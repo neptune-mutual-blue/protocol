@@ -31,16 +31,12 @@
     "bs58": "^4.0.1",
     "hardhat": "^2.3.0",
     "hardhat-contract-sizer": "^2.0.3",
-    "hardhat-docgen": "^1.1.1",
     "ipfs-http-client": "^50.1.2",
     "openzeppelin-solidity": "^4.1.0",
+    "prettier": "^2.3.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solc-0.8.4": "npm:solc@^0.8.4",
     "solhint": "^3.3.6",
-    "solidity-docgen": "^0.5.13",
     "standard": "^16.0.3"
-  },
-  "dependencies": {
-    "prettier": "^2.3.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.13"
   }
 }
