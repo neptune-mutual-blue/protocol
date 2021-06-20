@@ -1,6 +1,6 @@
 # Neptune Mutual Covers
 
-[Decentralized Autonomous Cover Organization](./files/dao.png)
+![Decentralized Autonomous Cover Organization](./files/dao.png)
 
 ## Contract Creators
 
