@@ -1,0 +1,1198 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/governance/TimelockController.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "3954309e80d0cc1a52679c46133c7d88",
+      "sourceName": "openzeppelin-solidity/contracts/governance/TimelockController.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../access/AccessControl.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "TimelockController"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/access/AccessControl.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "c89562e4f5ef9b584f318a1559b5052a",
+      "sourceName": "openzeppelin-solidity/contracts/access/AccessControl.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol",
+        "../utils/Strings.sol",
+        "../utils/introspection/ERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "AccessControl",
+        "IAccessControl"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1623418132055,
+      "contentHash": "e575d915a7dbf0decd510699a7fd53dc",
+      "sourceName": "openzeppelin-solidity/contracts/utils/Strings.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Strings"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1623418132062,
+      "contentHash": "a9a5319dff9088c6ffe757ea1c2a6729",
+      "sourceName": "openzeppelin-solidity/contracts/utils/introspection/ERC165.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC165"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1623418132062,
+      "contentHash": "9a04322bb8f6b8f2767d8358d1d2537b",
+      "sourceName": "openzeppelin-solidity/contracts/utils/introspection/IERC165.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC165"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/proxy/Clones.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "08b85f1ee6d839857b6feaa519390069",
+      "sourceName": "openzeppelin-solidity/contracts/proxy/Clones.sol",
+      "solcConfig": {
+        "version": "0.8.5",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Clones"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/cover/Cover.sol": {
+      "lastModificationDate": 1624177560824,
+      "contentHash": "a1dc8874fa071df3dd82918b9ba05d9d",
+      "sourceName": "contracts/cover/Cover.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/IStore.sol",
+        "../../interfaces/ICover.sol",
+        "../../interfaces/ICoverStake.sol",
+        "../../libraries/ProtoUtilV1.sol",
+        "../../libraries/CoverUtilV1.sol",
+        "../../libraries/NTransferUtilV2.sol",
+        "../Recoverable.sol",
+        "../../interfaces/ICoverStake.sol",
+        "../../interfaces/ICoverLiquidity.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "Cover"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/IStore.sol": {
+      "lastModificationDate": 1624173149804,
+      "contentHash": "585d5a6bd03ae9fc6cb8ccb918ad6e5d",
+      "sourceName": "interfaces/IStore.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "IStore"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/libraries/ProtoUtilV1.sol": {
+      "lastModificationDate": 1624175531805,
+      "contentHash": "83b398b8c26d68707c823c7bb74d2997",
+      "sourceName": "libraries/ProtoUtilV1.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/IStore.sol",
+        "../interfaces/IVault.sol",
+        "../interfaces/IProtocol.sol",
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "ProtoUtilV1"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/libraries/CoverUtilV1.sol": {
+      "lastModificationDate": 1624176356235,
+      "contentHash": "0a4fd598d007473f8e38bd2e34aeca91",
+      "sourceName": "libraries/CoverUtilV1.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/IStore.sol",
+        "../interfaces/ICoverStake.sol",
+        "../interfaces/ICoverLiquidity.sol",
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+        "./ProtoUtilV1.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "CoverUtilV1"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/libraries/NTransferUtilV2.sol": {
+      "lastModificationDate": 1623941657860,
+      "contentHash": "25148a733ac937351fe0b3fc0c6f2073",
+      "sourceName": "libraries/NTransferUtilV2.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "openzeppelin-solidity/contracts/utils/math/SafeMath.sol",
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+        "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "NTransferUtilV2"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/Recoverable.sol": {
+      "lastModificationDate": 1624173924677,
+      "contentHash": "99a3f98ccfb8249c3a944dd791aa4e7e",
+      "sourceName": "contracts/Recoverable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "openzeppelin-solidity/contracts/access/Ownable.sol",
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+        "openzeppelin-solidity/contracts/security/ReentrancyGuard.sol",
+        "openzeppelin-solidity/contracts/security/Pausable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "Recoverable"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/IProtocol.sol": {
+      "lastModificationDate": 1624173578364,
+      "contentHash": "56e593c340f36f29eb99c79980120b5b",
+      "sourceName": "interfaces/IProtocol.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+        "./IMember.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "IProtocol"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "1d45ab4bd9b10c657bd26a957be5bcd9",
+      "sourceName": "openzeppelin-solidity/contracts/security/ReentrancyGuard.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ReentrancyGuard"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/security/Pausable.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "835673b68fdeaf41b38c84e966e8630b",
+      "sourceName": "openzeppelin-solidity/contracts/security/Pausable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Pausable"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/math/SafeMath.sol": {
+      "lastModificationDate": 1623418132062,
+      "contentHash": "9f282272a197e5e800ef035117e86f2f",
+      "sourceName": "openzeppelin-solidity/contracts/utils/math/SafeMath.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SafeMath"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/token/ERC20/IERC20.sol": {
+      "lastModificationDate": 1623418132062,
+      "contentHash": "c7492a9ab60ba083d345f893d5e0f33c",
+      "sourceName": "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC20"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol": {
+      "lastModificationDate": 1623418132062,
+      "contentHash": "e5187f826fe23aac7606440680f16de3",
+      "sourceName": "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IERC20.sol",
+        "../../../utils/Address.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SafeERC20"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/Address.sol": {
+      "lastModificationDate": 1623418132055,
+      "contentHash": "37103cdc416efc2601c6f6734044b559",
+      "sourceName": "openzeppelin-solidity/contracts/utils/Address.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Address"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1623418132054,
+      "contentHash": "17d9f40220b0ab370db2c77e7c92c4ef",
+      "sourceName": "openzeppelin-solidity/contracts/access/Ownable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Ownable"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/node_modules/openzeppelin-solidity/contracts/utils/Context.sol": {
+      "lastModificationDate": 1623418132055,
+      "contentHash": "bc047f55d4e6dcc5a9c7ee096f530312",
+      "sourceName": "openzeppelin-solidity/contracts/utils/Context.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Context"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/Protocol.sol": {
+      "lastModificationDate": 1624198384795,
+      "contentHash": "08619a52a379b9eeda7e1db9590efb43",
+      "sourceName": "contracts/Protocol.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/IStore.sol",
+        "../libraries/ProtoUtilV1.sol",
+        "../libraries/NTransferUtilV2.sol",
+        "./Recoverable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "Protocol"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/IVault.sol": {
+      "lastModificationDate": 1624176189808,
+      "contentHash": "0325285b50c9bef80d60bd6b9940f4c8",
+      "sourceName": "interfaces/IVault.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
+        "./IMember.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "IVault"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/vault/Vault.sol": {
+      "lastModificationDate": 1624177698920,
+      "contentHash": "6fa73f542b10a858500b553e73108474",
+      "sourceName": "contracts/vault/Vault.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/IStore.sol",
+        "../../interfaces/IVault.sol",
+        "../../libraries/ProtoUtilV1.sol",
+        "../../libraries/CoverUtilV1.sol",
+        "../../libraries/NTransferUtilV2.sol",
+        "../Recoverable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "Vault"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/IMember.sol": {
+      "lastModificationDate": 1624177633889,
+      "contentHash": "79297fa79c67a3cdc7c76d4f1499348e",
+      "sourceName": "interfaces/IMember.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "IMember"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/ICover.sol": {
+      "lastModificationDate": 1624173636326,
+      "contentHash": "38dd8c62964946f3f87fd14cb051cd83",
+      "sourceName": "interfaces/ICover.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IMember.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "ICover"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/ICoverStake.sol": {
+      "lastModificationDate": 1624176191099,
+      "contentHash": "efce567b49fd22043ed522837b7482c4",
+      "sourceName": "interfaces/ICoverStake.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IMember.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "ICoverStake"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/cover/CoverProvision.sol": {
+      "lastModificationDate": 1624177577844,
+      "contentHash": "b3306a66aef9aaf377481f3ccec7db90",
+      "sourceName": "contracts/cover/CoverProvision.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/IStore.sol",
+        "../../interfaces/IMember.sol",
+        "../../libraries/ProtoUtilV1.sol",
+        "../../libraries/CoverUtilV1.sol",
+        "../../libraries/NTransferUtilV2.sol",
+        "../Recoverable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "CoverProvision"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/interfaces/ICoverLiquidity.sol": {
+      "lastModificationDate": 1624176192377,
+      "contentHash": "1086d63b8fd5480df2455859b179e64f",
+      "sourceName": "interfaces/ICoverLiquidity.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IMember.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "ICoverLiquidity"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/cover/CoverLiquidity.sol": {
+      "lastModificationDate": 1624177571763,
+      "contentHash": "459a740a4631dadbddad8a3e856e097b",
+      "sourceName": "contracts/cover/CoverLiquidity.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/ICoverLiquidity.sol",
+        "../../libraries/ProtoUtilV1.sol",
+        "../../libraries/CoverUtilV1.sol",
+        "../../libraries/NTransferUtilV2.sol",
+        "../Recoverable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "CoverLiquidity"
+      ]
+    },
+    "/Users/tokyo/defi/nm/protocol/contracts/cover/CoverStake.sol": {
+      "lastModificationDate": 1624177588139,
+      "contentHash": "4387ee1494c697c6df90408647f32a5d",
+      "sourceName": "contracts/cover/CoverStake.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "devdoc",
+                "userdoc"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../interfaces/ICoverStake.sol",
+        "../../libraries/ProtoUtilV1.sol",
+        "../../libraries/CoverUtilV1.sol",
+        "../../libraries/NTransferUtilV2.sol",
+        "../Recoverable.sol"
+      ],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "CoverStake"
+      ]
+    }
+  }
+}

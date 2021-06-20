@@ -5,7 +5,6 @@
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.autoIndent": "none",
-  "prettier.enable": true,
   "solidity.formatter": "prettier",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
@@ -13,5 +12,13 @@
   "solidity.linter": "solhint",
   "solidity.validationDelay": 2,
   "standard.autoFixOnSave": true,
-  "javascript.suggestionActions.enabled": false
+  "javascript.suggestionActions.enabled": false,
+  "[json]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace",
+    "editor.defaultFormatter": "vscode.json-language-features",
+  },
+  "editor.padding.top": 24
 }

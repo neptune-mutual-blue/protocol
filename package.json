@@ -1,0 +1,46 @@
+{
+  "name": "protocol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "hardhat compile",
+    "solhint": "solhint \"contracts/**/*.sol\"",
+    "gendoc": "rm -rf build && rm -rf docs && truffle compile && solidoc2",
+    "flatten:protocol": "flatsol contracts/Protocol.sol > ./.flatsol/Protocol.sol",
+    "flatten:vault": "flatsol contracts/vault/Vault.sol > ./.flatsol/Vault.sol",
+    "flatten:cover": "flatsol contracts/cover/Cover.sol > ./.flatsol/Cover.sol",
+    "flatten:liquidity": "flatsol contracts/cover/CoverLiquidity.sol > ./.flatsol/CoverLiquidity.sol",
+    "flatten:provision": "flatsol contracts/cover/CoverProvision.sol > ./.flatsol/CoverProvision.sol",
+    "flatten:stake": "flatsol contracts/cover/CoverStake.sol > ./.flatsol/CoverStake.sol",
+    "flatten:all": "yarn flatten:protocol && yarn flatten:vault && yarn flatten:cover  && yarn flatten:liquidity  && yarn flatten:provision && yarn flatten:stake",
+    "slither": "slither ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neptune-mutual/protocol.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neptune-mutual/protocol/issues"
+  },
+  "homepage": "https://github.com/neptune-mutual/protocol#readme",
+  "devDependencies": {
+    "bs58": "^4.0.1",
+    "hardhat": "^2.3.0",
+    "hardhat-contract-sizer": "^2.0.3",
+    "hardhat-docgen": "^1.1.1",
+    "ipfs-http-client": "^50.1.2",
+    "openzeppelin-solidity": "^4.1.0",
+    "solc-0.8.4": "npm:solc@^0.8.4",
+    "solhint": "^3.3.6",
+    "solidity-docgen": "^0.5.13",
+    "standard": "^16.0.3"
+  },
+  "dependencies": {
+    "prettier": "^2.3.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.13"
+  }
+}

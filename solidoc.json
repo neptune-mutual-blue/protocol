@@ -1,0 +1,9 @@
+{
+  "pathToRoot": "./",
+  "outputPath": "./docs",
+  "noCompilation": true,
+  "compiler": "truffle compile",
+  "language": "en",
+  "rootContract": "Protobase",
+  "readMe": "./readme.md"
+}
