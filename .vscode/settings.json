@@ -1,0 +1,17 @@
+{
+  "editor.tabSize": 2,
+  "editor.foldingStrategy": "indentation",
+  "editor.wrappingIndent": "indent",
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.autoIndent": "none",
+  "prettier.enable": true,
+  "solidity.formatter": "prettier",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "solidity.compileUsingRemoteVersion": "latest",
+  "solidity.linter": "solhint",
+  "solidity.validationDelay": 2,
+  "standard.autoFixOnSave": true,
+  "javascript.suggestionActions.enabled": false
+}
