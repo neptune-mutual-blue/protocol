@@ -17,29 +17,34 @@ contract CoverProvision is IMember, Recoverable {
   event ProvisionIncreased(bytes32 key, uint256 previous, uint256 current);
   event ProvisionDecreased(bytes32 key, uint256 previous, uint256 current);
 
-  function increaseProvision(bytes32 key, uint256 amount) external onlyOwner nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
+  modifier validateKey(bytes32 key) {
+    s.ensureValidCover(key); // Ensures the key is valid cover
+    _;
+  }
 
+  constructor(IStore store) {
+    s = store;
+  }
+
+  function increaseProvision(bytes32 key, uint256 amount) external onlyOwner validateKey(key) nonReentrant whenNotPaused {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_PROVISION, key).toKeccak256();
 
     emit ProvisionIncreased(key, s.getUint(k), s.getUint(k) + amount);
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount);
 
     IProtocol proto = s.getProtocol();
-    proto.vaultDeposit(getName(), key, s.nepToken(), super._msgSender(), amount);
+    proto.depositToVault(getName(), key, s.nepToken(), super._msgSender(), amount);
   }
 
-  function decreaseProvision(bytes32 key, uint256 amount) external onlyOwner nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
-
+  function decreaseProvision(bytes32 key, uint256 amount) external onlyOwner validateKey(key) nonReentrant whenNotPaused {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_PROVISION, key).toKeccak256();
     uint256 privision = s.getUint(k);
 
     require(privision >= amount, "Exceeds Balance"); // Exceeds balance
-    s.setUint(k, privision - amount);
+    s.subtractUint(k, amount);
 
     IProtocol proto = s.getProtocol();
-    proto.vaultWithdrawal(getName(), key, s.nepToken(), super._msgSender(), amount);
+    proto.withdrawFromVault(getName(), key, s.nepToken(), super._msgSender(), amount);
     emit ProvisionIncreased(key, privision, privision - amount);
   }
 

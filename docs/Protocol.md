@@ -17,7 +17,8 @@ contract IStore public s;
 **Events**
 
 ```js
-event ContractUpgraded(address indexed previous, address indexed current);
+event ContractAdded(bytes32  namespace, address  contractAddress);
+event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
 ```
 
 ## Modifiers
@@ -40,18 +41,18 @@ modifier onlyProtocol(address contractAddress) internal
 
 ## Functions
 
-- [(IStore store, address nep)](#)
-- [_getMemberHash(address contractAddress)](#_getmemberhash)
-- [vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount)](#vaultwithdrawal)
-- [vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount)](#vaultdeposit)
+- [constructor(IStore store, address nep, address treasury, address assuranceVault)](#)
+- [withdrawFromVault(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount)](#withdrawfromvault)
+- [depositToVault(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount)](#deposittovault)
 - [upgradeContract(bytes32 name, address previous, address current)](#upgradecontract)
+- [addContract(bytes32 name, address contractAddress)](#addcontract)
 - [_addContract(bytes32 name, address contractAddress)](#_addcontract)
 - [_deleteContract(bytes32 name, address contractAddress)](#_deletecontract)
 
 ### 
 
 ```js
-function (IStore store, address nep) public nonpayable
+function (IStore store, address nep, address treasury, address assuranceVault) public nonpayable
 ```
 
 **Arguments**
@@ -60,26 +61,13 @@ function (IStore store, address nep) public nonpayable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 | nep | address |  | 
+| treasury | address |  | 
+| assuranceVault | address |  | 
 
-### _getMemberHash
-
-This function ensures that the supplied address is one of the latest protocol contracts
-
-```js
-function _getMemberHash(address contractAddress) internal view
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| contractAddress | address |  | 
-
-### vaultWithdrawal
+### withdrawFromVault
 
 ```js
-function vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount) public nonpayable nonReentrant onlyProtocol 
+function withdrawFromVault(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount) public nonpayable nonReentrant onlyProtocol whenNotPaused 
 ```
 
 **Arguments**
@@ -92,10 +80,10 @@ function vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, addres
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-### vaultDeposit
+### depositToVault
 
 ```js
-function vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount) public nonpayable nonReentrant onlyProtocol 
+function depositToVault(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount) public nonpayable nonReentrant onlyProtocol whenNotPaused 
 ```
 
 **Arguments**
@@ -111,7 +99,7 @@ function vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address s
 ### upgradeContract
 
 ```js
-function upgradeContract(bytes32 name, address previous, address current) external nonpayable onlyOwner 
+function upgradeContract(bytes32 name, address previous, address current) external nonpayable onlyOwner onlyProtocol whenNotPaused 
 ```
 
 **Arguments**
@@ -122,10 +110,23 @@ function upgradeContract(bytes32 name, address previous, address current) extern
 | previous | address |  | 
 | current | address |  | 
 
+### addContract
+
+```js
+function addContract(bytes32 name, address contractAddress) external nonpayable onlyProtocol whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| name | bytes32 |  | 
+| contractAddress | address |  | 
+
 ### _addContract
 
 ```js
-function _addContract(bytes32 name, address contractAddress) private nonpayable onlyProtocol 
+function _addContract(bytes32 name, address contractAddress) private nonpayable
 ```
 
 **Arguments**
@@ -138,7 +139,7 @@ function _addContract(bytes32 name, address contractAddress) private nonpayable 
 ### _deleteContract
 
 ```js
-function _deleteContract(bytes32 name, address contractAddress) private nonpayable onlyProtocol 
+function _deleteContract(bytes32 name, address contractAddress) private nonpayable
 ```
 
 **Arguments**
@@ -151,12 +152,15 @@ function _deleteContract(bytes32 name, address contractAddress) private nonpayab
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

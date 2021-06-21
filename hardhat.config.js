@@ -1,5 +1,4 @@
 require('hardhat-contract-sizer')
-require('hardhat-docgen')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig

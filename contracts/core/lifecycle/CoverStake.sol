@@ -17,6 +17,17 @@ contract CoverStake is ICoverStake, Recoverable {
 
   event StakeAdded(bytes32 key, uint256 amount);
   event StakeRemoved(bytes32 key, uint256 amount);
+  event FeeBurned(bytes32 key, uint256 amount);
+
+  modifier onlyFromCover() {
+    s.ensureMemberWithName(ProtoUtilV1.CONTRACTS_COVER);
+    _;
+  }
+
+  modifier validateKey(bytes32 key) {
+    s.ensureValidCover(key); // Ensures the key is valid cover
+    _;
+  }
 
   constructor(IStore store) {
     s = store;
@@ -25,31 +36,32 @@ contract CoverStake is ICoverStake, Recoverable {
   function increaseStake(
     bytes32 key,
     address account,
-    uint256 amount
-  ) external override nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
-    s.onlyContract(ProtoUtilV1.CONTRACTS_COVER); // Only the cover contract can update the state
-
+    uint256 amount,
+    uint256 fee
+  ) external override onlyFromCover validateKey(key) nonReentrant whenNotPaused {
     IProtocol proto = s.getProtocol();
-    proto.vaultDeposit(getName(), key, s.nepToken(), account, amount);
+
+    proto.depositToVault(getName(), key, s.nepToken(), account, amount);
+
+    if (fee > 0) {
+      proto.withdrawFromVault(getName(), key, s.nepToken(), s.getBurnAddress(), fee);
+      emit FeeBurned(key, fee);
+    }
 
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_STAKE, key).toKeccak256();
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount - fee);
 
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_STAKE_OWNED, key, account).toKeccak256();
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount - fee);
 
-    emit StakeAdded(key, amount);
+    emit StakeAdded(key, amount - fee);
   }
 
   function decreaseStake(
     bytes32 key,
     address account,
     uint256 amount
-  ) external override nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
-    s.onlyContract(ProtoUtilV1.CONTRACTS_COVER); // Only the cover contract can update the state
-
+  ) external override onlyFromCover validateKey(key) nonReentrant whenNotPaused {
     require(stakeOf(key, account) >= amount, "Exceeds balance");
 
     uint256 minStake = s.getProtocol().getMinCoverStake();
@@ -58,10 +70,10 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 currentStake = s.getUint(k);
 
     require(currentStake - amount >= minStake, "Min stake required");
-    s.setUint(k, s.getUint(k) - amount);
+    s.subtractUint(k, amount);
 
     IProtocol proto = s.getProtocol();
-    proto.vaultWithdrawal(getName(), key, s.nepToken(), account, amount);
+    proto.withdrawFromVault(getName(), key, s.nepToken(), account, amount);
     emit StakeRemoved(key, amount);
   }
 

@@ -21,9 +21,37 @@ event StakeAdded(bytes32  key, uint256  amount);
 event StakeRemoved(bytes32  key, uint256  amount);
 ```
 
+## Modifiers
+
+- [onlyFromCover](#onlyfromcover)
+- [validateKey](#validatekey)
+
+### onlyFromCover
+
+```js
+modifier onlyFromCover() internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### validateKey
+
+```js
+modifier validateKey(bytes32 key) internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
 ## Functions
 
-- [(IStore store)](#)
+- [constructor(IStore store)](#)
 - [increaseStake(bytes32 key, address account, uint256 amount)](#increasestake)
 - [decreaseStake(bytes32 key, address account, uint256 amount)](#decreasestake)
 - [version()](#version)
@@ -45,7 +73,7 @@ function (IStore store) public nonpayable
 ### increaseStake
 
 ```js
-function increaseStake(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
+function increaseStake(bytes32 key, address account, uint256 amount) external nonpayable onlyFromCover validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -59,7 +87,7 @@ function increaseStake(bytes32 key, address account, uint256 amount) external no
 ### decreaseStake
 
 ```js
-function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
+function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable onlyFromCover validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -111,12 +139,15 @@ returns(bytes32)
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

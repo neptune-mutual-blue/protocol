@@ -1,10 +1,10 @@
-# CoverLiquidity.sol
+# CoverAssurance.sol
 
-View Source: [contracts/cover/CoverLiquidity.sol](../contracts/cover/CoverLiquidity.sol)
+View Source: [contracts/cover/CoverAssurance.sol](../contracts/cover/CoverAssurance.sol)
 
-**↗ Extends: [ICoverLiquidity](ICoverLiquidity.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
 
-**CoverLiquidity**
+**CoverAssurance**
 
 ## Contract Members
 **Constants & Variables**
@@ -17,25 +17,13 @@ contract IStore public s;
 **Events**
 
 ```js
-event LiquidityAdded(bytes32  key, address  asset, uint256  amount);
-event LiquidityRemoved(bytes32  key, address  asset, uint256  amount);
+event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
+event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
 ```
 
 ## Modifiers
 
-- [onlyFromCover](#onlyfromcover)
 - [validateKey](#validatekey)
-
-### onlyFromCover
-
-```js
-modifier onlyFromCover() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
 
 ### validateKey
 
@@ -52,10 +40,10 @@ modifier validateKey(bytes32 key) internal
 ## Functions
 
 - [constructor(IStore store)](#)
-- [addLiquidity(bytes32 key, address account, uint256 amount)](#addliquidity)
-- [removeLiquidity(bytes32 key, address account, uint256 amount)](#removeliquidity)
+- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
+- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
+- [getProvision(bytes32 key)](#getprovision)
 - [version()](#version)
-- [liquidityOf(bytes32 key, address account)](#liquidityof)
 - [getName()](#getname)
 
 ### 
@@ -70,10 +58,10 @@ function (IStore store) public nonpayable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-### addLiquidity
+### increaseProvision
 
 ```js
-function addLiquidity(bytes32 key, address account, uint256 amount) external nonpayable validateKey onlyFromCover nonReentrant whenNotPaused 
+function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -81,13 +69,12 @@ function addLiquidity(bytes32 key, address account, uint256 amount) external non
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
-| account | address |  | 
 | amount | uint256 |  | 
 
-### removeLiquidity
+### decreaseProvision
 
 ```js
-function removeLiquidity(bytes32 key, address account, uint256 amount) external nonpayable validateKey onlyFromCover nonReentrant whenNotPaused 
+function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -95,8 +82,20 @@ function removeLiquidity(bytes32 key, address account, uint256 amount) external 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
-| account | address |  | 
 | amount | uint256 |  | 
+
+### getProvision
+
+```js
+function getProvision(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ### version
 
@@ -109,20 +108,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-### liquidityOf
-
-```js
-function liquidityOf(bytes32 key, address account) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
 
 ### getName
 

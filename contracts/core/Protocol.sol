@@ -11,9 +11,23 @@ contract Protocol is Recoverable {
   using NTransferUtilV2 for IERC20;
   IStore public s;
 
-  event ContractUpgraded(address indexed previous, address indexed current);
+  event ContractAdded(bytes32 namespace, address contractAddress);
+  event ContractUpgraded(bytes32 namespace, address indexed previous, address indexed current);
 
-  constructor(IStore store, address nep) {
+  /**
+   * @dev This modifier ensures that the caller is one of the latest protocol contracts
+   */
+  modifier onlyProtocol(address contractAddress) {
+    s.ensureProtocolMember(contractAddress);
+    _;
+  }
+
+  constructor(
+    IStore store,
+    address nep,
+    address treasury,
+    address assuranceVault
+  ) {
     s = store;
 
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CORE).toKeccak256();
@@ -24,57 +38,45 @@ contract Protocol is Recoverable {
 
     k = abi.encodePacked(ProtoUtilV1.KP_BURNER).toKeccak256();
     s.setAddress(k, 0x0000000000000000000000000000000000000001);
+
+    k = abi.encodePacked(ProtoUtilV1.KP_TREASURY).toKeccak256();
+    s.setAddress(k, treasury);
+
+    k = abi.encodePacked(ProtoUtilV1.KP_ASSURANCE_VAULT).toKeccak256();
+    s.setAddress(k, assuranceVault);
   }
 
-  /**
-   * @dev This modifier ensures that the caller is one of the latest protocol contracts
-   */
-  modifier onlyProtocol(address contractAddress) {
-    _getMemberHash(contractAddress);
-    _;
-  }
-
-  /**
-   * @dev This function ensures that the supplied address is one of the latest protocol contracts
-   */
-  function _getMemberHash(address contractAddress) internal view returns (bytes32) {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, contractAddress).toKeccak256();
-    require(s.getBool(k), "Not a protocol contract");
-
-    return k;
-  }
-
-  function vaultWithdrawal(
+  function withdrawFromVault(
     bytes32 contractName,
     bytes32 key,
     IERC20 asset,
     address recipient,
     uint256 amount
-  ) public nonReentrant onlyProtocol(msg.sender) {
+  ) public nonReentrant onlyProtocol(msg.sender) whenNotPaused {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, contractName).toKeccak256();
     require(s.getAddress(k) == super._msgSender(), "Access denied");
 
     k = abi.encodePacked(ProtoUtilV1.KP_VAULT_BALANCES, contractName, key, asset).toKeccak256();
     require(amount <= s.getUint(k), "Exceeds balance");
 
-    s.setUint(k, s.getUint(k) - amount);
+    s.subtractUint(k, amount);
 
     IVault vault = s.getVault();
     vault.transferOut(asset, recipient, amount);
   }
 
-  function vaultDeposit(
+  function depositToVault(
     bytes32 contractName,
     bytes32 key,
     IERC20 asset,
     address sender,
     uint256 amount
-  ) public nonReentrant onlyProtocol(msg.sender) {
+  ) public nonReentrant onlyProtocol(msg.sender) whenNotPaused {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, contractName).toKeccak256();
     require(s.getAddress(k) == super._msgSender(), "Access denied");
 
     k = abi.encodePacked(ProtoUtilV1.KP_VAULT_BALANCES, contractName, key, asset).toKeccak256();
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount);
 
     address vault = s.getVaultAddress();
     asset.ensureTransferFrom(sender, vault, amount);
@@ -84,22 +86,29 @@ contract Protocol is Recoverable {
     bytes32 name,
     address previous,
     address current
-  ) external onlyOwner {
+  ) external onlyOwner onlyProtocol(previous) whenNotPaused {
     _deleteContract(name, previous);
     _addContract(name, current);
 
-    emit ContractUpgraded(previous, current);
+    emit ContractUpgraded(name, previous, current);
   }
 
-  function _addContract(bytes32 name, address contractAddress) private onlyProtocol(contractAddress) {
+  function addContract(bytes32 name, address contractAddress) external onlyProtocol(contractAddress) whenNotPaused {
+    _addContract(name, contractAddress);
+    emit ContractAdded(name, contractAddress);
+  }
+
+  function _addContract(bytes32 name, address contractAddress) private {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, contractAddress).toKeccak256();
+    require(!s.getBool(k), "Already exists");
+
     s.setBool(k, true);
 
     k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, name).toKeccak256();
     s.setAddress(k, contractAddress);
   }
 
-  function _deleteContract(bytes32 name, address contractAddress) private onlyProtocol(contractAddress) {
+  function _deleteContract(bytes32 name, address contractAddress) private {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_CONTRACTS, contractAddress).toKeccak256();
     s.deleteBool(k);
 

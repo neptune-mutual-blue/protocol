@@ -2,6 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 import "../interfaces/IStore.sol";
 import "../interfaces/ICoverStake.sol";
+import "../interfaces/ICoverAssurance.sol";
 import "../interfaces/ICoverLiquidity.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
@@ -9,14 +10,14 @@ import "./ProtoUtilV1.sol";
 library CoverUtilV1 {
   using ProtoUtilV1 for IStore;
 
-  function onlyValidCovers(IStore s, bytes32 key) external view {
+  function ensureValidCover(IStore s, bytes32 key) external view {
     require(_getStatus(s, key) != 1, "Cover on Maintenance");
 
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.KP_COVER, key));
     require(s.getBool(k), "Cover does not exist");
   }
 
-  function onlyCoverOwner(
+  function ensureCoverOwner(
     IStore s,
     bytes32 key,
     address sender,
@@ -83,6 +84,10 @@ library CoverUtilV1 {
 
   function getStakingContract(IStore s) public view returns (ICoverStake) {
     return ICoverStake(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_COVER_STAKE));
+  }
+
+  function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
+    return ICoverAssurance(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_COVER_STAKE));
   }
 
   function getLiquidityContract(IStore s) public view returns (ICoverLiquidity) {

@@ -66,7 +66,7 @@ modifier whenPaused() internal
 
 ## Functions
 
-- [()](#)
+- [constructor()](#)
 - [paused()](#paused)
 - [_pause()](#_pause)
 - [_unpause()](#_unpause)
@@ -131,12 +131,15 @@ function _unpause() internal nonpayable whenPaused
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

@@ -4,6 +4,6 @@
   "noCompilation": true,
   "compiler": "truffle compile",
   "language": "en",
-  "rootContract": "Protobase",
+  "rootContract": "Cover",
   "readMe": "./readme.md"
 }

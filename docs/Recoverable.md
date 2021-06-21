@@ -3,7 +3,7 @@
 View Source: [contracts/Recoverable.sol](../contracts/Recoverable.sol)
 
 **↗ Extends: [Ownable](Ownable.md), [ReentrancyGuard](ReentrancyGuard.md), [Pausable](Pausable.md)**
-**↘ Derived Contracts: [Cover](Cover.md), [CoverLiquidity](CoverLiquidity.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [Protocol](Protocol.md), [Vault](Vault.md)**
+**↘ Derived Contracts: [Commission](Commission.md), [Cover](Cover.md), [CoverAssurance](CoverAssurance.md), [CoverLiquidity](CoverLiquidity.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [Protocol](Protocol.md), [Vault](Vault.md)**
 
 **Recoverable**
 
@@ -66,12 +66,15 @@ function unpause() external nonpayable onlyOwner whenPaused
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

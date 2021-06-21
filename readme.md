@@ -36,15 +36,15 @@ The liquidity providers collectively earn cover fees paid by the platform users.
 
 
 
+
 [comment]: #solidoc (Start)
-# Protobase.sol
+# Cover Contract (Cover.sol)
 
-View Source: [contracts/Protobase.sol](/contracts/Protobase.sol)
+View Source: [contracts/cover/Cover.sol](/contracts/cover/Cover.sol)
 
-**↗ Extends: [Recoverable](docs/Recoverable.md)**
-**↘ Derived Contracts: [Protocol](docs/Protocol.md)**
+**↗ Extends: [ICover](docs/ICover.md), [Recoverable](Recoverable.md)**
 
-**Protobase**
+**Cover**
 
 ## Contract Members
 **Constants & Variables**
@@ -57,43 +57,128 @@ contract IStore public s;
 **Events**
 
 ```js
-event ContractUpgraded(address indexed previous, address indexed current);
+event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
+event CoverUpdated(bytes32  key, bytes32  info);
 ```
 
 ## Modifiers
 
-- [onlyProtocol](#onlyprotocol)
+- [onlyCoverOwner](#onlycoverowner)
+- [validateKey](#validatekey)
 
-### onlyProtocol
-
-This modifier ensures that the caller is one of the latest protocol contracts
+### onlyCoverOwner
 
 ```js
-modifier onlyProtocol(address contractAddress) internal
+modifier onlyCoverOwner(bytes32 key) internal
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| contractAddress | address |  | 
+| key | bytes32 |  | 
+
+### validateKey
+
+```js
+modifier validateKey(bytes32 key) internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ## Functions
 
-- [_getMemberHash(address contractAddress)](#_getmemberhash)
-- [(IStore store)](#)
-- [vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount)](#vaultwithdrawal)
-- [vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount)](#vaultdeposit)
-- [upgradeContract(bytes32 name, address previous, address current)](#upgradecontract)
-- [_addContract(bytes32 name, address contractAddress)](#_addcontract)
-- [_deleteContract(bytes32 name, address contractAddress)](#_deletecontract)
+- [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
+- [addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
+- [updateCover(bytes32 key, bytes32 info)](#updatecover)
+- [getCover(bytes32 key)](#getcover)
+- [version()](#version)
+- [getName()](#getname)
+- [_burn(IERC20 token, uint256 amount)](#_burn)
 
-### _getMemberHash
+### 
 
-This function ensures that the supplied address is one of the latest protocol contracts
+Constructs this smart contract
 
 ```js
-function _getMemberHash(address contractAddress) internal view
+function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| store | IStore | Provide the address of an eternal storage contract to use.<br > This contract must be a member of the Protocol for write access to the storage | 
+| liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
+| liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
+
+### addCover
+
+Adds a new coverage pool or cover contract.
+ To add a new cover, you need to pay cover creation fee
+ and stake minimum amount of NEP in the Vault. <br /> <br />
+ Through the governance portal, projects will be able redeem
+ the full cover fee at a later date.
+ As the cover creator, you will earn a portion of all cover fees
+ generated in this pool. <br /> <br />
+ Read the documentation to learn more about the fees:
+ https://docs.neptunemutual.com/covers/contract-creators
+
+```js
+function addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter a unique key for this cover | 
+| info | bytes32 | IPFS info of the cover contract | 
+| stakeWithFee | uint256 | Enter the total NEP amount (stake + fee) to transfer to this contract. | 
+| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br > Assurance tokens can be added by a project to demonstrate coverage support<br > for their own project. This helps bring the cover fee (or premium) down and enhances<br > liquidity provider confidence. Along with NEP tokens, the assurance tokens are rewarded<br > as a support to the liquidity providers when a cover incident occurs. | 
+| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of<br > assurance tokens you'd like to add to this pool. | 
+| initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
+
+### updateCover
+
+Updates the cover contract
+
+```js
+function updateCover(bytes32 key, bytes32 info) external nonpayable validateKey onlyCoverOwner nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key | 
+| info | bytes32 | Enter a new IPFS URL to update | 
+
+### getCover
+
+Get more information about this cover contract
+
+```js
+function getCover(bytes32 key) external view
+returns(coverOwner address, info bytes32, values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key | 
+
+### version
+
+Version number of this contract
+
+```js
+function version() external pure
 returns(bytes32)
 ```
 
@@ -101,101 +186,48 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| contractAddress | address |  | 
 
-### 
+### getName
+
+Name of this contract
 
 ```js
-function (IStore store) internal nonpayable
+function getName() public pure
+returns(bytes32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
 
-### vaultWithdrawal
+### _burn
+
+Burns the supplied tokens held by the contract
 
 ```js
-function vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount) public nonpayable nonReentrant onlyProtocol 
+function _burn(IERC20 token, uint256 amount) private nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| contractName | bytes32 |  | 
-| key | bytes32 |  | 
-| asset | IERC20 |  | 
-| recipient | address |  | 
+| token | IERC20 |  | 
 | amount | uint256 |  | 
-
-### vaultDeposit
-
-```js
-function vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount) public nonpayable nonReentrant onlyProtocol 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| contractName | bytes32 |  | 
-| key | bytes32 |  | 
-| asset | IERC20 |  | 
-| sender | address |  | 
-| amount | uint256 |  | 
-
-### upgradeContract
-
-```js
-function upgradeContract(bytes32 name, address previous, address current) external nonpayable onlyOwner 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| name | bytes32 |  | 
-| previous | address |  | 
-| current | address |  | 
-
-### _addContract
-
-```js
-function _addContract(bytes32 name, address contractAddress) private nonpayable onlyProtocol 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| name | bytes32 |  | 
-| contractAddress | address |  | 
-
-### _deleteContract
-
-```js
-function _deleteContract(bytes32 name, address contractAddress) private nonpayable onlyProtocol 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| name | bytes32 |  | 
-| contractAddress | address |  | 
 
 ## Contracts
 
 * [Address](docs/Address.md)
+* [Commission](docs/Commission.md)
 * [Context](docs/Context.md)
 * [Cover](docs/Cover.md)
+* [CoverAssurance](docs/CoverAssurance.md)
 * [CoverLiquidity](docs/CoverLiquidity.md)
 * [CoverProvision](docs/CoverProvision.md)
 * [CoverStake](docs/CoverStake.md)
 * [CoverUtilV1](docs/CoverUtilV1.md)
+* [ICommission](docs/ICommission.md)
 * [ICover](docs/ICover.md)
 * [ICoverLiquidity](docs/ICoverLiquidity.md)
 * [ICoverStake](docs/ICoverStake.md)
@@ -207,7 +239,6 @@ function _deleteContract(bytes32 name, address contractAddress) private nonpayab
 * [NTransferUtilV2](docs/NTransferUtilV2.md)
 * [Ownable](docs/Ownable.md)
 * [Pausable](docs/Pausable.md)
-* [Protobase](docs/Protobase.md)
 * [Protocol](docs/Protocol.md)
 * [ProtoUtilV1](docs/ProtoUtilV1.md)
 * [Recoverable](docs/Recoverable.md)

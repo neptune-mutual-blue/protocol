@@ -21,18 +21,47 @@ event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
 event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
 ```
 
+## Modifiers
+
+- [validateKey](#validatekey)
+
+### validateKey
+
+```js
+modifier validateKey(bytes32 key) internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
 ## Functions
 
+- [constructor(IStore store)](#)
 - [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
 - [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
 - [getProvision(bytes32 key)](#getprovision)
 - [version()](#version)
 - [getName()](#getname)
 
+### 
+
+```js
+function (IStore store) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| store | IStore |  | 
+
 ### increaseProvision
 
 ```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
+function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -45,7 +74,7 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable only
 ### decreaseProvision
 
 ```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
+function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -95,12 +124,15 @@ returns(bytes32)
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

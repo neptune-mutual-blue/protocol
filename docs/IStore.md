@@ -9,6 +9,8 @@ View Source: [interfaces/IStore.sol](../interfaces/IStore.sol)
 - [setAddress(bytes32 k, address v)](#setaddress)
 - [setAddresses(bytes32 k, address[] v)](#setaddresses)
 - [setUint(bytes32 k, uint256 v)](#setuint)
+- [addUint(bytes32 k, uint256 v)](#adduint)
+- [subtractUint(bytes32 k, uint256 v)](#subtractuint)
 - [setUints(bytes32 k, uint256[] v)](#setuints)
 - [setString(bytes32 k, string v)](#setstring)
 - [setStrings(bytes32 k, string[] v)](#setstrings)
@@ -76,6 +78,32 @@ function setAddresses(bytes32 k, address[] v) external nonpayable
 
 ```js
 function setUint(bytes32 k, uint256 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | uint256 |  | 
+
+### addUint
+
+```js
+function addUint(bytes32 k, uint256 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | uint256 |  | 
+
+### subtractUint
+
+```js
+function subtractUint(bytes32 k, uint256 v) external nonpayable
 ```
 
 **Arguments**
@@ -543,12 +571,15 @@ returns(bytes32[])
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

@@ -1,29 +1,12 @@
-# IVault.sol
+# Cover Commissions (Commission.sol)
 
-View Source: [interfaces/IVault.sol](../interfaces/IVault.sol)
+View Source: [contracts/cover/_Commission.sol](../contracts/cover/_Commission.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Vault](Vault.md)**
+**↗ Extends: [ICommission](ICommission.md), [Recoverable](Recoverable.md)**
 
-**IVault**
+**Commission**
 
 ## Functions
-
-- [transferOut(IERC20 token, address recipient, uint256 amount)](#transferout)
-
-### transferOut
-
-```js
-function transferOut(IERC20 token, address recipient, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | IERC20 |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
 
 ## Contracts
 

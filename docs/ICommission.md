@@ -1,29 +1,13 @@
-# IVault.sol
+# ICommission.sol
 
-View Source: [interfaces/IVault.sol](../interfaces/IVault.sol)
+View Source: [interfaces/ICommission.sol](../interfaces/ICommission.sol)
 
 **↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Vault](Vault.md)**
+**↘ Derived Contracts: [Commission](Commission.md)**
 
-**IVault**
+**ICommission**
 
 ## Functions
-
-- [transferOut(IERC20 token, address recipient, uint256 amount)](#transferout)
-
-### transferOut
-
-```js
-function transferOut(IERC20 token, address recipient, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | IERC20 |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
 
 ## Contracts
 

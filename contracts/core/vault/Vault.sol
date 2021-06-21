@@ -14,7 +14,7 @@ contract Vault is IVault, Recoverable {
     IERC20 token,
     address recipient,
     uint256 amount
-  ) external override onlyOwner {
+  ) external override onlyOwner whenNotPaused {
     IERC20(token).ensureTransfer(recipient, amount);
   }
 

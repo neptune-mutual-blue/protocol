@@ -12,7 +12,8 @@ interface ICoverStake is IMember {
   function increaseStake(
     bytes32 key,
     address account,
-    uint256 amount
+    uint256 amount,
+    uint256 fees
   ) external;
 
   function stakeOf(bytes32 key, address account) external view returns (uint256);

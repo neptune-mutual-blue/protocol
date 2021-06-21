@@ -8,6 +8,10 @@ interface IStore {
 
   function setUint(bytes32 k, uint256 v) external;
 
+  function addUint(bytes32 k, uint256 v) external;
+
+  function subtractUint(bytes32 k, uint256 v) external;
+
   function setUints(bytes32 k, uint256[] memory v) external;
 
   function setString(bytes32 k, string calldata v) external;

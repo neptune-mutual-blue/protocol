@@ -8,52 +8,16 @@ View Source: [interfaces/IProtocol.sol](../interfaces/IProtocol.sol)
 
 ## Functions
 
+- [depositToVault(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount)](#deposittovault)
+- [withdrawFromVault(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount)](#withdrawfromvault)
 - [getCoverFee()](#getcoverfee)
 - [getMinCoverStake()](#getmincoverstake)
 - [getMinLiquidityPeriod()](#getminliquidityperiod)
-- [vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount)](#vaultdeposit)
-- [vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount)](#vaultwithdrawal)
 
-### getCoverFee
+### depositToVault
 
 ```js
-function getCoverFee() external nonpayable
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getMinCoverStake
-
-```js
-function getMinCoverStake() external nonpayable
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getMinLiquidityPeriod
-
-```js
-function getMinLiquidityPeriod() external nonpayable
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### vaultDeposit
-
-```js
-function vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount) external nonpayable
+function depositToVault(bytes32 contractName, bytes32 key, IERC20 asset, address sender, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -66,10 +30,10 @@ function vaultDeposit(bytes32 contractName, bytes32 key, IERC20 asset, address s
 | sender | address |  | 
 | amount | uint256 |  | 
 
-### vaultWithdrawal
+### withdrawFromVault
 
 ```js
-function vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount) external nonpayable
+function withdrawFromVault(bytes32 contractName, bytes32 key, IERC20 asset, address recipient, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -82,15 +46,54 @@ function vaultWithdrawal(bytes32 contractName, bytes32 key, IERC20 asset, addres
 | recipient | address |  | 
 | amount | uint256 |  | 
 
+### getCoverFee
+
+```js
+function getCoverFee() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### getMinCoverStake
+
+```js
+function getMinCoverStake() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### getMinLiquidityPeriod
+
+```js
+function getMinLiquidityPeriod() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

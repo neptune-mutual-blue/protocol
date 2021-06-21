@@ -6,8 +6,8 @@ View Source: [libraries/CoverUtilV1.sol](../libraries/CoverUtilV1.sol)
 
 ## Functions
 
-- [onlyValidCovers(IStore s, bytes32 key)](#onlyvalidcovers)
-- [onlyCoverOwner(IStore s, bytes32 key, address sender, address owner)](#onlycoverowner)
+- [ensureValidCover(IStore s, bytes32 key)](#ensurevalidcover)
+- [ensureCoverOwner(IStore s, bytes32 key, address sender, address owner)](#ensurecoverowner)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
 - [getLiquidity(IStore s, bytes32 key)](#getliquidity)
 - [getStake(IStore s, bytes32 key)](#getstake)
@@ -18,10 +18,10 @@ View Source: [libraries/CoverUtilV1.sol](../libraries/CoverUtilV1.sol)
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
 - [_getStatus(IStore s, bytes32 key)](#_getstatus)
 
-### onlyValidCovers
+### ensureValidCover
 
 ```js
-function onlyValidCovers(IStore s, bytes32 key) external view
+function ensureValidCover(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -31,10 +31,10 @@ function onlyValidCovers(IStore s, bytes32 key) external view
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-### onlyCoverOwner
+### ensureCoverOwner
 
 ```js
-function onlyCoverOwner(IStore s, bytes32 key, address sender, address owner) external view
+function ensureCoverOwner(IStore s, bytes32 key, address sender, address owner) external view
 ```
 
 **Arguments**
@@ -180,12 +180,15 @@ returns(uint256)
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)

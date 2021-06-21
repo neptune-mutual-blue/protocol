@@ -18,6 +18,16 @@ contract CoverLiquidity is ICoverLiquidity, Recoverable {
   event LiquidityAdded(bytes32 key, address asset, uint256 amount);
   event LiquidityRemoved(bytes32 key, address asset, uint256 amount);
 
+  modifier onlyFromCover() {
+    s.ensureMemberWithName(ProtoUtilV1.CONTRACTS_COVER);
+    _;
+  }
+
+  modifier validateKey(bytes32 key) {
+    s.ensureValidCover(key); // Ensures the key is valid cover
+    _;
+  }
+
   constructor(IStore store) {
     s = store;
   }
@@ -26,22 +36,19 @@ contract CoverLiquidity is ICoverLiquidity, Recoverable {
     bytes32 key,
     address account,
     uint256 amount
-  ) external override nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
-    s.onlyContract(ProtoUtilV1.CONTRACTS_COVER); // Only the cover contract can update the state
-
+  ) external override validateKey(key) onlyFromCover nonReentrant whenNotPaused {
     IERC20 liquidityToken = s.getLiquidityToken();
 
     // First deposit into vault
     IProtocol proto = s.getProtocol();
-    proto.vaultDeposit(getName(), key, liquidityToken, account, amount);
+    proto.depositToVault(getName(), key, liquidityToken, account, amount);
 
     // Update values
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY, key).toKeccak256();
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount);
 
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_OWNED, key, account).toKeccak256();
-    s.setUint(k, s.getUint(k) + amount);
+    s.addUint(k, amount);
 
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_TS, key, account).toKeccak256();
     s.setUint(k, block.timestamp); // solhint-disable-line
@@ -53,13 +60,8 @@ contract CoverLiquidity is ICoverLiquidity, Recoverable {
     bytes32 key,
     address account,
     uint256 amount
-  ) external override nonReentrant {
-    s.onlyValidCovers(key); // Ensures the key is valid cover
-    s.onlyContract(ProtoUtilV1.CONTRACTS_COVER); // Only the cover contract can update the state
-
+  ) external override validateKey(key) onlyFromCover nonReentrant whenNotPaused {
     IERC20 liquidityToken = s.getLiquidityToken();
-
-    s.onlyValidCovers(key); // Ensures the key is valid cover
 
     require(liquidityOf(key, account) >= amount, "Exceeds balance"); // Exceeds balance
 
@@ -71,13 +73,13 @@ contract CoverLiquidity is ICoverLiquidity, Recoverable {
     require(block.timestamp > liqts + minLiquidityPeriod, "You are early"); // solhint-disable-line
 
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY, key).toKeccak256();
-    s.setUint(k, s.getUint(k) - amount);
+    s.subtractUint(k, amount);
 
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_OWNED, key, account).toKeccak256();
-    s.setUint(k, s.getUint(k) - amount);
+    s.subtractUint(k, amount);
 
     IProtocol proto = s.getProtocol();
-    proto.vaultWithdrawal(getName(), key, liquidityToken, account, amount);
+    proto.withdrawFromVault(getName(), key, liquidityToken, account, amount);
     emit LiquidityRemoved(key, address(liquidityToken), amount);
   }
 

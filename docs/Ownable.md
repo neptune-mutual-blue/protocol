@@ -49,7 +49,7 @@ modifier onlyOwner() internal
 
 ## Functions
 
-- [()](#)
+- [constructor()](#)
 - [owner()](#owner)
 - [renounceOwnership()](#renounceownership)
 - [transferOwnership(address newOwner)](#transferownership)
@@ -115,12 +115,15 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 ## Contracts
 
 * [Address](Address.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
+* [CoverAssurance](CoverAssurance.md)
 * [CoverLiquidity](CoverLiquidity.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverLiquidity](ICoverLiquidity.md)
 * [ICoverStake](ICoverStake.md)
