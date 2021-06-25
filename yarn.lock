@@ -3914,10 +3914,10 @@ solidity-comments-extractor@^0.0.7:
   resolved "https://registry.yarnpkg.com/solidity-comments-extractor/-/solidity-comments-extractor-0.0.7.tgz#99d8f1361438f84019795d928b931f4e5c39ca19"
   integrity sha512-wciNMLg/Irp8OKGrh3S2tfvZiZ0NEyILfcRCXCD4mp7SgK/i9gzLfhY2hY7VMCQJ3kH9UB9BzNdibIVMchzyYw==
 
-solidoc2@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/solidoc2/-/solidoc2-1.0.6.tgz#4c2878d7698b37d8ad034956dfcc1ac9e68c902e"
-  integrity sha512-j2TXwNHlcwXUYUseGH7KzZXkv6UEVTe27VFYb6Mi1PrteUFG3sfOkNgOarRnYjh6ehphJeOyzF0q2ucWHa+kEQ==
+solidoc2@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/solidoc2/-/solidoc2-1.0.7.tgz#01685730a327914db503674c9948e962fd12fccc"
+  integrity sha512-QaJijjEuWWwGSEjxOOatZawGI8Jg/71Y+lrOf6ItEPiO/GFPii65sQamTIqwrNunU1u3sniX9TNlc3XX5nXkJQ==
   dependencies:
     fs-extra "^7.0.0"
     glob "^7.1.3"

@@ -63,7 +63,7 @@ function (IStore store, address liquidityToken, bytes32 liquidityName) internal 
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the address of an eternal storage contract to use.<br /> This contract must be a member of the Protocol for write access to the storage | 
+| store | IStore | Provide the address of an eternal storage contract to use.  This contract must be a member of the Protocol for write access to the storage | 
 | liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
 | liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 

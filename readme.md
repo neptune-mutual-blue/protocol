@@ -106,11 +106,8 @@ function addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assur
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | stakeWithFee | uint256 | Enter the total NEP amount (stake + fee) to transfer to this contract. | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br /> Assurance tokens can be added by a project to demonstrate coverage support
- for their own project. This helps bring the cover fee down and enhances
- liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
- as a support to the liquidity providers when a cover incident occurs. | 
-| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of<br /> assurance tokens you'd like to add to this pool. | 
+| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br />  Assurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
 ### _addCover

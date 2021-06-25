@@ -51,7 +51,7 @@ contract Cover is CoverBase {
    *
    * @param key Enter a unique key for this cover
    * @param info IPFS info of the cover contract
-   * @param assuranceToken **Optional.** Token added as an assurance of this cover. <br />
+   * @param assuranceToken **Optional.** Token added as an assurance of this cover. <br /><br />
    *
    * Assurance tokens can be added by a project to demonstrate coverage support
    * for their own project. This helps bring the cover fee down and enhances
