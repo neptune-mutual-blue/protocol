@@ -1,21 +1,34 @@
-# IProtocol.sol
+# ICoverAssurance.sol
 
-View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
+View Source: [contracts/interfaces/ICoverAssurance.sol](../contracts/interfaces/ICoverAssurance.sol)
 
 **↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [CoverAssurance](CoverAssurance.md)**
 
-**IProtocol**
+**ICoverAssurance**
 
 ## Functions
 
-- [getCoverFee()](#getcoverfee)
-- [getMinCoverStake()](#getmincoverstake)
-- [getMinLiquidityPeriod()](#getminliquidityperiod)
+- [addAssurance(bytes32 key, uint256 amount)](#addassurance)
+- [getAssurance(bytes32 key)](#getassurance)
 
-### getCoverFee
+### addAssurance
 
 ```js
-function getCoverFee() external view
+function addAssurance(bytes32 key, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| amount | uint256 |  | 
+
+### getAssurance
+
+```js
+function getAssurance(bytes32 key) external nonpayable
 returns(uint256)
 ```
 
@@ -23,30 +36,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-### getMinCoverStake
-
-```js
-function getMinCoverStake() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getMinLiquidityPeriod
-
-```js
-function getMinLiquidityPeriod() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ## Contracts
 

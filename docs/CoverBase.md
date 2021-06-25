@@ -1,10 +1,11 @@
-# CoverProvision.sol
+# Base Cover Contract (CoverBase.sol)
 
-View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
+View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycle/CoverBase.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [ICover](ICover.md), [Recoverable](Recoverable.md)**
+**↘ Derived Contracts: [Cover](Cover.md)**
 
-**CoverProvision**
+**CoverBase**
 
 ## Contract Members
 **Constants & Variables**
@@ -14,16 +15,22 @@ contract IStore public s;
 
 ```
 
-**Events**
-
-```js
-event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
-event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
-```
-
 ## Modifiers
 
+- [onlyCoverOwner](#onlycoverowner)
 - [onlyValidCover](#onlyvalidcover)
+
+### onlyCoverOwner
+
+```js
+modifier onlyCoverOwner(bytes32 key) internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key to check | 
 
 ### onlyValidCover
 
@@ -39,65 +46,45 @@ modifier onlyValidCover(bytes32 key) internal
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
+- [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
+- [getCover(bytes32 key)](#getcover)
 - [version()](#version)
 - [getName()](#getname)
 
 ### 
 
+Constructs this smart contract
+
 ```js
-function (IStore store) public nonpayable
+function (IStore store, address liquidityToken, bytes32 liquidityName) internal nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| store | IStore | Provide the address of an eternal storage contract to use.<br /> This contract must be a member of the Protocol for write access to the storage | 
+| liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
+| liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
-### increaseProvision
+### getCover
+
+Get more information about this cover contract
 
 ```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner onlyValidCover nonReentrant whenNotPaused 
+function getCover(bytes32 key) external view
+returns(coverOwner address, info bytes32, values uint256[])
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
-
-### decreaseProvision
-
-```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant whenNotPaused 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
-
-### getProvision
-
-```js
-function getProvision(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key | 
 
 ### version
+
+Version number of this contract
 
 ```js
 function version() external pure
@@ -110,6 +97,8 @@ returns(bytes32)
 | ------------- |------------- | -----|
 
 ### getName
+
+Name of this contract
 
 ```js
 function getName() public pure

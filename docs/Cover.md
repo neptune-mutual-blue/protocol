@@ -1,80 +1,47 @@
 # Cover Contract (Cover.sol)
 
-View Source: [contracts/cover/Cover.sol](../contracts/cover/Cover.sol)
+View Source: [contracts/core/lifecycle/Cover.sol](../contracts/core/lifecycle/Cover.sol)
 
-**↗ Extends: [ICover](ICover.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [CoverBase](CoverBase.md)**
 
 **Cover**
-
-## Contract Members
-**Constants & Variables**
-
-```js
-contract IStore public s;
-
-```
-
-**Events**
-
-```js
-event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
-event CoverUpdated(bytes32  key, bytes32  info);
-```
-
-## Modifiers
-
-- [onlyCoverOwner](#onlycoverowner)
-- [validateKey](#validatekey)
-
-### onlyCoverOwner
-
-```js
-modifier onlyCoverOwner(bytes32 key) internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-### validateKey
-
-```js
-modifier validateKey(bytes32 key) internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
 
 ## Functions
 
 - [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
-- [addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [getCover(bytes32 key)](#getcover)
-- [version()](#version)
-- [getName()](#getname)
-- [_burn(IERC20 token, uint256 amount)](#_burn)
+- [addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
+- [_addCover(bytes32 key, bytes32 info, uint256 fee, address assuranceToken)](#_addcover)
+- [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 
 ### 
 
-Constructs this smart contract
-
 ```js
-function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable
+function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable CoverBase 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the address of an eternal storage contract to use.<br > This contract must be a member of the Protocol for write access to the storage | 
-| liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
-| liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
+| store | IStore |  | 
+| liquidityToken | address |  | 
+| liquidityName | bytes32 |  | 
+
+### updateCover
+
+Updates the cover contract
+
+```js
+function updateCover(bytes32 key, bytes32 info) external nonpayable onlyValidCover onlyCoverOwner nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key | 
+| info | bytes32 | Enter a new IPFS URL to update | 
 
 ### addCover
 
@@ -99,103 +66,76 @@ function addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assur
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | stakeWithFee | uint256 | Enter the total NEP amount (stake + fee) to transfer to this contract. | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br > Assurance tokens can be added by a project to demonstrate coverage support<br > for their own project. This helps bring the cover fee (or premium) down and enhances<br > liquidity provider confidence. Along with NEP tokens, the assurance tokens are rewarded<br > as a support to the liquidity providers when a cover incident occurs. | 
-| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of<br > assurance tokens you'd like to add to this pool. | 
+| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br /> Assurance tokens can be added by a project to demonstrate coverage support
+ for their own project. This helps bring the cover fee down and enhances
+ liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
+ as a support to the liquidity providers when a cover incident occurs. | 
+| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of<br /> assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
-### updateCover
-
-Updates the cover contract
+### _addCover
 
 ```js
-function updateCover(bytes32 key, bytes32 info) external nonpayable validateKey onlyCoverOwner nonReentrant whenNotPaused 
+function _addCover(bytes32 key, bytes32 info, uint256 fee, address assuranceToken) private nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-| info | bytes32 | Enter a new IPFS URL to update | 
+| key | bytes32 | Enter a unique key for this cover | 
+| info | bytes32 | IPFS info of the cover contract | 
+| fee | uint256 | Fee paid to create this cover | 
+| assuranceToken | address | **Optional.** Token added as an assurance of this cover. | 
 
-### getCover
+### _validateAndGetFee
 
-Get more information about this cover contract
+Validation checks before adding a new cover
 
 ```js
-function getCover(bytes32 key) external view
-returns(coverOwner address, info bytes32, values uint256[])
+function _validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee) private view
+returns(uint256)
 ```
+
+**Returns**
+
+Returns fee required to create a new cover
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-
-### version
-
-Version number of this contract
-
-```js
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getName
-
-Name of this contract
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### _burn
-
-Burns the supplied tokens held by the contract
-
-```js
-function _burn(IERC20 token, uint256 amount) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | IERC20 |  | 
-| amount | uint256 |  | 
+| key | bytes32 |  | 
+| info | bytes32 |  | 
+| stakeWithFee | uint256 |  | 
 
 ## Contracts
 
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -206,3 +146,6 @@ function _burn(IERC20 token, uint256 amount) private nonpayable
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)

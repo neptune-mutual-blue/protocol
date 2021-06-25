@@ -1,52 +1,26 @@
-# IProtocol.sol
+# Governance.sol
 
-View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
+View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
 
-**↗ Extends: [IMember](IMember.md)**
+**↗ Extends: [Witness](Witness.md)**
 
-**IProtocol**
+**Governance**
 
 ## Functions
 
-- [getCoverFee()](#getcoverfee)
-- [getMinCoverStake()](#getmincoverstake)
-- [getMinLiquidityPeriod()](#getminliquidityperiod)
+- [constructor(IStore store)](#)
 
-### getCoverFee
+### 
 
 ```js
-function getCoverFee() external view
-returns(uint256)
+function (IStore store) public nonpayable Witness 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-### getMinCoverStake
-
-```js
-function getMinCoverStake() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getMinLiquidityPeriod
-
-```js
-function getMinLiquidityPeriod() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+| store | IStore |  | 
 
 ## Contracts
 

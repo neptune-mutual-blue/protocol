@@ -1,22 +1,28 @@
-# IProtocol.sol
+# IERC20Metadata.sol
 
-View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
+View Source: [openzeppelin-solidity/contracts/token/ERC20/extensions/IERC20Metadata.sol](../openzeppelin-solidity/contracts/token/ERC20/extensions/IERC20Metadata.sol)
 
-**↗ Extends: [IMember](IMember.md)**
+**↗ Extends: [IERC20](IERC20.md)**
+**↘ Derived Contracts: [ERC20](ERC20.md)**
 
-**IProtocol**
+**IERC20Metadata**
+
+Interface for the optional metadata functions from the ERC20 standard.
+ _Available since v4.1._
 
 ## Functions
 
-- [getCoverFee()](#getcoverfee)
-- [getMinCoverStake()](#getmincoverstake)
-- [getMinLiquidityPeriod()](#getminliquidityperiod)
+- [name()](#name)
+- [symbol()](#symbol)
+- [decimals()](#decimals)
 
-### getCoverFee
+### name
+
+Returns the name of the token.
 
 ```js
-function getCoverFee() external view
-returns(uint256)
+function name() external view
+returns(string)
 ```
 
 **Arguments**
@@ -24,11 +30,13 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### getMinCoverStake
+### symbol
+
+Returns the symbol of the token.
 
 ```js
-function getMinCoverStake() external view
-returns(uint256)
+function symbol() external view
+returns(string)
 ```
 
 **Arguments**
@@ -36,11 +44,13 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### getMinLiquidityPeriod
+### decimals
+
+Returns the decimals places of the token.
 
 ```js
-function getMinLiquidityPeriod() external view
-returns(uint256)
+function decimals() external view
+returns(uint8)
 ```
 
 **Arguments**

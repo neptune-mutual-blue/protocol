@@ -17,7 +17,11 @@ contract CoverProvision is IMember, Recoverable {
   event ProvisionIncreased(bytes32 key, uint256 previous, uint256 current);
   event ProvisionDecreased(bytes32 key, uint256 previous, uint256 current);
 
-  modifier validateKey(bytes32 key) {
+  /**
+   * Ensures the given key is a valid cover contract
+   * @param key Enter the cover key to check
+   */
+  modifier onlyValidCover(bytes32 key) {
     s.ensureValidCover(key); // Ensures the key is valid cover
     _;
   }
@@ -26,26 +30,33 @@ contract CoverProvision is IMember, Recoverable {
     s = store;
   }
 
-  function increaseProvision(bytes32 key, uint256 amount) external onlyOwner validateKey(key) nonReentrant whenNotPaused {
+  function increaseProvision(bytes32 key, uint256 amount) external onlyOwner onlyValidCover(key) nonReentrant whenNotPaused {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_PROVISION, key).toKeccak256();
+    uint256 privision = s.getUint(k);
 
-    emit ProvisionIncreased(key, s.getUint(k), s.getUint(k) + amount);
     s.addUint(k, amount);
 
-    IProtocol proto = s.getProtocol();
-    proto.depositToVault(getName(), key, s.nepToken(), super._msgSender(), amount);
+    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), amount);
+
+    emit ProvisionIncreased(key, privision, privision + amount);
   }
 
-  function decreaseProvision(bytes32 key, uint256 amount) external onlyOwner validateKey(key) nonReentrant whenNotPaused {
+  function decreaseProvision(bytes32 key, uint256 amount)
+    external
+    onlyOwner
+    /* onlyValidCover(key) */
+    nonReentrant
+    whenNotPaused
+  {
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_PROVISION, key).toKeccak256();
     uint256 privision = s.getUint(k);
 
     require(privision >= amount, "Exceeds Balance"); // Exceeds balance
     s.subtractUint(k, amount);
 
-    IProtocol proto = s.getProtocol();
-    proto.withdrawFromVault(getName(), key, s.nepToken(), super._msgSender(), amount);
-    emit ProvisionIncreased(key, privision, privision - amount);
+    s.nepToken().ensureTransfer(super.owner(), amount);
+
+    emit ProvisionDecreased(key, privision, privision - amount);
   }
 
   function getProvision(bytes32 key) external view returns (uint256) {

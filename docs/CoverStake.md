@@ -1,6 +1,6 @@
 # CoverStake.sol
 
-View Source: [contracts/cover/CoverStake.sol](../contracts/cover/CoverStake.sol)
+View Source: [contracts/core/lifecycle/CoverStake.sol](../contracts/core/lifecycle/CoverStake.sol)
 
 **↗ Extends: [ICoverStake](ICoverStake.md), [Recoverable](Recoverable.md)**
 
@@ -19,12 +19,13 @@ contract IStore public s;
 ```js
 event StakeAdded(bytes32  key, uint256  amount);
 event StakeRemoved(bytes32  key, uint256  amount);
+event FeeBurned(bytes32  key, uint256  amount);
 ```
 
 ## Modifiers
 
 - [onlyFromCover](#onlyfromcover)
-- [validateKey](#validatekey)
+- [onlyValidCover](#onlyvalidcover)
 
 ### onlyFromCover
 
@@ -37,25 +38,26 @@ modifier onlyFromCover() internal
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### validateKey
+### onlyValidCover
 
 ```js
-modifier validateKey(bytes32 key) internal
+modifier onlyValidCover(bytes32 key) internal
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key to check | 
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [increaseStake(bytes32 key, address account, uint256 amount)](#increasestake)
+- [increaseStake(bytes32 key, address account, uint256 amount, uint256 fee)](#increasestake)
 - [decreaseStake(bytes32 key, address account, uint256 amount)](#decreasestake)
 - [version()](#version)
 - [stakeOf(bytes32 key, address account)](#stakeof)
+- [_getDrawingPower(bytes32 key, address account)](#_getdrawingpower)
 - [getName()](#getname)
 
 ### 
@@ -73,7 +75,7 @@ function (IStore store) public nonpayable
 ### increaseStake
 
 ```js
-function increaseStake(bytes32 key, address account, uint256 amount) external nonpayable onlyFromCover validateKey nonReentrant whenNotPaused 
+function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable onlyFromCover onlyValidCover nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -83,11 +85,12 @@ function increaseStake(bytes32 key, address account, uint256 amount) external no
 | key | bytes32 |  | 
 | account | address |  | 
 | amount | uint256 |  | 
+| fee | uint256 |  | 
 
 ### decreaseStake
 
 ```js
-function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable onlyFromCover validateKey nonReentrant whenNotPaused 
+function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable onlyFromCover onlyValidCover nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -124,6 +127,20 @@ returns(uint256)
 | key | bytes32 |  | 
 | account | address |  | 
 
+### _getDrawingPower
+
+```js
+function _getDrawingPower(bytes32 key, address account) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| account | address |  | 
+
 ### getName
 
 ```js
@@ -141,21 +158,28 @@ returns(bytes32)
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -166,3 +190,6 @@ returns(bytes32)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)

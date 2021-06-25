@@ -24,7 +24,11 @@ contract CoverStake is ICoverStake, Recoverable {
     _;
   }
 
-  modifier validateKey(bytes32 key) {
+  /**
+   * Ensures the given key is a valid cover contract
+   * @param key Enter the cover key to check
+   */
+  modifier onlyValidCover(bytes32 key) {
     s.ensureValidCover(key); // Ensures the key is valid cover
     _;
   }
@@ -38,13 +42,13 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount,
     uint256 fee
-  ) external override onlyFromCover validateKey(key) nonReentrant whenNotPaused {
-    IProtocol proto = s.getProtocol();
+  ) external override onlyFromCover onlyValidCover(key) nonReentrant whenNotPaused {
+    require(amount >= fee, "Invalid fee");
 
-    proto.depositToVault(getName(), key, s.nepToken(), account, amount);
+    s.nepToken().ensureTransferFrom(account, address(this), amount);
 
     if (fee > 0) {
-      proto.withdrawFromVault(getName(), key, s.nepToken(), s.getBurnAddress(), fee);
+      s.nepToken().ensureTransferFrom(address(this), s.getBurnAddress(), fee);
       emit FeeBurned(key, fee);
     }
 
@@ -61,19 +65,17 @@ contract CoverStake is ICoverStake, Recoverable {
     bytes32 key,
     address account,
     uint256 amount
-  ) external override onlyFromCover validateKey(key) nonReentrant whenNotPaused {
-    require(stakeOf(key, account) >= amount, "Exceeds balance");
-
-    uint256 minStake = s.getProtocol().getMinCoverStake();
+  ) external override onlyFromCover onlyValidCover(key) nonReentrant whenNotPaused {
+    uint256 drawingPower = _getDrawingPower(key, account);
+    require(drawingPower >= amount, "Exceeds your drawing power");
 
     bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_STAKE, key).toKeccak256();
-    uint256 currentStake = s.getUint(k);
-
-    require(currentStake - amount >= minStake, "Min stake required");
     s.subtractUint(k, amount);
 
-    IProtocol proto = s.getProtocol();
-    proto.withdrawFromVault(getName(), key, s.nepToken(), account, amount);
+    k = abi.encodePacked(ProtoUtilV1.KP_COVER_STAKE_OWNED, key, account).toKeccak256();
+    s.subtractUint(k, amount);
+
+    s.nepToken().ensureTransfer(account, amount);
     emit StakeRemoved(key, amount);
   }
 
@@ -84,6 +86,15 @@ contract CoverStake is ICoverStake, Recoverable {
   function stakeOf(bytes32 key, address account) public view override returns (uint256) {
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.KP_COVER_STAKE_OWNED, key, account));
     return s.getUint(k);
+  }
+
+  function _getDrawingPower(bytes32 key, address account) private view returns (uint256) {
+    uint256 yourStake = stakeOf(key, account);
+    bool isOwner = account == s.getCoverOwner(key);
+
+    uint256 minStake = s.getProtocol().getMinCoverStake();
+
+    return isOwner ? yourStake - minStake : yourStake;
   }
 
   function getName() public pure override returns (bytes32) {

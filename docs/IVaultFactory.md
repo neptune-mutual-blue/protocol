@@ -1,52 +1,29 @@
-# IProtocol.sol
+# IVaultFactory.sol
 
-View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
+View Source: [contracts/interfaces/IVaultFactory.sol](../contracts/interfaces/IVaultFactory.sol)
 
 **↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [VaultFactory](VaultFactory.md)**
 
-**IProtocol**
+**IVaultFactory**
 
 ## Functions
 
-- [getCoverFee()](#getcoverfee)
-- [getMinCoverStake()](#getmincoverstake)
-- [getMinLiquidityPeriod()](#getminliquidityperiod)
+- [deploy(IStore s, bytes32 key)](#deploy)
 
-### getCoverFee
+### deploy
 
 ```js
-function getCoverFee() external view
-returns(uint256)
+function deploy(IStore s, bytes32 key) external nonpayable
+returns(address)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-### getMinCoverStake
-
-```js
-function getMinCoverStake() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getMinLiquidityPeriod
-
-```js
-function getMinLiquidityPeriod() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
 
 ## Contracts
 

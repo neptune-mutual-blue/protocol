@@ -1,103 +1,50 @@
-# CoverProvision.sol
+# Cover Contract (VaultFactory.sol)
 
-View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
+View Source: [contracts/core/liquidity/VaultFactory.sol](../contracts/core/liquidity/VaultFactory.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IVaultFactory](IVaultFactory.md)**
 
-**CoverProvision**
-
-## Contract Members
-**Constants & Variables**
-
-```js
-contract IStore public s;
-
-```
-
-**Events**
-
-```js
-event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
-event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
-```
-
-## Modifiers
-
-- [onlyValidCover](#onlyvalidcover)
-
-### onlyValidCover
-
-```js
-modifier onlyValidCover(bytes32 key) internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key to check | 
+**VaultFactory**
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
+- [deploy(IStore s, bytes32 key)](#deploy)
+- [setVault(IStore s, bytes32 key, address liquidity)](#setvault)
 - [version()](#version)
 - [getName()](#getname)
+- [_getByteCode(IStore s, bytes32 key, address liquidityToken)](#_getbytecode)
 
-### 
+### deploy
 
 ```js
-function (IStore store) public nonpayable
+function deploy(IStore s, bytes32 key) external nonpayable
+returns(addr address)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-
-### increaseProvision
-
-```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner onlyValidCover nonReentrant whenNotPaused 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+| s | IStore |  | 
 | key | bytes32 |  | 
-| amount | uint256 |  | 
 
-### decreaseProvision
+### setVault
 
 ```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant whenNotPaused 
+function setVault(IStore s, bytes32 key, address liquidity) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 | key | bytes32 |  | 
-| amount | uint256 |  | 
-
-### getProvision
-
-```js
-function getProvision(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
+| liquidity | address |  | 
 
 ### version
+
+Version number of this contract
 
 ```js
 function version() external pure
@@ -111,6 +58,8 @@ returns(bytes32)
 
 ### getName
 
+Name of this contract
+
 ```js
 function getName() public pure
 returns(bytes32)
@@ -120,6 +69,21 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+### _getByteCode
+
+```js
+function _getByteCode(IStore s, bytes32 key, address liquidityToken) private pure
+returns(bytecode bytes, salt bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| liquidityToken | address |  | 
 
 ## Contracts
 

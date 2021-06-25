@@ -1,10 +1,18 @@
-# CoverAssurance.sol
+# Cover Assurance (CoverAssurance.sol)
 
-View Source: [contracts/cover/CoverAssurance.sol](../contracts/cover/CoverAssurance.sol)
+View Source: [contracts/core/lifecycle/CoverAssurance.sol](../contracts/core/lifecycle/CoverAssurance.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [ICoverAssurance](ICoverAssurance.md), [Recoverable](Recoverable.md)**
 
 **CoverAssurance**
+
+Assurance tokens can be added by a covered project to demonstrate coverage support
+ for their project. This helps bring the cover fee down and enhances
+ liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
+ as a support to the liquidity providers when a cover incident occurs.
+ Without negatively affecting the price much,
+ the protocol will gradually convert the assurance tokens
+ to stablecoin liquidity.
 
 ## Contract Members
 **Constants & Variables**
@@ -17,32 +25,30 @@ contract IStore public s;
 **Events**
 
 ```js
-event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
-event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
+event AssuranceAdded(bytes32  key, uint256  amount);
 ```
 
 ## Modifiers
 
-- [validateKey](#validatekey)
+- [onlyValidCover](#onlyvalidcover)
 
-### validateKey
+### onlyValidCover
 
 ```js
-modifier validateKey(bytes32 key) internal
+modifier onlyValidCover(bytes32 key) internal
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key to check | 
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
+- [addAssurance(bytes32 key, uint256 amount)](#addassurance)
+- [getAssurance(bytes32 key)](#getassurance)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -58,36 +64,27 @@ function (IStore store) public nonpayable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-### increaseProvision
+### addAssurance
+
+Adds assurance to the specified cover contract
 
 ```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
+function addAssurance(bytes32 key, uint256 amount) external nonpayable onlyValidCover nonReentrant whenNotPaused 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
+| key | bytes32 | Enter the cover key | 
+| amount | uint256 | Enter the amount you would like to supply | 
 
-### decreaseProvision
+### getAssurance
 
-```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner validateKey nonReentrant whenNotPaused 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
-
-### getProvision
+Gets the assurance amount of the specified cover contract
 
 ```js
-function getProvision(bytes32 key) external view
+function getAssurance(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -95,9 +92,11 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key | 
 
 ### version
+
+Version number of this contract
 
 ```js
 function version() external pure
@@ -110,6 +109,8 @@ returns(bytes32)
 | ------------- |------------- | -----|
 
 ### getName
+
+Name of this contract
 
 ```js
 function getName() public pure
@@ -126,21 +127,28 @@ returns(bytes32)
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -151,3 +159,6 @@ returns(bytes32)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)

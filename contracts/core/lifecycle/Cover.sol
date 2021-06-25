@@ -3,7 +3,8 @@ pragma solidity >=0.4.22 <0.9.0;
 import "./CoverBase.sol";
 import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/ICoverStake.sol";
-import "../../interfaces/ICoverLiquidity.sol";
+import "../../interfaces/IVault.sol";
+import "../liquidity/Vault.sol";
 
 /**
  * @title Cover Contract
@@ -53,8 +54,8 @@ contract Cover is CoverBase {
    * @param assuranceToken **Optional.** Token added as an assurance of this cover. <br />
    *
    * Assurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee (or premium) down and enhances
-   * liquidity provider confidence. Along with NEP tokens, the assurance tokens are rewarded
+   * for their own project. This helps bring the cover fee down and enhances
+   * liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
    * @param initialAssuranceAmount **Optional.** Enter the initial amount of
    * assurance tokens you'd like to add to this pool.
@@ -85,12 +86,19 @@ contract Cover is CoverBase {
 
     // Add initial liquidity
     if (initialLiquidity > 0) {
-      s.getLiquidityContract().addLiquidity(key, super._msgSender(), initialLiquidity);
+      s.getVault(key).addLiquidityInternal(key, super._msgSender(), initialLiquidity);
     }
 
     emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
   }
 
+  /**
+   * Adds a new cover contract
+   * @param key Enter a unique key for this cover
+   * @param info IPFS info of the cover contract
+   * @param fee Fee paid to create this cover
+   * @param assuranceToken **Optional.** Token added as an assurance of this cover.
+   */
   function _addCover(
     bytes32 key,
     bytes32 info,
@@ -116,10 +124,16 @@ contract Cover is CoverBase {
     // Set the fee charged during cover creation
     k = abi.encodePacked(ProtoUtilV1.KP_COVER_FEE, key).toKeccak256();
     s.setUint(k, fee);
+
+    // Create cover liquidity contract
+    k = abi.encodePacked(ProtoUtilV1.KP_COVER_VAULT, key).toKeccak256();
+    address deployed = s.getVaultFactoryContract().deploy(s, key);
+    s.setAddress(k, deployed);
   }
 
   /**
    * @dev Validation checks before adding a new cover
+   * @return Returns fee required to create a new cover
    */
   function _validateAndGetFee(
     bytes32 key,

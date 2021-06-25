@@ -1,9 +1,9 @@
 # Recoverable.sol
 
-View Source: [contracts/Recoverable.sol](../contracts/Recoverable.sol)
+View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [Ownable](Ownable.md), [ReentrancyGuard](ReentrancyGuard.md), [Pausable](Pausable.md)**
-**↘ Derived Contracts: [Commission](Commission.md), [Cover](Cover.md), [CoverAssurance](CoverAssurance.md), [CoverLiquidity](CoverLiquidity.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [Protocol](Protocol.md), [Vault](Vault.md)**
+**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [Factory](Factory.md), [Protocol](Protocol.md), [VaultPod](VaultPod.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -68,21 +68,28 @@ function unpause() external nonpayable onlyOwner whenPaused
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -93,3 +100,6 @@ function unpause() external nonpayable onlyOwner whenPaused
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)

@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../interfaces/IStore.sol";
+import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/ICoverAssurance.sol";
-import "../interfaces/ICoverLiquidity.sol";
+import "../interfaces/IVault.sol";
+import "../interfaces/IVaultFactory.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
 
@@ -23,11 +25,14 @@ library CoverUtilV1 {
     address sender,
     address owner
   ) external view {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.KP_COVER_OWNER, key));
-    bool isCoverOwner = s.getAddress(k) == sender;
+    bool isCoverOwner = _getCoverOwner(s, key) == sender;
     bool isOwner = sender == owner;
 
     require(isOwner || isCoverOwner, "Forbidden");
+  }
+
+  function getCoverOwner(IStore s, bytes32 key) external view returns (address) {
+    return _getCoverOwner(s, key);
   }
 
   /**
@@ -86,12 +91,27 @@ library CoverUtilV1 {
     return ICoverStake(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_COVER_STAKE));
   }
 
+  function getPolicyContract(IStore s) public view returns (IPolicy) {
+    return IPolicy(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_POLICY));
+  }
+
   function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
     return ICoverAssurance(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_COVER_STAKE));
   }
 
-  function getLiquidityContract(IStore s) public view returns (ICoverLiquidity) {
-    return ICoverLiquidity(ProtoUtilV1.getContract(s, ProtoUtilV1.CONTRACTS_COVER_LIQUIDITY));
+  function getVault(IStore s, bytes32 key) public view returns (IVault) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.KP_COVER_VAULT, key));
+    return IVault(s.getAddress(k));
+  }
+
+  function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.CONTRACTS_VAULT_FACTORY));
+    return IVaultFactory(s.getAddress(k));
+  }
+
+  function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.KP_COVER_OWNER, key));
+    return s.getAddress(k);
   }
 
   function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {

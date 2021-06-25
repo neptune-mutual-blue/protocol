@@ -10,10 +10,8 @@ abstract contract Recoverable is Ownable, ReentrancyGuard, Pausable {
    * @dev Recover all Ether held by the contract to the owner.
    */
   function recoverEther() external onlyOwner {
-    address owner = super.owner();
-
     // slither-disable-next-line arbitrary-send
-    payable(owner).transfer(address(this).balance);
+    payable(super.owner()).transfer(address(this).balance);
   }
 
   /**
@@ -21,11 +19,10 @@ abstract contract Recoverable is Ownable, ReentrancyGuard, Pausable {
    * @param token BEP-20 The address of the token contract
    */
   function recoverToken(address token) external onlyOwner {
-    address owner = super.owner();
     IERC20 bep20 = IERC20(token);
 
     uint256 balance = bep20.balanceOf(address(this));
-    require(bep20.transfer(owner, balance), "Transfer failed");
+    require(bep20.transfer(super.owner(), balance), "Transfer failed");
   }
 
   function pause() external onlyOwner whenNotPaused {

@@ -1,50 +1,20 @@
-# ICoverLiquidity.sol
+# IPolicy.sol
 
-View Source: [interfaces/ICoverLiquidity.sol](../interfaces/ICoverLiquidity.sol)
+View Source: [contracts/interfaces/IPolicy.sol](../contracts/interfaces/IPolicy.sol)
 
 **↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [CoverLiquidity](CoverLiquidity.md)**
 
-**ICoverLiquidity**
+**IPolicy**
 
 ## Functions
 
-- [addLiquidity(bytes32 key, address account, uint256 amount)](#addliquidity)
-- [removeLiquidity(bytes32 key, address account, uint256 amount)](#removeliquidity)
-- [liquidityOf(bytes32 key, address account)](#liquidityof)
+- [getCommitment(bytes32 key)](#getcommitment)
+- [getCoverable(bytes32 key)](#getcoverable)
 
-### addLiquidity
-
-```js
-function addLiquidity(bytes32 key, address account, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
-
-### removeLiquidity
+### getCommitment
 
 ```js
-function removeLiquidity(bytes32 key, address account, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
-
-### liquidityOf
-
-```js
-function liquidityOf(bytes32 key, address account) external view
+function getCommitment(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -53,28 +23,47 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
-| account | address |  | 
+
+### getCoverable
+
+```js
+function getCoverable(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ## Contracts
 
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -85,3 +74,6 @@ returns(uint256)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)

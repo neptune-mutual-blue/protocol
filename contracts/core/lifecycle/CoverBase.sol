@@ -6,6 +6,9 @@ import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../Recoverable.sol";
 
+/**
+ * @title Base Cover Contract
+ */
 abstract contract CoverBase is ICover, Recoverable {
   using ProtoUtilV1 for bytes;
   using CoverUtilV1 for IStore;
@@ -13,11 +16,19 @@ abstract contract CoverBase is ICover, Recoverable {
   /** eternal storage */
   IStore public s;
 
+  /**
+   * Ensures this feature is accessed only by the cover owner or the owner of this contract.
+   * @param key Enter the cover key to check
+   */
   modifier onlyCoverOwner(bytes32 key) {
     s.ensureCoverOwner(key, super._msgSender(), owner());
     _;
   }
 
+  /**
+   * Ensures the given key is a valid cover contract
+   * @param key Enter the cover key to check
+   */
   modifier onlyValidCover(bytes32 key) {
     s.ensureValidCover(key); // Ensures the key is valid cover
     _;

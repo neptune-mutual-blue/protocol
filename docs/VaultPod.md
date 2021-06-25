@@ -1,55 +1,34 @@
-# CoverProvision.sol
+# VaultPod.sol
 
-View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
+View Source: [contracts/core/liquidity/VaultPod.sol](../contracts/core/liquidity/VaultPod.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IVault](IVault.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
+**↘ Derived Contracts: [Vault](Vault.md)**
 
-**CoverProvision**
+**VaultPod**
 
 ## Contract Members
 **Constants & Variables**
 
 ```js
 contract IStore public s;
+bytes32 public key;
+address public lqt;
 
 ```
-
-**Events**
-
-```js
-event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
-event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
-```
-
-## Modifiers
-
-- [onlyValidCover](#onlyvalidcover)
-
-### onlyValidCover
-
-```js
-modifier onlyValidCover(bytes32 key) internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key to check | 
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
-- [version()](#version)
-- [getName()](#getname)
+- [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
+- [_mintPods(address account, uint256 liquidityToAdd)](#_mintpods)
+- [_burnPods(address account, uint256 podsToBurn)](#_burnpods)
+- [_calculateLiquidity(uint256 podsToBurn)](#_calculateliquidity)
+- [_calculatePods(uint256 liquidityToAdd)](#_calculatepods)
 
 ### 
 
 ```js
-function (IStore store) public nonpayable
+function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpayable ERC20 
 ```
 
 **Arguments**
@@ -57,37 +36,39 @@ function (IStore store) public nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore |  | 
+| coverKey | bytes32 |  | 
+| liquidityToken | IERC20 |  | 
 
-### increaseProvision
+### _mintPods
 
 ```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner onlyValidCover nonReentrant whenNotPaused 
+function _mintPods(address account, uint256 liquidityToAdd) internal nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
+| account | address |  | 
+| liquidityToAdd | uint256 |  | 
 
-### decreaseProvision
+### _burnPods
 
 ```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant whenNotPaused 
+function _burnPods(address account, uint256 podsToBurn) internal nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| amount | uint256 |  | 
+| account | address |  | 
+| podsToBurn | uint256 |  | 
 
-### getProvision
+### _calculateLiquidity
 
 ```js
-function getProvision(bytes32 key) external view
+function _calculateLiquidity(uint256 podsToBurn) private view
 returns(uint256)
 ```
 
@@ -95,31 +76,20 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| podsToBurn | uint256 |  | 
 
-### version
+### _calculatePods
 
 ```js
-function version() external pure
-returns(bytes32)
+function _calculatePods(uint256 liquidityToAdd) private view
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-### getName
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+| liquidityToAdd | uint256 |  | 
 
 ## Contracts
 

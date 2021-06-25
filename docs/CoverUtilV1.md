@@ -1,6 +1,6 @@
 # CoverUtilV1.sol
 
-View Source: [libraries/CoverUtilV1.sol](../libraries/CoverUtilV1.sol)
+View Source: [contracts/libraries/CoverUtilV1.sol](../contracts/libraries/CoverUtilV1.sol)
 
 **CoverUtilV1**
 
@@ -8,13 +8,18 @@ View Source: [libraries/CoverUtilV1.sol](../libraries/CoverUtilV1.sol)
 
 - [ensureValidCover(IStore s, bytes32 key)](#ensurevalidcover)
 - [ensureCoverOwner(IStore s, bytes32 key, address sender, address owner)](#ensurecoverowner)
+- [getCoverOwner(IStore s, bytes32 key)](#getcoverowner)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
 - [getLiquidity(IStore s, bytes32 key)](#getliquidity)
 - [getStake(IStore s, bytes32 key)](#getstake)
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
 - [getStakingContract(IStore s)](#getstakingcontract)
-- [getLiquidityContract(IStore s)](#getliquiditycontract)
+- [getPolicyContract(IStore s)](#getpolicycontract)
+- [getAssuranceContract(IStore s)](#getassurancecontract)
+- [getVault(IStore s, bytes32 key)](#getvault)
+- [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
+- [_getCoverOwner(IStore s, bytes32 key)](#_getcoverowner)
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
 - [_getStatus(IStore s, bytes32 key)](#_getstatus)
 
@@ -45,6 +50,20 @@ function ensureCoverOwner(IStore s, bytes32 key, address sender, address owner) 
 | key | bytes32 |  | 
 | sender | address |  | 
 | owner | address |  | 
+
+### getCoverOwner
+
+```js
+function getCoverOwner(IStore s, bytes32 key) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
 
 ### getStatus
 
@@ -136,11 +155,11 @@ returns(contract ICoverStake)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
-### getLiquidityContract
+### getPolicyContract
 
 ```js
-function getLiquidityContract(IStore s) public view
-returns(contract ICoverLiquidity)
+function getPolicyContract(IStore s) public view
+returns(contract IPolicy)
 ```
 
 **Arguments**
@@ -148,6 +167,60 @@ returns(contract ICoverLiquidity)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+
+### getAssuranceContract
+
+```js
+function getAssuranceContract(IStore s) public view
+returns(contract ICoverAssurance)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getVault
+
+```js
+function getVault(IStore s, bytes32 key) public view
+returns(contract IVault)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getVaultFactoryContract
+
+```js
+function getVaultFactoryContract(IStore s) public view
+returns(contract IVaultFactory)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### _getCoverOwner
+
+```js
+function _getCoverOwner(IStore s, bytes32 key) private view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
 
 ### _getClaimable
 
@@ -182,21 +255,28 @@ returns(uint256)
 * [Address](Address.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverAssurance](CoverAssurance.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [ERC20](ERC20.md)
+* [Factory](Factory.md)
+* [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
+* [IPolicy](IPolicy.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
@@ -207,3 +287,6 @@ returns(uint256)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Vault](Vault.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultPod](VaultPod.md)
+* [Witness](Witness.md)
