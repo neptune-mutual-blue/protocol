@@ -1,0 +1,17 @@
+{
+  "extends": "solhint:all",
+  "rules": {
+    "avoid-throw": "off",
+    "avoid-suicide": "error",
+    "avoid-sha3": "warn",
+    "compiler-version": "0.8.4",
+    "comprehensive-interface": "off",
+    "max-line-length": "off",
+    "func-visibility": [
+      "error",
+      {
+        "ignoreConstructors": true
+      }
+    ]
+  }
+}
