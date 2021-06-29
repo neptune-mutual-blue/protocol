@@ -8,36 +8,46 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
-bytes32 public constant KP_ASSURANCE_VAULT;
-bytes32 public constant KP_BURNER;
-bytes32 public constant KP_CONTRACTS;
-bytes32 public constant KP_CORE;
-bytes32 public constant KP_COVER;
-bytes32 public constant KP_COVER_ASSURANCE;
-bytes32 public constant KP_COVER_ASSURANCE_TOKEN;
-bytes32 public constant KP_COVER_CLAIMABLE;
-bytes32 public constant KP_COVER_FEE;
-bytes32 public constant KP_COVER_INFO;
-bytes32 public constant KP_COVER_LIQUIDITY;
-bytes32 public constant KP_COVER_LIQUIDITY_NAME;
-bytes32 public constant KP_COVER_LIQUIDITY_TOKEN;
-bytes32 public constant KP_COVER_LIQUIDITY_RELEASE_DATE;
-bytes32 public constant KP_COVER_OWNER;
-bytes32 public constant KP_COVER_PROVISION;
-bytes32 public constant KP_COVER_STAKE;
-bytes32 public constant KP_COVER_STAKE_OWNED;
-bytes32 public constant KP_COVER_STATUS;
-bytes32 public constant KP_COVER_VAULT;
-bytes32 public constant KP_NEP;
-bytes32 public constant KP_TREASURY;
-bytes32 public constant CONTRACTS_PROTOCOL;
-bytes32 public constant CONTRACTS_TREASURY;
-bytes32 public constant CONTRACTS_POLICY;
-bytes32 public constant CONTRACTS_COVER;
-bytes32 public constant CONTRACTS_VAULT_FACTORY;
-bytes32 public constant CONTRACTS_COVER_PROVISION;
-bytes32 public constant CONTRACTS_COVER_STAKE;
-bytes32 public constant CONTRACTS_LIQUIDITY_VAULT;
+bytes32 public constant NS_ASSURANCE_VAULT;
+bytes32 public constant NS_BURNER;
+bytes32 public constant NS_CONTRACTS;
+bytes32 public constant NS_MEMBERS;
+bytes32 public constant NS_CORE;
+bytes32 public constant NS_COVER;
+bytes32 public constant NS_COVER_ASSURANCE;
+bytes32 public constant NS_COVER_ASSURANCE_TOKEN;
+bytes32 public constant NS_COVER_CLAIMABLE;
+bytes32 public constant NS_COVER_FEE;
+bytes32 public constant NS_COVER_INFO;
+bytes32 public constant NS_COVER_LIQUIDITY;
+bytes32 public constant NS_COVER_LIQUIDITY_NAME;
+bytes32 public constant NS_COVER_LIQUIDITY_TOKEN;
+bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
+bytes32 public constant NS_COVER_OWNER;
+bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
+bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
+bytes32 public constant NS_COVER_PROVISION;
+bytes32 public constant NS_COVER_STAKE;
+bytes32 public constant NS_COVER_STAKE_OWNED;
+bytes32 public constant NS_COVER_STATUS;
+bytes32 public constant NS_COVER_VAULT;
+bytes32 public constant NS_COVER_CTOKEN;
+bytes32 public constant NS_TREASURY;
+bytes32 public constant NS_SETUP_NEP;
+bytes32 public constant NS_SETUP_COVER_FEE;
+bytes32 public constant NS_SETUP_MIN_STAKE;
+bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD;
+bytes32 public constant CNAME_PROTOCOL;
+bytes32 public constant CNAME_TREASURY;
+bytes32 public constant CNAME_POLICY;
+bytes32 public constant CNAME_POLICY_MANAGER;
+bytes32 public constant CNAME_COVER;
+bytes32 public constant CNAME_VAULT_FACTORY;
+bytes32 public constant CNAME_CTOKEN_FACTORY;
+bytes32 public constant CNAME_COVER_PROVISION;
+bytes32 public constant CNAME_COVER_STAKE;
+bytes32 public constant CNAME_COVER_ASSURANCE;
+bytes32 public constant CNAME_LIQUIDITY_VAULT;
 
 ```
 
@@ -45,16 +55,19 @@ bytes32 public constant CONTRACTS_LIQUIDITY_VAULT;
 
 - [getProtocol(IStore s)](#getprotocol)
 - [getCoverFee(IStore s)](#getcoverfee)
+- [getMinCoverStake(IStore s)](#getmincoverstake)
+- [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
 - [getContract(IStore s, bytes32 name)](#getcontract)
 - [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
-- [ensureProtocolMember(IStore s, address contractAddress)](#ensureprotocolmember)
-- [ensureMemberWithName(IStore s, bytes32 name)](#ensurememberwithname)
+- [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
+- [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
 - [nepToken(IStore s)](#neptoken)
 - [getTreasury(IStore s)](#gettreasury)
 - [getAssuranceVault(IStore s)](#getassurancevault)
 - [getLiquidityToken(IStore s)](#getliquiditytoken)
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [toKeccak256(bytes value)](#tokeccak256)
+- [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
 - [_getContract(IStore s, bytes32 name)](#_getcontract)
 - [_getProtocol(IStore s)](#_getprotocol)
 
@@ -76,6 +89,32 @@ returns(contract IProtocol)
 ```js
 function getCoverFee(IStore s) external view
 returns(fee uint256, minStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getMinCoverStake
+
+```js
+function getMinCoverStake(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getMinLiquidityPeriod
+
+```js
+function getMinLiquidityPeriod(IStore s) external view
+returns(uint256)
 ```
 
 **Arguments**
@@ -112,10 +151,12 @@ returns(bool)
 | s | IStore |  | 
 | contractAddress | address |  | 
 
-### ensureProtocolMember
+### mustBeProtocolMember
+
+Reverts if the caller is one of the protocol members.
 
 ```js
-function ensureProtocolMember(IStore s, address contractAddress) external view
+function mustBeProtocolMember(IStore s, address contractAddress) external view
 ```
 
 **Arguments**
@@ -125,18 +166,21 @@ function ensureProtocolMember(IStore s, address contractAddress) external view
 | s | IStore |  | 
 | contractAddress | address |  | 
 
-### ensureMemberWithName
+### mustBeExactContract
+
+Ensures that the sender matches with the exact contract having the specified name.
 
 ```js
-function ensureMemberWithName(IStore s, bytes32 name) external view
+function mustBeExactContract(IStore s, bytes32 name, address sender) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| name | bytes32 |  | 
+| s | IStore | ender Enter the `msg.sender` value | 
+| name | bytes32 | Enter the name of the contract | 
+| sender | address | Enter the `msg.sender` value | 
 
 ### nepToken
 
@@ -216,6 +260,20 @@ returns(bytes32)
 | ------------- |------------- | -----|
 | value | bytes |  | 
 
+### _isProtocolMember
+
+```js
+function _isProtocolMember(IStore s, address contractAddress) private view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| contractAddress | address |  | 
+
 ### _getContract
 
 ```js
@@ -246,6 +304,7 @@ returns(contract IProtocol)
 ## Contracts
 
 * [Address](Address.md)
+* [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
@@ -255,13 +314,19 @@ returns(contract IProtocol)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [cToken](cToken.md)
+* [cTokenFactory](cTokenFactory.md)
+* [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
-* [Factory](Factory.md)
+* [FakeStore](FakeStore.md)
+* [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
+* [ICToken](ICToken.md)
+* [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
@@ -270,15 +335,24 @@ returns(contract IProtocol)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [MaliciousToken](MaliciousToken.md)
+* [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
+* [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
+* [Policy](Policy.md)
+* [PolicyAdmin](PolicyAdmin.md)
+* [PolicyManager](PolicyManager.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [Store](Store.md)
+* [StoreBase](StoreBase.md)
+* [StoreKeyUtil](StoreKeyUtil.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultPod](VaultPod.md)

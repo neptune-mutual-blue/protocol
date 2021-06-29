@@ -1,18 +1,31 @@
+// Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/IVaultFactory.sol";
-import "../liquidity/Vault.sol";
+import "./Vault.sol";
 
+// Todo: Recovery Feature
 /**
- * @title Cover Contract
+ * @title Vault Factory Contract
+ * @dev As and when required by the protocol,
+ * the VaultFactory contract creates new instances of
+ * Cover Vaults on demand.
  */
+
 contract VaultFactory is IVaultFactory {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
-  using CoverUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
 
+  /**
+   * @dev Deploys a new instance of Vault
+   * @param s Provide the store contract instance
+   * @param key Enter the cover key related to this Vault instance
+   */
   function deploy(IStore s, bytes32 key) external override returns (address addr) {
+    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, msg.sender); // Ensure the caller is the latest cover contract
+
     (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, s.getLiquidityToken());
 
     // solhint-disable-next-line
@@ -31,17 +44,6 @@ contract VaultFactory is IVaultFactory {
     }
   }
 
-  function setVault(
-    IStore s,
-    bytes32 key,
-    address liquidity
-  ) external {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_VAULT, key).toKeccak256();
-    require(s.getAddress(k) != address(0), "You should deploy instead");
-
-    s.setAddress(k, liquidity);
-  }
-
   /**
    * @dev Version number of this contract
    */
@@ -53,7 +55,7 @@ contract VaultFactory is IVaultFactory {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CONTRACTS_VAULT_FACTORY;
+    return ProtoUtilV1.CNAME_VAULT_FACTORY;
   }
 
   function _getByteCode(
@@ -61,7 +63,7 @@ contract VaultFactory is IVaultFactory {
     bytes32 key,
     address liquidityToken
   ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.KP_COVER_VAULT, key).toKeccak256();
+    salt = abi.encodePacked(ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
     bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
   }
 }

@@ -46,6 +46,8 @@ View Source: [contracts/core/lifecycle/Cover.sol](/contracts/core/lifecycle/Cove
 
 **Cover**
 
+The cover contract facilitates you create and update covers
+
 ## Functions
 
 - [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
@@ -56,6 +58,8 @@ View Source: [contracts/core/lifecycle/Cover.sol](/contracts/core/lifecycle/Cove
 
 ### 
 
+Constructs this contract
+
 ```js
 function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable CoverBase 
 ```
@@ -64,16 +68,17 @@ function (IStore store, address liquidityToken, bytes32 liquidityName) public no
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-| liquidityToken | address |  | 
-| liquidityName | bytes32 |  | 
+| store | IStore | Enter the store | 
+| liquidityToken | address | Enter the stable liquidity token to use when creating covers | 
+| liquidityName | bytes32 | Provide a name of the `liquidityToken`. Example: `wxDai`, `USD Coin`, or `Binance Pegged USD`. | 
 
 ### updateCover
 
-Updates the cover contract
+Updates the cover contract.
+ This feature is accessible only to the cover owner or protocol owner (governance).
 
 ```js
-function updateCover(bytes32 key, bytes32 info) external nonpayable onlyValidCover onlyCoverOwner nonReentrant whenNotPaused 
+function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -89,14 +94,16 @@ Adds a new coverage pool or cover contract.
  To add a new cover, you need to pay cover creation fee
  and stake minimum amount of NEP in the Vault. <br /> <br />
  Through the governance portal, projects will be able redeem
- the full cover fee at a later date.
+ the full cover fee at a later date. <br /> <br />
+ **Apply for Fee Redemption** <br />
+ https://docs.neptunemutual.com/covers/cover-fee-redemption <br /><br />
  As the cover creator, you will earn a portion of all cover fees
  generated in this pool. <br /> <br />
- Read the documentation to learn more about the fees:
+ Read the documentation to learn more about the fees: <br />
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```js
-function addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant whenNotPaused 
+function addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -149,6 +156,7 @@ Returns fee required to create a new cover
 ## Contracts
 
 * [Address](docs/Address.md)
+* [BokkyPooBahsDateTimeLibrary](docs/BokkyPooBahsDateTimeLibrary.md)
 * [Commission](docs/Commission.md)
 * [Context](docs/Context.md)
 * [Controller](docs/Controller.md)
@@ -158,13 +166,19 @@ Returns fee required to create a new cover
 * [CoverProvision](docs/CoverProvision.md)
 * [CoverStake](docs/CoverStake.md)
 * [CoverUtilV1](docs/CoverUtilV1.md)
+* [cToken](docs/cToken.md)
+* [cTokenFactory](docs/cTokenFactory.md)
+* [Destroyable](docs/Destroyable.md)
 * [ERC20](docs/ERC20.md)
-* [Factory](docs/Factory.md)
+* [FakeStore](docs/FakeStore.md)
+* [FakeToken](docs/FakeToken.md)
 * [Governance](docs/Governance.md)
 * [ICommission](docs/ICommission.md)
 * [ICover](docs/ICover.md)
 * [ICoverAssurance](docs/ICoverAssurance.md)
 * [ICoverStake](docs/ICoverStake.md)
+* [ICToken](docs/ICToken.md)
+* [ICTokenFactory](docs/ICTokenFactory.md)
 * [IERC20](docs/IERC20.md)
 * [IERC20Metadata](docs/IERC20Metadata.md)
 * [IMember](docs/IMember.md)
@@ -173,15 +187,24 @@ Returns fee required to create a new cover
 * [IStore](docs/IStore.md)
 * [IVault](docs/IVault.md)
 * [IVaultFactory](docs/IVaultFactory.md)
+* [MaliciousToken](docs/MaliciousToken.md)
+* [Migrations](docs/Migrations.md)
 * [NTransferUtilV2](docs/NTransferUtilV2.md)
+* [NTransferUtilV2Intermediate](docs/NTransferUtilV2Intermediate.md)
 * [Ownable](docs/Ownable.md)
 * [Pausable](docs/Pausable.md)
+* [Policy](docs/Policy.md)
+* [PolicyAdmin](docs/PolicyAdmin.md)
+* [PolicyManager](docs/PolicyManager.md)
 * [Protocol](docs/Protocol.md)
 * [ProtoUtilV1](docs/ProtoUtilV1.md)
 * [Recoverable](docs/Recoverable.md)
 * [ReentrancyGuard](docs/ReentrancyGuard.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [SafeMath](docs/SafeMath.md)
+* [Store](docs/Store.md)
+* [StoreBase](docs/StoreBase.md)
+* [StoreKeyUtil](docs/StoreKeyUtil.md)
 * [Vault](docs/Vault.md)
 * [VaultFactory](docs/VaultFactory.md)
 * [VaultPod](docs/VaultPod.md)

@@ -1,4 +1,7 @@
 require('hardhat-contract-sizer')
+require('@nomiclabs/hardhat-waffle')
+require('solidity-coverage')
+require('hardhat-gas-reporter')
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -12,13 +15,21 @@ module.exports = {
     }
   },
   contractSizer: {
-    alphaSort: true,
+    alphaSort: false,
     runOnCompile: true,
     disambiguatePaths: false
   },
-  docgen: {
-    path: './docs',
-    clear: true,
-    runOnCompile: true
+  paths: {
+    sources: './contracts',
+    tests: './test',
+    cache: './cache',
+    artifacts: './artifacts'
+  },
+  mocha: {
+    timeout: 20000
+  },
+  gasReporter: {
+    currency: 'ETH',
+    gasPrice: 21
   }
 }

@@ -6,15 +6,18 @@ View Source: [contracts/libraries/CoverUtilV1.sol](../contracts/libraries/CoverU
 
 ## Functions
 
-- [ensureValidCover(IStore s, bytes32 key)](#ensurevalidcover)
-- [ensureCoverOwner(IStore s, bytes32 key, address sender, address owner)](#ensurecoverowner)
+- [mustBeValidCover(IStore s, bytes32 key)](#mustbevalidcover)
+- [mustBeCoverOwner(IStore s, bytes32 key, address sender, address owner)](#mustbecoverowner)
 - [getCoverOwner(IStore s, bytes32 key)](#getcoverowner)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
+- [getCoverPoolSummary(IStore s, bytes32 key)](#getcoverpoolsummary)
+- [getPolicyRates(IStore s, bytes32 key)](#getpolicyrates)
 - [getLiquidity(IStore s, bytes32 key)](#getliquidity)
 - [getStake(IStore s, bytes32 key)](#getstake)
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
 - [getStakingContract(IStore s)](#getstakingcontract)
+- [getCTokenFactory(IStore s)](#getctokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
 - [getAssuranceContract(IStore s)](#getassurancecontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
@@ -23,10 +26,12 @@ View Source: [contracts/libraries/CoverUtilV1.sol](../contracts/libraries/CoverU
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
 - [_getStatus(IStore s, bytes32 key)](#_getstatus)
 
-### ensureValidCover
+### mustBeValidCover
+
+Reverts if the key does not resolve in a valid cover contract.
 
 ```js
-function ensureValidCover(IStore s, bytes32 key) external view
+function mustBeValidCover(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -34,22 +39,24 @@ function ensureValidCover(IStore s, bytes32 key) external view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key to check | 
 
-### ensureCoverOwner
+### mustBeCoverOwner
+
+Reverts if the sender is not the cover owner or owner
 
 ```js
-function ensureCoverOwner(IStore s, bytes32 key, address sender, address owner) external view
+function mustBeCoverOwner(IStore s, bytes32 key, address sender, address owner) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| sender | address |  | 
-| owner | address |  | 
+| s | IStore | ender The `msg.sender` value | 
+| key | bytes32 | Enter the cover key to check | 
+| sender | address | The `msg.sender` value | 
+| owner | address | Enter the owner address | 
 
 ### getCoverOwner
 
@@ -77,6 +84,36 @@ Gets the current status of the protocol
 ```js
 function getStatus(IStore s, bytes32 key) external view
 returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getCoverPoolSummary
+
+Todo: Returns the values of the given cover key
+
+```js
+function getCoverPoolSummary(IStore s, bytes32 key) external view
+returns(_values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getPolicyRates
+
+```js
+function getPolicyRates(IStore s, bytes32 key) external view
+returns(floor uint256, ceiling uint256)
 ```
 
 **Arguments**
@@ -147,6 +184,19 @@ returns(owner address, info bytes32, values uint256[])
 ```js
 function getStakingContract(IStore s) public view
 returns(contract ICoverStake)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getCTokenFactory
+
+```js
+function getCTokenFactory(IStore s) public view
+returns(contract ICTokenFactory)
 ```
 
 **Arguments**
@@ -253,6 +303,7 @@ returns(uint256)
 ## Contracts
 
 * [Address](Address.md)
+* [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
@@ -262,13 +313,19 @@ returns(uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [cToken](cToken.md)
+* [cTokenFactory](cTokenFactory.md)
+* [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
-* [Factory](Factory.md)
+* [FakeStore](FakeStore.md)
+* [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverStake](ICoverStake.md)
+* [ICToken](ICToken.md)
+* [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
@@ -277,15 +334,24 @@ returns(uint256)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [MaliciousToken](MaliciousToken.md)
+* [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
+* [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
+* [Policy](Policy.md)
+* [PolicyAdmin](PolicyAdmin.md)
+* [PolicyManager](PolicyManager.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [Store](Store.md)
+* [StoreBase](StoreBase.md)
+* [StoreKeyUtil](StoreKeyUtil.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultPod](VaultPod.md)

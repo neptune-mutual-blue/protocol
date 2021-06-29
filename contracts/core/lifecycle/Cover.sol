@@ -1,3 +1,4 @@
+// Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "./CoverBase.sol";
@@ -8,12 +9,21 @@ import "../liquidity/Vault.sol";
 
 /**
  * @title Cover Contract
+ * @dev The cover contract facilitates you create and update covers
  */
 contract Cover is CoverBase {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
 
+  /**
+   * @dev Constructs this contract
+   * @param store Enter the store
+   * @param liquidityToken Enter the stable liquidity token to use when creating covers
+   * @param liquidityName Provide a name of the `liquidityToken`. Example: `wxDai`, `USD Coin`, or `Binance Pegged USD`.
+   */
   constructor(
     IStore store,
     address liquidityToken,
@@ -23,15 +33,20 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Updates the cover contract
+   * @dev Updates the cover contract.
+   * This feature is accessible only to the cover owner or protocol owner (governance).
+   *
    * @param key Enter the cover key
    * @param info Enter a new IPFS URL to update
    */
-  function updateCover(bytes32 key, bytes32 info) external onlyValidCover(key) onlyCoverOwner(key) nonReentrant whenNotPaused {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_INFO, key).toKeccak256();
-    require(s.getBytes32(k) != info, "Duplicate content");
+  function updateCover(bytes32 key, bytes32 info) external nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+    s.mustBeValidCover(key); // Ensures the key is valid cover
+    s.mustBeCoverOwner(key, super._msgSender(), owner()); // Ensures the sender is either the owner or cover owner
 
-    s.setBytes32(k, info);
+    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
+
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
     emit CoverUpdated(key, info);
   }
 
@@ -41,12 +56,15 @@ contract Cover is CoverBase {
    * and stake minimum amount of NEP in the Vault. <br /> <br />
    *
    * Through the governance portal, projects will be able redeem
-   * the full cover fee at a later date.
+   * the full cover fee at a later date. <br /> <br />
+   *
+   * **Apply for Fee Redemption** <br />
+   * https://docs.neptunemutual.com/covers/cover-fee-redemption <br /><br />
    *
    * As the cover creator, you will earn a portion of all cover fees
    * generated in this pool. <br /> <br />
    *
-   * Read the documentation to learn more about the fees:
+   * Read the documentation to learn more about the fees: <br />
    * https://docs.neptunemutual.com/covers/contract-creators
    *
    * @param key Enter a unique key for this cover
@@ -69,7 +87,9 @@ contract Cover is CoverBase {
     address assuranceToken,
     uint256 initialAssuranceAmount,
     uint256 initialLiquidity
-  ) external nonReentrant whenNotPaused {
+  ) external nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+
     // First validate the information entered
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
 
@@ -81,12 +101,17 @@ contract Cover is CoverBase {
 
     // Add cover assurance
     if (initialAssuranceAmount > 0) {
-      s.getAssuranceContract().addAssurance(key, initialAssuranceAmount);
+      s.getAssuranceContract().addAssurance(key, super._msgSender(), initialAssuranceAmount);
     }
 
     // Add initial liquidity
     if (initialLiquidity > 0) {
+      IVault vault = s.getVault(key);
+
       s.getVault(key).addLiquidityInternal(key, super._msgSender(), initialLiquidity);
+
+      // Transfer liquidity only after minting the pods
+      IERC20(s.getLiquidityToken()).ensureTransferFrom(super._msgSender(), address(vault), initialLiquidity);
     }
 
     emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
@@ -106,29 +131,23 @@ contract Cover is CoverBase {
     address assuranceToken
   ) private {
     // Add a new cover
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER, key).toKeccak256();
-    s.setBool(k, true);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
 
     // Set cover owner
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_OWNER, key).toKeccak256();
-    s.setAddress(k, super._msgSender());
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, super._msgSender());
 
     // Set cover info
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_INFO, key).toKeccak256();
-    s.setBytes32(k, info);
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
 
     // Set assurance token
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_ASSURANCE_TOKEN, key).toKeccak256();
-    s.setAddress(k, assuranceToken);
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key, assuranceToken);
 
     // Set the fee charged during cover creation
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_FEE, key).toKeccak256();
-    s.setUint(k, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE, key, fee);
 
-    // Create cover liquidity contract
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_VAULT, key).toKeccak256();
+    // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
-    s.setAddress(k, deployed);
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_VAULT, key, deployed);
   }
 
   /**
@@ -144,9 +163,7 @@ contract Cover is CoverBase {
     (uint256 fee, uint256 minStake) = s.getCoverFee();
 
     require(stakeWithFee > fee + minStake, "NEP Insufficient");
-
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER, key).toKeccak256();
-    require(s.getBool(k) == false, "Already exists");
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
 
     return fee;
   }

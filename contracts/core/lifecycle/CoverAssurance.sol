@@ -1,9 +1,11 @@
+// Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICoverAssurance.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -21,23 +23,14 @@ import "../Recoverable.sol";
 contract CoverAssurance is ICoverAssurance, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
 
-  IStore public s;
   event AssuranceAdded(bytes32 key, uint256 amount);
 
-  /**
-   * Ensures the given key is a valid cover contract
-   * @param key Enter the cover key to check
-   */
-  modifier onlyValidCover(bytes32 key) {
-    s.ensureValidCover(key); // Ensures the key is valid cover
-    _;
-  }
-
-  constructor(IStore store) {
-    s = store;
+  constructor(IStore store) Recoverable(store) {
+    this;
   }
 
   /**
@@ -45,17 +38,22 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
    * @param key Enter the cover key
    * @param amount Enter the amount you would like to supply
    */
-  function addAssurance(bytes32 key, uint256 amount) external override onlyValidCover(key) nonReentrant whenNotPaused {
-    require(amount > 0, "Provide amount");
+  function addAssurance(
+    bytes32 key,
+    address account,
+    uint256 amount
+  ) external override nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+    s.mustBeValidCover(key); // Ensures the key is valid cover
 
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_ASSURANCE_TOKEN, key).toKeccak256();
-    IERC20 assuranceToken = IERC20(s.getAddress(k));
+    require(amount > 0, "Provide valid amount");
+
+    IERC20 assuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key));
     address vault = s.getAssuranceVault();
 
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_ASSURANCE, key).toKeccak256();
-    s.addUint(k, amount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key, amount);
 
-    assuranceToken.ensureTransfer(vault, amount);
+    assuranceToken.ensureTransferFrom(account, vault, amount);
 
     emit AssuranceAdded(key, amount);
   }
@@ -65,8 +63,7 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
    * @param key Enter the cover key
    */
   function getAssurance(bytes32 key) external view override returns (uint256) {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_ASSURANCE, key).toKeccak256();
-    return s.getUint(k);
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
   }
 
   /**
@@ -80,6 +77,6 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CONTRACTS_COVER_PROVISION;
+    return ProtoUtilV1.CNAME_COVER_ASSURANCE;
   }
 }

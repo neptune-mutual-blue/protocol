@@ -1,3 +1,4 @@
+// Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -19,27 +20,12 @@ import "./VaultPod.sol";
 contract Vault is VaultPod {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
 
   event LiquidityAdded(bytes32 key, uint256 amount);
   event LiquidityRemoved(bytes32 key, uint256 amount);
-
-  /**
-   * @dev Ensures the caller to be the cover contract
-   */
-  modifier onlyFromCover() {
-    s.ensureMemberWithName(ProtoUtilV1.CONTRACTS_COVER);
-    _;
-  }
-
-  /**
-   * Ensures the cover key is a valid cover contract
-   */
-  modifier onlyValidCover() {
-    s.ensureValidCover(key); // Ensures the key is valid cover
-    _;
-  }
 
   constructor(
     IStore store,
@@ -59,8 +45,12 @@ contract Vault is VaultPod {
     bytes32 coverKey,
     address account,
     uint256 amount
-  ) external override onlyValidCover onlyFromCover nonReentrant whenNotPaused {
-    _addLiquidity(coverKey, account, amount);
+  ) external override nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+    s.mustBeValidCover(key); // Ensures the key is valid cover
+    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+
+    _addLiquidity(coverKey, account, amount, true);
   }
 
   /**
@@ -68,8 +58,11 @@ contract Vault is VaultPod {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    */
-  function addLiquidity(bytes32 coverKey, uint256 amount) external override onlyValidCover nonReentrant whenNotPaused {
-    _addLiquidity(coverKey, super._msgSender(), amount);
+  function addLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+    s.mustBeValidCover(key); // Ensures the key is valid cover
+
+    _addLiquidity(coverKey, super._msgSender(), amount, false);
   }
 
   /**
@@ -77,7 +70,10 @@ contract Vault is VaultPod {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to remove.
    */
-  function removeLiquidity(bytes32 coverKey, uint256 amount) external override onlyValidCover nonReentrant whenNotPaused {
+  function removeLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+
+    s.mustBeValidCover(key); // Ensures the key is valid cover
     require(coverKey == key, "Forbidden");
 
     uint256 available = s.getPolicyContract().getCoverable(key);
@@ -87,21 +83,17 @@ contract Vault is VaultPod {
      * your liquidity.
      */
     require(available >= amount, "Insufficient balance"); // Insufficient balance. Please wait for the policy to expire.
-
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_RELEASE_DATE, key, super._msgSender()).toKeccak256();
-    require(s.getUint(k) > 0, "Invalid request");
-
-    require(block.timestamp > s.getUint(k), "Withdrawal too early"); // solhint-disable-line
+    require(s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, key, super._msgSender()) > 0, "Invalid request");
+    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, key, super._msgSender()), "Withdrawal too early"); // solhint-disable-line
 
     // Update values
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY, key).toKeccak256();
-    s.subtractUint(k, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key, amount);
 
     /***
      * Send liquidity tokens back
      */
 
-    super._burnPods(super._msgSender(), amount);
+    super._redeemPods(super._msgSender(), amount);
     emit LiquidityRemoved(key, amount);
   }
 
@@ -114,32 +106,37 @@ contract Vault is VaultPod {
   function _addLiquidity(
     bytes32 coverKey,
     address account,
-    uint256 amount
+    uint256 amount,
+    bool initialLiquidity
   ) private {
     require(coverKey == key, "Forbidden");
     require(account != address(0), "Invalid account");
 
     address liquidityToken = s.getLiquidityToken();
-    require(lqt == address(liquidityToken), "Vault migration required");
+    require(lqt == liquidityToken, "Vault migration required");
 
     // Update values
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY, key).toKeccak256();
-    s.addUint(k, amount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key, amount);
 
-    uint256 minLiquidityPeriod = s.getProtocol().getMinLiquidityPeriod();
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_RELEASE_DATE, key, account).toKeccak256();
-    s.setUint(k, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, key, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
 
-    super._mintPods(account, amount);
+    super._mintPods(account, amount, initialLiquidity);
 
     emit LiquidityAdded(key, amount);
   }
 
+  /**
+   * @dev Version number of this contract
+   */
   function version() external pure override returns (bytes32) {
     return "v0.1";
   }
 
+  /**
+   * @dev Name of this contract
+   */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CONTRACTS_LIQUIDITY_VAULT;
+    return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
   }
 }

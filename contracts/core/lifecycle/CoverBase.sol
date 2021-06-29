@@ -1,9 +1,12 @@
+// Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICover.sol";
 import "../../libraries/ProtoUtilV1.sol";
+import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**
@@ -12,27 +15,7 @@ import "../Recoverable.sol";
 abstract contract CoverBase is ICover, Recoverable {
   using ProtoUtilV1 for bytes;
   using CoverUtilV1 for IStore;
-
-  /** eternal storage */
-  IStore public s;
-
-  /**
-   * Ensures this feature is accessed only by the cover owner or the owner of this contract.
-   * @param key Enter the cover key to check
-   */
-  modifier onlyCoverOwner(bytes32 key) {
-    s.ensureCoverOwner(key, super._msgSender(), owner());
-    _;
-  }
-
-  /**
-   * Ensures the given key is a valid cover contract
-   * @param key Enter the cover key to check
-   */
-  modifier onlyValidCover(bytes32 key) {
-    s.ensureValidCover(key); // Ensures the key is valid cover
-    _;
-  }
+  using StoreKeyUtil for IStore;
 
   /**
    * @dev Constructs this smart contract
@@ -46,14 +29,9 @@ abstract contract CoverBase is ICover, Recoverable {
     IStore store,
     address liquidityToken,
     bytes32 liquidityName
-  ) {
-    s = store;
-
-    bytes32 k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_TOKEN).toKeccak256();
-    s.setAddress(k, liquidityToken);
-
-    k = abi.encodePacked(ProtoUtilV1.KP_COVER_LIQUIDITY_NAME).toKeccak256();
-    s.setBytes32(k, liquidityName);
+  ) Recoverable(store) {
+    s.setAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN, liquidityToken);
+    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
   }
 
   /**
@@ -86,6 +64,6 @@ abstract contract CoverBase is ICover, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CONTRACTS_COVER;
+    return ProtoUtilV1.CNAME_COVER;
   }
 }
