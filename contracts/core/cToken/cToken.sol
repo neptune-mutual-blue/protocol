@@ -25,8 +25,6 @@ contract cToken is ICToken, Recoverable, ERC20 {
   uint256 public override expiresOn;
   bool public finalized = false;
 
-  event Finalized(uint256 amount);
-
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
@@ -55,7 +53,7 @@ contract cToken is ICToken, Recoverable, ERC20 {
     uint256 amount
   ) external override {
     require(key == coverKey, "Invalid cover");
-    s.mustBeExactContract(ProtoUtilV1.CNAME_POLICY, super._msgSender()); // Ensure the caller is the latest policy contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY, super._msgSender()); // Ensure the caller is the latest policy contract
 
     super._mint(to, amount);
   }
@@ -64,7 +62,7 @@ contract cToken is ICToken, Recoverable, ERC20 {
    * @dev Burns the tokens held by the sender
    * @param amount Specify the amount of tokens to burn
    */
-  function burn(uint256 amount) external {
+  function burn(uint256 amount) external override {
     super._burn(super._msgSender(), amount);
   }
 
@@ -74,7 +72,7 @@ contract cToken is ICToken, Recoverable, ERC20 {
    * will be transferred to the Cover Vault contract.
    */
   function finalize() external override {
-    s.mustBeExactContract(ProtoUtilV1.CNAME_POLICY_MANAGER, super._msgSender()); // Ensure the caller is the latest policy manager contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY_MANAGER, super._msgSender()); // Ensure the caller is the latest policy manager contract
     require(block.timestamp >= expiresOn, "Wait until expiry"); // solhint-disable-line
 
     IERC20 liquidity = IERC20(s.getLiquidityToken());

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IStore.sol";
-import "../../interfaces/IMember.sol";
+import "../../interfaces/ICoverProvision.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
@@ -18,15 +18,12 @@ import "../Recoverable.sol";
  * Along with the NEP provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
  * for the rainy day.
  */
-contract CoverProvision is IMember, Recoverable {
+contract CoverProvision is ICoverProvision, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
-
-  event ProvisionIncreased(bytes32 key, uint256 previous, uint256 current);
-  event ProvisionDecreased(bytes32 key, uint256 previous, uint256 current);
 
   /**
    * @dev Constructs this contract
@@ -42,7 +39,7 @@ contract CoverProvision is IMember, Recoverable {
    * @param key Provide the cover key you wish to increase the provision of
    * @param amount Specify the amount of NEP tokens you would like to add
    */
-  function increaseProvision(bytes32 key, uint256 amount) external onlyOwner nonReentrant {
+  function increaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
 
@@ -61,7 +58,7 @@ contract CoverProvision is IMember, Recoverable {
    * @param key Provide the cover key you wish to decrease the provision from
    * @param amount Specify the amount of NEP tokens you would like to decrease
    */
-  function decreaseProvision(bytes32 key, uint256 amount) external onlyOwner nonReentrant {
+  function decreaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
 
@@ -79,7 +76,7 @@ contract CoverProvision is IMember, Recoverable {
    * @dev Gets the NEP provision amount for the given cover key
    * @param key Enter the cover key to get the provision
    */
-  function getProvision(bytes32 key) external view returns (uint256) {
+  function getProvision(bytes32 key) external override view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
   }
 

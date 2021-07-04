@@ -4,6 +4,7 @@ const toBytes32 = (x) => ethers.utils.formatBytes32String(x)
 const getCoverContractKey = (namespace, coverKey) => encodeKeys(['bytes32', 'bytes32'], [toBytes32(namespace), coverKey])
 const qualifyBytes32 = (k) => encodeKeys(['bytes32', 'bytes32'], [toBytes32(NS.CONTRACTS), toBytes32(k)])
 const qualify = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.CONTRACTS), k])
+const qualifyMember = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.MEMBERS), k])
 
 const NS = {
   ASSURANCE_VAULT: 'proto:core:assurance:vault',
@@ -13,15 +14,18 @@ const NS = {
   CORE: 'proto:core',
   COVER: 'proto:cover',
   COVER_ASSURANCE: 'proto:cover:assurance',
-  COVER_ASSURANCE_TOKEN: 'proto:cover:assurancetoken',
+  COVER_ASSURANCE_TOKEN: 'proto:cover:assurance:token',
   COVER_CLAIMABLE: 'proto:cover:claimable',
   COVER_FEE: 'proto:cover:fee',
   COVER_INFO: 'proto:cover:info',
   COVER_LIQUIDITY: 'proto:cover:liquidity',
+  COVER_LIQUIDITY_COMMITMENT: 'proto:cover:liquidity:commitment',
   COVER_LIQUIDITY_NAME: 'proto:cover:liquidityName',
   COVER_LIQUIDITY_TOKEN: 'proto:cover:liquidityToken',
   COVER_LIQUIDITY_RELEASE_DATE: 'proto:cover:liquidity:release',
   COVER_OWNER: 'proto:cover:owner',
+  COVER_POLICY: 'proto:cover:policy',
+  COVER_POLICY_ADMIN: 'proto:cover:policy:admin',
   COVER_POLICY_RATE_FLOOR: 'proto:cover:policy:rate:floor',
   COVER_POLICY_RATE_CEILING: 'proto:cover:policy:rate:ceiling',
   COVER_PROVISION: 'proto:cover:provision',
@@ -34,13 +38,17 @@ const NS = {
   SETUP_NEP: 'proto:setup:nep',
   SETUP_COVER_FEE: 'proto:setup:cover:fee',
   SETUP_MIN_STAKE: 'proto:setup:min:stake',
-  SETUP_MIN_LIQ_PERIOD: 'proto:setup:min:liq:period'
+  SETUP_MIN_LIQ_PERIOD: 'proto:setup:min:liq:period',
+  PRICE_DISCOVERY: 'proto:core:price:discovery',
+  COVER_CTOKEN_FACTORY: 'proto:cover:ctoken:factory',
+  COVER_VAULT_FACTORY: 'proto:cover:vault:factory'
 }
 
 const CNAME = {
   PROTOCOL: 'Protocol',
   TREASURY: 'Treasury',
   POLICY: 'Policy',
+  PRICE_DISCOVERY: 'PriceDiscovery',
   COVER: 'Cover',
   VAULT_FACTORY: 'VaultFactory',
   CTOKEN_FACTORY: 'cTokenFactory',
@@ -55,6 +63,7 @@ const CNAME_KEYS = {
   PROTOCOL: toBytes32(CNAME.PROTOCOL),
   TREASURY: toBytes32(CNAME.TREASURY),
   POLICY: toBytes32(CNAME.POLICY),
+  PRICE_DISCOVERY: toBytes32(CNAME.PRICE_DISCOVERY),
   COVER: toBytes32(CNAME.COVER),
   VAULT_FACTORY: toBytes32(CNAME.VAULT_FACTORY),
   CTOKEN_FACTORY: toBytes32(CNAME.CTOKEN_FACTORY),
@@ -87,5 +96,6 @@ module.exports = {
   toBytes32,
   getCoverContractKey,
   qualify,
+  qualifyMember,
   qualifyBytes32
 }

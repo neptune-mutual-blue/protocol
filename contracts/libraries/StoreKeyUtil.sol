@@ -162,6 +162,17 @@ library StoreKeyUtil {
     return s.setAddress(keccak256(abi.encodePacked(key1, key2)), value);
   }
 
+  function setAddressByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address value
+  ) external {
+    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
+    return s.setAddress(keccak256(abi.encodePacked(key1, key2, key3)), value);
+  }
+
   function deleteUintByKey(IStore s, bytes32 key) external {
     require(key > 0, "Invalid key");
     return s.deleteUint(keccak256(abi.encodePacked(key)));
@@ -300,5 +311,15 @@ library StoreKeyUtil {
   ) external view returns (address) {
     require(key1 > 0 && key2 > 0, "Invalid key(s)");
     return s.getAddress(keccak256(abi.encodePacked(key1, key2)));
+  }
+
+  function getAddressByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (address) {
+    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
+    return s.getAddress(keccak256(abi.encodePacked(key1, key2, key3)));
   }
 }

@@ -27,7 +27,7 @@ contract cTokenFactory is ICTokenFactory {
     bytes32 key,
     uint256 expiryDate
   ) external override returns (address deployed) {
-    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, msg.sender); // Ensure the caller is the latest cover contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY, msg.sender); // Ensure the caller is the latest policy contract
 
     (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, expiryDate);
 
@@ -49,6 +49,7 @@ contract cTokenFactory is ICTokenFactory {
     }
 
     s.setAddress(salt, deployed);
+    emit CTokenDeployed(key, deployed, expiryDate);
   }
 
   /**

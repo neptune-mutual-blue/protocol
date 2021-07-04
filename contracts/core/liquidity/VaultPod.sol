@@ -29,7 +29,6 @@ abstract contract VaultPod is IVault, Recoverable, ERC20 {
   bytes32 public key;
   address public lqt;
 
-  event PodsMinted(address indexed account, uint256 podsMinted, address indexed vault, uint256 liquidityAdded);
 
   /**
    * @dev Constructs this contract

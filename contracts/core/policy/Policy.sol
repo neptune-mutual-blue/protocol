@@ -22,9 +22,6 @@ contract Policy is IPolicy, Recoverable {
   using CoverUtilV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
-  event PolicyRateSet(uint256 floor, uint256 ceiling);
-  event PolicyRateSet(bytes32 key, uint256 floor, uint256 ceiling);
-
   constructor(IStore store) Recoverable(store) {
     this;
   }
@@ -43,7 +40,7 @@ contract Policy is IPolicy, Recoverable {
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover
-  ) external nonReentrant {
+  ) external override nonReentrant returns (address) {
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
     (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);
@@ -56,6 +53,14 @@ contract Policy is IPolicy, Recoverable {
     IERC20(liquidityToken).ensureTransferFrom(super._msgSender(), address(cToken), fee);
 
     cToken.mint(key, super._msgSender(), amountToCover);
+    return address(cToken);
+  }
+
+  function getCToken(bytes32 key, uint256 coverDuration) public view returns (address cToken, uint256 expiryDate) {
+    expiryDate = getExpiryDate(block.timestamp, coverDuration); // solhint-disable-line
+    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
+
+    cToken = s.getAddress(k);
   }
 
   /**
@@ -64,10 +69,7 @@ contract Policy is IPolicy, Recoverable {
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
   function _getCTokenOrDeploy(bytes32 key, uint256 coverDuration) private returns (ICToken) {
-    uint256 expiryDate = _getExpiryDate(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
-
-    address cToken = s.getAddress(k);
+    (address cToken, uint256 expiryDate) = getCToken(key, coverDuration);
 
     if (cToken != address(0)) {
       return ICToken(cToken);
@@ -83,7 +85,7 @@ contract Policy is IPolicy, Recoverable {
    * @param today Enter the current timestamp
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
-  function _getExpiryDate(uint256 today, uint256 coverDuration) private pure returns (uint256) {
+  function getExpiryDate(uint256 today, uint256 coverDuration) public override pure returns (uint256) {
     // Get the day of the month
     (, , uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(today);
 
@@ -166,7 +168,7 @@ contract Policy is IPolicy, Recoverable {
     uint256 amountToCover
   )
     external
-    view
+    view override
     returns (
       uint256 fee,
       uint256 utilizationRatio,
@@ -206,6 +208,9 @@ contract Policy is IPolicy, Recoverable {
     require(coverDuration <= 3, "Invalid duration");
 
     (floor, ceiling) = s.getPolicyRates(key);
+
+    require(floor > 0 && ceiling > floor, "Policy rate config error");
+
     uint256[] memory values = s.getCoverPoolSummary(key);
 
     // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
@@ -234,7 +239,7 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[5] Assurance token price
    * @param _values[6] Assurance pool weight
    */
-  function getCoverPoolSummary(bytes32 key) external view returns (uint256[] memory _values) {
+  function getCoverPoolSummary(bytes32 key) external override view returns (uint256[] memory _values) {
     return s.getCoverPoolSummary(key);
   }
 

@@ -27,10 +27,6 @@ contract CoverStake is ICoverStake, Recoverable {
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
 
-  event StakeAdded(bytes32 key, uint256 amount);
-  event StakeRemoved(bytes32 key, uint256 amount);
-  event FeeBurned(bytes32 key, uint256 amount);
-
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
@@ -54,7 +50,7 @@ contract CoverStake is ICoverStake, Recoverable {
   ) external override nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
 
     require(amount >= fee, "Invalid fee");
 
@@ -84,7 +80,7 @@ contract CoverStake is ICoverStake, Recoverable {
   ) external override nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
 
     uint256 drawingPower = _getDrawingPower(key, account);
     require(drawingPower >= amount, "Exceeds your drawing power");

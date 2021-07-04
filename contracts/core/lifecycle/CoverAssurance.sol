@@ -27,8 +27,6 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
 
-  event AssuranceAdded(bytes32 key, uint256 amount);
-
   constructor(IStore store) Recoverable(store) {
     this;
   }
@@ -56,6 +54,14 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
     assuranceToken.ensureTransferFrom(account, vault, amount);
 
     emit AssuranceAdded(key, amount);
+  }
+
+  function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+    _mustBeUnpaused(); // Ensures the contract isn't paused
+    s.mustBeValidCover(key); // Ensures the key is valid cover
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
   }
 
   /**

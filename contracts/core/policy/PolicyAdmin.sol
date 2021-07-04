@@ -3,7 +3,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
-import "../../interfaces/IMember.sol";
+import "../../interfaces/IPolicyAdmin.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/ProtoUtilV1.sol";
@@ -15,15 +15,12 @@ import "../Recoverable.sol";
  * @dev The policy admin contract enables the owner (governance)
  * to set the policy rate and fee info.
  */
-contract PolicyAdmin is IMember, Recoverable {
+contract PolicyAdmin is IPolicyAdmin, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
-
-  event PolicyRateSet(uint256 floor, uint256 ceiling);
-  event CoverPolicyRateSet(bytes32 key, uint256 floor, uint256 ceiling);
 
   /**
    * @dev Constructs this contract
@@ -38,7 +35,7 @@ contract PolicyAdmin is IMember, Recoverable {
    * @param floor The lowest cover fee rate fallback
    * @param ceiling The highest cover fee rate fallback
    */
-  function setPolicyRates(uint256 floor, uint256 ceiling) external {
+  function setPolicyRates(uint256 floor, uint256 ceiling) external override {
     _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
@@ -52,11 +49,11 @@ contract PolicyAdmin is IMember, Recoverable {
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
    */
-  function setPolicyRates(
+  function setPolicyRatesByKey(
     bytes32 key,
     uint256 floor,
     uint256 ceiling
-  ) external {
+  ) external override {
     _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
@@ -68,7 +65,7 @@ contract PolicyAdmin is IMember, Recoverable {
   /**
    * @dev Gets the cover policy rates for the given cover key
    */
-  function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint256 ceiling) {
+  function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
     return s.getPolicyRates(key);
   }
 
@@ -83,6 +80,6 @@ contract PolicyAdmin is IMember, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_POLICY;
+    return ProtoUtilV1.CNAME_POLICY_ADMIN;
   }
 }

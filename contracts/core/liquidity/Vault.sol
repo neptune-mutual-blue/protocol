@@ -24,9 +24,6 @@ contract Vault is VaultPod {
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
 
-  event LiquidityAdded(bytes32 key, uint256 amount);
-  event LiquidityRemoved(bytes32 key, uint256 amount);
-
   constructor(
     IStore store,
     bytes32 coverKey,
@@ -48,7 +45,7 @@ contract Vault is VaultPod {
   ) external override nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
 
     _addLiquidity(coverKey, account, amount, true);
   }

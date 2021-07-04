@@ -20,6 +20,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
 
   constructor() {
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, msg.sender))] = true;
+    boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, address(this)))] = true;
   }
 
   /**

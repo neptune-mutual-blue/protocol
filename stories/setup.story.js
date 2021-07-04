@@ -2,121 +2,84 @@
 
 const BigNumber = require('bignumber.js')
 require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
-const { helper, deployer, key, storeUtil, ipfs, sample } = require('../util')
+const { helper, key, storeUtil, ipfs, sample } = require('../util')
+const composer = require('./composer')
 
 const coverKey = key.toBytes32('Compound Finance Cover')
+
+let contracts = {
+  assuranceToken: null,
+  nep: null,
+  wxDai: null,
+  store: null,
+  storeKeyUtil: null,
+  protoUtilV1: null,
+  protocol: null,
+  cover: null,
+  stakingContract: null,
+  assuranceContract: null,
+  provisionContract: null,
+  coverUtil: null,
+  vaultFactory: null,
+  transferLib: null,
+  dateLib: null
+}
 
 describe('Protocol Initialization Stories', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, assuranceToken, wxDai, store, storeKeyUtil, protoUtilV1, protocol, cover, stakingContract, assuranceContract, coverUtil, vaultFactory, transferLib, previous
-
-  const getVault = async (coverKey) => {
-    const vaultAddress = await storeUtil.getVaultAddress(store, coverKey)
-
-    const Vault = await ethers.getContractFactory('Vault', {
-      libraries: {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
-        CoverUtilV1: coverUtil.address,
-        NTransferUtilV2: transferLib.address
-      }
-    })
-
-    const vault = await Vault.attach(vaultAddress)
-    return vault
-  }
+  let previous
 
   before(async () => {
-    store = await deployer.deploy('FakeStore')
-
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000000))
-    wxDai = await deployer.deploy('FakeToken', 'Wrapped Dai', 'WXDAI', helper.ether(10000000))
-
-    storeKeyUtil = await deployer.deploy('StoreKeyUtil')
-    transferLib = await deployer.deploy('NTransferUtilV2')
-
-    protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
-      StoreKeyUtil: storeKeyUtil.address
-    })
-
-    coverUtil = await deployer.deployWithLibraries('CoverUtilV1', {
-      StoreKeyUtil: storeKeyUtil.address,
-      ProtoUtilV1: protoUtilV1.address
-    })
+    contracts = await composer.initializer.initialize(treasury, assuranceVault)
   })
 
-  it('protocol was deployed', async () => {
-    protocol = await deployer.deployWithLibraries('Protocol',
-      {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address
-      },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
-    )
+  it('protocol was correctly deployed', async () => {
+    contracts.protocol.address.should.not.be.empty
+    contracts.protocol.address.should.not.equal(helper.zerox)
 
-    protocol.address.should.not.be.empty
-    protocol.address.should.not.equal(helper.zerox)
+    const fetchedAddress = await contracts.store.getAddress(key.encodeKey(key.NS.CORE))
+    fetchedAddress.should.equal(contracts.protocol.address)
   })
 
-  it('staking contract was deployed', async () => {
-    stakingContract = await deployer.deployWithLibraries('CoverStake', {
-      StoreKeyUtil: storeKeyUtil.address,
-      ProtoUtilV1: protoUtilV1.address,
-      CoverUtilV1: coverUtil.address,
-      NTransferUtilV2: transferLib.address
-    }, store.address)
+  it('staking contract was correctly deployed', async () => {
+    contracts.stakingContract.address.should.not.be.empty
+    contracts.stakingContract.address.should.not.equal(helper.zerox)
 
-    await protocol.addContract(key.CNAME_KEYS.COVER_STAKE, stakingContract.address)
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_STAKE))
+    fetchedAddress.should.equal(contracts.stakingContract.address)
   })
 
-  it('assurance contract was deployed', async () => {
-    assuranceContract = await deployer.deployWithLibraries('CoverAssurance', {
-      StoreKeyUtil: storeKeyUtil.address,
-      ProtoUtilV1: protoUtilV1.address,
-      CoverUtilV1: coverUtil.address,
-      NTransferUtilV2: transferLib.address
-    }, store.address)
+  it('assurance contract was correctly deployed', async () => {
+    contracts.assuranceContract.address.should.not.be.empty
+    contracts.assuranceContract.address.should.not.equal(helper.zerox)
 
-    await protocol.addContract(key.CNAME_KEYS.COVER_ASSURANCE, assuranceContract.address)
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_ASSURANCE))
+    fetchedAddress.should.equal(contracts.assuranceContract.address)
   })
 
-  it('cover contract was deployed', async () => {
-    cover = await deployer.deployWithLibraries('Cover',
-      {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
-        CoverUtilV1: coverUtil.address,
-        NTransferUtilV2: transferLib.address
-      },
-      store.address,
-      wxDai.address,
-      key.toBytes32('WXDAI')
-    )
+  it('provision contract was correctly deployed', async () => {
+    contracts.provisionContract.address.should.not.be.empty
+    contracts.provisionContract.address.should.not.equal(helper.zerox)
 
-    cover.address.should.not.be.empty
-    cover.address.should.not.equal(helper.zerox)
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_PROVISION))
+    fetchedAddress.should.equal(contracts.provisionContract.address)
+  })
 
-    await protocol.addContract(key.CNAME_KEYS.COVER, cover.address)
+  it('cover contract was correctly deployed', async () => {
+    contracts.cover.address.should.not.be.empty
+    contracts.cover.address.should.not.equal(helper.zerox)
+
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER))
+    fetchedAddress.should.equal(contracts.cover.address)
   })
 
   it('vault factory contract was deployed', async () => {
-    vaultFactory = await deployer.deployWithLibraries('VaultFactory',
-      {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
-        CoverUtilV1: coverUtil.address,
-        NTransferUtilV2: transferLib.address
-      }
-    )
+    contracts.vaultFactory.address.should.not.be.empty
+    contracts.vaultFactory.address.should.not.equal(helper.zerox)
 
-    vaultFactory.address.should.not.be.empty
-    vaultFactory.address.should.not.equal(helper.zerox)
-
-    await protocol.addContract(key.CNAME_KEYS.VAULT_FACTORY, vaultFactory.address)
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_VAULT_FACTORY))
+    fetchedAddress.should.equal(contracts.vaultFactory.address)
   })
 
   it('a new cover `Compound Finance Cover` was created', async () => {
@@ -124,64 +87,63 @@ describe('Protocol Initialization Stories', () => {
 
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
-    assuranceToken = await deployer.deploy('FakeToken', 'CMP', 'CMP', helper.ether(1000000000))
-
-    const vault = await getVault(coverKey)
-    const assuranceVault = await storeUtil.getAssuranceVaultAddress(store)
     const stakeWithFee = helper.ether(10000)
-    const initialAssuranceAmount = helper.ether(10)
-    const initialLiquidity = helper.ether(10)
+    const initialAssuranceAmount = helper.ether(1000000)
+    const initialLiquidity = helper.ether(4000000)
 
-    await nep.approve(stakingContract.address, stakeWithFee)
-    await assuranceToken.approve(assuranceContract.address, initialAssuranceAmount)
-    await wxDai.approve(cover.address, initialLiquidity)
+    await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
+    await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
+
+    const vault = await composer.vault.getVault(contracts, coverKey)
+    const assuranceVault = await storeUtil.getAssuranceVaultAddress(contracts.store)
 
     previous = {
-      wxDaiBalance: (await wxDai.balanceOf(vault.address)).toString(),
-      assuranceTokenBalance: (await assuranceToken.balanceOf(assuranceVault)).toString()
+      wxDaiBalance: (await contracts.wxDai.balanceOf(vault.address)).toString(),
+      assuranceTokenBalance: (await contracts.assuranceToken.balanceOf(assuranceVault)).toString()
     }
 
-    await cover.addCover(coverKey, info, stakeWithFee, assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
   })
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {
-    const vault = await getVault(coverKey)
-    const balance = await wxDai.balanceOf(vault.address)
+    const vault = await composer.vault.getVault(contracts, coverKey)
+    const balance = await contracts.wxDai.balanceOf(vault.address)
 
-    const expected = helper.add(previous.wxDaiBalance, helper.ether(10))
+    const expected = helper.add(previous.wxDaiBalance, helper.ether(4000000))
     balance.should.equal(expected)
 
     previous.wxDaiBalance = expected
   })
 
   it('corretness rule: assurance token should\'ve been correctly transferred to the assurance vault', async () => {
-    const vault = await storeUtil.getAssuranceVaultAddress(store)
+    const vault = await storeUtil.getAssuranceVaultAddress(contracts.store)
 
-    const balance = await assuranceToken.balanceOf(vault)
+    const balance = await contracts.assuranceToken.balanceOf(vault)
 
-    const expected = helper.add(previous.assuranceTokenBalance, helper.ether(10))
+    const expected = helper.add(previous.assuranceTokenBalance, helper.ether(1000000))
     balance.should.equal(expected)
 
     previous.assuranceTokenBalance = expected
   })
 
   it('xDai liquidity was added again', async () => {
-    const liquidity = helper.ether(1000)
-    const vault = await getVault(coverKey)
+    const liquidity = helper.ether(50000)
+    const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await wxDai.approve(vault.address, liquidity)
+    await contracts.wxDai.approve(vault.address, liquidity)
     await vault.addLiquidity(coverKey, liquidity)
 
-    const expected = helper.add(previous.assuranceTokenBalance, liquidity)
+    const expected = helper.add(previous.wxDaiBalance, liquidity)
 
-    const balance = await wxDai.balanceOf(vault.address)
+    const balance = await contracts.wxDai.balanceOf(vault.address)
     balance.should.equal(expected)
 
     previous.wxDaiBalance = expected
   })
 
   it('correctness rule: pods should match the number of tokens deposited', async () => {
-    const pod = await getVault(coverKey)
+    const pod = await composer.vault.getVault(contracts, coverKey)
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
@@ -190,18 +152,57 @@ describe('Protocol Initialization Stories', () => {
 
   it('assurance token allocation was increased', async () => {
     const [owner] = await ethers.getSigners()
-    const liquidity = helper.ether(10000)
-    const vault = await storeUtil.getAssuranceVaultAddress(store)
+    const liquidity = helper.ether(20000)
+    const vault = await storeUtil.getAssuranceVaultAddress(contracts.store)
 
-    await assuranceToken.approve(assuranceContract.address, liquidity)
-    await assuranceContract.addAssurance(coverKey, owner.address, liquidity)
+    await contracts.assuranceToken.approve(contracts.assuranceContract.address, liquidity)
+    await contracts.assuranceContract.addAssurance(coverKey, owner.address, liquidity)
 
     const expected = helper.add(previous.assuranceTokenBalance, liquidity)
 
-    const balance = await assuranceToken.balanceOf(vault)
+    const balance = await contracts.assuranceToken.balanceOf(vault)
 
     balance.should.equal(expected)
 
     previous.assuranceTokenBalance = expected
+  })
+
+  it('the vault generated a fictional income', async () => {
+    const liquidity = helper.ether(1)
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    // Directly transferring xDai to simulate an income earned from external source(s)
+    await contracts.wxDai.transfer(vault.address, liquidity)
+    // await vault.addLiquidity(coverKey, liquidity)
+
+    const expected = helper.add(previous.wxDaiBalance, liquidity)
+
+    const balance = await contracts.wxDai.balanceOf(vault.address)
+    balance.should.equal(expected)
+
+    previous.wxDaiBalance = expected
+  })
+
+  it('xDai liquidity was added once again', async () => {
+    const liquidity = helper.ether(1000)
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await contracts.wxDai.approve(vault.address, liquidity)
+    await vault.addLiquidity(coverKey, liquidity)
+
+    const expected = helper.add(previous.wxDaiBalance, liquidity)
+
+    const balance = await contracts.wxDai.balanceOf(vault.address)
+    balance.should.equal(expected)
+
+    previous.wxDaiBalance = expected
+  })
+
+  it('correctness rule: pods should now be less than the number of tokens deposited', async () => {
+    const pod = await composer.vault.getVault(contracts, coverKey)
+    const [owner] = await ethers.getSigners()
+
+    const pods = await pod.balanceOf(owner.address)
+    parseInt(pods.toString()).should.be.lessThan(parseInt(previous.wxDaiBalance.toString()))
   })
 })

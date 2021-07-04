@@ -12,6 +12,8 @@ abstract contract Recoverable is Ownable, ReentrancyGuard, Pausable {
   IStore public s;
 
   constructor(IStore store) {
+    require(address(store) != address(0), "Invalid Store");
+
     s = store;
   }
 
@@ -67,9 +69,14 @@ abstract contract Recoverable is Ownable, ReentrancyGuard, Pausable {
    */
   function _mustBeOwnerOrProtoOwner() internal view {
     IProtocol protocol = ProtoUtilV1.getProtocol(s);
-    address protocolOwner = Ownable(address(protocol)).owner();
 
-    require(super._msgSender() == protocolOwner || super._msgSender() == owner(), "Forbidden");
+    if (address(protocol) == address(0)) {
+      require(super._msgSender() == owner(), "Forbidden");
+      return;
+    }
+
+    address protocolOwner = Ownable(address(protocol)).owner();
+    require(super._msgSender() == owner() || super._msgSender() == protocolOwner, "Forbidden");
   }
 
   function _mustBeUnpaused() internal view {

@@ -21,15 +21,22 @@ abstract contract CoverBase is ICover, Recoverable {
    * @dev Constructs this smart contract
    * @param store Provide the address of an eternal storage contract to use.
    * This contract must be a member of the Protocol for write access to the storage
+   *
+   */
+  constructor(IStore store) Recoverable(store) {
+    this;
+  }
+
+  /**
+   * @dev Initializes this contract
    * @param liquidityToken Provide the address of the token this cover will be quoted against.
    * @param liquidityName Enter a description or ENS name of your liquidity token.
    *
    */
-  constructor(
-    IStore store,
-    address liquidityToken,
-    bytes32 liquidityName
-  ) Recoverable(store) {
+  function initialize(address liquidityToken, bytes32 liquidityName) external override {
+    _mustBeOwnerOrProtoMember();
+    require(s.getAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN) == address(0), "Already initialized");
+
     s.setAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN, liquidityToken);
     s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
   }
@@ -42,7 +49,7 @@ abstract contract CoverBase is ICover, Recoverable {
    * @param values Array of uint256 values
    */
   function getCover(bytes32 key)
-    external
+    external override
     view
     returns (
       address coverOwner,

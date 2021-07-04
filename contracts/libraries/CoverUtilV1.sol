@@ -4,6 +4,7 @@ pragma solidity >=0.4.22 <0.9.0;
 import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
+import "../interfaces/IPriceDiscovery.sol";
 import "../interfaces/ICTokenFactory.sol";
 import "../interfaces/ICoverAssurance.sol";
 import "../interfaces/IVault.sol";
@@ -73,9 +74,17 @@ library CoverUtilV1 {
    */
   function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
     require(_getStatus(s, key) != 1, "Invalid cover");
+    IPriceDiscovery discovery = getPriceDiscoveryContract(s);
 
     _values = new uint256[](7);
-    revert("Not implemented");
+
+    _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITMENT, key); // <-- Todo: liquidity commitment should expire as policies expire
+    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+    _values[3] = discovery.getTokenPriceInLiquidityToken(address(s.nepToken()), s.getLiquidityToken(), 1 ether);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
+    _values[5] = discovery.getTokenPriceInLiquidityToken(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key)), s.getLiquidityToken(), 1 ether);
+    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key);
   }
 
   function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 floor, uint256 ceiling) {
@@ -123,29 +132,33 @@ library CoverUtilV1 {
     values[4] = _getClaimable(s, key);
   }
 
+  function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
+    return IPriceDiscovery(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_PRICE_DISCOVERY));
+  }
+
   function getStakingContract(IStore s) public view returns (ICoverStake) {
-    return ICoverStake(ProtoUtilV1.getContract(s, ProtoUtilV1.CNAME_COVER_STAKE));
+    return ICoverStake(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_STAKE));
   }
 
   function getCTokenFactory(IStore s) public view returns (ICTokenFactory) {
-    return ICTokenFactory(ProtoUtilV1.getContract(s, ProtoUtilV1.CNAME_CTOKEN_FACTORY));
+    return ICTokenFactory(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_CTOKEN_FACTORY));
   }
 
   function getPolicyContract(IStore s) public view returns (IPolicy) {
-    return IPolicy(ProtoUtilV1.getContract(s, ProtoUtilV1.CNAME_POLICY));
+    return IPolicy(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_POLICY));
   }
 
   function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
-    return ICoverAssurance(ProtoUtilV1.getContract(s, ProtoUtilV1.CNAME_COVER_ASSURANCE));
+    return ICoverAssurance(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_ASSURANCE));
   }
 
   function getVault(IStore s, bytes32 key) public view returns (IVault) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_COVER_VAULT, key);
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key);
     return IVault(vault);
   }
 
   function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
-    address factory = ProtoUtilV1.getContract(s, ProtoUtilV1.CNAME_VAULT_FACTORY);
+    address factory = ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);
   }
 

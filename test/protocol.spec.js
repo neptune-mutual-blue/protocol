@@ -4,10 +4,7 @@ const BigNumber = require('bignumber.js')
 require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
 const { helper, deployer, key, storeUtil, ipfs, sample } = require('../util')
 
-const encodeKeys = (x, y) => ethers.utils.solidityKeccak256(x, y)
-const toBytes32 = (x) => ethers.utils.formatBytes32String(x)
-
-describe('Constructor', () => {
+describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
   let nep, store, storeKeyUtil, protoUtilV1
@@ -29,11 +26,13 @@ describe('Constructor', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
 
     protocol.address.should.not.be.empty
     protocol.address.should.not.equal(helper.zerox)
@@ -45,11 +44,13 @@ describe('Constructor', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
 
     const sProtocolAddress = await store.getAddress(key.encodeKey(key.NS.CORE))
     sProtocolAddress.should.equal(protocol.address)
@@ -76,50 +77,53 @@ describe('Constructor', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      helper.zerox,
-      nep.address,
-      treasury,
-      assuranceVault
+      helper.zerox
     ).should.be.revertedWith('Invalid Store')
   })
 
   it('should fail when zero address is provided as NEP', async () => {
-    await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries('Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      helper.zerox,
-      treasury,
-      assuranceVault
-    ).should.be.revertedWith('Invalid NEP')
+      store.address
+    )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(helper.zerox, treasury, assuranceVault).should.be.revertedWith('Invalid NEP')
   })
 
   it('should fail when zero address is provided as treasury', async () => {
-    await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries('Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      helper.zerox,
-      assuranceVault
-    ).should.be.revertedWith('Invalid Treasury')
+      store.address
+    )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, helper.zerox, assuranceVault).should.be.revertedWith('Invalid Treasury')
   })
 
   it('should fail when zero address is provided as assurance vault', async () => {
-    await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries('Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      helper.zerox
-    ).should.be.revertedWith('Invalid Vault')
+      store.address
+    )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, helper.zerox).should.be.revertedWith('Invalid Vault')
   })
 })
 
@@ -143,25 +147,25 @@ describe('Adding a New Protocol Contract', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
   })
 
   it('should correctly add a new contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.encodeKey(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
   })
 
   it('should correctly set storage values', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(toBytes32(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
 
-    const k = encodeKeys(['bytes32', 'bytes32'], [toBytes32('proto:contracts'), toBytes32(key.NS.COVER)])
-
-    const sContractAddress = await store.getAddress(k)
+    const sContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
 
     sContractAddress.should.equal(fakeCover)
   })
@@ -187,45 +191,46 @@ describe('Upgrading Protocol Contract(s)', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
   })
 
   it('should correctly upgrade a contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.encodeKey(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.encodeKey(key.NS.COVER), fakeCover, fakeCover2)
+    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), fakeCover, fakeCover2)
   })
 
   it('should fail when the previous address is incorrect', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.encodeKey(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.encodeKey(key.NS.COVER), helper.randomAddress(), fakeCover2)
+    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), helper.randomAddress(), fakeCover2)
       .should.be.revertedWith('Not a protocol member')
   })
 
   it('should correctly set storage values', async () => {
     const cover = helper.randomAddress()
-    await protocol.addContract(toBytes32(key.NS.COVER), cover)
+    await protocol.addContract(key.toBytes32(key.NS.COVER), cover)
 
-    const k = encodeKeys(['bytes32', 'bytes32'], [toBytes32('proto:contracts'), toBytes32(key.NS.COVER)])
-    let sContractAddress = await store.getAddress(k)
+    let sContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
 
     sContractAddress.should.equal(cover)
 
     // ------- UPGRADE CONTRACT -------
 
     const cover2 = helper.randomAddress()
-    await protocol.upgradeContract(toBytes32(key.NS.COVER), cover, cover2)
+    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), cover, cover2)
 
-    sContractAddress = await store.getAddress(k)
+    sContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
     sContractAddress.should.equal(cover2)
   })
 })
@@ -250,11 +255,13 @@ describe('Adding a New Protocol Member', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
   })
 
   it('should correctly add a new member', async () => {
@@ -272,8 +279,7 @@ describe('Adding a New Protocol Member', () => {
     const fakeMember = helper.randomAddress()
     await protocol.addMember(fakeMember)
 
-    const k = encodeKeys(['bytes32', 'address'], [toBytes32('proto:members'), fakeMember])
-    const isMember = await store.getBool(k)
+    const isMember = await store.getBool(key.qualifyMember(fakeMember))
     isMember.should.be.true
   })
 })
@@ -298,11 +304,13 @@ describe('Removing Protocol Member(s)', () => {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
       },
-      store.address,
-      nep.address,
-      treasury,
-      assuranceVault
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(nep.address, treasury, assuranceVault)
   })
 
   it('should correctly remove a member', async () => {
@@ -315,14 +323,12 @@ describe('Removing Protocol Member(s)', () => {
     const fakeMember = helper.randomAddress()
     await protocol.addMember(fakeMember)
 
-    let k = encodeKeys(['bytes32', 'address'], [toBytes32('proto:members'), fakeMember])
-    let isMember = await store.getBool(k)
+    let isMember = await store.getBool(key.qualifyMember(fakeMember))
     isMember.should.be.true
 
     await protocol.removeMember(fakeMember)
 
-    k = encodeKeys(['bytes32', 'address'], [toBytes32('proto:members'), fakeMember])
-    isMember = await store.getBool(k)
+    isMember = await store.getBool(key.qualifyMember(fakeMember))
     isMember.should.be.false
   })
 })

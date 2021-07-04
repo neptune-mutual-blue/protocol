@@ -21,14 +21,8 @@ contract Cover is CoverBase {
   /**
    * @dev Constructs this contract
    * @param store Enter the store
-   * @param liquidityToken Enter the stable liquidity token to use when creating covers
-   * @param liquidityName Provide a name of the `liquidityToken`. Example: `wxDai`, `USD Coin`, or `Binance Pegged USD`.
    */
-  constructor(
-    IStore store,
-    address liquidityToken,
-    bytes32 liquidityName
-  ) CoverBase(store, liquidityToken, liquidityName) {
+  constructor(IStore store) CoverBase(store) {
     this;
   }
 
@@ -39,7 +33,7 @@ contract Cover is CoverBase {
    * @param key Enter the cover key
    * @param info Enter a new IPFS URL to update
    */
-  function updateCover(bytes32 key, bytes32 info) external nonReentrant {
+  function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeValidCover(key); // Ensures the key is valid cover
     s.mustBeCoverOwner(key, super._msgSender(), owner()); // Ensures the sender is either the owner or cover owner
@@ -87,7 +81,7 @@ contract Cover is CoverBase {
     address assuranceToken,
     uint256 initialAssuranceAmount,
     uint256 initialLiquidity
-  ) external nonReentrant {
+  ) external override nonReentrant {
     _mustBeUnpaused(); // Ensures the contract isn't paused
 
     // First validate the information entered
@@ -141,13 +135,16 @@ contract Cover is CoverBase {
 
     // Set assurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key, assuranceToken);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE, key, fee);
 
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_VAULT, key, deployed);
+
+    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key, deployed);
+    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
   }
 
   /**

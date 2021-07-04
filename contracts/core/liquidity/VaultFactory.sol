@@ -24,7 +24,7 @@ contract VaultFactory is IVaultFactory {
    * @param key Enter the cover key related to this Vault instance
    */
   function deploy(IStore s, bytes32 key) external override returns (address addr) {
-    s.mustBeExactContract(ProtoUtilV1.CNAME_COVER, msg.sender); // Ensure the caller is the latest cover contract
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER, msg.sender); // Ensure the caller is the latest cover contract
 
     (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, s.getLiquidityToken());
 
@@ -42,6 +42,8 @@ contract VaultFactory is IVaultFactory {
         revert(0, 0)
       }
     }
+
+    emit VaultDeployed(key, addr);
   }
 
   /**
@@ -63,7 +65,7 @@ contract VaultFactory is IVaultFactory {
     bytes32 key,
     address liquidityToken
   ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
+    salt = abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
     bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
   }
 }

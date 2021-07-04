@@ -17,15 +17,20 @@ library ProtoUtilV1 {
   bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_COVER = "proto:cover";
   bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
-  bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurancetoken";
+  bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
+  bytes32 public constant NS_COVER_ASSURANCE_WEIGHT = "proto:cover:assurance:weight";
   bytes32 public constant NS_COVER_CLAIMABLE = "proto:cover:claimable";
   bytes32 public constant NS_COVER_FEE = "proto:cover:fee";
   bytes32 public constant NS_COVER_INFO = "proto:cover:info";
   bytes32 public constant NS_COVER_LIQUIDITY = "proto:cover:liquidity";
+  bytes32 public constant NS_COVER_LIQUIDITY_COMMITMENT = "proto:cover:liquidity:commitment";
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "proto:cover:liquidityName";
   bytes32 public constant NS_COVER_LIQUIDITY_TOKEN = "proto:cover:liquidityToken";
   bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "proto:cover:liquidity:release";
   bytes32 public constant NS_COVER_OWNER = "proto:cover:owner";
+  bytes32 public constant NS_COVER_POLICY = "proto:cover:policy";
+  bytes32 public constant NS_COVER_POLICY_ADMIN = "proto:cover:policy:admin";
+  bytes32 public constant NS_COVER_POLICY_MANAGER = "proto:cover:policy:manager";
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "proto:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "proto:cover:policy:rate:ceiling";
   bytes32 public constant NS_COVER_PROVISION = "proto:cover:provision";
@@ -33,8 +38,11 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_STAKE_OWNED = "proto:cover:stake:owned";
   bytes32 public constant NS_COVER_STATUS = "proto:cover:status";
   bytes32 public constant NS_COVER_VAULT = "proto:cover:vault";
-  bytes32 public constant NS_COVER_CTOKEN = "proto:cover:cToken";
+  bytes32 public constant NS_COVER_VAULT_FACTORY = "proto:cover:vault:factory";
+  bytes32 public constant NS_COVER_CTOKEN = "proto:cover:ctoken";
+  bytes32 public constant NS_COVER_CTOKEN_FACTORY = "proto:cover:ctoken:factory";
   bytes32 public constant NS_TREASURY = "proto:core:treasury";
+  bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
 
   bytes32 public constant NS_SETUP_NEP = "proto:setup:nep";
   bytes32 public constant NS_SETUP_COVER_FEE = "proto:setup:cover:fee";
@@ -45,7 +53,9 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_PROTOCOL = "Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
+  bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
   bytes32 public constant CNAME_POLICY_MANAGER = "PolicyManager";
+  bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CTOKEN_FACTORY = "cTokenFactory";

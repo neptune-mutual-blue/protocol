@@ -12,18 +12,18 @@ contract Protocol is IProtocol, Recoverable {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  event ContractAdded(bytes32 namespace, address contractAddress);
-  event ContractUpgraded(bytes32 namespace, address indexed previous, address indexed current);
-  event MemberAdded(address member);
-  event MemberRemoved(address member);
+  constructor(IStore store) Recoverable(store) {
+    this;
+  }
 
-  constructor(
-    IStore store,
+  function initialize(
     address nep,
     address treasury,
     address assuranceVault
-  ) Recoverable(store) {
-    require(address(store) != address(0), "Invalid Store");
+  ) external {
+    _mustBeOwnerOrProtoOwner();
+
+    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NEP) == address(0), "Already initialized");
     require(nep != address(0), "Invalid NEP");
     require(treasury != address(0), "Invalid Treasury");
     require(assuranceVault != address(0), "Invalid Vault");
@@ -40,7 +40,7 @@ contract Protocol is IProtocol, Recoverable {
     bytes32 namespace,
     address previous,
     address current
-  ) external onlyOwner {
+  ) external override onlyOwner {
     _mustBeUnpaused(); // Ensures the contract isn't paused
     s.mustBeProtocolMember(previous); // Ensures the given address is a protocol member
 
@@ -50,21 +50,21 @@ contract Protocol is IProtocol, Recoverable {
     emit ContractUpgraded(namespace, previous, current);
   }
 
-  function addContract(bytes32 namespace, address contractAddress) external onlyOwner {
+  function addContract(bytes32 namespace, address contractAddress) external override onlyOwner {
     _mustBeUnpaused(); // Ensures the contract isn't paused
 
     _addContract(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);
   }
 
-  function removeMember(address member) external onlyOwner {
+  function removeMember(address member) external override onlyOwner {
     _mustBeUnpaused(); // Ensures the contract isn't paused
 
     _removeMember(member);
     emit MemberRemoved(member);
   }
 
-  function addMember(address member) external onlyOwner {
+  function addMember(address member) external override onlyOwner {
     _mustBeUnpaused(); // Ensures the contract isn't paused
 
     _addMember(member);
