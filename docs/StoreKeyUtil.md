@@ -22,6 +22,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [setBoolByKeys(IStore s, bytes32 key, address account, bool value)](#setboolbykeys)
 - [setAddressByKey(IStore s, bytes32 key, address value)](#setaddressbykey)
 - [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#setaddressbykeys)
+- [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#setaddressbykeys)
 - [deleteUintByKey(IStore s, bytes32 key)](#deleteuintbykey)
 - [deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2)](#deleteuintbykeys)
 - [deleteBytes32ByKey(IStore s, bytes32 key)](#deletebytes32bykey)
@@ -41,6 +42,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [getBoolByKeys(IStore s, bytes32 key, address account)](#getboolbykeys)
 - [getAddressByKey(IStore s, bytes32 key)](#getaddressbykey)
 - [getAddressByKeys(IStore s, bytes32 key1, bytes32 key2)](#getaddressbykeys)
+- [getAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)](#getaddressbykeys)
 
 ### setUintByKey
 
@@ -277,6 +279,22 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value) e
 | s | IStore |  | 
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
+| value | address |  | 
+
+### setAddressByKeys
+
+```js
+function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
 | value | address |  | 
 
 ### deleteUintByKey
@@ -548,6 +566,22 @@ returns(address)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
+### getAddressByKeys
+
+```js
+function getAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
 ## Contracts
 
 * [Address](Address.md)
@@ -571,6 +605,7 @@ returns(address)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -578,6 +613,8 @@ returns(address)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -591,6 +628,7 @@ returns(address)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

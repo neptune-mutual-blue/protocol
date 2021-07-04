@@ -8,19 +8,13 @@ View Source: [contracts/core/policy/Policy.sol](../contracts/core/policy/Policy.
 
 The policy contract enables you to a purchase cover
 
-**Events**
-
-```js
-event PolicyRateSet(uint256  floor, uint256  ceiling);
-event PolicyRateSet(bytes32  key, uint256  floor, uint256  ceiling);
-```
-
 ## Functions
 
 - [constructor(IStore store)](#)
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)
+- [getCToken(bytes32 key, uint256 coverDuration)](#getctoken)
 - [_getCTokenOrDeploy(bytes32 key, uint256 coverDuration)](#_getctokenordeploy)
-- [_getExpiryDate(uint256 today, uint256 coverDuration)](#_getexpirydate)
+- [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
 - [getCommitment(bytes32 )](#getcommitment)
 - [getCoverable(bytes32 )](#getcoverable)
 - [_getCoverFeeRate(uint256 floor, uint256 ceiling, uint256 coverRatio)](#_getcoverfeerate)
@@ -53,6 +47,7 @@ Purchase cover for the specified amount. <br /> <br />
 
 ```js
 function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover) external nonpayable nonReentrant 
+returns(address)
 ```
 
 **Arguments**
@@ -62,6 +57,20 @@ function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover
 | key | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+
+### getCToken
+
+```js
+function getCToken(bytes32 key, uint256 coverDuration) public view
+returns(cToken address, expiryDate uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| coverDuration | uint256 |  | 
 
 ### _getCTokenOrDeploy
 
@@ -79,12 +88,12 @@ returns(contract ICToken)
 | key | bytes32 | Enter the cover key | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 
-### _getExpiryDate
+### getExpiryDate
 
 Gets the expiry date based on cover duration
 
 ```js
-function _getExpiryDate(uint256 today, uint256 coverDuration) private pure
+function getExpiryDate(uint256 today, uint256 coverDuration) public pure
 returns(uint256)
 ```
 
@@ -255,6 +264,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -262,6 +272,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -275,6 +287,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

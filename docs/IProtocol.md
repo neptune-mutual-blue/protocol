@@ -7,7 +7,72 @@ View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProto
 
 **IProtocol**
 
+**Events**
+
+```js
+event ContractAdded(bytes32  namespace, address  contractAddress);
+event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
+event MemberAdded(address  member);
+event MemberRemoved(address  member);
+```
+
 ## Functions
+
+- [addContract(bytes32 namespace, address contractAddress)](#addcontract)
+- [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
+- [addMember(address member)](#addmember)
+- [removeMember(address member)](#removemember)
+
+### addContract
+
+```js
+function addContract(bytes32 namespace, address contractAddress) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| contractAddress | address |  | 
+
+### upgradeContract
+
+```js
+function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| previous | address |  | 
+| current | address |  | 
+
+### addMember
+
+```js
+function addMember(address member) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| member | address |  | 
+
+### removeMember
+
+```js
+function removeMember(address member) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| member | address |  | 
 
 ## Contracts
 
@@ -32,6 +97,7 @@ View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProto
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -39,6 +105,8 @@ View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProto
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -52,6 +120,7 @@ View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProto
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

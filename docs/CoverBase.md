@@ -9,7 +9,8 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 
 ## Functions
 
-- [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
+- [constructor(IStore store)](#)
+- [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
 - [getCover(bytes32 key)](#getcover)
 - [version()](#version)
 - [getName()](#getname)
@@ -19,7 +20,7 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 Constructs this smart contract
 
 ```js
-function (IStore store, address liquidityToken, bytes32 liquidityName) internal nonpayable Recoverable 
+function (IStore store) internal nonpayable Recoverable 
 ```
 
 **Arguments**
@@ -27,6 +28,19 @@ function (IStore store, address liquidityToken, bytes32 liquidityName) internal 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore | Provide the address of an eternal storage contract to use.  This contract must be a member of the Protocol for write access to the storage | 
+
+### initialize
+
+Initializes this contract
+
+```js
+function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 | liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
 | liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
@@ -96,6 +110,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -103,6 +118,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -116,6 +133,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

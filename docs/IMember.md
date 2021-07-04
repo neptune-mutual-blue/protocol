@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [CoverProvision](CoverProvision.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IPolicy](IPolicy.md), [IProtocol](IProtocol.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md)**
+**↘ Derived Contracts: [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
 
 **IMember**
 
@@ -62,6 +62,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -69,6 +70,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -82,6 +85,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

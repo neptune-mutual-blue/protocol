@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [Ownable](Ownable.md), [ReentrancyGuard](ReentrancyGuard.md), [Pausable](Pausable.md)**
-**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [cToken](cToken.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [Protocol](Protocol.md), [VaultPod](VaultPod.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [cToken](cToken.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Protocol](Protocol.md), [VaultPod](VaultPod.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -149,6 +149,7 @@ function _mustBeUnpaused() internal view
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -156,6 +157,8 @@ function _mustBeUnpaused() internal view
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -169,6 +172,7 @@ function _mustBeUnpaused() internal view
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

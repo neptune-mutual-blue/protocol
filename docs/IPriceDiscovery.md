@@ -1,55 +1,30 @@
-# FakeToken.sol
+# IPriceDiscovery.sol
 
-View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
+View Source: [contracts/interfaces/IPriceDiscovery.sol](../contracts/interfaces/IPriceDiscovery.sol)
 
-**↗ Extends: [ERC20](ERC20.md), [Ownable](Ownable.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [PriceDiscovery](PriceDiscovery.md)**
 
-**FakeToken**
+**IPriceDiscovery**
 
 ## Functions
 
-- [constructor(string name, string symbol, uint256 supply)](#)
-- [mint(address account, uint256 amount)](#mint)
-- [burn(uint256 amount)](#burn)
+- [getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier)](#gettokenpriceinliquiditytoken)
 
-### 
+### getTokenPriceInLiquidityToken
 
 ```js
-function (string name, string symbol, uint256 supply) public nonpayable ERC20 
+function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| name | string |  | 
-| symbol | string |  | 
-| supply | uint256 |  | 
-
-### mint
-
-```js
-function mint(address account, uint256 amount) external nonpayable onlyOwner 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| account | address |  | 
-| amount | uint256 |  | 
-
-### burn
-
-```js
-function burn(uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| amount | uint256 |  | 
+| token | address |  | 
+| liquidityToken | address |  | 
+| multiplier | uint256 |  | 
 
 ## Contracts
 

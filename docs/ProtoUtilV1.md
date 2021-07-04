@@ -16,14 +16,19 @@ bytes32 public constant NS_CORE;
 bytes32 public constant NS_COVER;
 bytes32 public constant NS_COVER_ASSURANCE;
 bytes32 public constant NS_COVER_ASSURANCE_TOKEN;
+bytes32 public constant NS_COVER_ASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_CLAIMABLE;
 bytes32 public constant NS_COVER_FEE;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_LIQUIDITY;
+bytes32 public constant NS_COVER_LIQUIDITY_COMMITMENT;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
 bytes32 public constant NS_COVER_LIQUIDITY_TOKEN;
 bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
 bytes32 public constant NS_COVER_OWNER;
+bytes32 public constant NS_COVER_POLICY;
+bytes32 public constant NS_COVER_POLICY_ADMIN;
+bytes32 public constant NS_COVER_POLICY_MANAGER;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
 bytes32 public constant NS_COVER_PROVISION;
@@ -31,8 +36,11 @@ bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
 bytes32 public constant NS_COVER_VAULT;
+bytes32 public constant NS_COVER_VAULT_FACTORY;
 bytes32 public constant NS_COVER_CTOKEN;
+bytes32 public constant NS_COVER_CTOKEN_FACTORY;
 bytes32 public constant NS_TREASURY;
+bytes32 public constant NS_PRICE_DISCOVERY;
 bytes32 public constant NS_SETUP_NEP;
 bytes32 public constant NS_SETUP_COVER_FEE;
 bytes32 public constant NS_SETUP_MIN_STAKE;
@@ -40,7 +48,9 @@ bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD;
 bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
+bytes32 public constant CNAME_POLICY_ADMIN;
 bytes32 public constant CNAME_POLICY_MANAGER;
+bytes32 public constant CNAME_PRICE_DISCOVERY;
 bytes32 public constant CNAME_COVER;
 bytes32 public constant CNAME_VAULT_FACTORY;
 bytes32 public constant CNAME_CTOKEN_FACTORY;
@@ -324,6 +334,7 @@ returns(contract IProtocol)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -331,6 +342,8 @@ returns(contract IProtocol)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -344,6 +357,7 @@ returns(contract IProtocol)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

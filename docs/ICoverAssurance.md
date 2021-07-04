@@ -7,12 +7,21 @@ View Source: [contracts/interfaces/ICoverAssurance.sol](../contracts/interfaces/
 
 **ICoverAssurance**
 
+**Events**
+
+```js
+event AssuranceAdded(bytes32  key, uint256  amount);
+```
+
 ## Functions
 
 - [addAssurance(bytes32 key, address account, uint256 amount)](#addassurance)
+- [setWeight(bytes32 key, uint256 weight)](#setweight)
 - [getAssurance(bytes32 key)](#getassurance)
 
 ### addAssurance
+
+Adds assurance to the specified cover contract
 
 ```js
 function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable
@@ -22,11 +31,26 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key | 
 | account | address |  | 
-| amount | uint256 |  | 
+| amount | uint256 | Enter the amount you would like to supply | 
+
+### setWeight
+
+```js
+function setWeight(bytes32 key, uint256 weight) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| weight | uint256 |  | 
 
 ### getAssurance
+
+Gets the assurance amount of the specified cover contract
 
 ```js
 function getAssurance(bytes32 key) external nonpayable
@@ -37,7 +61,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the cover key | 
 
 ## Contracts
 
@@ -62,6 +86,7 @@ returns(uint256)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -69,6 +94,8 @@ returns(uint256)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -82,6 +109,7 @@ returns(uint256)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

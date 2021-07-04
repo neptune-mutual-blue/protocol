@@ -7,27 +7,39 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 
 **IVault**
 
+**Events**
+
+```js
+event LiquidityAdded(bytes32  key, uint256  amount);
+event LiquidityRemoved(bytes32  key, uint256  amount);
+event PodsMinted(address indexed account, uint256  podsMinted, address indexed vault, uint256  liquidityAdded);
+```
+
 ## Functions
 
-- [addLiquidityInternal(bytes32 key, address account, uint256 amount)](#addliquidityinternal)
+- [addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)](#addliquidityinternal)
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
 
 ### addLiquidityInternal
 
+Adds liquidity to the specified cover contract
+
 ```js
-function addLiquidityInternal(bytes32 key, address account, uint256 amount) external nonpayable
+function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| account | address | Specify the account on behalf of which the liquidity is being added. | 
+| amount | uint256 | Enter the amount of liquidity token to supply. | 
 
 ### addLiquidity
+
+Adds liquidity to the specified cover contract
 
 ```js
 function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
@@ -37,10 +49,12 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| amount | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| amount | uint256 | Enter the amount of liquidity token to supply. | 
 
 ### removeLiquidity
+
+Removes liquidity from the specified cover contract
 
 ```js
 function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
@@ -50,8 +64,8 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| amount | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| amount | uint256 | Enter the amount of liquidity token to remove. | 
 
 ## Contracts
 
@@ -76,6 +90,7 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -83,6 +98,8 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -96,6 +113,7 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

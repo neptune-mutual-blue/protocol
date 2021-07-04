@@ -2,25 +2,18 @@
 
 View Source: [contracts/core/policy/PolicyAdmin.sol](../contracts/core/policy/PolicyAdmin.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IPolicyAdmin](IPolicyAdmin.md), [Recoverable](Recoverable.md)**
 
 **PolicyAdmin**
 
 The policy admin contract enables the owner (governance)
  to set the policy rate and fee info.
 
-**Events**
-
-```js
-event PolicyRateSet(uint256  floor, uint256  ceiling);
-event CoverPolicyRateSet(bytes32  key, uint256  floor, uint256  ceiling);
-```
-
 ## Functions
 
 - [constructor(IStore store)](#)
 - [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
-- [setPolicyRates(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyrates)
+- [setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
 - [getPolicyRates(bytes32 key)](#getpolicyrates)
 - [version()](#version)
 - [getName()](#getname)
@@ -54,12 +47,12 @@ function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
 | floor | uint256 | The lowest cover fee rate fallback | 
 | ceiling | uint256 | The highest cover fee rate fallback | 
 
-### setPolicyRates
+### setPolicyRatesByKey
 
 Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
 
 ```js
-function setPolicyRates(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable
+function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable
 ```
 
 **Arguments**
@@ -136,6 +129,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -143,6 +137,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -156,6 +152,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

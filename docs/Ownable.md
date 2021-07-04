@@ -3,7 +3,7 @@
 View Source: [openzeppelin-solidity/contracts/access/Ownable.sol](../openzeppelin-solidity/contracts/access/Ownable.sol)
 
 **↗ Extends: [Context](Context.md)**
-**↘ Derived Contracts: [Recoverable](Recoverable.md), [StoreBase](StoreBase.md)**
+**↘ Derived Contracts: [FakeToken](FakeToken.md), [Recoverable](Recoverable.md), [StoreBase](StoreBase.md)**
 
 **Ownable**
 
@@ -135,6 +135,7 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -142,6 +143,8 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -155,6 +158,7 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

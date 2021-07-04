@@ -6,18 +6,10 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 
 **Protocol**
 
-**Events**
-
-```js
-event ContractAdded(bytes32  namespace, address  contractAddress);
-event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
-event MemberAdded(address  member);
-event MemberRemoved(address  member);
-```
-
 ## Functions
 
-- [constructor(IStore store, address nep, address treasury, address assuranceVault)](#)
+- [constructor(IStore store)](#)
+- [initialize(address nep, address treasury, address assuranceVault)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [removeMember(address member)](#removemember)
@@ -32,7 +24,7 @@ event MemberRemoved(address  member);
 ### 
 
 ```js
-function (IStore store, address nep, address treasury, address assuranceVault) public nonpayable Recoverable 
+function (IStore store) public nonpayable Recoverable 
 ```
 
 **Arguments**
@@ -40,6 +32,17 @@ function (IStore store, address nep, address treasury, address assuranceVault) p
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore |  | 
+
+### initialize
+
+```js
+function initialize(address nep, address treasury, address assuranceVault) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 | nep | address |  | 
 | treasury | address |  | 
 | assuranceVault | address |  | 
@@ -196,6 +199,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -203,6 +207,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -216,6 +222,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

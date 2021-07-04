@@ -1,55 +1,70 @@
-# FakeToken.sol
+# IPolicyAdmin.sol
 
-View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
+View Source: [contracts/interfaces/IPolicyAdmin.sol](../contracts/interfaces/IPolicyAdmin.sol)
 
-**↗ Extends: [ERC20](ERC20.md), [Ownable](Ownable.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [PolicyAdmin](PolicyAdmin.md)**
 
-**FakeToken**
+**IPolicyAdmin**
+
+**Events**
+
+```js
+event PolicyRateSet(uint256  floor, uint256  ceiling);
+event CoverPolicyRateSet(bytes32  key, uint256  floor, uint256  ceiling);
+```
 
 ## Functions
 
-- [constructor(string name, string symbol, uint256 supply)](#)
-- [mint(address account, uint256 amount)](#mint)
-- [burn(uint256 amount)](#burn)
+- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
+- [setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
+- [getPolicyRates(bytes32 key)](#getpolicyrates)
 
-### 
+### setPolicyRates
+
+Sets policy rates. This feature is only accessible by owner or protocol owner.
 
 ```js
-function (string name, string symbol, uint256 supply) public nonpayable ERC20 
+function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| name | string |  | 
-| symbol | string |  | 
-| supply | uint256 |  | 
+| floor | uint256 | The lowest cover fee rate fallback | 
+| ceiling | uint256 | The highest cover fee rate fallback | 
 
-### mint
+### setPolicyRatesByKey
+
+Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
 
 ```js
-function mint(address account, uint256 amount) external nonpayable onlyOwner 
+function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address |  | 
-| amount | uint256 |  | 
+| key | bytes32 |  | 
+| floor | uint256 | The lowest cover fee rate for this cover | 
+| ceiling | uint256 | The highest cover fee rate for this cover | 
 
-### burn
+### getPolicyRates
+
+Gets the cover policy rates for the given cover key
 
 ```js
-function burn(uint256 amount) external nonpayable
+function getPolicyRates(bytes32 key) external view
+returns(floor uint256, ceiling uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| amount | uint256 |  | 
+| key | bytes32 |  | 
 
 ## Contracts
 

@@ -16,6 +16,7 @@ View Source: [contracts/libraries/CoverUtilV1.sol](../contracts/libraries/CoverU
 - [getStake(IStore s, bytes32 key)](#getstake)
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
+- [getPriceDiscoveryContract(IStore s)](#getpricediscoverycontract)
 - [getStakingContract(IStore s)](#getstakingcontract)
 - [getCTokenFactory(IStore s)](#getctokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
@@ -179,6 +180,19 @@ returns(owner address, info bytes32, values uint256[])
 | s | IStore |  | 
 | key | bytes32 |  | 
 
+### getPriceDiscoveryContract
+
+```js
+function getPriceDiscoveryContract(IStore s) public view
+returns(contract IPriceDiscovery)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
 ### getStakingContract
 
 ```js
@@ -323,6 +337,7 @@ returns(uint256)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -330,6 +345,8 @@ returns(uint256)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -343,6 +360,7 @@ returns(uint256)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

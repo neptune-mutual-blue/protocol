@@ -14,14 +14,6 @@ When you create a new cover, you have to specify the amount of
  or similar terms. Even when there are no duplicate contract, a higher stake
  would normally imply a better cover pool commitment.
 
-**Events**
-
-```js
-event StakeAdded(bytes32  key, uint256  amount);
-event StakeRemoved(bytes32  key, uint256  amount);
-event FeeBurned(bytes32  key, uint256  amount);
-```
-
 ## Functions
 
 - [constructor(IStore store)](#)
@@ -171,6 +163,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -178,6 +171,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -191,6 +186,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

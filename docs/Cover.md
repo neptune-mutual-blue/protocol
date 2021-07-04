@@ -10,7 +10,7 @@ The cover contract facilitates you create and update covers
 
 ## Functions
 
-- [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
+- [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
 - [_addCover(bytes32 key, bytes32 info, uint256 fee, address assuranceToken)](#_addcover)
@@ -21,7 +21,7 @@ The cover contract facilitates you create and update covers
 Constructs this contract
 
 ```js
-function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable CoverBase 
+function (IStore store) public nonpayable CoverBase 
 ```
 
 **Arguments**
@@ -29,8 +29,6 @@ function (IStore store, address liquidityToken, bytes32 liquidityName) public no
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore | Enter the store | 
-| liquidityToken | address | Enter the stable liquidity token to use when creating covers | 
-| liquidityName | bytes32 | Provide a name of the `liquidityToken`. Example: `wxDai`, `USD Coin`, or `Binance Pegged USD`. | 
 
 ### updateCover
 
@@ -136,6 +134,7 @@ Returns fee required to create a new cover
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -143,6 +142,8 @@ Returns fee required to create a new cover
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -156,6 +157,7 @@ Returns fee required to create a new cover
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

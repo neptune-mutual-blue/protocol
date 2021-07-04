@@ -7,6 +7,12 @@ View Source: [contracts/interfaces/ICTokenFactory.sol](../contracts/interfaces/I
 
 **ICTokenFactory**
 
+**Events**
+
+```js
+event CTokenDeployed(bytes32 indexed key, address  cToken, uint256  expiryDate);
+```
+
 ## Functions
 
 - [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
@@ -49,6 +55,7 @@ returns(address)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -56,6 +63,8 @@ returns(address)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -69,6 +78,7 @@ returns(address)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

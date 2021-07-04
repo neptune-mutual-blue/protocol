@@ -50,7 +50,7 @@ The cover contract facilitates you create and update covers
 
 ## Functions
 
-- [constructor(IStore store, address liquidityToken, bytes32 liquidityName)](#)
+- [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [addCover(bytes32 key, bytes32 info, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
 - [_addCover(bytes32 key, bytes32 info, uint256 fee, address assuranceToken)](#_addcover)
@@ -61,7 +61,7 @@ The cover contract facilitates you create and update covers
 Constructs this contract
 
 ```js
-function (IStore store, address liquidityToken, bytes32 liquidityName) public nonpayable CoverBase 
+function (IStore store) public nonpayable CoverBase 
 ```
 
 **Arguments**
@@ -69,8 +69,6 @@ function (IStore store, address liquidityToken, bytes32 liquidityName) public no
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore | Enter the store | 
-| liquidityToken | address | Enter the stable liquidity token to use when creating covers | 
-| liquidityName | bytes32 | Provide a name of the `liquidityToken`. Example: `wxDai`, `USD Coin`, or `Binance Pegged USD`. | 
 
 ### updateCover
 
@@ -176,6 +174,7 @@ Returns fee required to create a new cover
 * [ICommission](docs/ICommission.md)
 * [ICover](docs/ICover.md)
 * [ICoverAssurance](docs/ICoverAssurance.md)
+* [ICoverProvision](docs/ICoverProvision.md)
 * [ICoverStake](docs/ICoverStake.md)
 * [ICToken](docs/ICToken.md)
 * [ICTokenFactory](docs/ICTokenFactory.md)
@@ -183,6 +182,8 @@ Returns fee required to create a new cover
 * [IERC20Metadata](docs/IERC20Metadata.md)
 * [IMember](docs/IMember.md)
 * [IPolicy](docs/IPolicy.md)
+* [IPolicyAdmin](docs/IPolicyAdmin.md)
+* [IPriceDiscovery](docs/IPriceDiscovery.md)
 * [IProtocol](docs/IProtocol.md)
 * [IStore](docs/IStore.md)
 * [IVault](docs/IVault.md)
@@ -196,6 +197,7 @@ Returns fee required to create a new cover
 * [Policy](docs/Policy.md)
 * [PolicyAdmin](docs/PolicyAdmin.md)
 * [PolicyManager](docs/PolicyManager.md)
+* [PriceDiscovery](docs/PriceDiscovery.md)
 * [Protocol](docs/Protocol.md)
 * [ProtoUtilV1](docs/ProtoUtilV1.md)
 * [Recoverable](docs/Recoverable.md)

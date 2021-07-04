@@ -16,13 +16,6 @@ Liquidity providers can earn fees by adding stablecoin liquidity
  - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NEP provision.
  - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `assurance token` allocation.
 
-**Events**
-
-```js
-event LiquidityAdded(bytes32  key, uint256  amount);
-event LiquidityRemoved(bytes32  key, uint256  amount);
-```
-
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
@@ -161,6 +154,7 @@ returns(bytes32)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -168,6 +162,8 @@ returns(bytes32)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -181,6 +177,7 @@ returns(bytes32)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

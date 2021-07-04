@@ -7,13 +7,40 @@ View Source: [contracts/interfaces/ICoverStake.sol](../contracts/interfaces/ICov
 
 **ICoverStake**
 
+**Events**
+
+```js
+event StakeAdded(bytes32  key, uint256  amount);
+event StakeRemoved(bytes32  key, uint256  amount);
+event FeeBurned(bytes32  key, uint256  amount);
+```
+
 ## Functions
 
+- [increaseStake(bytes32 key, address account, uint256 amount, uint256 fee)](#increasestake)
 - [decreaseStake(bytes32 key, address account, uint256 amount)](#decreasestake)
-- [increaseStake(bytes32 key, address account, uint256 amount, uint256 fees)](#increasestake)
 - [stakeOf(bytes32 key, address account)](#stakeof)
 
+### increaseStake
+
+Increase the stake of the given cover pool
+
+```js
+function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key | 
+| account | address | Enter the account from where the NEP tokens will be transferred | 
+| amount | uint256 | Enter the amount of stake | 
+| fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
+
 ### decreaseStake
+
+Decreases the stake from the given cover pool
 
 ```js
 function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable
@@ -23,38 +50,29 @@ function decreaseStake(bytes32 key, address account, uint256 amount) external no
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
-
-### increaseStake
-
-```js
-function increaseStake(bytes32 key, address account, uint256 amount, uint256 fees) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
-| fees | uint256 |  | 
+| key | bytes32 | Enter the cover key | 
+| account | address | Enter the account to decrease the stake of | 
+| amount | uint256 | Enter the amount of stake to decrease | 
 
 ### stakeOf
+
+Gets the stake of an account for the given cover key
 
 ```js
 function stakeOf(bytes32 key, address account) external view
 returns(uint256)
 ```
 
+**Returns**
+
+Returns the total stake of the specified account on the given cover key
+
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
+| key | bytes32 | Enter the cover key | 
+| account | address | Specify the account to obtain the stake of | 
 
 ## Contracts
 
@@ -79,6 +97,7 @@ returns(uint256)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
@@ -86,6 +105,8 @@ returns(uint256)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
@@ -99,6 +120,7 @@ returns(uint256)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)

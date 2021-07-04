@@ -1,39 +1,24 @@
-# NEP Cover Provision (CoverProvision.sol)
+# ICoverProvision.sol
 
-View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
+View Source: [contracts/interfaces/ICoverProvision.sol](../contracts/interfaces/ICoverProvision.sol)
 
-**↗ Extends: [ICoverProvision](ICoverProvision.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [CoverProvision](CoverProvision.md)**
 
-**CoverProvision**
+**ICoverProvision**
 
-Through governance, NEP tokens can be allocated as provision or `Reward Pool Support`
- for any given cover. This not only fosters community participation but also incentivizes
- the liquidity providers or acts as a defense/support during cover incidents.
- Along with the NEP provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
- for the rainy day.
+**Events**
+
+```js
+event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
+event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
+```
 
 ## Functions
 
-- [constructor(IStore store)](#)
 - [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
 - [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
 - [getProvision(bytes32 key)](#getprovision)
-- [version()](#version)
-- [getName()](#getname)
-
-### 
-
-Constructs this contract
-
-```js
-function (IStore store) public nonpayable Recoverable 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
 
 ### increaseProvision
 
@@ -41,7 +26,7 @@ Increases NEP provision for the given cover key.
  This feature is accessible only to the contract owner (governance).
 
 ```js
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
+function increaseProvision(bytes32 key, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -57,7 +42,7 @@ Decreases NEP provision for the given cover key
  This feature is accessible only to the contract owner (governance).
 
 ```js
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
+function decreaseProvision(bytes32 key, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -81,34 +66,6 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key to get the provision | 
-
-### version
-
-Version number of this contract
-
-```js
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getName
-
-Name of this contract
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
 
 ## Contracts
 
