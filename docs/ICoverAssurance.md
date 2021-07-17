@@ -23,7 +23,7 @@ event AssuranceAdded(bytes32  key, uint256  amount);
 
 Adds assurance to the specified cover contract
 
-```js
+```solidity
 function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable
 ```
 
@@ -35,9 +35,21 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 | account | address |  | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addAssurance(
+    bytes32 key,
+    address account,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### setWeight
 
-```js
+```solidity
 function setWeight(bytes32 key, uint256 weight) external nonpayable
 ```
 
@@ -48,12 +60,20 @@ function setWeight(bytes32 key, uint256 weight) external nonpayable
 | key | bytes32 |  | 
 | weight | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setWeight(bytes32 key, uint256 weight) external;
+```
+</details>
+
 ### getAssurance
 
 Gets the assurance amount of the specified cover contract
 
-```js
-function getAssurance(bytes32 key) external nonpayable
+```solidity
+function getAssurance(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -62,6 +82,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAssurance(bytes32 key) external view returns (uint256);
+```
+</details>
 
 ## Contracts
 
@@ -83,6 +111,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -92,14 +121,17 @@ returns(uint256)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -114,6 +146,7 @@ returns(uint256)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

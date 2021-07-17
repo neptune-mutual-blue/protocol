@@ -14,7 +14,7 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 
 ### 
 
-```js
+```solidity
 function (string name, string symbol, uint256 supply) public nonpayable ERC20 
 ```
 
@@ -26,9 +26,23 @@ function (string name, string symbol, uint256 supply) public nonpayable ERC20
 | symbol | string |  | 
 | supply | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(
+    string memory name,
+    string memory symbol,
+    uint256 supply
+  ) ERC20(name, symbol) {
+    super._mint(super._msgSender(), supply);
+  }
+```
+</details>
+
 ### mint
 
-```js
+```solidity
 function mint(address account, uint256 amount) external nonpayable onlyOwner 
 ```
 
@@ -39,9 +53,19 @@ function mint(address account, uint256 amount) external nonpayable onlyOwner
 | account | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(address account, uint256 amount) external onlyOwner {
+    super._mint(account, amount);
+  }
+```
+</details>
+
 ### burn
 
-```js
+```solidity
 function burn(uint256 amount) external nonpayable
 ```
 
@@ -50,6 +74,16 @@ function burn(uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function burn(uint256 amount) external {
+    super._burn(super._msgSender(), amount);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -71,6 +105,7 @@ function burn(uint256 amount) external nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -80,14 +115,17 @@ function burn(uint256 amount) external nonpayable
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -102,6 +140,7 @@ function burn(uint256 amount) external nonpayable
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

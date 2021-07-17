@@ -3,7 +3,9 @@
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/ICTokenFactory.sol";
-import "./cToken.sol";
+import "../../libraries/cTokenFactoryLibV1.sol";
+import "../../libraries/ValidationLibV1.sol";
+import "../Recoverable.sol";
 
 /**
  * @title cToken Factory Contract
@@ -12,9 +14,18 @@ import "./cToken.sol";
  * cTokens on demand.
  */
 // solhint-disable-next-line
-contract cTokenFactory is ICTokenFactory {
+contract cTokenFactory is ICTokenFactory, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
+
+  /**
+   * @dev Constructs this contract
+   * @param store Provide the store contract instance
+   */
+  constructor(IStore store) Recoverable(store) {
+    this;
+  }
 
   /**
    * @dev Deploys a new instance of cTokens
@@ -27,9 +38,11 @@ contract cTokenFactory is ICTokenFactory {
     bytes32 key,
     uint256 expiryDate
   ) external override returns (address deployed) {
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY, msg.sender); // Ensure the caller is the latest policy contract
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key);
+    s.callerMustBePolicyContract();
 
-    (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cTokenFactoryLibV1.getByteCode(s, key, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -64,20 +77,5 @@ contract cTokenFactory is ICTokenFactory {
    */
   function getName() public pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_CTOKEN_FACTORY;
-  }
-
-  /**
-   * @dev Gets the bytecode of the `cToken` contract
-   * @param s Provide the store instance
-   * @param key Provide the cover key
-   * @param expiryDate Specify the expiry date of this cToken instance
-   */
-  function _getByteCode(
-    IStore s,
-    bytes32 key,
-    uint256 expiryDate
-  ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
-    bytecode = abi.encodePacked(type(cToken).creationCode, abi.encode(s, key, expiryDate));
   }
 }

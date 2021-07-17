@@ -31,7 +31,8 @@ const initialize = async () => {
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     CoverUtilV1: libs.coverUtil.address,
-    NTransferUtilV2: libs.transferLib.address
+    NTransferUtilV2: libs.transferLib.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_STAKE), stakingContract.address)
@@ -39,19 +40,19 @@ const initialize = async () => {
   const assuranceContract = await deployer.deployWithLibraries('CoverAssurance', {
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
-    CoverUtilV1: libs.coverUtil.address,
-    NTransferUtilV2: libs.transferLib.address
+    NTransferUtilV2: libs.transferLib.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_ASSURANCE), assuranceContract.address)
 
   const vaultFactory = await deployer.deployWithLibraries('VaultFactory',
     {
-      StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
-      CoverUtilV1: libs.coverUtil.address,
-      NTransferUtilV2: libs.transferLib.address
+      VaultFactoryLibV1: libs.vaultFactoryLib.address,
+      ValidationLibV1: libs.validationLib.address
     }
+    , store.address
   )
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_VAULT_FACTORY), vaultFactory.address)
@@ -59,8 +60,10 @@ const initialize = async () => {
   const cTokenFactory = await deployer.deployWithLibraries('cTokenFactory',
     {
       ProtoUtilV1: libs.protoUtilV1.address,
-      NTransferUtilV2: libs.transferLib.address
+      cTokenFactoryLibV1: libs.cTokenFactoryLib.address,
+      ValidationLibV1: libs.validationLib.address
     }
+    , store.address
   )
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_CTOKEN_FACTORY), cTokenFactory.address)
@@ -70,7 +73,9 @@ const initialize = async () => {
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       CoverUtilV1: libs.coverUtil.address,
-      NTransferUtilV2: libs.transferLib.address
+      NTransferUtilV2: libs.transferLib.address,
+      ValidationLibV1: libs.validationLib.address,
+      RegistryLibV1: libs.registryLib.address
     },
     store.address
   )
@@ -82,8 +87,8 @@ const initialize = async () => {
   const provisionContract = await deployer.deployWithLibraries('CoverProvision', {
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
-    CoverUtilV1: libs.coverUtil.address,
-    NTransferUtilV2: libs.transferLib.address
+    NTransferUtilV2: libs.transferLib.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_PROVISION), provisionContract.address)
@@ -98,10 +103,10 @@ const initialize = async () => {
   await policyAdminContract.setPolicyRates(helper.ether(0.07), helper.ether(0.45))
 
   const policy = await deployer.deployWithLibraries('Policy', {
-    // StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     CoverUtilV1: libs.coverUtil.address,
-    NTransferUtilV2: libs.transferLib.address
+    NTransferUtilV2: libs.transferLib.address,
+    RegistryLibV1: libs.registryLib.address
   }, store.address)
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_POLICY), policy.address)

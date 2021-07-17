@@ -6,6 +6,8 @@ import "../../interfaces/ICover.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/RegistryLibV1.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -49,8 +51,9 @@ abstract contract CoverBase is ICover, Recoverable {
    * @param values Array of uint256 values
    */
   function getCover(bytes32 key)
-    external override
+    external
     view
+    override
     returns (
       address coverOwner,
       bytes32 info,

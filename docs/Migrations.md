@@ -34,7 +34,7 @@ modifier restricted() internal
 
 ### setCompleted
 
-```js
+```solidity
 function setCompleted(uint256 completed) public nonpayable restricted 
 ```
 
@@ -43,6 +43,16 @@ function setCompleted(uint256 completed) public nonpayable restricted
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | completed | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCompleted(uint256 completed) public restricted {
+    last_completed_migration = completed;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -64,6 +74,7 @@ function setCompleted(uint256 completed) public nonpayable restricted
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -73,14 +84,17 @@ function setCompleted(uint256 completed) public nonpayable restricted
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -95,6 +109,7 @@ function setCompleted(uint256 completed) public nonpayable restricted
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

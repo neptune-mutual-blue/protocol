@@ -16,6 +16,8 @@ contract Cover is CoverBase {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
+  using ValidationLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   /**
@@ -34,8 +36,8 @@ contract Cover is CoverBase {
    * @param info Enter a new IPFS URL to update
    */
   function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
     s.mustBeCoverOwner(key, super._msgSender(), owner()); // Ensures the sender is either the owner or cover owner
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
@@ -69,6 +71,7 @@ contract Cover is CoverBase {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
+   * @param reportingPeriod The period during when reporting happens.
    * @param initialAssuranceAmount **Optional.** Enter the initial amount of
    * assurance tokens you'd like to add to this pool.
    * @param stakeWithFee Enter the total NEP amount (stake + fee) to transfer to this contract.
@@ -77,18 +80,20 @@ contract Cover is CoverBase {
   function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 reportingPeriod,
     uint256 stakeWithFee,
     address assuranceToken,
     uint256 initialAssuranceAmount,
     uint256 initialLiquidity
   ) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
+    require(reportingPeriod >= 7 days, "Insufficent reporting period");
+    _mustBeUnpaused();
 
     // First validate the information entered
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
 
     // Set the basic cover info
-    _addCover(key, info, fee, assuranceToken);
+    _addCover(key, info, reportingPeriod, fee, assuranceToken);
 
     // Stake the supplied NEP tokens and burn the fees
     s.getStakingContract().increaseStake(key, super._msgSender(), stakeWithFee, fee);
@@ -115,12 +120,14 @@ contract Cover is CoverBase {
    * Adds a new cover contract
    * @param key Enter a unique key for this cover
    * @param info IPFS info of the cover contract
+   * @param reportingPeriod The period during when reporting happens.
    * @param fee Fee paid to create this cover
    * @param assuranceToken **Optional.** Token added as an assurance of this cover.
    */
   function _addCover(
     bytes32 key,
     bytes32 info,
+    uint256 reportingPeriod,
     uint256 fee,
     address assuranceToken
   ) private {
@@ -132,6 +139,7 @@ contract Cover is CoverBase {
 
     // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
+    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key, reportingPeriod);
 
     // Set assurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key, assuranceToken);

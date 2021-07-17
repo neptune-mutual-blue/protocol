@@ -14,16 +14,12 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [removeMember(address member)](#removemember)
 - [addMember(address member)](#addmember)
-- [_addContract(bytes32 namespace, address contractAddress)](#_addcontract)
-- [_deleteContract(bytes32 namespace, address contractAddress)](#_deletecontract)
-- [_addMember(address member)](#_addmember)
-- [_removeMember(address member)](#_removemember)
 - [version()](#version)
 - [getName()](#getname)
 
 ### 
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -33,9 +29,19 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### initialize
 
-```js
+```solidity
 function initialize(address nep, address treasury, address assuranceVault) external nonpayable
 ```
 
@@ -47,9 +53,35 @@ function initialize(address nep, address treasury, address assuranceVault) exter
 | treasury | address |  | 
 | assuranceVault | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function initialize(
+    address nep,
+    address treasury,
+    address assuranceVault
+  ) external {
+    _mustBeOwnerOrProtoOwner();
+
+    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NEP) == address(0), "Already initialized");
+    require(nep != address(0), "Invalid NEP");
+    require(treasury != address(0), "Invalid Treasury");
+    require(assuranceVault != address(0), "Invalid Vault");
+
+    s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
+    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
+    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NEP, nep);
+    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
+    s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
+    s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
+  }
+```
+</details>
+
 ### upgradeContract
 
-```js
+```solidity
 function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable onlyOwner 
 ```
 
@@ -61,9 +93,26 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 | previous | address |  | 
 | current | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContract(
+    bytes32 namespace,
+    address previous,
+    address current
+  ) external override onlyOwner {
+    _mustBeUnpaused();
+
+    s.upgradeContract(namespace, previous, current);
+    emit ContractUpgraded(namespace, previous, current);
+  }
+```
+</details>
+
 ### addContract
 
-```js
+```solidity
 function addContract(bytes32 namespace, address contractAddress) external nonpayable onlyOwner 
 ```
 
@@ -74,9 +123,22 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContract(bytes32 namespace, address contractAddress) external override onlyOwner {
+    _mustBeUnpaused();
+
+    s.addContract(namespace, contractAddress);
+    emit ContractAdded(namespace, contractAddress);
+  }
+```
+</details>
+
 ### removeMember
 
-```js
+```solidity
 function removeMember(address member) external nonpayable onlyOwner 
 ```
 
@@ -86,9 +148,22 @@ function removeMember(address member) external nonpayable onlyOwner
 | ------------- |------------- | -----|
 | member | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeMember(address member) external override onlyOwner {
+    _mustBeUnpaused();
+
+    s.removeMember(member);
+    emit MemberRemoved(member);
+  }
+```
+</details>
+
 ### addMember
 
-```js
+```solidity
 function addMember(address member) external nonpayable onlyOwner 
 ```
 
@@ -98,61 +173,24 @@ function addMember(address member) external nonpayable onlyOwner
 | ------------- |------------- | -----|
 | member | address |  | 
 
-### _addContract
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function _addContract(bytes32 namespace, address contractAddress) private nonpayable
+```javascript
+function addMember(address member) external override onlyOwner {
+    _mustBeUnpaused();
+
+    s.addMember(member);
+    emit MemberAdded(member);
+  }
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-### _deleteContract
-
-```js
-function _deleteContract(bytes32 namespace, address contractAddress) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-### _addMember
-
-```js
-function _addMember(address member) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| member | address |  | 
-
-### _removeMember
-
-```js
-function _removeMember(address member) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| member | address |  | 
+</details>
 
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -162,11 +200,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -175,6 +223,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return "Neptune Mutual Protocol";
+  }
+```
+</details>
 
 ## Contracts
 
@@ -196,6 +254,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -205,14 +264,17 @@ returns(bytes32)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -227,6 +289,7 @@ returns(bytes32)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

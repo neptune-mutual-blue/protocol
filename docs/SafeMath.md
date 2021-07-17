@@ -29,7 +29,7 @@ Wrappers over Solidity's arithmetic operations.
 Returns the addition of two unsigned integers, with an overflow flag.
  _Available since v3.4._
 
-```js
+```solidity
 function tryAdd(uint256 a, uint256 b) internal pure
 returns(bool, uint256)
 ```
@@ -41,12 +41,26 @@ returns(bool, uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            uint256 c = a + b;
+            if (c < a) return (false, 0);
+            return (true, c);
+        }
+    }
+```
+</details>
+
 ### trySub
 
 Returns the substraction of two unsigned integers, with an overflow flag.
  _Available since v3.4._
 
-```js
+```solidity
 function trySub(uint256 a, uint256 b) internal pure
 returns(bool, uint256)
 ```
@@ -58,12 +72,25 @@ returns(bool, uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b > a) return (false, 0);
+            return (true, a - b);
+        }
+    }
+```
+</details>
+
 ### tryMul
 
 Returns the multiplication of two unsigned integers, with an overflow flag.
  _Available since v3.4._
 
-```js
+```solidity
 function tryMul(uint256 a, uint256 b) internal pure
 returns(bool, uint256)
 ```
@@ -75,12 +102,30 @@ returns(bool, uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+            // benefit is lost if 'b' is also tested.
+            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+            if (a == 0) return (true, 0);
+            uint256 c = a * b;
+            if (c / a != b) return (false, 0);
+            return (true, c);
+        }
+    }
+```
+</details>
+
 ### tryDiv
 
 Returns the division of two unsigned integers, with a division by zero flag.
  _Available since v3.4._
 
-```js
+```solidity
 function tryDiv(uint256 a, uint256 b) internal pure
 returns(bool, uint256)
 ```
@@ -92,12 +137,25 @@ returns(bool, uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a / b);
+        }
+    }
+```
+</details>
+
 ### tryMod
 
 Returns the remainder of dividing two unsigned integers, with a division by zero flag.
  _Available since v3.4._
 
-```js
+```solidity
 function tryMod(uint256 a, uint256 b) internal pure
 returns(bool, uint256)
 ```
@@ -109,6 +167,19 @@ returns(bool, uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a % b);
+        }
+    }
+```
+</details>
+
 ### add
 
 Returns the addition of two unsigned integers, reverting on
@@ -117,7 +188,7 @@ Returns the addition of two unsigned integers, reverting on
  Requirements:
  - Addition cannot overflow.
 
-```js
+```solidity
 function add(uint256 a, uint256 b) internal pure
 returns(uint256)
 ```
@@ -129,6 +200,16 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a + b;
+    }
+```
+</details>
+
 ### sub
 
 Returns the subtraction of two unsigned integers, reverting on
@@ -137,7 +218,7 @@ Returns the subtraction of two unsigned integers, reverting on
  Requirements:
  - Subtraction cannot overflow.
 
-```js
+```solidity
 function sub(uint256 a, uint256 b) internal pure
 returns(uint256)
 ```
@@ -149,6 +230,16 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a - b;
+    }
+```
+</details>
+
 ### mul
 
 Returns the multiplication of two unsigned integers, reverting on
@@ -157,7 +248,7 @@ Returns the multiplication of two unsigned integers, reverting on
  Requirements:
  - Multiplication cannot overflow.
 
-```js
+```solidity
 function mul(uint256 a, uint256 b) internal pure
 returns(uint256)
 ```
@@ -169,6 +260,16 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a * b;
+    }
+```
+</details>
+
 ### div
 
 Returns the integer division of two unsigned integers, reverting on
@@ -177,7 +278,7 @@ Returns the integer division of two unsigned integers, reverting on
  Requirements:
  - The divisor cannot be zero.
 
-```js
+```solidity
 function div(uint256 a, uint256 b) internal pure
 returns(uint256)
 ```
@@ -189,6 +290,16 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a / b;
+    }
+```
+</details>
+
 ### mod
 
 Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
@@ -199,7 +310,7 @@ Returns the remainder of dividing two unsigned integers. (unsigned integer modul
  Requirements:
  - The divisor cannot be zero.
 
-```js
+```solidity
 function mod(uint256 a, uint256 b) internal pure
 returns(uint256)
 ```
@@ -211,6 +322,16 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a % b;
+    }
+```
+</details>
+
 ### sub
 
 Returns the subtraction of two unsigned integers, reverting with custom message on
@@ -221,7 +342,7 @@ Returns the subtraction of two unsigned integers, reverting with custom message 
  Requirements:
  - Subtraction cannot overflow.
 
-```js
+```solidity
 function sub(uint256 a, uint256 b, string errorMessage) internal pure
 returns(uint256)
 ```
@@ -233,6 +354,19 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 | errorMessage | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b <= a, errorMessage);
+            return a - b;
+        }
+    }
+```
+</details>
 
 ### div
 
@@ -247,7 +381,7 @@ Returns the integer division of two unsigned integers, reverting with custom mes
  Requirements:
  - The divisor cannot be zero.
 
-```js
+```solidity
 function div(uint256 a, uint256 b, string errorMessage) internal pure
 returns(uint256)
 ```
@@ -259,6 +393,19 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 | errorMessage | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a / b;
+        }
+    }
+```
+</details>
 
 ### mod
 
@@ -272,7 +419,7 @@ Returns the remainder of dividing two unsigned integers. (unsigned integer modul
  Requirements:
  - The divisor cannot be zero.
 
-```js
+```solidity
 function mod(uint256 a, uint256 b, string errorMessage) internal pure
 returns(uint256)
 ```
@@ -284,6 +431,19 @@ returns(uint256)
 | a | uint256 |  | 
 | b | uint256 |  | 
 | errorMessage | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+        unchecked {
+            require(b > 0, errorMessage);
+            return a % b;
+        }
+    }
+```
+</details>
 
 ## Contracts
 
@@ -305,6 +465,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -314,14 +475,17 @@ returns(uint256)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -336,6 +500,7 @@ returns(uint256)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

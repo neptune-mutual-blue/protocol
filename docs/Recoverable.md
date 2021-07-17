@@ -28,7 +28,7 @@ contract IStore public s;
 
 ### 
 
-```js
+```solidity
 function (IStore store) internal nonpayable
 ```
 
@@ -38,11 +38,23 @@ function (IStore store) internal nonpayable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) {
+    require(address(store) != address(0), "Invalid Store");
+
+    s = store;
+  }
+```
+</details>
+
 ### recoverEther
 
 Recover all Ether held by the contract.
 
-```js
+```solidity
 function recoverEther(address sendTo) external nonpayable
 ```
 
@@ -52,11 +64,24 @@ function recoverEther(address sendTo) external nonpayable
 | ------------- |------------- | -----|
 | sendTo | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function recoverEther(address sendTo) external {
+    _mustBeOwnerOrProtoOwner();
+
+    // slither-disable-next-line arbitrary-send
+    payable(sendTo).transfer(address(this).balance);
+  }
+```
+</details>
+
 ### recoverToken
 
 Recover all BEP-20 compatible tokens sent to this address.
 
-```js
+```solidity
 function recoverToken(address token, address sendTo) external nonpayable
 ```
 
@@ -67,9 +92,24 @@ function recoverToken(address token, address sendTo) external nonpayable
 | token | address | BEP-20 The address of the token contract | 
 | sendTo | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function recoverToken(address token, address sendTo) external {
+    _mustBeOwnerOrProtoOwner();
+
+    IERC20 bep20 = IERC20(token);
+
+    uint256 balance = bep20.balanceOf(address(this));
+    require(bep20.transfer(sendTo, balance), "Transfer failed");
+  }
+```
+</details>
+
 ### pause
 
-```js
+```solidity
 function pause() external nonpayable
 ```
 
@@ -78,9 +118,22 @@ function pause() external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function pause() external {
+    _mustBeUnpaused();
+    _mustBeOwnerOrProtoOwner();
+
+    super._pause();
+  }
+```
+</details>
+
 ### unpause
 
-```js
+```solidity
 function unpause() external nonpayable whenPaused 
 ```
 
@@ -89,11 +142,23 @@ function unpause() external nonpayable whenPaused
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function unpause() external whenPaused {
+    _mustBeOwnerOrProtoOwner();
+
+    super._unpause();
+  }
+```
+</details>
+
 ### _mustBeOwnerOrProtoMember
 
 Reverts if the sender is not the contract owner or a protocol member.
 
-```js
+```solidity
 function _mustBeOwnerOrProtoMember() internal view
 ```
 
@@ -102,11 +167,25 @@ function _mustBeOwnerOrProtoMember() internal view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _mustBeOwnerOrProtoMember() internal view {
+    bool isProtocol = s.isProtocolMember(super._msgSender());
+
+    if (isProtocol == false) {
+      require(super._msgSender() == super.owner(), "Forbidden");
+    }
+  }
+```
+</details>
+
 ### _mustBeOwnerOrProtoOwner
 
 Reverts if the sender is not the contract owner or protocol owner.
 
-```js
+```solidity
 function _mustBeOwnerOrProtoOwner() internal view
 ```
 
@@ -115,9 +194,27 @@ function _mustBeOwnerOrProtoOwner() internal view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _mustBeOwnerOrProtoOwner() internal view {
+    IProtocol protocol = ProtoUtilV1.getProtocol(s);
+
+    if (address(protocol) == address(0)) {
+      require(super._msgSender() == owner(), "Forbidden");
+      return;
+    }
+
+    address protocolOwner = Ownable(address(protocol)).owner();
+    require(super._msgSender() == owner() || super._msgSender() == protocolOwner, "Forbidden");
+  }
+```
+</details>
+
 ### _mustBeUnpaused
 
-```js
+```solidity
 function _mustBeUnpaused() internal view
 ```
 
@@ -125,6 +222,16 @@ function _mustBeUnpaused() internal view
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _mustBeUnpaused() internal view {
+    require(super.paused() == false, "Contract paused");
+  }
+```
+</details>
 
 ## Contracts
 
@@ -146,6 +253,7 @@ function _mustBeUnpaused() internal view
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -155,14 +263,17 @@ function _mustBeUnpaused() internal view
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -177,6 +288,7 @@ function _mustBeUnpaused() internal view
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -3,9 +3,10 @@
 pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/IVaultFactory.sol";
-import "./Vault.sol";
+import "../../libraries/VaultFactoryLibV1.sol";
+import "../../libraries/ValidationLibV1.sol";
+import "../Recoverable.sol";
 
-// Todo: Recovery Feature
 /**
  * @title Vault Factory Contract
  * @dev As and when required by the protocol,
@@ -13,10 +14,19 @@ import "./Vault.sol";
  * Cover Vaults on demand.
  */
 
-contract VaultFactory is IVaultFactory {
+contract VaultFactory is IVaultFactory, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
+
+  /**
+   * @dev Constructs this contract
+   * @param store Provide the store contract instance
+   */
+  constructor(IStore store) Recoverable(store) {
+    this;
+  }
 
   /**
    * @dev Deploys a new instance of Vault
@@ -24,9 +34,11 @@ contract VaultFactory is IVaultFactory {
    * @param key Enter the cover key related to this Vault instance
    */
   function deploy(IStore s, bytes32 key) external override returns (address addr) {
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER, msg.sender); // Ensure the caller is the latest cover contract
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
+    s.callerMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, s.getLiquidityToken());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getLiquidityToken());
 
     // solhint-disable-next-line
     assembly {
@@ -58,14 +70,5 @@ contract VaultFactory is IVaultFactory {
    */
   function getName() public pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_VAULT_FACTORY;
-  }
-
-  function _getByteCode(
-    IStore s,
-    bytes32 key,
-    address liquidityToken
-  ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
-    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
   }
 }

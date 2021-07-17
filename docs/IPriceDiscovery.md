@@ -13,7 +13,7 @@ View Source: [contracts/interfaces/IPriceDiscovery.sol](../contracts/interfaces/
 
 ### getTokenPriceInLiquidityToken
 
-```js
+```solidity
 function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
 returns(uint256)
 ```
@@ -25,6 +25,18 @@ returns(uint256)
 | token | address |  | 
 | liquidityToken | address |  | 
 | multiplier | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getTokenPriceInLiquidityToken(
+    address token,
+    address liquidityToken,
+    uint256 multiplier
+  ) external view returns (uint256);
+```
+</details>
 
 ## Contracts
 
@@ -46,6 +58,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -55,14 +68,17 @@ returns(uint256)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -77,6 +93,7 @@ returns(uint256)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

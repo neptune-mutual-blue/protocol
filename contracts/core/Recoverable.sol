@@ -80,6 +80,9 @@ abstract contract Recoverable is Ownable, ReentrancyGuard, Pausable {
   }
 
   function _mustBeUnpaused() internal view {
-    require(super.paused() == false, "Contract paused");
+    require(super.paused() == false, "Contract is paused");
+
+    address protocol = ProtoUtilV1.getProtocolAddress(s);
+    require(Pausable(protocol).paused() == false, "Protocol is paused");
   }
 }

@@ -6,6 +6,7 @@ import "../../interfaces/ICoverProvision.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -22,8 +23,9 @@ contract CoverProvision is ICoverProvision, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
+  using ValidationLibV1 for IStore;
   using CoverUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
 
   /**
    * @dev Constructs this contract
@@ -40,8 +42,8 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param amount Specify the amount of NEP tokens you would like to add
    */
   function increaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
 
     uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
@@ -59,8 +61,8 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param amount Specify the amount of NEP tokens you would like to decrease
    */
   function decreaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
 
     uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
@@ -76,7 +78,7 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @dev Gets the NEP provision amount for the given cover key
    * @param key Enter the cover key to get the provision
    */
-  function getProvision(bytes32 key) external override view returns (uint256) {
+  function getProvision(bytes32 key) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
   }
 

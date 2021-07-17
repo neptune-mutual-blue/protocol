@@ -5,7 +5,6 @@ import "../../interfaces/IPriceDiscovery.sol";
 import "../../interfaces/IStore.sol";
 import "../Recoverable.sol";
 
-// solhint-disable-next-line
 contract PriceDiscovery is IPriceDiscovery, Recoverable {
   constructor(IStore store) Recoverable(store) {
     this;

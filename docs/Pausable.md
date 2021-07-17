@@ -75,7 +75,7 @@ modifier whenPaused() internal
 
 Initializes the contract in unpaused state.
 
-```js
+```solidity
 function () internal nonpayable
 ```
 
@@ -84,11 +84,21 @@ function () internal nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor () {
+        _paused = false;
+    }
+```
+</details>
+
 ### paused
 
 Returns true if the contract is paused, and false otherwise.
 
-```js
+```solidity
 function paused() public view
 returns(bool)
 ```
@@ -98,13 +108,23 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function paused() public view virtual returns (bool) {
+        return _paused;
+    }
+```
+</details>
+
 ### _pause
 
 Triggers stopped state.
  Requirements:
  - The contract must not be paused.
 
-```js
+```solidity
 function _pause() internal nonpayable whenNotPaused 
 ```
 
@@ -113,13 +133,24 @@ function _pause() internal nonpayable whenNotPaused
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _pause() internal virtual whenNotPaused {
+        _paused = true;
+        emit Paused(_msgSender());
+    }
+```
+</details>
+
 ### _unpause
 
 Returns to normal state.
  Requirements:
  - The contract must be paused.
 
-```js
+```solidity
 function _unpause() internal nonpayable whenPaused 
 ```
 
@@ -127,6 +158,17 @@ function _unpause() internal nonpayable whenPaused
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _unpause() internal virtual whenPaused {
+        _paused = false;
+        emit Unpaused(_msgSender());
+    }
+```
+</details>
 
 ## Contracts
 
@@ -148,6 +190,7 @@ function _unpause() internal nonpayable whenPaused
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -157,14 +200,17 @@ function _unpause() internal nonpayable whenPaused
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -179,6 +225,7 @@ function _unpause() internal nonpayable whenPaused
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

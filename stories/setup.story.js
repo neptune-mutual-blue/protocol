@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
 const { helper, key, storeUtil, ipfs, sample } = require('../util')
 const composer = require('./composer')
+const day = 86400
 
 const coverKey = key.toBytes32('Compound Finance Cover')
 
@@ -90,6 +91,7 @@ describe('Protocol Initialization Stories', () => {
     const stakeWithFee = helper.ether(10000)
     const initialAssuranceAmount = helper.ether(1000000)
     const initialLiquidity = helper.ether(4000000)
+    const reportingPeriod = 7 * day
 
     await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
@@ -103,7 +105,7 @@ describe('Protocol Initialization Stories', () => {
       assuranceTokenBalance: (await contracts.assuranceToken.balanceOf(assuranceVault)).toString()
     }
 
-    await contracts.cover.addCover(coverKey, info, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
   })
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {

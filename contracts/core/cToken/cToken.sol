@@ -5,6 +5,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICToken.sol";
 import "../../libraries/ProtoUtilV1.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -19,6 +20,7 @@ import "../Recoverable.sol";
 // solhint-disable-next-line
 contract cToken is ICToken, Recoverable, ERC20 {
   using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   bytes32 public override coverKey;
@@ -35,7 +37,7 @@ contract cToken is ICToken, Recoverable, ERC20 {
     IStore store,
     bytes32 key,
     uint256 expiry
-  ) ERC20("NEP cTokens", "cNEP") Recoverable(store) {
+  ) ERC20("USD Cover Token", "cUSD") Recoverable(store) {
     coverKey = key;
     expiresOn = expiry;
   }
@@ -52,8 +54,9 @@ contract cToken is ICToken, Recoverable, ERC20 {
     address to,
     uint256 amount
   ) external override {
+    _mustBeUnpaused();
     require(key == coverKey, "Invalid cover");
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY, super._msgSender()); // Ensure the caller is the latest policy contract
+    s.callerMustBePolicyContract();
 
     super._mint(to, amount);
   }
@@ -64,24 +67,5 @@ contract cToken is ICToken, Recoverable, ERC20 {
    */
   function burn(uint256 amount) external override {
     super._burn(super._msgSender(), amount);
-  }
-
-  /**
-   * @dev Todo: Finializes the cToken contract.
-   * During this step, the policy fee paid by the users
-   * will be transferred to the Cover Vault contract.
-   */
-  function finalize() external override {
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY_MANAGER, super._msgSender()); // Ensure the caller is the latest policy manager contract
-    require(block.timestamp >= expiresOn, "Wait until expiry"); // solhint-disable-line
-
-    IERC20 liquidity = IERC20(s.getLiquidityToken());
-    uint256 balance = liquidity.balanceOf(address(this));
-
-    liquidity.ensureTransfer(super._msgSender(), balance);
-
-    finalized = true;
-
-    emit Finalized(balance);
   }
 }

@@ -25,7 +25,7 @@ Assurance tokens can be added by a covered project to demonstrate coverage suppo
 
 ### 
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -35,11 +35,21 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### addAssurance
 
 Adds assurance to the specified cover contract
 
-```js
+```solidity
 function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -51,9 +61,35 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 | account | address |  | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addAssurance(
+    bytes32 key,
+    address account,
+    uint256 amount
+  ) external override nonReentrant {
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key); // Ensures the key is valid cover
+
+    require(amount > 0, "Provide valid amount");
+
+    IERC20 assuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key));
+    address vault = s.getAssuranceVault();
+
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key, amount);
+
+    assuranceToken.ensureTransferFrom(account, vault, amount);
+
+    emit AssuranceAdded(key, amount);
+  }
+```
+</details>
+
 ### setWeight
 
-```js
+```solidity
 function setWeight(bytes32 key, uint256 weight) external nonpayable nonReentrant 
 ```
 
@@ -64,11 +100,25 @@ function setWeight(bytes32 key, uint256 weight) external nonpayable nonReentrant
 | key | bytes32 |  | 
 | weight | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key); // Ensures the key is valid cover
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
+  }
+```
+</details>
+
 ### getAssurance
 
 Gets the assurance amount of the specified cover contract
 
-```js
+```solidity
 function getAssurance(bytes32 key) external view
 returns(uint256)
 ```
@@ -79,11 +129,21 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAssurance(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -93,11 +153,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -106,6 +176,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_COVER_ASSURANCE;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -127,6 +207,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -136,14 +217,17 @@ returns(bytes32)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -158,6 +242,7 @@ returns(bytes32)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

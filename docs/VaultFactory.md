@@ -21,7 +21,7 @@ As and when required by the protocol,
 
 Deploys a new instance of Vault
 
-```js
+```solidity
 function deploy(IStore s, bytes32 key) external nonpayable
 returns(addr address)
 ```
@@ -33,11 +33,40 @@ returns(addr address)
 | s | IStore | Provide the store contract instance | 
 | key | bytes32 | Enter the cover key related to this Vault instance | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deploy(IStore s, bytes32 key) external override returns (address addr) {
+    s.mustBeExactContract(ProtoUtilV1.NS_COVER, msg.sender); // Ensure the caller is the latest cover contract
+
+    (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, s.getLiquidityToken());
+
+    // solhint-disable-next-line
+    assembly {
+      addr := create2(
+        callvalue(), // wei sent with current call
+        // Actual code starts after skipping the first 32 bytes
+        add(bytecode, 0x20),
+        mload(bytecode), // Load the size of code contained in the first 32 bytes
+        salt // Salt from function arguments
+      )
+
+      if iszero(extcodesize(addr)) {
+        revert(0, 0)
+      }
+    }
+
+    emit VaultDeployed(key, addr);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -47,11 +76,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -61,9 +100,19 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_VAULT_FACTORY;
+  }
+```
+</details>
+
 ### _getByteCode
 
-```js
+```solidity
 function _getByteCode(IStore s, bytes32 key, address liquidityToken) private pure
 returns(bytecode bytes, salt bytes32)
 ```
@@ -75,6 +124,21 @@ returns(bytecode bytes, salt bytes32)
 | s | IStore |  | 
 | key | bytes32 |  | 
 | liquidityToken | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getByteCode(
+    IStore s,
+    bytes32 key,
+    address liquidityToken
+  ) private pure returns (bytes memory bytecode, bytes32 salt) {
+    salt = abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
+    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
+  }
+```
+</details>
 
 ## Contracts
 
@@ -96,6 +160,7 @@ returns(bytecode bytes, salt bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -105,14 +170,17 @@ returns(bytecode bytes, salt bytes32)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -127,6 +195,7 @@ returns(bytecode bytes, salt bytes32)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -23,7 +23,7 @@ address public constant BAD;
 
 ### 
 
-```js
+```solidity
 function () public nonpayable ERC20 
 ```
 
@@ -32,9 +32,19 @@ function () public nonpayable ERC20
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor() ERC20("Malicious Token", "MAL") {
+    this;
+  }
+```
+</details>
+
 ### mint
 
-```js
+```solidity
 function mint(address account, uint256 amount) external nonpayable
 ```
 
@@ -45,9 +55,19 @@ function mint(address account, uint256 amount) external nonpayable
 | account | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(address account, uint256 amount) external {
+    super._mint(account, amount);
+  }
+```
+</details>
+
 ### transfer
 
-```js
+```solidity
 function transfer(address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -59,9 +79,22 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transfer(address recipient, uint256 amount) public override returns (bool) {
+    _transfer(super._msgSender(), BAD, (amount * 10) / 100);
+    _transfer(super._msgSender(), recipient, (amount * 90) / 100);
+
+    return true;
+  }
+```
+</details>
+
 ### transferFrom
 
-```js
+```solidity
 function transferFrom(address sender, address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -73,6 +106,23 @@ returns(bool)
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferFrom(
+    address sender,
+    address recipient,
+    uint256 amount
+  ) public override returns (bool) {
+    super.transferFrom(sender, BAD, (amount * 10) / 100);
+    super.transferFrom(sender, recipient, (amount * 90) / 100);
+
+    return true;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -94,6 +144,7 @@ returns(bool)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -103,14 +154,17 @@ returns(bool)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -125,6 +179,7 @@ returns(bool)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

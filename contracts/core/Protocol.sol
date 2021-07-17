@@ -41,54 +41,31 @@ contract Protocol is IProtocol, Recoverable {
     address previous,
     address current
   ) external override onlyOwner {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeProtocolMember(previous); // Ensures the given address is a protocol member
+    _mustBeUnpaused();
 
-    _deleteContract(namespace, previous);
-    _addContract(namespace, current);
-
+    s.upgradeContract(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
 
   function addContract(bytes32 namespace, address contractAddress) external override onlyOwner {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
+    _mustBeUnpaused();
 
-    _addContract(namespace, contractAddress);
+    s.addContract(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);
   }
 
   function removeMember(address member) external override onlyOwner {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
+    _mustBeUnpaused();
 
-    _removeMember(member);
+    s.removeMember(member);
     emit MemberRemoved(member);
   }
 
   function addMember(address member) external override onlyOwner {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
+    _mustBeUnpaused();
 
-    _addMember(member);
+    s.addMember(member);
     emit MemberAdded(member);
-  }
-
-  function _addContract(bytes32 namespace, address contractAddress) private {
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
-    _addMember(contractAddress);
-  }
-
-  function _deleteContract(bytes32 namespace, address contractAddress) private {
-    s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
-
-    _removeMember(contractAddress);
-  }
-
-  function _addMember(address member) private {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
-  }
-
-  function _removeMember(address member) private {
-    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
   }
 
   /**

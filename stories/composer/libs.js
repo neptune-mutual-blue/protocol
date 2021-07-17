@@ -9,9 +9,40 @@ const deployAll = async () => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const coverUtil = await deployer.deployWithLibraries('CoverUtilV1', {
+  const registryLib = await deployer.deployWithLibraries('RegistryLibV1', {
     StoreKeyUtil: storeKeyUtil.address,
     ProtoUtilV1: protoUtilV1.address
+  })
+
+  const coverUtil = await deployer.deployWithLibraries('CoverUtilV1', {
+    StoreKeyUtil: storeKeyUtil.address,
+    ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLib.address
+  })
+
+  const governanceLib = await deployer.deployWithLibraries('GovernanceUtilV1', {
+    StoreKeyUtil: storeKeyUtil.address,
+    CoverUtilV1: coverUtil.address
+  })
+
+  const validationLib = await deployer.deployWithLibraries('ValidationLibV1', {
+    StoreKeyUtil: storeKeyUtil.address,
+    ProtoUtilV1: protoUtilV1.address,
+    CoverUtilV1: coverUtil.address,
+    GovernanceUtilV1: governanceLib.address
+  })
+
+  const vaultFactoryLib = await deployer.deployWithLibraries('VaultFactoryLibV1', {
+    StoreKeyUtil: storeKeyUtil.address,
+    ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLib.address,
+    NTransferUtilV2: transferLib.address,
+    ValidationLibV1: validationLib.address
+  })
+
+  const cTokenFactoryLib = await deployer.deployWithLibraries('cTokenFactoryLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
+    ValidationLibV1: validationLib.address
   })
 
   return {
@@ -19,6 +50,11 @@ const deployAll = async () => {
     protoUtilV1,
     coverUtil,
     transferLib,
+    registryLib,
+    validationLib,
+    governanceLib,
+    vaultFactoryLib,
+    cTokenFactoryLib,
     dateLib
   }
 }

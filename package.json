@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
+    "build": "hardhat compile",
     "compile:clean": "rm -rf ./artifacts && hardhat compile",
     "solhint": "solhint \"contracts/**/*.sol\"",
     "gendoc": "rm -rf build && rm -rf docs && truffle compile && solidoc2",
+    "gendoc:local": "rm -rf build && rm -rf docs && truffle compile && node ../solidoc2/cli.js",
     "slither": "slither .",
     "test": "npx hardhat test",
     "test:all": "npx hardhat test ./**/*.{spec,story}.js",
     "stories": "npx hardhat test ./**/*.story.js",
+    "story": "yarn stories",
     "mumbai": "mkdir -p ./.todo/deployments/mumbai && npx hardhat run --network mumbai scripts/deploy.js > \"./.todo/deployments/mumbai/$(date +%Y%m%d-%H%M%S).txt\"",
     "bsc:testnet": "mkdir -p ./.todo/deployments/bsct && npx hardhat run --network bsct scripts/deploy.js > \"./.todo/deployments/bsct/$(date +%Y%m%d-%H%M%S).txt\""
   },

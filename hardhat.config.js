@@ -15,14 +15,14 @@ module.exports = {
       url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
       gasPrice: 20000000000,
-      accounts: { mnemonic: process.env.MUMBAI_MNEMONIC }
+      accounts: [process.env.PRIVATE_KEY]
     }
   },
   solidity: '0.8.4',
   settings: {
     optimizer: {
       enabled: true,
-      runs: 999999
+      runs: 200
     }
   },
   contractSizer: {

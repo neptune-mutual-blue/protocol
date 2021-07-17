@@ -16,6 +16,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_MEMBERS = "proto:members";
   bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_COVER = "proto:cover";
+  bytes32 public constant NS_GOVERNANCE = "proto:governance";
   bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
   bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
   bytes32 public constant NS_COVER_ASSURANCE_WEIGHT = "proto:cover:assurance:weight";
@@ -23,7 +24,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_FEE = "proto:cover:fee";
   bytes32 public constant NS_COVER_INFO = "proto:cover:info";
   bytes32 public constant NS_COVER_LIQUIDITY = "proto:cover:liquidity";
-  bytes32 public constant NS_COVER_LIQUIDITY_COMMITMENT = "proto:cover:liquidity:commitment";
+  bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "proto:cover:liquidity:committed";
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "proto:cover:liquidityName";
   bytes32 public constant NS_COVER_LIQUIDITY_TOKEN = "proto:cover:liquidityToken";
   bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "proto:cover:liquidity:release";
@@ -44,9 +45,20 @@ library ProtoUtilV1 {
   bytes32 public constant NS_TREASURY = "proto:core:treasury";
   bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
 
+  bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
+  bytes32 public constant NS_CLAIM_PERIOD = "proto:claim:period";
+  bytes32 public constant NS_REPORTING_INCIDENT_DATE = "proto:reporting:incident:date";
+  bytes32 public constant NS_RESOLUTION_TS = "proto:reporting:resolution:ts";
+  bytes32 public constant NS_CLAIM_EXPIRY_TS = "proto:claim:expiry:ts";
+  bytes32 public constant NS_REPORTING_WITNESS_YES = "proto:reporting:witness:yes";
+  bytes32 public constant NS_REPORTING_WITNESS_NO = "proto:reporting:witness:no";
+  bytes32 public constant NS_REPORTING_STAKE_OWNED_YES = "proto:reporting:stake:owned:yes";
+  bytes32 public constant NS_REPORTING_STAKE_OWNED_NO = "proto:reporting:stake:owned:no";
+
   bytes32 public constant NS_SETUP_NEP = "proto:setup:nep";
   bytes32 public constant NS_SETUP_COVER_FEE = "proto:setup:cover:fee";
   bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
+  bytes32 public constant NS_SETUP_REPORTING_STAKE = "proto:setup:reporting:stake";
   bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
 
   // Contract names
@@ -55,8 +67,10 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_POLICY = "Policy";
   bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
   bytes32 public constant CNAME_POLICY_MANAGER = "PolicyManager";
+  bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
   bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";
+  bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CTOKEN_FACTORY = "cTokenFactory";
   bytes32 public constant CNAME_COVER_PROVISION = "CoverProvison";
@@ -65,7 +79,11 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
 
   function getProtocol(IStore s) external view returns (IProtocol) {
-    return _getProtocol(s);
+    return IProtocol(getProtocolAddress(s));
+  }
+
+  function getProtocolAddress(IStore s) public view returns (address) {
+    return s.getAddressByKey(NS_CORE);
   }
 
   function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
@@ -106,9 +124,17 @@ library ProtoUtilV1 {
     IStore s,
     bytes32 name,
     address sender
-  ) external view {
+  ) public view {
     address contractAddress = _getContract(s, name);
     require(sender == contractAddress, "Access denied");
+  }
+
+  /**
+   * @dev Ensures that the sender matches with the exact contract having the specified name.
+   * @param name Enter the name of the contract
+   */
+  function callerMustBeExactContract(IStore s, bytes32 name) external view {
+    return mustBeExactContract(s, name, msg.sender);
   }
 
   function nepToken(IStore s) external view returns (IERC20) {
@@ -144,8 +170,67 @@ library ProtoUtilV1 {
     return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 
-  function _getProtocol(IStore s) private view returns (IProtocol) {
-    address protocol = s.getAddressByKey(NS_CORE);
-    return IProtocol(protocol);
+  function addContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) external {
+    _addContract(s, namespace, contractAddress);
+  }
+
+  function _addContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) private {
+    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
+    _addMember(s, contractAddress);
+  }
+
+  function deleteContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) external {
+    _deleteContract(s, namespace, contractAddress);
+  }
+
+  function _deleteContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) private {
+    s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
+    _removeMember(s, contractAddress);
+  }
+
+  function upgradeContract(
+    IStore s,
+    bytes32 namespace,
+    address previous,
+    address current
+  ) external {
+    bool isMember = _isProtocolMember(s, previous);
+    require(isMember, "Not a protocol member");
+
+    _deleteContract(s, namespace, previous);
+    _addContract(s, namespace, current);
+  }
+
+  function addMember(IStore s, address member) external {
+    _addMember(s, member);
+  }
+
+  function removeMember(IStore s, address member) external {
+    _removeMember(s, member);
+  }
+
+  function _addMember(IStore s, address member) private {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
+    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
+  }
+
+  function _removeMember(IStore s, address member) private {
+    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
   }
 }

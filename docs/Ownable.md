@@ -58,7 +58,7 @@ modifier onlyOwner() internal
 
 Initializes the contract setting the deployer as the initial owner.
 
-```js
+```solidity
 function () internal nonpayable
 ```
 
@@ -67,11 +67,23 @@ function () internal nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor () {
+        address msgSender = _msgSender();
+        _owner = msgSender;
+        emit OwnershipTransferred(address(0), msgSender);
+    }
+```
+</details>
+
 ### owner
 
 Returns the address of the current owner.
 
-```js
+```solidity
 function owner() public view
 returns(address)
 ```
@@ -81,6 +93,16 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function owner() public view virtual returns (address) {
+        return _owner;
+    }
+```
+</details>
+
 ### renounceOwnership
 
 Leaves the contract without owner. It will not be possible to call
@@ -88,7 +110,7 @@ Leaves the contract without owner. It will not be possible to call
  NOTE: Renouncing ownership will leave the contract without an owner,
  thereby removing any functionality that is only available to the owner.
 
-```js
+```solidity
 function renounceOwnership() public nonpayable onlyOwner 
 ```
 
@@ -97,12 +119,23 @@ function renounceOwnership() public nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+```
+</details>
+
 ### transferOwnership
 
 Transfers ownership of the contract to a new account (`newOwner`).
  Can only be called by the current owner.
 
-```js
+```solidity
 function transferOwnership(address newOwner) public nonpayable onlyOwner 
 ```
 
@@ -111,6 +144,18 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | newOwner | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferOwnership(address newOwner) public virtual onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
+```
+</details>
 
 ## Contracts
 
@@ -132,6 +177,7 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -141,14 +187,17 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -163,6 +212,7 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

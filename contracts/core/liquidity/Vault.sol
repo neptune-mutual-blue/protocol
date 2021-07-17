@@ -21,8 +21,10 @@ contract Vault is VaultPod {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
+  using RegistryLibV1 for IStore;
+  using ValidationLibV1 for IStore;
   using CoverUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
 
   constructor(
     IStore store,
@@ -43,11 +45,24 @@ contract Vault is VaultPod {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
+    s.callerMustBeCoverContract();
 
     _addLiquidity(coverKey, account, amount, true);
+  }
+
+  function transferGovernance(
+    bytes32 coverKey,
+    address to,
+    uint256 amount
+  ) external override nonReentrant {
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
+    s.callerMustBeGovernanceContract();
+
+    IERC20(lqt).ensureTransfer(to, amount);
+    emit GovernanceTransfer(coverKey, to, amount);
   }
 
   /**
@@ -56,8 +71,8 @@ contract Vault is VaultPod {
    * @param amount Enter the amount of liquidity token to supply.
    */
   function addLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCover(key);
 
     _addLiquidity(coverKey, super._msgSender(), amount, false);
   }
@@ -68,9 +83,9 @@ contract Vault is VaultPod {
    * @param amount Enter the amount of liquidity token to remove.
    */
   function removeLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
+    _mustBeUnpaused();
 
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    s.mustBeValidCover(key);
     require(coverKey == key, "Forbidden");
 
     uint256 available = s.getPolicyContract().getCoverable(key);

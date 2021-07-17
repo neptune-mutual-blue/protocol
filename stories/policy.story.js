@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
 const { helper, key, ipfs, sample } = require('../util')
 const composer = require('./composer')
+const day = 86400
 
 const coverKey = key.toBytes32('Compound Finance Cover')
 
@@ -40,12 +41,13 @@ describe('Policy Purchase Stories', () => {
     const stakeWithFee = helper.ether(10_000)
     const initialAssuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
+    const reportingPeriod = 7 * day
 
     await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
   })
 
   it('provision of 1M NEP tokens was added to the `Compound Finance Cover` pool', async () => {

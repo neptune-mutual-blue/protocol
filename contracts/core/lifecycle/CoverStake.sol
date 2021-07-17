@@ -6,6 +6,7 @@ import "../../interfaces/ICoverStake.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -24,8 +25,9 @@ contract CoverStake is ICoverStake, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
+  using NTransferUtilV2 for IERC20;
 
   /**
    * @dev Constructs this contract
@@ -48,9 +50,9 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key);
+    s.callerMustBeCoverContract();
 
     require(amount >= fee, "Invalid fee");
 
@@ -78,9 +80,9 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER, super._msgSender()); // Ensure the caller is the latest cover contract
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key);
+    s.callerMustBeCoverContract();
 
     uint256 drawingPower = _getDrawingPower(key, account);
     require(drawingPower >= amount, "Exceeds your drawing power");

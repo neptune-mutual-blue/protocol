@@ -2,54 +2,46 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
 import "../interfaces/IStore.sol";
-import "../interfaces/IPolicy.sol";
-import "../interfaces/ICoverStake.sol";
-import "../interfaces/IPriceDiscovery.sol";
-import "../interfaces/ICTokenFactory.sol";
-import "../interfaces/ICoverAssurance.sol";
-import "../interfaces/IVault.sol";
-import "../interfaces/IVaultFactory.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
+import "./RegistryLibV1.sol";
 
 library CoverUtilV1 {
+  using RegistryLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  /**
-   * @dev Reverts if the key does not resolve in a valid cover contract.
-   * @param key Enter the cover key to check
-   */
-  function mustBeValidCover(IStore s, bytes32 key) external view {
-    require(_getStatus(s, key) != 1, "Cover on Maintenance");
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
-  }
-
-  /**
-   * @dev Reverts if the sender is not the cover owner or owner
-   * @param key Enter the cover key to check
-   * @param sender The `msg.sender` value
-   * @param owner Enter the owner address
-   */
-  function mustBeCoverOwner(
-    IStore s,
-    bytes32 key,
-    address sender,
-    address owner
-  ) external view {
-    bool isCoverOwner = _getCoverOwner(s, key) == sender;
-    bool isOwner = sender == owner;
-
-    require(isOwner || isCoverOwner, "Forbidden");
+  enum CoverStatus {
+    Normal,
+    Stopped,
+    IncidentHappened,
+    FalseReporting,
+    Claimable
   }
 
   function getCoverOwner(IStore s, bytes32 key) external view returns (address) {
     return _getCoverOwner(s, key);
   }
 
+  function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
+  }
+
+  function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
+  }
+
+  function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+  }
+
+  function getResolutionTimestamp(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+  }
+
   /**
-   * @dev Gets the current status of the protocol
+   * @dev Gets the current status of a given cover
    *
    * 0 - normal
    * 1 - stopped, can not purchase covers or add liquidity
@@ -58,7 +50,7 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function getStatus(IStore s, bytes32 key) external view returns (uint256) {
+  function getStatus(IStore s, bytes32 key) external view returns (CoverStatus) {
     return _getStatus(s, key);
   }
 
@@ -73,13 +65,13 @@ library CoverUtilV1 {
    * @param _values[6] Assurance pool weight
    */
   function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
-    require(_getStatus(s, key) != 1, "Invalid cover");
-    IPriceDiscovery discovery = getPriceDiscoveryContract(s);
+    require(_getStatus(s, key) == CoverStatus.Normal, "Invalid cover");
+    IPriceDiscovery discovery = s.getPriceDiscoveryContract();
 
     _values = new uint256[](7);
 
     _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
-    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITMENT, key); // <-- Todo: liquidity commitment should expire as policies expire
+    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
     _values[3] = discovery.getTokenPriceInLiquidityToken(address(s.nepToken()), s.getLiquidityToken(), 1 ether);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
@@ -132,38 +124,22 @@ library CoverUtilV1 {
     values[4] = _getClaimable(s, key);
   }
 
-  function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
-    return IPriceDiscovery(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_PRICE_DISCOVERY));
-  }
-
-  function getStakingContract(IStore s) public view returns (ICoverStake) {
-    return ICoverStake(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_STAKE));
-  }
-
-  function getCTokenFactory(IStore s) public view returns (ICTokenFactory) {
-    return ICTokenFactory(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_CTOKEN_FACTORY));
-  }
-
-  function getPolicyContract(IStore s) public view returns (IPolicy) {
-    return IPolicy(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_POLICY));
-  }
-
-  function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
-    return ICoverAssurance(ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_ASSURANCE));
-  }
-
-  function getVault(IStore s, bytes32 key) public view returns (IVault) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key);
-    return IVault(vault);
-  }
-
-  function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
-    address factory = ProtoUtilV1.getContract(s, ProtoUtilV1.NS_COVER_VAULT_FACTORY);
-    return IVaultFactory(factory);
-  }
-
-  function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
-    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
+  /**
+   * @dev Sets the current status of a given cover
+   *
+   * 0 - normal
+   * 1 - stopped, can not purchase covers or add liquidity
+   * 2 - reporting, incident happened
+   * 3 - reporting, false reporting
+   * 4 - claimable, claims accepted for payout
+   *
+   */
+  function setStatus(
+    IStore s,
+    bytes32 key,
+    CoverStatus status
+  ) external {
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
   }
 
   function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
@@ -171,7 +147,7 @@ library CoverUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
   }
 
-  function _getStatus(IStore s, bytes32 key) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
+  function _getStatus(IStore s, bytes32 key) private view returns (CoverStatus) {
+    return CoverStatus(s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key));
   }
 }

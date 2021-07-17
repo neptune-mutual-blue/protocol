@@ -55,6 +55,10 @@ interface IPolicy is IMember {
    */
   function getCoverPoolSummary(bytes32 key) external view returns (uint256[] memory _values);
 
+  function getCToken(bytes32 key, uint256 coverDuration) external view returns (address cToken, uint256 expiryDate);
+
+  function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view returns (address cToken);
+
   /**
    * Gets the sum total of cover commitment that haven't expired yet.
    */

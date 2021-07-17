@@ -20,7 +20,7 @@ Interface for the optional metadata functions from the ERC20 standard.
 
 Returns the name of the token.
 
-```js
+```solidity
 function name() external view
 returns(string)
 ```
@@ -30,11 +30,19 @@ returns(string)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function name() external view returns (string memory);
+```
+</details>
+
 ### symbol
 
 Returns the symbol of the token.
 
-```js
+```solidity
 function symbol() external view
 returns(string)
 ```
@@ -44,11 +52,19 @@ returns(string)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function symbol() external view returns (string memory);
+```
+</details>
+
 ### decimals
 
 Returns the decimals places of the token.
 
-```js
+```solidity
 function decimals() external view
 returns(uint8)
 ```
@@ -57,6 +73,14 @@ returns(uint8)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function decimals() external view returns (uint8);
+```
+</details>
 
 ## Contracts
 
@@ -78,6 +102,7 @@ returns(uint8)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -87,14 +112,17 @@ returns(uint8)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -109,6 +137,7 @@ returns(uint8)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

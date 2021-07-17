@@ -13,8 +13,6 @@ interface ICToken {
 
   function burn(uint256 amount) external;
 
-  function finalize() external;
-
   function expiresOn() external view returns (uint256);
 
   function coverKey() external view returns (bytes32);

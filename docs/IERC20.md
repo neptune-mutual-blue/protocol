@@ -2,7 +2,7 @@
 
 View Source: [openzeppelin-solidity/contracts/token/ERC20/IERC20.sol](../openzeppelin-solidity/contracts/token/ERC20/IERC20.sol)
 
-**↘ Derived Contracts: [ERC20](ERC20.md), [IERC20Metadata](IERC20Metadata.md)**
+**↘ Derived Contracts: [ERC20](ERC20.md), [IERC20Metadata](IERC20Metadata.md), [IVault](IVault.md)**
 
 **IERC20**
 
@@ -28,7 +28,7 @@ event Approval(address indexed owner, address indexed spender, uint256  value);
 
 Returns the amount of tokens in existence.
 
-```js
+```solidity
 function totalSupply() external view
 returns(uint256)
 ```
@@ -38,11 +38,19 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function totalSupply() external view returns (uint256);
+```
+</details>
+
 ### balanceOf
 
 Returns the amount of tokens owned by `account`.
 
-```js
+```solidity
 function balanceOf(address account) external view
 returns(uint256)
 ```
@@ -53,13 +61,21 @@ returns(uint256)
 | ------------- |------------- | -----|
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function balanceOf(address account) external view returns (uint256);
+```
+</details>
+
 ### transfer
 
 Moves `amount` tokens from the caller's account to `recipient`.
  Returns a boolean value indicating whether the operation succeeded.
  Emits a {Transfer} event.
 
-```js
+```solidity
 function transfer(address recipient, uint256 amount) external nonpayable
 returns(bool)
 ```
@@ -71,6 +87,14 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transfer(address recipient, uint256 amount) external returns (bool);
+```
+</details>
+
 ### allowance
 
 Returns the remaining number of tokens that `spender` will be
@@ -78,7 +102,7 @@ Returns the remaining number of tokens that `spender` will be
  zero by default.
  This value changes when {approve} or {transferFrom} are called.
 
-```js
+```solidity
 function allowance(address owner, address spender) external view
 returns(uint256)
 ```
@@ -89,6 +113,14 @@ returns(uint256)
 | ------------- |------------- | -----|
 | owner | address |  | 
 | spender | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function allowance(address owner, address spender) external view returns (uint256);
+```
+</details>
 
 ### approve
 
@@ -102,7 +134,7 @@ Sets `amount` as the allowance of `spender` over the caller's tokens.
  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
  Emits an {Approval} event.
 
-```js
+```solidity
 function approve(address spender, uint256 amount) external nonpayable
 returns(bool)
 ```
@@ -114,6 +146,14 @@ returns(bool)
 | spender | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function approve(address spender, uint256 amount) external returns (bool);
+```
+</details>
+
 ### transferFrom
 
 Moves `amount` tokens from `sender` to `recipient` using the
@@ -122,7 +162,7 @@ Moves `amount` tokens from `sender` to `recipient` using the
  Returns a boolean value indicating whether the operation succeeded.
  Emits a {Transfer} event.
 
-```js
+```solidity
 function transferFrom(address sender, address recipient, uint256 amount) external nonpayable
 returns(bool)
 ```
@@ -134,6 +174,14 @@ returns(bool)
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+```
+</details>
 
 ## Contracts
 
@@ -155,6 +203,7 @@ returns(bool)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -164,14 +213,17 @@ returns(bool)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -186,6 +238,7 @@ returns(bool)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -8,6 +8,8 @@ import "../../interfaces/IVault.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/RegistryLibV1.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 
 /**
@@ -25,10 +27,10 @@ import "../../libraries/NTransferUtilV2.sol";
 abstract contract VaultPod is IVault, Recoverable, ERC20 {
   using NTransferUtilV2 for IERC20;
   using StoreKeyUtil for IStore;
+  using RegistryLibV1 for IStore;
 
   bytes32 public key;
   address public lqt;
-
 
   /**
    * @dev Constructs this contract
@@ -87,7 +89,7 @@ abstract contract VaultPod is IVault, Recoverable, ERC20 {
     super.transferFrom(account, address(this), podsToBurn);
     super._burn(address(this), podsToBurn);
 
-    IERC20(lqt).ensureTransferFrom(address(this), account, amount);
+    IERC20(lqt).ensureTransfer(account, amount);
   }
 
   /**

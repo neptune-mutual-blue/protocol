@@ -7,6 +7,7 @@ import "../../interfaces/ICTokenFactory.sol";
 import "../../interfaces/ICToken.sol";
 import "../../interfaces/IPolicy.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import "../../libraries/NTransferUtilV2.sol";
@@ -20,6 +21,7 @@ contract Policy is IPolicy, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using CoverUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   constructor(IStore store) Recoverable(store) {
@@ -50,14 +52,21 @@ contract Policy is IPolicy, Recoverable {
     require(liquidityToken != address(0), "Cover liquidity uninitialized");
 
     // Transfer the fee to cToken contract
-    IERC20(liquidityToken).ensureTransferFrom(super._msgSender(), address(cToken), fee);
+    // Todo: keep track of cover fee paid (for refunds)
+    IERC20(liquidityToken).ensureTransferFrom(super._msgSender(), address(s.getVault(key)), fee);
 
     cToken.mint(key, super._msgSender(), amountToCover);
     return address(cToken);
   }
 
-  function getCToken(bytes32 key, uint256 coverDuration) public view returns (address cToken, uint256 expiryDate) {
+  function getCToken(bytes32 key, uint256 coverDuration) public view override returns (address cToken, uint256 expiryDate) {
     expiryDate = getExpiryDate(block.timestamp, coverDuration); // solhint-disable-line
+    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
+
+    cToken = s.getAddress(k);
+  }
+
+  function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cToken) {
     bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
 
     cToken = s.getAddress(k);
@@ -77,6 +86,8 @@ contract Policy is IPolicy, Recoverable {
 
     ICTokenFactory factory = s.getCTokenFactory();
     cToken = factory.deploy(s, key, expiryDate);
+    s.addMember(cToken);
+
     return ICToken(cToken);
   }
 
@@ -85,7 +96,7 @@ contract Policy is IPolicy, Recoverable {
    * @param today Enter the current timestamp
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
-  function getExpiryDate(uint256 today, uint256 coverDuration) public override pure returns (uint256) {
+  function getExpiryDate(uint256 today, uint256 coverDuration) public pure override returns (uint256) {
     // Get the day of the month
     (, , uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(today);
 
@@ -168,7 +179,8 @@ contract Policy is IPolicy, Recoverable {
     uint256 amountToCover
   )
     external
-    view override
+    view
+    override
     returns (
       uint256 fee,
       uint256 utilizationRatio,
@@ -239,7 +251,7 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[5] Assurance token price
    * @param _values[6] Assurance pool weight
    */
-  function getCoverPoolSummary(bytes32 key) external override view returns (uint256[] memory _values) {
+  function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummary(key);
   }
 

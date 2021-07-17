@@ -2,26 +2,97 @@
 
 View Source: [contracts/core/governance/Witness.sol](../contracts/core/governance/Witness.sol)
 
-**↗ Extends: [Recoverable](Recoverable.md)**
-**↘ Derived Contracts: [Governance](Governance.md)**
+**↗ Extends: [Recoverable](Recoverable.md), [IWitness](IWitness.md)**
+**↘ Derived Contracts: [Reporter](Reporter.md)**
 
 **Witness**
 
 ## Functions
 
-- [constructor(IStore store)](#)
+- [attest(bytes32 key, uint256 incidentDate, uint256 stake)](#attest)
+- [refute(bytes32 key, uint256 incidentDate, uint256 stake)](#refute)
 
-### 
+### attest
 
-```js
-function (IStore store) public nonpayable Recoverable 
+```solidity
+function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| stake | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function attest(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external override nonReentrant {
+    _mustBeUnpaused();
+    s.mustBeReportingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeDuringReportingPeriod(key);
+
+    require(stake >= 0, "Enter a stake");
+
+    // Update the values
+    s.addUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, stake);
+    s.addUintByKeys(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, super._msgSender(), stake);
+
+    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+
+    emit Attested(key, super._msgSender(), incidentDate, stake);
+  }
+```
+</details>
+
+### refute
+
+```solidity
+function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| stake | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function refute(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external override nonReentrant {
+    _mustBeUnpaused();
+    s.mustBeReportingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeDuringReportingPeriod(key);
+
+    require(stake >= 0, "Enter a stake");
+
+    // Update the values
+    s.addUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, stake);
+    s.addUintByKeys(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, super._msgSender(), stake);
+
+    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+
+    emit Refuted(key, super._msgSender(), incidentDate, stake);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -43,6 +114,7 @@ function (IStore store) public nonpayable Recoverable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -52,14 +124,17 @@ function (IStore store) public nonpayable Recoverable
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -74,6 +149,7 @@ function (IStore store) public nonpayable Recoverable
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -22,7 +22,7 @@ event Finalized(uint256  amount);
 
 ### mint
 
-```js
+```solidity
 function mint(bytes32 key, address to, uint256 amount) external nonpayable
 ```
 
@@ -34,9 +34,21 @@ function mint(bytes32 key, address to, uint256 amount) external nonpayable
 | to | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(
+    bytes32 key,
+    address to,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### burn
 
-```js
+```solidity
 function burn(uint256 amount) external nonpayable
 ```
 
@@ -46,9 +58,17 @@ function burn(uint256 amount) external nonpayable
 | ------------- |------------- | -----|
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function burn(uint256 amount) external;
+```
+</details>
+
 ### finalize
 
-```js
+```solidity
 function finalize() external nonpayable
 ```
 
@@ -57,9 +77,17 @@ function finalize() external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function finalize() external;
+```
+</details>
+
 ### expiresOn
 
-```js
+```solidity
 function expiresOn() external view
 returns(uint256)
 ```
@@ -69,9 +97,17 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function expiresOn() external view returns (uint256);
+```
+</details>
+
 ### coverKey
 
-```js
+```solidity
 function coverKey() external view
 returns(bytes32)
 ```
@@ -80,6 +116,14 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function coverKey() external view returns (bytes32);
+```
+</details>
 
 ## Contracts
 
@@ -101,6 +145,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -110,14 +155,17 @@ returns(bytes32)
 * [ICTokenFactory](ICTokenFactory.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
@@ -132,6 +180,7 @@ returns(bytes32)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -23,5 +23,5 @@ interface ICoverAssurance is IMember {
    * @dev Gets the assurance amount of the specified cover contract
    * @param key Enter the cover key
    */
-  function getAssurance(bytes32 key) external returns (uint256);
+  function getAssurance(bytes32 key) external view returns (uint256);
 }

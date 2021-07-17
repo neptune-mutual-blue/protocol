@@ -5,6 +5,7 @@ import "../../interfaces/IStore.sol";
 import "../../interfaces/ICoverAssurance.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
@@ -26,6 +27,7 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
   using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {
     this;
@@ -41,8 +43,8 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key);
 
     require(amount > 0, "Provide valid amount");
 
@@ -58,8 +60,8 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
 
   function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
     _mustBeOwnerOrProtoOwner();
-    _mustBeUnpaused(); // Ensures the contract isn't paused
-    s.mustBeValidCover(key); // Ensures the key is valid cover
+    _mustBeUnpaused();
+    s.mustBeValidCoverKey(key);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
   }

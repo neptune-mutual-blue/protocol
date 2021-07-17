@@ -40,6 +40,7 @@ interface ICover is IMember {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
+   * @param reportingPeriod The period during when reporting happens.
    * @param initialAssuranceAmount **Optional.** Enter the initial amount of
    * assurance tokens you'd like to add to this pool.
    * @param stakeWithFee Enter the total NEP amount (stake + fee) to transfer to this contract.
@@ -48,6 +49,7 @@ interface ICover is IMember {
   function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 reportingPeriod,
     uint256 stakeWithFee,
     address assuranceToken,
     uint256 initialAssuranceAmount,
