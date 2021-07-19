@@ -1,30 +1,22 @@
 /* eslint-disable no-unused-expressions */
 
 const BigNumber = require('bignumber.js')
-require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
 const { helper, key, storeUtil, ipfs, sample } = require('../util')
 const composer = require('./composer')
+
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should()
+
 const day = 86400
 
 const coverKey = key.toBytes32('Compound Finance Cover')
 
-let contracts = {
-  assuranceToken: null,
-  nep: null,
-  wxDai: null,
-  store: null,
-  storeKeyUtil: null,
-  protoUtilV1: null,
-  protocol: null,
-  cover: null,
-  stakingContract: null,
-  assuranceContract: null,
-  provisionContract: null,
-  coverUtil: null,
-  vaultFactory: null,
-  transferLib: null,
-  dateLib: null
-}
+/**
+ * @type {Contracts}
+ */
+let contracts = {}
 
 describe('Protocol Initialization Stories', () => {
   const treasury = helper.randomAddress()

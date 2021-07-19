@@ -9,6 +9,7 @@ import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
+import "../../libraries/StoreKeyUtil.sol";
 
 contract Processor is IClaimsProcessor, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -16,6 +17,7 @@ contract Processor is IClaimsProcessor, Recoverable {
   using NTransferUtilV2 for IERC20;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
+  using StoreKeyUtil for IStore;
 
   constructor(IStore store) Recoverable(store) {
     this;
@@ -47,6 +49,10 @@ contract Processor is IClaimsProcessor, Recoverable {
     s.mustBeValidClaim(key, cToken, incidentDate);
 
     return true;
+  }
+
+  function getClaimExpiryDate(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
   }
 
   /**

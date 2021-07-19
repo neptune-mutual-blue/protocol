@@ -59,4 +59,20 @@ abstract contract Witness is Recoverable, IWitness {
 
     emit Refuted(key, super._msgSender(), incidentDate, stake);
   }
+
+  function getStatus(bytes32 key) external view override returns (uint256) {
+    return s.getStatus(key);
+  }
+
+  function getStakes(bytes32 key, uint256 incidentDate) external view override returns (uint256, uint256) {
+    return s.getStakes(key, incidentDate);
+  }
+
+  function getStakesOf(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) external view override returns (uint256, uint256) {
+    return s.getStakesOf(account, key, incidentDate);
+  }
 }

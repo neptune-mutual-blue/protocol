@@ -1,5 +1,9 @@
 const { deployer } = require('../../util')
 
+/**
+ * Deploys all libraries
+ * @return {Libraries}
+ */
 const deployAll = async () => {
   const dateLib = await deployer.deploy('BokkyPooBahsDateTimeLibrary')
   const storeKeyUtil = await deployer.deploy('StoreKeyUtil')

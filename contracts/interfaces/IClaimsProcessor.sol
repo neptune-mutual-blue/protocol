@@ -18,4 +18,6 @@ interface IClaimsProcessor is IMember {
     bytes32 key,
     uint256 incidentDate
   ) external view returns (bool);
+
+  function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 }

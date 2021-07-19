@@ -17,4 +17,14 @@ interface IWitness {
     uint256 incidentDate,
     uint256 stake
   ) external;
+
+  function getStatus(bytes32 key) external view returns (uint256);
+
+  function getStakes(bytes32 key, uint256 incidentDate) external view returns (uint256, uint256);
+
+  function getStakesOf(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) external view returns (uint256, uint256);
 }

@@ -21,8 +21,7 @@ abstract contract Reporter is IReporter, Witness {
     s.mustBeValidCover(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
-    uint256 minStake = s.getMinReportingStake();
-    require(stake >= minStake, "Stake insufficient");
+    require(stake >= getMinStake(), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key, incidentDate);
 
@@ -31,7 +30,7 @@ abstract contract Reporter is IReporter, Witness {
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, resolutionDate);
 
     // Set the claim expiry timestamp
-    uint256 claimExpiry = resolutionDate + s.getClaimPeriod(key);
+    uint256 claimExpiry = resolutionDate + s.getClaimPeriod();
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiry);
 
     // Update the values
@@ -50,12 +49,12 @@ abstract contract Reporter is IReporter, Witness {
     uint256 stake
   ) external override nonReentrant {
     _mustBeUnpaused();
+    s.mustNotHaveDispute(key);
     s.mustBeReporting(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
-    uint256 minStake = s.getMinReportingStake();
-    require(stake >= minStake, "Stake insufficient");
+    require(stake >= getMinStake(), "Stake insufficient");
 
     s.addDispute(key, super._msgSender(), incidentDate, stake);
 
@@ -65,11 +64,19 @@ abstract contract Reporter is IReporter, Witness {
     emit Refuted(key, super._msgSender(), incidentDate, stake);
   }
 
-  function getActiveIncidentDate(bytes32 key) external view returns (uint256) {
+  function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
   }
 
-  function getReporter(bytes32 key, uint256 incidentDate) external view returns (address) {
+  function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {
     return s.getReporter(key, incidentDate);
+  }
+
+  function getResolutionDate(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+  }
+
+  function getMinStake() public view override returns (uint256) {
+    return s.getMinReportingStake();
   }
 }

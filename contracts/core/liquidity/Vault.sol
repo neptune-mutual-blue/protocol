@@ -58,8 +58,7 @@ contract Vault is VaultPod {
     uint256 amount
   ) external override nonReentrant {
     _mustBeUnpaused();
-    s.mustBeValidCover(key);
-    s.callerMustBeGovernanceContract();
+    s.callerMustBeClaimsProcessorContract();
 
     IERC20(lqt).ensureTransfer(to, amount);
     emit GovernanceTransfer(coverKey, to, amount);

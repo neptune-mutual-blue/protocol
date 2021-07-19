@@ -17,6 +17,8 @@ const NS = {
   COVER_ASSURANCE_TOKEN: 'proto:cover:assurance:token',
   COVER_CLAIMABLE: 'proto:cover:claimable',
   COVER_FEE: 'proto:cover:fee',
+  GOVERNANCE: 'proto:governance',
+  CLAIMS_PROCESSOR: 'proto:claims:processor',
   COVER_INFO: 'proto:cover:info',
   COVER_LIQUIDITY: 'proto:cover:liquidity',
   COVER_LIQUIDITY_COMMITTED: 'proto:cover:liquidity:committed',

@@ -1,8 +1,13 @@
 /* eslint-disable no-unused-expressions */
 
 const BigNumber = require('bignumber.js')
-require('chai').use(require('chai-as-promised')).use(require('chai-bignumber')(BigNumber)).should()
-const { helper, deployer, key, storeUtil, ipfs, sample } = require('../util')
+const { helper, deployer, key } = require('../util')
+const DAYS = 86400
+
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should()
 
 describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
@@ -32,7 +37,16 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
 
     protocol.address.should.not.be.empty
     protocol.address.should.not.equal(helper.zerox)
@@ -50,7 +64,16 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
 
     const sProtocolAddress = await store.getAddress(key.encodeKey(key.NS.CORE))
     sProtocolAddress.should.equal(protocol.address)
@@ -93,7 +116,16 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(helper.zerox, treasury, assuranceVault).should.be.revertedWith('Invalid NEP')
+    await protocol.initialize(
+      helper.zerox,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    ).should.be.revertedWith('Invalid NEP')
   })
 
   it('should fail when zero address is provided as treasury', async () => {
@@ -108,7 +140,16 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, helper.zerox, assuranceVault).should.be.revertedWith('Invalid Treasury')
+    await protocol.initialize(
+      nep.address,
+      helper.zerox,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    ).should.be.revertedWith('Invalid Treasury')
   })
 
   it('should fail when zero address is provided as assurance vault', async () => {
@@ -123,7 +164,16 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, helper.zerox).should.be.revertedWith('Invalid Vault')
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      helper.zerox,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    ).should.be.revertedWith('Invalid Vault')
   })
 })
 
@@ -153,7 +203,16 @@ describe('Adding a New Protocol Contract', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
   })
 
   it('should correctly add a new contract', async () => {
@@ -197,7 +256,16 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
   })
 
   it('should correctly upgrade a contract', async () => {
@@ -261,7 +329,16 @@ describe('Adding a New Protocol Member', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
   })
 
   it('should correctly add a new member', async () => {
@@ -310,7 +387,16 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.initialize(nep.address, treasury, assuranceVault)
+    await protocol.initialize(
+      nep.address,
+      treasury,
+      assuranceVault,
+      helper.ether(0), // Cover Fee
+      helper.ether(0), // Min Cover Stake
+      helper.ether(250), // Min Reporting Stake
+      7 * DAYS, // Min liquidity period
+      7 * DAYS // Claim period
+    )
   })
 
   it('should correctly remove a member', async () => {

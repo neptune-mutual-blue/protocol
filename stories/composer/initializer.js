@@ -2,7 +2,12 @@ const storeComposer = require('./store')
 const tokenComposer = require('./token')
 const libsComposer = require('./libs')
 const { deployer, key, sample, helper } = require('../../util')
+const DAYS = 86400
 
+/**
+ * Initializes all contracts
+ * @return {Contracts}
+ */
 const initialize = async () => {
   const store = await storeComposer.deploy()
 
@@ -25,7 +30,16 @@ const initialize = async () => {
   await store.setBool(key.qualify(protocol.address), true)
   await store.setBool(key.qualifyMember(protocol.address), true)
 
-  await protocol.initialize(nep.address, sample.fake.TREASURY, sample.fake.ASSURANCE_VAULT)
+  await protocol.initialize(
+    nep.address,
+    sample.fake.TREASURY,
+    sample.fake.ASSURANCE_VAULT,
+    helper.ether(0), // Cover Fee
+    helper.ether(0), // Min Cover Stake
+    helper.ether(250), // Min Reporting Stake
+    7 * DAYS, // Min liquidity period
+    7 * DAYS // Claim period
+  )
 
   const stakingContract = await deployer.deployWithLibraries('CoverStake', {
     StoreKeyUtil: libs.storeKeyUtil.address,
@@ -67,6 +81,19 @@ const initialize = async () => {
   )
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_CTOKEN_FACTORY), cTokenFactory.address)
+
+  const governance = await deployer.deployWithLibraries('Governance',
+    {
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      CoverUtilV1: libs.coverUtil.address,
+      NTransferUtilV2: libs.transferLib.address,
+      ValidationLibV1: libs.validationLib.address,
+      GovernanceUtilV1: libs.governanceLib.address
+    },
+    store.address
+  )
+  await protocol.addContract(key.toBytes32(key.NS.GOVERNANCE), governance.address)
 
   const cover = await deployer.deployWithLibraries('Cover',
     {
@@ -111,6 +138,19 @@ const initialize = async () => {
 
   await protocol.addContract(key.toBytes32(key.NS.COVER_POLICY), policy.address)
 
+  const claimsProcessor = await deployer.deployWithLibraries('Processor',
+    {
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLib.address,
+      NTransferUtilV2: libs.transferLib.address,
+      ValidationLibV1: libs.validationLib.address,
+      StoreKeyUtil: libs.storeKeyUtil.address
+    },
+    store.address
+  )
+
+  await protocol.addContract(key.toBytes32(key.NS.CLAIMS_PROCESSOR), claimsProcessor.address)
+
   const priceDiscovery = await deployer.deployWithLibraries('PriceDiscovery', {
     ProtoUtilV1: libs.protoUtilV1.address
   }, store.address)
@@ -132,7 +172,9 @@ const initialize = async () => {
     priceDiscovery,
     policyAdminContract,
     policy,
-    ...libs
+    governance,
+    claimsProcessor,
+    libs
   }
 }
 

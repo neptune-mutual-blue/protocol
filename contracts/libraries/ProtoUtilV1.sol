@@ -17,6 +17,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_COVER = "proto:cover";
   bytes32 public constant NS_GOVERNANCE = "proto:governance";
+  bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
   bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
   bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
   bytes32 public constant NS_COVER_ASSURANCE_WEIGHT = "proto:cover:assurance:weight";
@@ -46,7 +47,6 @@ library ProtoUtilV1 {
   bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
 
   bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
-  bytes32 public constant NS_CLAIM_PERIOD = "proto:claim:period";
   bytes32 public constant NS_REPORTING_INCIDENT_DATE = "proto:reporting:incident:date";
   bytes32 public constant NS_RESOLUTION_TS = "proto:reporting:resolution:ts";
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "proto:claim:expiry:ts";
@@ -60,6 +60,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
   bytes32 public constant NS_SETUP_REPORTING_STAKE = "proto:setup:reporting:stake";
   bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
+  bytes32 public constant NS_SETUP_CLAIM_PERIOD = "proto:setup:claim:period";
 
   // Contract names
   bytes32 public constant CNAME_PROTOCOL = "Protocol";

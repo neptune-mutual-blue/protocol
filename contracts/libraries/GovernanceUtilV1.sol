@@ -31,14 +31,35 @@ library GovernanceUtilV1 {
     bytes32 key,
     uint256 incidentDate
   ) external view returns (address) {
+    (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
+
+    bytes32 prefix = yes >= no ? ProtoUtilV1.NS_REPORTING_WITNESS_YES : ProtoUtilV1.NS_REPORTING_WITNESS_NO;
+    return s.getAddressByKeys(prefix, key);
+  }
+
+  function getStakes(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
-    uint256 no = s.getUintByKey(k);
+    no = s.getUintByKey(k);
 
     k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
-    uint256 yes = s.getUintByKey(k);
+    yes = s.getUintByKey(k);
+  }
 
-    bytes32 prefix = yes > no ? ProtoUtilV1.NS_REPORTING_WITNESS_YES : ProtoUtilV1.NS_REPORTING_WITNESS_NO;
-    return s.getAddressByKeys(prefix, key);
+  function getStakesOf(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
+    no = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+    yes = s.getUintByKey(k);
   }
 
   function updateCoverStatus(

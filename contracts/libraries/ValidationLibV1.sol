@@ -32,7 +32,7 @@ library ValidationLibV1 {
    */
   function mustBeValidCover(IStore s, bytes32 key) public view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
+    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
   }
 
   /**
@@ -77,6 +77,10 @@ library ValidationLibV1 {
     s.callerMustBeExactContract(ProtoUtilV1.NS_GOVERNANCE);
   }
 
+  function callerMustBeClaimsProcessorContract(IStore s) external view {
+    s.callerMustBeExactContract(ProtoUtilV1.NS_CLAIMS_PROCESSOR);
+  }
+
   /*********************************************************************************************
    ______  _____  _    _ _______  ______ __   _ _______ __   _ _______ _______
   |  ____ |     |  \  /  |______ |_____/ | \  | |_____| | \  | |       |______
@@ -85,15 +89,15 @@ library ValidationLibV1 {
   *********************************************************************************************/
 
   function mustBeReporting(IStore s, bytes32 key) public view {
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 
   function mustBeDisputed(IStore s, bytes32 key) public view {
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
   function mustBeReportingOrDisputed(IStore s, bytes32 key) public view {
-    CoverUtilV1.CoverStatus status = s.getStatus(key);
+    CoverUtilV1.CoverStatus status = s.getReportingStatus(key);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
@@ -106,6 +110,11 @@ library ValidationLibV1 {
     uint256 incidentDate
   ) public view {
     require(s.getLatestIncidentDate(key) == incidentDate, "Invalid incident date");
+  }
+
+  function mustNotHaveDispute(IStore s, bytes32 key) public view {
+    address reporter = s.getAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key);
+    require(reporter == address(0), "Already disputed");
   }
 
   function mustBeDuringReportingPeriod(IStore s, bytes32 key) public view {
@@ -134,7 +143,7 @@ library ValidationLibV1 {
     address cToken,
     uint256 incidentDate
   ) public view {
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Claim denied");
+    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Claim denied");
 
     s.mustBeProtocolMember(cToken);
     mustBeValidIncidentDate(s, key, incidentDate);

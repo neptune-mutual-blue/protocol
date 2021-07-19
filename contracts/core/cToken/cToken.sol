@@ -21,7 +21,6 @@ import "../Recoverable.sol";
 contract cToken is ICToken, Recoverable, ERC20 {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   bytes32 public override coverKey;
   uint256 public override expiresOn;

@@ -19,7 +19,12 @@ contract Protocol is IProtocol, Recoverable {
   function initialize(
     address nep,
     address treasury,
-    address assuranceVault
+    address assuranceVault,
+    uint256 coverFee,
+    uint256 minStake,
+    uint256 minReportingStake,
+    uint256 minLiquidityPeriod,
+    uint256 claimPeriod
   ) external {
     _mustBeOwnerOrProtoOwner();
 
@@ -34,6 +39,57 @@ contract Protocol is IProtocol, Recoverable {
     s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
     s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
     s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
+
+    setCoverFees(coverFee);
+    setMinStake(minStake);
+    setMinReportingStake(minReportingStake);
+    setMinLiquidityPeriod(minLiquidityPeriod);
+    setClaimPeriod(claimPeriod);
+  }
+
+  function setClaimPeriod(uint256 value) public nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
+
+    emit ClaimPeriodSet(previous, value);
+  }
+
+  function setCoverFees(uint256 value) public nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE, value);
+
+    emit CoverFeeSet(previous, value);
+  }
+
+  function setMinStake(uint256 value) public nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE, value);
+
+    emit MinStakeSet(previous, value);
+  }
+
+  function setMinReportingStake(uint256 value) public nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE, value);
+
+    emit MinReportingStakeSet(previous, value);
+  }
+
+  function setMinLiquidityPeriod(uint256 value) public nonReentrant {
+    _mustBeOwnerOrProtoOwner();
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD, value);
+
+    emit MinLiquidityPeriodSet(previous, value);
   }
 
   function upgradeContract(

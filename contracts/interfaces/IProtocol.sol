@@ -9,6 +9,11 @@ interface IProtocol is IMember {
   event ContractUpgraded(bytes32 namespace, address indexed previous, address indexed current);
   event MemberAdded(address member);
   event MemberRemoved(address member);
+  event CoverFeeSet(uint256 previous, uint256 current);
+  event MinStakeSet(uint256 previous, uint256 current);
+  event MinReportingStakeSet(uint256 previous, uint256 current);
+  event MinLiquidityPeriodSet(uint256 previous, uint256 current);
+  event ClaimPeriodSet(uint256 previous, uint256 current);
 
   function addContract(bytes32 namespace, address contractAddress) external;
 
