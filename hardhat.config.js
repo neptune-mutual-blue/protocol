@@ -11,14 +11,34 @@ require('dotenv').config()
 module.exports = {
   defaultNetwork: 'hardhat',
   networks: {
+    ropsten: {
+      url: 'https://ropsten.infura.io/v3/04f673a8619b4e3f89a49232d453f6f2',
+      chainId: 3,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 30000000000,
+      gas: 'auto'
+    },
+    bsctestnet: {
+      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+      chainId: 97,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 30000000000,
+      gas: 'auto'
+    },
     mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
-      gasPrice: 20000000000,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 30000000000,
+      gas: 'auto'
+    },
+    local: {
+      url: 'http://localhost:8545/',
+      chainId: 1337,
       accounts: [process.env.PRIVATE_KEY]
     }
   },
-  solidity: '0.8.4',
+  solidity: '0.8.7',
   settings: {
     optimizer: {
       enabled: true,
@@ -44,6 +64,6 @@ module.exports = {
     gasPrice: 21
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY
   }
 }

@@ -39,7 +39,7 @@ bytes32 private constant _NS_MEMBERS;
 
 ### 
 
-```solidity
+```js
 function () internal nonpayable
 ```
 
@@ -48,22 +48,11 @@ function () internal nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor() {
-    boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, msg.sender))] = true;
-    boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, address(this)))] = true;
-  }
-```
-</details>
-
 ### recoverEther
 
 Recover all Ether held by the contract.
 
-```solidity
+```js
 function recoverEther(address sendTo) external nonpayable onlyOwner 
 ```
 
@@ -73,22 +62,11 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 | ------------- |------------- | -----|
 | sendTo | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function recoverEther(address sendTo) external onlyOwner {
-    // slither-disable-next-line arbitrary-send
-    payable(sendTo).transfer(address(this).balance);
-  }
-```
-</details>
-
 ### recoverToken
 
 Recover all BEP-20 compatible tokens sent to this address.
 
-```solidity
+```js
 function recoverToken(address token, address sendTo) external nonpayable onlyOwner 
 ```
 
@@ -99,22 +77,9 @@ function recoverToken(address token, address sendTo) external nonpayable onlyOwn
 | token | address | BEP-20 The address of the token contract | 
 | sendTo | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function recoverToken(address token, address sendTo) external onlyOwner {
-    IERC20 bep20 = IERC20(token);
-
-    uint256 balance = bep20.balanceOf(address(this));
-    require(bep20.transfer(sendTo, balance), "Transfer failed");
-  }
-```
-</details>
-
 ### pause
 
-```solidity
+```js
 function pause() external nonpayable onlyOwner 
 ```
 
@@ -123,19 +88,9 @@ function pause() external nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function pause() external onlyOwner {
-    super._pause();
-  }
-```
-</details>
-
 ### unpause
 
-```solidity
+```js
 function unpause() external nonpayable onlyOwner 
 ```
 
@@ -144,19 +99,9 @@ function unpause() external nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function unpause() external onlyOwner {
-    super._unpause();
-  }
-```
-</details>
-
 ### isProtocolMember
 
-```solidity
+```js
 function isProtocolMember(address contractAddress) public view
 returns(bool)
 ```
@@ -167,19 +112,9 @@ returns(bool)
 | ------------- |------------- | -----|
 | contractAddress | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function isProtocolMember(address contractAddress) public view returns (bool) {
-    return boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, contractAddress))];
-  }
-```
-</details>
-
 ### _throwIfPaused
 
-```solidity
+```js
 function _throwIfPaused() internal view
 ```
 
@@ -188,19 +123,9 @@ function _throwIfPaused() internal view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _throwIfPaused() internal view {
-    require(!super.paused(), "Pausable: paused");
-  }
-```
-</details>
-
 ### _throwIfSenderNotProtocol
 
-```solidity
+```js
 function _throwIfSenderNotProtocol() internal view
 ```
 
@@ -208,16 +133,6 @@ function _throwIfSenderNotProtocol() internal view
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _throwIfSenderNotProtocol() internal view {
-    require(isProtocolMember(super._msgSender()), "Forbidden");
-  }
-```
-</details>
 
 ## Contracts
 
@@ -234,12 +149,14 @@ function _throwIfSenderNotProtocol() internal view {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -270,17 +187,21 @@ function _throwIfSenderNotProtocol() internal view {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

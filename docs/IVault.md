@@ -27,7 +27,7 @@ event PodsMinted(address indexed account, uint256  podsMinted, address indexed v
 
 Adds liquidity to the specified cover contract
 
-```solidity
+```js
 function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable
 ```
 
@@ -39,23 +39,11 @@ function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addLiquidityInternal(
-    bytes32 coverKey,
-    address account,
-    uint256 amount
-  ) external;
-```
-</details>
-
 ### addLiquidity
 
 Adds liquidity to the specified cover contract
 
-```solidity
+```js
 function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
@@ -66,19 +54,11 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addLiquidity(bytes32 coverKey, uint256 amount) external;
-```
-</details>
-
 ### removeLiquidity
 
 Removes liquidity from the specified cover contract
 
-```solidity
+```js
 function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
@@ -89,19 +69,11 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to remove. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeLiquidity(bytes32 coverKey, uint256 amount) external;
-```
-</details>
-
 ### transferGovernance
 
 Transfers liquidity to governance contract.
 
-```solidity
+```js
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable
 ```
 
@@ -112,18 +84,6 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 | coverKey | bytes32 | Enter the cover key | 
 | to | address | Enter the destination account | 
 | amount | uint256 | Enter the amount of liquidity token to transfer. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transferGovernance(
-    bytes32 coverKey,
-    address to,
-    uint256 amount
-  ) external;
-```
-</details>
 
 ## Contracts
 
@@ -140,12 +100,14 @@ function transferGovernance(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -176,17 +138,21 @@ function transferGovernance(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

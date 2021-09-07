@@ -1,68 +1,29 @@
-# ReentrancyGuard.sol
+# VaultFactoryLibV1.sol
 
-View Source: [openzeppelin-solidity/contracts/security/ReentrancyGuard.sol](../openzeppelin-solidity/contracts/security/ReentrancyGuard.sol)
+View Source: [contracts/libraries/VaultFactoryLibV1.sol](../contracts/libraries/VaultFactoryLibV1.sol)
 
-**↘ Derived Contracts: [Recoverable](Recoverable.md)**
-
-**ReentrancyGuard**
-
-Contract module that helps prevent reentrant calls to a function.
- Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
- available, which can be applied to functions to make sure there are no nested
- (reentrant) calls to them.
- Note that because there is a single `nonReentrant` guard, functions marked as
- `nonReentrant` may not call one another. This can be worked around by making
- those functions `private`, and then adding `external` `nonReentrant` entry
- points to them.
- TIP: If you would like to learn more about reentrancy and alternative ways
- to protect against it, check out our blog post
- https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
-
-## Contract Members
-**Constants & Variables**
-
-```js
-uint256 private constant _NOT_ENTERED;
-uint256 private constant _ENTERED;
-uint256 private _status;
-
-```
-
-## Modifiers
-
-- [nonReentrant](#nonreentrant)
-
-### nonReentrant
-
-Prevents a contract from calling itself, directly or indirectly.
- Calling a `nonReentrant` function from another `nonReentrant`
- function is not supported. It is possible to prevent this from happening
- by making the `nonReentrant` function external, and make it call a
- `private` function that does the actual work.
-
-```js
-modifier nonReentrant() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+**VaultFactoryLibV1**
 
 ## Functions
 
-- [constructor()](#)
+- [getByteCode(IStore s, bytes32 key, address liquidityToken)](#getbytecode)
 
-### 
+### getByteCode
+
+Gets the bytecode of the `Vault` contract
 
 ```js
-function () internal nonpayable
+function getByteCode(IStore s, bytes32 key, address liquidityToken) external pure
+returns(bytecode bytes, salt bytes32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore | Provide the store instance | 
+| key | bytes32 | Provide the cover key | 
+| liquidityToken | address | Specify the liquidity token for this Vault | 
 
 ## Contracts
 

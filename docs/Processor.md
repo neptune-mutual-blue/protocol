@@ -1,47 +1,82 @@
-# ReentrancyGuard.sol
+# Processor.sol
 
-View Source: [openzeppelin-solidity/contracts/security/ReentrancyGuard.sol](../openzeppelin-solidity/contracts/security/ReentrancyGuard.sol)
+View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Processor.sol)
 
-**↘ Derived Contracts: [Recoverable](Recoverable.md)**
+**↗ Extends: [IClaimsProcessor](IClaimsProcessor.md), [Recoverable](Recoverable.md)**
 
-**ReentrancyGuard**
+**Processor**
 
-Contract module that helps prevent reentrant calls to a function.
- Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
- available, which can be applied to functions to make sure there are no nested
- (reentrant) calls to them.
- Note that because there is a single `nonReentrant` guard, functions marked as
- `nonReentrant` may not call one another. This can be worked around by making
- those functions `private`, and then adding `external` `nonReentrant` entry
- points to them.
- TIP: If you would like to learn more about reentrancy and alternative ways
- to protect against it, check out our blog post
- https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+## Functions
 
-## Contract Members
-**Constants & Variables**
+- [constructor(IStore store)](#)
+- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
+- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
+- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [version()](#version)
+- [getName()](#getname)
+
+### 
 
 ```js
-uint256 private constant _NOT_ENTERED;
-uint256 private constant _ENTERED;
-uint256 private _status;
-
+function (IStore store) public nonpayable Recoverable 
 ```
 
-## Modifiers
+**Arguments**
 
-- [nonReentrant](#nonreentrant)
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| store | IStore |  | 
 
-### nonReentrant
-
-Prevents a contract from calling itself, directly or indirectly.
- Calling a `nonReentrant` function from another `nonReentrant`
- function is not supported. It is possible to prevent this from happening
- by making the `nonReentrant` function external, and make it call a
- `private` function that does the actual work.
+### claim
 
 ```js
-modifier nonReentrant() internal
+function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| cToken | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| amount | uint256 |  | 
+
+### validate
+
+```js
+function validate(address cToken, bytes32 key, uint256 incidentDate) public view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| cToken | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getClaimExpiryDate
+
+```js
+function getClaimExpiryDate(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+### version
+
+Version number of this contract
+
+```js
+function version() external pure
+returns(bytes32)
 ```
 
 **Arguments**
@@ -49,14 +84,13 @@ modifier nonReentrant() internal
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-## Functions
+### getName
 
-- [constructor()](#)
-
-### 
+Name of this contract
 
 ```js
-function () internal nonpayable
+function getName() external pure
+returns(bytes32)
 ```
 
 **Arguments**

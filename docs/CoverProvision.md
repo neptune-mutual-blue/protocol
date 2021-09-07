@@ -25,7 +25,7 @@ Through governance, NEP tokens can be allocated as provision or `Reward Pool Sup
 
 Constructs this contract
 
-```solidity
+```js
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -35,22 +35,12 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide the store contract instance | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
 ### increaseProvision
 
 Increases NEP provision for the given cover key.
  This feature is accessible only to the contract owner (governance).
 
-```solidity
+```js
 function increaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
 ```
 
@@ -61,31 +51,12 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable only
 | key | bytes32 | Provide the cover key you wish to increase the provision of | 
 | amount | uint256 | Specify the amount of NEP tokens you would like to add | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function increaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-
-    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
-
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), amount);
-
-    emit ProvisionIncreased(key, privision, privision + amount);
-  }
-```
-</details>
-
 ### decreaseProvision
 
 Decreases NEP provision for the given cover key
  This feature is accessible only to the contract owner (governance).
 
-```solidity
+```js
 function decreaseProvision(bytes32 key, uint256 amount) external nonpayable onlyOwner nonReentrant 
 ```
 
@@ -96,31 +67,11 @@ function decreaseProvision(bytes32 key, uint256 amount) external nonpayable only
 | key | bytes32 | Provide the cover key you wish to decrease the provision from | 
 | amount | uint256 | Specify the amount of NEP tokens you would like to decrease | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function decreaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-
-    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-
-    require(privision >= amount, "Exceeds Balance"); // Exceeds balance
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
-
-    s.nepToken().ensureTransfer(super.owner(), amount);
-
-    emit ProvisionDecreased(key, privision, privision - amount);
-  }
-```
-</details>
-
 ### getProvision
 
 Gets the NEP provision amount for the given cover key
 
-```solidity
+```js
 function getProvision(bytes32 key) external view
 returns(uint256)
 ```
@@ -131,21 +82,11 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key to get the provision | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getProvision(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -155,21 +96,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -178,16 +109,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER_PROVISION;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -204,12 +125,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -240,17 +163,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

@@ -14,6 +14,11 @@ event ContractAdded(bytes32  namespace, address  contractAddress);
 event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
+event CoverFeeSet(uint256  previous, uint256  current);
+event MinStakeSet(uint256  previous, uint256  current);
+event MinReportingStakeSet(uint256  previous, uint256  current);
+event MinLiquidityPeriodSet(uint256  previous, uint256  current);
+event ClaimPeriodSet(uint256  previous, uint256  current);
 ```
 
 ## Functions
@@ -25,7 +30,7 @@ event MemberRemoved(address  member);
 
 ### addContract
 
-```solidity
+```js
 function addContract(bytes32 namespace, address contractAddress) external nonpayable
 ```
 
@@ -36,17 +41,9 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addContract(bytes32 namespace, address contractAddress) external;
-```
-</details>
-
 ### upgradeContract
 
-```solidity
+```js
 function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable
 ```
 
@@ -58,21 +55,9 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 | previous | address |  | 
 | current | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function upgradeContract(
-    bytes32 namespace,
-    address previous,
-    address current
-  ) external;
-```
-</details>
-
 ### addMember
 
-```solidity
+```js
 function addMember(address member) external nonpayable
 ```
 
@@ -82,17 +67,9 @@ function addMember(address member) external nonpayable
 | ------------- |------------- | -----|
 | member | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addMember(address member) external;
-```
-</details>
-
 ### removeMember
 
-```solidity
+```js
 function removeMember(address member) external nonpayable
 ```
 
@@ -101,14 +78,6 @@ function removeMember(address member) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeMember(address member) external;
-```
-</details>
 
 ## Contracts
 
@@ -125,12 +94,14 @@ function removeMember(address member) external;
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -161,17 +132,21 @@ function removeMember(address member) external;
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

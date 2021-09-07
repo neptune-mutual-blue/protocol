@@ -10,11 +10,12 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 
 - [constructor(string name, string symbol, uint256 supply)](#)
 - [mint(address account, uint256 amount)](#mint)
+- [request()](#request)
 - [burn(uint256 amount)](#burn)
 
 ### 
 
-```solidity
+```js
 function (string name, string symbol, uint256 supply) public nonpayable ERC20 
 ```
 
@@ -26,23 +27,9 @@ function (string name, string symbol, uint256 supply) public nonpayable ERC20
 | symbol | string |  | 
 | supply | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(
-    string memory name,
-    string memory symbol,
-    uint256 supply
-  ) ERC20(name, symbol) {
-    super._mint(super._msgSender(), supply);
-  }
-```
-</details>
-
 ### mint
 
-```solidity
+```js
 function mint(address account, uint256 amount) external nonpayable onlyOwner 
 ```
 
@@ -53,19 +40,22 @@ function mint(address account, uint256 amount) external nonpayable onlyOwner
 | account | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### request
 
-```javascript
-function mint(address account, uint256 amount) external onlyOwner {
-    super._mint(account, amount);
-  }
+Request 100 tokens
+
+```js
+function request() external nonpayable
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 
 ### burn
 
-```solidity
+```js
 function burn(uint256 amount) external nonpayable
 ```
 
@@ -74,16 +64,6 @@ function burn(uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function burn(uint256 amount) external {
-    super._burn(super._msgSender(), amount);
-  }
-```
-</details>
 
 ## Contracts
 
@@ -100,12 +80,14 @@ function burn(uint256 amount) external {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -136,17 +118,21 @@ function burn(uint256 amount) external {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

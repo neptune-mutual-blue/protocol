@@ -2,7 +2,7 @@
 
 View Source: [contracts/core/liquidity/VaultFactory.sol](../contracts/core/liquidity/VaultFactory.sol)
 
-**↗ Extends: [IVaultFactory](IVaultFactory.md)**
+**↗ Extends: [IVaultFactory](IVaultFactory.md), [Recoverable](Recoverable.md)**
 
 **VaultFactory**
 
@@ -12,16 +12,30 @@ As and when required by the protocol,
 
 ## Functions
 
+- [constructor(IStore store)](#)
 - [deploy(IStore s, bytes32 key)](#deploy)
 - [version()](#version)
 - [getName()](#getname)
-- [_getByteCode(IStore s, bytes32 key, address liquidityToken)](#_getbytecode)
+
+### 
+
+Constructs this contract
+
+```js
+function (IStore store) public nonpayable Recoverable 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| store | IStore | Provide the store contract instance | 
 
 ### deploy
 
 Deploys a new instance of Vault
 
-```solidity
+```js
 function deploy(IStore s, bytes32 key) external nonpayable
 returns(addr address)
 ```
@@ -33,40 +47,11 @@ returns(addr address)
 | s | IStore | Provide the store contract instance | 
 | key | bytes32 | Enter the cover key related to this Vault instance | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deploy(IStore s, bytes32 key) external override returns (address addr) {
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER, msg.sender); // Ensure the caller is the latest cover contract
-
-    (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, s.getLiquidityToken());
-
-    // solhint-disable-next-line
-    assembly {
-      addr := create2(
-        callvalue(), // wei sent with current call
-        // Actual code starts after skipping the first 32 bytes
-        add(bytecode, 0x20),
-        mload(bytecode), // Load the size of code contained in the first 32 bytes
-        salt // Salt from function arguments
-      )
-
-      if iszero(extcodesize(addr)) {
-        revert(0, 0)
-      }
-    }
-
-    emit VaultDeployed(key, addr);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -76,21 +61,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -99,46 +74,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_VAULT_FACTORY;
-  }
-```
-</details>
-
-### _getByteCode
-
-```solidity
-function _getByteCode(IStore s, bytes32 key, address liquidityToken) private pure
-returns(bytecode bytes, salt bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| liquidityToken | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getByteCode(
-    IStore s,
-    bytes32 key,
-    address liquidityToken
-  ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key).toKeccak256();
-    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
-  }
-```
-</details>
 
 ## Contracts
 
@@ -155,12 +90,14 @@ function _getByteCode(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -191,17 +128,21 @@ function _getByteCode(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

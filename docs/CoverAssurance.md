@@ -25,7 +25,7 @@ Assurance tokens can be added by a covered project to demonstrate coverage suppo
 
 ### 
 
-```solidity
+```js
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -35,21 +35,11 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
 ### addAssurance
 
 Adds assurance to the specified cover contract
 
-```solidity
+```js
 function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -61,35 +51,9 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 | account | address |  | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addAssurance(
-    bytes32 key,
-    address account,
-    uint256 amount
-  ) external override nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeValidCoverKey(key); // Ensures the key is valid cover
-
-    require(amount > 0, "Provide valid amount");
-
-    IERC20 assuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key));
-    address vault = s.getAssuranceVault();
-
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key, amount);
-
-    assuranceToken.ensureTransferFrom(account, vault, amount);
-
-    emit AssuranceAdded(key, amount);
-  }
-```
-</details>
-
 ### setWeight
 
-```solidity
+```js
 function setWeight(bytes32 key, uint256 weight) external nonpayable nonReentrant 
 ```
 
@@ -100,25 +64,11 @@ function setWeight(bytes32 key, uint256 weight) external nonpayable nonReentrant
 | key | bytes32 |  | 
 | weight | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-    _mustBeUnpaused();
-    s.mustBeValidCoverKey(key); // Ensures the key is valid cover
-
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
-  }
-```
-</details>
-
 ### getAssurance
 
 Gets the assurance amount of the specified cover contract
 
-```solidity
+```js
 function getAssurance(bytes32 key) external view
 returns(uint256)
 ```
@@ -129,21 +79,11 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAssurance(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -153,21 +93,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -176,16 +106,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER_ASSURANCE;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -202,12 +122,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -238,17 +160,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

@@ -17,10 +17,14 @@ event Disputed(bytes32 indexed key, address indexed reporter, uint256  incidentD
 
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [getMinStake()](#getminstake)
+- [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
+- [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
+- [getResolutionDate(bytes32 key)](#getresolutiondate)
 
 ### report
 
-```solidity
+```js
 function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable
 ```
 
@@ -32,21 +36,9 @@ function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable
 | info | bytes32 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function report(
-    bytes32 key,
-    bytes32 info,
-    uint256 stake
-  ) external;
-```
-</details>
-
 ### dispute
 
-```solidity
+```js
 function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable
 ```
 
@@ -59,18 +51,57 @@ function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)
 | info | bytes32 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### getMinStake
 
-```javascript
-function dispute(
-    bytes32 key,
-    uint256 incidentDate,
-    bytes32 info,
-    uint256 stake
-  ) external;
+```js
+function getMinStake() external view
+returns(uint256)
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### getActiveIncidentDate
+
+```js
+function getActiveIncidentDate(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+### getReporter
+
+```js
+function getReporter(bytes32 key, uint256 incidentDate) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getResolutionDate
+
+```js
+function getResolutionDate(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ## Contracts
 
@@ -87,12 +118,14 @@ function dispute(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -123,17 +156,21 @@ function dispute(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

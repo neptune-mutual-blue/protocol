@@ -19,7 +19,7 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 
 Constructs this smart contract
 
-```solidity
+```js
 function (IStore store) internal nonpayable Recoverable 
 ```
 
@@ -29,21 +29,11 @@ function (IStore store) internal nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide the address of an eternal storage contract to use.  This contract must be a member of the Protocol for write access to the storage | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
 ### initialize
 
 Initializes this contract
 
-```solidity
+```js
 function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable
 ```
 
@@ -54,25 +44,11 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 | liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
 | liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function initialize(address liquidityToken, bytes32 liquidityName) external override {
-    _mustBeOwnerOrProtoMember();
-    require(s.getAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN) == address(0), "Already initialized");
-
-    s.setAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN, liquidityToken);
-    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
-  }
-```
-</details>
-
 ### getCover
 
 Get more information about this cover contract
 
-```solidity
+```js
 function getCover(bytes32 key) external view
 returns(coverOwner address, info bytes32, values uint256[])
 ```
@@ -83,29 +59,11 @@ returns(coverOwner address, info bytes32, values uint256[])
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCover(bytes32 key)
-    external override
-    view
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    return s.getCoverInfo(key);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -115,21 +73,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -138,16 +86,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -164,12 +102,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -200,17 +140,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

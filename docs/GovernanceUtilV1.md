@@ -6,219 +6,21 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 
 ## Functions
 
-- [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
-- [mustBeDisputed(IStore s, bytes32 key)](#mustbedisputed)
-- [mustBeReportingOrDisputed(IStore s, bytes32 key)](#mustbereportingordisputed)
-- [mustBeValidIncidentDate(IStore s, bytes32 key, uint256 incidentDate)](#mustbevalidincidentdate)
-- [mustBeDuringReportingPeriod(IStore s, bytes32 key)](#mustbeduringreportingperiod)
-- [mustBeAfterReportingPeriod(IStore s, bytes32 key)](#mustbeafterreportingperiod)
-- [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
-- [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
 - [getMinReportingStake(IStore s)](#getminreportingstake)
-- [getReporter(IStore s, bytes32 key)](#getreporter)
 - [getLatestIncidentDate(IStore s, bytes32 key)](#getlatestincidentdate)
+- [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
+- [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
+- [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
+- [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
+- [addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#addattestation)
+- [getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate)](#getattestation)
+- [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
+- [getDispute(IStore s, bytes32 key, address who, uint256 incidentDate)](#getdispute)
 - [_getLatestIncidentDate(IStore s, bytes32 key)](#_getlatestincidentdate)
-
-### mustBeReporting
-
-```solidity
-function mustBeReporting(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeReporting(IStore s, bytes32 key) external view {
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
-  }
-```
-</details>
-
-### mustBeDisputed
-
-```solidity
-function mustBeDisputed(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeDisputed(IStore s, bytes32 key) external view {
-    require(s.getStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
-  }
-```
-</details>
-
-### mustBeReportingOrDisputed
-
-```solidity
-function mustBeReportingOrDisputed(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeReportingOrDisputed(IStore s, bytes32 key) external view {
-    CoverUtilV1.CoverStatus status = s.getStatus(key);
-    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
-    bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
-
-    require(incidentHappened || falseReporting, "Not reporting or disputed");
-  }
-```
-</details>
-
-### mustBeValidIncidentDate
-
-```solidity
-function mustBeValidIncidentDate(IStore s, bytes32 key, uint256 incidentDate) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeValidIncidentDate(
-    IStore s,
-    bytes32 key,
-    uint256 incidentDate
-  ) external view {
-    require(_getLatestIncidentDate(s, key) == incidentDate, "Invalid incident date");
-  }
-```
-</details>
-
-### mustBeDuringReportingPeriod
-
-```solidity
-function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view {
-    require(s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
-  }
-```
-</details>
-
-### mustBeAfterReportingPeriod
-
-```solidity
-function mustBeAfterReportingPeriod(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeAfterReportingPeriod(IStore s, bytes32 key) external view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
-  }
-```
-</details>
-
-### mustBeDuringClaimPeriod
-
-```solidity
-function mustBeDuringClaimPeriod(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeDuringClaimPeriod(IStore s, bytes32 key) external view {
-    uint256 resolutionDate = s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
-    require(block.timestamp >= resolutionDate, "Reporting still active"); // solhint-disable-line
-
-    uint256 claimExpiry = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
-    require(block.timestamp <= claimExpiry, "Claim period has expired"); // solhint-disable-line
-  }
-```
-</details>
-
-### mustBeAfterClaimExpiry
-
-```solidity
-function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key), "Claim still active"); // solhint-disable-line
-  }
-```
-</details>
 
 ### getMinReportingStake
 
-```solidity
+```js
 function getMinReportingStake(IStore s) external view
 returns(uint256)
 ```
@@ -229,47 +31,9 @@ returns(uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getMinReportingStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
-  }
-```
-</details>
-
-### getReporter
-
-```solidity
-function getReporter(IStore s, bytes32 key) external view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReporter(IStore s, bytes32 key) external view returns (address) {
-    uint256 no = s.getUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key);
-    uint256 yes = s.getUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
-
-    bytes32 prefix = yes > no ? ProtoUtilV1.NS_REPORTING_WITNESS_YES : ProtoUtilV1.NS_REPORTING_WITNESS_NO;
-    return s.getAddressByKeys(prefix, key);
-  }
-```
-</details>
-
 ### getLatestIncidentDate
 
-```solidity
+```js
 function getLatestIncidentDate(IStore s, bytes32 key) external view
 returns(uint256)
 ```
@@ -281,19 +45,133 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### getReporter
 
-```javascript
-function getLatestIncidentDate(IStore s, bytes32 key) external view returns (uint256) {
-    return _getLatestIncidentDate(s, key);
-  }
+```js
+function getReporter(IStore s, bytes32 key, uint256 incidentDate) external view
+returns(address)
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getStakes
+
+```js
+function getStakes(IStore s, bytes32 key, uint256 incidentDate) public view
+returns(yes uint256, no uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getStakesOf
+
+```js
+function getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(yes uint256, no uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### updateCoverStatus
+
+```js
+function updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### addAttestation
+
+```js
+function addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+| stake | uint256 |  | 
+
+### getAttestation
+
+```js
+function getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+
+### addDispute
+
+```js
+function addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+| stake | uint256 |  | 
+
+### getDispute
+
+```js
+function getDispute(IStore s, bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
 
 ### _getLatestIncidentDate
 
-```solidity
+```js
 function _getLatestIncidentDate(IStore s, bytes32 key) private view
 returns(uint256)
 ```
@@ -304,16 +182,6 @@ returns(uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
-  }
-```
-</details>
 
 ## Contracts
 
@@ -330,12 +198,14 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -366,17 +236,21 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

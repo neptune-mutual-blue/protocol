@@ -9,7 +9,12 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address nep, address treasury, address assuranceVault)](#initialize)
+- [initialize(address nep, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod)](#initialize)
+- [setClaimPeriod(uint256 value)](#setclaimperiod)
+- [setCoverFees(uint256 value)](#setcoverfees)
+- [setMinStake(uint256 value)](#setminstake)
+- [setMinReportingStake(uint256 value)](#setminreportingstake)
+- [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [removeMember(address member)](#removemember)
@@ -19,7 +24,7 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 
 ### 
 
-```solidity
+```js
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -29,20 +34,10 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
 ### initialize
 
-```solidity
-function initialize(address nep, address treasury, address assuranceVault) external nonpayable
+```js
+function initialize(address nep, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod) external nonpayable
 ```
 
 **Arguments**
@@ -52,36 +47,75 @@ function initialize(address nep, address treasury, address assuranceVault) exter
 | nep | address |  | 
 | treasury | address |  | 
 | assuranceVault | address |  | 
+| coverFee | uint256 |  | 
+| minStake | uint256 |  | 
+| minReportingStake | uint256 |  | 
+| minLiquidityPeriod | uint256 |  | 
+| claimPeriod | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### setClaimPeriod
 
-```javascript
-function initialize(
-    address nep,
-    address treasury,
-    address assuranceVault
-  ) external {
-    _mustBeOwnerOrProtoOwner();
-
-    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NEP) == address(0), "Already initialized");
-    require(nep != address(0), "Invalid NEP");
-    require(treasury != address(0), "Invalid Treasury");
-    require(assuranceVault != address(0), "Invalid Vault");
-
-    s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
-    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
-    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NEP, nep);
-    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
-    s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
-    s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
-  }
+```js
+function setClaimPeriod(uint256 value) public nonpayable nonReentrant 
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+### setCoverFees
+
+```js
+function setCoverFees(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+### setMinStake
+
+```js
+function setMinStake(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+### setMinReportingStake
+
+```js
+function setMinReportingStake(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+### setMinLiquidityPeriod
+
+```js
+function setMinLiquidityPeriod(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
 
 ### upgradeContract
 
-```solidity
+```js
 function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable onlyOwner 
 ```
 
@@ -93,26 +127,9 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 | previous | address |  | 
 | current | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function upgradeContract(
-    bytes32 namespace,
-    address previous,
-    address current
-  ) external override onlyOwner {
-    _mustBeUnpaused();
-
-    s.upgradeContract(namespace, previous, current);
-    emit ContractUpgraded(namespace, previous, current);
-  }
-```
-</details>
-
 ### addContract
 
-```solidity
+```js
 function addContract(bytes32 namespace, address contractAddress) external nonpayable onlyOwner 
 ```
 
@@ -123,22 +140,9 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addContract(bytes32 namespace, address contractAddress) external override onlyOwner {
-    _mustBeUnpaused();
-
-    s.addContract(namespace, contractAddress);
-    emit ContractAdded(namespace, contractAddress);
-  }
-```
-</details>
-
 ### removeMember
 
-```solidity
+```js
 function removeMember(address member) external nonpayable onlyOwner 
 ```
 
@@ -148,22 +152,9 @@ function removeMember(address member) external nonpayable onlyOwner
 | ------------- |------------- | -----|
 | member | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeMember(address member) external override onlyOwner {
-    _mustBeUnpaused();
-
-    s.removeMember(member);
-    emit MemberRemoved(member);
-  }
-```
-</details>
-
 ### addMember
 
-```solidity
+```js
 function addMember(address member) external nonpayable onlyOwner 
 ```
 
@@ -173,24 +164,11 @@ function addMember(address member) external nonpayable onlyOwner
 | ------------- |------------- | -----|
 | member | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addMember(address member) external override onlyOwner {
-    _mustBeUnpaused();
-
-    s.addMember(member);
-    emit MemberAdded(member);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -200,21 +178,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -223,16 +191,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return "Neptune Mutual Protocol";
-  }
-```
-</details>
 
 ## Contracts
 
@@ -249,12 +207,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -285,17 +245,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

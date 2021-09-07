@@ -23,7 +23,7 @@ address public constant BAD;
 
 ### 
 
-```solidity
+```js
 function () public nonpayable ERC20 
 ```
 
@@ -32,19 +32,9 @@ function () public nonpayable ERC20
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor() ERC20("Malicious Token", "MAL") {
-    this;
-  }
-```
-</details>
-
 ### mint
 
-```solidity
+```js
 function mint(address account, uint256 amount) external nonpayable
 ```
 
@@ -55,19 +45,9 @@ function mint(address account, uint256 amount) external nonpayable
 | account | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mint(address account, uint256 amount) external {
-    super._mint(account, amount);
-  }
-```
-</details>
-
 ### transfer
 
-```solidity
+```js
 function transfer(address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -79,22 +59,9 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transfer(address recipient, uint256 amount) public override returns (bool) {
-    _transfer(super._msgSender(), BAD, (amount * 10) / 100);
-    _transfer(super._msgSender(), recipient, (amount * 90) / 100);
-
-    return true;
-  }
-```
-</details>
-
 ### transferFrom
 
-```solidity
+```js
 function transferFrom(address sender, address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -106,23 +73,6 @@ returns(bool)
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transferFrom(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) public override returns (bool) {
-    super.transferFrom(sender, BAD, (amount * 10) / 100);
-    super.transferFrom(sender, recipient, (amount * 90) / 100);
-
-    return true;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -139,12 +89,14 @@ function transferFrom(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -175,17 +127,21 @@ function transferFrom(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

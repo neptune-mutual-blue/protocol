@@ -1,8 +1,10 @@
 const composer = require('../stories/composer')
+const DEPLOYMENT_ID = 2
 
 const deploy = async () => {
-  global.logDeployments = true
-  await composer.initializer.initialize()
+  global.log = true
+
+  await composer.initializer.initialize(false, DEPLOYMENT_ID)
 }
 
 deploy()

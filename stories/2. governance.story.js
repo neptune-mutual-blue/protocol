@@ -14,7 +14,11 @@ const constants = {
   DAYS: 86400,
   cTokens: {},
   reportInfo: {
-    foo: 'bar'
+    title: 'Test Exploit',
+    observed: new Date(),
+    proofOfIncident: 'https://etherscan.io/tokenholdings?a=0xA9AD3537C819ae0530623aFb458Fee8456C47d33',
+    description: 'Foobar',
+    stake: '0'
   },
   coverAmounts: {
     kimberly: 500_000,
@@ -64,7 +68,7 @@ const refute = async (id, user, stake) => {
 
 describe('Governance Stories', () => {
   before(async () => {
-    contracts = await composer.initializer.initialize()
+    contracts = await composer.initializer.initialize(true)
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
     const info = await ipfs.write(sample.info)
@@ -122,7 +126,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Claim denied')
+      .should.be.revertedWith('Your claim is denied')
   })
 
   it('the cover `Compound Finance` has no known incidents', async () => {
@@ -313,7 +317,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Claim denied')
+      .should.be.revertedWith('Your claim is denied')
   })
 
   it('george again attested with a very large stake', async () => {

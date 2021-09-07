@@ -11,7 +11,7 @@ View Source: [contracts/libraries/NTransferUtilV2.sol](../contracts/libraries/NT
 
 ### ensureTransfer
 
-```solidity
+```js
 function ensureTransfer(IERC20 malicious, address recipient, uint256 amount) external nonpayable
 ```
 
@@ -23,32 +23,9 @@ function ensureTransfer(IERC20 malicious, address recipient, uint256 amount) ext
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function ensureTransfer(
-    IERC20 malicious,
-    address recipient,
-    uint256 amount
-  ) external {
-    require(recipient != address(0), "Invalid recipient");
-    require(amount > 0, "Invalid transfer amount");
-
-    uint256 pre = malicious.balanceOf(recipient);
-    malicious.safeTransfer(recipient, amount);
-
-    uint256 post = malicious.balanceOf(recipient);
-
-    // slither-disable-next-line incorrect-equality
-    require(post.sub(pre) == amount, "Invalid transfer");
-  }
-```
-</details>
-
 ### ensureTransferFrom
 
-```solidity
+```js
 function ensureTransferFrom(IERC20 malicious, address sender, address recipient, uint256 amount) external nonpayable
 ```
 
@@ -60,29 +37,6 @@ function ensureTransferFrom(IERC20 malicious, address sender, address recipient,
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function ensureTransferFrom(
-    IERC20 malicious,
-    address sender,
-    address recipient,
-    uint256 amount
-  ) external {
-    require(recipient != address(0), "Invalid recipient");
-    require(amount > 0, "Invalid transfer amount");
-
-    uint256 pre = malicious.balanceOf(recipient);
-    malicious.safeTransferFrom(sender, recipient, amount);
-    uint256 post = malicious.balanceOf(recipient);
-
-    // slither-disable-next-line incorrect-equality
-    require(post.sub(pre) == amount, "Invalid transfer");
-  }
-```
-</details>
 
 ## Contracts
 
@@ -99,12 +53,14 @@ function ensureTransferFrom(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -135,17 +91,21 @@ function ensureTransferFrom(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

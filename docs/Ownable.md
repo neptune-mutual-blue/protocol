@@ -53,12 +53,13 @@ modifier onlyOwner() internal
 - [owner()](#owner)
 - [renounceOwnership()](#renounceownership)
 - [transferOwnership(address newOwner)](#transferownership)
+- [_setOwner(address newOwner)](#_setowner)
 
 ### 
 
 Initializes the contract setting the deployer as the initial owner.
 
-```solidity
+```js
 function () internal nonpayable
 ```
 
@@ -67,23 +68,11 @@ function () internal nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor () {
-        address msgSender = _msgSender();
-        _owner = msgSender;
-        emit OwnershipTransferred(address(0), msgSender);
-    }
-```
-</details>
-
 ### owner
 
 Returns the address of the current owner.
 
-```solidity
+```js
 function owner() public view
 returns(address)
 ```
@@ -93,16 +82,6 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function owner() public view virtual returns (address) {
-        return _owner;
-    }
-```
-</details>
-
 ### renounceOwnership
 
 Leaves the contract without owner. It will not be possible to call
@@ -110,7 +89,7 @@ Leaves the contract without owner. It will not be possible to call
  NOTE: Renouncing ownership will leave the contract without an owner,
  thereby removing any functionality that is only available to the owner.
 
-```solidity
+```js
 function renounceOwnership() public nonpayable onlyOwner 
 ```
 
@@ -119,23 +98,12 @@ function renounceOwnership() public nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function renounceOwnership() public virtual onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
-    }
-```
-</details>
-
 ### transferOwnership
 
 Transfers ownership of the contract to a new account (`newOwner`).
  Can only be called by the current owner.
 
-```solidity
+```js
 function transferOwnership(address newOwner) public nonpayable onlyOwner 
 ```
 
@@ -145,17 +113,17 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 | ------------- |------------- | -----|
 | newOwner | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### _setOwner
 
-```javascript
-function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
-        emit OwnershipTransferred(_owner, newOwner);
-        _owner = newOwner;
-    }
+```js
+function _setOwner(address newOwner) private nonpayable
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| newOwner | address |  | 
 
 ## Contracts
 
@@ -172,12 +140,14 @@ function transferOwnership(address newOwner) public virtual onlyOwner {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -208,17 +178,21 @@ function transferOwnership(address newOwner) public virtual onlyOwner {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

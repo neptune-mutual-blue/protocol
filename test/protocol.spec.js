@@ -3,6 +3,7 @@
 const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../util')
 const DAYS = 86400
+const cache = null
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -15,18 +16,18 @@ describe('Constructor & Initializer', () => {
   let nep, store, storeKeyUtil, protoUtilV1
 
   beforeEach(async () => {
-    store = await deployer.deploy('FakeStore')
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    store = await deployer.deploy(cache, 'FakeStore')
+    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
 
-    storeKeyUtil = await deployer.deploy('StoreKeyUtil')
+    storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
-    protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
+    protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
       StoreKeyUtil: storeKeyUtil.address
     })
   })
 
   it('should deploy correctly', async () => {
-    const protocol = await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -53,7 +54,7 @@ describe('Constructor & Initializer', () => {
   })
 
   it('should correctly set storage values', async () => {
-    const protocol = await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -95,7 +96,7 @@ describe('Constructor & Initializer', () => {
   })
 
   it('should fail when zero address is provided as store', async () => {
-    await deployer.deployWithLibraries('Protocol',
+    await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -105,7 +106,7 @@ describe('Constructor & Initializer', () => {
   })
 
   it('should fail when zero address is provided as NEP', async () => {
-    const protocol = await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -129,7 +130,7 @@ describe('Constructor & Initializer', () => {
   })
 
   it('should fail when zero address is provided as treasury', async () => {
-    const protocol = await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -153,7 +154,7 @@ describe('Constructor & Initializer', () => {
   })
 
   it('should fail when zero address is provided as assurance vault', async () => {
-    const protocol = await deployer.deployWithLibraries('Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -183,16 +184,16 @@ describe('Adding a New Protocol Contract', () => {
   let nep, store, protocol
 
   beforeEach(async () => {
-    store = await deployer.deploy('FakeStore')
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    store = await deployer.deploy(cache, 'FakeStore')
+    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
 
-    const storeKeyUtil = await deployer.deploy('StoreKeyUtil')
+    const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
-    const protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
+    const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
       StoreKeyUtil: storeKeyUtil.address
     })
 
-    protocol = await deployer.deployWithLibraries('Protocol',
+    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -236,16 +237,16 @@ describe('Upgrading Protocol Contract(s)', () => {
   let nep, store, protocol
 
   beforeEach(async () => {
-    store = await deployer.deploy('FakeStore')
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    store = await deployer.deploy(cache, 'FakeStore')
+    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
 
-    const storeKeyUtil = await deployer.deploy('StoreKeyUtil')
+    const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
-    const protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
+    const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
       StoreKeyUtil: storeKeyUtil.address
     })
 
-    protocol = await deployer.deployWithLibraries('Protocol',
+    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -309,16 +310,16 @@ describe('Adding a New Protocol Member', () => {
   let nep, store, protocol
 
   beforeEach(async () => {
-    store = await deployer.deploy('FakeStore')
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    store = await deployer.deploy(cache, 'FakeStore')
+    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
 
-    const storeKeyUtil = await deployer.deploy('StoreKeyUtil')
+    const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
-    const protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
+    const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
       StoreKeyUtil: storeKeyUtil.address
     })
 
-    protocol = await deployer.deployWithLibraries('Protocol',
+    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address
@@ -367,16 +368,16 @@ describe('Removing Protocol Member(s)', () => {
   let nep, store, protocol
 
   beforeEach(async () => {
-    store = await deployer.deploy('FakeStore')
-    nep = await deployer.deploy('FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    store = await deployer.deploy(cache, 'FakeStore')
+    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
 
-    const storeKeyUtil = await deployer.deploy('StoreKeyUtil')
+    const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
-    const protoUtilV1 = await deployer.deployWithLibraries('ProtoUtilV1', {
+    const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
       StoreKeyUtil: storeKeyUtil.address
     })
 
-    protocol = await deployer.deployWithLibraries('Protocol',
+    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
         ProtoUtilV1: protoUtilV1.address

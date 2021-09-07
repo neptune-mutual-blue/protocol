@@ -11,11 +11,14 @@ View Source: [contracts/core/governance/Reporter.sol](../contracts/core/governan
 
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
-- [getReporter(bytes32 key)](#getreporter)
+- [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
+- [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
+- [getResolutionDate(bytes32 key)](#getresolutiondate)
+- [getMinStake()](#getminstake)
 
 ### report
 
-```solidity
+```js
 function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable nonReentrant 
 ```
 
@@ -27,53 +30,9 @@ function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable no
 | info | bytes32 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function report(
-    bytes32 key,
-    bytes32 info,
-    uint256 stake
-  ) external override nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeValidCover(key);
-
-    uint256 incidentDate = block.timestamp; // solhint-disable-line
-    uint256 minStake = s.getMinReportingStake();
-    require(stake >= minStake, "Stake insufficient");
-
-    // Set the reporter's account
-    s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, super._msgSender());
-
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key, incidentDate);
-
-    // Set the Resolution Timestamp
-    uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
-    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, resolutionDate);
-
-    // Set the claim expiry timestamp
-    uint256 claimExpiry = resolutionDate + s.getClaimPeriod(key);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiry);
-
-    // Update the values
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, stake);
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, super._msgSender(), stake);
-
-    // Update the cover to "Incident Happened"
-    s.setStatus(key, CoverUtilV1.CoverStatus.IncidentHappened);
-
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
-
-    emit Reported(key, super._msgSender(), incidentDate, info, stake);
-    emit Attested(key, super._msgSender(), incidentDate, stake);
-  }
-```
-</details>
-
 ### dispute
 
-```solidity
+```js
 function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
 ```
 
@@ -86,47 +45,11 @@ function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)
 | info | bytes32 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### getActiveIncidentDate
 
-```javascript
-function dispute(
-    bytes32 key,
-    uint256 incidentDate,
-    bytes32 info,
-    uint256 stake
-  ) external override nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeReporting(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeDuringReportingPeriod(key);
-
-    uint256 minStake = s.getMinReportingStake();
-    require(stake >= minStake, "Stake insufficient");
-
-    // Set the reporter's account
-    s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, super._msgSender());
-
-    // Update the values
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, stake);
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, super._msgSender(), stake);
-
-    // Update the cover to "False Reporting"
-    s.setStatus(key, CoverUtilV1.CoverStatus.FalseReporting);
-
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
-
-    emit Disputed(key, super._msgSender(), incidentDate, info, stake);
-    emit Refuted(key, super._msgSender(), incidentDate, stake);
-  }
-```
-</details>
-
-### getReporter
-
-```solidity
-function getReporter(bytes32 key) external view
-returns(address)
+```js
+function getActiveIncidentDate(bytes32 key) external view
+returns(uint256)
 ```
 
 **Arguments**
@@ -135,15 +58,44 @@ returns(address)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### getReporter
 
-```javascript
-function getReporter(bytes32 key) external view returns (address) {
-    return s.getReporter(key);
-  }
+```js
+function getReporter(bytes32 key, uint256 incidentDate) external view
+returns(address)
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getResolutionDate
+
+```js
+function getResolutionDate(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+### getMinStake
+
+```js
+function getMinStake() public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 
 ## Contracts
 
@@ -160,12 +112,14 @@ function getReporter(bytes32 key) external view returns (address) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -196,17 +150,21 @@ function getReporter(bytes32 key) external view returns (address) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

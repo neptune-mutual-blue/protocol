@@ -14,9 +14,10 @@ Implementation of the {IERC20} interface.
  TIP: For a detailed writeup see our guide
  https://forum.zeppelin.solutions/t/how-to-implement-erc20-supply-mechanisms/226[How
  to implement supply mechanisms].
- We have followed general OpenZeppelin guidelines: functions revert instead
- of returning `false` on failure. This behavior is nonetheless conventional
- and does not conflict with the expectations of ERC20 applications.
+ We have followed general OpenZeppelin Contracts guidelines: functions revert
+ instead returning `false` on failure. This behavior is nonetheless
+ conventional and does not conflict with the expectations of ERC20
+ applications.
  Additionally, an {Approval} event is emitted on calls to {transferFrom}.
  This allows applications to reconstruct the allowance for all accounts just
  by listening to said events. Other implementations of the EIP may not emit
@@ -56,16 +57,17 @@ string private _symbol;
 - [_burn(address account, uint256 amount)](#_burn)
 - [_approve(address owner, address spender, uint256 amount)](#_approve)
 - [_beforeTokenTransfer(address from, address to, uint256 amount)](#_beforetokentransfer)
+- [_afterTokenTransfer(address from, address to, uint256 amount)](#_aftertokentransfer)
 
 ### 
 
 Sets the values for {name} and {symbol}.
- The defaut value of {decimals} is 18. To select a different value for
+ The default value of {decimals} is 18. To select a different value for
  {decimals} you should overload it.
  All two of these values are immutable: they can only be set once during
  construction.
 
-```solidity
+```js
 function (string name_, string symbol_) public nonpayable
 ```
 
@@ -76,22 +78,11 @@ function (string name_, string symbol_) public nonpayable
 | name_ | string |  | 
 | symbol_ | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor (string memory name_, string memory symbol_) {
-        _name = name_;
-        _symbol = symbol_;
-    }
-```
-</details>
-
 ### name
 
 Returns the name of the token.
 
-```solidity
+```js
 function name() public view
 returns(string)
 ```
@@ -101,22 +92,12 @@ returns(string)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function name() public view virtual override returns (string memory) {
-        return _name;
-    }
-```
-</details>
-
 ### symbol
 
 Returns the symbol of the token, usually a shorter version of the
  name.
 
-```solidity
+```js
 function symbol() public view
 returns(string)
 ```
@@ -126,21 +107,11 @@ returns(string)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function symbol() public view virtual override returns (string memory) {
-        return _symbol;
-    }
-```
-</details>
-
 ### decimals
 
 Returns the number of decimals used to get its user representation.
  For example, if `decimals` equals `2`, a balance of `505` tokens should
- be displayed to a user as `5,05` (`505 / 10 ** 2`).
+ be displayed to a user as `5.05` (`505 / 10 ** 2`).
  Tokens usually opt for a value of 18, imitating the relationship between
  Ether and Wei. This is the value {ERC20} uses, unless this function is
  overridden;
@@ -148,7 +119,7 @@ Returns the number of decimals used to get its user representation.
  no way affects any of the arithmetic of the contract, including
  {IERC20-balanceOf} and {IERC20-transfer}.
 
-```solidity
+```js
 function decimals() public view
 returns(uint8)
 ```
@@ -158,21 +129,11 @@ returns(uint8)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function decimals() public view virtual override returns (uint8) {
-        return 18;
-    }
-```
-</details>
-
 ### totalSupply
 
 See {IERC20-totalSupply}.
 
-```solidity
+```js
 function totalSupply() public view
 returns(uint256)
 ```
@@ -182,21 +143,11 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function totalSupply() public view virtual override returns (uint256) {
-        return _totalSupply;
-    }
-```
-</details>
-
 ### balanceOf
 
 See {IERC20-balanceOf}.
 
-```solidity
+```js
 function balanceOf(address account) public view
 returns(uint256)
 ```
@@ -207,16 +158,6 @@ returns(uint256)
 | ------------- |------------- | -----|
 | account | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function balanceOf(address account) public view virtual override returns (uint256) {
-        return _balances[account];
-    }
-```
-</details>
-
 ### transfer
 
 See {IERC20-transfer}.
@@ -224,7 +165,7 @@ See {IERC20-transfer}.
  - `recipient` cannot be the zero address.
  - the caller must have a balance of at least `amount`.
 
-```solidity
+```js
 function transfer(address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -236,22 +177,11 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
-        _transfer(_msgSender(), recipient, amount);
-        return true;
-    }
-```
-</details>
-
 ### allowance
 
 See {IERC20-allowance}.
 
-```solidity
+```js
 function allowance(address owner, address spender) public view
 returns(uint256)
 ```
@@ -263,23 +193,13 @@ returns(uint256)
 | owner | address |  | 
 | spender | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function allowance(address owner, address spender) public view virtual override returns (uint256) {
-        return _allowances[owner][spender];
-    }
-```
-</details>
-
 ### approve
 
 See {IERC20-approve}.
  Requirements:
  - `spender` cannot be the zero address.
 
-```solidity
+```js
 function approve(address spender, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -290,17 +210,6 @@ returns(bool)
 | ------------- |------------- | -----|
 | spender | address |  | 
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function approve(address spender, uint256 amount) public virtual override returns (bool) {
-        _approve(_msgSender(), spender, amount);
-        return true;
-    }
-```
-</details>
 
 ### transferFrom
 
@@ -313,7 +222,7 @@ See {IERC20-transferFrom}.
  - the caller must have allowance for ``sender``'s tokens of at least
  `amount`.
 
-```solidity
+```js
 function transferFrom(address sender, address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -326,22 +235,6 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
-        _transfer(sender, recipient, amount);
-
-        uint256 currentAllowance = _allowances[sender][_msgSender()];
-        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
-        _approve(sender, _msgSender(), currentAllowance - amount);
-
-        return true;
-    }
-```
-</details>
-
 ### increaseAllowance
 
 Atomically increases the allowance granted to `spender` by the caller.
@@ -351,7 +244,7 @@ Atomically increases the allowance granted to `spender` by the caller.
  Requirements:
  - `spender` cannot be the zero address.
 
-```solidity
+```js
 function increaseAllowance(address spender, uint256 addedValue) public nonpayable
 returns(bool)
 ```
@@ -362,17 +255,6 @@ returns(bool)
 | ------------- |------------- | -----|
 | spender | address |  | 
 | addedValue | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
-        return true;
-    }
-```
-</details>
 
 ### decreaseAllowance
 
@@ -385,7 +267,7 @@ Atomically decreases the allowance granted to `spender` by the caller.
  - `spender` must have allowance for the caller of at least
  `subtractedValue`.
 
-```solidity
+```js
 function decreaseAllowance(address spender, uint256 subtractedValue) public nonpayable
 returns(bool)
 ```
@@ -397,24 +279,10 @@ returns(bool)
 | spender | address |  | 
 | subtractedValue | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        uint256 currentAllowance = _allowances[_msgSender()][spender];
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-        _approve(_msgSender(), spender, currentAllowance - subtractedValue);
-
-        return true;
-    }
-```
-</details>
-
 ### _transfer
 
-Moves tokens `amount` from `sender` to `recipient`.
- This is internal function is equivalent to {transfer}, and can be used to
+Moves `amount` of tokens from `sender` to `recipient`.
+ This internal function is equivalent to {transfer}, and can be used to
  e.g. implement automatic token fees, slashing mechanisms, etc.
  Emits a {Transfer} event.
  Requirements:
@@ -422,7 +290,7 @@ Moves tokens `amount` from `sender` to `recipient`.
  - `recipient` cannot be the zero address.
  - `sender` must have a balance of at least `amount`.
 
-```solidity
+```js
 function _transfer(address sender, address recipient, uint256 amount) internal nonpayable
 ```
 
@@ -434,35 +302,15 @@ function _transfer(address sender, address recipient, uint256 amount) internal n
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _transfer(address sender, address recipient, uint256 amount) internal virtual {
-        require(sender != address(0), "ERC20: transfer from the zero address");
-        require(recipient != address(0), "ERC20: transfer to the zero address");
-
-        _beforeTokenTransfer(sender, recipient, amount);
-
-        uint256 senderBalance = _balances[sender];
-        require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
-        _balances[sender] = senderBalance - amount;
-        _balances[recipient] += amount;
-
-        emit Transfer(sender, recipient, amount);
-    }
-```
-</details>
-
 ### _mint
 
 Creates `amount` tokens and assigns them to `account`, increasing
  the total supply.
  Emits a {Transfer} event with `from` set to the zero address.
  Requirements:
- - `to` cannot be the zero address.
+ - `account` cannot be the zero address.
 
-```solidity
+```js
 function _mint(address account, uint256 amount) internal nonpayable
 ```
 
@@ -473,22 +321,6 @@ function _mint(address account, uint256 amount) internal nonpayable
 | account | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: mint to the zero address");
-
-        _beforeTokenTransfer(address(0), account, amount);
-
-        _totalSupply += amount;
-        _balances[account] += amount;
-        emit Transfer(address(0), account, amount);
-    }
-```
-</details>
-
 ### _burn
 
 Destroys `amount` tokens from `account`, reducing the
@@ -498,7 +330,7 @@ Destroys `amount` tokens from `account`, reducing the
  - `account` cannot be the zero address.
  - `account` must have at least `amount` tokens.
 
-```solidity
+```js
 function _burn(address account, uint256 amount) internal nonpayable
 ```
 
@@ -508,25 +340,6 @@ function _burn(address account, uint256 amount) internal nonpayable
 | ------------- |------------- | -----|
 | account | address |  | 
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _burn(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: burn from the zero address");
-
-        _beforeTokenTransfer(account, address(0), amount);
-
-        uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
-        _balances[account] = accountBalance - amount;
-        _totalSupply -= amount;
-
-        emit Transfer(account, address(0), amount);
-    }
-```
-</details>
 
 ### _approve
 
@@ -538,7 +351,7 @@ Sets `amount` as the allowance of `spender` over the `owner` s tokens.
  - `owner` cannot be the zero address.
  - `spender` cannot be the zero address.
 
-```solidity
+```js
 function _approve(address owner, address spender, uint256 amount) internal nonpayable
 ```
 
@@ -550,33 +363,19 @@ function _approve(address owner, address spender, uint256 amount) internal nonpa
 | spender | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _approve(address owner, address spender, uint256 amount) internal virtual {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
-
-        _allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
-    }
-```
-</details>
-
 ### _beforeTokenTransfer
 
 Hook that is called before any transfer of tokens. This includes
  minting and burning.
  Calling conditions:
  - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
- will be to transferred to `to`.
+ will be transferred to `to`.
  - when `from` is zero, `amount` tokens will be minted for `to`.
  - when `to` is zero, `amount` of ``from``'s tokens will be burned.
  - `from` and `to` are never both zero.
  To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
 
-```solidity
+```js
 function _beforeTokenTransfer(address from, address to, uint256 amount) internal nonpayable
 ```
 
@@ -588,13 +387,29 @@ function _beforeTokenTransfer(address from, address to, uint256 amount) internal
 | to | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### _afterTokenTransfer
 
-```javascript
-function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+Hook that is called after any transfer of tokens. This includes
+ minting and burning.
+ Calling conditions:
+ - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
+ has been transferred to `to`.
+ - when `from` is zero, `amount` tokens have been minted for `to`.
+ - when `to` is zero, `amount` of ``from``'s tokens have been burned.
+ - `from` and `to` are never both zero.
+ To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+
+```js
+function _afterTokenTransfer(address from, address to, uint256 amount) internal nonpayable
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| from | address |  | 
+| to | address |  | 
+| amount | uint256 |  | 
 
 ## Contracts
 
@@ -611,12 +426,14 @@ function _beforeTokenTransfer(address from, address to, uint256 amount) internal
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -647,17 +464,21 @@ function _beforeTokenTransfer(address from, address to, uint256 amount) internal
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

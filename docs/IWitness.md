@@ -17,10 +17,13 @@ event Refuted(bytes32 indexed key, address indexed witness, uint256  incidentDat
 
 - [attest(bytes32 key, uint256 incidentDate, uint256 stake)](#attest)
 - [refute(bytes32 key, uint256 incidentDate, uint256 stake)](#refute)
+- [getStatus(bytes32 key)](#getstatus)
+- [getStakes(bytes32 key, uint256 incidentDate)](#getstakes)
+- [getStakesOf(bytes32 key, uint256 incidentDate, address account)](#getstakesof)
 
 ### attest
 
-```solidity
+```js
 function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -32,21 +35,9 @@ function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function attest(
-    bytes32 key,
-    uint256 incidentDate,
-    uint256 stake
-  ) external;
-```
-</details>
-
 ### refute
 
-```solidity
+```js
 function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -58,17 +49,47 @@ function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### getStatus
 
-```javascript
-function refute(
-    bytes32 key,
-    uint256 incidentDate,
-    uint256 stake
-  ) external;
+```js
+function getStatus(bytes32 key) external view
+returns(uint256)
 ```
-</details>
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+### getStakes
+
+```js
+function getStakes(bytes32 key, uint256 incidentDate) external view
+returns(uint256, uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getStakesOf
+
+```js
+function getStakesOf(bytes32 key, uint256 incidentDate, address account) external view
+returns(uint256, uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| account | address |  | 
 
 ## Contracts
 
@@ -85,12 +106,14 @@ function refute(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -121,17 +144,21 @@ function refute(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

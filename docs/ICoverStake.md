@@ -25,7 +25,7 @@ event FeeBurned(bytes32  key, uint256  amount);
 
 Increase the stake of the given cover pool
 
-```solidity
+```js
 function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable
 ```
 
@@ -38,24 +38,11 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function increaseStake(
-    bytes32 key,
-    address account,
-    uint256 amount,
-    uint256 fee
-  ) external;
-```
-</details>
-
 ### decreaseStake
 
 Decreases the stake from the given cover pool
 
-```solidity
+```js
 function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable
 ```
 
@@ -67,26 +54,18 @@ function decreaseStake(bytes32 key, address account, uint256 amount) external no
 | account | address | Enter the account to decrease the stake of | 
 | amount | uint256 | Enter the amount of stake to decrease | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function decreaseStake(
-    bytes32 key,
-    address account,
-    uint256 amount
-  ) external;
-```
-</details>
-
 ### stakeOf
 
 Gets the stake of an account for the given cover key
 
-```solidity
+```js
 function stakeOf(bytes32 key, address account) external view
 returns(uint256)
 ```
+
+**Returns**
+
+Returns the total stake of the specified account on the given cover key
 
 **Arguments**
 
@@ -94,18 +73,6 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 | account | address | Specify the account to obtain the stake of | 
-
-**Returns**
-
-Returns the total stake of the specified account on the given cover key
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function stakeOf(bytes32 key, address account) external view returns (uint256);
-```
-</details>
 
 ## Contracts
 
@@ -122,12 +89,14 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -158,17 +127,21 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

@@ -2,7 +2,7 @@
 
 View Source: [contracts/core/cToken/cTokenFactory.sol](../contracts/core/cToken/cTokenFactory.sol)
 
-**↗ Extends: [ICTokenFactory](ICTokenFactory.md)**
+**↗ Extends: [ICTokenFactory](ICTokenFactory.md), [Recoverable](Recoverable.md)**
 
 **cTokenFactory**
 
@@ -12,16 +12,30 @@ As and when required by the protocol,
 
 ## Functions
 
+- [constructor(IStore store)](#)
 - [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
 - [version()](#version)
 - [getName()](#getname)
-- [_getByteCode(IStore s, bytes32 key, uint256 expiryDate)](#_getbytecode)
+
+### 
+
+Constructs this contract
+
+```js
+function (IStore store) public nonpayable Recoverable 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| store | IStore | Provide the store contract instance | 
 
 ### deploy
 
 Deploys a new instance of cTokens
 
-```solidity
+```js
 function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
 returns(deployed address)
 ```
@@ -34,47 +48,11 @@ returns(deployed address)
 | key | bytes32 | Enter the cover key related to this cToken instance | 
 | expiryDate | uint256 | Specify the expiry date of this cToken instance | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deploy(
-    IStore s,
-    bytes32 key,
-    uint256 expiryDate
-  ) external override returns (address deployed) {
-    s.mustBeExactContract(ProtoUtilV1.NS_COVER_POLICY, msg.sender); // Ensure the caller is the latest policy contract
-
-    (bytes memory bytecode, bytes32 salt) = _getByteCode(s, key, expiryDate);
-
-    require(s.getAddress(salt) == address(0), "Already deployed");
-
-    // solhint-disable-next-line
-    assembly {
-      deployed := create2(
-        callvalue(), // wei sent with current call
-        // Actual code starts after skipping the first 32 bytes
-        add(bytecode, 0x20),
-        mload(bytecode), // Load the size of code contained in the first 32 bytes
-        salt // Salt from function arguments
-      )
-
-      if iszero(extcodesize(deployed)) {
-        revert(0, 0)
-      }
-    }
-
-    s.setAddress(salt, deployed);
-    emit CTokenDeployed(key, deployed, expiryDate);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -84,21 +62,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -107,48 +75,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_CTOKEN_FACTORY;
-  }
-```
-</details>
-
-### _getByteCode
-
-Gets the bytecode of the `cToken` contract
-
-```solidity
-function _getByteCode(IStore s, bytes32 key, uint256 expiryDate) private pure
-returns(bytecode bytes, salt bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Provide the store instance | 
-| key | bytes32 | Provide the cover key | 
-| expiryDate | uint256 | Specify the expiry date of this cToken instance | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getByteCode(
-    IStore s,
-    bytes32 key,
-    uint256 expiryDate
-  ) private pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
-    bytecode = abi.encodePacked(type(cToken).creationCode, abi.encode(s, key, expiryDate));
-  }
-```
-</details>
 
 ## Contracts
 
@@ -165,12 +91,14 @@ function _getByteCode(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -201,17 +129,21 @@ function _getByteCode(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

@@ -1,132 +1,139 @@
-# Pausable.sol
+# RegistryLibV1.sol
 
-View Source: [openzeppelin-solidity/contracts/security/Pausable.sol](../openzeppelin-solidity/contracts/security/Pausable.sol)
+View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/RegistryLibV1.sol)
 
-**↗ Extends: [Context](Context.md)**
-**↘ Derived Contracts: [Recoverable](Recoverable.md), [StoreBase](StoreBase.md)**
-
-**Pausable**
-
-Contract module which allows children to implement an emergency stop
- mechanism that can be triggered by an authorized account.
- This module is used through inheritance. It will make available the
- modifiers `whenNotPaused` and `whenPaused`, which can be applied to
- the functions of your contract. Note that they will not be pausable by
- simply including this module, only once the modifiers are put in place.
-
-## Contract Members
-**Constants & Variables**
-
-```js
-bool private _paused;
-
-```
-
-**Events**
-
-```js
-event Paused(address  account);
-event Unpaused(address  account);
-```
-
-## Modifiers
-
-- [whenNotPaused](#whennotpaused)
-- [whenPaused](#whenpaused)
-
-### whenNotPaused
-
-Modifier to make a function callable only when the contract is not paused.
- Requirements:
- - The contract must not be paused.
-
-```js
-modifier whenNotPaused() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### whenPaused
-
-Modifier to make a function callable only when the contract is paused.
- Requirements:
- - The contract must be paused.
-
-```js
-modifier whenPaused() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+**RegistryLibV1**
 
 ## Functions
 
-- [constructor()](#)
-- [paused()](#paused)
-- [_pause()](#_pause)
-- [_unpause()](#_unpause)
+- [getPriceDiscoveryContract(IStore s)](#getpricediscoverycontract)
+- [getGovernanceContract(IStore s)](#getgovernancecontract)
+- [getStakingContract(IStore s)](#getstakingcontract)
+- [getCTokenFactory(IStore s)](#getctokenfactory)
+- [getPolicyContract(IStore s)](#getpolicycontract)
+- [getAssuranceContract(IStore s)](#getassurancecontract)
+- [getVault(IStore s, bytes32 key)](#getvault)
+- [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
+- [_getContract(IStore s, bytes32 namespace)](#_getcontract)
 
-### 
-
-Initializes the contract in unpaused state.
+### getPriceDiscoveryContract
 
 ```js
-function () internal nonpayable
+function getPriceDiscoveryContract(IStore s) public view
+returns(contract IPriceDiscovery)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 
-### paused
-
-Returns true if the contract is paused, and false otherwise.
+### getGovernanceContract
 
 ```js
-function paused() public view
-returns(bool)
+function getGovernanceContract(IStore s) public view
+returns(contract IGovernance)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 
-### _pause
-
-Triggers stopped state.
- Requirements:
- - The contract must not be paused.
+### getStakingContract
 
 ```js
-function _pause() internal nonpayable whenNotPaused 
+function getStakingContract(IStore s) public view
+returns(contract ICoverStake)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 
-### _unpause
-
-Returns to normal state.
- Requirements:
- - The contract must be paused.
+### getCTokenFactory
 
 ```js
-function _unpause() internal nonpayable whenPaused 
+function getCTokenFactory(IStore s) public view
+returns(contract ICTokenFactory)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getPolicyContract
+
+```js
+function getPolicyContract(IStore s) public view
+returns(contract IPolicy)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getAssuranceContract
+
+```js
+function getAssuranceContract(IStore s) public view
+returns(contract ICoverAssurance)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getVault
+
+```js
+function getVault(IStore s, bytes32 key) public view
+returns(contract IVault)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getVaultFactoryContract
+
+```js
+function getVaultFactoryContract(IStore s) public view
+returns(contract IVaultFactory)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### _getContract
+
+```js
+function _getContract(IStore s, bytes32 namespace) private view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| namespace | bytes32 |  | 
 
 ## Contracts
 

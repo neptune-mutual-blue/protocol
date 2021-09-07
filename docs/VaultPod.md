@@ -36,7 +36,7 @@ address public lqt;
 
 Constructs this contract
 
-```solidity
+```js
 function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpayable ERC20 Recoverable 
 ```
 
@@ -48,21 +48,6 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpay
 | coverKey | bytes32 | Enter the cover key or cover this contract is related to | 
 | liquidityToken | IERC20 | Provide the liquidity token instance for this Vault | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(
-    IStore store,
-    bytes32 coverKey,
-    IERC20 liquidityToken
-  ) ERC20("Proof of Deposits", "PODs") Recoverable(store) {
-    key = coverKey;
-    lqt = address(liquidityToken);
-  }
-```
-</details>
-
 ### _mintPods
 
 Internal function to mint pods by transferring liquidity. <br /> <br />
@@ -70,7 +55,7 @@ Internal function to mint pods by transferring liquidity. <br /> <br />
  You --> Liquidity Tokens --> This Contract
  This Contract --> PODS --> You
 
-```solidity
+```js
 function _mintPods(address account, uint256 liquidityToAdd, bool initialLiquidity) internal nonpayable
 ```
 
@@ -82,29 +67,6 @@ function _mintPods(address account, uint256 liquidityToAdd, bool initialLiquidit
 | liquidityToAdd | uint256 | Enter the amount of liquidity to add | 
 | initialLiquidity | bool | Indicate if this the first liquidity being added to the POD.  Note: The cover contract transfers the liquidity only after the `Vault` contract is deployed.  This argument should be used with caution. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _mintPods(
-    address account,
-    uint256 liquidityToAdd,
-    bool initialLiquidity
-  ) internal {
-    uint256 pods = _calculatePods(liquidityToAdd);
-
-    if (initialLiquidity == false) {
-      // First deposit the tokens
-      IERC20(lqt).ensureTransferFrom(account, address(this), liquidityToAdd);
-    }
-
-    super._mint(account, pods);
-
-    emit PodsMinted(account, pods, address(this), liquidityToAdd);
-  }
-```
-</details>
-
 ### _redeemPods
 
 Internal function to redeem pods by burning. <br /> <br />
@@ -112,7 +74,7 @@ Internal function to redeem pods by burning. <br /> <br />
  You --> PODs --> This Contract --> Burn
  This Contract --> Your Share of Liquidity Tokens --> You
 
-```solidity
+```js
 function _redeemPods(address account, uint256 podsToBurn) internal nonpayable
 ```
 
@@ -123,26 +85,11 @@ function _redeemPods(address account, uint256 podsToBurn) internal nonpayable
 | account | address | Specify the address to burn the PODs from | 
 | podsToBurn | uint256 | Enter the amount of PODs to burn | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _redeemPods(address account, uint256 podsToBurn) internal {
-    uint256 amount = _calculateLiquidity(podsToBurn);
-
-    super.transferFrom(account, address(this), podsToBurn);
-    super._burn(address(this), podsToBurn);
-
-    IERC20(lqt).ensureTransfer(account, amount);
-  }
-```
-</details>
-
 ### _calculateLiquidity
 
 Calculates the amount of liquidity to transfer for the given amount of PODs to burn
 
-```solidity
+```js
 function _calculateLiquidity(uint256 podsToBurn) private view
 returns(uint256)
 ```
@@ -153,22 +100,11 @@ returns(uint256)
 | ------------- |------------- | -----|
 | podsToBurn | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _calculateLiquidity(uint256 podsToBurn) private view returns (uint256) {
-    uint256 balance = IERC20(lqt).balanceOf(address(this));
-    return (balance * podsToBurn) / super.totalSupply();
-  }
-```
-</details>
-
 ### _calculatePods
 
 Calculates the amount of PODS to mint for the given amount of liquidity to transfer
 
-```solidity
+```js
 function _calculatePods(uint256 liquidityToAdd) private view
 returns(uint256)
 ```
@@ -178,22 +114,6 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | liquidityToAdd | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _calculatePods(uint256 liquidityToAdd) private view returns (uint256) {
-    uint256 balance = IERC20(lqt).balanceOf(address(this));
-
-    if (balance == 0) {
-      return liquidityToAdd;
-    }
-
-    return (super.totalSupply() * liquidityToAdd) / balance;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -210,12 +130,14 @@ function _calculatePods(uint256 liquidityToAdd) private view returns (uint256) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -246,17 +168,21 @@ function _calculatePods(uint256 liquidityToAdd) private view returns (uint256) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

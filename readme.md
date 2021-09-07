@@ -60,7 +60,7 @@ The cover contract facilitates you create and update covers
 
 Constructs this contract
 
-```solidity
+```js
 function (IStore store) public nonpayable CoverBase 
 ```
 
@@ -70,22 +70,12 @@ function (IStore store) public nonpayable CoverBase
 | ------------- |------------- | -----|
 | store | IStore | Enter the store | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) CoverBase(store) {
-    this;
-  }
-```
-</details>
-
 ### updateCover
 
 Updates the cover contract.
  This feature is accessible only to the cover owner or protocol owner (governance).
 
-```solidity
+```js
 function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant 
 ```
 
@@ -95,23 +85,6 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 | info | bytes32 | Enter a new IPFS URL to update | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeValidCover(key); // Ensures the key is valid cover
-    s.mustBeCoverOwner(key, super._msgSender(), owner()); // Ensures the sender is either the owner or cover owner
-
-    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
-
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
-    emit CoverUpdated(key, info);
-  }
-```
-</details>
 
 ### addCover
 
@@ -127,7 +100,7 @@ Adds a new coverage pool or cover contract.
  Read the documentation to learn more about the fees: <br />
  https://docs.neptunemutual.com/covers/contract-creators
 
-```solidity
+```js
 function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
 ```
 
@@ -143,54 +116,9 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addCover(
-    bytes32 key,
-    bytes32 info,
-    uint256 reportingPeriod,
-    uint256 stakeWithFee,
-    address assuranceToken,
-    uint256 initialAssuranceAmount,
-    uint256 initialLiquidity
-  ) external override nonReentrant {
-    require(reportingPeriod >= 7 days, "Insufficent reporting period");
-    _mustBeUnpaused();
-
-    // First validate the information entered
-    uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
-
-    // Set the basic cover info
-    _addCover(key, info, reportingPeriod, fee, assuranceToken);
-
-    // Stake the supplied NEP tokens and burn the fees
-    s.getStakingContract().increaseStake(key, super._msgSender(), stakeWithFee, fee);
-
-    // Add cover assurance
-    if (initialAssuranceAmount > 0) {
-      s.getAssuranceContract().addAssurance(key, super._msgSender(), initialAssuranceAmount);
-    }
-
-    // Add initial liquidity
-    if (initialLiquidity > 0) {
-      IVault vault = s.getVault(key);
-
-      s.getVault(key).addLiquidityInternal(key, super._msgSender(), initialLiquidity);
-
-      // Transfer liquidity only after minting the pods
-      IERC20(s.getLiquidityToken()).ensureTransferFrom(super._msgSender(), address(vault), initialLiquidity);
-    }
-
-    emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
-  }
-```
-</details>
-
 ### _addCover
 
-```solidity
+```js
 function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address assuranceToken) private nonpayable
 ```
 
@@ -204,51 +132,18 @@ function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 f
 | fee | uint256 | Fee paid to create this cover | 
 | assuranceToken | address | **Optional.** Token added as an assurance of this cover. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addCover(
-    bytes32 key,
-    bytes32 info,
-    uint256 reportingPeriod,
-    uint256 fee,
-    address assuranceToken
-  ) private {
-    // Add a new cover
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
-
-    // Set cover owner
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, super._msgSender());
-
-    // Set cover info
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key, reportingPeriod);
-
-    // Set assurance token
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key, assuranceToken);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
-
-    // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE, key, fee);
-
-    // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(s, key);
-
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key, deployed);
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
-  }
-```
-</details>
-
 ### _validateAndGetFee
 
 Validation checks before adding a new cover
 
-```solidity
+```js
 function _validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee) private view
 returns(uint256)
 ```
+
+**Returns**
+
+Returns fee required to create a new cover
 
 **Arguments**
 
@@ -257,30 +152,6 @@ returns(uint256)
 | key | bytes32 |  | 
 | info | bytes32 |  | 
 | stakeWithFee | uint256 |  | 
-
-**Returns**
-
-Returns fee required to create a new cover
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _validateAndGetFee(
-    bytes32 key,
-    bytes32 info,
-    uint256 stakeWithFee
-  ) private view returns (uint256) {
-    require(info > 0, "Invalid info");
-    (uint256 fee, uint256 minStake) = s.getCoverFee();
-
-    require(stakeWithFee > fee + minStake, "NEP Insufficient");
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
-
-    return fee;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -297,12 +168,14 @@ function _validateAndGetFee(
 * [CoverUtilV1](docs/CoverUtilV1.md)
 * [cToken](docs/cToken.md)
 * [cTokenFactory](docs/cTokenFactory.md)
+* [cTokenFactoryLibV1](docs/cTokenFactoryLibV1.md)
 * [Destroyable](docs/Destroyable.md)
 * [ERC20](docs/ERC20.md)
 * [FakeStore](docs/FakeStore.md)
 * [FakeToken](docs/FakeToken.md)
 * [Governance](docs/Governance.md)
 * [GovernanceUtilV1](docs/GovernanceUtilV1.md)
+* [IClaimsProcessor](docs/IClaimsProcessor.md)
 * [ICommission](docs/ICommission.md)
 * [ICover](docs/ICover.md)
 * [ICoverAssurance](docs/ICoverAssurance.md)
@@ -333,18 +206,22 @@ function _validateAndGetFee(
 * [PolicyAdmin](docs/PolicyAdmin.md)
 * [PolicyManager](docs/PolicyManager.md)
 * [PriceDiscovery](docs/PriceDiscovery.md)
+* [Processor](docs/Processor.md)
 * [Protocol](docs/Protocol.md)
 * [ProtoUtilV1](docs/ProtoUtilV1.md)
 * [Recoverable](docs/Recoverable.md)
 * [ReentrancyGuard](docs/ReentrancyGuard.md)
+* [RegistryLibV1](docs/RegistryLibV1.md)
 * [Reporter](docs/Reporter.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [SafeMath](docs/SafeMath.md)
 * [Store](docs/Store.md)
 * [StoreBase](docs/StoreBase.md)
 * [StoreKeyUtil](docs/StoreKeyUtil.md)
+* [ValidationLibV1](docs/ValidationLibV1.md)
 * [Vault](docs/Vault.md)
 * [VaultFactory](docs/VaultFactory.md)
+* [VaultFactoryLibV1](docs/VaultFactoryLibV1.md)
 * [VaultPod](docs/VaultPod.md)
 * [Witness](docs/Witness.md)
 

@@ -25,7 +25,7 @@ event CoverUpdated(bytes32  key, bytes32  info);
 
 Initializes this contract
 
-```solidity
+```js
 function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable
 ```
 
@@ -35,14 +35,6 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 | ------------- |------------- | -----|
 | liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
 | liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function initialize(address liquidityToken, bytes32 liquidityName) external;
-```
-</details>
 
 ### addCover
 
@@ -58,7 +50,7 @@ Adds a new coverage pool or cover contract.
  Read the documentation to learn more about the fees: <br />
  https://docs.neptunemutual.com/covers/contract-creators
 
-```solidity
+```js
 function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable
 ```
 
@@ -74,28 +66,12 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addCover(
-    bytes32 key,
-    bytes32 info,
-    uint256 reportingPeriod,
-    uint256 stakeWithFee,
-    address assuranceToken,
-    uint256 initialAssuranceAmount,
-    uint256 initialLiquidity
-  ) external;
-```
-</details>
-
 ### updateCover
 
 Updates the cover contract.
  This feature is accessible only to the cover owner or protocol owner (governance).
 
-```solidity
+```js
 function updateCover(bytes32 key, bytes32 info) external nonpayable
 ```
 
@@ -106,19 +82,11 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable
 | key | bytes32 | Enter the cover key | 
 | info | bytes32 | Enter a new IPFS URL to update | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function updateCover(bytes32 key, bytes32 info) external;
-```
-</details>
-
 ### getCover
 
 Get info of a cover contract by key
 
-```solidity
+```js
 function getCover(bytes32 key) external view
 returns(coverOwner address, info bytes32, values uint256[])
 ```
@@ -128,21 +96,6 @@ returns(coverOwner address, info bytes32, values uint256[])
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCover(bytes32 key)
-    external
-    view
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    );
-```
-</details>
 
 ## Contracts
 
@@ -159,12 +112,14 @@ function getCover(bytes32 key)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -195,17 +150,21 @@ function getCover(bytes32 key)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

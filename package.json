@@ -14,9 +14,7 @@
     "test": "npx hardhat test",
     "test:all": "npx hardhat test ./**/*.{spec,story}.js",
     "stories": "npx hardhat test ./**/*.story.js",
-    "story": "yarn stories",
-    "mumbai": "mkdir -p ./.todo/deployments/mumbai && npx hardhat run --network mumbai scripts/deploy.js > \"./.todo/deployments/mumbai/$(date +%Y%m%d-%H%M%S).txt\"",
-    "bsc:testnet": "mkdir -p ./.todo/deployments/bsct && npx hardhat run --network bsct scripts/deploy.js > \"./.todo/deployments/bsct/$(date +%Y%m%d-%H%M%S).txt\""
+    "story": "yarn stories"
   },
   "repository": {
     "type": "git",
@@ -52,7 +50,7 @@
     "dotenv": "^10.0.0",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.0",
-    "hardhat": "^2.3.3",
+    "hardhat": "^2.6.1",
     "hardhat-contract-sizer": "^2.0.3",
     "hardhat-gas-reporter": "^1.0.4",
     "ipfs-mini": "^1.1.5",

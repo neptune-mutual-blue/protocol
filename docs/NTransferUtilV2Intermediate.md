@@ -11,7 +11,7 @@ View Source: [contracts/fakes/NTransferUtilV2Intermediate.sol](../contracts/fake
 
 ### iTransfer
 
-```solidity
+```js
 function iTransfer(IERC20 token, address recipient, uint256 amount) external nonpayable
 ```
 
@@ -23,23 +23,9 @@ function iTransfer(IERC20 token, address recipient, uint256 amount) external non
 | recipient | address |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function iTransfer(
-    IERC20 token,
-    address recipient,
-    uint256 amount
-  ) external {
-    token.ensureTransfer(recipient, amount);
-  }
-```
-</details>
-
 ### iTransferFrom
 
-```solidity
+```js
 function iTransferFrom(IERC20 token, address sender, address recipient, uint256 amount) external nonpayable
 ```
 
@@ -51,21 +37,6 @@ function iTransferFrom(IERC20 token, address sender, address recipient, uint256 
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function iTransferFrom(
-    IERC20 token,
-    address sender,
-    address recipient,
-    uint256 amount
-  ) external {
-    token.ensureTransferFrom(sender, recipient, amount);
-  }
-```
-</details>
 
 ## Contracts
 
@@ -82,12 +53,14 @@ function iTransferFrom(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -118,17 +91,21 @@ function iTransferFrom(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

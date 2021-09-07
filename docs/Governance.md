@@ -9,14 +9,13 @@ View Source: [contracts/core/governance/Governance.sol](../contracts/core/govern
 ## Functions
 
 - [constructor(IStore store)](#)
-- [claim(address cToken, bytes32 key, uint256 amount)](#claim)
 - [finalize(bytes32 key, uint256 incidentDate)](#finalize)
 - [version()](#version)
 - [getName()](#getname)
 
 ### 
 
-```solidity
+```js
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -26,57 +25,9 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
-### claim
-
-```solidity
-function claim(address cToken, bytes32 key, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function claim(
-    address cToken,
-    bytes32 key,
-    uint256 amount
-  ) external override nonReentrant {
-    _mustBeUnpaused();
-    s.mustBeDuringClaimPeriod(key);
-    s.mustBeProtocolMember(cToken);
-
-    IERC20(cToken).ensureTransferFrom(super._msgSender(), address(this), amount);
-    ICToken(cToken).burn(amount);
-
-    IVault vault = s.getVault(key);
-    vault.transferGovernance(key, super._msgSender(), amount);
-
-    emit Claimed(cToken, key, super._msgSender(), amount);
-  }
-```
-</details>
-
 ### finalize
 
-```solidity
+```js
 function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
@@ -87,34 +38,11 @@ function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReen
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    _mustBeUnpaused();
-    _mustBeOwnerOrProtoOwner();
-
-    s.mustBeReportingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterClaimExpiry(key);
-
-    // Reset to normal
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key, 0);
-    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, 0);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, 0);
-
-    emit Finalized(key, super._msgSender(), incidentDate);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -124,22 +52,12 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
-function getName() public pure
+```js
+function getName() external pure
 returns(bytes32)
 ```
 
@@ -147,16 +65,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_GOVERNANCE;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -173,12 +81,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -209,17 +119,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

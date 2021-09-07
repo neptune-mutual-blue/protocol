@@ -22,7 +22,7 @@ The policy admin contract enables the owner (governance)
 
 Constructs this contract
 
-```solidity
+```js
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -32,21 +32,11 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide the store contract instance | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
-```
-</details>
-
 ### setPolicyRates
 
 Sets policy rates. This feature is only accessible by owner or protocol owner.
 
-```solidity
+```js
 function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
 ```
 
@@ -57,26 +47,11 @@ function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
 | floor | uint256 | The lowest cover fee rate fallback | 
 | ceiling | uint256 | The highest cover fee rate fallback | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external override {
-    _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
-
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
-
-    emit PolicyRateSet(floor, ceiling);
-  }
-```
-</details>
-
 ### setPolicyRatesByKey
 
 Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
 
-```solidity
+```js
 function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable
 ```
 
@@ -88,30 +63,11 @@ function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) extern
 | floor | uint256 | The lowest cover fee rate for this cover | 
 | ceiling | uint256 | The highest cover fee rate for this cover | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRatesByKey(
-    bytes32 key,
-    uint256 floor,
-    uint256 ceiling
-  ) external override {
-    _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
-
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);
-
-    emit CoverPolicyRateSet(key, floor, ceiling);
-  }
-```
-</details>
-
 ### getPolicyRates
 
 Gets the cover policy rates for the given cover key
 
-```solidity
+```js
 function getPolicyRates(bytes32 key) external view
 returns(floor uint256, ceiling uint256)
 ```
@@ -122,21 +78,11 @@ returns(floor uint256, ceiling uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRates(key);
-  }
-```
-</details>
-
 ### version
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -146,21 +92,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() public pure
 returns(bytes32)
 ```
@@ -169,16 +105,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_POLICY_ADMIN;
-  }
-```
-</details>
 
 ## Contracts
 
@@ -195,12 +121,14 @@ function getName() public pure override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -231,17 +159,21 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

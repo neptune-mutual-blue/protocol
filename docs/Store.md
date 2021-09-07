@@ -37,7 +37,7 @@ View Source: [contracts/core/store/Store.sol](../contracts/core/store/Store.sol)
 
 ### setAddress
 
-```solidity
+```js
 function setAddress(bytes32 k, address v) external nonpayable
 ```
 
@@ -48,22 +48,9 @@ function setAddress(bytes32 k, address v) external nonpayable
 | k | bytes32 |  | 
 | v | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setAddress(bytes32 k, address v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    addressStorage[k] = v;
-  }
-```
-</details>
-
 ### setUint
 
-```solidity
+```js
 function setUint(bytes32 k, uint256 v) external nonpayable
 ```
 
@@ -74,22 +61,9 @@ function setUint(bytes32 k, uint256 v) external nonpayable
 | k | bytes32 |  | 
 | v | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setUint(bytes32 k, uint256 v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    uintStorage[k] = v;
-  }
-```
-</details>
-
 ### addUint
 
-```solidity
+```js
 function addUint(bytes32 k, uint256 v) external nonpayable
 ```
 
@@ -100,23 +74,9 @@ function addUint(bytes32 k, uint256 v) external nonpayable
 | k | bytes32 |  | 
 | v | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addUint(bytes32 k, uint256 v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    uint256 existing = uintStorage[k];
-    uintStorage[k] = existing + v;
-  }
-```
-</details>
-
 ### subtractUint
 
-```solidity
+```js
 function subtractUint(bytes32 k, uint256 v) external nonpayable
 ```
 
@@ -127,23 +87,9 @@ function subtractUint(bytes32 k, uint256 v) external nonpayable
 | k | bytes32 |  | 
 | v | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function subtractUint(bytes32 k, uint256 v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    uint256 existing = uintStorage[k];
-    uintStorage[k] = existing - v;
-  }
-```
-</details>
-
 ### setUints
 
-```solidity
+```js
 function setUints(bytes32 k, uint256[] v) external nonpayable
 ```
 
@@ -154,22 +100,9 @@ function setUints(bytes32 k, uint256[] v) external nonpayable
 | k | bytes32 |  | 
 | v | uint256[] |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setUints(bytes32 k, uint256[] memory v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    uintsStorage[k] = v;
-  }
-```
-</details>
-
 ### setString
 
-```solidity
+```js
 function setString(bytes32 k, string v) external nonpayable
 ```
 
@@ -180,22 +113,9 @@ function setString(bytes32 k, string v) external nonpayable
 | k | bytes32 |  | 
 | v | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setString(bytes32 k, string calldata v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    stringStorage[k] = v;
-  }
-```
-</details>
-
 ### setBytes
 
-```solidity
+```js
 function setBytes(bytes32 k, bytes v) external nonpayable
 ```
 
@@ -206,21 +126,9 @@ function setBytes(bytes32 k, bytes v) external nonpayable
 | k | bytes32 |  | 
 | v | bytes |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBytes(bytes32 k, bytes calldata v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-    bytesStorage[k] = v;
-  }
-```
-</details>
-
 ### setBool
 
-```solidity
+```js
 function setBool(bytes32 k, bool v) external nonpayable
 ```
 
@@ -231,24 +139,9 @@ function setBool(bytes32 k, bool v) external nonpayable
 | k | bytes32 |  | 
 | v | bool |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBool(bytes32 k, bool v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    if (v) {
-      boolStorage[k] = v;
-    }
-  }
-```
-</details>
-
 ### setInt
 
-```solidity
+```js
 function setInt(bytes32 k, int256 v) external nonpayable
 ```
 
@@ -259,22 +152,9 @@ function setInt(bytes32 k, int256 v) external nonpayable
 | k | bytes32 |  | 
 | v | int256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setInt(bytes32 k, int256 v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    intStorage[k] = v;
-  }
-```
-</details>
-
 ### setBytes32
 
-```solidity
+```js
 function setBytes32(bytes32 k, bytes32 v) external nonpayable
 ```
 
@@ -285,22 +165,9 @@ function setBytes32(bytes32 k, bytes32 v) external nonpayable
 | k | bytes32 |  | 
 | v | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBytes32(bytes32 k, bytes32 v) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    bytes32Storage[k] = v;
-  }
-```
-</details>
-
 ### deleteAddress
 
-```solidity
+```js
 function deleteAddress(bytes32 k) external nonpayable
 ```
 
@@ -310,22 +177,9 @@ function deleteAddress(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteAddress(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete addressStorage[k];
-  }
-```
-</details>
-
 ### deleteUint
 
-```solidity
+```js
 function deleteUint(bytes32 k) external nonpayable
 ```
 
@@ -335,22 +189,9 @@ function deleteUint(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteUint(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete uintStorage[k];
-  }
-```
-</details>
-
 ### deleteUints
 
-```solidity
+```js
 function deleteUints(bytes32 k) external nonpayable
 ```
 
@@ -360,22 +201,9 @@ function deleteUints(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteUints(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete uintsStorage[k];
-  }
-```
-</details>
-
 ### deleteString
 
-```solidity
+```js
 function deleteString(bytes32 k) external nonpayable
 ```
 
@@ -385,22 +213,9 @@ function deleteString(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteString(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete stringStorage[k];
-  }
-```
-</details>
-
 ### deleteBytes
 
-```solidity
+```js
 function deleteBytes(bytes32 k) external nonpayable
 ```
 
@@ -410,22 +225,9 @@ function deleteBytes(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBytes(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete bytesStorage[k];
-  }
-```
-</details>
-
 ### deleteBool
 
-```solidity
+```js
 function deleteBool(bytes32 k) external nonpayable
 ```
 
@@ -435,22 +237,9 @@ function deleteBool(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBool(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete boolStorage[k];
-  }
-```
-</details>
-
 ### deleteInt
 
-```solidity
+```js
 function deleteInt(bytes32 k) external nonpayable
 ```
 
@@ -460,22 +249,9 @@ function deleteInt(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteInt(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete intStorage[k];
-  }
-```
-</details>
-
 ### deleteBytes32
 
-```solidity
+```js
 function deleteBytes32(bytes32 k) external nonpayable
 ```
 
@@ -485,22 +261,9 @@ function deleteBytes32(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBytes32(bytes32 k) external override {
-    _throwIfPaused();
-    _throwIfSenderNotProtocol();
-
-    delete bytes32Storage[k];
-  }
-```
-</details>
-
 ### getAddress
 
-```solidity
+```js
 function getAddress(bytes32 k) external view
 returns(address)
 ```
@@ -511,19 +274,9 @@ returns(address)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAddress(bytes32 k) external view override returns (address) {
-    return addressStorage[k];
-  }
-```
-</details>
-
 ### getUint
 
-```solidity
+```js
 function getUint(bytes32 k) external view
 returns(uint256)
 ```
@@ -534,19 +287,9 @@ returns(uint256)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUint(bytes32 k) external view override returns (uint256) {
-    return uintStorage[k];
-  }
-```
-</details>
-
 ### getUints
 
-```solidity
+```js
 function getUints(bytes32 k) external view
 returns(uint256[])
 ```
@@ -557,19 +300,9 @@ returns(uint256[])
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUints(bytes32 k) external view override returns (uint256[] memory) {
-    return uintsStorage[k];
-  }
-```
-</details>
-
 ### getString
 
-```solidity
+```js
 function getString(bytes32 k) external view
 returns(string)
 ```
@@ -580,19 +313,9 @@ returns(string)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getString(bytes32 k) external view override returns (string memory) {
-    return stringStorage[k];
-  }
-```
-</details>
-
 ### getBytes
 
-```solidity
+```js
 function getBytes(bytes32 k) external view
 returns(bytes)
 ```
@@ -603,19 +326,9 @@ returns(bytes)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBytes(bytes32 k) external view override returns (bytes memory) {
-    return bytesStorage[k];
-  }
-```
-</details>
-
 ### getBool
 
-```solidity
+```js
 function getBool(bytes32 k) external view
 returns(bool)
 ```
@@ -626,19 +339,9 @@ returns(bool)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBool(bytes32 k) external view override returns (bool) {
-    return boolStorage[k];
-  }
-```
-</details>
-
 ### getInt
 
-```solidity
+```js
 function getInt(bytes32 k) external view
 returns(int256)
 ```
@@ -649,19 +352,9 @@ returns(int256)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getInt(bytes32 k) external view override returns (int256) {
-    return intStorage[k];
-  }
-```
-</details>
-
 ### getBytes32
 
-```solidity
+```js
 function getBytes32(bytes32 k) external view
 returns(bytes32)
 ```
@@ -671,16 +364,6 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBytes32(bytes32 k) external view override returns (bytes32) {
-    return bytes32Storage[k];
-  }
-```
-</details>
 
 ## Contracts
 
@@ -697,12 +380,14 @@ function getBytes32(bytes32 k) external view override returns (bytes32) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -733,17 +418,21 @@ function getBytes32(bytes32 k) external view override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

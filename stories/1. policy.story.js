@@ -9,7 +9,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-const day = 86400
+const DAYS = 86400
 
 const coverKey = key.toBytes32('Compound Finance Cover')
 
@@ -20,7 +20,7 @@ let contracts = {}
 
 describe('Policy Purchase Stories', () => {
   before(async () => {
-    contracts = await composer.initializer.initialize()
+    contracts = await composer.initializer.initialize(true)
   })
 
   it('a new cover `Compound Finance Cover` was created', async () => {
@@ -31,7 +31,7 @@ describe('Policy Purchase Stories', () => {
     const stakeWithFee = helper.ether(10_000)
     const initialAssuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
-    const reportingPeriod = 7 * day
+    const reportingPeriod = 7 * DAYS
 
     await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)

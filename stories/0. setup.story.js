@@ -9,7 +9,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-const day = 86400
+const DAYS = 86400
 
 const coverKey = key.toBytes32('Compound Finance Cover')
 
@@ -19,12 +19,10 @@ const coverKey = key.toBytes32('Compound Finance Cover')
 let contracts = {}
 
 describe('Protocol Initialization Stories', () => {
-  const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
   let previous
 
   before(async () => {
-    contracts = await composer.initializer.initialize(treasury, assuranceVault)
+    contracts = await composer.initializer.initialize(true)
   })
 
   it('protocol was correctly deployed', async () => {
@@ -83,7 +81,7 @@ describe('Protocol Initialization Stories', () => {
     const stakeWithFee = helper.ether(10000)
     const initialAssuranceAmount = helper.ether(1000000)
     const initialLiquidity = helper.ether(4000000)
-    const reportingPeriod = 7 * day
+    const reportingPeriod = 7 * DAYS
 
     await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)

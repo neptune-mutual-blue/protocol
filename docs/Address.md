@@ -18,7 +18,7 @@ Collection of functions related to the address type
 - [functionStaticCall(address target, bytes data, string errorMessage)](#functionstaticcall)
 - [functionDelegateCall(address target, bytes data)](#functiondelegatecall)
 - [functionDelegateCall(address target, bytes data, string errorMessage)](#functiondelegatecall)
-- [_verifyCallResult(bool success, bytes returndata, string errorMessage)](#_verifycallresult)
+- [verifyCallResult(bool success, bytes returndata, string errorMessage)](#verifycallresult)
 
 ### isContract
 
@@ -35,7 +35,7 @@ Returns true if `account` is a contract.
   - an address where a contract lived, but was destroyed
  ====
 
-```solidity
+```js
 function isContract(address account) internal view
 returns(bool)
 ```
@@ -45,23 +45,6 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function isContract(address account) internal view returns (bool) {
-        // This method relies on extcodesize, which returns 0 for contracts in
-        // construction, since the code is only stored at the end of the
-        // constructor execution.
-
-        uint256 size;
-        // solhint-disable-next-line no-inline-assembly
-        assembly { size := extcodesize(account) }
-        return size > 0;
-    }
-```
-</details>
 
 ### sendValue
 
@@ -77,7 +60,7 @@ Replacement for Solidity's `transfer`: sends `amount` wei to
  {ReentrancyGuard} or the
  https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
 
-```solidity
+```js
 function sendValue(address payable recipient, uint256 amount) internal nonpayable
 ```
 
@@ -88,24 +71,10 @@ function sendValue(address payable recipient, uint256 amount) internal nonpayabl
 | recipient | address payable |  | 
 | amount | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
-
-        // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
-        (bool success, ) = recipient.call{ value: amount }("");
-        require(success, "Address: unable to send value, recipient may have reverted");
-    }
-```
-</details>
-
 ### functionCall
 
 Performs a Solidity function call using a low level `call`. A
- plain`call` is an unsafe replacement for a function call: use this
+ plain `call` is an unsafe replacement for a function call: use this
  function instead.
  If `target` reverts with a revert reason, it is bubbled up by this
  function (like regular Solidity function calls).
@@ -116,7 +85,7 @@ Performs a Solidity function call using a low level `call`. A
  - calling `target` with `data` must not revert.
  _Available since v3.1._
 
-```solidity
+```js
 function functionCall(address target, bytes data) internal nonpayable
 returns(bytes)
 ```
@@ -128,23 +97,13 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionCall(address target, bytes memory data) internal returns (bytes memory) {
-      return functionCall(target, data, "Address: low-level call failed");
-    }
-```
-</details>
-
 ### functionCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
  `errorMessage` as a fallback revert reason when `target` reverts.
  _Available since v3.1._
 
-```solidity
+```js
 function functionCall(address target, bytes data, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -157,16 +116,6 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, 0, errorMessage);
-    }
-```
-</details>
-
 ### functionCallWithValue
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
@@ -176,7 +125,7 @@ Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  - the called Solidity function must be `payable`.
  _Available since v3.1._
 
-```solidity
+```js
 function functionCallWithValue(address target, bytes data, uint256 value) internal nonpayable
 returns(bytes)
 ```
@@ -189,23 +138,13 @@ returns(bytes)
 | data | bytes |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
-    }
-```
-</details>
-
 ### functionCallWithValue
 
 Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
  with `errorMessage` as a fallback revert reason when `target` reverts.
  _Available since v3.1._
 
-```solidity
+```js
 function functionCallWithValue(address target, bytes data, uint256 value, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -219,28 +158,13 @@ returns(bytes)
 | value | uint256 |  | 
 | errorMessage | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
-        require(address(this).balance >= value, "Address: insufficient balance for call");
-        require(isContract(target), "Address: call to non-contract");
-
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.call{ value: value }(data);
-        return _verifyCallResult(success, returndata, errorMessage);
-    }
-```
-</details>
-
 ### functionStaticCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  but performing a static call.
  _Available since v3.3._
 
-```solidity
+```js
 function functionStaticCall(address target, bytes data) internal view
 returns(bytes)
 ```
@@ -252,23 +176,13 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
-        return functionStaticCall(target, data, "Address: low-level static call failed");
-    }
-```
-</details>
-
 ### functionStaticCall
 
 Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
  but performing a static call.
  _Available since v3.3._
 
-```solidity
+```js
 function functionStaticCall(address target, bytes data, string errorMessage) internal view
 returns(bytes)
 ```
@@ -281,27 +195,13 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {
-        require(isContract(target), "Address: static call to non-contract");
-
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.staticcall(data);
-        return _verifyCallResult(success, returndata, errorMessage);
-    }
-```
-</details>
-
 ### functionDelegateCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  but performing a delegate call.
  _Available since v3.4._
 
-```solidity
+```js
 function functionDelegateCall(address target, bytes data) internal nonpayable
 returns(bytes)
 ```
@@ -313,23 +213,13 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
-        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
-    }
-```
-</details>
-
 ### functionDelegateCall
 
 Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
  but performing a delegate call.
  _Available since v3.4._
 
-```solidity
+```js
 function functionDelegateCall(address target, bytes data, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -342,24 +232,14 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
+### verifyCallResult
 
-```javascript
-function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
-        require(isContract(target), "Address: delegate call to non-contract");
+Tool to verifies that a low level call was successful, and revert if it wasn't, either by bubbling the
+ revert reason using the provided one.
+ _Available since v4.3._
 
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.delegatecall(data);
-        return _verifyCallResult(success, returndata, errorMessage);
-    }
-```
-</details>
-
-### _verifyCallResult
-
-```solidity
-function _verifyCallResult(bool success, bytes returndata, string errorMessage) private pure
+```js
+function verifyCallResult(bool success, bytes returndata, string errorMessage) internal pure
 returns(bytes)
 ```
 
@@ -370,31 +250,6 @@ returns(bytes)
 | success | bool |  | 
 | returndata | bytes |  | 
 | errorMessage | string |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {
-        if (success) {
-            return returndata;
-        } else {
-            // Look for revert reason and bubble it up if present
-            if (returndata.length > 0) {
-                // The easiest way to bubble the revert reason is using memory via assembly
-
-                // solhint-disable-next-line no-inline-assembly
-                assembly {
-                    let returndata_size := mload(returndata)
-                    revert(add(32, returndata), returndata_size)
-                }
-            } else {
-                revert(errorMessage);
-            }
-        }
-    }
-```
-</details>
 
 ## Contracts
 
@@ -411,12 +266,14 @@ function _verifyCallResult(bool success, bytes memory returndata, string memory 
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -447,17 +304,21 @@ function _verifyCallResult(bool success, bytes memory returndata, string memory 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

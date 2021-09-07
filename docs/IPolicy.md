@@ -26,7 +26,7 @@ Purchase cover for the specified amount. <br /> <br />
  Each unit of cTokens are fully redeemable at 1:1 ratio to the given
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
-```solidity
+```js
 function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover) external nonpayable
 returns(address)
 ```
@@ -39,23 +39,11 @@ returns(address)
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function purchaseCover(
-    bytes32 key,
-    uint256 coverDuration,
-    uint256 amountToCover
-  ) external returns (address);
-```
-</details>
-
 ### getCoverFee
 
 Gets the cover fee info for the given cover key, duration, and amount
 
-```solidity
+```js
 function getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
 ```
@@ -68,34 +56,11 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverFee(
-    bytes32 key,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
-    external
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    );
-```
-</details>
-
 ### getCoverPoolSummary
 
 Returns the values of the given cover key
 
-```solidity
+```js
 function getCoverPoolSummary(bytes32 key) external view
 returns(_values uint256[])
 ```
@@ -106,17 +71,9 @@ returns(_values uint256[])
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverPoolSummary(bytes32 key) external view returns (uint256[] memory _values);
-```
-</details>
-
 ### getCToken
 
-```solidity
+```js
 function getCToken(bytes32 key, uint256 coverDuration) external view
 returns(cToken address, expiryDate uint256)
 ```
@@ -128,17 +85,9 @@ returns(cToken address, expiryDate uint256)
 | key | bytes32 |  | 
 | coverDuration | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCToken(bytes32 key, uint256 coverDuration) external view returns (address cToken, uint256 expiryDate);
-```
-</details>
-
 ### getCTokenByExpiryDate
 
-```solidity
+```js
 function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view
 returns(cToken address)
 ```
@@ -150,17 +99,9 @@ returns(cToken address)
 | key | bytes32 |  | 
 | expiryDate | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view returns (address cToken);
-```
-</details>
-
 ### getCommitment
 
-```solidity
+```js
 function getCommitment(bytes32 key) external view
 returns(uint256)
 ```
@@ -171,17 +112,9 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCommitment(bytes32 key) external view returns (uint256);
-```
-</details>
-
 ### getCoverable
 
-```solidity
+```js
 function getCoverable(bytes32 key) external view
 returns(uint256)
 ```
@@ -192,19 +125,11 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverable(bytes32 key) external view returns (uint256);
-```
-</details>
-
 ### getExpiryDate
 
 Gets the expiry date based on cover duration
 
-```solidity
+```js
 function getExpiryDate(uint256 today, uint256 coverDuration) external pure
 returns(uint256)
 ```
@@ -215,14 +140,6 @@ returns(uint256)
 | ------------- |------------- | -----|
 | today | uint256 | Enter the current timestamp | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getExpiryDate(uint256 today, uint256 coverDuration) external pure returns (uint256);
-```
-</details>
 
 ## Contracts
 
@@ -239,12 +156,14 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -275,17 +194,21 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

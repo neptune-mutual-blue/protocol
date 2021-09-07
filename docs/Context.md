@@ -6,6 +6,14 @@ View Source: [openzeppelin-solidity/contracts/utils/Context.sol](../openzeppelin
 
 **Context**
 
+Provides information about the current execution context, including the
+ sender of the transaction and its data. While these are generally available
+ via msg.sender and msg.data, they should not be accessed in such a direct
+ manner, since when dealing with meta-transactions the account sending and
+ paying for execution may not be the actual sender (as far as an application
+ is concerned).
+ This contract is only required for intermediate, library-like contracts.
+
 ## Functions
 
 - [_msgSender()](#_msgsender)
@@ -13,7 +21,7 @@ View Source: [openzeppelin-solidity/contracts/utils/Context.sol](../openzeppelin
 
 ### _msgSender
 
-```solidity
+```js
 function _msgSender() internal view
 returns(address)
 ```
@@ -23,19 +31,9 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _msgSender() internal view virtual returns (address) {
-        return msg.sender;
-    }
-```
-</details>
-
 ### _msgData
 
-```solidity
+```js
 function _msgData() internal view
 returns(bytes)
 ```
@@ -44,17 +42,6 @@ returns(bytes)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _msgData() internal view virtual returns (bytes calldata) {
-        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
-        return msg.data;
-    }
-```
-</details>
 
 ## Contracts
 
@@ -71,12 +58,14 @@ function _msgData() internal view virtual returns (bytes calldata) {
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -107,17 +96,21 @@ function _msgData() internal view virtual returns (bytes calldata) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

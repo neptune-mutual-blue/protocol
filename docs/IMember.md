@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
+**↘ Derived Contracts: [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
 
 **IMember**
 
@@ -15,7 +15,7 @@ View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.
 
 Version number of this contract
 
-```solidity
+```js
 function version() external pure
 returns(bytes32)
 ```
@@ -25,19 +25,11 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure returns (bytes32);
-```
-</details>
-
 ### getName
 
 Name of this contract
 
-```solidity
+```js
 function getName() external pure
 returns(bytes32)
 ```
@@ -46,14 +38,6 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() external pure returns (bytes32);
-```
-</details>
 
 ## Contracts
 
@@ -70,12 +54,14 @@ function getName() external pure returns (bytes32);
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -106,17 +92,21 @@ function getName() external pure returns (bytes32);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

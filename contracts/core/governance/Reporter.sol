@@ -48,6 +48,7 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
+    // Todo: the reporter should be allowed to dispute
     _mustBeUnpaused();
     s.mustNotHaveDispute(key);
     s.mustBeReporting(key);

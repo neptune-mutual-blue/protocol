@@ -46,7 +46,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 
 ### setUintByKey
 
-```solidity
+```js
 function setUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 ```
 
@@ -58,24 +58,9 @@ function setUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 | key | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setUintByKey(
-    IStore s,
-    bytes32 key,
-    uint256 value
-  ) external {
-    require(key > 0, "Invalid key");
-    return s.setUint(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### setUintByKeys
 
-```solidity
+```js
 function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) external nonpayable
 ```
 
@@ -88,25 +73,9 @@ function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) exte
 | key2 | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### setUintByKeys
 
-```solidity
+```js
 function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value) external nonpayable
 ```
 
@@ -120,26 +89,9 @@ function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, ui
 | account | address |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    address account,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2, account)), value);
-  }
-```
-</details>
-
 ### addUintByKey
 
-```solidity
+```js
 function addUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 ```
 
@@ -151,24 +103,9 @@ function addUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 | key | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addUintByKey(
-    IStore s,
-    bytes32 key,
-    uint256 value
-  ) external {
-    require(key > 0, "Invalid key");
-    return s.addUint(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### addUintByKeys
 
-```solidity
+```js
 function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) external nonpayable
 ```
 
@@ -181,25 +118,9 @@ function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) exte
 | key2 | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### addUintByKeys
 
-```solidity
+```js
 function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value) external nonpayable
 ```
 
@@ -213,26 +134,9 @@ function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, ui
 | account | address |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    address account,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2, account)), value);
-  }
-```
-</details>
-
 ### subtractUintByKey
 
-```solidity
+```js
 function subtractUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 ```
 
@@ -244,24 +148,9 @@ function subtractUintByKey(IStore s, bytes32 key, uint256 value) external nonpay
 | key | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function subtractUintByKey(
-    IStore s,
-    bytes32 key,
-    uint256 value
-  ) external {
-    require(key > 0, "Invalid key");
-    return s.subtractUint(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### subtractUintByKeys
 
-```solidity
+```js
 function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) external nonpayable
 ```
 
@@ -274,25 +163,9 @@ function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value)
 | key2 | bytes32 |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function subtractUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### subtractUintByKeys
 
-```solidity
+```js
 function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value) external nonpayable
 ```
 
@@ -306,26 +179,9 @@ function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address accoun
 | account | address |  | 
 | value | uint256 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function subtractUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    address account,
-    uint256 value
-  ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2, account)), value);
-  }
-```
-</details>
-
 ### setBytes32ByKey
 
-```solidity
+```js
 function setBytes32ByKey(IStore s, bytes32 key, bytes32 value) external nonpayable
 ```
 
@@ -337,24 +193,9 @@ function setBytes32ByKey(IStore s, bytes32 key, bytes32 value) external nonpayab
 | key | bytes32 |  | 
 | value | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBytes32ByKey(
-    IStore s,
-    bytes32 key,
-    bytes32 value
-  ) external {
-    require(key > 0, "Invalid key");
-    s.setBytes32(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### setBytes32ByKeys
 
-```solidity
+```js
 function setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value) external nonpayable
 ```
 
@@ -367,25 +208,9 @@ function setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value) e
 | key2 | bytes32 |  | 
 | value | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBytes32ByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    bytes32 value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBytes32(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### setBoolByKey
 
-```solidity
+```js
 function setBoolByKey(IStore s, bytes32 key, bool value) external nonpayable
 ```
 
@@ -397,24 +222,9 @@ function setBoolByKey(IStore s, bytes32 key, bool value) external nonpayable
 | key | bytes32 |  | 
 | value | bool |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBoolByKey(
-    IStore s,
-    bytes32 key,
-    bool value
-  ) external {
-    require(key > 0, "Invalid key");
-    return s.setBool(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### setBoolByKeys
 
-```solidity
+```js
 function setBoolByKeys(IStore s, bytes32 key1, bytes32 key2, bool value) external nonpayable
 ```
 
@@ -427,25 +237,9 @@ function setBoolByKeys(IStore s, bytes32 key1, bytes32 key2, bool value) externa
 | key2 | bytes32 |  | 
 | value | bool |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBoolByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    bool value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### setBoolByKeys
 
-```solidity
+```js
 function setBoolByKeys(IStore s, bytes32 key, address account, bool value) external nonpayable
 ```
 
@@ -458,25 +252,9 @@ function setBoolByKeys(IStore s, bytes32 key, address account, bool value) exter
 | account | address |  | 
 | value | bool |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setBoolByKeys(
-    IStore s,
-    bytes32 key,
-    address account,
-    bool value
-  ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key, account)), value);
-  }
-```
-</details>
-
 ### setAddressByKey
 
-```solidity
+```js
 function setAddressByKey(IStore s, bytes32 key, address value) external nonpayable
 ```
 
@@ -488,24 +266,9 @@ function setAddressByKey(IStore s, bytes32 key, address value) external nonpayab
 | key | bytes32 |  | 
 | value | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setAddressByKey(
-    IStore s,
-    bytes32 key,
-    address value
-  ) external {
-    require(key > 0, "Invalid key");
-    return s.setAddress(keccak256(abi.encodePacked(key)), value);
-  }
-```
-</details>
-
 ### setAddressByKeys
 
-```solidity
+```js
 function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value) external nonpayable
 ```
 
@@ -518,25 +281,9 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value) e
 | key2 | bytes32 |  | 
 | value | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setAddressByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    address value
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2)), value);
-  }
-```
-</details>
-
 ### setAddressByKeys
 
-```solidity
+```js
 function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value) external nonpayable
 ```
 
@@ -550,26 +297,9 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, ad
 | key3 | bytes32 |  | 
 | value | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setAddressByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    bytes32 key3,
-    address value
-  ) external {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2, key3)), value);
-  }
-```
-</details>
-
 ### deleteUintByKey
 
-```solidity
+```js
 function deleteUintByKey(IStore s, bytes32 key) external nonpayable
 ```
 
@@ -580,20 +310,9 @@ function deleteUintByKey(IStore s, bytes32 key) external nonpayable
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteUintByKey(IStore s, bytes32 key) external {
-    require(key > 0, "Invalid key");
-    return s.deleteUint(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### deleteUintByKeys
 
-```solidity
+```js
 function deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpayable
 ```
 
@@ -605,24 +324,9 @@ function deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpaya
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteUint(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### deleteBytes32ByKey
 
-```solidity
+```js
 function deleteBytes32ByKey(IStore s, bytes32 key) external nonpayable
 ```
 
@@ -633,20 +337,9 @@ function deleteBytes32ByKey(IStore s, bytes32 key) external nonpayable
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBytes32ByKey(IStore s, bytes32 key) external {
-    require(key > 0, "Invalid key");
-    s.deleteBytes32(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### deleteBytes32ByKeys
 
-```solidity
+```js
 function deleteBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpayable
 ```
 
@@ -658,24 +351,9 @@ function deleteBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2) external nonp
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBytes32ByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBytes32(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### deleteBoolByKey
 
-```solidity
+```js
 function deleteBoolByKey(IStore s, bytes32 key) external nonpayable
 ```
 
@@ -686,20 +364,9 @@ function deleteBoolByKey(IStore s, bytes32 key) external nonpayable
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBoolByKey(IStore s, bytes32 key) external {
-    require(key > 0, "Invalid key");
-    return s.deleteBool(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### deleteBoolByKeys
 
-```solidity
+```js
 function deleteBoolByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpayable
 ```
 
@@ -711,24 +378,9 @@ function deleteBoolByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpaya
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBoolByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### deleteBoolByKeys
 
-```solidity
+```js
 function deleteBoolByKeys(IStore s, bytes32 key, address account) external nonpayable
 ```
 
@@ -740,24 +392,9 @@ function deleteBoolByKeys(IStore s, bytes32 key, address account) external nonpa
 | key | bytes32 |  | 
 | account | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteBoolByKeys(
-    IStore s,
-    bytes32 key,
-    address account
-  ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key, account)));
-  }
-```
-</details>
-
 ### deleteAddressByKey
 
-```solidity
+```js
 function deleteAddressByKey(IStore s, bytes32 key) external nonpayable
 ```
 
@@ -768,20 +405,9 @@ function deleteAddressByKey(IStore s, bytes32 key) external nonpayable
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteAddressByKey(IStore s, bytes32 key) external {
-    require(key > 0, "Invalid key");
-    return s.deleteAddress(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### deleteAddressByKeys
 
-```solidity
+```js
 function deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpayable
 ```
 
@@ -793,24 +419,9 @@ function deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2) external nonp
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteAddressByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteAddress(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### getUintByKey
 
-```solidity
+```js
 function getUintByKey(IStore s, bytes32 key) external view
 returns(uint256)
 ```
@@ -822,20 +433,9 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUintByKey(IStore s, bytes32 key) external view returns (uint256) {
-    require(key > 0, "Invalid key");
-    return s.getUint(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### getUintByKeys
 
-```solidity
+```js
 function getUintByKeys(IStore s, bytes32 key1, bytes32 key2) external view
 returns(uint256)
 ```
@@ -848,24 +448,9 @@ returns(uint256)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### getUintByKeys
 
-```solidity
+```js
 function getUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account) external view
 returns(uint256)
 ```
@@ -879,25 +464,9 @@ returns(uint256)
 | key2 | bytes32 |  | 
 | account | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUintByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    address account
-  ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2, account)));
-  }
-```
-</details>
-
 ### getBytes32ByKey
 
-```solidity
+```js
 function getBytes32ByKey(IStore s, bytes32 key) external view
 returns(bytes32)
 ```
@@ -909,20 +478,9 @@ returns(bytes32)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBytes32ByKey(IStore s, bytes32 key) external view returns (bytes32) {
-    require(key > 0, "Invalid key");
-    return s.getBytes32(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### getBytes32ByKeys
 
-```solidity
+```js
 function getBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2) external view
 returns(bytes32)
 ```
@@ -935,24 +493,9 @@ returns(bytes32)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBytes32ByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external view returns (bytes32) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBytes32(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### getBoolByKey
 
-```solidity
+```js
 function getBoolByKey(IStore s, bytes32 key) external view
 returns(bool)
 ```
@@ -964,20 +507,9 @@ returns(bool)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBoolByKey(IStore s, bytes32 key) external view returns (bool) {
-    require(key > 0, "Invalid key");
-    return s.getBool(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### getBoolByKeys
 
-```solidity
+```js
 function getBoolByKeys(IStore s, bytes32 key1, bytes32 key2) external view
 returns(bool)
 ```
@@ -990,24 +522,9 @@ returns(bool)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBoolByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external view returns (bool) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### getBoolByKeys
 
-```solidity
+```js
 function getBoolByKeys(IStore s, bytes32 key, address account) external view
 returns(bool)
 ```
@@ -1020,24 +537,9 @@ returns(bool)
 | key | bytes32 |  | 
 | account | address |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getBoolByKeys(
-    IStore s,
-    bytes32 key,
-    address account
-  ) external view returns (bool) {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key, account)));
-  }
-```
-</details>
-
 ### getAddressByKey
 
-```solidity
+```js
 function getAddressByKey(IStore s, bytes32 key) external view
 returns(address)
 ```
@@ -1049,20 +551,9 @@ returns(address)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAddressByKey(IStore s, bytes32 key) external view returns (address) {
-    require(key > 0, "Invalid key");
-    return s.getAddress(keccak256(abi.encodePacked(key)));
-  }
-```
-</details>
-
 ### getAddressByKeys
 
-```solidity
+```js
 function getAddressByKeys(IStore s, bytes32 key1, bytes32 key2) external view
 returns(address)
 ```
@@ -1075,24 +566,9 @@ returns(address)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAddressByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2
-  ) external view returns (address) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2)));
-  }
-```
-</details>
-
 ### getAddressByKeys
 
-```solidity
+```js
 function getAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) external view
 returns(address)
 ```
@@ -1105,22 +581,6 @@ returns(address)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 | key3 | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAddressByKeys(
-    IStore s,
-    bytes32 key1,
-    bytes32 key2,
-    bytes32 key3
-  ) external view returns (address) {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2, key3)));
-  }
-```
-</details>
 
 ## Contracts
 
@@ -1137,12 +597,14 @@ function getAddressByKeys(
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -1173,17 +635,21 @@ function getAddressByKeys(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

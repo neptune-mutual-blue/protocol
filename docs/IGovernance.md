@@ -10,44 +10,16 @@ View Source: [contracts/interfaces/IGovernance.sol](../contracts/interfaces/IGov
 **Events**
 
 ```js
-event Claimed(address indexed cToken, bytes32 indexed key, address indexed account, uint256  amount);
 event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
 ```
 
 ## Functions
 
-- [claim(address cToken, bytes32 key, uint256 amount)](#claim)
 - [finalize(bytes32 key, uint256 incidentDate)](#finalize)
-
-### claim
-
-```solidity
-function claim(address cToken, bytes32 key, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function claim(
-    address cToken,
-    bytes32 key,
-    uint256 amount
-  ) external;
-```
-</details>
 
 ### finalize
 
-```solidity
+```js
 function finalize(bytes32 key, uint256 incidentDate) external nonpayable
 ```
 
@@ -57,14 +29,6 @@ function finalize(bytes32 key, uint256 incidentDate) external nonpayable
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function finalize(bytes32 key, uint256 incidentDate) external;
-```
-</details>
 
 ## Contracts
 
@@ -81,12 +45,14 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [CoverUtilV1](CoverUtilV1.md)
 * [cToken](cToken.md)
 * [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
 * [ICoverAssurance](ICoverAssurance.md)
@@ -117,17 +83,21 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultPod](VaultPod.md)
 * [Witness](Witness.md)

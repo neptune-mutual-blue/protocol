@@ -1,68 +1,66 @@
-# ReentrancyGuard.sol
+# IClaimsProcessor.sol
 
-View Source: [openzeppelin-solidity/contracts/security/ReentrancyGuard.sol](../openzeppelin-solidity/contracts/security/ReentrancyGuard.sol)
+View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
 
-**↘ Derived Contracts: [Recoverable](Recoverable.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [Processor](Processor.md)**
 
-**ReentrancyGuard**
+**IClaimsProcessor**
 
-Contract module that helps prevent reentrant calls to a function.
- Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
- available, which can be applied to functions to make sure there are no nested
- (reentrant) calls to them.
- Note that because there is a single `nonReentrant` guard, functions marked as
- `nonReentrant` may not call one another. This can be worked around by making
- those functions `private`, and then adding `external` `nonReentrant` entry
- points to them.
- TIP: If you would like to learn more about reentrancy and alternative ways
- to protect against it, check out our blog post
- https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
-
-## Contract Members
-**Constants & Variables**
+**Events**
 
 ```js
-uint256 private constant _NOT_ENTERED;
-uint256 private constant _ENTERED;
-uint256 private _status;
-
+event Claimed(address indexed cToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
 ```
-
-## Modifiers
-
-- [nonReentrant](#nonreentrant)
-
-### nonReentrant
-
-Prevents a contract from calling itself, directly or indirectly.
- Calling a `nonReentrant` function from another `nonReentrant`
- function is not supported. It is possible to prevent this from happening
- by making the `nonReentrant` function external, and make it call a
- `private` function that does the actual work.
-
-```js
-modifier nonReentrant() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
 
 ## Functions
 
-- [constructor()](#)
+- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
+- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
+- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
 
-### 
+### claim
 
 ```js
-function () internal nonpayable
+function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| cToken | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| amount | uint256 |  | 
+
+### validate
+
+```js
+function validate(address cToken, bytes32 key, uint256 incidentDate) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| cToken | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### getClaimExpiryDate
+
+```js
+function getClaimExpiryDate(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
 
 ## Contracts
 

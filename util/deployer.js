@@ -1,25 +1,51 @@
-const prepare = async (contractName, libraries, ...args) => {
+const { network } = require('hardhat')
+const io = require('./io')
+
+const prepare = async (cache, contractName, libraries, ...args) => {
   const contract = libraries ? await ethers.getContractFactory(contractName, libraries) : await ethers.getContractFactory(contractName)
-  return await contract.deploy(...args)
+
+  const key = [contractName, ...args].join('.')
+
+  const address = await io.fetchValue(cache, key)
+
+  if (address) {
+    global.log && console.info('[skip] No need to deploy %s', contractName)
+    return await contract.attach(address)
+  }
+
+  const instance = await contract.deploy(...args)
+  const deployed = await instance.deployed()
+
+  await io.cacheValue(cache, key, deployed.address)
+
+  global.log && console.info('[tx] %s: %s %s', contractName, deployed.address, args.length ? '--> ' + JSON.stringify(args) : '')
+
+  return deployed
 }
 
-const deploy = async (contractName, ...args) => {
-  const contract = await prepare(contractName, null, ...args)
-  const deployed = await contract.deployed()
+const deploy = async (cache, contractName, ...args) => {
+  const deployed = await prepare(cache, contractName, null, ...args)
 
-  if (global.logDeployments) {
-    console.info('%s: %s %s', contractName, deployed.address, args.length ? '--> ' + JSON.stringify(args) : '')
+  const { name } = network
+  const timeout = process.env[`${name}-timeout`]
+
+  if (timeout) {
+    global.log && console.info('Wait %s ms', timeout)
+    await new Promise(resolve => setTimeout(resolve, timeout))
   }
 
   return deployed
 }
 
-const deployWithLibraries = async (contractName, libraries, ...args) => {
-  const contract = await prepare(contractName, { libraries }, ...args)
-  const deployed = await contract.deployed()
+const deployWithLibraries = async (cache, contractName, libraries, ...args) => {
+  const deployed = await prepare(cache, contractName, { libraries }, ...args)
 
-  if (global.logDeployments) {
-    console.info('%s: %s %s', contractName, deployed.address, args.length ? '-->' + JSON.stringify(args) : '')
+  const { name } = network
+  const timeout = process.env[`${name}-timeout`]
+
+  if (timeout) {
+    global.log && console.info('Wait %s ms', timeout)
+    await new Promise(resolve => setTimeout(resolve, timeout))
   }
 
   return deployed

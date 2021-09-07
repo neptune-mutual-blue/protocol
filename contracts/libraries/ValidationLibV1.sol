@@ -143,7 +143,7 @@ library ValidationLibV1 {
     address cToken,
     uint256 incidentDate
   ) public view {
-    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Claim denied");
+    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Your claim is denied");
 
     s.mustBeProtocolMember(cToken);
     mustBeValidIncidentDate(s, key, incidentDate);
