@@ -36,7 +36,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     s.addAttestation(key, super._msgSender(), incidentDate, stake);
 
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
 
     emit Attested(key, super._msgSender(), incidentDate, stake);
   }
@@ -55,7 +55,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     s.addDispute(key, super._msgSender(), incidentDate, stake);
 
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
 
     emit Refuted(key, super._msgSender(), incidentDate, stake);
   }

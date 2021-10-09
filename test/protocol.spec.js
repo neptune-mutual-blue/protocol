@@ -13,11 +13,13 @@ require('chai')
 describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, store, storeKeyUtil, protoUtilV1
+  let npm, store, router, storeKeyUtil, protoUtilV1
 
   beforeEach(async () => {
     store = await deployer.deploy(cache, 'FakeStore')
-    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
+
+    npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
 
     storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -39,7 +41,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -66,7 +69,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -83,7 +87,7 @@ describe('Constructor & Initializer', () => {
     isProtocolAddress.should.be.true
 
     const sNEPAddress = await store.getAddress(key.encodeKey(key.NS.SETUP_NEP))
-    sNEPAddress.should.equal(nep.address)
+    sNEPAddress.should.equal(npm.address)
 
     const sBurner = await store.getAddress(key.encodeKey(key.NS.BURNER))
     sBurner.should.equal(helper.zero1)
@@ -105,7 +109,7 @@ describe('Constructor & Initializer', () => {
     ).should.be.revertedWith('Invalid Store')
   })
 
-  it('should fail when zero address is provided as NEP', async () => {
+  it('should fail when zero address is provided as NPM', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
@@ -118,6 +122,7 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
+      router.address,
       helper.zerox,
       treasury,
       assuranceVault,
@@ -126,7 +131,7 @@ describe('Constructor & Initializer', () => {
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
       7 * DAYS // Claim period
-    ).should.be.revertedWith('Invalid NEP')
+    ).should.be.revertedWith('Invalid NPM')
   })
 
   it('should fail when zero address is provided as treasury', async () => {
@@ -142,7 +147,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       helper.zerox,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -166,7 +172,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       helper.zerox,
       helper.ether(0), // Cover Fee
@@ -181,11 +188,13 @@ describe('Constructor & Initializer', () => {
 describe('Adding a New Protocol Contract', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, store, protocol
+  let npm, store, router, protocol
 
   beforeEach(async () => {
     store = await deployer.deploy(cache, 'FakeStore')
-    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
+
+    npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
 
     const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -205,7 +214,8 @@ describe('Adding a New Protocol Contract', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -234,11 +244,13 @@ describe('Adding a New Protocol Contract', () => {
 describe('Upgrading Protocol Contract(s)', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, store, protocol
+  let npm, store, router, protocol
 
   beforeEach(async () => {
     store = await deployer.deploy(cache, 'FakeStore')
-    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
+
+    npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
 
     const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -258,7 +270,8 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -307,11 +320,13 @@ describe('Upgrading Protocol Contract(s)', () => {
 describe('Adding a New Protocol Member', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, store, protocol
+  let npm, store, router, protocol
 
   beforeEach(async () => {
     store = await deployer.deploy(cache, 'FakeStore')
-    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
+
+    npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
 
     const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -331,7 +346,8 @@ describe('Adding a New Protocol Member', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee
@@ -365,11 +381,13 @@ describe('Adding a New Protocol Member', () => {
 describe('Removing Protocol Member(s)', () => {
   const treasury = helper.randomAddress()
   const assuranceVault = helper.randomAddress()
-  let nep, store, protocol
+  let npm, store, router, protocol
 
   beforeEach(async () => {
     store = await deployer.deploy(cache, 'FakeStore')
-    nep = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NEP', helper.ether(10000))
+    router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
+
+    npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
 
     const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -389,7 +407,8 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      nep.address,
+      router.address,
+      npm.address,
       treasury,
       assuranceVault,
       helper.ether(0), // Cover Fee

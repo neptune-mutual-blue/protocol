@@ -14,7 +14,7 @@ import "./VaultPod.sol";
  * - Cover fees paid in stablecoin get added to the liquidity pool.
  * - The protocol supplies a small portion of idle assets to lending protocols (v2).
  * - Flash loan interest also gets added back to the pool.
- * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NEP provision.
+ * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NPM provision.
  * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `assurance token` allocation.
  */
 contract Vault is VaultPod {

@@ -1,3 +1,4 @@
+const fakesComposer = require('./fakes')
 const storeComposer = require('./store')
 const tokenComposer = require('./token')
 const libsComposer = require('./libs')
@@ -12,9 +13,10 @@ const initialize = async (suite, deploymentId) => {
   const cache = suite ? null : await fileCache.from(deploymentId)
 
   const store = await storeComposer.deploy(cache)
+  const fakes = await fakesComposer.deployAll(cache)
 
-  const [nep, wxDai, assuranceToken] = await tokenComposer.deploySeveral(cache, [
-    { name: 'Neptune Mutual Token', symbol: 'NEP' },
+  const [npm, wxDai, assuranceToken] = await tokenComposer.deploySeveral(cache, [
+    { name: 'Neptune Mutual Token', symbol: 'NPM' },
     { name: 'Wrapped Dai', symbol: 'WXDAI' },
     { name: 'Compound', symbol: 'CMP' }
   ])
@@ -33,7 +35,8 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
   await intermediate(cache, protocol, 'initialize',
-    nep.address,
+    fakes.router.address,
+    npm.address,
     sample.fake.TREASURY,
     sample.fake.ASSURANCE_VAULT,
     helper.ether(0), // Cover Fee
@@ -162,7 +165,7 @@ const initialize = async (suite, deploymentId) => {
 
   return {
     store,
-    nep,
+    npm,
     wxDai,
     assuranceToken,
     protocol,

@@ -22,7 +22,7 @@ event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
 
 ### increaseProvision
 
-Increases NEP provision for the given cover key.
+Increases NPM provision for the given cover key.
  This feature is accessible only to the contract owner (governance).
 
 ```js
@@ -34,11 +34,11 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Provide the cover key you wish to increase the provision of | 
-| amount | uint256 | Specify the amount of NEP tokens you would like to add | 
+| amount | uint256 | Specify the amount of NPM tokens you would like to add | 
 
 ### decreaseProvision
 
-Decreases NEP provision for the given cover key
+Decreases NPM provision for the given cover key
  This feature is accessible only to the contract owner (governance).
 
 ```js
@@ -50,11 +50,11 @@ function decreaseProvision(bytes32 key, uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Provide the cover key you wish to decrease the provision from | 
-| amount | uint256 | Specify the amount of NEP tokens you would like to decrease | 
+| amount | uint256 | Specify the amount of NPM tokens you would like to decrease | 
 
 ### getProvision
 
-Gets the NEP provision amount for the given cover key
+Gets the NPM provision amount for the given cover key
 
 ```js
 function getProvision(bytes32 key) external view
@@ -87,6 +87,7 @@ returns(uint256)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -107,6 +108,8 @@ returns(uint256)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

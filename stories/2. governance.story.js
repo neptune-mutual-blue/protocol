@@ -57,12 +57,12 @@ const coverKey = key.toBytes32('Compound Finance Cover')
 let contracts = {}
 
 const attest = async (id, user, stake) => {
-  await contracts.nep.connect(user).approve(contracts.governance.address, helper.ether(stake))
+  await contracts.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
   await contracts.governance.connect(user).attest(coverKey, id, helper.ether(stake))
 }
 
 const refute = async (id, user, stake) => {
-  await contracts.nep.connect(user).approve(contracts.governance.address, helper.ether(stake))
+  await contracts.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
   await contracts.governance.connect(user).refute(coverKey, id, helper.ether(stake))
 }
 
@@ -81,7 +81,7 @@ describe('Governance Stories', () => {
     const reportingPeriod = 7 * constants.DAYS
 
     // Submit approvals
-    await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
@@ -91,7 +91,7 @@ describe('Governance Stories', () => {
     // Add provision
     const provision = helper.ether(1_000_001)
 
-    await contracts.nep.approve(contracts.provisionContract.address, provision)
+    await contracts.npm.approve(contracts.provisionContract.address, provision)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     // Purchase a cover
@@ -143,15 +143,15 @@ describe('Governance Stories', () => {
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)
 
-    const previous = await contracts.nep.balanceOf(alice.address)
+    const previous = await contracts.npm.balanceOf(alice.address)
 
-    await contracts.nep.connect(alice).approve(contracts.governance.address, stake)
+    await contracts.npm.connect(alice).approve(contracts.governance.address, stake)
     await contracts.governance.connect(alice).report(coverKey, info, helper.ether(1))
       .should.be.revertedWith('Stake insufficient')
 
     await contracts.governance.connect(alice).report(coverKey, info, stake)
 
-    const current = await contracts.nep.balanceOf(alice.address)
+    const current = await contracts.npm.balanceOf(alice.address)
     previous.sub(current).should.equal(stake)
   })
 
@@ -161,7 +161,7 @@ describe('Governance Stories', () => {
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)
 
-    await contracts.nep.connect(bob).approve(contracts.governance.address, stake)
+    await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
     await contracts.governance.connect(bob).report(coverKey, info, stake)
       .should.be.revertedWith('Actively Reporting')
   })
@@ -189,7 +189,7 @@ describe('Governance Stories', () => {
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
-    await contracts.nep.connect(bob).approve(contracts.governance.address, stake)
+    await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
 
     await contracts.governance.connect(bob).dispute(coverKey, incidentDate, info, helper.ether(1))
       .should.be.revertedWith('Stake insufficient')
@@ -203,7 +203,7 @@ describe('Governance Stories', () => {
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
-    await contracts.nep.connect(chris).approve(contracts.governance.address, stake)
+    await contracts.npm.connect(chris).approve(contracts.governance.address, stake)
     await contracts.governance.connect(chris).dispute(coverKey, incidentDate, info, stake)
       .should.be.revertedWith('Already disputed')
   })

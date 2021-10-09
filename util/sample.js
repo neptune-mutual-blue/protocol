@@ -9,7 +9,7 @@ const info = {
     name: 'Main Ethereum Network'
   },
   smartContracts: ['0xc00e94cb662c3520282e6f5717214004a7f26888'],
-  rules: `1. You must have maintained at least 1 NEP tokens in your wallet during your coverage period.
+  rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
           2. During your coverage period, the protocol faced an attack, hack, exploitation, or vulnerability which resulted in the user assets being stolen or lost and the protocol was also unable to cover the loss themselves. This does not have to be your own loss.
           3. The protocol never communicated anything about their plans to cover the lost fund and de-risk their users within 7 days of the incident.
           4. The protocol promised but later were unable to cover, write off, or bear at least 75% of the sufferred loss on behalf of their users within 30 days of the incident`,

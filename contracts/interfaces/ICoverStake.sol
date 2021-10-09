@@ -11,7 +11,7 @@ interface ICoverStake is IMember {
   /**
    * @dev Increase the stake of the given cover pool
    * @param key Enter the cover key
-   * @param account Enter the account from where the NEP tokens will be transferred
+   * @param account Enter the account from where the NPM tokens will be transferred
    * @param amount Enter the amount of stake
    * @param fee Enter the fee amount. Note: do not enter the fee if you are directly calling this function.
    */

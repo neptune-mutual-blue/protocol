@@ -55,12 +55,13 @@ library ProtoUtilV1 {
   bytes32 public constant NS_REPORTING_STAKE_OWNED_YES = "proto:reporting:stake:owned:yes";
   bytes32 public constant NS_REPORTING_STAKE_OWNED_NO = "proto:reporting:stake:owned:no";
 
-  bytes32 public constant NS_SETUP_NEP = "proto:setup:nep";
+  bytes32 public constant NS_SETUP_NPM = "proto:setup:npm";
   bytes32 public constant NS_SETUP_COVER_FEE = "proto:setup:cover:fee";
   bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
   bytes32 public constant NS_SETUP_REPORTING_STAKE = "proto:setup:reporting:stake";
   bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
   bytes32 public constant NS_SETUP_CLAIM_PERIOD = "proto:setup:claim:period";
+  bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER = "proto:uniswap:v2:router";
 
   // Contract names
   bytes32 public constant CNAME_PROTOCOL = "Protocol";
@@ -138,9 +139,13 @@ library ProtoUtilV1 {
     return mustBeExactContract(s, name, msg.sender);
   }
 
-  function nepToken(IStore s) external view returns (IERC20) {
-    address nep = s.getAddressByKey(NS_SETUP_NEP);
-    return IERC20(nep);
+  function npmToken(IStore s) external view returns (IERC20) {
+    address npm = s.getAddressByKey(NS_SETUP_NPM);
+    return IERC20(npm);
+  }
+
+  function getUniswapV2Router(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_SETUP_UNISWAP_V2_ROUTER);
   }
 
   function getTreasury(IStore s) external view returns (address) {

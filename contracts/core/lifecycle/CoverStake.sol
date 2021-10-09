@@ -13,10 +13,10 @@ import "../Recoverable.sol";
 /**
  * @title Cover Stake
  * @dev When you create a new cover, you have to specify the amount of
- * NEP tokens you wish to stake as a cover creator. <br /> <br />
+ * NPM tokens you wish to stake as a cover creator. <br /> <br />
  *
  * To demonstrate support for a cover pool, anyone can add and remove
- * NEP stakes (minimum required). The higher the sake, the more visibility
+ * NPM stakes (minimum required). The higher the sake, the more visibility
  * the contract gets if there are multiple cover contracts with the same name
  * or similar terms. Even when there are no duplicate contract, a higher stake
  * would normally imply a better cover pool commitment.
@@ -40,7 +40,7 @@ contract CoverStake is ICoverStake, Recoverable {
   /**
    * @dev Increase the stake of the given cover pool
    * @param key Enter the cover key
-   * @param account Enter the account from where the NEP tokens will be transferred
+   * @param account Enter the account from where the NPM tokens will be transferred
    * @param amount Enter the amount of stake
    * @param fee Enter the fee amount. Note: do not enter the fee if you are directly calling this function.
    */
@@ -56,10 +56,10 @@ contract CoverStake is ICoverStake, Recoverable {
 
     require(amount >= fee, "Invalid fee");
 
-    s.nepToken().ensureTransferFrom(account, address(this), amount);
+    s.npmToken().ensureTransferFrom(account, address(this), amount);
 
     if (fee > 0) {
-      s.nepToken().ensureTransferFrom(address(this), s.getBurnAddress(), fee);
+      s.npmToken().ensureTransferFrom(address(this), s.getBurnAddress(), fee);
       emit FeeBurned(key, fee);
     }
 
@@ -90,7 +90,7 @@ contract CoverStake is ICoverStake, Recoverable {
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount);
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount);
 
-    s.nepToken().ensureTransfer(account, amount);
+    s.npmToken().ensureTransfer(account, amount);
     emit StakeRemoved(key, amount);
   }
 

@@ -18,7 +18,7 @@ interface ICover is IMember {
   /**
    * @dev Adds a new coverage pool or cover contract.
    * To add a new cover, you need to pay cover creation fee
-   * and stake minimum amount of NEP in the Vault. <br /> <br />
+   * and stake minimum amount of NPM in the Vault. <br /> <br />
    *
    * Through the governance portal, projects will be able redeem
    * the full cover fee at a later date. <br /> <br />
@@ -38,12 +38,12 @@ interface ICover is IMember {
    *
    * Assurance tokens can be added by a project to demonstrate coverage support
    * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
+   * liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
    * @param reportingPeriod The period during when reporting happens.
    * @param initialAssuranceAmount **Optional.** Enter the initial amount of
    * assurance tokens you'd like to add to this pool.
-   * @param stakeWithFee Enter the total NEP amount (stake + fee) to transfer to this contract.
+   * @param stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
    */
   function addCover(

@@ -11,12 +11,12 @@ import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**
- * @title NEP Cover Provision
- * @dev Through governance, NEP tokens can be allocated as provision or `Reward Pool Support`
+ * @title NPM Cover Provision
+ * @dev Through governance, NPM tokens can be allocated as provision or `Reward Pool Support`
  * for any given cover. This not only fosters community participation but also incentivizes
  * the liquidity providers or acts as a defense/support during cover incidents.
  *
- * Along with the NEP provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
+ * Along with the NPM provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
  * for the rainy day.
  */
 contract CoverProvision is ICoverProvision, Recoverable {
@@ -36,10 +36,10 @@ contract CoverProvision is ICoverProvision, Recoverable {
   }
 
   /**
-   * @dev Increases NEP provision for the given cover key.
+   * @dev Increases NPM provision for the given cover key.
    * This feature is accessible only to the contract owner (governance).
    * @param key Provide the cover key you wish to increase the provision of
-   * @param amount Specify the amount of NEP tokens you would like to add
+   * @param amount Specify the amount of NPM tokens you would like to add
    */
   function increaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
     _mustBeUnpaused();
@@ -49,16 +49,16 @@ contract CoverProvision is ICoverProvision, Recoverable {
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
 
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), amount);
+    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), amount);
 
     emit ProvisionIncreased(key, privision, privision + amount);
   }
 
   /**
-   * @dev Decreases NEP provision for the given cover key
+   * @dev Decreases NPM provision for the given cover key
    * This feature is accessible only to the contract owner (governance).
    * @param key Provide the cover key you wish to decrease the provision from
-   * @param amount Specify the amount of NEP tokens you would like to decrease
+   * @param amount Specify the amount of NPM tokens you would like to decrease
    */
   function decreaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
     _mustBeUnpaused();
@@ -69,13 +69,13 @@ contract CoverProvision is ICoverProvision, Recoverable {
     require(privision >= amount, "Exceeds Balance"); // Exceeds balance
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
 
-    s.nepToken().ensureTransfer(super.owner(), amount);
+    s.npmToken().ensureTransfer(super.owner(), amount);
 
     emit ProvisionDecreased(key, privision, privision - amount);
   }
 
   /**
-   * @dev Gets the NEP provision amount for the given cover key
+   * @dev Gets the NPM provision amount for the given cover key
    * @param key Enter the cover key to get the provision
    */
   function getProvision(bytes32 key) external view override returns (uint256) {

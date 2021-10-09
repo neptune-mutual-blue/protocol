@@ -14,7 +14,7 @@ import "../Recoverable.sol";
  * @title Cover Assurance
  * @dev Assurance tokens can be added by a covered project to demonstrate coverage support
  * for their project. This helps bring the cover fee down and enhances
- * liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
+ * liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded
  * as a support to the liquidity providers when a cover incident occurs.
  *
  * Without negatively affecting the price much,

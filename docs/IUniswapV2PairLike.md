@@ -1,79 +1,20 @@
-# Ownable.sol
+# IUniswapV2PairLike.sol
 
-View Source: [openzeppelin-solidity/contracts/access/Ownable.sol](../openzeppelin-solidity/contracts/access/Ownable.sol)
+View Source: [contracts/interfaces/external/IUniswapV2PairLike.sol](../contracts/interfaces/external/IUniswapV2PairLike.sol)
 
-**↗ Extends: [Context](Context.md)**
-**↘ Derived Contracts: [FakeToken](FakeToken.md), [Recoverable](Recoverable.md), [StoreBase](StoreBase.md)**
-
-**Ownable**
-
-Contract module which provides a basic access control mechanism, where
- there is an account (an owner) that can be granted exclusive access to
- specific functions.
- By default, the owner account will be the one that deploys the contract. This
- can later be changed with {transferOwnership}.
- This module is used through inheritance. It will make available the modifier
- `onlyOwner`, which can be applied to your functions to restrict their use to
- the owner.
-
-## Contract Members
-**Constants & Variables**
-
-```js
-address private _owner;
-
-```
-
-**Events**
-
-```js
-event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-```
-
-## Modifiers
-
-- [onlyOwner](#onlyowner)
-
-### onlyOwner
-
-Throws if called by any account other than the owner.
-
-```js
-modifier onlyOwner() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+**IUniswapV2PairLike**
 
 ## Functions
 
-- [constructor()](#)
-- [owner()](#owner)
-- [renounceOwnership()](#renounceownership)
-- [transferOwnership(address newOwner)](#transferownership)
-- [_setOwner(address newOwner)](#_setowner)
+- [token0()](#token0)
+- [token1()](#token1)
+- [totalSupply()](#totalsupply)
+- [getReserves()](#getreserves)
 
-### 
-
-Initializes the contract setting the deployer as the initial owner.
+### token0
 
 ```js
-function () internal nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### owner
-
-Returns the address of the current owner.
-
-```js
-function owner() public view
+function token0() external view
 returns(address)
 ```
 
@@ -82,15 +23,11 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### renounceOwnership
-
-Leaves the contract without owner. It will not be possible to call
- `onlyOwner` functions anymore. Can only be called by the current owner.
- NOTE: Renouncing ownership will leave the contract without an owner,
- thereby removing any functionality that is only available to the owner.
+### token1
 
 ```js
-function renounceOwnership() public nonpayable onlyOwner 
+function token1() external view
+returns(address)
 ```
 
 **Arguments**
@@ -98,32 +35,29 @@ function renounceOwnership() public nonpayable onlyOwner
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### transferOwnership
-
-Transfers ownership of the contract to a new account (`newOwner`).
- Can only be called by the current owner.
+### totalSupply
 
 ```js
-function transferOwnership(address newOwner) public nonpayable onlyOwner 
+function totalSupply() external view
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| newOwner | address |  | 
 
-### _setOwner
+### getReserves
 
 ```js
-function _setOwner(address newOwner) private nonpayable
+function getReserves() external view
+returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| newOwner | address |  | 
 
 ## Contracts
 

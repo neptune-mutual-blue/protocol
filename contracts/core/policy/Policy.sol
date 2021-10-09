@@ -245,8 +245,8 @@ contract Policy is IPolicy, Recoverable {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NEP provision
-   * @param _values[3] NEP price
+   * @param _values[2] The total amount of NPM provision
+   * @param _values[3] NPM price
    * @param _values[4] The total amount of assurance tokens
    * @param _values[5] Assurance token price
    * @param _values[6] Assurance pool weight

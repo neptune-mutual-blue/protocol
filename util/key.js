@@ -37,7 +37,7 @@ const NS = {
   COVER_VAULT: 'proto:cover:vault',
   COVER_CTOKEN: 'proto:cover:cToken',
   TREASURY: 'proto:core:treasury',
-  SETUP_NEP: 'proto:setup:nep',
+  SETUP_NEP: 'proto:setup:npm',
   SETUP_COVER_FEE: 'proto:setup:cover:fee',
   SETUP_MIN_STAKE: 'proto:setup:min:stake',
   SETUP_REPORTING_STAKE: 'proto:setup:reporting:stake',

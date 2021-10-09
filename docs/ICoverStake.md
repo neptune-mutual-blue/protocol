@@ -34,7 +34,7 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
-| account | address | Enter the account from where the NEP tokens will be transferred | 
+| account | address | Enter the account from where the NPM tokens will be transferred | 
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
 
@@ -94,6 +94,7 @@ Returns the total stake of the specified account on the given cover key
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -114,6 +115,8 @@ Returns the total stake of the specified account on the given cover key
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

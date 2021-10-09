@@ -9,7 +9,8 @@ View Source: [contracts/core/discovery/PriceDiscovery.sol](../contracts/core/dis
 ## Functions
 
 - [constructor(IStore store)](#)
-- [getTokenPriceInLiquidityToken(address , address , uint256 )](#gettokenpriceinliquiditytoken)
+- [getTokenPriceInStableCoin(address token, uint256 multiplier)](#gettokenpriceinstablecoin)
+- [getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier)](#gettokenpriceinliquiditytoken)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -25,10 +26,10 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
-### getTokenPriceInLiquidityToken
+### getTokenPriceInStableCoin
 
 ```js
-function getTokenPriceInLiquidityToken(address , address , uint256 ) external view
+function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
 returns(uint256)
 ```
 
@@ -36,9 +37,23 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-|  | address |  | 
-|  | uint256 |  | 
+| token | address |  | 
+| multiplier | uint256 |  | 
+
+### getTokenPriceInLiquidityToken
+
+```js
+function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | address |  | 
+| liquidityToken | address |  | 
+| multiplier | uint256 |  | 
 
 ### version
 
@@ -88,6 +103,7 @@ returns(bytes32)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -108,6 +124,8 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

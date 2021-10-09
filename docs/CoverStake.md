@@ -7,9 +7,9 @@ View Source: [contracts/core/lifecycle/CoverStake.sol](../contracts/core/lifecyc
 **CoverStake**
 
 When you create a new cover, you have to specify the amount of
- NEP tokens you wish to stake as a cover creator. <br /> <br />
+ NPM tokens you wish to stake as a cover creator. <br /> <br />
  To demonstrate support for a cover pool, anyone can add and remove
- NEP stakes (minimum required). The higher the sake, the more visibility
+ NPM stakes (minimum required). The higher the sake, the more visibility
  the contract gets if there are multiple cover contracts with the same name
  or similar terms. Even when there are no duplicate contract, a higher stake
  would normally imply a better cover pool commitment.
@@ -51,7 +51,7 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
-| account | address | Enter the account from where the NEP tokens will be transferred | 
+| account | address | Enter the account from where the NPM tokens will be transferred | 
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
 
@@ -160,6 +160,7 @@ returns(bytes32)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -180,6 +181,8 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

@@ -9,7 +9,7 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address nep, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod)](#initialize)
+- [initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod)](#initialize)
 - [setClaimPeriod(uint256 value)](#setclaimperiod)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinStake(uint256 value)](#setminstake)
@@ -37,14 +37,15 @@ function (IStore store) public nonpayable Recoverable
 ### initialize
 
 ```js
-function initialize(address nep, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod) external nonpayable
+function initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| nep | address |  | 
+| uniswapV2RouterLike | address |  | 
+| npm | address |  | 
 | treasury | address |  | 
 | assuranceVault | address |  | 
 | coverFee | uint256 |  | 
@@ -212,6 +213,7 @@ returns(bytes32)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -232,6 +234,8 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

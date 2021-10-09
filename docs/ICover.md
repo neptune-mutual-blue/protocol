@@ -40,7 +40,7 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 
 Adds a new coverage pool or cover contract.
  To add a new cover, you need to pay cover creation fee
- and stake minimum amount of NEP in the Vault. <br /> <br />
+ and stake minimum amount of NPM in the Vault. <br /> <br />
  Through the governance portal, projects will be able redeem
  the full cover fee at a later date. <br /> <br />
  **Apply for Fee Redemption** <br />
@@ -61,8 +61,8 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
-| stakeWithFee | uint256 | Enter the total NEP amount (stake + fee) to transfer to this contract. | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br />  Assurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
+| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br />  Assurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
 | initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
@@ -117,6 +117,7 @@ returns(coverOwner address, info bytes32, values uint256[])
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -137,6 +138,8 @@ returns(coverOwner address, info bytes32, values uint256[])
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

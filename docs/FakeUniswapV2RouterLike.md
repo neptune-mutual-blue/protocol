@@ -1,45 +1,28 @@
-# IPriceDiscovery.sol
+# FakeUniswapV2RouterLike.sol
 
-View Source: [contracts/interfaces/IPriceDiscovery.sol](../contracts/interfaces/IPriceDiscovery.sol)
+View Source: [contracts/fakes/FakeUniswapV2RouterLike.sol](../contracts/fakes/FakeUniswapV2RouterLike.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [PriceDiscovery](PriceDiscovery.md)**
+**↗ Extends: [IUniswapV2RouterLike](IUniswapV2RouterLike.md)**
 
-**IPriceDiscovery**
+**FakeUniswapV2RouterLike**
 
 ## Functions
 
-- [getTokenPriceInStableCoin(address token, uint256 multiplier)](#gettokenpriceinstablecoin)
-- [getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier)](#gettokenpriceinliquiditytoken)
+- [getAmountsOut(uint256 multiplier, address[] )](#getamountsout)
 
-### getTokenPriceInStableCoin
+### getAmountsOut
 
 ```js
-function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
-returns(uint256)
+function getAmountsOut(uint256 multiplier, address[] ) external pure
+returns(uint256[])
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address |  | 
 | multiplier | uint256 |  | 
-
-### getTokenPriceInLiquidityToken
-
-```js
-function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | address |  | 
-| liquidityToken | address |  | 
-| multiplier | uint256 |  | 
+|  | address[] |  | 
 
 ## Contracts
 

@@ -51,12 +51,13 @@ bytes32 public constant NS_REPORTING_WITNESS_YES;
 bytes32 public constant NS_REPORTING_WITNESS_NO;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_NO;
-bytes32 public constant NS_SETUP_NEP;
+bytes32 public constant NS_SETUP_NPM;
 bytes32 public constant NS_SETUP_COVER_FEE;
 bytes32 public constant NS_SETUP_MIN_STAKE;
 bytes32 public constant NS_SETUP_REPORTING_STAKE;
 bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD;
 bytes32 public constant NS_SETUP_CLAIM_PERIOD;
+bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER;
 bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
@@ -87,7 +88,8 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
 - [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
 - [callerMustBeExactContract(IStore s, bytes32 name)](#callermustbeexactcontract)
-- [nepToken(IStore s)](#neptoken)
+- [npmToken(IStore s)](#npmtoken)
+- [getUniswapV2Router(IStore s)](#getuniswapv2router)
 - [getTreasury(IStore s)](#gettreasury)
 - [getAssuranceVault(IStore s)](#getassurancevault)
 - [getLiquidityToken(IStore s)](#getliquiditytoken)
@@ -244,11 +246,24 @@ function callerMustBeExactContract(IStore s, bytes32 name) external view
 | s | IStore |  | 
 | name | bytes32 | Enter the name of the contract | 
 
-### nepToken
+### npmToken
 
 ```js
-function nepToken(IStore s) external view
+function npmToken(IStore s) external view
 returns(contract IERC20)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getUniswapV2Router
+
+```js
+function getUniswapV2Router(IStore s) external view
+returns(address)
 ```
 
 **Arguments**
@@ -493,6 +508,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -513,6 +529,8 @@ function _removeMember(IStore s, address member) private nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

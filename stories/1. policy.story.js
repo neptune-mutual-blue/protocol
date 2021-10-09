@@ -33,17 +33,17 @@ describe('Policy Purchase Stories', () => {
     const initialLiquidity = helper.ether(4_000_000)
     const reportingPeriod = 7 * DAYS
 
-    await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
     await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
   })
 
-  it('provision of 1M NEP tokens was added to the `Compound Finance Cover` pool', async () => {
+  it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
     const provision = helper.ether(1_000_001)
 
-    await contracts.nep.approve(contracts.provisionContract.address, provision)
+    await contracts.npm.approve(contracts.provisionContract.address, provision)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     await contracts.provisionContract.decreaseProvision(coverKey, helper.ether(1))

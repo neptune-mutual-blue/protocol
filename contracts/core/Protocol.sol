@@ -17,7 +17,8 @@ contract Protocol is IProtocol, Recoverable {
   }
 
   function initialize(
-    address nep,
+    address uniswapV2RouterLike,
+    address npm,
     address treasury,
     address assuranceVault,
     uint256 coverFee,
@@ -28,14 +29,16 @@ contract Protocol is IProtocol, Recoverable {
   ) external {
     _mustBeOwnerOrProtoOwner();
 
-    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NEP) == address(0), "Already initialized");
-    require(nep != address(0), "Invalid NEP");
+    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NPM) == address(0), "Already initialized");
+    require(npm != address(0), "Invalid NPM");
+    require(uniswapV2RouterLike != address(0), "Invalid Uniswap Router");
     require(treasury != address(0), "Invalid Treasury");
     require(assuranceVault != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
-    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NEP, nep);
+    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
+    s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
     s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
     s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
     s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);

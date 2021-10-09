@@ -36,7 +36,7 @@ abstract contract Reporter is IReporter, Witness {
     // Update the values
     s.addAttestation(key, super._msgSender(), incidentDate, stake);
 
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
 
     emit Reported(key, super._msgSender(), incidentDate, info, stake);
     emit Attested(key, super._msgSender(), incidentDate, stake);
@@ -59,7 +59,7 @@ abstract contract Reporter is IReporter, Witness {
 
     s.addDispute(key, super._msgSender(), incidentDate, stake);
 
-    s.nepToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
 
     emit Disputed(key, super._msgSender(), incidentDate, info, stake);
     emit Refuted(key, super._msgSender(), incidentDate, stake);

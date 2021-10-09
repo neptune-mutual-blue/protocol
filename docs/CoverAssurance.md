@@ -8,7 +8,7 @@ View Source: [contracts/core/lifecycle/CoverAssurance.sol](../contracts/core/lif
 
 Assurance tokens can be added by a covered project to demonstrate coverage support
  for their project. This helps bring the cover fee down and enhances
- liquidity provider confidence. Along with the NEP tokens, the assurance tokens are rewarded
+ liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded
  as a support to the liquidity providers when a cover incident occurs.
  Without negatively affecting the price much,
  the protocol will gradually convert the assurance tokens
@@ -127,6 +127,7 @@ returns(bytes32)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -147,6 +148,8 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

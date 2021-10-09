@@ -1,4 +1,4 @@
-# NEP Cover Provision (CoverProvision.sol)
+# NPM Cover Provision (CoverProvision.sol)
 
 View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
 
@@ -6,10 +6,10 @@ View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lif
 
 **CoverProvision**
 
-Through governance, NEP tokens can be allocated as provision or `Reward Pool Support`
+Through governance, NPM tokens can be allocated as provision or `Reward Pool Support`
  for any given cover. This not only fosters community participation but also incentivizes
  the liquidity providers or acts as a defense/support during cover incidents.
- Along with the NEP provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
+ Along with the NPM provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
  for the rainy day.
 
 ## Functions
@@ -37,7 +37,7 @@ function (IStore store) public nonpayable Recoverable
 
 ### increaseProvision
 
-Increases NEP provision for the given cover key.
+Increases NPM provision for the given cover key.
  This feature is accessible only to the contract owner (governance).
 
 ```js
@@ -49,11 +49,11 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable only
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Provide the cover key you wish to increase the provision of | 
-| amount | uint256 | Specify the amount of NEP tokens you would like to add | 
+| amount | uint256 | Specify the amount of NPM tokens you would like to add | 
 
 ### decreaseProvision
 
-Decreases NEP provision for the given cover key
+Decreases NPM provision for the given cover key
  This feature is accessible only to the contract owner (governance).
 
 ```js
@@ -65,11 +65,11 @@ function decreaseProvision(bytes32 key, uint256 amount) external nonpayable only
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Provide the cover key you wish to decrease the provision from | 
-| amount | uint256 | Specify the amount of NEP tokens you would like to decrease | 
+| amount | uint256 | Specify the amount of NPM tokens you would like to decrease | 
 
 ### getProvision
 
-Gets the NEP provision amount for the given cover key
+Gets the NPM provision amount for the given cover key
 
 ```js
 function getProvision(bytes32 key) external view
@@ -130,6 +130,7 @@ returns(bytes32)
 * [ERC20](ERC20.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -150,6 +151,8 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)

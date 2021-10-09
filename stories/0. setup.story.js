@@ -83,7 +83,7 @@ describe('Protocol Initialization Stories', () => {
     const initialLiquidity = helper.ether(4000000)
     const reportingPeriod = 7 * DAYS
 
-    await contracts.nep.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 

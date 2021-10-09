@@ -58,8 +58,8 @@ library CoverUtilV1 {
    * @dev Todo: Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NEP provision
-   * @param _values[3] NEP price
+   * @param _values[2] The total amount of NPM provision
+   * @param _values[3] NPM price
    * @param _values[4] The total amount of assurance tokens
    * @param _values[5] Assurance token price
    * @param _values[6] Assurance pool weight
@@ -73,9 +73,9 @@ library CoverUtilV1 {
     _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
     _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-    _values[3] = discovery.getTokenPriceInLiquidityToken(address(s.nepToken()), s.getLiquidityToken(), 1 ether);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInLiquidityToken(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key)), s.getLiquidityToken(), 1 ether);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key)), 1 ether);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key);
   }
 

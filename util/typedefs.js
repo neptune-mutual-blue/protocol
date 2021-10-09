@@ -16,13 +16,13 @@
 /**
  * @typedef {Object} Contracts
  * @property {Object} store - Store contract
- * @property {Object} nep - NEP Token contract
+ * @property {Object} npm - NPM Token contract
  * @property {Object} wxDai - wxDai contract
  * @property {Object} assuranceToken - Assurance token
  * @property {Object} protocol - The base protocol contract
- * @property {Object} stakingContract - NEP staking contract
+ * @property {Object} stakingContract - NPM staking contract
  * @property {Object} assuranceContract - Assurance contract
- * @property {Object} provisionContract - NEP provision contract
+ * @property {Object} provisionContract - NPM provision contract
  * @property {Object} vaultFactory - Liquidity vault factory
  * @property {Object} cTokenFactory - cToken factory
  * @property {Object} cover - The base cover contract
