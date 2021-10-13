@@ -44,7 +44,17 @@ const NS = {
   SETUP_MIN_LIQ_PERIOD: 'proto:setup:min:liq:period',
   PRICE_DISCOVERY: 'proto:core:price:discovery',
   COVER_CTOKEN_FACTORY: 'proto:cover:ctoken:factory',
-  COVER_VAULT_FACTORY: 'proto:cover:vault:factory'
+  COVER_VAULT_FACTORY: 'proto:cover:vault:factory',
+  ROLES: {
+    ADMIN: 'role:admin',
+    COVER_MANAGER: 'role:cover:manager',
+    LIQUIDITY_MANAGER: 'role:liquidity:manager',
+    GOVERNANCE_AGENT: 'role:governance:agent',
+    UPGRADE_AGENT: 'role:upgrade:agent',
+    RECOVERY_AGENT: 'role:recovery:agent',
+    PAUSE_AGENT: 'role:pause:agent',
+    UNPAUSE_AGENT: 'role:unpause:agent'
+  }
 }
 
 const CNAME = {

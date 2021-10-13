@@ -19,27 +19,27 @@ library RegistryLibV1 {
   using StoreKeyUtil for IStore;
 
   function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
-    return IPriceDiscovery(_getContract(s, ProtoUtilV1.NS_PRICE_DISCOVERY));
+    return IPriceDiscovery(s.getContract(ProtoUtilV1.NS_PRICE_DISCOVERY));
   }
 
   function getGovernanceContract(IStore s) public view returns (IGovernance) {
-    return IGovernance(_getContract(s, ProtoUtilV1.NS_GOVERNANCE));
+    return IGovernance(s.getContract(ProtoUtilV1.NS_GOVERNANCE));
   }
 
   function getStakingContract(IStore s) public view returns (ICoverStake) {
-    return ICoverStake(_getContract(s, ProtoUtilV1.NS_COVER_STAKE));
+    return ICoverStake(s.getContract(ProtoUtilV1.NS_COVER_STAKE));
   }
 
   function getCTokenFactory(IStore s) public view returns (ICTokenFactory) {
-    return ICTokenFactory(_getContract(s, ProtoUtilV1.NS_COVER_CTOKEN_FACTORY));
+    return ICTokenFactory(s.getContract(ProtoUtilV1.NS_COVER_CTOKEN_FACTORY));
   }
 
   function getPolicyContract(IStore s) public view returns (IPolicy) {
-    return IPolicy(_getContract(s, ProtoUtilV1.NS_COVER_POLICY));
+    return IPolicy(s.getContract(ProtoUtilV1.NS_COVER_POLICY));
   }
 
   function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
-    return ICoverAssurance(_getContract(s, ProtoUtilV1.NS_COVER_ASSURANCE));
+    return ICoverAssurance(s.getContract(ProtoUtilV1.NS_COVER_ASSURANCE));
   }
 
   function getVault(IStore s, bytes32 key) public view returns (IVault) {
@@ -48,11 +48,7 @@ library RegistryLibV1 {
   }
 
   function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
-    address factory = _getContract(s, ProtoUtilV1.NS_COVER_VAULT_FACTORY);
+    address factory = s.getContract(ProtoUtilV1.NS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);
-  }
-
-  function _getContract(IStore s, bytes32 namespace) private view returns (address) {
-    return s.getContract(namespace);
   }
 }

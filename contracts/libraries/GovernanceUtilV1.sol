@@ -18,12 +18,20 @@ library GovernanceUtilV1 {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
+  function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
+  }
+
   function getMinReportingStake(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
   }
 
   function getLatestIncidentDate(IStore s, bytes32 key) external view returns (uint256) {
     return _getLatestIncidentDate(s, key);
+  }
+
+  function getResolutionTimestamp(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
   }
 
   function getReporter(

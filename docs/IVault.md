@@ -3,17 +3,16 @@
 View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.sol)
 
 **↗ Extends: [IMember](IMember.md), [IERC20](IERC20.md)**
-**↘ Derived Contracts: [VaultPod](VaultPod.md)**
+**↘ Derived Contracts: [VaultBase](VaultBase.md)**
 
 **IVault**
 
 **Events**
 
 ```js
-event LiquidityAdded(bytes32  key, uint256  amount);
-event LiquidityRemoved(bytes32  key, uint256  amount);
-event GovernanceTransfer(bytes32  key, address  to, uint256  amount);
-event PodsMinted(address indexed account, uint256  podsMinted, address indexed vault, uint256  liquidityAdded);
+event GovernanceTransfer(address indexed to, uint256  amount);
+event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
+event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 ```
 
 ## Functions
@@ -87,7 +86,10 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -102,12 +104,15 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -116,10 +121,12 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -142,6 +149,7 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -153,9 +161,11 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

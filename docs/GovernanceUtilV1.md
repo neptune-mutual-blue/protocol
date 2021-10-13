@@ -6,8 +6,10 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 
 ## Functions
 
+- [getReportingPeriod(IStore s, bytes32 key)](#getreportingperiod)
 - [getMinReportingStake(IStore s)](#getminreportingstake)
 - [getLatestIncidentDate(IStore s, bytes32 key)](#getlatestincidentdate)
+- [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
 - [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
@@ -17,6 +19,20 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
 - [getDispute(IStore s, bytes32 key, address who, uint256 incidentDate)](#getdispute)
 - [_getLatestIncidentDate(IStore s, bytes32 key)](#_getlatestincidentdate)
+
+### getReportingPeriod
+
+```js
+function getReportingPeriod(IStore s, bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
 
 ### getMinReportingStake
 
@@ -35,6 +51,20 @@ returns(uint256)
 
 ```js
 function getLatestIncidentDate(IStore s, bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getResolutionTimestamp
+
+```js
+function getResolutionTimestamp(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -185,7 +215,10 @@ returns(uint256)
 
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -200,12 +233,15 @@ returns(uint256)
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -214,10 +250,12 @@ returns(uint256)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -240,6 +278,7 @@ returns(uint256)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -251,9 +290,11 @@ returns(uint256)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

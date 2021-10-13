@@ -2,7 +2,7 @@
 
 View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Vault.sol)
 
-**↗ Extends: [VaultPod](VaultPod.md)**
+**↗ Extends: [VaultBase](VaultBase.md)**
 
 **Vault**
 
@@ -19,18 +19,11 @@ Liquidity providers can earn fees by adding stablecoin liquidity
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)](#addliquidityinternal)
-- [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
-- [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
-- [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
-- [_addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity)](#_addliquidity)
-- [version()](#version)
-- [getName()](#getname)
 
 ### 
 
 ```js
-function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayable VaultPod 
+function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayable VaultBase 
 ```
 
 **Arguments**
@@ -41,114 +34,12 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayab
 | coverKey | bytes32 |  | 
 | liquidityToken | IERC20 |  | 
 
-### addLiquidityInternal
-
-Adds liquidity to the specified cover contract
-
-```js
-function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account on behalf of which the liquidity is being added. | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-
-### transferGovernance
-
-```js
-function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| to | address |  | 
-| amount | uint256 |  | 
-
-### addLiquidity
-
-Adds liquidity to the specified cover contract
-
-```js
-function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-
-### removeLiquidity
-
-Removes liquidity from the specified cover contract
-
-```js
-function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| amount | uint256 | Enter the amount of liquidity token to remove. | 
-
-### _addLiquidity
-
-Adds liquidity to the specified cover contract
-
-```js
-function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account on behalf of which the liquidity is being added. | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| initialLiquidity | bool |  | 
-
-### version
-
-Version number of this contract
-
-```js
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getName
-
-Name of this contract
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -163,12 +54,15 @@ returns(bytes32)
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -177,10 +71,12 @@ returns(bytes32)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -203,6 +99,7 @@ returns(bytes32)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -214,9 +111,11 @@ returns(bytes32)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

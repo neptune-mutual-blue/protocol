@@ -21,10 +21,12 @@ enum CoverStatus {
 
 - [getCoverOwner(IStore s, bytes32 key)](#getcoverowner)
 - [_getCoverOwner(IStore s, bytes32 key)](#_getcoverowner)
-- [getReportingPeriod(IStore s, bytes32 key)](#getreportingperiod)
+- [getCoverFee(IStore s)](#getcoverfee)
+- [getMinCoverStake(IStore s)](#getmincoverstake)
+- [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
 - [getClaimPeriod(IStore s)](#getclaimperiod)
-- [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
-- [getReportingStatus(IStore s, bytes32 key)](#getreportingstatus)
+- [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
+- [getStatus(IStore s, bytes32 key)](#getstatus)
 - [getCoverPoolSummary(IStore s, bytes32 key)](#getcoverpoolsummary)
 - [getPolicyRates(IStore s, bytes32 key)](#getpolicyrates)
 - [getLiquidity(IStore s, bytes32 key)](#getliquidity)
@@ -33,7 +35,6 @@ enum CoverStatus {
 - [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
 - [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
-- [getStatus(IStore s, bytes32 key)](#getstatus)
 
 ### getCoverOwner
 
@@ -63,10 +64,23 @@ returns(address)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-### getReportingPeriod
+### getCoverFee
 
 ```js
-function getReportingPeriod(IStore s, bytes32 key) external view
+function getCoverFee(IStore s) external view
+returns(fee uint256, minStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getMinCoverStake
+
+```js
+function getMinCoverStake(IStore s) external view
 returns(uint256)
 ```
 
@@ -75,7 +89,19 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+
+### getMinLiquidityPeriod
+
+```js
+function getMinLiquidityPeriod(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
 
 ### getClaimPeriod
 
@@ -90,21 +116,7 @@ returns(uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
-### getResolutionTimestamp
-
-```js
-function getResolutionTimestamp(IStore s, bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-### getReportingStatus
+### getCoverStatus
 
 Gets the current status of a given cover
  0 - normal
@@ -114,8 +126,22 @@ Gets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```js
-function getReportingStatus(IStore s, bytes32 key) public view
+function getCoverStatus(IStore s, bytes32 key) public view
 returns(enum CoverUtilV1.CoverStatus)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### getStatus
+
+```js
+function getStatus(IStore s, bytes32 key) public view
+returns(uint256)
 ```
 
 **Arguments**
@@ -246,23 +272,12 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
-### getStatus
-
-```js
-function getStatus(IStore s, bytes32 key) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -277,12 +292,15 @@ returns(uint256)
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -291,10 +309,12 @@ returns(uint256)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -317,6 +337,7 @@ returns(uint256)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -328,9 +349,11 @@ returns(uint256)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

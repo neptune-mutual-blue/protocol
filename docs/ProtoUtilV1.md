@@ -8,11 +8,11 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
+bytes32 public constant NS_CORE;
 bytes32 public constant NS_ASSURANCE_VAULT;
 bytes32 public constant NS_BURNER;
 bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_MEMBERS;
-bytes32 public constant NS_CORE;
 bytes32 public constant NS_COVER;
 bytes32 public constant NS_GOVERNANCE;
 bytes32 public constant NS_CLAIMS_PROCESSOR;
@@ -80,9 +80,6 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 
 - [getProtocol(IStore s)](#getprotocol)
 - [getProtocolAddress(IStore s)](#getprotocoladdress)
-- [getCoverFee(IStore s)](#getcoverfee)
-- [getMinCoverStake(IStore s)](#getmincoverstake)
-- [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
 - [getContract(IStore s, bytes32 name)](#getcontract)
 - [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
@@ -125,45 +122,6 @@ returns(contract IProtocol)
 ```js
 function getProtocolAddress(IStore s) public view
 returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-### getCoverFee
-
-```js
-function getCoverFee(IStore s) external view
-returns(fee uint256, minStake uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-### getMinCoverStake
-
-```js
-function getMinCoverStake(IStore s) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-### getMinLiquidityPeriod
-
-```js
-function getMinLiquidityPeriod(IStore s) external view
-returns(uint256)
 ```
 
 **Arguments**
@@ -490,7 +448,10 @@ function _removeMember(IStore s, address member) private nonpayable
 
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -505,12 +466,15 @@ function _removeMember(IStore s, address member) private nonpayable
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -519,10 +483,12 @@ function _removeMember(IStore s, address member) private nonpayable
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -545,6 +511,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -556,9 +523,11 @@ function _removeMember(IStore s, address member) private nonpayable
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

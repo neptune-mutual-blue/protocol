@@ -32,14 +32,14 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   }
 
   /**
-   * @dev Recover all BEP-20 compatible tokens sent to this address.
-   * @param token BEP-20 The address of the token contract
+   * @dev Recover all IERC-20 compatible tokens sent to this address.
+   * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external onlyOwner {
-    IERC20 bep20 = IERC20(token);
+    IERC20 erc20 = IERC20(token);
 
-    uint256 balance = bep20.balanceOf(address(this));
-    require(bep20.transfer(sendTo, balance), "Transfer failed");
+    uint256 balance = erc20.balanceOf(address(this));
+    require(erc20.transfer(sendTo, balance), "Transfer failed");
   }
 
   function pause() external onlyOwner {
@@ -59,6 +59,6 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   }
 
   function _throwIfSenderNotProtocol() internal view {
-    require(isProtocolMember(super._msgSender()), "Forbidden");
+    require(isProtocolMember(msg.sender), "Forbidden");
   }
 }

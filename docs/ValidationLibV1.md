@@ -6,9 +6,10 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 
 ## Functions
 
+- [mustNotBePaused(IStore s)](#mustnotbepaused)
 - [mustBeValidCover(IStore s, bytes32 key)](#mustbevalidcover)
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
-- [mustBeCoverOwner(IStore s, bytes32 key, address sender, address owner)](#mustbecoverowner)
+- [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
 - [callerMustBePolicyContract(IStore s)](#callermustbepolicycontract)
 - [callerMustBePolicyManagerContract(IStore s)](#callermustbepolicymanagercontract)
 - [callerMustBeCoverContract(IStore s)](#callermustbecovercontract)
@@ -25,6 +26,20 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidClaim(IStore s, bytes32 key, address cToken, uint256 incidentDate)](#mustbevalidclaim)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
 - [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
+
+### mustNotBePaused
+
+Reverts if the protocol is paused
+
+```js
+function mustNotBePaused(IStore s) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
 
 ### mustBeValidCover
 
@@ -59,10 +74,10 @@ function mustBeValidCoverKey(IStore s, bytes32 key) public view
 
 ### mustBeCoverOwner
 
-Reverts if the sender is not the cover owner or owner
+Reverts if the sender is not the cover owner
 
 ```js
-function mustBeCoverOwner(IStore s, bytes32 key, address sender, address owner) public view
+function mustBeCoverOwner(IStore s, bytes32 key, address sender) public view
 ```
 
 **Arguments**
@@ -72,7 +87,6 @@ function mustBeCoverOwner(IStore s, bytes32 key, address sender, address owner) 
 | s | IStore | ender The `msg.sender` value | 
 | key | bytes32 | Enter the cover key to check | 
 | sender | address | The `msg.sender` value | 
-| owner | address | Enter the owner address | 
 
 ### callerMustBePolicyContract
 
@@ -283,7 +297,10 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -298,12 +315,15 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -312,10 +332,12 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -338,6 +360,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -349,9 +372,11 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

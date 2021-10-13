@@ -9,12 +9,11 @@ import "./StoreKeyUtil.sol";
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
-  // Namespaces
+  bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_ASSURANCE_VAULT = "proto:core:assurance:vault";
   bytes32 public constant NS_BURNER = "proto:core:burner";
   bytes32 public constant NS_CONTRACTS = "proto:contracts";
   bytes32 public constant NS_MEMBERS = "proto:members";
-  bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_COVER = "proto:cover";
   bytes32 public constant NS_GOVERNANCE = "proto:governance";
   bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
@@ -63,7 +62,6 @@ library ProtoUtilV1 {
   bytes32 public constant NS_SETUP_CLAIM_PERIOD = "proto:setup:claim:period";
   bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER = "proto:uniswap:v2:router";
 
-  // Contract names
   bytes32 public constant CNAME_PROTOCOL = "Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
@@ -86,19 +84,6 @@ library ProtoUtilV1 {
 
   function getProtocolAddress(IStore s) public view returns (address) {
     return s.getAddressByKey(NS_CORE);
-  }
-
-  function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
-    fee = s.getUintByKey(NS_SETUP_COVER_FEE);
-    minStake = s.getUintByKey(NS_SETUP_MIN_STAKE);
-  }
-
-  function getMinCoverStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(NS_SETUP_MIN_STAKE);
-  }
-
-  function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(NS_SETUP_MIN_LIQ_PERIOD);
   }
 
   function getContract(IStore s, bytes32 name) external view returns (address) {

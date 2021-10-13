@@ -18,6 +18,7 @@ import "../Recoverable.sol";
 contract PolicyAdmin is IPolicyAdmin, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
@@ -31,12 +32,13 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   }
 
   /**
-   * @dev Sets policy rates. This feature is only accessible by owner or protocol owner.
+   * @dev Sets policy rates. This feature is only accessible by cover manager.
    * @param floor The lowest cover fee rate fallback
    * @param ceiling The highest cover fee rate fallback
    */
   function setPolicyRates(uint256 floor, uint256 ceiling) external override {
-    _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
@@ -45,7 +47,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   }
 
   /**
-   * @dev Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
+   * @dev Sets policy rates for the given cover key. This feature is only accessible by cover manager.
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
    */
@@ -54,7 +56,8 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
     uint256 floor,
     uint256 ceiling
   ) external override {
-    _mustBeOwnerOrProtoOwner(); // Ensures that the caller is either the owner or protocol owner
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);

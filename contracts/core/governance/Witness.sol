@@ -27,18 +27,18 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
     require(stake >= 0, "Enter a stake");
 
-    s.addAttestation(key, super._msgSender(), incidentDate, stake);
+    s.addAttestation(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
 
-    emit Attested(key, super._msgSender(), incidentDate, stake);
+    emit Attested(key, msg.sender, incidentDate, stake);
   }
 
   function refute(
@@ -46,18 +46,18 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
     require(stake >= 0, "Enter a stake");
 
-    s.addDispute(key, super._msgSender(), incidentDate, stake);
+    s.addDispute(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
 
-    emit Refuted(key, super._msgSender(), incidentDate, stake);
+    emit Refuted(key, msg.sender, incidentDate, stake);
   }
 
   function getStatus(bytes32 key) external view override returns (uint256) {

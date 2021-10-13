@@ -1,11 +1,11 @@
-# Vault POD (Proof of Deposit) (VaultPod.sol)
+# Vault POD (Proof of Deposit) (VaultBase.sol)
 
-View Source: [contracts/core/liquidity/VaultPod.sol](../contracts/core/liquidity/VaultPod.sol)
+View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidity/VaultBase.sol)
 
 **↗ Extends: [IVault](IVault.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
 **↘ Derived Contracts: [Vault](Vault.md)**
 
-**VaultPod**
+**VaultBase**
 
 The VaultPod has `_mintPods` and `_redeemPods` features which enables
  POD minting and burning on demand. <br /> <br />
@@ -27,10 +27,13 @@ address public lqt;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [_mintPods(address account, uint256 liquidityToAdd, bool initialLiquidity)](#_mintpods)
-- [_redeemPods(address account, uint256 podsToBurn)](#_redeempods)
-- [_calculateLiquidity(uint256 podsToBurn)](#_calculateliquidity)
-- [_calculatePods(uint256 liquidityToAdd)](#_calculatepods)
+- [addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)](#addliquidityinternal)
+- [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
+- [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
+- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem)](#removeliquidity)
+- [_addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity)](#_addliquidity)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -48,76 +51,117 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpay
 | coverKey | bytes32 | Enter the cover key or cover this contract is related to | 
 | liquidityToken | IERC20 | Provide the liquidity token instance for this Vault | 
 
-### _mintPods
+### addLiquidityInternal
 
-Internal function to mint pods by transferring liquidity. <br /> <br />
- **How Does This Work?**
- You --> Liquidity Tokens --> This Contract
- This Contract --> PODS --> You
+Adds liquidity to the specified cover contract
 
 ```js
-function _mintPods(address account, uint256 liquidityToAdd, bool initialLiquidity) internal nonpayable
+function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address | Specify the address to send the minted PODs to | 
-| liquidityToAdd | uint256 | Enter the amount of liquidity to add | 
-| initialLiquidity | bool | Indicate if this the first liquidity being added to the POD.  Note: The cover contract transfers the liquidity only after the `Vault` contract is deployed.  This argument should be used with caution. | 
+| coverKey | bytes32 | Enter the cover key | 
+| account | address | Specify the account on behalf of which the liquidity is being added. | 
+| amount | uint256 | Enter the amount of liquidity token to supply. | 
 
-### _redeemPods
-
-Internal function to redeem pods by burning. <br /> <br />
- **How Does This Work?**
- You --> PODs --> This Contract --> Burn
- This Contract --> Your Share of Liquidity Tokens --> You
+### transferGovernance
 
 ```js
-function _redeemPods(address account, uint256 podsToBurn) internal nonpayable
+function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address | Specify the address to burn the PODs from | 
-| podsToBurn | uint256 | Enter the amount of PODs to burn | 
+| coverKey | bytes32 |  | 
+| to | address |  | 
+| amount | uint256 |  | 
 
-### _calculateLiquidity
+### addLiquidity
 
-Calculates the amount of liquidity to transfer for the given amount of PODs to burn
+Adds liquidity to the specified cover contract
 
 ```js
-function _calculateLiquidity(uint256 podsToBurn) private view
-returns(uint256)
+function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| podsToBurn | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| amount | uint256 | Enter the amount of liquidity token to supply. | 
 
-### _calculatePods
+### removeLiquidity
 
-Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+Removes liquidity from the specified cover contract
 
 ```js
-function _calculatePods(uint256 liquidityToAdd) private view
-returns(uint256)
+function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| liquidityToAdd | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| podsToRedeem | uint256 | Enter the amount of pods to redeem | 
+
+### _addLiquidity
+
+Adds liquidity to the specified cover contract
+
+```js
+function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter the cover key | 
+| account | address | Specify the account on behalf of which the liquidity is being added. | 
+| amount | uint256 | Enter the amount of liquidity token to supply. | 
+| initialLiquidity | bool |  | 
+
+### version
+
+Version number of this contract
+
+```js
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### getName
+
+Name of this contract
+
+```js
+function getName() public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
 * [Commission](Commission.md)
 * [Context](Context.md)
@@ -132,12 +176,15 @@ returns(uint256)
 * [cTokenFactory](cTokenFactory.md)
 * [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -146,10 +193,12 @@ returns(uint256)
 * [ICoverStake](ICoverStake.md)
 * [ICToken](ICToken.md)
 * [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
@@ -172,6 +221,7 @@ returns(uint256)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
@@ -183,9 +233,11 @@ returns(uint256)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
-* [VaultPod](VaultPod.md)
+* [VaultLibV1](VaultLibV1.md)
 * [Witness](Witness.md)

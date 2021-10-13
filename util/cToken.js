@@ -6,7 +6,7 @@
 const atAddress = async (at, libraries) => {
   const cToken = await ethers.getContractFactory('cToken', {
     libraries: {
-      ProtoUtilV1: libraries.protoUtilV1.address,
+      BaseLibV1: libraries.baseLibV1.address,
       ValidationLibV1: libraries.validationLib.address
     }
   })

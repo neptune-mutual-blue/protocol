@@ -5,10 +5,9 @@ import "./IMember.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 interface IVault is IMember, IERC20 {
-  event LiquidityAdded(bytes32 key, uint256 amount);
-  event LiquidityRemoved(bytes32 key, uint256 amount);
-  event GovernanceTransfer(bytes32 key, address to, uint256 amount);
-  event PodsMinted(address indexed account, uint256 podsMinted, address indexed vault, uint256 liquidityAdded);
+  event GovernanceTransfer(address indexed to, uint256 amount);
+  event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
+  event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
 
   /**
    * @dev Adds liquidity to the specified cover contract

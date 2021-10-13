@@ -10,7 +10,7 @@ contract FakeToken is ERC20, Ownable {
     string memory symbol,
     uint256 supply
   ) ERC20(name, symbol) {
-    super._mint(super._msgSender(), supply);
+    super._mint(msg.sender, supply);
   }
 
   function mint(address account, uint256 amount) external onlyOwner {
@@ -21,10 +21,10 @@ contract FakeToken is ERC20, Ownable {
    * @dev Request 100 tokens
    */
   function request() external {
-    super._mint(super._msgSender(), 100 ether);
+    super._mint(msg.sender, 100 ether);
   }
 
   function burn(uint256 amount) external {
-    super._burn(super._msgSender(), amount);
+    super._burn(msg.sender, amount);
   }
 }

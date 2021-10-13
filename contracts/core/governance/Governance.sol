@@ -17,8 +17,8 @@ contract Governance is IGovernance, Reporter {
   }
 
   function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    _mustBeUnpaused();
-    _mustBeOwnerOrProtoOwner();
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -33,7 +33,7 @@ contract Governance is IGovernance, Reporter {
     s.deleteAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
 
-    emit Finalized(key, super._msgSender(), incidentDate);
+    emit Finalized(key, msg.sender, incidentDate);
   }
 
   /**

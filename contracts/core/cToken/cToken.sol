@@ -53,7 +53,7 @@ contract cToken is ICToken, Recoverable, ERC20 {
     address to,
     uint256 amount
   ) external override {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     require(key == coverKey, "Invalid cover");
     s.callerMustBePolicyContract();
 
@@ -65,6 +65,6 @@ contract cToken is ICToken, Recoverable, ERC20 {
    * @param amount Specify the amount of tokens to burn
    */
   function burn(uint256 amount) external override {
-    super._burn(super._msgSender(), amount);
+    super._burn(msg.sender, amount);
   }
 }

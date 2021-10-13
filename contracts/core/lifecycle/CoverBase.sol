@@ -17,6 +17,7 @@ import "../Recoverable.sol";
 abstract contract CoverBase is ICover, Recoverable {
   using ProtoUtilV1 for bytes;
   using CoverUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
   /**
@@ -36,7 +37,9 @@ abstract contract CoverBase is ICover, Recoverable {
    *
    */
   function initialize(address liquidityToken, bytes32 liquidityName) external override {
-    _mustBeOwnerOrProtoMember();
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
     require(s.getAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN) == address(0), "Already initialized");
 
     s.setAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN, liquidityToken);

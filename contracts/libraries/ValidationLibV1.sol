@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
 pragma solidity >=0.4.22 <0.9.0;
-import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/access/IAccessControl.sol";
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./GovernanceUtilV1.sol";
+import "../interfaces/IStore.sol";
 import "../interfaces/ICToken.sol";
+import "../interfaces/IPausable.sol";
 
 library ValidationLibV1 {
-  using RegistryLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
@@ -26,13 +27,21 @@ library ValidationLibV1 {
    *********************************************************************************************/
 
   /**
+   * @dev Reverts if the protocol is paused
+   */
+  function mustNotBePaused(IStore s) public view {
+    address protocol = s.getProtocolAddress();
+    require(IPausable(protocol).paused() == false, "Protocol is paused");
+  }
+
+  /**
    * @dev Reverts if the key does not resolve in a valid cover contract
    * or if the cover is under governance.
    * @param key Enter the cover key to check
    */
   function mustBeValidCover(IStore s, bytes32 key) public view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
-    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
   }
 
   /**
@@ -44,21 +53,17 @@ library ValidationLibV1 {
   }
 
   /**
-   * @dev Reverts if the sender is not the cover owner or owner
+   * @dev Reverts if the sender is not the cover owner
    * @param key Enter the cover key to check
    * @param sender The `msg.sender` value
-   * @param owner Enter the owner address
    */
   function mustBeCoverOwner(
     IStore s,
     bytes32 key,
-    address sender,
-    address owner
+    address sender
   ) public view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
-    bool isOwner = sender == owner;
-
-    require(isOwner || isCoverOwner, "Forbidden");
+    require(isCoverOwner, "Forbidden");
   }
 
   function callerMustBePolicyContract(IStore s) external view {
@@ -89,15 +94,15 @@ library ValidationLibV1 {
   *********************************************************************************************/
 
   function mustBeReporting(IStore s, bytes32 key) public view {
-    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 
   function mustBeDisputed(IStore s, bytes32 key) public view {
-    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
   function mustBeReportingOrDisputed(IStore s, bytes32 key) public view {
-    CoverUtilV1.CoverStatus status = s.getReportingStatus(key);
+    CoverUtilV1.CoverStatus status = s.getCoverStatus(key);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
@@ -143,7 +148,7 @@ library ValidationLibV1 {
     address cToken,
     uint256 incidentDate
   ) public view {
-    require(s.getReportingStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Your claim is denied");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Your claim is denied");
 
     s.mustBeProtocolMember(cToken);
     mustBeValidIncidentDate(s, key, incidentDate);

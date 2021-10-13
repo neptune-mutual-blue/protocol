@@ -53,9 +53,9 @@ contract Policy is IPolicy, Recoverable {
 
     // Transfer the fee to cToken contract
     // Todo: keep track of cover fee paid (for refunds)
-    IERC20(liquidityToken).ensureTransferFrom(super._msgSender(), address(s.getVault(key)), fee);
+    IERC20(liquidityToken).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
-    cToken.mint(key, super._msgSender(), amountToCover);
+    cToken.mint(key, msg.sender, amountToCover);
     return address(cToken);
   }
 

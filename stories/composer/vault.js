@@ -11,11 +11,10 @@ const getVault = async (contracts, coverKey) => {
 
   const Vault = await ethers.getContractFactory('Vault', {
     libraries: {
-      StoreKeyUtil: contracts.libs.storeKeyUtil.address,
-      ProtoUtilV1: contracts.libs.protoUtilV1.address,
+      BaseLibV1: contracts.libs.baseLibV1.address,
       NTransferUtilV2: contracts.libs.transferLib.address,
-      RegistryLibV1: contracts.libs.registryLib.address,
-      ValidationLibV1: contracts.libs.validationLib.address
+      ValidationLibV1: contracts.libs.validationLib.address,
+      VaultLibV1: contracts.libs.vaultLib.address
     }
   })
 

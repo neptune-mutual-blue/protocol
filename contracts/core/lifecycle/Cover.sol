@@ -36,9 +36,12 @@ contract Cover is CoverBase {
    * @param info Enter a new IPFS URL to update
    */
   function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCover(key);
-    s.mustBeCoverOwner(key, super._msgSender(), owner()); // Ensures the sender is either the owner or cover owner
+
+    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+      s.mustBeCoverOwner(key, msg.sender);
+    }
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
@@ -86,8 +89,8 @@ contract Cover is CoverBase {
     uint256 initialAssuranceAmount,
     uint256 initialLiquidity
   ) external override nonReentrant {
+    s.mustNotBePaused();
     require(reportingPeriod >= 7 days, "Insufficent reporting period");
-    _mustBeUnpaused();
 
     // First validate the information entered
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
@@ -96,21 +99,21 @@ contract Cover is CoverBase {
     _addCover(key, info, reportingPeriod, fee, assuranceToken);
 
     // Stake the supplied NPM tokens and burn the fees
-    s.getStakingContract().increaseStake(key, super._msgSender(), stakeWithFee, fee);
+    s.getStakingContract().increaseStake(key, msg.sender, stakeWithFee, fee);
 
     // Add cover assurance
     if (initialAssuranceAmount > 0) {
-      s.getAssuranceContract().addAssurance(key, super._msgSender(), initialAssuranceAmount);
+      s.getAssuranceContract().addAssurance(key, msg.sender, initialAssuranceAmount);
     }
 
     // Add initial liquidity
     if (initialLiquidity > 0) {
       IVault vault = s.getVault(key);
 
-      s.getVault(key).addLiquidityInternal(key, super._msgSender(), initialLiquidity);
+      s.getVault(key).addLiquidityInternal(key, msg.sender, initialLiquidity);
 
       // Transfer liquidity only after minting the pods
-      IERC20(s.getLiquidityToken()).ensureTransferFrom(super._msgSender(), address(vault), initialLiquidity);
+      IERC20(s.getLiquidityToken()).ensureTransferFrom(msg.sender, address(vault), initialLiquidity);
     }
 
     emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
@@ -135,7 +138,7 @@ contract Cover is CoverBase {
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
 
     // Set cover owner
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, super._msgSender());
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, msg.sender);
 
     // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);

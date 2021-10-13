@@ -38,7 +38,7 @@ contract cTokenFactory is ICTokenFactory, Recoverable {
     bytes32 key,
     uint256 expiryDate
   ) external override returns (address deployed) {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
 

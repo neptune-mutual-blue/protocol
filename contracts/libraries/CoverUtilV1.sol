@@ -28,16 +28,21 @@ library CoverUtilV1 {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
   }
 
-  function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
+  function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
+    fee = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
+    minStake = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+  }
+
+  function getMinCoverStake(IStore s) external view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+  }
+
+  function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
   }
 
   function getClaimPeriod(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
-  }
-
-  function getResolutionTimestamp(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
   }
 
   /**
@@ -50,8 +55,12 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function getReportingStatus(IStore s, bytes32 key) public view returns (CoverStatus) {
+  function getCoverStatus(IStore s, bytes32 key) public view returns (CoverStatus) {
     return CoverStatus(getStatus(s, key));
+  }
+
+  function getStatus(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
   }
 
   /**
@@ -65,7 +74,7 @@ library CoverUtilV1 {
    * @param _values[6] Assurance pool weight
    */
   function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
-    require(getReportingStatus(s, key) == CoverStatus.Normal, "Invalid cover");
+    require(getCoverStatus(s, key) == CoverStatus.Normal, "Invalid cover");
     IPriceDiscovery discovery = s.getPriceDiscoveryContract();
 
     _values = new uint256[](7);
@@ -145,9 +154,5 @@ library CoverUtilV1 {
   function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
     // Todo: deduct the expired cover amounts
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
-  }
-
-  function getStatus(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
   }
 }

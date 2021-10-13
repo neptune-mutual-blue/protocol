@@ -10,6 +10,7 @@ const DAYS = 86400
  * @return {Contracts}
  */
 const initialize = async (suite, deploymentId) => {
+  const [owner] = await ethers.getSigners()
   const cache = suite ? null : await fileCache.from(deploymentId)
 
   const store = await storeComposer.deploy(cache)
@@ -26,13 +27,18 @@ const initialize = async (suite, deploymentId) => {
   const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
     {
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ProtoUtilV1: libs.protoUtilV1.address
+      ProtoUtilV1: libs.protoUtilV1.address,
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      ValidationLibV1: libs.validationLib.address,
+      BaseLibV1: libs.baseLibV1.address
     },
     store.address
   )
 
   await intermediate(cache, store, 'setBool', key.qualify(protocol.address), true)
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
+
+  await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
   await intermediate(cache, protocol, 'initialize',
     fakes.router.address,
@@ -47,6 +53,7 @@ const initialize = async (suite, deploymentId) => {
   )
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
+    BaseLibV1: libs.baseLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     CoverUtilV1: libs.coverUtil.address,
@@ -57,6 +64,8 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_STAKE), stakingContract.address)
 
   const assuranceContract = await deployer.deployWithLibraries(cache, 'CoverAssurance', {
+    BaseLibV1: libs.baseLibV1.address,
+    AccessControlLibV1: libs.accessControlLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     NTransferUtilV2: libs.transferLib.address,
@@ -67,6 +76,7 @@ const initialize = async (suite, deploymentId) => {
 
   const vaultFactory = await deployer.deployWithLibraries(cache, 'VaultFactory',
     {
+      BaseLibV1: libs.baseLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       VaultFactoryLibV1: libs.vaultFactoryLib.address,
       ValidationLibV1: libs.validationLib.address
@@ -78,7 +88,7 @@ const initialize = async (suite, deploymentId) => {
 
   const cTokenFactory = await deployer.deployWithLibraries(cache, 'cTokenFactory',
     {
-      ProtoUtilV1: libs.protoUtilV1.address,
+      BaseLibV1: libs.baseLibV1.address,
       cTokenFactoryLibV1: libs.cTokenFactoryLib.address,
       ValidationLibV1: libs.validationLib.address
     }
@@ -89,8 +99,10 @@ const initialize = async (suite, deploymentId) => {
 
   const governance = await deployer.deployWithLibraries(cache, 'Governance',
     {
+      BaseLibV1: libs.baseLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
+      AccessControlLibV1: libs.accessControlLibV1.address,
       CoverUtilV1: libs.coverUtil.address,
       NTransferUtilV2: libs.transferLib.address,
       ValidationLibV1: libs.validationLib.address,
@@ -103,8 +115,10 @@ const initialize = async (suite, deploymentId) => {
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
     {
+      BaseLibV1: libs.baseLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
+      AccessControlLibV1: libs.accessControlLibV1.address,
       CoverUtilV1: libs.coverUtil.address,
       NTransferUtilV2: libs.transferLib.address,
       ValidationLibV1: libs.validationLib.address,
@@ -116,6 +130,8 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER), cover.address)
 
   const provisionContract = await deployer.deployWithLibraries(cache, 'CoverProvision', {
+    BaseLibV1: libs.baseLibV1.address,
+    AccessControlLibV1: libs.accessControlLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     NTransferUtilV2: libs.transferLib.address,
@@ -125,18 +141,23 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_PROVISION), provisionContract.address)
 
   const policyAdminContract = await deployer.deployWithLibraries(cache, 'PolicyAdmin', {
+    BaseLibV1: libs.baseLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
+    AccessControlLibV1: libs.accessControlLibV1.address,
+    ValidationLibV1: libs.validationLib.address,
     CoverUtilV1: libs.coverUtil.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_POLICY_ADMIN), policyAdminContract.address)
+
+  await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.COVER_MANAGER), owner.address)
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.ether(0.07), helper.ether(0.45))
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
-    ProtoUtilV1: libs.protoUtilV1.address,
+    BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtil.address,
     NTransferUtilV2: libs.transferLib.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
     RegistryLibV1: libs.registryLib.address
   }, store.address)
 
@@ -144,11 +165,11 @@ const initialize = async (suite, deploymentId) => {
 
   const claimsProcessor = await deployer.deployWithLibraries(cache, 'Processor',
     {
-      ProtoUtilV1: libs.protoUtilV1.address,
-      RegistryLibV1: libs.registryLib.address,
+      BaseLibV1: libs.baseLibV1.address,
       NTransferUtilV2: libs.transferLib.address,
-      ValidationLibV1: libs.validationLib.address,
-      StoreKeyUtil: libs.storeKeyUtil.address
+      RegistryLibV1: libs.registryLib.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     },
     store.address
   )
@@ -156,6 +177,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.CLAIMS_PROCESSOR), claimsProcessor.address)
 
   const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
+    BaseLibV1: libs.baseLibV1.address,
     ProtoUtilV1: libs.protoUtilV1.address
   }, store.address)
 

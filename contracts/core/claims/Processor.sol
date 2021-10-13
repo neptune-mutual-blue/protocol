@@ -29,15 +29,15 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    require(validate(cToken, key, incidentDate), "Claim not valid");
+    validate(cToken, key, incidentDate);
 
-    IERC20(cToken).ensureTransferFrom(super._msgSender(), address(this), amount);
+    IERC20(cToken).ensureTransferFrom(msg.sender, address(this), amount);
     ICToken(cToken).burn(amount);
 
     IVault vault = s.getVault(key);
-    vault.transferGovernance(key, super._msgSender(), amount);
+    vault.transferGovernance(key, msg.sender, amount);
 
-    emit Claimed(cToken, key, super._msgSender(), incidentDate, amount);
+    emit Claimed(cToken, key, msg.sender, incidentDate, amount);
   }
 
   function validate(
@@ -45,7 +45,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     bytes32 key,
     uint256 incidentDate
   ) public view override returns (bool) {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidClaim(key, cToken, incidentDate);
 
     return true;

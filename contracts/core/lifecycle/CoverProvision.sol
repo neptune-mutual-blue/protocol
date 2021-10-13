@@ -41,15 +41,17 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param key Provide the cover key you wish to increase the provision of
    * @param amount Specify the amount of NPM tokens you would like to add
    */
-  function increaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused();
+  function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
     s.mustBeValidCover(key);
 
     uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
 
-    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), amount);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
 
     emit ProvisionIncreased(key, privision, privision + amount);
   }
@@ -60,8 +62,10 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param key Provide the cover key you wish to decrease the provision from
    * @param amount Specify the amount of NPM tokens you would like to decrease
    */
-  function decreaseProvision(bytes32 key, uint256 amount) external override onlyOwner nonReentrant {
-    _mustBeUnpaused();
+  function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
     s.mustBeValidCover(key);
 
     uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
@@ -69,7 +73,7 @@ contract CoverProvision is ICoverProvision, Recoverable {
     require(privision >= amount, "Exceeds Balance"); // Exceeds balance
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
 
-    s.npmToken().ensureTransfer(super.owner(), amount);
+    s.npmToken().ensureTransfer(msg.sender, amount);
 
     emit ProvisionDecreased(key, privision, privision - amount);
   }

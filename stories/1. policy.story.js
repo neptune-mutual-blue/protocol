@@ -41,9 +41,12 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
+    const [owner] = await ethers.getSigners()
     const provision = helper.ether(1_000_001)
 
     await contracts.npm.approve(contracts.provisionContract.address, provision)
+
+    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.LIQUIDITY_MANAGER), owner.address)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     await contracts.provisionContract.decreaseProvision(coverKey, helper.ether(1))

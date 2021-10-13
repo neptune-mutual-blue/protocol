@@ -43,7 +43,7 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
 
     require(amount > 0, "Provide valid amount");
@@ -59,8 +59,9 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
   }
 
   function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-    _mustBeUnpaused();
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
     s.mustBeValidCoverKey(key);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);

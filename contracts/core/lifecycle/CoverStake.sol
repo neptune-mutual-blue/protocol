@@ -50,7 +50,7 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBeCoverContract();
 
@@ -80,7 +80,7 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBeCoverContract();
 

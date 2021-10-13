@@ -5,16 +5,16 @@ import "../interfaces/IStore.sol";
 import "../interfaces/IProtocol.sol";
 import "../libraries/ProtoUtilV1.sol";
 import "../libraries/StoreKeyUtil.sol";
-import "./Recoverable.sol";
+import "./ProtoBase.sol";
 
-contract Protocol is IProtocol, Recoverable {
+contract Protocol is IProtocol, ProtoBase {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  uint256 public initialized = 0;
+
+  constructor(IStore store) ProtoBase(store) {} // solhint-disable-line
 
   function initialize(
     address uniswapV2RouterLike,
@@ -27,68 +27,93 @@ contract Protocol is IProtocol, Recoverable {
     uint256 minLiquidityPeriod,
     uint256 claimPeriod
   ) external {
-    _mustBeOwnerOrProtoOwner();
+    s.mustBeProtocolMember(msg.sender);
 
-    require(s.getAddressByKey(ProtoUtilV1.NS_SETUP_NPM) == address(0), "Already initialized");
+    require(initialized == 0, "Already initialized");
     require(npm != address(0), "Invalid NPM");
-    require(uniswapV2RouterLike != address(0), "Invalid Uniswap Router");
+    require(uniswapV2RouterLike != address(0), "Invalid Router");
     require(treasury != address(0), "Invalid Treasury");
     require(assuranceVault != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
+    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
+
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
-    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
     s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
     s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
 
-    setCoverFees(coverFee);
-    setMinStake(minStake);
-    setMinReportingStake(minReportingStake);
-    setMinLiquidityPeriod(minLiquidityPeriod);
-    setClaimPeriod(claimPeriod);
+    _setCoverFees(coverFee);
+    _setMinStake(minStake);
+    _setMinReportingStake(minReportingStake);
+    _setMinLiquidityPeriod(minLiquidityPeriod);
+    _setClaimPeriod(claimPeriod);
+
+    initialized = 1;
   }
 
   function setClaimPeriod(uint256 value) public nonReentrant {
-    _mustBeOwnerOrProtoOwner();
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setClaimPeriod(value);
+  }
 
+  function setCoverFees(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setCoverFees(value);
+  }
+
+  function setMinStake(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    _setMinStake(value);
+  }
+
+  function setMinReportingStake(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setMinReportingStake(value);
+  }
+
+  function setMinLiquidityPeriod(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    _setMinLiquidityPeriod(value);
+  }
+
+  function _setClaimPeriod(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
 
     emit ClaimPeriodSet(previous, value);
   }
 
-  function setCoverFees(uint256 value) public nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-
+  function _setCoverFees(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE, value);
 
     emit CoverFeeSet(previous, value);
   }
 
-  function setMinStake(uint256 value) public nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-
+  function _setMinStake(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE, value);
 
     emit MinStakeSet(previous, value);
   }
 
-  function setMinReportingStake(uint256 value) public nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-
+  function _setMinReportingStake(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE, value);
 
     emit MinReportingStakeSet(previous, value);
   }
 
-  function setMinLiquidityPeriod(uint256 value) public nonReentrant {
-    _mustBeOwnerOrProtoOwner();
-
+  function _setMinLiquidityPeriod(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD, value);
 
@@ -99,29 +124,33 @@ contract Protocol is IProtocol, Recoverable {
     bytes32 namespace,
     address previous,
     address current
-  ) external override onlyOwner {
-    _mustBeUnpaused();
+  ) external override {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.upgradeContract(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
 
-  function addContract(bytes32 namespace, address contractAddress) external override onlyOwner {
-    _mustBeUnpaused();
+  function addContract(bytes32 namespace, address contractAddress) external override {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.addContract(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);
   }
 
-  function removeMember(address member) external override onlyOwner {
-    _mustBeUnpaused();
+  function removeMember(address member) external override {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.removeMember(member);
     emit MemberRemoved(member);
   }
 
-  function addMember(address member) external override onlyOwner {
-    _mustBeUnpaused();
+  function addMember(address member) external override {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.addMember(member);
     emit MemberAdded(member);

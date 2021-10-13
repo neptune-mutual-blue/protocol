@@ -6889,10 +6889,10 @@ open@^7.4.2:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-openzeppelin-solidity@^4.1.0:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-4.3.1.tgz#e58504e91d1899ad7a7ce3a7a4ac453d0d09be4e"
-  integrity sha512-S+fEGe9WLLK1mDcOvKs9nrQegGHYa0KGYcylfTIy0tPSvrHEfN2ZSGRKXpFWDfvEfuucqowpkX5VIq1dvYDMSA==
+openzeppelin-solidity@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-4.3.2.tgz#30ab3cb813166a070b8e46d7ac719aefa4571921"
+  integrity sha512-k20olEz9A58yq3zwFZgOJoe9vWodKaFsMjajpou1NiqzuxuDfIdaGL3/xLcn/48J0AmvqsxHrcgI3WHq370J+w==
 
 optionator@^0.8.1, optionator@^0.8.2:
   version "0.8.3"

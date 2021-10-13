@@ -2,6 +2,8 @@
  * @typedef {Object} Libraries
  * @property {Object} store - Store contract
  * @property {Object} storeKeyUtil - Store uitility library
+ * @property {Object} accessControlLibV1 - Access control library
+ * @property {Object} baseLibV1 - Access control library
  * @property {Object} protoUtilV1 - Protocol utility library
  * @property {Object} coverUtil - Cover  utility library
  * @property {Object} transferLib - Transfer helper library
@@ -9,6 +11,7 @@
  * @property {Object} validationLib - Validation helper library
  * @property {Object} governanceLib - Governance utility library
  * @property {Object} vaultFactoryLib - Vault factory library
+ * @property {Object} vaultLib - Vault library
  * @property {Object} cTokenFactoryLib - cToken factory library
  * @property {Object} dateLib - Date helper library
  */

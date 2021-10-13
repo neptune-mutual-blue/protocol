@@ -17,7 +17,7 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustBeValidCover(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
@@ -34,12 +34,12 @@ abstract contract Reporter is IReporter, Witness {
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiry);
 
     // Update the values
-    s.addAttestation(key, super._msgSender(), incidentDate, stake);
+    s.addAttestation(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
 
-    emit Reported(key, super._msgSender(), incidentDate, info, stake);
-    emit Attested(key, super._msgSender(), incidentDate, stake);
+    emit Reported(key, msg.sender, incidentDate, info, stake);
+    emit Attested(key, msg.sender, incidentDate, stake);
   }
 
   function dispute(
@@ -49,7 +49,7 @@ abstract contract Reporter is IReporter, Witness {
     uint256 stake
   ) external override nonReentrant {
     // Todo: the reporter should be allowed to dispute
-    _mustBeUnpaused();
+    s.mustNotBePaused();
     s.mustNotHaveDispute(key);
     s.mustBeReporting(key);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -57,12 +57,12 @@ abstract contract Reporter is IReporter, Witness {
 
     require(stake >= getMinStake(), "Stake insufficient");
 
-    s.addDispute(key, super._msgSender(), incidentDate, stake);
+    s.addDispute(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(super._msgSender(), address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
 
-    emit Disputed(key, super._msgSender(), incidentDate, info, stake);
-    emit Refuted(key, super._msgSender(), incidentDate, stake);
+    emit Disputed(key, msg.sender, incidentDate, info, stake);
+    emit Refuted(key, msg.sender, incidentDate, stake);
   }
 
   function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
