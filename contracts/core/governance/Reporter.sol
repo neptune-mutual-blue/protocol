@@ -29,10 +29,6 @@ abstract contract Reporter is IReporter, Witness {
     uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, resolutionDate);
 
-    // Set the claim expiry timestamp
-    uint256 claimExpiry = resolutionDate + s.getClaimPeriod();
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiry);
-
     // Update the values
     s.addAttestation(key, msg.sender, incidentDate, stake);
 
@@ -48,7 +44,6 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    // Todo: the reporter should be allowed to dispute
     s.mustNotBePaused();
     s.mustNotHaveDispute(key);
     s.mustBeReporting(key);

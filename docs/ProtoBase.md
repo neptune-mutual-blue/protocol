@@ -152,6 +152,7 @@ function unpause() external nonpayable whenPaused
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

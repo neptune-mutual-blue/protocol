@@ -225,6 +225,7 @@ Returns fee required to create a new cover
 * [ReentrancyGuard](docs/ReentrancyGuard.md)
 * [RegistryLibV1](docs/RegistryLibV1.md)
 * [Reporter](docs/Reporter.md)
+* [Resolution](docs/Resolution.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [SafeMath](docs/SafeMath.md)
 * [Store](docs/Store.md)

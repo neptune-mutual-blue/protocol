@@ -101,12 +101,25 @@ library ValidationLibV1 {
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
+  function mustBeClaimable(IStore s, bytes32 key) public view {
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
+  }
+
+  function mustBeClaimingOrDisputed(IStore s, bytes32 key) public view {
+    CoverUtilV1.CoverStatus status = s.getCoverStatus(key);
+
+    bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
+    bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
+
+    require(claiming || falseReporting, "Not reported nor disputed");
+  }
+
   function mustBeReportingOrDisputed(IStore s, bytes32 key) public view {
     CoverUtilV1.CoverStatus status = s.getCoverStatus(key);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
-    require(incidentHappened || falseReporting, "Not reporting or disputed");
+    require(incidentHappened || falseReporting, "Not reported nor disputed");
   }
 
   function mustBeValidIncidentDate(
@@ -148,7 +161,7 @@ library ValidationLibV1 {
     address cToken,
     uint256 incidentDate
   ) public view {
-    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Your claim is denied");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable, "Your claim is denied");
 
     s.mustBeProtocolMember(cToken);
     mustBeValidIncidentDate(s, key, incidentDate);
@@ -157,11 +170,11 @@ library ValidationLibV1 {
   }
 
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
-    uint256 resolutionDate = s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
-    require(block.timestamp >= resolutionDate, "Reporting still active"); // solhint-disable-line
+    uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
+    require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
 
-    uint256 claimExpiry = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
-    require(block.timestamp <= claimExpiry, "Claim period has expired"); // solhint-disable-line
+    uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+    require(block.timestamp <= expiresAt, "Claim period has expired"); // solhint-disable-line
   }
 
   function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view {

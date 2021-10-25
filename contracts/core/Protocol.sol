@@ -125,6 +125,7 @@ contract Protocol is IProtocol, ProtoBase {
     address previous,
     address current
   ) external override {
+    ProtoUtilV1.mustBeProtocolMember(s, previous);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
@@ -141,6 +142,7 @@ contract Protocol is IProtocol, ProtoBase {
   }
 
   function removeMember(address member) external override {
+    ProtoUtilV1.mustBeProtocolMember(s, member);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 

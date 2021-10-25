@@ -97,7 +97,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_CTOKEN_FACTORY), cTokenFactory.address)
 
-  const governance = await deployer.deployWithLibraries(cache, 'Governance',
+  const governance = await deployer.deployWithLibraries(cache, 'Resolution',
     {
       BaseLibV1: libs.baseLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,

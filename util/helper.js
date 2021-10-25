@@ -22,10 +22,6 @@ const coverStatus = {
   claimable: 4 // Claimable, claims accepted for payout
 }
 
-// for (let i = 0; i < 20; i++) {
-//   console.log(randomAddress())
-// }
-
 module.exports = {
   randomAddress,
   randomPrivateKey,

@@ -12,6 +12,7 @@ bytes32 public constant NS_ROLES_ADMIN;
 bytes32 public constant NS_ROLES_COVER_MANAGER;
 bytes32 public constant NS_ROLES_LIQUIDITY_MANAGER;
 bytes32 public constant NS_ROLES_GOVERNANCE_AGENT;
+bytes32 public constant NS_ROLES_GOVERNANCE_ADMIN;
 bytes32 public constant NS_ROLES_UPGRADE_AGENT;
 bytes32 public constant NS_ROLES_RECOVERY_AGENT;
 bytes32 public constant NS_ROLES_PAUSE_AGENT;
@@ -25,6 +26,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 - [mustBeCoverManager(IStore s)](#mustbecovermanager)
 - [mustBeLiquidityManager(IStore s)](#mustbeliquiditymanager)
 - [mustBeGovernanceAgent(IStore s)](#mustbegovernanceagent)
+- [mustBeGovernanceAdmin(IStore s)](#mustbegovernanceadmin)
 - [mustBeUpgradeAgent(IStore s)](#mustbeupgradeagent)
 - [mustBeRecoveryAgent(IStore s)](#mustberecoveryagent)
 - [mustBePauseAgent(IStore s)](#mustbepauseagent)
@@ -34,7 +36,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 
 ### mustBeAdmin
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not the protocol admin.
 
 ```js
 function mustBeAdmin(IStore s) public view
@@ -48,7 +50,7 @@ function mustBeAdmin(IStore s) public view
 
 ### mustBeCoverManager
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not the cover manager.
 
 ```js
 function mustBeCoverManager(IStore s) public view
@@ -62,7 +64,7 @@ function mustBeCoverManager(IStore s) public view
 
 ### mustBeLiquidityManager
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not the liquidity manager.
 
 ```js
 function mustBeLiquidityManager(IStore s) public view
@@ -76,7 +78,7 @@ function mustBeLiquidityManager(IStore s) public view
 
 ### mustBeGovernanceAgent
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not a governance agent.
 
 ```js
 function mustBeGovernanceAgent(IStore s) public view
@@ -88,9 +90,23 @@ function mustBeGovernanceAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+### mustBeGovernanceAdmin
+
+Reverts if the sender is not a governance admin.
+
+```js
+function mustBeGovernanceAdmin(IStore s) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
 ### mustBeUpgradeAgent
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not an upgrade agent.
 
 ```js
 function mustBeUpgradeAgent(IStore s) public view
@@ -104,7 +120,7 @@ function mustBeUpgradeAgent(IStore s) public view
 
 ### mustBeRecoveryAgent
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not a recovery agent.
 
 ```js
 function mustBeRecoveryAgent(IStore s) public view
@@ -118,7 +134,7 @@ function mustBeRecoveryAgent(IStore s) public view
 
 ### mustBePauseAgent
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not the pause agent.
 
 ```js
 function mustBePauseAgent(IStore s) public view
@@ -132,7 +148,7 @@ function mustBePauseAgent(IStore s) public view
 
 ### mustBeUnpauseAgent
 
-Reverts if the sender is not the contract or protocol admin.
+Reverts if the sender is not the unpause agent.
 
 ```js
 function mustBeUnpauseAgent(IStore s) public view
@@ -252,6 +268,7 @@ Returns true if the user is a member of the specified role
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

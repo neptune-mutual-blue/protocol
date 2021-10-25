@@ -7,6 +7,15 @@ import "./IMember.sol";
 
 interface IGovernance is IMember, IReporter, IWitness {
   event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
+  event Resolved(bytes32 key, uint256 incidentDate, bool decision, bool emergency);
 
   function finalize(bytes32 key, uint256 incidentDate) external;
+
+  function resolve(bytes32 key, uint256 incidentDate) external;
+
+  function emergencyResolve(
+    bytes32 key,
+    uint256 incidentDate,
+    bool decision
+  ) external;
 }

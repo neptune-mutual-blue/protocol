@@ -17,6 +17,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [callerMustBeClaimsProcessorContract(IStore s)](#callermustbeclaimsprocessorcontract)
 - [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
 - [mustBeDisputed(IStore s, bytes32 key)](#mustbedisputed)
+- [mustBeClaimable(IStore s, bytes32 key)](#mustbeclaimable)
+- [mustBeClaimingOrDisputed(IStore s, bytes32 key)](#mustbeclaimingordisputed)
 - [mustBeReportingOrDisputed(IStore s, bytes32 key)](#mustbereportingordisputed)
 - [mustBeValidIncidentDate(IStore s, bytes32 key, uint256 incidentDate)](#mustbevalidincidentdate)
 - [mustNotHaveDispute(IStore s, bytes32 key)](#mustnothavedispute)
@@ -165,6 +167,32 @@ function mustBeReporting(IStore s, bytes32 key) public view
 
 ```js
 function mustBeDisputed(IStore s, bytes32 key) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### mustBeClaimable
+
+```js
+function mustBeClaimable(IStore s, bytes32 key) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+### mustBeClaimingOrDisputed
+
+```js
+function mustBeClaimingOrDisputed(IStore s, bytes32 key) public view
 ```
 
 **Arguments**
@@ -367,6 +395,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

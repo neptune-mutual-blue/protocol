@@ -49,6 +49,7 @@ const NS = {
     ADMIN: 'role:admin',
     COVER_MANAGER: 'role:cover:manager',
     LIQUIDITY_MANAGER: 'role:liquidity:manager',
+    GOVERNANCE_ADMIN: 'role:governance:admin',
     GOVERNANCE_AGENT: 'role:governance:agent',
     UPGRADE_AGENT: 'role:upgrade:agent',
     RECOVERY_AGENT: 'role:recovery:agent',

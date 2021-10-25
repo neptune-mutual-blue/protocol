@@ -3,7 +3,7 @@
 View Source: [contracts/interfaces/IGovernance.sol](../contracts/interfaces/IGovernance.sol)
 
 **↗ Extends: [IMember](IMember.md), [IReporter](IReporter.md), [IWitness](IWitness.md)**
-**↘ Derived Contracts: [Governance](Governance.md)**
+**↘ Derived Contracts: [Governance](Governance.md), [Resolution](Resolution.md)**
 
 **IGovernance**
 
@@ -11,11 +11,14 @@ View Source: [contracts/interfaces/IGovernance.sol](../contracts/interfaces/IGov
 
 ```js
 event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
+event Resolved(bytes32  key, uint256  incidentDate, bool  decision, bool  emergency);
 ```
 
 ## Functions
 
 - [finalize(bytes32 key, uint256 incidentDate)](#finalize)
+- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
 
 ### finalize
 
@@ -29,6 +32,33 @@ function finalize(bytes32 key, uint256 incidentDate) external nonpayable
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
+
+### resolve
+
+```js
+function resolve(bytes32 key, uint256 incidentDate) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### emergencyResolve
+
+```js
+function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
 
 ## Contracts
 
@@ -102,6 +132,7 @@ function finalize(bytes32 key, uint256 incidentDate) external nonpayable
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

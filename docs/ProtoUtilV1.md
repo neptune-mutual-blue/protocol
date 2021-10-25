@@ -46,6 +46,7 @@ bytes32 public constant NS_PRICE_DISCOVERY;
 bytes32 public constant NS_REPORTING_PERIOD;
 bytes32 public constant NS_REPORTING_INCIDENT_DATE;
 bytes32 public constant NS_RESOLUTION_TS;
+bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
 bytes32 public constant NS_REPORTING_WITNESS_YES;
 bytes32 public constant NS_REPORTING_WITNESS_NO;
@@ -518,6 +519,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

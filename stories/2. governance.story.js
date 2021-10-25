@@ -330,7 +330,7 @@ describe('Governance Stories', () => {
     await attest(incidentDate, george, 100_000)
   })
 
-  it('unable to claim because the reporting period is still acive', async () => {
+  it('unable to claim because the claim period has not begun', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cTokens.kimberly.balanceOf(kimberly.address)
@@ -339,7 +339,23 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Reporting still active')
+      .should.be.revertedWith('Your claim is denied')
+  })
+
+  it('a governance agent resolves the cover', async () => {
+    const [_o, _a] = await ethers.getSigners() // eslint-disable-line
+
+    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.GOVERNANCE_ADMIN), _o.address)
+    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.GOVERNANCE_AGENT), _a.address)
+
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
+
+    await contracts.governance.connect(_a).resolve(coverKey, incidentDate)
+
+    const status = await contracts.governance.getStatus(coverKey)
+    status.should.equal(helper.coverStatus.claimable)
   })
 
   it('kimberly successfully received payout during the claim period', async () => {
@@ -349,7 +365,7 @@ describe('Governance Stories', () => {
     constants.cTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
-    await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
+    await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     const before = await contracts.wxDai.balanceOf(kimberly.address)
 
@@ -374,5 +390,18 @@ describe('Governance Stories', () => {
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cTokens.lewis.address, coverKey, incidentDate, balance)
       .should.be.revertedWith('Claim period has expired')
+  })
+
+  it('a governance agent finalizes the cover', async () => {
+    const [_o, _a] = await ethers.getSigners() // eslint-disable-line
+
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
+
+    await contracts.governance.connect(_a).finalize(coverKey, incidentDate)
+
+    const status = await contracts.governance.getStatus(coverKey)
+    status.should.equal(helper.coverStatus.normal)
   })
 })

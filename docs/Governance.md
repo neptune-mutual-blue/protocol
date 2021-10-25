@@ -3,32 +3,34 @@
 View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
 
 **↗ Extends: [IGovernance](IGovernance.md), [Reporter](Reporter.md)**
+**↘ Derived Contracts: [Resolution](Resolution.md)**
 
 **Governance**
 
 ## Functions
 
-- [constructor(IStore store)](#)
 - [finalize(bytes32 key, uint256 incidentDate)](#finalize)
+- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
 - [version()](#version)
 - [getName()](#getname)
 
-### 
+### finalize
 
 ```js
-function (IStore store) public nonpayable Recoverable 
+function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
-### finalize
+### _finalize
 
 ```js
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 ```
 
 **Arguments**
@@ -138,6 +140,7 @@ returns(bytes32)
 * [ReentrancyGuard](ReentrancyGuard.md)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)

@@ -13,62 +13,70 @@ library AccessControlLibV1 {
   bytes32 public constant NS_ROLES_COVER_MANAGER = "role:cover:manager";
   bytes32 public constant NS_ROLES_LIQUIDITY_MANAGER = "role:liquidity:manager";
   bytes32 public constant NS_ROLES_GOVERNANCE_AGENT = "role:governance:agent";
+  bytes32 public constant NS_ROLES_GOVERNANCE_ADMIN = "role:governance:admin";
   bytes32 public constant NS_ROLES_UPGRADE_AGENT = "role:upgrade:agent";
   bytes32 public constant NS_ROLES_RECOVERY_AGENT = "role:recovery:agent";
   bytes32 public constant NS_ROLES_PAUSE_AGENT = "role:pause:agent";
   bytes32 public constant NS_ROLES_UNPAUSE_AGENT = "role:unpause:agent";
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not the protocol admin.
    */
   function mustBeAdmin(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_ADMIN);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not the cover manager.
    */
   function mustBeCoverManager(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not the liquidity manager.
    */
   function mustBeLiquidityManager(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not a governance agent.
    */
   function mustBeGovernanceAgent(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not a governance admin.
+   */
+  function mustBeGovernanceAdmin(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN);
+  }
+
+  /**
+   * @dev Reverts if the sender is not an upgrade agent.
    */
   function mustBeUpgradeAgent(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not a recovery agent.
    */
   function mustBeRecoveryAgent(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not the pause agent.
    */
   function mustBePauseAgent(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT);
   }
 
   /**
-   * @dev Reverts if the sender is not the contract or protocol admin.
+   * @dev Reverts if the sender is not the unpause agent.
    */
   function mustBeUnpauseAgent(IStore s) public view {
     _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT);

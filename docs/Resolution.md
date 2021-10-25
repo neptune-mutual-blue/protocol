@@ -1,42 +1,71 @@
-# NTransferUtilV2.sol
+# Resolution.sol
 
-View Source: [contracts/libraries/NTransferUtilV2.sol](../contracts/libraries/NTransferUtilV2.sol)
+View Source: [contracts/core/governance/Resolution.sol](../contracts/core/governance/Resolution.sol)
 
-**NTransferUtilV2**
+**↗ Extends: [IGovernance](IGovernance.md), [Governance](Governance.md)**
+
+**Resolution**
 
 ## Functions
 
-- [ensureTransfer(IERC20 malicious, address recipient, uint256 amount)](#ensuretransfer)
-- [ensureTransferFrom(IERC20 malicious, address sender, address recipient, uint256 amount)](#ensuretransferfrom)
+- [constructor(IStore store)](#)
+- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [_resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
 
-### ensureTransfer
+### 
 
 ```js
-function ensureTransfer(IERC20 malicious, address recipient, uint256 amount) external nonpayable
+function (IStore store) public nonpayable Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| malicious | IERC20 |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
+| store | IStore |  | 
 
-### ensureTransferFrom
+### resolve
 
 ```js
-function ensureTransferFrom(IERC20 malicious, address sender, address recipient, uint256 amount) external nonpayable
+function resolve(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| malicious | IERC20 |  | 
-| sender | address |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### emergencyResolve
+
+```js
+function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
+
+### _resolve
+
+```js
+function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
+| emergency | bool |  | 
 
 ## Contracts
 

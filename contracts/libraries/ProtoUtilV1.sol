@@ -48,6 +48,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
   bytes32 public constant NS_REPORTING_INCIDENT_DATE = "proto:reporting:incident:date";
   bytes32 public constant NS_RESOLUTION_TS = "proto:reporting:resolution:ts";
+  bytes32 public constant NS_CLAIM_BEGIN_TS = "proto:claim:begin:ts";
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "proto:claim:expiry:ts";
   bytes32 public constant NS_REPORTING_WITNESS_YES = "proto:reporting:witness:yes";
   bytes32 public constant NS_REPORTING_WITNESS_NO = "proto:reporting:witness:no";
