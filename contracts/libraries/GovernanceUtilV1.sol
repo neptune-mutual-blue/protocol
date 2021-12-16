@@ -50,11 +50,11 @@ library GovernanceUtilV1 {
     bytes32 key,
     uint256 incidentDate
   ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
-    no = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
     yes = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    no = s.getUintByKey(k);
   }
 
   function getStakesOf(

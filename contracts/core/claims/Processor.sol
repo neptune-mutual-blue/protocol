@@ -11,6 +11,12 @@ import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/StoreKeyUtil.sol";
 
+/**
+ * @title Claims Processor Contract
+ * @dev Enables the policyholders to submit a claim and receive immediate payouts during claim period.
+ * The claims which are submitted after the claim expiry period are considered invalid
+ * and therefore receive no payouts.
+ */
 contract Processor is IClaimsProcessor, Recoverable {
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
@@ -19,10 +25,23 @@ contract Processor is IClaimsProcessor, Recoverable {
   using ValidationLibV1 for bytes32;
   using StoreKeyUtil for IStore;
 
+  /**
+   * @dev Constructs this contract
+   * @param store Provide an implmentation of IStore
+   */
   constructor(IStore store) Recoverable(store) {
     this;
   }
 
+  /**
+   * @dev Enables policyholders to claim their cTokens which results in a payout.
+   * The payout is provided only when the active cover is marked and resolved as "Incident Happened".
+   *
+   * @param cToken Provide the address of the claim token that you're using for this claim.
+   * @param key Enter the key of the cover you're claiming
+   * @param incidentDate Enter the active cover's date of incident
+   * @param amount Enter the amount of cTokens you want to transfer
+   */
   function claim(
     address cToken,
     bytes32 key,
@@ -35,11 +54,19 @@ contract Processor is IClaimsProcessor, Recoverable {
     ICToken(cToken).burn(amount);
 
     IVault vault = s.getVault(key);
+    //Todo: platform fees
     vault.transferGovernance(key, msg.sender, amount);
 
     emit Claimed(cToken, key, msg.sender, incidentDate, amount);
   }
 
+  /**
+   * @dev Validates a given claim
+   * @param cToken Provide the address of the claim token that you're using for this claim.
+   * @param key Enter the key of the cover you're validating the claim for
+   * @param incidentDate Enter the active cover's date of incident
+   * @return Returns true if the given claim is valid and can result in a successful payout
+   */
   function validate(
     address cToken,
     bytes32 key,
@@ -51,6 +78,11 @@ contract Processor is IClaimsProcessor, Recoverable {
     return true;
   }
 
+  /**
+   * @dev Returns claim expiry date. A policy can not be claimed after the expiry date
+   * even when the policy was valid.
+   * @param key Enter the key of the cover you're checking
+   */
   function getClaimExpiryDate(bytes32 key) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
   }

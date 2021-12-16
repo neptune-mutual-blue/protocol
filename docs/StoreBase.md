@@ -16,6 +16,7 @@ mapping(bytes32 => int256) public intStorage;
 mapping(bytes32 => uint256) public uintStorage;
 mapping(bytes32 => uint256[]) public uintsStorage;
 mapping(bytes32 => address) public addressStorage;
+mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
 mapping(bytes32 => string) public stringStorage;
 mapping(bytes32 => bytes) public bytesStorage;
 mapping(bytes32 => bytes32) public bytes32Storage;
@@ -35,7 +36,7 @@ bytes32 private constant _NS_MEMBERS;
 - [unpause()](#unpause)
 - [isProtocolMember(address contractAddress)](#isprotocolmember)
 - [_throwIfPaused()](#_throwifpaused)
-- [_throwIfSenderNotProtocol()](#_throwifsendernotprotocol)
+- [_throwIfSenderNotProtocolMember()](#_throwifsendernotprotocolmember)
 
 ### 
 
@@ -123,10 +124,10 @@ function _throwIfPaused() internal view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### _throwIfSenderNotProtocol
+### _throwIfSenderNotProtocolMember
 
 ```js
-function _throwIfSenderNotProtocol() internal view
+function _throwIfSenderNotProtocolMember() internal view
 ```
 
 **Arguments**

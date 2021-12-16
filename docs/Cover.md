@@ -15,6 +15,8 @@ The cover contract facilitates you create and update covers
 - [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
 - [_addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address assuranceToken)](#_addcover)
 - [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
+- [updateWhitelist(address account, bool status)](#updatewhitelist)
+- [checkIfWhitelisted(address account)](#checkifwhitelisted)
 
 ### 
 
@@ -112,6 +114,32 @@ Returns fee required to create a new cover
 | key | bytes32 |  | 
 | info | bytes32 |  | 
 | stakeWithFee | uint256 |  | 
+
+### updateWhitelist
+
+```js
+function updateWhitelist(address account, bool status) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
+| status | bool |  | 
+
+### checkIfWhitelisted
+
+```js
+function checkIfWhitelisted(address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
 
 ## Contracts
 

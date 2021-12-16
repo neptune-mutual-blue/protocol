@@ -9,6 +9,7 @@ import "./Recoverable.sol";
 
 abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
   using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {
     _setAccessPolicy();
@@ -33,6 +34,7 @@ abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
     bytes32 adminRole,
     address account
   ) external {
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
 
     _setRoleAdmin(role, adminRole);

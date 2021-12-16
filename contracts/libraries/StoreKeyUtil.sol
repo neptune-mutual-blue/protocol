@@ -173,6 +173,39 @@ library StoreKeyUtil {
     return s.setAddress(keccak256(abi.encodePacked(key1, key2, key3)), value);
   }
 
+  function setAddressBooleanByKey(
+    IStore s,
+    bytes32 key,
+    address account,
+    bool value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.setAddressBoolean(keccak256(abi.encodePacked(key)), account, value);
+  }
+
+  function setAddressBooleanByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address account,
+    bool value
+  ) external {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account, value);
+  }
+
+  function setAddressBooleanByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address account,
+    bool value
+  ) external {
+    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
+    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account, value);
+  }
+
   function deleteUintByKey(IStore s, bytes32 key) external {
     require(key > 0, "Invalid key");
     return s.deleteUint(keccak256(abi.encodePacked(key)));
@@ -321,5 +354,35 @@ library StoreKeyUtil {
   ) external view returns (address) {
     require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
     return s.getAddress(keccak256(abi.encodePacked(key1, key2, key3)));
+  }
+
+  function getAddressBooleanByKey(
+    IStore s,
+    bytes32 key,
+    address account
+  ) external view returns (bool) {
+    require(key > 0, "Invalid key");
+    return s.getAddressBoolean(keccak256(abi.encodePacked(key)), account);
+  }
+
+  function getAddressBooleanByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address account
+  ) external view returns (bool) {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account);
+  }
+
+  function getAddressBooleanByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address account
+  ) external view returns (bool) {
+    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
+    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account);
   }
 }

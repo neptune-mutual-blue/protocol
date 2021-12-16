@@ -152,6 +152,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.COVER_MANAGER), owner.address)
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.ether(0.07), helper.ether(0.45))
+  await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
     BaseLibV1: libs.baseLibV1.address,

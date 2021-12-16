@@ -14,7 +14,8 @@
     "test": "npx hardhat test",
     "test:all": "npx hardhat test ./**/*.{spec,story}.js",
     "stories": "npx hardhat test ./**/*.story.js",
-    "story": "yarn stories"
+    "story": "yarn stories",
+    "walk": "node ./util/analyzers/chain-state"
   },
   "repository": {
     "type": "git",

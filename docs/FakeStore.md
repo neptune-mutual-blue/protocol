@@ -18,12 +18,14 @@ mapping(bytes32 => string) public stringStorage;
 mapping(bytes32 => bytes) public bytesStorage;
 mapping(bytes32 => bytes32) public bytes32Storage;
 mapping(bytes32 => bool) public boolStorage;
+mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
 
 ```
 
 ## Functions
 
 - [setAddress(bytes32 k, address v)](#setaddress)
+- [setAddressBoolean(bytes32 k, address a, bool v)](#setaddressboolean)
 - [setUint(bytes32 k, uint256 v)](#setuint)
 - [addUint(bytes32 k, uint256 v)](#adduint)
 - [subtractUint(bytes32 k, uint256 v)](#subtractuint)
@@ -42,6 +44,7 @@ mapping(bytes32 => bool) public boolStorage;
 - [deleteInt(bytes32 k)](#deleteint)
 - [deleteBytes32(bytes32 k)](#deletebytes32)
 - [getAddress(bytes32 k)](#getaddress)
+- [getAddressBoolean(bytes32 k, address a)](#getaddressboolean)
 - [getUint(bytes32 k)](#getuint)
 - [getUints(bytes32 k)](#getuints)
 - [getString(bytes32 k)](#getstring)
@@ -62,6 +65,20 @@ function setAddress(bytes32 k, address v) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 | v | address |  | 
+
+### setAddressBoolean
+
+```js
+function setAddressBoolean(bytes32 k, address a, bool v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| a | address |  | 
+| v | bool |  | 
 
 ### setUint
 
@@ -288,6 +305,20 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
+
+### getAddressBoolean
+
+```js
+function getAddressBoolean(bytes32 k, address a) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| a | address |  | 
 
 ### getUint
 

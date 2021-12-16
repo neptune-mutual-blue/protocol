@@ -5,6 +5,12 @@ pragma solidity >=0.4.22 <0.9.0;
 interface IStore {
   function setAddress(bytes32 k, address v) external;
 
+  function setAddressBoolean(
+    bytes32 k,
+    address a,
+    bool v
+  ) external;
+
   function setUint(bytes32 k, uint256 v) external;
 
   function addUint(bytes32 k, uint256 v) external;
@@ -40,6 +46,8 @@ interface IStore {
   function deleteBytes32(bytes32 k) external;
 
   function getAddress(bytes32 k) external view returns (address);
+
+  function getAddressBoolean(bytes32 k, address a) external view returns (bool);
 
   function getUint(bytes32 k) external view returns (uint256);
 

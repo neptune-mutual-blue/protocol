@@ -7,19 +7,41 @@ import "../../interfaces/external/IUniswapV2RouterLike.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../Recoverable.sol";
 
+/**
+ * @title Price Discovery Contract
+ * @dev Provides features to discover price of a given token, uses UniswapV2 and compatible forks
+ */
 contract PriceDiscovery is IPriceDiscovery, Recoverable {
   using ProtoUtilV1 for IStore;
 
+  /**
+   * @dev Constructs this contract
+   * @param store Provide an implmentation of IStore
+   */
   constructor(IStore store) Recoverable(store) {
     this;
   }
 
+  /**
+   * @dev Gets the price of the given token against the platform's stablecoin.
+   * Warning: if the supplied token address (and the stablecoin pair) is not found on the UniswapV2-like decentralized exchange,
+   * the result will be incorrect.
+   * @param token Provide the token address to get the price of
+   * @param multiplier Enter the token price multiplier
+   */
   function getTokenPriceInStableCoin(address token, uint256 multiplier) external view override returns (uint256) {
     address stablecoin = s.getLiquidityToken();
     return this.getTokenPriceInLiquidityToken(token, stablecoin, multiplier);
   }
 
-  // Todo: check this implementation
+  /**
+   * @dev Gets the price of the given token against the given liquidity token.
+   * Warning: if both of the supplied token address aren't to be found on the UniswapV2-like decentralized exchange,
+   * the result will be incorrect.
+   * @param token Provide the token address to get the price of
+   * @param liquidityToken Provide the liquidity token address to get the price in
+   * @param multiplier Enter the token price multiplier
+   */
   function getTokenPriceInLiquidityToken(
     address token,
     address liquidityToken,

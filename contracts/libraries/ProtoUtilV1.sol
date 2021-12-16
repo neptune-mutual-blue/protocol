@@ -42,6 +42,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_VAULT_FACTORY = "proto:cover:vault:factory";
   bytes32 public constant NS_COVER_CTOKEN = "proto:cover:ctoken";
   bytes32 public constant NS_COVER_CTOKEN_FACTORY = "proto:cover:ctoken:factory";
+  bytes32 public constant NS_COVER_WHITELIST = "proto:cover:whitelist";
   bytes32 public constant NS_TREASURY = "proto:core:treasury";
   bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
 

@@ -12,6 +12,7 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 ```js
 event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
 event CoverUpdated(bytes32  key, bytes32  info);
+event WhitelistUpdated(address  account, bool  status);
 ```
 
 ## Functions
@@ -19,7 +20,9 @@ event CoverUpdated(bytes32  key, bytes32  info);
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
 - [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
+- [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
+- [checkIfWhitelisted(address account)](#checkifwhitelisted)
 
 ### initialize
 
@@ -82,6 +85,19 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable
 | key | bytes32 | Enter the cover key | 
 | info | bytes32 | Enter a new IPFS URL to update | 
 
+### updateWhitelist
+
+```js
+function updateWhitelist(address account, bool whitelisted) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
+| whitelisted | bool |  | 
+
 ### getCover
 
 Get info of a cover contract by key
@@ -96,6 +112,19 @@ returns(coverOwner address, info bytes32, values uint256[])
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
+
+### checkIfWhitelisted
+
+```js
+function checkIfWhitelisted(address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
 
 ## Contracts
 

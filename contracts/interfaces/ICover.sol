@@ -6,6 +6,7 @@ import "./IMember.sol";
 interface ICover is IMember {
   event CoverCreated(bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 liquidity);
   event CoverUpdated(bytes32 key, bytes32 info);
+  event WhitelistUpdated(address account, bool status);
 
   /**
    * @dev Initializes this contract
@@ -65,6 +66,8 @@ interface ICover is IMember {
    */
   function updateCover(bytes32 key, bytes32 info) external;
 
+  function updateWhitelist(address account, bool whitelisted) external;
+
   /**
    * @dev Get info of a cover contract by key
    * @param key Enter the cover key
@@ -80,4 +83,6 @@ interface ICover is IMember {
       bytes32 info,
       uint256[] memory values
     );
+
+  function checkIfWhitelisted(address account) external view returns (bool);
 }

@@ -11,6 +11,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   mapping(bytes32 => uint256) public uintStorage;
   mapping(bytes32 => uint256[]) public uintsStorage;
   mapping(bytes32 => address) public addressStorage;
+  mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
   mapping(bytes32 => string) public stringStorage;
   mapping(bytes32 => bytes) public bytesStorage;
   mapping(bytes32 => bytes32) public bytes32Storage;
@@ -58,7 +59,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     require(!super.paused(), "Pausable: paused");
   }
 
-  function _throwIfSenderNotProtocol() internal view {
+  function _throwIfSenderNotProtocolMember() internal view {
     require(isProtocolMember(msg.sender), "Forbidden");
   }
 }

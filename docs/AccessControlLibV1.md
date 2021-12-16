@@ -24,6 +24,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 
 - [mustBeAdmin(IStore s)](#mustbeadmin)
 - [mustBeCoverManager(IStore s)](#mustbecovermanager)
+- [senderMustBeWhitelisted(IStore s)](#sendermustbewhitelisted)
 - [mustBeLiquidityManager(IStore s)](#mustbeliquiditymanager)
 - [mustBeGovernanceAgent(IStore s)](#mustbegovernanceagent)
 - [mustBeGovernanceAdmin(IStore s)](#mustbegovernanceadmin)
@@ -54,6 +55,20 @@ Reverts if the sender is not the cover manager.
 
 ```js
 function mustBeCoverManager(IStore s) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### senderMustBeWhitelisted
+
+Reverts if the sender is not the cover manager.
+
+```js
+function senderMustBeWhitelisted(IStore s) public view
 ```
 
 **Arguments**

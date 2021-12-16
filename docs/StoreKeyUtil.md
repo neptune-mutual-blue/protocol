@@ -23,6 +23,9 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [setAddressByKey(IStore s, bytes32 key, address value)](#setaddressbykey)
 - [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#setaddressbykeys)
 - [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#setaddressbykeys)
+- [setAddressBooleanByKey(IStore s, bytes32 key, address account, bool value)](#setaddressbooleanbykey)
+- [setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account, bool value)](#setaddressbooleanbykeys)
+- [setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account, bool value)](#setaddressbooleanbykeys)
 - [deleteUintByKey(IStore s, bytes32 key)](#deleteuintbykey)
 - [deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2)](#deleteuintbykeys)
 - [deleteBytes32ByKey(IStore s, bytes32 key)](#deletebytes32bykey)
@@ -43,6 +46,9 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [getAddressByKey(IStore s, bytes32 key)](#getaddressbykey)
 - [getAddressByKeys(IStore s, bytes32 key1, bytes32 key2)](#getaddressbykeys)
 - [getAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)](#getaddressbykeys)
+- [getAddressBooleanByKey(IStore s, bytes32 key, address account)](#getaddressbooleanbykey)
+- [getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account)](#getaddressbooleanbykeys)
+- [getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account)](#getaddressbooleanbykeys)
 
 ### setUintByKey
 
@@ -296,6 +302,54 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, ad
 | key2 | bytes32 |  | 
 | key3 | bytes32 |  | 
 | value | address |  | 
+
+### setAddressBooleanByKey
+
+```js
+function setAddressBooleanByKey(IStore s, bytes32 key, address account, bool value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| account | address |  | 
+| value | bool |  | 
+
+### setAddressBooleanByKeys
+
+```js
+function setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account, bool value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| account | address |  | 
+| value | bool |  | 
+
+### setAddressBooleanByKeys
+
+```js
+function setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account, bool value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| account | address |  | 
+| value | bool |  | 
 
 ### deleteUintByKey
 
@@ -581,6 +635,54 @@ returns(address)
 | key1 | bytes32 |  | 
 | key2 | bytes32 |  | 
 | key3 | bytes32 |  | 
+
+### getAddressBooleanByKey
+
+```js
+function getAddressBooleanByKey(IStore s, bytes32 key, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| account | address |  | 
+
+### getAddressBooleanByKeys
+
+```js
+function getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| account | address |  | 
+
+### getAddressBooleanByKeys
+
+```js
+function getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| account | address |  | 
 
 ## Contracts
 

@@ -1,10 +1,14 @@
-# Processor.sol
+# Claims Processor Contract (Processor.sol)
 
 View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Processor.sol)
 
 **↗ Extends: [IClaimsProcessor](IClaimsProcessor.md), [Recoverable](Recoverable.md)**
 
 **Processor**
+
+Enables the policyholders to submit a claim and receive immediate payouts during claim period.
+ The claims which are submitted after the claim expiry period are considered invalid
+ and therefore receive no payouts.
 
 ## Functions
 
@@ -17,6 +21,8 @@ View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Proc
 
 ### 
 
+Constructs this contract
+
 ```js
 function (IStore store) public nonpayable Recoverable 
 ```
@@ -25,9 +31,12 @@ function (IStore store) public nonpayable Recoverable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| store | IStore | Provide an implmentation of IStore | 
 
 ### claim
+
+Enables policyholders to claim their cTokens which results in a payout.
+ The payout is provided only when the active cover is marked and resolved as "Incident Happened".
 
 ```js
 function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
@@ -37,27 +46,36 @@ function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| amount | uint256 |  | 
+| cToken | address | Provide the address of the claim token that you're using for this claim. | 
+| key | bytes32 | Enter the key of the cover you're claiming | 
+| incidentDate | uint256 | Enter the active cover's date of incident | 
+| amount | uint256 | Enter the amount of cTokens you want to transfer | 
 
 ### validate
+
+Validates a given claim
 
 ```js
 function validate(address cToken, bytes32 key, uint256 incidentDate) public view
 returns(bool)
 ```
 
+**Returns**
+
+Returns true if the given claim is valid and can result in a successful payout
+
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| cToken | address | Provide the address of the claim token that you're using for this claim. | 
+| key | bytes32 | Enter the key of the cover you're validating the claim for | 
+| incidentDate | uint256 | Enter the active cover's date of incident | 
 
 ### getClaimExpiryDate
+
+Returns claim expiry date. A policy can not be claimed after the expiry date
+ even when the policy was valid.
 
 ```js
 function getClaimExpiryDate(bytes32 key) external view
@@ -68,7 +86,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Enter the key of the cover you're checking | 
 
 ### version
 

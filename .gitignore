@@ -7,3 +7,4 @@ _*.sol*
 cache
 coverage
 coverage.json
+walk

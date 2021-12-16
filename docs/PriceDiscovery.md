@@ -1,10 +1,12 @@
-# PriceDiscovery.sol
+# Price Discovery Contract (PriceDiscovery.sol)
 
 View Source: [contracts/core/discovery/PriceDiscovery.sol](../contracts/core/discovery/PriceDiscovery.sol)
 
 **↗ Extends: [IPriceDiscovery](IPriceDiscovery.md), [Recoverable](Recoverable.md)**
 
 **PriceDiscovery**
+
+Provides features to discover price of a given token, uses UniswapV2 and compatible forks
 
 ## Functions
 
@@ -16,6 +18,8 @@ View Source: [contracts/core/discovery/PriceDiscovery.sol](../contracts/core/dis
 
 ### 
 
+Constructs this contract
+
 ```js
 function (IStore store) public nonpayable Recoverable 
 ```
@@ -24,9 +28,13 @@ function (IStore store) public nonpayable Recoverable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| store | IStore | Provide an implmentation of IStore | 
 
 ### getTokenPriceInStableCoin
+
+Gets the price of the given token against the platform's stablecoin.
+ Warning: if the supplied token address (and the stablecoin pair) is not found on the UniswapV2-like decentralized exchange,
+ the result will be incorrect.
 
 ```js
 function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
@@ -37,10 +45,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address |  | 
-| multiplier | uint256 |  | 
+| token | address | Provide the token address to get the price of | 
+| multiplier | uint256 | Enter the token price multiplier | 
 
 ### getTokenPriceInLiquidityToken
+
+Gets the price of the given token against the given liquidity token.
+ Warning: if both of the supplied token address aren't to be found on the UniswapV2-like decentralized exchange,
+ the result will be incorrect.
 
 ```js
 function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
@@ -51,9 +63,9 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address |  | 
-| liquidityToken | address |  | 
-| multiplier | uint256 |  | 
+| token | address | Provide the token address to get the price of | 
+| liquidityToken | address | Provide the liquidity token address to get the price in | 
+| multiplier | uint256 | Enter the token price multiplier | 
 
 ### version
 

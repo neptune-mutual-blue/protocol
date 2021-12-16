@@ -18,8 +18,8 @@ const ensureFile = async (file, content = '{}') => {
   }
 }
 
-const saveToDisk = async (path, contents) => {
-  await fs.writeFile(path, JSON.stringify(contents, null, 2))
+const saveToDisk = async (filePath, contents) => {
+  await fs.writeFile(filePath, JSON.stringify(contents, null, 2))
 }
 
 const fetchValue = async (cache, key) => {
@@ -58,4 +58,27 @@ const cacheValue = async (cache, key, value) => {
   await fs.writeFile(file, JSON.stringify(parsed, null, 2))
 }
 
-module.exports = { saveToDisk, ensureDirectory, ensureFile, cacheValue, fetchValue }
+const readFile = async (filePath) => {
+  const data = await fs.readFile(filePath)
+  return data.toString()
+}
+
+const findFiles = async (extension, directoryName, results = []) => {
+  const files = await fs.readdir(directoryName, { withFileTypes: true })
+
+  for (const f of files) {
+    const fullPath = path.join(directoryName, f.name)
+
+    if (f.isDirectory()) {
+      await findFiles(extension, fullPath, results)
+    } else {
+      if (fullPath.split('.').pop() === extension) {
+        results.push(fullPath)
+      }
+    }
+  }
+
+  return results
+}
+
+module.exports = { saveToDisk, ensureDirectory, ensureFile, cacheValue, fetchValue, findFiles, readFile }

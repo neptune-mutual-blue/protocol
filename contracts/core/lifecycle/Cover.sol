@@ -15,6 +15,7 @@ contract Cover is CoverBase {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using AccessControlLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using ValidationLibV1 for IStore;
@@ -90,6 +91,8 @@ contract Cover is CoverBase {
     uint256 initialLiquidity
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.senderMustBeWhitelisted();
+
     require(reportingPeriod >= 7 days, "Insufficent reporting period");
 
     // First validate the information entered
@@ -174,5 +177,18 @@ contract Cover is CoverBase {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
 
     return fee;
+  }
+
+  function updateWhitelist(address account, bool status) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account, status);
+
+    emit WhitelistUpdated(account, status);
+  }
+
+  function checkIfWhitelisted(address account) external view override returns (bool) {
+    return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account);
   }
 }

@@ -4,6 +4,19 @@ pragma solidity >=0.4.22 <0.9.0;
 import "../../interfaces/IReporter.sol";
 import "./Witness.sol";
 
+/**
+ * @title Neptune Mutual Governance: Reporter Contract
+ * @dev This contract enables any NPM tokenholder to
+ * report an incident or dispute a reported incident.
+ * <br />
+ * The reporters can submit incidents and/or dispute them as well.
+ * When a cover pool is reporting, other tokenholders can also join
+ * the reporters achieve a resolution.
+
+* The reporter who first submits an incident is known as `First Reporter` whereas
+* the reporter who disputes the reported incident is called `Candidate Reporter`. 
+ *
+ */
 abstract contract Reporter is IReporter, Witness {
   using GovernanceUtilV1 for IStore;
   using CoverUtilV1 for IStore;

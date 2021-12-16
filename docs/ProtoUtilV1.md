@@ -41,6 +41,7 @@ bytes32 public constant NS_COVER_VAULT;
 bytes32 public constant NS_COVER_VAULT_FACTORY;
 bytes32 public constant NS_COVER_CTOKEN;
 bytes32 public constant NS_COVER_CTOKEN_FACTORY;
+bytes32 public constant NS_COVER_WHITELIST;
 bytes32 public constant NS_TREASURY;
 bytes32 public constant NS_PRICE_DISCOVERY;
 bytes32 public constant NS_REPORTING_PERIOD;

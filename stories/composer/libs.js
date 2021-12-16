@@ -16,7 +16,8 @@ const deployAll = async (cache) => {
   })
 
   const accessControlLibV1 = await deployer.deployWithLibraries(cache, 'AccessControlLibV1', {
-    ProtoUtilV1: protoUtilV1.address
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address
   })
 
   const registryLib = await deployer.deployWithLibraries(cache, 'RegistryLibV1', {

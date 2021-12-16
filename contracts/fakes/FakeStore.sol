@@ -12,9 +12,18 @@ contract FakeStore is IStore {
   mapping(bytes32 => bytes) public bytesStorage;
   mapping(bytes32 => bytes32) public bytes32Storage;
   mapping(bytes32 => bool) public boolStorage;
+  mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
 
   function setAddress(bytes32 k, address v) external override {
     addressStorage[k] = v;
+  }
+
+  function setAddressBoolean(
+    bytes32 k,
+    address a,
+    bool v
+  ) external override {
+    addressBooleanStorage[k][a] = v;
   }
 
   function setUint(bytes32 k, uint256 v) external override {
@@ -91,6 +100,10 @@ contract FakeStore is IStore {
 
   function getAddress(bytes32 k) external view override returns (address) {
     return addressStorage[k];
+  }
+
+  function getAddressBoolean(bytes32 k, address a) external view override returns (bool) {
+    return addressBooleanStorage[k][a];
   }
 
   function getUint(bytes32 k) external view override returns (uint256) {

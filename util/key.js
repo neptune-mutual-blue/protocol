@@ -34,6 +34,7 @@ const NS = {
   COVER_STAKE: 'proto:cover:stake',
   COVER_STAKE_OWNED: 'proto:cover:stake:owned',
   COVER_STATUS: 'proto:cover:status',
+  COVER_WHITELIST: 'proto:cover:whitelist',
   COVER_VAULT: 'proto:cover:vault',
   COVER_CTOKEN: 'proto:cover:cToken',
   TREASURY: 'proto:core:treasury',
