@@ -28,6 +28,12 @@ library VaultLibV1 {
     uint256 liquidityToAdd
   ) public view returns (uint256) {
     uint256 balance = IERC20(stablecoin).balanceOf(address(this));
+    uint256 podSupply = IERC20(pod).totalSupply();
+
+    // This smart contract contains stablecoins without liquidity provider contribution
+    if (podSupply == 0 && balance > 0) {
+      revert("Liquidity/POD mismatch");
+    }
 
     if (balance == 0) {
       return liquidityToAdd;
