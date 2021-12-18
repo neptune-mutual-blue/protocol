@@ -134,22 +134,22 @@ describe('Constructor & Initializer', () => {
       7 * DAYS // Claim period
     )
 
-    const sProtocolAddress = await store.getAddress(key.encodeKey(key.NS.CORE))
+    const sProtocolAddress = await store.getAddress(key.toBytes32(key.NS.CORE))
     sProtocolAddress.should.equal(protocol.address)
 
     const isProtocolAddress = await store.getBool(key.qualify(protocol.address))
     isProtocolAddress.should.be.true
 
-    const sNEPAddress = await store.getAddress(key.encodeKey(key.NS.SETUP_NEP))
+    const sNEPAddress = await store.getAddress(key.toBytes32(key.NS.SETUP_NEP))
     sNEPAddress.should.equal(npm.address)
 
-    const sBurner = await store.getAddress(key.encodeKey(key.NS.BURNER))
+    const sBurner = await store.getAddress(key.toBytes32(key.NS.BURNER))
     sBurner.should.equal(helper.zero1)
 
-    const sTreasury = await store.getAddress(key.encodeKey(key.NS.TREASURY))
+    const sTreasury = await store.getAddress(key.toBytes32(key.NS.TREASURY))
     sTreasury.should.equal(treasury)
 
-    const sAssuranceVault = await store.getAddress(key.encodeKey(key.NS.ASSURANCE_VAULT))
+    const sAssuranceVault = await store.getAddress(key.toBytes32(key.NS.ASSURANCE_VAULT))
     sAssuranceVault.should.equal(assuranceVault)
   })
 

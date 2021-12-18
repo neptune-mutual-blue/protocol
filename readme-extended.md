@@ -22,7 +22,7 @@ Produces documentation using `truffle compiler`
 | NS_ROLES_COVER_MANAGER     | Moderate | Cover managers can set cover configuration parameters.                                     |
 | NS_ROLES_LIQUIDITY_MANAGER | Moderate | Liquidity managers can configure liquidity pool configuration                              |
 | NS_ROLES_GOVERNANCE_AGENT  | High     | A governance agent can resolve and finalize covers undergoing reporting                    |
-| NS_ROLES_GOVERNANCE_ADMIN  | None     | No permission. Reserved                                                                    |
+| NS_ROLES_GOVERNANCE_ADMIN  | Critical | Governance admin can perform emergency resolution.                                         |
 | NS_ROLES_UPGRADE_AGENT     | Critical | Upgrade agents are allowed to upgrade the protocol                                         |
 | NS_ROLES_RECOVERY_AGENT    | Highest  | Recovery agents can recover accidentally-sent ERC-20 tokens and Ether from smart contracts |
 | NS_ROLES_PAUSE_AGENT       | Low      | Pause Agents can pause the protocol                                                        |

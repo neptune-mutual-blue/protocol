@@ -96,14 +96,16 @@ library GovernanceUtilV1 {
     uint256 incidentDate,
     uint256 stake
   ) external {
+    // Add individual stake of the reporter
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
     s.addUintByKey(k, stake);
 
+    // All "incident happened" camp witnesses combined
     k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
     uint256 currentStake = s.getUintByKey(k);
 
+    // No has reported yet, this is the first report
     if (currentStake == 0) {
-      // The first user who reported
       s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, msg.sender);
     }
 
