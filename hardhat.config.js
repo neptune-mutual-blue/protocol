@@ -38,7 +38,7 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY]
     }
   },
-  solidity: '0.8.7',
+  solidity: '0.8.0',
   settings: {
     optimizer: {
       enabled: true,
