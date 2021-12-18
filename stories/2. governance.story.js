@@ -352,7 +352,7 @@ describe('Governance Stories', () => {
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.governance.connect(_a).resolve(coverKey, incidentDate)
+    await contracts.resolution.connect(_a).resolve(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
     status.should.equal(helper.coverStatus.claimable)
@@ -399,7 +399,7 @@ describe('Governance Stories', () => {
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.governance.connect(_a).finalize(coverKey, incidentDate)
+    await contracts.resolution.connect(_a).finalize(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
     status.should.equal(helper.coverStatus.normal)

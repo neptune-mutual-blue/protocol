@@ -16,6 +16,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_MEMBERS = "proto:members";
   bytes32 public constant NS_COVER = "proto:cover";
   bytes32 public constant NS_GOVERNANCE = "proto:governance";
+  bytes32 public constant NS_RESOLUTION = "proto:governance:resolution";
   bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
   bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
   bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
@@ -73,6 +74,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
+  bytes32 public constant CNAME_RESOLUTION = "Resolution";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CTOKEN_FACTORY = "cTokenFactory";
   bytes32 public constant CNAME_COVER_PROVISION = "CoverProvison";

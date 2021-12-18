@@ -33,6 +33,7 @@
  * @property {Object} policyAdminContract - Policy admin contract
  * @property {Object} policy - Policy contract
  * @property {Object} governance - Governance contract
+ * @property {Object} resolution - Resolution contract
  * @property {Object} claimsProcessor - Claims processor contract
  * @property {Libraries} libs - All libraries
  */

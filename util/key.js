@@ -18,6 +18,7 @@ const NS = {
   COVER_CLAIMABLE: 'proto:cover:claimable',
   COVER_FEE: 'proto:cover:fee',
   GOVERNANCE: 'proto:governance',
+  RESOLUTION: 'proto:governance:resolution',
   CLAIMS_PROCESSOR: 'proto:claims:processor',
   COVER_INFO: 'proto:cover:info',
   COVER_LIQUIDITY: 'proto:cover:liquidity',

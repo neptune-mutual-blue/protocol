@@ -97,12 +97,11 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_CTOKEN_FACTORY), cTokenFactory.address)
 
-  const governance = await deployer.deployWithLibraries(cache, 'Resolution',
+  const governance = await deployer.deployWithLibraries(cache, 'Governance',
     {
       BaseLibV1: libs.baseLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
-      AccessControlLibV1: libs.accessControlLibV1.address,
       CoverUtilV1: libs.coverUtil.address,
       NTransferUtilV2: libs.transferLib.address,
       ValidationLibV1: libs.validationLib.address,
@@ -112,6 +111,22 @@ const initialize = async (suite, deploymentId) => {
   )
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.GOVERNANCE), governance.address)
+
+  const resolution = await deployer.deployWithLibraries(cache, 'Resolution',
+    {
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      BaseLibV1: libs.baseLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      // ProtoUtilV1: libs.protoUtilV1.address,
+      CoverUtilV1: libs.coverUtil.address,
+      // NTransferUtilV2: libs.transferLib.address,
+      ValidationLibV1: libs.validationLib.address
+      // GovernanceUtilV1: libs.governanceLib.address
+    },
+    store.address
+  )
+
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.RESOLUTION), resolution.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
     {
@@ -202,6 +217,7 @@ const initialize = async (suite, deploymentId) => {
     policyAdminContract,
     policy,
     governance,
+    resolution,
     claimsProcessor,
     libs
   }

@@ -5,35 +5,15 @@ import "./Reporter.sol";
 import "../../interfaces/IGovernance.sol";
 import "../../interfaces/ICToken.sol";
 
-abstract contract Governance is IGovernance, Reporter {
+contract Governance is IGovernance, Reporter {
   using GovernanceUtilV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
 
-  function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
-
-    s.mustBeClaimingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterClaimExpiry(key);
-
-    _finalize(key, incidentDate);
-  }
-
-  function _finalize(bytes32 key, uint256 incidentDate) internal {
-    // Reset to normal
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
-    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
-
-    s.deleteAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
-
-    emit Finalized(key, msg.sender, incidentDate);
+  constructor(IStore store) Recoverable(store) {
+    this;
   }
 
   /**

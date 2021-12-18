@@ -1,11 +1,14 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.4.22 <0.9.0;
-import "./Governance.sol";
-import "../../interfaces/IGovernance.sol";
-import "../../interfaces/ICToken.sol";
+import "./Finalization.sol";
+import "../../Recoverable.sol";
+import "../../../interfaces/IResolution.sol";
+import "../../../interfaces/IResolution.sol";
+import "../../../libraries/GovernanceUtilV1.sol";
+import "../../../libraries/ValidationLibV1.sol";
 
-contract Resolution is IGovernance, Governance {
+contract Resolution is IResolution, Finalization {
   using GovernanceUtilV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -46,7 +49,7 @@ contract Resolution is IGovernance, Governance {
     bool emergency
   ) private {
     if (decision == false) {
-      super._finalize(key, incidentDate);
+      _finalize(key, incidentDate);
       return;
     }
 
@@ -59,5 +62,19 @@ contract Resolution is IGovernance, Governance {
     s.setStatus(key, CoverUtilV1.CoverStatus.Claimable);
 
     emit Resolved(key, incidentDate, decision, emergency);
+  }
+
+  /**
+   * @dev Version number of this contract
+   */
+  function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+
+  /**
+   * @dev Name of this contract
+   */
+  function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_RESOLUTION;
   }
 }
