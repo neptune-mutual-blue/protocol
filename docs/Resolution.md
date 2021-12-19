@@ -1,17 +1,20 @@
 # Resolution.sol
 
-View Source: [contracts/core/governance/Resolution.sol](../contracts/core/governance/Resolution.sol)
+View Source: [contracts/core/governance/resolution/Resolution.sol](../contracts/core/governance/resolution/Resolution.sol)
 
-**↗ Extends: [IGovernance](IGovernance.md), [Governance](Governance.md)**
+**↗ Extends: [IResolution](IResolution.md), [Finalization](Finalization.md)**
 
 **Resolution**
 
 ## Functions
 
 - [constructor(IStore store)](#)
+- [withdrawStake(bytes32 key, uint256 incidentDate)](#withdrawstake)
 - [resolve(bytes32 key, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
 - [_resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -24,6 +27,19 @@ function (IStore store) public nonpayable Recoverable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore |  | 
+
+### withdrawStake
+
+```js
+function withdrawStake(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
 ### resolve
 
@@ -67,6 +83,34 @@ function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergen
 | decision | bool |  | 
 | emergency | bool |  | 
 
+### version
+
+Version number of this contract
+
+```js
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+### getName
+
+Name of this contract
+
+```js
+function getName() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
 ## Contracts
 
 * [AccessControl](AccessControl.md)
@@ -93,6 +137,7 @@ function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergen
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -107,6 +152,7 @@ function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergen
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -115,6 +161,7 @@ function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergen
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

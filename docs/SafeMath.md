@@ -5,7 +5,7 @@ View Source: [openzeppelin-solidity/contracts/utils/math/SafeMath.sol](../openze
 **SafeMath**
 
 Wrappers over Solidity's arithmetic operations.
- NOTE: `SafeMath` is no longer needed starting with Solidity 0.8. The compiler
+ NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler
  now has built in overflow checking.
 
 ## Functions
@@ -308,6 +308,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -322,6 +323,7 @@ returns(uint256)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -330,6 +332,7 @@ returns(uint256)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

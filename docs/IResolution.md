@@ -1,59 +1,40 @@
-# IClaimsProcessor.sol
+# IResolution.sol
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/interfaces/IResolution.sol](../contracts/interfaces/IResolution.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↗ Extends: [IMember](IMember.md), [IFinalization](IFinalization.md)**
+**↘ Derived Contracts: [Resolution](Resolution.md)**
 
-**IClaimsProcessor**
+**IResolution**
 
 **Events**
 
 ```js
-event Claimed(address indexed cToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
+event Resolved(bytes32  key, uint256  incidentDate, bool  decision, bool  emergency);
 ```
 
 ## Functions
 
-- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
 
-### claim
+### resolve
 
 ```js
-function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function resolve(bytes32 key, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| amount | uint256 |  | 
-
-### validate
-
-```js
-function validate(address cToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| cToken | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
-### getClaimExpiryDate
+### emergencyResolve
 
 ```js
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
+function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable
 ```
 
 **Arguments**
@@ -61,6 +42,8 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
 
 ## Contracts
 

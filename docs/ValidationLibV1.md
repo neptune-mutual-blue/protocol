@@ -26,6 +26,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeAfterReportingPeriod(IStore s, bytes32 key)](#mustbeafterreportingperiod)
 - [mustBeValidCToken(bytes32 key, address cToken, uint256 incidentDate)](#mustbevalidctoken)
 - [mustBeValidClaim(IStore s, bytes32 key, address cToken, uint256 incidentDate)](#mustbevalidclaim)
+- [mustNotHaveUnstaken(IStore s, address account, bytes32 key, uint256 incidentDate)](#mustnothaveunstaken)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
 - [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
 
@@ -297,6 +298,21 @@ function mustBeValidClaim(IStore s, bytes32 key, address cToken, uint256 inciden
 | cToken | address |  | 
 | incidentDate | uint256 |  | 
 
+### mustNotHaveUnstaken
+
+```js
+function mustNotHaveUnstaken(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
 ### mustBeDuringClaimPeriod
 
 ```js
@@ -349,6 +365,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -363,6 +380,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -371,6 +389,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

@@ -203,7 +203,7 @@ Revokes `role` from the calling account.
  Roles are often managed via {grantRole} and {revokeRole}: this function's
  purpose is to provide a mechanism for accounts to lose their privileges
  if they are compromised (such as when a trusted device is misplaced).
- If the calling account had been granted `role`, emits a {RoleRevoked}
+ If the calling account had been revoked `role`, emits a {RoleRevoked}
  event.
  Requirements:
  - the caller must be `account`.
@@ -232,6 +232,7 @@ Grants `role` to `account`.
  Using this function in any other way is effectively circumventing the admin
  system imposed by {AccessControl}.
  ====
+ NOTE: This function is deprecated in favor of {_grantRole}.
 
 ```js
 function _setupRole(bytes32 role, address account) internal nonpayable
@@ -262,8 +263,11 @@ function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal nonpayable
 
 ### _grantRole
 
+Grants `role` to `account`.
+ Internal function without access restriction.
+
 ```js
-function _grantRole(bytes32 role, address account) private nonpayable
+function _grantRole(bytes32 role, address account) internal nonpayable
 ```
 
 **Arguments**
@@ -275,8 +279,11 @@ function _grantRole(bytes32 role, address account) private nonpayable
 
 ### _revokeRole
 
+Revokes `role` from `account`.
+ Internal function without access restriction.
+
 ```js
-function _revokeRole(bytes32 role, address account) private nonpayable
+function _revokeRole(bytes32 role, address account) internal nonpayable
 ```
 
 **Arguments**
@@ -312,6 +319,7 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -326,6 +334,7 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -334,6 +343,7 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

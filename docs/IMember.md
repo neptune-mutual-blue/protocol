@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
+**↘ Derived Contracts: [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICTokenFactory](ICTokenFactory.md), [IFinalization](IFinalization.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
 
 **IMember**
 
@@ -65,6 +65,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -79,6 +80,7 @@ returns(bytes32)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -87,6 +89,7 @@ returns(bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

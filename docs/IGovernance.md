@@ -3,62 +3,11 @@
 View Source: [contracts/interfaces/IGovernance.sol](../contracts/interfaces/IGovernance.sol)
 
 **↗ Extends: [IMember](IMember.md), [IReporter](IReporter.md), [IWitness](IWitness.md)**
-**↘ Derived Contracts: [Governance](Governance.md), [Resolution](Resolution.md)**
+**↘ Derived Contracts: [Governance](Governance.md)**
 
 **IGovernance**
 
-**Events**
-
-```js
-event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
-event Resolved(bytes32  key, uint256  incidentDate, bool  decision, bool  emergency);
-```
-
 ## Functions
-
-- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
-- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
-- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
-
-### finalize
-
-```js
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-### resolve
-
-```js
-function resolve(bytes32 key, uint256 incidentDate) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-### emergencyResolve
-
-```js
-function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| decision | bool |  | 
 
 ## Contracts
 
@@ -86,6 +35,7 @@ function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) exte
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -100,6 +50,7 @@ function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) exte
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -108,6 +59,7 @@ function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) exte
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

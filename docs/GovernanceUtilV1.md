@@ -12,8 +12,10 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
+- [getCampStatusFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getcampstatusfor)
 - [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
+- [setUnstakeTimestamp(IStore s, address account, bytes32 key, uint256 incidentDate)](#setunstaketimestamp)
 - [addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#addattestation)
 - [getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate)](#getattestation)
 - [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
@@ -105,6 +107,22 @@ returns(yes uint256, no uint256)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+### getCampStatusFor
+
+```js
+function getCampStatusFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(winningCampTotal uint256, losingCampTotal uint256, myStakeInWinningCamp uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
 ### getStakesOf
 
 ```js
@@ -132,6 +150,21 @@ function updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate) public n
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+### setUnstakeTimestamp
+
+```js
+function setUnstakeTimestamp(IStore s, address account, bytes32 key, uint256 incidentDate) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
@@ -239,6 +272,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -253,6 +287,7 @@ returns(uint256)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -261,6 +296,7 @@ returns(uint256)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

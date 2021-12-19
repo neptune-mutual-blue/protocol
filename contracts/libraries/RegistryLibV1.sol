@@ -26,6 +26,10 @@ library RegistryLibV1 {
     return IGovernance(s.getContract(ProtoUtilV1.NS_GOVERNANCE));
   }
 
+  function getResolutionContract(IStore s) public view returns (IGovernance) {
+    return IGovernance(s.getContract(ProtoUtilV1.NS_RESOLUTION));
+  }
+
   function getStakingContract(IStore s) public view returns (ICoverStake) {
     return ICoverStake(s.getContract(ProtoUtilV1.NS_COVER_STAKE));
   }

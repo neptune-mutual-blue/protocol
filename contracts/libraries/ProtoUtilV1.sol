@@ -11,13 +11,37 @@ library ProtoUtilV1 {
 
   bytes32 public constant NS_CORE = "proto:core";
   bytes32 public constant NS_ASSURANCE_VAULT = "proto:core:assurance:vault";
+
+  /// @dev The address where burn tokens are sent or collected.
+  /// This behavior (collection) is required if the instance of
+  /// the Neptune Mutual protocol is deployed on a sidechain
+  /// or a layer-2 blockchain.
+  /// &nbsp;\n
+  /// The collected NPM tokens are will be periodically bridged back to Ethereum
+  /// and then burned.
   bytes32 public constant NS_BURNER = "proto:core:burner";
-  bytes32 public constant NS_CONTRACTS = "proto:contracts";
+
+  /// @dev Namespace for all protocol members.
   bytes32 public constant NS_MEMBERS = "proto:members";
+
+  /// @dev Namespace for protocol contract members.
+  bytes32 public constant NS_CONTRACTS = "proto:contracts";
+
+  /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "proto:cover";
-  bytes32 public constant NS_GOVERNANCE = "proto:governance";
-  bytes32 public constant NS_RESOLUTION = "proto:governance:resolution";
+
+  /// @dev Governance contract address
+  bytes32 public constant NS_GOVERNANCE = "proto:gov";
+
+  /// @dev Governance:Resolution contract address
+  bytes32 public constant NS_RESOLUTION = "proto:gov:resolution";
+
+  /// @dev The timestamp when a tokenholder withdraws their reporting stake
+  bytes32 public constant NS_UNSTAKE_TS = "proto:gov:unstake:ts";
+
+  /// @dev Claims processor contract address
   bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
+
   bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
   bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
   bytes32 public constant NS_COVER_ASSURANCE_WEIGHT = "proto:cover:assurance:weight";
@@ -47,20 +71,52 @@ library ProtoUtilV1 {
   bytes32 public constant NS_TREASURY = "proto:core:treasury";
   bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
 
-  bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
+  /// @dev An approximate date and time when trigger event or cover incident occured
   bytes32 public constant NS_REPORTING_INCIDENT_DATE = "proto:reporting:incident:date";
+
+  /// @dev A period (in solidity timestamp) configurable by cover creators during
+  /// when NPM tokenholders can vote on incident reporting proposals
+  bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
+
+  /// @dev Resolution timestamp = timestamp of first reporting + reporting period
   bytes32 public constant NS_RESOLUTION_TS = "proto:reporting:resolution:ts";
+
+  /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
   bytes32 public constant NS_CLAIM_BEGIN_TS = "proto:claim:begin:ts";
+
+  /// @dev Claim expiry date = Claim begin date + claim duration
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "proto:claim:expiry:ts";
+
+  /// @dev Used as key element in a couple of places:
+  /// 1. For uint256 --> Sum total of NPM witnesses who saw incident to have happened
+  /// 2. For address --> The address of the first reporter
   bytes32 public constant NS_REPORTING_WITNESS_YES = "proto:reporting:witness:yes";
+
+  /// @dev Used as key element in a couple of places:
+  /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting
+  /// 2. For address --> The address of the first disputing reporter (disputer / candidate reporter)
   bytes32 public constant NS_REPORTING_WITNESS_NO = "proto:reporting:witness:no";
+
+  /// @dev Stakes guaranteed by an individual witness supporting the "incident happened" camp
   bytes32 public constant NS_REPORTING_STAKE_OWNED_YES = "proto:reporting:stake:owned:yes";
+
+  /// @dev Stakes guaranteed by an individual witness supporting the "false reporting" camp
   bytes32 public constant NS_REPORTING_STAKE_OWNED_NO = "proto:reporting:stake:owned:no";
 
+  /// @dev The address of NPM token available in this blockchain
   bytes32 public constant NS_SETUP_NPM = "proto:setup:npm";
+
+  /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake reward to burn.
+  /// Note that the reward comes from the losing camp after resolution is achieved.
+  bytes32 public constant NS_REPORTING_BURN_RATE = "proto:reporting:burn:rate";
+
+  /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake
+  /// reward to provide to the final reporter.
+  bytes32 public constant NS_REPORTER_COMMISSION = "proto:reporter:commission";
+
   bytes32 public constant NS_SETUP_COVER_FEE = "proto:setup:cover:fee";
   bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
-  bytes32 public constant NS_SETUP_REPORTING_STAKE = "proto:setup:reporting:stake";
+  bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE = "proto:setup:1st:reporting:stake";
   bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
   bytes32 public constant NS_SETUP_CLAIM_PERIOD = "proto:setup:claim:period";
   bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER = "proto:uniswap:v2:router";

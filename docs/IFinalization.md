@@ -1,66 +1,34 @@
-# IClaimsProcessor.sol
+# IFinalization.sol
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/interfaces/IFinalization.sol](../contracts/interfaces/IFinalization.sol)
 
 **↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↘ Derived Contracts: [Finalization](Finalization.md), [IResolution](IResolution.md)**
 
-**IClaimsProcessor**
+**IFinalization**
 
 **Events**
 
 ```js
-event Claimed(address indexed cToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
+event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
 ```
 
 ## Functions
 
-- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
 
-### claim
+### finalize
 
 ```js
-function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function finalize(bytes32 key, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
-| amount | uint256 |  | 
-
-### validate
-
-```js
-function validate(address cToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-### getClaimExpiryDate
-
-```js
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
 
 ## Contracts
 

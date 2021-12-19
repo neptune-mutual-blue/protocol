@@ -53,7 +53,7 @@ modifier onlyOwner() internal
 - [owner()](#owner)
 - [renounceOwnership()](#renounceownership)
 - [transferOwnership(address newOwner)](#transferownership)
-- [_setOwner(address newOwner)](#_setowner)
+- [_transferOwnership(address newOwner)](#_transferownership)
 
 ### 
 
@@ -113,10 +113,13 @@ function transferOwnership(address newOwner) public nonpayable onlyOwner
 | ------------- |------------- | -----|
 | newOwner | address |  | 
 
-### _setOwner
+### _transferOwnership
+
+Transfers ownership of the contract to a new account (`newOwner`).
+ Internal function without access restriction.
 
 ```js
-function _setOwner(address newOwner) private nonpayable
+function _transferOwnership(address newOwner) internal nonpayable
 ```
 
 **Arguments**
@@ -151,6 +154,7 @@ function _setOwner(address newOwner) private nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -165,6 +169,7 @@ function _setOwner(address newOwner) private nonpayable
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -173,6 +178,7 @@ function _setOwner(address newOwner) private nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

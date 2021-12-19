@@ -3,42 +3,26 @@
 View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
 
 **↗ Extends: [IGovernance](IGovernance.md), [Reporter](Reporter.md)**
-**↘ Derived Contracts: [Resolution](Resolution.md)**
 
 **Governance**
 
 ## Functions
 
-- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
-- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
+- [constructor(IStore store)](#)
 - [version()](#version)
 - [getName()](#getname)
 
-### finalize
+### 
 
 ```js
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function (IStore store) public nonpayable Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-### _finalize
-
-```js
-function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| store | IStore |  | 
 
 ### version
 
@@ -94,6 +78,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -108,6 +93,7 @@ returns(bytes32)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -116,6 +102,7 @@ returns(bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

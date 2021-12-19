@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
-**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [cToken](cToken.md), [cTokenFactory](cTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [cToken](cToken.md), [cTokenFactory](cTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -92,6 +92,7 @@ function recoverToken(address token, address sendTo) external nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -106,6 +107,7 @@ function recoverToken(address token, address sendTo) external nonpayable
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -114,6 +116,7 @@ function recoverToken(address token, address sendTo) external nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

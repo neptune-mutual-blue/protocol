@@ -25,7 +25,9 @@ contract Protocol is IProtocol, ProtoBase {
     uint256 minStake,
     uint256 minReportingStake,
     uint256 minLiquidityPeriod,
-    uint256 claimPeriod
+    uint256 claimPeriod,
+    uint256 burnRate,
+    uint256 reporterCommission
   ) external {
     s.mustBeProtocolMember(msg.sender);
 
@@ -48,9 +50,24 @@ contract Protocol is IProtocol, ProtoBase {
     _setMinStake(minStake);
     _setMinReportingStake(minReportingStake);
     _setMinLiquidityPeriod(minLiquidityPeriod);
+
+    _setReportingBurnRate(burnRate);
+    _setReporterCommission(reporterCommission);
     _setClaimPeriod(claimPeriod);
 
     initialized = 1;
+  }
+
+  function setReportingBurnRate(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReportingBurnRate(value);
+  }
+
+  function setReportingCommission(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReporterCommission(value);
   }
 
   function setClaimPeriod(uint256 value) public nonReentrant {
@@ -85,6 +102,20 @@ contract Protocol is IProtocol, ProtoBase {
     _setMinLiquidityPeriod(value);
   }
 
+  function _setReportingBurnRate(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE, value);
+
+    emit ReportingBurnRateSet(previous, value);
+  }
+
+  function _setReporterCommission(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION, value);
+
+    emit ReporterCommissionSet(previous, value);
+  }
+
   function _setClaimPeriod(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
@@ -107,8 +138,8 @@ contract Protocol is IProtocol, ProtoBase {
   }
 
   function _setMinReportingStake(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE, value);
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE, value);
 
     emit MinReportingStakeSet(previous, value);
   }

@@ -1,59 +1,34 @@
-# IClaimsProcessor.sol
+# Finalization.sol
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↗ Extends: [IFinalization](IFinalization.md), [Recoverable](Recoverable.md)**
+**↘ Derived Contracts: [Resolution](Resolution.md)**
 
-**IClaimsProcessor**
-
-**Events**
-
-```js
-event Claimed(address indexed cToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
-```
+**Finalization**
 
 ## Functions
 
-- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
+- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
 
-### claim
+### finalize
 
 ```js
-function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| amount | uint256 |  | 
-
-### validate
-
-```js
-function validate(address cToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| cToken | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
-### getClaimExpiryDate
+### _finalize
 
 ```js
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
+function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 ```
 
 **Arguments**
@@ -61,6 +36,7 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
 ## Contracts
 

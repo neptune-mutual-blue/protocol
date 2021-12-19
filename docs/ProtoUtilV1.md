@@ -11,10 +11,12 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 bytes32 public constant NS_CORE;
 bytes32 public constant NS_ASSURANCE_VAULT;
 bytes32 public constant NS_BURNER;
-bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_MEMBERS;
+bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_COVER;
 bytes32 public constant NS_GOVERNANCE;
+bytes32 public constant NS_RESOLUTION;
+bytes32 public constant NS_UNSTAKE_TS;
 bytes32 public constant NS_CLAIMS_PROCESSOR;
 bytes32 public constant NS_COVER_ASSURANCE;
 bytes32 public constant NS_COVER_ASSURANCE_TOKEN;
@@ -44,8 +46,8 @@ bytes32 public constant NS_COVER_CTOKEN_FACTORY;
 bytes32 public constant NS_COVER_WHITELIST;
 bytes32 public constant NS_TREASURY;
 bytes32 public constant NS_PRICE_DISCOVERY;
-bytes32 public constant NS_REPORTING_PERIOD;
 bytes32 public constant NS_REPORTING_INCIDENT_DATE;
+bytes32 public constant NS_REPORTING_PERIOD;
 bytes32 public constant NS_RESOLUTION_TS;
 bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
@@ -53,10 +55,12 @@ bytes32 public constant NS_REPORTING_WITNESS_YES;
 bytes32 public constant NS_REPORTING_WITNESS_NO;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_NO;
+bytes32 public constant NS_REPORTING_BURN_RATE;
+bytes32 public constant NS_REPORTER_COMMISSION;
 bytes32 public constant NS_SETUP_NPM;
 bytes32 public constant NS_SETUP_COVER_FEE;
 bytes32 public constant NS_SETUP_MIN_STAKE;
-bytes32 public constant NS_SETUP_REPORTING_STAKE;
+bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE;
 bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD;
 bytes32 public constant NS_SETUP_CLAIM_PERIOD;
 bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER;
@@ -69,6 +73,7 @@ bytes32 public constant CNAME_CLAIMS_PROCESSOR;
 bytes32 public constant CNAME_PRICE_DISCOVERY;
 bytes32 public constant CNAME_COVER;
 bytes32 public constant CNAME_GOVERNANCE;
+bytes32 public constant CNAME_RESOLUTION;
 bytes32 public constant CNAME_VAULT_FACTORY;
 bytes32 public constant CNAME_CTOKEN_FACTORY;
 bytes32 public constant CNAME_COVER_PROVISION;
@@ -474,6 +479,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -488,6 +494,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -496,6 +503,7 @@ function _removeMember(IStore s, address member) private nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

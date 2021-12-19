@@ -37,7 +37,7 @@ uint256 private _status;
 Prevents a contract from calling itself, directly or indirectly.
  Calling a `nonReentrant` function from another `nonReentrant`
  function is not supported. It is possible to prevent this from happening
- by making the `nonReentrant` function external, and make it call a
+ by making the `nonReentrant` function external, and making it call a
  `private` function that does the actual work.
 
 ```js
@@ -90,6 +90,7 @@ function () internal nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -104,6 +105,7 @@ function () internal nonpayable
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -112,6 +114,7 @@ function () internal nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

@@ -1,5 +1,7 @@
 ## Neptune Mutual Cover
 
+![Protocol](./files/protocol.png)
+
 Anyone who has NPM tokens can create a cover contract. To avoid spam, questionable, and confusing cover contracts, a creator has to burn 1000 NPM tokens. Additionally, the contract creator also needs to stake 4000 NPM tokens or more. The higher the sake, the more visibility the contract gets if there are multiple cover contracts with the same name or similar terms.
 
 [Read More](https://docs.neptunemutual.com/sdk/quickstart)

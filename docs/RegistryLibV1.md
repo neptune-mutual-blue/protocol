@@ -8,6 +8,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 
 - [getPriceDiscoveryContract(IStore s)](#getpricediscoverycontract)
 - [getGovernanceContract(IStore s)](#getgovernancecontract)
+- [getResolutionContract(IStore s)](#getresolutioncontract)
 - [getStakingContract(IStore s)](#getstakingcontract)
 - [getCTokenFactory(IStore s)](#getctokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
@@ -32,6 +33,19 @@ returns(contract IPriceDiscovery)
 
 ```js
 function getGovernanceContract(IStore s) public view
+returns(contract IGovernance)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+### getResolutionContract
+
+```js
+function getResolutionContract(IStore s) public view
 returns(contract IGovernance)
 ```
 
@@ -146,6 +160,7 @@ returns(contract IVaultFactory)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -160,6 +175,7 @@ returns(contract IVaultFactory)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -168,6 +184,7 @@ returns(contract IVaultFactory)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)

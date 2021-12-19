@@ -6,7 +6,7 @@ import "../../../interfaces/IFinalization.sol";
 import "../../../libraries/GovernanceUtilV1.sol";
 import "../../../libraries/ValidationLibV1.sol";
 
-abstract contract Finalization is IFinalization, Recoverable {
+abstract contract Finalization is Recoverable, IFinalization {
   using GovernanceUtilV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;

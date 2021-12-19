@@ -169,6 +169,18 @@ library ValidationLibV1 {
     mustBeDuringClaimPeriod(s, key);
   }
 
+  function mustNotHaveUnstaken(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    uint256 withdrawal = s.getUintByKey(k);
+
+    require(withdrawal == 0, "Already unstaken");
+  }
+
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
     uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
     require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
