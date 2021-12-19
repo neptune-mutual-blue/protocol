@@ -1,50 +1,41 @@
 # IStore.sol
 
-View Source: [interfaces/IStore.sol](../interfaces/IStore.sol)
+View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.sol)
+
+**↘ Derived Contracts: [FakeStore](FakeStore.md), [StoreBase](StoreBase.md)**
 
 **IStore**
 
 ## Functions
 
 - [setAddress(bytes32 k, address v)](#setaddress)
-- [setAddresses(bytes32 k, address[] v)](#setaddresses)
+- [setAddressBoolean(bytes32 k, address a, bool v)](#setaddressboolean)
 - [setUint(bytes32 k, uint256 v)](#setuint)
+- [addUint(bytes32 k, uint256 v)](#adduint)
+- [subtractUint(bytes32 k, uint256 v)](#subtractuint)
 - [setUints(bytes32 k, uint256[] v)](#setuints)
 - [setString(bytes32 k, string v)](#setstring)
-- [setStrings(bytes32 k, string[] v)](#setstrings)
 - [setBytes(bytes32 k, bytes v)](#setbytes)
 - [setBool(bytes32 k, bool v)](#setbool)
-- [setBools(bytes32 k, bool[] v)](#setbools)
 - [setInt(bytes32 k, int256 v)](#setint)
-- [setInts(bytes32 k, int256[] v)](#setints)
 - [setBytes32(bytes32 k, bytes32 v)](#setbytes32)
-- [setBytes32s(bytes32 k, bytes32[] v)](#setbytes32s)
 - [deleteAddress(bytes32 k)](#deleteaddress)
-- [deleteAddresses(bytes32 k)](#deleteaddresses)
 - [deleteUint(bytes32 k)](#deleteuint)
 - [deleteUints(bytes32 k)](#deleteuints)
 - [deleteString(bytes32 k)](#deletestring)
-- [deleteStrings(bytes32 k)](#deletestrings)
 - [deleteBytes(bytes32 k)](#deletebytes)
 - [deleteBool(bytes32 k)](#deletebool)
-- [deleteBools(bytes32 k)](#deletebools)
 - [deleteInt(bytes32 k)](#deleteint)
-- [deleteInts(bytes32 k)](#deleteints)
 - [deleteBytes32(bytes32 k)](#deletebytes32)
-- [deleteBytes32s(bytes32 k)](#deletebytes32s)
 - [getAddress(bytes32 k)](#getaddress)
-- [getAddresses(bytes32 k)](#getaddresses)
+- [getAddressBoolean(bytes32 k, address a)](#getaddressboolean)
 - [getUint(bytes32 k)](#getuint)
 - [getUints(bytes32 k)](#getuints)
 - [getString(bytes32 k)](#getstring)
-- [getStrings(bytes32 k)](#getstrings)
 - [getBytes(bytes32 k)](#getbytes)
 - [getBool(bytes32 k)](#getbool)
-- [getBools(bytes32 k)](#getbools)
 - [getInt(bytes32 k)](#getint)
-- [getInts(bytes32 k)](#getints)
 - [getBytes32(bytes32 k)](#getbytes32)
-- [getBytes32s(bytes32 k)](#getbytes32s)
 
 ### setAddress
 
@@ -59,10 +50,10 @@ function setAddress(bytes32 k, address v) external nonpayable
 | k | bytes32 |  | 
 | v | address |  | 
 
-### setAddresses
+### setAddressBoolean
 
 ```js
-function setAddresses(bytes32 k, address[] v) external nonpayable
+function setAddressBoolean(bytes32 k, address a, bool v) external nonpayable
 ```
 
 **Arguments**
@@ -70,12 +61,39 @@ function setAddresses(bytes32 k, address[] v) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
-| v | address[] |  | 
+| a | address |  | 
+| v | bool |  | 
 
 ### setUint
 
 ```js
 function setUint(bytes32 k, uint256 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | uint256 |  | 
+
+### addUint
+
+```js
+function addUint(bytes32 k, uint256 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | uint256 |  | 
+
+### subtractUint
+
+```js
+function subtractUint(bytes32 k, uint256 v) external nonpayable
 ```
 
 **Arguments**
@@ -111,19 +129,6 @@ function setString(bytes32 k, string v) external nonpayable
 | k | bytes32 |  | 
 | v | string |  | 
 
-### setStrings
-
-```js
-function setStrings(bytes32 k, string[] v) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-| v | string[] |  | 
-
 ### setBytes
 
 ```js
@@ -150,19 +155,6 @@ function setBool(bytes32 k, bool v) external nonpayable
 | k | bytes32 |  | 
 | v | bool |  | 
 
-### setBools
-
-```js
-function setBools(bytes32 k, bool[] v) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-| v | bool[] |  | 
-
 ### setInt
 
 ```js
@@ -175,19 +167,6 @@ function setInt(bytes32 k, int256 v) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 | v | int256 |  | 
-
-### setInts
-
-```js
-function setInts(bytes32 k, int256[] v) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-| v | int256[] |  | 
 
 ### setBytes32
 
@@ -202,35 +181,10 @@ function setBytes32(bytes32 k, bytes32 v) external nonpayable
 | k | bytes32 |  | 
 | v | bytes32 |  | 
 
-### setBytes32s
-
-```js
-function setBytes32s(bytes32 k, bytes32[] v) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-| v | bytes32[] |  | 
-
 ### deleteAddress
 
 ```js
 function deleteAddress(bytes32 k) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
-### deleteAddresses
-
-```js
-function deleteAddresses(bytes32 k) external nonpayable
 ```
 
 **Arguments**
@@ -275,18 +229,6 @@ function deleteString(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### deleteStrings
-
-```js
-function deleteStrings(bytes32 k) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ### deleteBytes
 
 ```js
@@ -311,18 +253,6 @@ function deleteBool(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### deleteBools
-
-```js
-function deleteBools(bytes32 k) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ### deleteInt
 
 ```js
@@ -335,34 +265,10 @@ function deleteInt(bytes32 k) external nonpayable
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### deleteInts
-
-```js
-function deleteInts(bytes32 k) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ### deleteBytes32
 
 ```js
 function deleteBytes32(bytes32 k) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
-### deleteBytes32s
-
-```js
-function deleteBytes32s(bytes32 k) external nonpayable
 ```
 
 **Arguments**
@@ -384,11 +290,11 @@ returns(address)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### getAddresses
+### getAddressBoolean
 
 ```js
-function getAddresses(bytes32 k) external view
-returns(address[])
+function getAddressBoolean(bytes32 k, address a) external view
+returns(bool)
 ```
 
 **Arguments**
@@ -396,6 +302,7 @@ returns(address[])
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
+| a | address |  | 
 
 ### getUint
 
@@ -436,19 +343,6 @@ returns(string)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### getStrings
-
-```js
-function getStrings(bytes32 k) external view
-returns(string[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ### getBytes
 
 ```js
@@ -475,37 +369,11 @@ returns(bool)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### getBools
-
-```js
-function getBools(bytes32 k) external view
-returns(bool[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ### getInt
 
 ```js
 function getInt(bytes32 k) external view
 returns(int256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
-### getInts
-
-```js
-function getInts(bytes32 k) external view
-returns(int256[])
 ```
 
 **Arguments**
@@ -527,43 +395,89 @@ returns(bytes32)
 | ------------- |------------- | -----|
 | k | bytes32 |  | 
 
-### getBytes32s
-
-```js
-function getBytes32s(bytes32 k) external view
-returns(bytes32[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
 ## Contracts
 
+* [AccessControl](AccessControl.md)
+* [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
+* [BaseLibV1](BaseLibV1.md)
+* [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [Commission](Commission.md)
 * [Context](Context.md)
+* [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverLiquidity](CoverLiquidity.md)
+* [CoverAssurance](CoverAssurance.md)
+* [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
+* [cToken](cToken.md)
+* [cTokenFactory](cTokenFactory.md)
+* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [Destroyable](Destroyable.md)
+* [ERC165](ERC165.md)
+* [ERC20](ERC20.md)
+* [FakeRecoverable](FakeRecoverable.md)
+* [FakeStore](FakeStore.md)
+* [FakeToken](FakeToken.md)
+* [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Governance](Governance.md)
+* [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAccessControl](IAccessControl.md)
+* [IClaimsProcessor](IClaimsProcessor.md)
+* [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverLiquidity](ICoverLiquidity.md)
+* [ICoverAssurance](ICoverAssurance.md)
+* [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
+* [ICToken](ICToken.md)
+* [ICTokenFactory](ICTokenFactory.md)
+* [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Metadata](IERC20Metadata.md)
+* [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
+* [IPausable](IPausable.md)
+* [IPolicy](IPolicy.md)
+* [IPolicyAdmin](IPolicyAdmin.md)
+* [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IReporter](IReporter.md)
 * [IStore](IStore.md)
+* [IUniswapV2PairLike](IUniswapV2PairLike.md)
+* [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IVault](IVault.md)
+* [IVaultFactory](IVaultFactory.md)
+* [IWitness](IWitness.md)
+* [MaliciousToken](MaliciousToken.md)
+* [Migrations](Migrations.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
+* [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
 * [Pausable](Pausable.md)
+* [Policy](Policy.md)
+* [PolicyAdmin](PolicyAdmin.md)
+* [PolicyManager](PolicyManager.md)
+* [PriceDiscovery](PriceDiscovery.md)
+* [Processor](Processor.md)
+* [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
 * [ProtoUtilV1](ProtoUtilV1.md)
 * [Recoverable](Recoverable.md)
 * [ReentrancyGuard](ReentrancyGuard.md)
+* [RegistryLibV1](RegistryLibV1.md)
+* [Reporter](Reporter.md)
+* [Resolution](Resolution.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [Store](Store.md)
+* [StoreBase](StoreBase.md)
+* [StoreKeyUtil](StoreKeyUtil.md)
+* [Strings](Strings.md)
+* [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
+* [VaultBase](VaultBase.md)
+* [VaultFactory](VaultFactory.md)
+* [VaultFactoryLibV1](VaultFactoryLibV1.md)
+* [VaultLibV1](VaultLibV1.md)
+* [Witness](Witness.md)

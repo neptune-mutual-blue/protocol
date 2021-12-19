@@ -13,6 +13,10 @@
   "solidity.validationDelay": 2,
   "standard.autoFixOnSave": true,
   "javascript.suggestionActions.enabled": false,
+  "[javascript]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
   "[json]": {
     "editor.quickSuggestions": {
       "strings": true

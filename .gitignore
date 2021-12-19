@@ -3,3 +3,8 @@ node_modules
 yarn-error.log
 artifacts
 build
+_*.sol*
+cache
+coverage
+coverage.json
+walk
