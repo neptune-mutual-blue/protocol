@@ -1,25 +1,25 @@
-# Cover Assurance (CoverAssurance.sol)
+# Cover Reassurance (CoverReassurance.sol)
 
-View Source: [contracts/core/lifecycle/CoverAssurance.sol](../contracts/core/lifecycle/CoverAssurance.sol)
+View Source: [contracts/core/lifecycle/CoverReassurance.sol](../contracts/core/lifecycle/CoverReassurance.sol)
 
-**↗ Extends: [ICoverAssurance](ICoverAssurance.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [ICoverReassurance](ICoverReassurance.md), [Recoverable](Recoverable.md)**
 
-**CoverAssurance**
+**CoverReassurance**
 
-Assurance tokens can be added by a covered project to demonstrate coverage support
+Reassurance tokens can be added by a covered project to demonstrate coverage support
  for their project. This helps bring the cover fee down and enhances
- liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded
+ liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
  as a support to the liquidity providers when a cover incident occurs.
  Without negatively affecting the price much,
- the protocol will gradually convert the assurance tokens
+ the protocol will gradually convert the reassurance tokens
  to stablecoin liquidity.
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [addAssurance(bytes32 key, address account, uint256 amount)](#addassurance)
+- [addReassurance(bytes32 key, address account, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 key, uint256 weight)](#setweight)
-- [getAssurance(bytes32 key)](#getassurance)
+- [getReassurance(bytes32 key)](#getreassurance)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -45,12 +45,12 @@ constructor(IStore store) Recoverable(store) {
 ```
 </details>
 
-### addAssurance
+### addReassurance
 
-Adds assurance to the specified cover contract
+Adds reassurance to the specified cover contract
 
 ```solidity
-function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
+function addReassurance(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -65,7 +65,7 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addAssurance(
+function addReassurance(
     bytes32 key,
     address account,
     uint256 amount
@@ -75,14 +75,14 @@ function addAssurance(
 
     require(amount > 0, "Provide valid amount");
 
-    IERC20 assuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key));
-    address vault = s.getAssuranceVault();
+    IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    address vault = s.getReassuranceVault();
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key, amount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);
 
-    assuranceToken.ensureTransferFrom(account, vault, amount);
+    reassuranceToken.ensureTransferFrom(account, vault, amount);
 
-    emit AssuranceAdded(key, amount);
+    emit ReassuranceAdded(key, amount);
   }
 ```
 </details>
@@ -110,17 +110,17 @@ function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
 
     s.mustBeValidCoverKey(key);
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
   }
 ```
 </details>
 
-### getAssurance
+### getReassurance
 
-Gets the assurance amount of the specified cover contract
+Gets the reassurance amount of the specified cover contract
 
 ```solidity
-function getAssurance(bytes32 key) external view
+function getReassurance(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -134,8 +134,8 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAssurance(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
+function getReassurance(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
   }
 ```
 </details>
@@ -183,7 +183,7 @@ returns(bytes32)
 
 ```javascript
 function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER_ASSURANCE;
+    return ProtoUtilV1.CNAME_COVER_REASSURANCE;
   }
 ```
 </details>
@@ -199,9 +199,9 @@ function getName() public pure override returns (bytes32) {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -221,8 +221,8 @@ function getName() public pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

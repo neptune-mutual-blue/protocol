@@ -28,7 +28,7 @@ const info = {
   reportingPeriod: 7,
   selfCoveragePeriod: 30,
   resolutionSources: ['https://twitter.com/compoundfinance', 'https://medium.com/compound-finance', 'https://twitter.com/neptunemutual'],
-  assuranceToken: {
+  reassuranceToken: {
     at: '0x0e7c8a8545352663ee070f1c9a0174f4a50532dc',
     name: 'Compound',
     symbol: 'COMP',
@@ -40,7 +40,7 @@ const info = {
 
 const fake = {
   TREASURY: '0xECd0023B976c4008ef3D3FBD58c84C6d1A59c59e',
-  ASSURANCE_VAULT: '0x34f12E31DC5EBC3c2cDBdeEBf6a74005B3301902'
+  REASSURANCE_VAULT: '0x34f12E31DC5EBC3c2cDBdeEBf6a74005B3301902'
 }
 
 module.exports = { info, fake }

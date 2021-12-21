@@ -5,7 +5,7 @@ import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
-import "../interfaces/ICoverAssurance.sol";
+import "../interfaces/ICoverReassurance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";

@@ -21,10 +21,10 @@
  * @property {Object} store - Store contract
  * @property {Object} npm - NPM Token contract
  * @property {Object} wxDai - wxDai contract
- * @property {Object} assuranceToken - Assurance token
+ * @property {Object} reassuranceToken - Reassurance token
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract
- * @property {Object} assuranceContract - Assurance contract
+ * @property {Object} reassuranceContract - Reassurance contract
  * @property {Object} provisionContract - NPM provision contract
  * @property {Object} vaultFactory - Liquidity vault factory
  * @property {Object} cxTokenFactory - cxToken factory

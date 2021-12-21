@@ -60,7 +60,7 @@ const deployDependencies = async () => {
 
 describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
+  const reassuranceVault = helper.randomAddress()
   let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1
 
   beforeEach(async () => {
@@ -95,7 +95,7 @@ describe('Constructor & Initializer', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -128,7 +128,7 @@ describe('Constructor & Initializer', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -153,8 +153,8 @@ describe('Constructor & Initializer', () => {
     const sTreasury = await store.getAddress(key.toBytes32(key.NS.TREASURY))
     sTreasury.should.equal(treasury)
 
-    const sAssuranceVault = await store.getAddress(key.toBytes32(key.NS.ASSURANCE_VAULT))
-    sAssuranceVault.should.equal(assuranceVault)
+    const sReassuranceVault = await store.getAddress(key.toBytes32(key.NS.REASSURANCE_VAULT))
+    sReassuranceVault.should.equal(reassuranceVault)
   })
 
   it('should fail when zero address is provided as store', async () => {
@@ -189,7 +189,7 @@ describe('Constructor & Initializer', () => {
       router.address,
       helper.zerox,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -219,7 +219,7 @@ describe('Constructor & Initializer', () => {
       router.address,
       npm.address,
       helper.zerox,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -230,7 +230,7 @@ describe('Constructor & Initializer', () => {
     ).should.be.revertedWith('Invalid Treasury')
   })
 
-  it('should fail when zero address is provided as assurance vault', async () => {
+  it('should fail when zero address is provided as reassurance vault', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         StoreKeyUtil: storeKeyUtil.address,
@@ -263,7 +263,7 @@ describe('Constructor & Initializer', () => {
 
 describe('Adding a New Protocol Contract', () => {
   const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
+  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   beforeEach(async () => {
@@ -295,7 +295,7 @@ describe('Adding a New Protocol Contract', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -323,7 +323,7 @@ describe('Adding a New Protocol Contract', () => {
 
 describe('Upgrading Protocol Contract(s)', () => {
   const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
+  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   beforeEach(async () => {
@@ -355,7 +355,7 @@ describe('Upgrading Protocol Contract(s)', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -403,7 +403,7 @@ describe('Upgrading Protocol Contract(s)', () => {
 
 describe('Adding a New Protocol Member', () => {
   const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
+  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   beforeEach(async () => {
@@ -436,7 +436,7 @@ describe('Adding a New Protocol Member', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -469,7 +469,7 @@ describe('Adding a New Protocol Member', () => {
 
 describe('Removing Protocol Member(s)', () => {
   const treasury = helper.randomAddress()
-  const assuranceVault = helper.randomAddress()
+  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   beforeEach(async () => {
@@ -501,7 +501,7 @@ describe('Removing Protocol Member(s)', () => {
       router.address,
       npm.address,
       treasury,
-      assuranceVault,
+      reassuranceVault,
       helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake

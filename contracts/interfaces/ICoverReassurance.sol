@@ -3,15 +3,15 @@
 pragma solidity 0.8.0;
 import "./IMember.sol";
 
-interface ICoverAssurance is IMember {
-  event AssuranceAdded(bytes32 key, uint256 amount);
+interface ICoverReassurance is IMember {
+  event ReassuranceAdded(bytes32 key, uint256 amount);
 
   /**
-   * @dev Adds assurance to the specified cover contract
+   * @dev Adds reassurance to the specified cover contract
    * @param key Enter the cover key
    * @param amount Enter the amount you would like to supply
    */
-  function addAssurance(
+  function addReassurance(
     bytes32 key,
     address account,
     uint256 amount
@@ -20,8 +20,8 @@ interface ICoverAssurance is IMember {
   function setWeight(bytes32 key, uint256 weight) external;
 
   /**
-   * @dev Gets the assurance amount of the specified cover contract
+   * @dev Gets the reassurance amount of the specified cover contract
    * @param key Enter the cover key
    */
-  function getAssurance(bytes32 key) external view returns (uint256);
+  function getReassurance(bytes32 key) external view returns (uint256);
 }

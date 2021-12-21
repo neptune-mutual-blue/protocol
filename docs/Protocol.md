@@ -17,7 +17,7 @@ uint256 public initialized;
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission)](#initialize)
+- [initialize(address uniswapV2RouterLike, address npm, address treasury, address reassuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission)](#initialize)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReportingCommission(uint256 value)](#setreportingcommission)
 - [setClaimPeriod(uint256 value)](#setclaimperiod)
@@ -62,7 +62,7 @@ constructor(IStore store) ProtoBase(store) {}
 ### initialize
 
 ```solidity
-function initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission) external nonpayable nonReentrant whenNotPaused 
+function initialize(address uniswapV2RouterLike, address npm, address treasury, address reassuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission) external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -72,7 +72,7 @@ function initialize(address uniswapV2RouterLike, address npm, address treasury, 
 | uniswapV2RouterLike | address |  | 
 | npm | address |  | 
 | treasury | address |  | 
-| assuranceVault | address |  | 
+| reassuranceVault | address |  | 
 | coverFee | uint256 |  | 
 | minStake | uint256 |  | 
 | minReportingStake | uint256 |  | 
@@ -89,7 +89,7 @@ function initialize(
     address uniswapV2RouterLike,
     address npm,
     address treasury,
-    address assuranceVault,
+    address reassuranceVault,
     uint256 coverFee,
     uint256 minStake,
     uint256 minReportingStake,
@@ -105,7 +105,7 @@ function initialize(
     require(npm != address(0), "Invalid NPM");
     require(uniswapV2RouterLike != address(0), "Invalid Router");
     require(treasury != address(0), "Invalid Treasury");
-    require(assuranceVault != address(0), "Invalid Vault");
+    require(reassuranceVault != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
@@ -114,7 +114,7 @@ function initialize(
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
     s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
-    s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
+    s.setAddressByKey(ProtoUtilV1.NS_REASSURANCE_VAULT, reassuranceVault);
 
     _setCoverFees(coverFee);
     _setMinStake(minStake);
@@ -647,9 +647,9 @@ function getName() public pure override returns (bytes32) {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -669,8 +669,8 @@ function getName() public pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

@@ -14,7 +14,7 @@ Liquidity providers can earn fees by adding stablecoin liquidity
  - The protocol supplies a small portion of idle assets to lending protocols (v2).
  - Flash loan interest also gets added back to the pool.
  - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NPM provision.
- - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `assurance token` allocation.
+ - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `reassurance token` allocation.
 
 ## Functions
 
@@ -59,9 +59,9 @@ constructor(
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -81,8 +81,8 @@ constructor(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

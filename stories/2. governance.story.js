@@ -76,17 +76,17 @@ describe('Governance Stories', () => {
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
     const stakeWithFee = helper.ether(10_000)
-    const initialAssuranceAmount = helper.ether(1_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
     const reportingPeriod = 7 * constants.DAYS
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
 
     // Add provision
     const provision = helper.ether(1_000_001)

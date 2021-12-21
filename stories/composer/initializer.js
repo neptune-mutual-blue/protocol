@@ -16,7 +16,7 @@ const initialize = async (suite, deploymentId) => {
   const store = await storeComposer.deploy(cache)
   const fakes = await fakesComposer.deployAll(cache)
 
-  const [npm, wxDai, assuranceToken] = await tokenComposer.deploySeveral(cache, [
+  const [npm, wxDai, reassuranceToken] = await tokenComposer.deploySeveral(cache, [
     { name: 'Neptune Mutual Token', symbol: 'NPM' },
     { name: 'Wrapped Dai', symbol: 'WXDAI' },
     { name: 'Compound', symbol: 'CMP' }
@@ -44,7 +44,7 @@ const initialize = async (suite, deploymentId) => {
     fakes.router.address,
     npm.address,
     sample.fake.TREASURY,
-    sample.fake.ASSURANCE_VAULT,
+    sample.fake.REASSURANCE_VAULT,
     helper.ether(0), // Cover Fee
     helper.ether(0), // Min Cover Stake
     helper.ether(250), // Min Reporting Stake
@@ -65,7 +65,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_STAKE), stakingContract.address)
 
-  const assuranceContract = await deployer.deployWithLibraries(cache, 'CoverAssurance', {
+  const reassuranceContract = await deployer.deployWithLibraries(cache, 'CoverReassurance', {
     BaseLibV1: libs.baseLibV1.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
@@ -74,7 +74,7 @@ const initialize = async (suite, deploymentId) => {
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
-  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_ASSURANCE), assuranceContract.address)
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_REASSURANCE), reassuranceContract.address)
 
   const vaultFactory = await deployer.deployWithLibraries(cache, 'VaultFactory',
     {
@@ -209,10 +209,10 @@ const initialize = async (suite, deploymentId) => {
     store,
     npm,
     wxDai,
-    assuranceToken,
+    reassuranceToken,
     protocol,
     stakingContract,
-    assuranceContract,
+    reassuranceContract,
     provisionContract,
     vaultFactory,
     cxTokenFactory,

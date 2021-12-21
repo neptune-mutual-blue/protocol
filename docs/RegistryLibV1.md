@@ -12,7 +12,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getStakingContract(IStore s)](#getstakingcontract)
 - [getCxTokenFactory(IStore s)](#getcxtokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
-- [getAssuranceContract(IStore s)](#getassurancecontract)
+- [getReassuranceContract(IStore s)](#getreassurancecontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
 
@@ -154,11 +154,11 @@ function getPolicyContract(IStore s) public view returns (IPolicy) {
 ```
 </details>
 
-### getAssuranceContract
+### getReassuranceContract
 
 ```solidity
-function getAssuranceContract(IStore s) public view
-returns(contract ICoverAssurance)
+function getReassuranceContract(IStore s) public view
+returns(contract ICoverReassurance)
 ```
 
 **Arguments**
@@ -171,8 +171,8 @@ returns(contract ICoverAssurance)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
-    return ICoverAssurance(s.getContract(ProtoUtilV1.NS_COVER_ASSURANCE));
+function getReassuranceContract(IStore s) public view returns (ICoverReassurance) {
+    return ICoverReassurance(s.getContract(ProtoUtilV1.NS_COVER_REASSURANCE));
   }
 ```
 </details>
@@ -237,9 +237,9 @@ function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -259,8 +259,8 @@ function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

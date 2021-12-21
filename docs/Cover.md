@@ -12,8 +12,8 @@ The cover contract facilitates you create and update covers
 
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
-- [_addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address assuranceToken)](#_addcover)
+- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
+- [_addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address reassuranceToken)](#_addcover)
 - [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 - [updateWhitelist(address account, bool status)](#updatewhitelist)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
@@ -93,7 +93,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
+function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -104,8 +104,8 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | info | bytes32 | IPFS info of the cover contract | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br />  Assurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
+| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| initialReassuranceAmount | uint256 | **Optional.** Enter the initial amount of  reassurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
 <details>
@@ -117,8 +117,8 @@ function addCover(
     bytes32 info,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
-    address assuranceToken,
-    uint256 initialAssuranceAmount,
+    address reassuranceToken,
+    uint256 initialReassuranceAmount,
     uint256 initialLiquidity
   ) external override nonReentrant {
     // @supress-acl Can only be called by a whitelisted address
@@ -132,14 +132,14 @@ function addCover(
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
 
     // Set the basic cover info
-    _addCover(key, info, reportingPeriod, fee, assuranceToken);
+    _addCover(key, info, reportingPeriod, fee, reassuranceToken);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(key, msg.sender, stakeWithFee, fee);
 
-    // Add cover assurance
-    if (initialAssuranceAmount > 0) {
-      s.getAssuranceContract().addAssurance(key, msg.sender, initialAssuranceAmount);
+    // Add cover reassurance
+    if (initialReassuranceAmount > 0) {
+      s.getReassuranceContract().addReassurance(key, msg.sender, initialReassuranceAmount);
     }
 
     // Add initial liquidity
@@ -160,7 +160,7 @@ function addCover(
 ### _addCover
 
 ```solidity
-function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address assuranceToken) private nonpayable
+function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address reassuranceToken) private nonpayable
 ```
 
 **Arguments**
@@ -171,7 +171,7 @@ function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 f
 | info | bytes32 | IPFS info of the cover contract | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | fee | uint256 | Fee paid to create this cover | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. | 
+| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -182,7 +182,7 @@ function _addCover(
     bytes32 info,
     uint256 reportingPeriod,
     uint256 fee,
-    address assuranceToken
+    address reassuranceToken
   ) private {
     // Add a new cover
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
@@ -194,9 +194,9 @@ function _addCover(
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
     s.setUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key, reportingPeriod);
 
-    // Set assurance token
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key, assuranceToken);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
+    // Set reassurance token
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE, key, fee);
@@ -313,9 +313,9 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -335,8 +335,8 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

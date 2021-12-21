@@ -9,7 +9,7 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 
 ```js
 bytes32 public constant NS_CORE;
-bytes32 public constant NS_ASSURANCE_VAULT;
+bytes32 public constant NS_REASSURANCE_VAULT;
 bytes32 public constant NS_BURNER;
 bytes32 public constant NS_MEMBERS;
 bytes32 public constant NS_CONTRACTS;
@@ -22,9 +22,9 @@ bytes32 public constant NS_UNSTAKE_REWARD;
 bytes32 public constant NS_UNSTAKE_BURNED;
 bytes32 public constant NS_UNSTAKE_REPORTER_FEE;
 bytes32 public constant NS_CLAIMS_PROCESSOR;
-bytes32 public constant NS_COVER_ASSURANCE;
-bytes32 public constant NS_COVER_ASSURANCE_TOKEN;
-bytes32 public constant NS_COVER_ASSURANCE_WEIGHT;
+bytes32 public constant NS_COVER_REASSURANCE;
+bytes32 public constant NS_COVER_REASSURANCE_TOKEN;
+bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_CLAIMABLE;
 bytes32 public constant NS_COVER_FEE;
 bytes32 public constant NS_COVER_INFO;
@@ -82,7 +82,7 @@ bytes32 public constant CNAME_VAULT_FACTORY;
 bytes32 public constant CNAME_CXTOKEN_FACTORY;
 bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
-bytes32 public constant CNAME_COVER_ASSURANCE;
+bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
 
 ```
@@ -99,7 +99,7 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [npmToken(IStore s)](#npmtoken)
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
 - [getTreasury(IStore s)](#gettreasury)
-- [getAssuranceVault(IStore s)](#getassurancevault)
+- [getReassuranceVault(IStore s)](#getreassurancevault)
 - [getLiquidityToken(IStore s)](#getliquiditytoken)
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [toKeccak256(bytes value)](#tokeccak256)
@@ -361,10 +361,10 @@ function getTreasury(IStore s) external view returns (address) {
 ```
 </details>
 
-### getAssuranceVault
+### getReassuranceVault
 
 ```solidity
-function getAssuranceVault(IStore s) external view
+function getReassuranceVault(IStore s) external view
 returns(address)
 ```
 
@@ -378,8 +378,8 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAssuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_ASSURANCE_VAULT);
+function getReassuranceVault(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_REASSURANCE_VAULT);
   }
 ```
 </details>
@@ -753,9 +753,9 @@ function _removeMember(IStore s, address member) private {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -775,8 +775,8 @@ function _removeMember(IStore s, address member) private {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)
