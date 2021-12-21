@@ -99,7 +99,7 @@ modifier onlyRole(bytes32 role) internal
 
 See {IERC165-supportsInterface}.
 
-```js
+```solidity
 function supportsInterface(bytes4 interfaceId) public view
 returns(bool)
 ```
@@ -110,11 +110,21 @@ returns(bool)
 | ------------- |------------- | -----|
 | interfaceId | bytes4 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);
+    }
+```
+</details>
+
 ### hasRole
 
 Returns `true` if `account` has been granted `role`.
 
-```js
+```solidity
 function hasRole(bytes32 role, address account) public view
 returns(bool)
 ```
@@ -126,13 +136,23 @@ returns(bool)
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function hasRole(bytes32 role, address account) public view override returns (bool) {
+        return _roles[role].members[account];
+    }
+```
+</details>
+
 ### _checkRole
 
 Revert with a standard message if `account` is missing `role`.
  The format of the revert reason is given by the following regular expression:
   /^AccessControl: account (0x[0-9a-f]{40}) is missing role (0x[0-9a-f]{64})$/
 
-```js
+```solidity
 function _checkRole(bytes32 role, address account) internal view
 ```
 
@@ -143,13 +163,34 @@ function _checkRole(bytes32 role, address account) internal view
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _checkRole(bytes32 role, address account) internal view {
+        if (!hasRole(role, account)) {
+            revert(
+                string(
+                    abi.encodePacked(
+                        "AccessControl: account ",
+                        Strings.toHexString(uint160(account), 20),
+                        " is missing role ",
+                        Strings.toHexString(uint256(role), 32)
+                    )
+                )
+            );
+        }
+    }
+```
+</details>
+
 ### getRoleAdmin
 
 Returns the admin role that controls `role`. See {grantRole} and
  {revokeRole}.
  To change a role's admin, use {_setRoleAdmin}.
 
-```js
+```solidity
 function getRoleAdmin(bytes32 role) public view
 returns(bytes32)
 ```
@@ -160,6 +201,16 @@ returns(bytes32)
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getRoleAdmin(bytes32 role) public view override returns (bytes32) {
+        return _roles[role].adminRole;
+    }
+```
+</details>
+
 ### grantRole
 
 Grants `role` to `account`.
@@ -168,7 +219,7 @@ Grants `role` to `account`.
  Requirements:
  - the caller must have ``role``'s admin role.
 
-```js
+```solidity
 function grantRole(bytes32 role, address account) public nonpayable onlyRole 
 ```
 
@@ -179,6 +230,16 @@ function grantRole(bytes32 role, address account) public nonpayable onlyRole
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {
+        _grantRole(role, account);
+    }
+```
+</details>
+
 ### revokeRole
 
 Revokes `role` from `account`.
@@ -186,7 +247,7 @@ Revokes `role` from `account`.
  Requirements:
  - the caller must have ``role``'s admin role.
 
-```js
+```solidity
 function revokeRole(bytes32 role, address account) public nonpayable onlyRole 
 ```
 
@@ -197,18 +258,28 @@ function revokeRole(bytes32 role, address account) public nonpayable onlyRole
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function revokeRole(bytes32 role, address account) public virtual override onlyRole(getRoleAdmin(role)) {
+        _revokeRole(role, account);
+    }
+```
+</details>
+
 ### renounceRole
 
 Revokes `role` from the calling account.
  Roles are often managed via {grantRole} and {revokeRole}: this function's
  purpose is to provide a mechanism for accounts to lose their privileges
  if they are compromised (such as when a trusted device is misplaced).
- If the calling account had been granted `role`, emits a {RoleRevoked}
+ If the calling account had been revoked `role`, emits a {RoleRevoked}
  event.
  Requirements:
  - the caller must be `account`.
 
-```js
+```solidity
 function renounceRole(bytes32 role, address account) public nonpayable
 ```
 
@@ -218,6 +289,18 @@ function renounceRole(bytes32 role, address account) public nonpayable
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function renounceRole(bytes32 role, address account) public virtual override {
+        require(account == _msgSender(), "AccessControl: can only renounce roles for self");
+
+        _revokeRole(role, account);
+    }
+```
+</details>
 
 ### _setupRole
 
@@ -232,8 +315,9 @@ Grants `role` to `account`.
  Using this function in any other way is effectively circumventing the admin
  system imposed by {AccessControl}.
  ====
+ NOTE: This function is deprecated in favor of {_grantRole}.
 
-```js
+```solidity
 function _setupRole(bytes32 role, address account) internal nonpayable
 ```
 
@@ -244,12 +328,22 @@ function _setupRole(bytes32 role, address account) internal nonpayable
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setupRole(bytes32 role, address account) internal virtual {
+        _grantRole(role, account);
+    }
+```
+</details>
+
 ### _setRoleAdmin
 
 Sets `adminRole` as ``role``'s admin role.
  Emits a {RoleAdminChanged} event.
 
-```js
+```solidity
 function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal nonpayable
 ```
 
@@ -260,10 +354,25 @@ function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal nonpayable
 | role | bytes32 |  | 
 | adminRole | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        bytes32 previousAdminRole = getRoleAdmin(role);
+        _roles[role].adminRole = adminRole;
+        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+    }
+```
+</details>
+
 ### _grantRole
 
-```js
-function _grantRole(bytes32 role, address account) private nonpayable
+Grants `role` to `account`.
+ Internal function without access restriction.
+
+```solidity
+function _grantRole(bytes32 role, address account) internal nonpayable
 ```
 
 **Arguments**
@@ -272,11 +381,27 @@ function _grantRole(bytes32 role, address account) private nonpayable
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _grantRole(bytes32 role, address account) internal virtual {
+        if (!hasRole(role, account)) {
+            _roles[role].members[account] = true;
+            emit RoleGranted(role, account, _msgSender());
+        }
+    }
+```
+</details>
 
 ### _revokeRole
 
-```js
-function _revokeRole(bytes32 role, address account) private nonpayable
+Revokes `role` from `account`.
+ Internal function without access restriction.
+
+```solidity
+function _revokeRole(bytes32 role, address account) internal nonpayable
 ```
 
 **Arguments**
@@ -285,6 +410,19 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _revokeRole(bytes32 role, address account) internal virtual {
+        if (hasRole(role, account)) {
+            _roles[role].members[account] = false;
+            emit RoleRevoked(role, account, _msgSender());
+        }
+    }
+```
+</details>
 
 ## Contracts
 
@@ -302,9 +440,9 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -312,6 +450,7 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -321,11 +460,12 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -334,9 +474,12 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -359,12 +502,14 @@ function _revokeRole(bytes32 role, address account) private nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

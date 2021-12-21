@@ -35,7 +35,7 @@ Returns true if `account` is a contract.
   - an address where a contract lived, but was destroyed
  ====
 
-```js
+```solidity
 function isContract(address account) internal view
 returns(bool)
 ```
@@ -45,6 +45,24 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isContract(address account) internal view returns (bool) {
+        // This method relies on extcodesize, which returns 0 for contracts in
+        // construction, since the code is only stored at the end of the
+        // constructor execution.
+
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
+    }
+```
+</details>
 
 ### sendValue
 
@@ -60,7 +78,7 @@ Replacement for Solidity's `transfer`: sends `amount` wei to
  {ReentrancyGuard} or the
  https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
 
-```js
+```solidity
 function sendValue(address payable recipient, uint256 amount) internal nonpayable
 ```
 
@@ -70,6 +88,19 @@ function sendValue(address payable recipient, uint256 amount) internal nonpayabl
 | ------------- |------------- | -----|
 | recipient | address payable |  | 
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function sendValue(address payable recipient, uint256 amount) internal {
+        require(address(this).balance >= amount, "Address: insufficient balance");
+
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Address: unable to send value, recipient may have reverted");
+    }
+```
+</details>
 
 ### functionCall
 
@@ -85,7 +116,7 @@ Performs a Solidity function call using a low level `call`. A
  - calling `target` with `data` must not revert.
  _Available since v3.1._
 
-```js
+```solidity
 function functionCall(address target, bytes data) internal nonpayable
 returns(bytes)
 ```
@@ -97,13 +128,23 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionCall(target, data, "Address: low-level call failed");
+    }
+```
+</details>
+
 ### functionCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
  `errorMessage` as a fallback revert reason when `target` reverts.
  _Available since v3.1._
 
-```js
+```solidity
 function functionCall(address target, bytes data, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -116,6 +157,20 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, 0, errorMessage);
+    }
+```
+</details>
+
 ### functionCallWithValue
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
@@ -125,7 +180,7 @@ Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  - the called Solidity function must be `payable`.
  _Available since v3.1._
 
-```js
+```solidity
 function functionCallWithValue(address target, bytes data, uint256 value) internal nonpayable
 returns(bytes)
 ```
@@ -138,13 +193,27 @@ returns(bytes)
 | data | bytes |  | 
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+    }
+```
+</details>
+
 ### functionCallWithValue
 
 Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
  with `errorMessage` as a fallback revert reason when `target` reverts.
  _Available since v3.1._
 
-```js
+```solidity
 function functionCallWithValue(address target, bytes data, uint256 value, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -158,13 +227,32 @@ returns(bytes)
 | value | uint256 |  | 
 | errorMessage | string |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(address(this).balance >= value, "Address: insufficient balance for call");
+        require(isContract(target), "Address: call to non-contract");
+
+        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+```
+</details>
+
 ### functionStaticCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  but performing a static call.
  _Available since v3.3._
 
-```js
+```solidity
 function functionStaticCall(address target, bytes data) internal view
 returns(bytes)
 ```
@@ -176,13 +264,23 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+        return functionStaticCall(target, data, "Address: low-level static call failed");
+    }
+```
+</details>
+
 ### functionStaticCall
 
 Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
  but performing a static call.
  _Available since v3.3._
 
-```js
+```solidity
 function functionStaticCall(address target, bytes data, string errorMessage) internal view
 returns(bytes)
 ```
@@ -195,13 +293,30 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionStaticCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
+        require(isContract(target), "Address: static call to non-contract");
+
+        (bool success, bytes memory returndata) = target.staticcall(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+```
+</details>
+
 ### functionDelegateCall
 
 Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
  but performing a delegate call.
  _Available since v3.4._
 
-```js
+```solidity
 function functionDelegateCall(address target, bytes data) internal nonpayable
 returns(bytes)
 ```
@@ -213,13 +328,23 @@ returns(bytes)
 | target | address |  | 
 | data | bytes |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+    }
+```
+</details>
+
 ### functionDelegateCall
 
 Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
  but performing a delegate call.
  _Available since v3.4._
 
-```js
+```solidity
 function functionDelegateCall(address target, bytes data, string errorMessage) internal nonpayable
 returns(bytes)
 ```
@@ -232,13 +357,30 @@ returns(bytes)
 | data | bytes |  | 
 | errorMessage | string |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function functionDelegateCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(isContract(target), "Address: delegate call to non-contract");
+
+        (bool success, bytes memory returndata) = target.delegatecall(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+```
+</details>
+
 ### verifyCallResult
 
 Tool to verifies that a low level call was successful, and revert if it wasn't, either by bubbling the
  revert reason using the provided one.
  _Available since v4.3._
 
-```js
+```solidity
 function verifyCallResult(bool success, bytes returndata, string errorMessage) internal pure
 returns(bytes)
 ```
@@ -250,6 +392,34 @@ returns(bytes)
 | success | bool |  | 
 | returndata | bytes |  | 
 | errorMessage | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function verifyCallResult(
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) internal pure returns (bytes memory) {
+        if (success) {
+            return returndata;
+        } else {
+            // Look for revert reason and bubble it up if present
+            if (returndata.length > 0) {
+                // The easiest way to bubble the revert reason is using memory via assembly
+
+                assembly {
+                    let returndata_size := mload(returndata)
+                    revert(add(32, returndata), returndata_size)
+                }
+            } else {
+                revert(errorMessage);
+            }
+        }
+    }
+```
+</details>
 
 ## Contracts
 
@@ -267,9 +437,9 @@ returns(bytes)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -277,6 +447,7 @@ returns(bytes)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -286,11 +457,12 @@ returns(bytes)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -299,9 +471,12 @@ returns(bytes)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -324,12 +499,14 @@ returns(bytes)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

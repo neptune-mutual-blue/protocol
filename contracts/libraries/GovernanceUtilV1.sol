@@ -5,7 +5,6 @@ import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
-import "../interfaces/ICTokenFactory.sol";
 import "../interfaces/ICoverAssurance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
@@ -22,8 +21,16 @@ library GovernanceUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
   }
 
+  function getReportingBurnRate(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+  }
+
+  function getReporterCommission(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+  }
+
   function getMinReportingStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
+    return s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
   }
 
   function getLatestIncidentDate(IStore s, bytes32 key) external view returns (uint256) {
@@ -55,6 +62,112 @@ library GovernanceUtilV1 {
 
     k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
     no = s.getUintByKey(k);
+  }
+
+  function getResolutionInfoFor(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  )
+    public
+    view
+    returns (
+      uint256 totalStakeInWinningCamp,
+      uint256 totalStakeInLosingCamp,
+      uint256 myStakeInWinningCamp
+    )
+  {
+    (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
+    (uint256 myYes, uint256 myNo) = getStakesOf(s, account, key, incidentDate);
+
+    totalStakeInWinningCamp = yes > no ? yes : no;
+    totalStakeInLosingCamp = yes > no ? no : yes;
+    myStakeInWinningCamp = yes > no ? myYes : myNo;
+  }
+
+  function getUnstakeInfoFor(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  )
+    public
+    view
+    returns (
+      uint256 totalStakeInWinningCamp,
+      uint256 totalStakeInLosingCamp,
+      uint256 myStakeInWinningCamp,
+      uint256 toBurn,
+      uint256 toReporter,
+      uint256 myReward
+    )
+  {
+    (totalStakeInWinningCamp, totalStakeInLosingCamp, myStakeInWinningCamp) = getResolutionInfoFor(s, account, key, incidentDate);
+
+    require(myStakeInWinningCamp > 0, "Nothing to unstake");
+
+    uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
+    uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
+
+    toBurn = (reward * getReportingBurnRate(s)) / 1 ether;
+    toReporter = (reward * getReporterCommission(s)) / 1 ether;
+    myReward = reward - toBurn - toReporter;
+  }
+
+  function updateUnstakeDetails(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 originalStake,
+    uint256 reward,
+    uint256 burned,
+    uint256 reporterFee
+  ) public {
+    // Unstake timestamp of the account
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // Last unstake timestamp
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // ---------------------------------------------------------------------
+
+    // Amount unstaken by the account
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate, account));
+    s.setUintByKey(k, originalStake);
+
+    // Amount unstaken by everyone
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate));
+    s.addUintByKey(k, originalStake);
+
+    // ---------------------------------------------------------------------
+
+    if (reward > 0) {
+      // Reward received by the account
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate, account));
+      s.setUintByKey(k, reward);
+
+      // Total reward received
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate));
+      s.addUintByKey(k, reward);
+    }
+
+    // ---------------------------------------------------------------------
+
+    if (burned > 0) {
+      // Total burned
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_BURNED, key, incidentDate));
+      s.addUintByKey(k, burned);
+    }
+
+    if (reporterFee > 0) {
+      // Total fee paid to the final reporter
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REPORTER_FEE, key, incidentDate));
+      s.addUintByKey(k, reporterFee);
+    }
   }
 
   function getStakesOf(

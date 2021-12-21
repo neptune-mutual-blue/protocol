@@ -90,6 +90,8 @@ contract Cover is CoverBase {
     uint256 initialAssuranceAmount,
     uint256 initialLiquidity
   ) external override nonReentrant {
+    // @supress-acl Can only be called by a whitelisted address
+    // @supress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 

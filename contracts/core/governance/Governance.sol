@@ -3,7 +3,6 @@
 pragma solidity 0.8.0;
 import "./Reporter.sol";
 import "../../interfaces/IGovernance.sol";
-import "../../interfaces/ICToken.sol";
 
 contract Governance is IGovernance, Reporter {
   using GovernanceUtilV1 for IStore;

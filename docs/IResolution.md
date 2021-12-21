@@ -1,29 +1,13 @@
-# cTokenFactoryLibV1.sol
+# IResolution.sol
 
-View Source: [contracts/libraries/cTokenFactoryLibV1.sol](../contracts/libraries/cTokenFactoryLibV1.sol)
+View Source: [contracts/interfaces/IResolution.sol](../contracts/interfaces/IResolution.sol)
 
-**cTokenFactoryLibV1**
+**↗ Extends: [IFinalization](IFinalization.md), [IResolvable](IResolvable.md), [IUnstakable](IUnstakable.md), [IMember](IMember.md)**
+**↘ Derived Contracts: [Resolution](Resolution.md)**
+
+**IResolution**
 
 ## Functions
-
-- [getByteCode(IStore s, bytes32 key, uint256 expiryDate)](#getbytecode)
-
-### getByteCode
-
-Gets the bytecode of the `cToken` contract
-
-```js
-function getByteCode(IStore s, bytes32 key, uint256 expiryDate) external pure
-returns(bytecode bytes, salt bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Provide the store instance | 
-| key | bytes32 | Provide the cover key | 
-| expiryDate | uint256 | Specify the expiry date of this cToken instance | 
 
 ## Contracts
 
@@ -41,9 +25,9 @@ returns(bytecode bytes, salt bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -51,6 +35,7 @@ returns(bytecode bytes, salt bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -60,11 +45,12 @@ returns(bytecode bytes, salt bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -73,9 +59,12 @@ returns(bytecode bytes, salt bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -98,12 +87,14 @@ returns(bytecode bytes, salt bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

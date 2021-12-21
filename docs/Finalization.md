@@ -1,80 +1,78 @@
-# cToken Factory Contract (cTokenFactory.sol)
+# Finalization.sol
 
-View Source: [contracts/core/cToken/cTokenFactory.sol](../contracts/core/cToken/cTokenFactory.sol)
+View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
-**↗ Extends: [ICTokenFactory](ICTokenFactory.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [Recoverable](Recoverable.md), [IFinalization](IFinalization.md)**
+**↘ Derived Contracts: [Resolvable](Resolvable.md)**
 
-**cTokenFactory**
-
-As and when required by the protocol,
- the cTokenFactory contract creates new instances of
- cTokens on demand.
+**Finalization**
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
-- [version()](#version)
-- [getName()](#getname)
+- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
+- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
 
-### 
+### finalize
 
-Constructs this contract
-
-```js
-function (IStore store) public nonpayable Recoverable 
+```solidity
+function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
-### deploy
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-Deploys a new instance of cTokens
+```javascript
+function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
-```js
-function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
-returns(deployed address)
+    s.mustBeClaimingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterClaimExpiry(key);
+
+    _finalize(key, incidentDate);
+  }
+```
+</details>
+
+### _finalize
+
+```solidity
+function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore | Provide the store contract instance | 
-| key | bytes32 | Enter the cover key related to this cToken instance | 
-| expiryDate | uint256 | Specify the expiry date of this cToken instance | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
-### version
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-Version number of this contract
+```javascript
+function _finalize(bytes32 key, uint256 incidentDate) internal {
+    // Reset to normal
+    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
+    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
 
-```js
-function version() external pure
-returns(bytes32)
+    s.deleteAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
+
+    emit Finalized(key, msg.sender, incidentDate);
+  }
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getName
-
-Name of this contract
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+</details>
 
 ## Contracts
 
@@ -92,9 +90,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -102,6 +100,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -111,11 +110,12 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -124,9 +124,12 @@ returns(bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -149,12 +152,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

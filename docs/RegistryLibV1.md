@@ -8,8 +8,9 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 
 - [getPriceDiscoveryContract(IStore s)](#getpricediscoverycontract)
 - [getGovernanceContract(IStore s)](#getgovernancecontract)
+- [getResolutionContract(IStore s)](#getresolutioncontract)
 - [getStakingContract(IStore s)](#getstakingcontract)
-- [getCTokenFactory(IStore s)](#getctokenfactory)
+- [getCxTokenFactory(IStore s)](#getcxtokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
 - [getAssuranceContract(IStore s)](#getassurancecontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
@@ -17,7 +18,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 
 ### getPriceDiscoveryContract
 
-```js
+```solidity
 function getPriceDiscoveryContract(IStore s) public view
 returns(contract IPriceDiscovery)
 ```
@@ -28,9 +29,19 @@ returns(contract IPriceDiscovery)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
+    return IPriceDiscovery(s.getContract(ProtoUtilV1.NS_PRICE_DISCOVERY));
+  }
+```
+</details>
+
 ### getGovernanceContract
 
-```js
+```solidity
 function getGovernanceContract(IStore s) public view
 returns(contract IGovernance)
 ```
@@ -41,9 +52,42 @@ returns(contract IGovernance)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getGovernanceContract(IStore s) public view returns (IGovernance) {
+    return IGovernance(s.getContract(ProtoUtilV1.NS_GOVERNANCE));
+  }
+```
+</details>
+
+### getResolutionContract
+
+```solidity
+function getResolutionContract(IStore s) public view
+returns(contract IGovernance)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getResolutionContract(IStore s) public view returns (IGovernance) {
+    return IGovernance(s.getContract(ProtoUtilV1.NS_RESOLUTION));
+  }
+```
+</details>
+
 ### getStakingContract
 
-```js
+```solidity
 function getStakingContract(IStore s) public view
 returns(contract ICoverStake)
 ```
@@ -54,11 +98,21 @@ returns(contract ICoverStake)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
-### getCTokenFactory
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function getCTokenFactory(IStore s) public view
-returns(contract ICTokenFactory)
+```javascript
+function getStakingContract(IStore s) public view returns (ICoverStake) {
+    return ICoverStake(s.getContract(ProtoUtilV1.NS_COVER_STAKE));
+  }
+```
+</details>
+
+### getCxTokenFactory
+
+```solidity
+function getCxTokenFactory(IStore s) public view
+returns(contract ICxTokenFactory)
 ```
 
 **Arguments**
@@ -67,9 +121,19 @@ returns(contract ICTokenFactory)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
+    return ICxTokenFactory(s.getContract(ProtoUtilV1.NS_COVER_CXTOKEN_FACTORY));
+  }
+```
+</details>
+
 ### getPolicyContract
 
-```js
+```solidity
 function getPolicyContract(IStore s) public view
 returns(contract IPolicy)
 ```
@@ -80,9 +144,19 @@ returns(contract IPolicy)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getPolicyContract(IStore s) public view returns (IPolicy) {
+    return IPolicy(s.getContract(ProtoUtilV1.NS_COVER_POLICY));
+  }
+```
+</details>
+
 ### getAssuranceContract
 
-```js
+```solidity
 function getAssuranceContract(IStore s) public view
 returns(contract ICoverAssurance)
 ```
@@ -93,9 +167,19 @@ returns(contract ICoverAssurance)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
+    return ICoverAssurance(s.getContract(ProtoUtilV1.NS_COVER_ASSURANCE));
+  }
+```
+</details>
+
 ### getVault
 
-```js
+```solidity
 function getVault(IStore s, bytes32 key) public view
 returns(contract IVault)
 ```
@@ -107,9 +191,20 @@ returns(contract IVault)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getVault(IStore s, bytes32 key) public view returns (IVault) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key);
+    return IVault(vault);
+  }
+```
+</details>
+
 ### getVaultFactoryContract
 
-```js
+```solidity
 function getVaultFactoryContract(IStore s) public view
 returns(contract IVaultFactory)
 ```
@@ -119,6 +214,17 @@ returns(contract IVaultFactory)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
+    address factory = s.getContract(ProtoUtilV1.NS_COVER_VAULT_FACTORY);
+    return IVaultFactory(factory);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -136,9 +242,9 @@ returns(contract IVaultFactory)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -146,6 +252,7 @@ returns(contract IVaultFactory)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -155,11 +262,12 @@ returns(contract IVaultFactory)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -168,9 +276,12 @@ returns(contract IVaultFactory)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -193,12 +304,14 @@ returns(contract IVaultFactory)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

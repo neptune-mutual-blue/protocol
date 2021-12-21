@@ -49,7 +49,9 @@ const initialize = async (suite, deploymentId) => {
     helper.ether(0), // Min Cover Stake
     helper.ether(250), // Min Reporting Stake
     7 * DAYS, // Min liquidity period
-    7 * DAYS // Claim period
+    7 * DAYS, // Claim period
+    helper.ether(0.3), // Burn Rate: 30%
+    helper.ether(0.1) // Reporter Commission: 10%
   )
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
@@ -86,16 +88,16 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_VAULT_FACTORY), vaultFactory.address)
 
-  const cTokenFactory = await deployer.deployWithLibraries(cache, 'cTokenFactory',
+  const cxTokenFactory = await deployer.deployWithLibraries(cache, 'cxTokenFactory',
     {
       BaseLibV1: libs.baseLibV1.address,
-      cTokenFactoryLibV1: libs.cTokenFactoryLib.address,
+      cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
       ValidationLibV1: libs.validationLib.address
     }
     , store.address
   )
 
-  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_CTOKEN_FACTORY), cTokenFactory.address)
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_CXTOKEN_FACTORY), cxTokenFactory.address)
 
   const governance = await deployer.deployWithLibraries(cache, 'Governance',
     {
@@ -105,7 +107,8 @@ const initialize = async (suite, deploymentId) => {
       CoverUtilV1: libs.coverUtil.address,
       NTransferUtilV2: libs.transferLib.address,
       ValidationLibV1: libs.validationLib.address,
-      GovernanceUtilV1: libs.governanceLib.address
+      GovernanceUtilV1: libs.governanceLib.address,
+      RegistryLibV1: libs.registryLib.address
     },
     store.address
   )
@@ -117,11 +120,11 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      // ProtoUtilV1: libs.protoUtilV1.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
       CoverUtilV1: libs.coverUtil.address,
-      // NTransferUtilV2: libs.transferLib.address,
-      ValidationLibV1: libs.validationLib.address
-      // GovernanceUtilV1: libs.governanceLib.address
+      NTransferUtilV2: libs.transferLib.address,
+      ValidationLibV1: libs.validationLib.address,
+      GovernanceUtilV1: libs.governanceLib.address
     },
     store.address
   )
@@ -174,7 +177,8 @@ const initialize = async (suite, deploymentId) => {
     CoverUtilV1: libs.coverUtil.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
-    RegistryLibV1: libs.registryLib.address
+    RegistryLibV1: libs.registryLib.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.COVER_POLICY), policy.address)
@@ -211,7 +215,7 @@ const initialize = async (suite, deploymentId) => {
     assuranceContract,
     provisionContract,
     vaultFactory,
-    cTokenFactory,
+    cxTokenFactory,
     cover,
     priceDiscovery,
     policyAdminContract,

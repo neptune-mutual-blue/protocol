@@ -100,7 +100,9 @@ describe('Constructor & Initializer', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
 
     protocol.address.should.not.be.empty
@@ -131,7 +133,9 @@ describe('Constructor & Initializer', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
 
     const sProtocolAddress = await store.getAddress(key.toBytes32(key.NS.CORE))
@@ -190,7 +194,9 @@ describe('Constructor & Initializer', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid NPM')
   })
 
@@ -218,7 +224,9 @@ describe('Constructor & Initializer', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid Treasury')
   })
 
@@ -246,7 +254,9 @@ describe('Constructor & Initializer', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid Vault')
   })
 })
@@ -290,7 +300,9 @@ describe('Adding a New Protocol Contract', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
   })
 
@@ -348,7 +360,9 @@ describe('Upgrading Protocol Contract(s)', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
   })
 
@@ -427,7 +441,9 @@ describe('Adding a New Protocol Member', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
   })
 
@@ -490,7 +506,9 @@ describe('Removing Protocol Member(s)', () => {
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
-      7 * DAYS // Claim period
+      7 * DAYS, // Claim period
+      helper.ether(0.3), // Burn Rate: 30%
+      helper.ether(0.1) // Reporter Commission: 10%
     )
   })
 

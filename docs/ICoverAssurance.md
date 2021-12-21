@@ -23,7 +23,7 @@ event AssuranceAdded(bytes32  key, uint256  amount);
 
 Adds assurance to the specified cover contract
 
-```js
+```solidity
 function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable
 ```
 
@@ -35,9 +35,21 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 | account | address |  | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addAssurance(
+    bytes32 key,
+    address account,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### setWeight
 
-```js
+```solidity
 function setWeight(bytes32 key, uint256 weight) external nonpayable
 ```
 
@@ -48,11 +60,19 @@ function setWeight(bytes32 key, uint256 weight) external nonpayable
 | key | bytes32 |  | 
 | weight | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setWeight(bytes32 key, uint256 weight) external;
+```
+</details>
+
 ### getAssurance
 
 Gets the assurance amount of the specified cover contract
 
-```js
+```solidity
 function getAssurance(bytes32 key) external view
 returns(uint256)
 ```
@@ -62,6 +82,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAssurance(bytes32 key) external view returns (uint256);
+```
+</details>
 
 ## Contracts
 
@@ -79,9 +107,9 @@ returns(uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -89,6 +117,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -98,11 +127,12 @@ returns(uint256)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -111,9 +141,12 @@ returns(uint256)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -136,12 +169,14 @@ returns(uint256)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

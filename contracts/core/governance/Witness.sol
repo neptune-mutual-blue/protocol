@@ -10,7 +10,6 @@ import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/GovernanceUtilV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/RegistryLibV1.sol";
-import "../../interfaces/ICToken.sol";
 import "../../interfaces/IVault.sol";
 
 /**
@@ -63,6 +62,7 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -103,6 +103,8 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
     s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);

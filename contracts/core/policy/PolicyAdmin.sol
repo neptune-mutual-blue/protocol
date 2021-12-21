@@ -36,7 +36,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * @param floor The lowest cover fee rate fallback
    * @param ceiling The highest cover fee rate fallback
    */
-  function setPolicyRates(uint256 floor, uint256 ceiling) external override {
+  function setPolicyRates(uint256 floor, uint256 ceiling) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -55,7 +55,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
     bytes32 key,
     uint256 floor,
     uint256 ceiling
-  ) external override {
+  ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 

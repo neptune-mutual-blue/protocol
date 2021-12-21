@@ -33,7 +33,7 @@ abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
     bytes32 role,
     bytes32 adminRole,
     address account
-  ) external {
+  ) external nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
 
@@ -48,7 +48,7 @@ abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
    * @dev Pauses this contract.
    * Can only be called by "Pause Agents".
    */
-  function pause() external {
+  function pause() external nonReentrant {
     AccessControlLibV1.mustBePauseAgent(s);
     super._pause();
   }
@@ -57,7 +57,7 @@ abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
    * @dev Unpauses this contract.
    * Can only be called by "Unpause Agents".
    */
-  function unpause() external whenPaused {
+  function unpause() external whenPaused nonReentrant {
     AccessControlLibV1.mustBeUnpauseAgent(s);
     super._unpause();
   }

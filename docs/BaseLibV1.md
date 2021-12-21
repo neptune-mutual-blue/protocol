@@ -15,7 +15,7 @@ Recover all Ether held by the contract.
  On success, no event is emitted because the recovery feature does
  not have any significance in the SDK or the UI.
 
-```js
+```solidity
 function recoverEther(IStore s, address sendTo) external nonpayable
 ```
 
@@ -26,13 +26,27 @@ function recoverEther(IStore s, address sendTo) external nonpayable
 | s | IStore |  | 
 | sendTo | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function recoverEther(IStore s, address sendTo) external {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+
+    // slither-disable-next-line arbitrary-send
+    payable(sendTo).transfer(address(this).balance);
+  }
+```
+</details>
+
 ### recoverToken
 
 Recover all IERC-20 compatible tokens sent to this address.
  On success, no event is emitted because the recovery feature does
  not have any significance in the SDK or the UI.
 
-```js
+```solidity
 function recoverToken(IStore s, address token, address sendTo) external nonpayable
 ```
 
@@ -43,6 +57,26 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 | s | IStore |  | 
 | token | address | IERC-20 The address of the token contract | 
 | sendTo | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function recoverToken(
+    IStore s,
+    address token,
+    address sendTo
+  ) external {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+
+    IERC20 erc20 = IERC20(token);
+
+    uint256 balance = erc20.balanceOf(address(this));
+    require(erc20.transfer(sendTo, balance), "Transfer failed");
+  }
+```
+</details>
 
 ## Contracts
 
@@ -60,9 +94,9 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -70,6 +104,7 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -79,11 +114,12 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -92,9 +128,12 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -117,12 +156,14 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

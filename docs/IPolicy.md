@@ -12,8 +12,8 @@ View Source: [contracts/interfaces/IPolicy.sol](../contracts/interfaces/IPolicy.
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)
 - [getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfee)
 - [getCoverPoolSummary(bytes32 key)](#getcoverpoolsummary)
-- [getCToken(bytes32 key, uint256 coverDuration)](#getctoken)
-- [getCTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getctokenbyexpirydate)
+- [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
+- [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getCommitment(bytes32 key)](#getcommitment)
 - [getCoverable(bytes32 key)](#getcoverable)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
@@ -21,12 +21,12 @@ View Source: [contracts/interfaces/IPolicy.sol](../contracts/interfaces/IPolicy.
 ### purchaseCover
 
 Purchase cover for the specified amount. <br /> <br />
- When you purchase covers, you recieve equal amount of cTokens back.
- You need the cTokens to claim the cover when resolution occurs.
- Each unit of cTokens are fully redeemable at 1:1 ratio to the given
+ When you purchase covers, you recieve equal amount of cxTokens back.
+ You need the cxTokens to claim the cover when resolution occurs.
+ Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
-```js
+```solidity
 function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover) external nonpayable
 returns(address)
 ```
@@ -39,11 +39,23 @@ returns(address)
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function purchaseCover(
+    bytes32 key,
+    uint256 coverDuration,
+    uint256 amountToCover
+  ) external returns (address);
+```
+</details>
+
 ### getCoverFee
 
 Gets the cover fee info for the given cover key, duration, and amount
 
-```js
+```solidity
 function getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
 ```
@@ -56,11 +68,34 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverFee(
+    bytes32 key,
+    uint256 coverDuration,
+    uint256 amountToCover
+  )
+    external
+    view
+    returns (
+      uint256 fee,
+      uint256 utilizationRatio,
+      uint256 totalAvailableLiquidity,
+      uint256 coverRatio,
+      uint256 floor,
+      uint256 ceiling,
+      uint256 rate
+    );
+```
+</details>
+
 ### getCoverPoolSummary
 
 Returns the values of the given cover key
 
-```js
+```solidity
 function getCoverPoolSummary(bytes32 key) external view
 returns(_values uint256[])
 ```
@@ -71,11 +106,19 @@ returns(_values uint256[])
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
-### getCToken
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function getCToken(bytes32 key, uint256 coverDuration) external view
-returns(cToken address, expiryDate uint256)
+```javascript
+function getCoverPoolSummary(bytes32 key) external view returns (uint256[] memory _values);
+```
+</details>
+
+### getCxToken
+
+```solidity
+function getCxToken(bytes32 key, uint256 coverDuration) external view
+returns(cxToken address, expiryDate uint256)
 ```
 
 **Arguments**
@@ -85,11 +128,19 @@ returns(cToken address, expiryDate uint256)
 | key | bytes32 |  | 
 | coverDuration | uint256 |  | 
 
-### getCTokenByExpiryDate
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view
-returns(cToken address)
+```javascript
+function getCxToken(bytes32 key, uint256 coverDuration) external view returns (address cxToken, uint256 expiryDate);
+```
+</details>
+
+### getCxTokenByExpiryDate
+
+```solidity
+function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view
+returns(cxToken address)
 ```
 
 **Arguments**
@@ -99,9 +150,17 @@ returns(cToken address)
 | key | bytes32 |  | 
 | expiryDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view returns (address cxToken);
+```
+</details>
+
 ### getCommitment
 
-```js
+```solidity
 function getCommitment(bytes32 key) external view
 returns(uint256)
 ```
@@ -112,9 +171,17 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCommitment(bytes32 key) external view returns (uint256);
+```
+</details>
+
 ### getCoverable
 
-```js
+```solidity
 function getCoverable(bytes32 key) external view
 returns(uint256)
 ```
@@ -125,11 +192,19 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverable(bytes32 key) external view returns (uint256);
+```
+</details>
+
 ### getExpiryDate
 
 Gets the expiry date based on cover duration
 
-```js
+```solidity
 function getExpiryDate(uint256 today, uint256 coverDuration) external pure
 returns(uint256)
 ```
@@ -140,6 +215,14 @@ returns(uint256)
 | ------------- |------------- | -----|
 | today | uint256 | Enter the current timestamp | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getExpiryDate(uint256 today, uint256 coverDuration) external pure returns (uint256);
+```
+</details>
 
 ## Contracts
 
@@ -157,9 +240,9 @@ returns(uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -167,6 +250,7 @@ returns(uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -176,11 +260,12 @@ returns(uint256)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -189,9 +274,12 @@ returns(uint256)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -214,12 +302,14 @@ returns(uint256)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

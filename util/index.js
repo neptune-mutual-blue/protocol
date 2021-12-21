@@ -1,4 +1,4 @@
-const cToken = require('./cToken')
+const cxToken = require('./cxToken')
 const helper = require('./helper')
 const deployer = require('./deployer')
 const key = require('./key')
@@ -10,4 +10,4 @@ const intermediate = require('./intermediate')
 const sample = require('./sample')
 const typedefs = require('./typedefs')
 
-module.exports = { cToken, helper, deployer, key, storeUtil, ipfs, sample, io, intermediate, fileCache, typedefs }
+module.exports = { cxToken, helper, deployer, key, storeUtil, ipfs, sample, io, intermediate, fileCache, typedefs }

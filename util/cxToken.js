@@ -1,17 +1,17 @@
 /**
- * Gets cToken from an address
- * @param {string} at Address where your cToken is deployed
+ * Gets cxToken from an address
+ * @param {string} at Address where your cxToken is deployed
  * @param {Libraries} libraries The deployed libraries
  */
 const atAddress = async (at, libraries) => {
-  const cToken = await ethers.getContractFactory('cToken', {
+  const cxToken = await ethers.getContractFactory('cxToken', {
     libraries: {
       BaseLibV1: libraries.baseLibV1.address,
       ValidationLibV1: libraries.validationLib.address
     }
   })
 
-  return await cToken.attach(at)
+  return await cxToken.attach(at)
 }
 
 module.exports = { atAddress }

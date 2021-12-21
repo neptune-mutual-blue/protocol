@@ -10,8 +10,8 @@ import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./GovernanceUtilV1.sol";
 import "../interfaces/IStore.sol";
-import "../interfaces/ICToken.sol";
 import "../interfaces/IPausable.sol";
+import "../interfaces/ICxToken.sol";
 
 library ValidationLibV1 {
   using ProtoUtilV1 for IStore;
@@ -143,30 +143,44 @@ library ValidationLibV1 {
     require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
   }
 
-  function mustBeValidCToken(
+  function mustBeValidCxToken(
     bytes32 key,
-    address cToken,
+    address cxToken,
     uint256 incidentDate
   ) public view {
-    bytes32 coverKey = ICToken(cToken).coverKey();
-    require(coverKey == key, "Invalid cToken");
+    // Vulnerability in mustBeValidCToken validation logic #5
+    // https://github.com/neptune-mutual/protocol/issues/5
+    bytes32 coverKey = ICxToken(cxToken).coverKey();
+    require(coverKey == key, "Invalid cxToken");
 
-    uint256 expires = ICToken(cToken).expiresOn();
-    require(expires > incidentDate, "Invalid or expired cToken");
+    uint256 expires = ICxToken(cxToken).expiresOn();
+    require(expires > incidentDate, "Invalid or expired cxToken");
   }
 
   function mustBeValidClaim(
     IStore s,
     bytes32 key,
-    address cToken,
+    address cxToken,
     uint256 incidentDate
   ) public view {
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable, "Your claim is denied");
 
-    s.mustBeProtocolMember(cToken);
+    s.mustBeProtocolMember(cxToken);
     mustBeValidIncidentDate(s, key, incidentDate);
-    mustBeValidCToken(key, cToken, incidentDate);
+    mustBeValidCxToken(key, cxToken, incidentDate);
     mustBeDuringClaimPeriod(s, key);
+  }
+
+  function mustNotHaveUnstaken(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    uint256 withdrawal = s.getUintByKey(k);
+
+    require(withdrawal == 0, "Already unstaken");
   }
 
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {

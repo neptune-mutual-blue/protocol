@@ -18,7 +18,9 @@ abstract contract Recoverable is ReentrancyGuard {
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
    */
-  function recoverEther(address sendTo) external {
+  function recoverEther(address sendTo) external nonReentrant {
+    // @supress-pausable Already implemented in BaseLibV1
+    // @supress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverEther(s, sendTo);
   }
 
@@ -28,7 +30,9 @@ abstract contract Recoverable is ReentrancyGuard {
    * not have any significance in the SDK or the UI.
    * @param token IERC-20 The address of the token contract
    */
-  function recoverToken(address token, address sendTo) external {
+  function recoverToken(address token, address sendTo) external nonReentrant {
+    // @supress-pausable Already implemented in BaseLibV1
+    // @supress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverToken(s, token, sendTo);
   }
 }

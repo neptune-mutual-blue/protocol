@@ -21,7 +21,7 @@ As and when required by the protocol,
 
 Constructs this contract
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -31,12 +31,22 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide the store contract instance | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### deploy
 
 Deploys a new instance of Vault
 
-```js
-function deploy(IStore s, bytes32 key) external nonpayable
+```solidity
+function deploy(IStore s, bytes32 key) external nonpayable nonReentrant 
 returns(addr address)
 ```
 
@@ -47,11 +57,42 @@ returns(addr address)
 | s | IStore | Provide the store contract instance | 
 | key | bytes32 | Enter the cover key related to this Vault instance | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deploy(IStore s, bytes32 key) external override nonReentrant returns (address addr) {
+    s.mustNotBePaused();
+    s.mustBeValidCover(key);
+    s.callerMustBeCoverContract();
+
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getLiquidityToken());
+
+    // solhint-disable-next-line
+    assembly {
+      addr := create2(
+        callvalue(), // wei sent with current call
+        // Actual code starts after skipping the first 32 bytes
+        add(bytecode, 0x20),
+        mload(bytecode), // Load the size of code contained in the first 32 bytes
+        salt // Salt from function arguments
+      )
+
+      if iszero(extcodesize(addr)) {
+        revert(0, 0)
+      }
+    }
+
+    emit VaultDeployed(key, addr);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -61,11 +102,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -74,6 +125,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_VAULT_FACTORY;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -91,9 +152,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -101,6 +162,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -110,11 +172,12 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -123,9 +186,12 @@ returns(bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -148,12 +214,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

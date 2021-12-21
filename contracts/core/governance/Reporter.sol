@@ -19,6 +19,7 @@ import "./Witness.sol";
  */
 abstract contract Reporter is IReporter, Witness {
   using GovernanceUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -30,6 +31,8 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
@@ -45,7 +48,8 @@ abstract contract Reporter is IReporter, Witness {
     // Update the values
     s.addAttestation(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    // Transfer the stake to the resolution contract
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Reported(key, msg.sender, incidentDate, info, stake);
     emit Attested(key, msg.sender, incidentDate, stake);
@@ -57,6 +61,8 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
     s.mustNotBePaused();
     s.mustNotHaveDispute(key);
     s.mustBeReporting(key);
@@ -67,7 +73,8 @@ abstract contract Reporter is IReporter, Witness {
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    // Transfer the stake to the resolution contract
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Disputed(key, msg.sender, incidentDate, info, stake);
     emit Refuted(key, msg.sender, incidentDate, stake);

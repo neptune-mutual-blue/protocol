@@ -39,7 +39,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 
 Reverts if the sender is not the protocol admin.
 
-```js
+```solidity
 function mustBeAdmin(IStore s) public view
 ```
 
@@ -49,11 +49,21 @@ function mustBeAdmin(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeAdmin(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_ADMIN);
+  }
+```
+</details>
+
 ### mustBeCoverManager
 
 Reverts if the sender is not the cover manager.
 
-```js
+```solidity
 function mustBeCoverManager(IStore s) public view
 ```
 
@@ -63,11 +73,21 @@ function mustBeCoverManager(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeCoverManager(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
+  }
+```
+</details>
+
 ### senderMustBeWhitelisted
 
 Reverts if the sender is not the cover manager.
 
-```js
+```solidity
 function senderMustBeWhitelisted(IStore s) public view
 ```
 
@@ -77,11 +97,21 @@ function senderMustBeWhitelisted(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function senderMustBeWhitelisted(IStore s) public view {
+    require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, msg.sender), "Not whitelisted");
+  }
+```
+</details>
+
 ### mustBeLiquidityManager
 
 Reverts if the sender is not the liquidity manager.
 
-```js
+```solidity
 function mustBeLiquidityManager(IStore s) public view
 ```
 
@@ -91,11 +121,21 @@ function mustBeLiquidityManager(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeLiquidityManager(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER);
+  }
+```
+</details>
+
 ### mustBeGovernanceAgent
 
 Reverts if the sender is not a governance agent.
 
-```js
+```solidity
 function mustBeGovernanceAgent(IStore s) public view
 ```
 
@@ -105,11 +145,21 @@ function mustBeGovernanceAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeGovernanceAgent(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT);
+  }
+```
+</details>
+
 ### mustBeGovernanceAdmin
 
 Reverts if the sender is not a governance admin.
 
-```js
+```solidity
 function mustBeGovernanceAdmin(IStore s) public view
 ```
 
@@ -119,11 +169,21 @@ function mustBeGovernanceAdmin(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeGovernanceAdmin(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN);
+  }
+```
+</details>
+
 ### mustBeUpgradeAgent
 
 Reverts if the sender is not an upgrade agent.
 
-```js
+```solidity
 function mustBeUpgradeAgent(IStore s) public view
 ```
 
@@ -133,11 +193,21 @@ function mustBeUpgradeAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeUpgradeAgent(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT);
+  }
+```
+</details>
+
 ### mustBeRecoveryAgent
 
 Reverts if the sender is not a recovery agent.
 
-```js
+```solidity
 function mustBeRecoveryAgent(IStore s) public view
 ```
 
@@ -147,11 +217,21 @@ function mustBeRecoveryAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeRecoveryAgent(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT);
+  }
+```
+</details>
+
 ### mustBePauseAgent
 
 Reverts if the sender is not the pause agent.
 
-```js
+```solidity
 function mustBePauseAgent(IStore s) public view
 ```
 
@@ -161,11 +241,21 @@ function mustBePauseAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBePauseAgent(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT);
+  }
+```
+</details>
+
 ### mustBeUnpauseAgent
 
 Reverts if the sender is not the unpause agent.
 
-```js
+```solidity
 function mustBeUnpauseAgent(IStore s) public view
 ```
 
@@ -175,11 +265,21 @@ function mustBeUnpauseAgent(IStore s) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeUnpauseAgent(IStore s) public view {
+    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT);
+  }
+```
+</details>
+
 ### _mustHaveAccess
 
 Reverts if the sender does not have access to the given role.
 
-```js
+```solidity
 function _mustHaveAccess(IStore s, bytes32 role) private view
 ```
 
@@ -190,18 +290,24 @@ function _mustHaveAccess(IStore s, bytes32 role) private view
 | s | IStore |  | 
 | role | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _mustHaveAccess(IStore s, bytes32 role) private view {
+    require(hasAccess(s, role, msg.sender), "Forbidden");
+  }
+```
+</details>
+
 ### hasAccess
 
 Checks if a given user has access to the given role
 
-```js
+```solidity
 function hasAccess(IStore s, bytes32 role, address user) public view
 returns(bool)
 ```
-
-**Returns**
-
-Returns true if the user is a member of the specified role
 
 **Arguments**
 
@@ -210,6 +316,32 @@ Returns true if the user is a member of the specified role
 | s | IStore |  | 
 | role | bytes32 | Specify the role name | 
 | user | address | Enter the user account | 
+
+**Returns**
+
+Returns true if the user is a member of the specified role
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function hasAccess(
+    IStore s,
+    bytes32 role,
+    address user
+  ) public view returns (bool) {
+    address protocol = s.getProtocolAddress();
+
+    // The protocol is not deployed yet. Therefore, no role to check
+    if (protocol == address(0)) {
+      return false;
+    }
+
+    // You must have the same role in the protocol contract if you're don't have this role here
+    return IAccessControl(protocol).hasRole(role, user);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -227,9 +359,9 @@ Returns true if the user is a member of the specified role
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -237,6 +369,7 @@ Returns true if the user is a member of the specified role
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -246,11 +379,12 @@ Returns true if the user is a member of the specified role
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -259,9 +393,12 @@ Returns true if the user is a member of the specified role
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -284,12 +421,14 @@ Returns true if the user is a member of the specified role
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

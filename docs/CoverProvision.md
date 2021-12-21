@@ -25,7 +25,7 @@ Through governance, NPM tokens can be allocated as provision or `Reward Pool Sup
 
 Constructs this contract
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -35,12 +35,22 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide the store contract instance | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### increaseProvision
 
 Increases NPM provision for the given cover key.
  This feature is accessible only to the contract owner (governance).
 
-```js
+```solidity
 function increaseProvision(bytes32 key, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -51,12 +61,33 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable nonR
 | key | bytes32 | Provide the cover key you wish to increase the provision of | 
 | amount | uint256 | Specify the amount of NPM tokens you would like to add | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.mustBeValidCover(key);
+
+    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
+
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
+
+    emit ProvisionIncreased(key, privision, privision + amount);
+  }
+```
+</details>
+
 ### decreaseProvision
 
 Decreases NPM provision for the given cover key
  This feature is accessible only to the contract owner (governance).
 
-```js
+```solidity
 function decreaseProvision(bytes32 key, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -67,11 +98,33 @@ function decreaseProvision(bytes32 key, uint256 amount) external nonpayable nonR
 | key | bytes32 | Provide the cover key you wish to decrease the provision from | 
 | amount | uint256 | Specify the amount of NPM tokens you would like to decrease | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.mustBeValidCover(key);
+
+    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+
+    require(privision >= amount, "Exceeds Balance"); // Exceeds balance
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
+
+    s.npmToken().ensureTransfer(msg.sender, amount);
+
+    emit ProvisionDecreased(key, privision, privision - amount);
+  }
+```
+</details>
+
 ### getProvision
 
 Gets the NPM provision amount for the given cover key
 
-```js
+```solidity
 function getProvision(bytes32 key) external view
 returns(uint256)
 ```
@@ -82,11 +135,21 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key to get the provision | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProvision(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -96,11 +159,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -109,6 +182,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_COVER_PROVISION;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -126,9 +209,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -136,6 +219,7 @@ returns(bytes32)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -145,11 +229,12 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -158,9 +243,12 @@ returns(bytes32)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -183,12 +271,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

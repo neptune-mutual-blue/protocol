@@ -66,7 +66,7 @@ uint256 internal constant DOW_SUN;
 
 ### _daysFromDate
 
-```js
+```solidity
 function _daysFromDate(uint256 year, uint256 month, uint256 day) internal pure
 returns(_days uint256)
 ```
@@ -79,9 +79,38 @@ returns(_days uint256)
 | month | uint256 |  | 
 | day | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _daysFromDate(
+    uint256 year,
+    uint256 month,
+    uint256 day
+  ) internal pure returns (uint256 _days) {
+    require(year >= 1970);
+    int256 _year = int256(year);
+    int256 _month = int256(month);
+    int256 _day = int256(day);
+
+    int256 __days = _day -
+      32075 +
+      (1461 * (_year + 4800 + (_month - 14) / 12)) /
+      4 +
+      (367 * (_month - 2 - ((_month - 14) / 12) * 12)) /
+      12 -
+      (3 * ((_year + 4900 + (_month - 14) / 12) / 100)) /
+      4 -
+      OFFSET19700101;
+
+    _days = uint256(__days);
+  }
+```
+</details>
+
 ### _daysToDate
 
-```js
+```solidity
 function _daysToDate(uint256 _days) internal pure
 returns(year uint256, month uint256, day uint256)
 ```
@@ -92,9 +121,42 @@ returns(year uint256, month uint256, day uint256)
 | ------------- |------------- | -----|
 | _days | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _daysToDate(uint256 _days)
+    internal
+    pure
+    returns (
+      uint256 year,
+      uint256 month,
+      uint256 day
+    )
+  {
+    int256 __days = int256(_days);
+
+    int256 L = __days + 68569 + OFFSET19700101;
+    int256 N = (4 * L) / 146097;
+    L = L - (146097 * N + 3) / 4;
+    int256 _year = (4000 * (L + 1)) / 1461001;
+    L = L - (1461 * _year) / 4 + 31;
+    int256 _month = (80 * L) / 2447;
+    int256 _day = L - (2447 * _month) / 80;
+    L = _month / 11;
+    _month = _month + 2 - 12 * L;
+    _year = 100 * (N - 49) + _year + L;
+
+    year = uint256(_year);
+    month = uint256(_month);
+    day = uint256(_day);
+  }
+```
+</details>
+
 ### timestampFromDate
 
-```js
+```solidity
 function timestampFromDate(uint256 year, uint256 month, uint256 day) internal pure
 returns(timestamp uint256)
 ```
@@ -107,9 +169,23 @@ returns(timestamp uint256)
 | month | uint256 |  | 
 | day | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function timestampFromDate(
+    uint256 year,
+    uint256 month,
+    uint256 day
+  ) internal pure returns (uint256 timestamp) {
+    timestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY;
+  }
+```
+</details>
+
 ### timestampFromDateTime
 
-```js
+```solidity
 function timestampFromDateTime(uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second) internal pure
 returns(timestamp uint256)
 ```
@@ -125,9 +201,26 @@ returns(timestamp uint256)
 | minute | uint256 |  | 
 | second | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function timestampFromDateTime(
+    uint256 year,
+    uint256 month,
+    uint256 day,
+    uint256 hour,
+    uint256 minute,
+    uint256 second
+  ) internal pure returns (uint256 timestamp) {
+    timestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + hour * SECONDS_PER_HOUR + minute * SECONDS_PER_MINUTE + second;
+  }
+```
+</details>
+
 ### timestampToDate
 
-```js
+```solidity
 function timestampToDate(uint256 timestamp) internal pure
 returns(year uint256, month uint256, day uint256)
 ```
@@ -138,9 +231,27 @@ returns(year uint256, month uint256, day uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function timestampToDate(uint256 timestamp)
+    internal
+    pure
+    returns (
+      uint256 year,
+      uint256 month,
+      uint256 day
+    )
+  {
+    (year, month, day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+  }
+```
+</details>
+
 ### timestampToDateTime
 
-```js
+```solidity
 function timestampToDateTime(uint256 timestamp) internal pure
 returns(year uint256, month uint256, day uint256, hour uint256, minute uint256, second uint256)
 ```
@@ -151,9 +262,35 @@ returns(year uint256, month uint256, day uint256, hour uint256, minute uint256, 
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function timestampToDateTime(uint256 timestamp)
+    internal
+    pure
+    returns (
+      uint256 year,
+      uint256 month,
+      uint256 day,
+      uint256 hour,
+      uint256 minute,
+      uint256 second
+    )
+  {
+    (year, month, day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    uint256 secs = timestamp % SECONDS_PER_DAY;
+    hour = secs / SECONDS_PER_HOUR;
+    secs = secs % SECONDS_PER_HOUR;
+    minute = secs / SECONDS_PER_MINUTE;
+    second = secs % SECONDS_PER_MINUTE;
+  }
+```
+</details>
+
 ### isValidDate
 
-```js
+```solidity
 function isValidDate(uint256 year, uint256 month, uint256 day) internal pure
 returns(valid bool)
 ```
@@ -166,9 +303,28 @@ returns(valid bool)
 | month | uint256 |  | 
 | day | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isValidDate(
+    uint256 year,
+    uint256 month,
+    uint256 day
+  ) internal pure returns (bool valid) {
+    if (year >= 1970 && month > 0 && month <= 12) {
+      uint256 daysInMonth = _getDaysInMonth(year, month);
+      if (day > 0 && day <= daysInMonth) {
+        valid = true;
+      }
+    }
+  }
+```
+</details>
+
 ### isValidDateTime
 
-```js
+```solidity
 function isValidDateTime(uint256 year, uint256 month, uint256 day, uint256 hour, uint256 minute, uint256 second) internal pure
 returns(valid bool)
 ```
@@ -184,9 +340,30 @@ returns(valid bool)
 | minute | uint256 |  | 
 | second | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isValidDateTime(
+    uint256 year,
+    uint256 month,
+    uint256 day,
+    uint256 hour,
+    uint256 minute,
+    uint256 second
+  ) internal pure returns (bool valid) {
+    if (isValidDate(year, month, day)) {
+      if (hour < 24 && minute < 60 && second < 60) {
+        valid = true;
+      }
+    }
+  }
+```
+</details>
+
 ### isLeapYear
 
-```js
+```solidity
 function isLeapYear(uint256 timestamp) internal pure
 returns(leapYear bool)
 ```
@@ -197,9 +374,20 @@ returns(leapYear bool)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isLeapYear(uint256 timestamp) internal pure returns (bool leapYear) {
+    (uint256 year, , ) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    leapYear = _isLeapYear(year);
+  }
+```
+</details>
+
 ### _isLeapYear
 
-```js
+```solidity
 function _isLeapYear(uint256 year) internal pure
 returns(leapYear bool)
 ```
@@ -210,9 +398,19 @@ returns(leapYear bool)
 | ------------- |------------- | -----|
 | year | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _isLeapYear(uint256 year) internal pure returns (bool leapYear) {
+    leapYear = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+  }
+```
+</details>
+
 ### isWeekDay
 
-```js
+```solidity
 function isWeekDay(uint256 timestamp) internal pure
 returns(weekDay bool)
 ```
@@ -223,9 +421,19 @@ returns(weekDay bool)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isWeekDay(uint256 timestamp) internal pure returns (bool weekDay) {
+    weekDay = getDayOfWeek(timestamp) <= DOW_FRI;
+  }
+```
+</details>
+
 ### isWeekEnd
 
-```js
+```solidity
 function isWeekEnd(uint256 timestamp) internal pure
 returns(weekEnd bool)
 ```
@@ -236,9 +444,19 @@ returns(weekEnd bool)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isWeekEnd(uint256 timestamp) internal pure returns (bool weekEnd) {
+    weekEnd = getDayOfWeek(timestamp) >= DOW_SAT;
+  }
+```
+</details>
+
 ### getDaysInMonth
 
-```js
+```solidity
 function getDaysInMonth(uint256 timestamp) internal pure
 returns(daysInMonth uint256)
 ```
@@ -249,9 +467,20 @@ returns(daysInMonth uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDaysInMonth(uint256 timestamp) internal pure returns (uint256 daysInMonth) {
+    (uint256 year, uint256 month, ) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    daysInMonth = _getDaysInMonth(year, month);
+  }
+```
+</details>
+
 ### _getDaysInMonth
 
-```js
+```solidity
 function _getDaysInMonth(uint256 year, uint256 month) internal pure
 returns(daysInMonth uint256)
 ```
@@ -263,9 +492,25 @@ returns(daysInMonth uint256)
 | year | uint256 |  | 
 | month | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getDaysInMonth(uint256 year, uint256 month) internal pure returns (uint256 daysInMonth) {
+    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+      daysInMonth = 31;
+    } else if (month != 2) {
+      daysInMonth = 30;
+    } else {
+      daysInMonth = _isLeapYear(year) ? 29 : 28;
+    }
+  }
+```
+</details>
+
 ### getDayOfWeek
 
-```js
+```solidity
 function getDayOfWeek(uint256 timestamp) internal pure
 returns(dayOfWeek uint256)
 ```
@@ -276,9 +521,20 @@ returns(dayOfWeek uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDayOfWeek(uint256 timestamp) internal pure returns (uint256 dayOfWeek) {
+    uint256 _days = timestamp / SECONDS_PER_DAY;
+    dayOfWeek = ((_days + 3) % 7) + 1;
+  }
+```
+</details>
+
 ### getYear
 
-```js
+```solidity
 function getYear(uint256 timestamp) internal pure
 returns(year uint256)
 ```
@@ -289,9 +545,19 @@ returns(year uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getYear(uint256 timestamp) internal pure returns (uint256 year) {
+    (year, , ) = _daysToDate(timestamp / SECONDS_PER_DAY);
+  }
+```
+</details>
+
 ### getMonth
 
-```js
+```solidity
 function getMonth(uint256 timestamp) internal pure
 returns(month uint256)
 ```
@@ -302,9 +568,19 @@ returns(month uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMonth(uint256 timestamp) internal pure returns (uint256 month) {
+    (, month, ) = _daysToDate(timestamp / SECONDS_PER_DAY);
+  }
+```
+</details>
+
 ### getDay
 
-```js
+```solidity
 function getDay(uint256 timestamp) internal pure
 returns(day uint256)
 ```
@@ -315,9 +591,19 @@ returns(day uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDay(uint256 timestamp) internal pure returns (uint256 day) {
+    (, , day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+  }
+```
+</details>
+
 ### getHour
 
-```js
+```solidity
 function getHour(uint256 timestamp) internal pure
 returns(hour uint256)
 ```
@@ -328,9 +614,20 @@ returns(hour uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getHour(uint256 timestamp) internal pure returns (uint256 hour) {
+    uint256 secs = timestamp % SECONDS_PER_DAY;
+    hour = secs / SECONDS_PER_HOUR;
+  }
+```
+</details>
+
 ### getMinute
 
-```js
+```solidity
 function getMinute(uint256 timestamp) internal pure
 returns(minute uint256)
 ```
@@ -341,9 +638,20 @@ returns(minute uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMinute(uint256 timestamp) internal pure returns (uint256 minute) {
+    uint256 secs = timestamp % SECONDS_PER_HOUR;
+    minute = secs / SECONDS_PER_MINUTE;
+  }
+```
+</details>
+
 ### getSecond
 
-```js
+```solidity
 function getSecond(uint256 timestamp) internal pure
 returns(second uint256)
 ```
@@ -354,9 +662,19 @@ returns(second uint256)
 | ------------- |------------- | -----|
 | timestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getSecond(uint256 timestamp) internal pure returns (uint256 second) {
+    second = timestamp % SECONDS_PER_MINUTE;
+  }
+```
+</details>
+
 ### addYears
 
-```js
+```solidity
 function addYears(uint256 timestamp, uint256 _years) internal pure
 returns(newTimestamp uint256)
 ```
@@ -368,9 +686,26 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _years | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addYears(uint256 timestamp, uint256 _years) internal pure returns (uint256 newTimestamp) {
+    (uint256 year, uint256 month, uint256 day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    year += _years;
+    uint256 daysInMonth = _getDaysInMonth(year, month);
+    if (day > daysInMonth) {
+      day = daysInMonth;
+    }
+    newTimestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + (timestamp % SECONDS_PER_DAY);
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### addMonths
 
-```js
+```solidity
 function addMonths(uint256 timestamp, uint256 _months) internal pure
 returns(newTimestamp uint256)
 ```
@@ -382,9 +717,28 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _months | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMonths(uint256 timestamp, uint256 _months) internal pure returns (uint256 newTimestamp) {
+    (uint256 year, uint256 month, uint256 day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    month += _months;
+    year += (month - 1) / 12;
+    month = ((month - 1) % 12) + 1;
+    uint256 daysInMonth = _getDaysInMonth(year, month);
+    if (day > daysInMonth) {
+      day = daysInMonth;
+    }
+    newTimestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + (timestamp % SECONDS_PER_DAY);
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### addDays
 
-```js
+```solidity
 function addDays(uint256 timestamp, uint256 _days) internal pure
 returns(newTimestamp uint256)
 ```
@@ -396,9 +750,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _days | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addDays(uint256 timestamp, uint256 _days) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp + _days * SECONDS_PER_DAY;
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### addHours
 
-```js
+```solidity
 function addHours(uint256 timestamp, uint256 _hours) internal pure
 returns(newTimestamp uint256)
 ```
@@ -410,9 +775,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _hours | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addHours(uint256 timestamp, uint256 _hours) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp + _hours * SECONDS_PER_HOUR;
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### addMinutes
 
-```js
+```solidity
 function addMinutes(uint256 timestamp, uint256 _minutes) internal pure
 returns(newTimestamp uint256)
 ```
@@ -424,9 +800,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _minutes | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMinutes(uint256 timestamp, uint256 _minutes) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp + _minutes * SECONDS_PER_MINUTE;
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### addSeconds
 
-```js
+```solidity
 function addSeconds(uint256 timestamp, uint256 _seconds) internal pure
 returns(newTimestamp uint256)
 ```
@@ -438,9 +825,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _seconds | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addSeconds(uint256 timestamp, uint256 _seconds) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp + _seconds;
+    require(newTimestamp >= timestamp);
+  }
+```
+</details>
+
 ### subYears
 
-```js
+```solidity
 function subYears(uint256 timestamp, uint256 _years) internal pure
 returns(newTimestamp uint256)
 ```
@@ -452,9 +850,26 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _years | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subYears(uint256 timestamp, uint256 _years) internal pure returns (uint256 newTimestamp) {
+    (uint256 year, uint256 month, uint256 day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    year -= _years;
+    uint256 daysInMonth = _getDaysInMonth(year, month);
+    if (day > daysInMonth) {
+      day = daysInMonth;
+    }
+    newTimestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + (timestamp % SECONDS_PER_DAY);
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### subMonths
 
-```js
+```solidity
 function subMonths(uint256 timestamp, uint256 _months) internal pure
 returns(newTimestamp uint256)
 ```
@@ -466,9 +881,28 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _months | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subMonths(uint256 timestamp, uint256 _months) internal pure returns (uint256 newTimestamp) {
+    (uint256 year, uint256 month, uint256 day) = _daysToDate(timestamp / SECONDS_PER_DAY);
+    uint256 yearMonth = year * 12 + (month - 1) - _months;
+    year = yearMonth / 12;
+    month = (yearMonth % 12) + 1;
+    uint256 daysInMonth = _getDaysInMonth(year, month);
+    if (day > daysInMonth) {
+      day = daysInMonth;
+    }
+    newTimestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + (timestamp % SECONDS_PER_DAY);
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### subDays
 
-```js
+```solidity
 function subDays(uint256 timestamp, uint256 _days) internal pure
 returns(newTimestamp uint256)
 ```
@@ -480,9 +914,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _days | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subDays(uint256 timestamp, uint256 _days) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp - _days * SECONDS_PER_DAY;
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### subHours
 
-```js
+```solidity
 function subHours(uint256 timestamp, uint256 _hours) internal pure
 returns(newTimestamp uint256)
 ```
@@ -494,9 +939,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _hours | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subHours(uint256 timestamp, uint256 _hours) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp - _hours * SECONDS_PER_HOUR;
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### subMinutes
 
-```js
+```solidity
 function subMinutes(uint256 timestamp, uint256 _minutes) internal pure
 returns(newTimestamp uint256)
 ```
@@ -508,9 +964,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _minutes | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subMinutes(uint256 timestamp, uint256 _minutes) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp - _minutes * SECONDS_PER_MINUTE;
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### subSeconds
 
-```js
+```solidity
 function subSeconds(uint256 timestamp, uint256 _seconds) internal pure
 returns(newTimestamp uint256)
 ```
@@ -522,9 +989,20 @@ returns(newTimestamp uint256)
 | timestamp | uint256 |  | 
 | _seconds | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function subSeconds(uint256 timestamp, uint256 _seconds) internal pure returns (uint256 newTimestamp) {
+    newTimestamp = timestamp - _seconds;
+    require(newTimestamp <= timestamp);
+  }
+```
+</details>
+
 ### diffYears
 
-```js
+```solidity
 function diffYears(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_years uint256)
 ```
@@ -536,9 +1014,22 @@ returns(_years uint256)
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffYears(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _years) {
+    require(fromTimestamp <= toTimestamp);
+    (uint256 fromYear, , ) = _daysToDate(fromTimestamp / SECONDS_PER_DAY);
+    (uint256 toYear, , ) = _daysToDate(toTimestamp / SECONDS_PER_DAY);
+    _years = toYear - fromYear;
+  }
+```
+</details>
+
 ### diffMonths
 
-```js
+```solidity
 function diffMonths(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_months uint256)
 ```
@@ -550,9 +1041,22 @@ returns(_months uint256)
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffMonths(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _months) {
+    require(fromTimestamp <= toTimestamp);
+    (uint256 fromYear, uint256 fromMonth, ) = _daysToDate(fromTimestamp / SECONDS_PER_DAY);
+    (uint256 toYear, uint256 toMonth, ) = _daysToDate(toTimestamp / SECONDS_PER_DAY);
+    _months = toYear * 12 + toMonth - fromYear * 12 - fromMonth;
+  }
+```
+</details>
+
 ### diffDays
 
-```js
+```solidity
 function diffDays(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_days uint256)
 ```
@@ -564,9 +1068,20 @@ returns(_days uint256)
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffDays(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _days) {
+    require(fromTimestamp <= toTimestamp);
+    _days = (toTimestamp - fromTimestamp) / SECONDS_PER_DAY;
+  }
+```
+</details>
+
 ### diffHours
 
-```js
+```solidity
 function diffHours(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_hours uint256)
 ```
@@ -578,9 +1093,20 @@ returns(_hours uint256)
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffHours(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _hours) {
+    require(fromTimestamp <= toTimestamp);
+    _hours = (toTimestamp - fromTimestamp) / SECONDS_PER_HOUR;
+  }
+```
+</details>
+
 ### diffMinutes
 
-```js
+```solidity
 function diffMinutes(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_minutes uint256)
 ```
@@ -592,9 +1118,20 @@ returns(_minutes uint256)
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffMinutes(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _minutes) {
+    require(fromTimestamp <= toTimestamp);
+    _minutes = (toTimestamp - fromTimestamp) / SECONDS_PER_MINUTE;
+  }
+```
+</details>
+
 ### diffSeconds
 
-```js
+```solidity
 function diffSeconds(uint256 fromTimestamp, uint256 toTimestamp) internal pure
 returns(_seconds uint256)
 ```
@@ -605,6 +1142,17 @@ returns(_seconds uint256)
 | ------------- |------------- | -----|
 | fromTimestamp | uint256 |  | 
 | toTimestamp | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function diffSeconds(uint256 fromTimestamp, uint256 toTimestamp) internal pure returns (uint256 _seconds) {
+    require(fromTimestamp <= toTimestamp);
+    _seconds = toTimestamp - fromTimestamp;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -622,9 +1170,9 @@ returns(_seconds uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -632,6 +1180,7 @@ returns(_seconds uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
@@ -641,11 +1190,12 @@ returns(_seconds uint256)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
@@ -654,9 +1204,12 @@ returns(_seconds uint256)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
+* [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -679,12 +1232,14 @@ returns(_seconds uint256)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

@@ -25,8 +25,11 @@ contract Protocol is IProtocol, ProtoBase {
     uint256 minStake,
     uint256 minReportingStake,
     uint256 minLiquidityPeriod,
-    uint256 claimPeriod
-  ) external {
+    uint256 claimPeriod,
+    uint256 burnRate,
+    uint256 reporterCommission
+  ) external nonReentrant whenNotPaused {
+    // @supress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
     require(initialized == 0, "Already initialized");
@@ -48,9 +51,24 @@ contract Protocol is IProtocol, ProtoBase {
     _setMinStake(minStake);
     _setMinReportingStake(minReportingStake);
     _setMinLiquidityPeriod(minLiquidityPeriod);
+
+    _setReportingBurnRate(burnRate);
+    _setReporterCommission(reporterCommission);
     _setClaimPeriod(claimPeriod);
 
     initialized = 1;
+  }
+
+  function setReportingBurnRate(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReportingBurnRate(value);
+  }
+
+  function setReportingCommission(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReporterCommission(value);
   }
 
   function setClaimPeriod(uint256 value) public nonReentrant {
@@ -85,6 +103,20 @@ contract Protocol is IProtocol, ProtoBase {
     _setMinLiquidityPeriod(value);
   }
 
+  function _setReportingBurnRate(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE, value);
+
+    emit ReportingBurnRateSet(previous, value);
+  }
+
+  function _setReporterCommission(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION, value);
+
+    emit ReporterCommissionSet(previous, value);
+  }
+
   function _setClaimPeriod(uint256 value) private {
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
     s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
@@ -107,8 +139,8 @@ contract Protocol is IProtocol, ProtoBase {
   }
 
   function _setMinReportingStake(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_REPORTING_STAKE, value);
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE, value);
 
     emit MinReportingStakeSet(previous, value);
   }
@@ -124,7 +156,7 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 namespace,
     address previous,
     address current
-  ) external override {
+  ) external override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -133,7 +165,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit ContractUpgraded(namespace, previous, current);
   }
 
-  function addContract(bytes32 namespace, address contractAddress) external override {
+  function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
@@ -141,7 +173,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit ContractAdded(namespace, contractAddress);
   }
 
-  function removeMember(address member) external override {
+  function removeMember(address member) external override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, member);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -150,7 +182,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit MemberRemoved(member);
   }
 
-  function addMember(address member) external override {
+  function addMember(address member) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
