@@ -41,12 +41,12 @@ describe('Protocol Initialization Stories', () => {
     fetchedAddress.should.equal(contracts.stakingContract.address)
   })
 
-  it('assurance contract was correctly deployed', async () => {
-    contracts.assuranceContract.address.should.not.be.empty
-    contracts.assuranceContract.address.should.not.equal(helper.zerox)
+  it('reassurance contract was correctly deployed', async () => {
+    contracts.reassuranceContract.address.should.not.be.empty
+    contracts.reassuranceContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_ASSURANCE))
-    fetchedAddress.should.equal(contracts.assuranceContract.address)
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_REASSURANCE))
+    fetchedAddress.should.equal(contracts.reassuranceContract.address)
   })
 
   it('provision contract was correctly deployed', async () => {
@@ -79,23 +79,23 @@ describe('Protocol Initialization Stories', () => {
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
     const stakeWithFee = helper.ether(10000)
-    const initialAssuranceAmount = helper.ether(1000000)
+    const initialReassuranceAmount = helper.ether(1000000)
     const initialLiquidity = helper.ether(4000000)
     const reportingPeriod = 7 * DAYS
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
-    const assuranceVault = await storeUtil.getAssuranceVaultAddress(contracts.store)
+    const reassuranceVault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
     previous = {
       wxDaiBalance: (await contracts.wxDai.balanceOf(vault.address)).toString(),
-      assuranceTokenBalance: (await contracts.assuranceToken.balanceOf(assuranceVault)).toString()
+      reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
     }
 
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
   })
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {
@@ -108,15 +108,15 @@ describe('Protocol Initialization Stories', () => {
     previous.wxDaiBalance = expected
   })
 
-  it('corretness rule: assurance token should\'ve been correctly transferred to the assurance vault', async () => {
-    const vault = await storeUtil.getAssuranceVaultAddress(contracts.store)
+  it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
+    const vault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
-    const balance = await contracts.assuranceToken.balanceOf(vault)
+    const balance = await contracts.reassuranceToken.balanceOf(vault)
 
-    const expected = helper.add(previous.assuranceTokenBalance, helper.ether(1000000))
+    const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000))
     balance.should.equal(expected)
 
-    previous.assuranceTokenBalance = expected
+    previous.reassuranceTokenBalance = expected
   })
 
   it('xDai liquidity was added again', async () => {
@@ -142,21 +142,21 @@ describe('Protocol Initialization Stories', () => {
     pods.should.equal(previous.wxDaiBalance.toString())
   })
 
-  it('assurance token allocation was increased', async () => {
+  it('reassurance token allocation was increased', async () => {
     const [owner] = await ethers.getSigners()
     const liquidity = helper.ether(20000)
-    const vault = await storeUtil.getAssuranceVaultAddress(contracts.store)
+    const vault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
-    await contracts.assuranceToken.approve(contracts.assuranceContract.address, liquidity)
-    await contracts.assuranceContract.addAssurance(coverKey, owner.address, liquidity)
+    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, liquidity)
+    await contracts.reassuranceContract.addReassurance(coverKey, owner.address, liquidity)
 
-    const expected = helper.add(previous.assuranceTokenBalance, liquidity)
+    const expected = helper.add(previous.reassuranceTokenBalance, liquidity)
 
-    const balance = await contracts.assuranceToken.balanceOf(vault)
+    const balance = await contracts.reassuranceToken.balanceOf(vault)
 
     balance.should.equal(expected)
 
-    previous.assuranceTokenBalance = expected
+    previous.reassuranceTokenBalance = expected
   })
 
   it('the vault generated a fictional income', async () => {

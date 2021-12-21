@@ -233,7 +233,7 @@ contract Policy is IPolicy, Recoverable {
     // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
     utilizationRatio = (1 ether * values[1]) / values[0];
 
-    // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (ASSURANCE_POOL_SUPPORT * ASSURANCE_TOKEN_PRICE * ASSURANCE_POOL_WEIGHT)
+    // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
     totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (1 ether * 1 ether));
 
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
@@ -249,9 +249,9 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[1] The total commitment amount
    * @param _values[2] The total amount of NPM provision
    * @param _values[3] NPM price
-   * @param _values[4] The total amount of assurance tokens
-   * @param _values[5] Assurance token price
-   * @param _values[6] Assurance pool weight
+   * @param _values[4] The total amount of reassurance tokens
+   * @param _values[5] Reassurance token price
+   * @param _values[6] Reassurance pool weight
    */
   function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummary(key);

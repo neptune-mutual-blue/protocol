@@ -16,7 +16,7 @@ import "../Recoverable.sol";
  * for any given cover. This not only fosters community participation but also incentivizes
  * the liquidity providers or acts as a defense/support during cover incidents.
  *
- * Along with the NPM provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
+ * Along with the NPM provisions, the liquidity providers also have `[Reassurance Token Support](CoverReassurance.md)`
  * for the rainy day.
  */
 contract CoverProvision is ICoverProvision, Recoverable {

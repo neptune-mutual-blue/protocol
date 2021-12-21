@@ -7,14 +7,14 @@ const qualify = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.CONTRACT
 const qualifyMember = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.MEMBERS), k])
 
 const NS = {
-  ASSURANCE_VAULT: 'proto:core:assurance:vault',
+  REASSURANCE_VAULT: 'proto:core:reassurance:vault',
   BURNER: 'proto:core:burner',
   CONTRACTS: 'proto:contracts',
   MEMBERS: 'proto:members',
   CORE: 'proto:core',
   COVER: 'proto:cover',
-  COVER_ASSURANCE: 'proto:cover:assurance',
-  COVER_ASSURANCE_TOKEN: 'proto:cover:assurance:token',
+  COVER_REASSURANCE: 'proto:cover:reassurance',
+  COVER_REASSURANCE_TOKEN: 'proto:cover:reassurance:token',
   COVER_CLAIMABLE: 'proto:cover:claimable',
   COVER_FEE: 'proto:cover:fee',
   GOVERNANCE: 'proto:gov',
@@ -71,7 +71,7 @@ const CNAME = {
   CXTOKEN_FACTORY: 'cxTokenFactory',
   COVER_PROVISION: 'CoverProvison',
   COVER_STAKE: 'CoverStake',
-  COVER_ASSURANCE: 'CoverAssurance',
+  COVER_REASSURANCE: 'CoverReassurance',
   LIQUIDITY_VAULT: 'Vault'
 }
 
@@ -86,7 +86,7 @@ const CNAME_KEYS = {
   CXTOKEN_FACTORY: toBytes32(CNAME.CXTOKEN_FACTORY),
   COVER_PROVISION: toBytes32(CNAME.COVER_PROVISION),
   COVER_STAKE: toBytes32(CNAME.COVER_STAKE),
-  COVER_ASSURANCE: toBytes32(CNAME.COVER_ASSURANCE),
+  COVER_REASSURANCE: toBytes32(CNAME.COVER_REASSURANCE),
   LIQUIDITY_VAULT: toBytes32(CNAME.LIQUIDITY_VAULT)
 }
 
@@ -99,7 +99,7 @@ const CNAME_KEYS_FQN = {
   CXTOKEN_FACTORY: qualifyBytes32(CNAME.CXTOKEN_FACTORY),
   COVER_PROVISION: qualifyBytes32(CNAME.COVER_PROVISION),
   COVER_STAKE: qualifyBytes32(CNAME.COVER_STAKE),
-  COVER_ASSURANCE: qualifyBytes32(CNAME.COVER_ASSURANCE),
+  COVER_REASSURANCE: qualifyBytes32(CNAME.COVER_REASSURANCE),
   LIQUIDITY_VAULT: qualifyBytes32(CNAME.LIQUIDITY_VAULT)
 }
 

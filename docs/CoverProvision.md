@@ -9,7 +9,7 @@ View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lif
 Through governance, NPM tokens can be allocated as provision or `Reward Pool Support`
  for any given cover. This not only fosters community participation but also incentivizes
  the liquidity providers or acts as a defense/support during cover incidents.
- Along with the NPM provisions, the liquidity providers also have `[Assurance Token Support](CoverAssurance.md)`
+ Along with the NPM provisions, the liquidity providers also have `[Reassurance Token Support](CoverReassurance.md)`
  for the rainy day.
 
 ## Functions
@@ -204,9 +204,9 @@ function getName() public pure override returns (bytes32) {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -226,8 +226,8 @@ function getName() public pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

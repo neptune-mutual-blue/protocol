@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "../../interfaces/IStore.sol";
-import "../../interfaces/ICoverAssurance.sol";
+import "../../interfaces/ICoverReassurance.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/ValidationLibV1.sol";
@@ -11,17 +11,17 @@ import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**
- * @title Cover Assurance
- * @dev Assurance tokens can be added by a covered project to demonstrate coverage support
+ * @title Cover Reassurance
+ * @dev Reassurance tokens can be added by a covered project to demonstrate coverage support
  * for their project. This helps bring the cover fee down and enhances
- * liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded
+ * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
  * as a support to the liquidity providers when a cover incident occurs.
  *
  * Without negatively affecting the price much,
- * the protocol will gradually convert the assurance tokens
+ * the protocol will gradually convert the reassurance tokens
  * to stablecoin liquidity.
  */
-contract CoverAssurance is ICoverAssurance, Recoverable {
+contract CoverReassurance is ICoverReassurance, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -34,11 +34,11 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
   }
 
   /**
-   * @dev Adds assurance to the specified cover contract
+   * @dev Adds reassurance to the specified cover contract
    * @param key Enter the cover key
    * @param amount Enter the amount you would like to supply
    */
-  function addAssurance(
+  function addReassurance(
     bytes32 key,
     address account,
     uint256 amount
@@ -48,14 +48,14 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
 
     require(amount > 0, "Provide valid amount");
 
-    IERC20 assuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key));
-    address vault = s.getAssuranceVault();
+    IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    address vault = s.getReassuranceVault();
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key, amount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);
 
-    assuranceToken.ensureTransferFrom(account, vault, amount);
+    reassuranceToken.ensureTransferFrom(account, vault, amount);
 
-    emit AssuranceAdded(key, amount);
+    emit ReassuranceAdded(key, amount);
   }
 
   function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
@@ -64,15 +64,15 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
 
     s.mustBeValidCoverKey(key);
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key, weight);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
   }
 
   /**
-   * @dev Gets the assurance amount of the specified cover contract
+   * @dev Gets the reassurance amount of the specified cover contract
    * @param key Enter the cover key
    */
-  function getAssurance(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
+  function getReassurance(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
   }
 
   /**
@@ -86,6 +86,6 @@ contract CoverAssurance is ICoverAssurance, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER_ASSURANCE;
+    return ProtoUtilV1.CNAME_COVER_REASSURANCE;
   }
 }

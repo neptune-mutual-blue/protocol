@@ -29,15 +29,15 @@ describe('Policy Purchase Stories', () => {
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
     const stakeWithFee = helper.ether(10_000)
-    const initialAssuranceAmount = helper.ether(1_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
     const reportingPeriod = 7 * DAYS
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.assuranceToken.approve(contracts.assuranceContract.address, initialAssuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.assuranceToken.address, initialAssuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
@@ -57,15 +57,15 @@ describe('Policy Purchase Stories', () => {
 
   it('cover pool summary values are accurate', async () => {
     const result = await contracts.policy.getCoverPoolSummary(coverKey)
-    const [totalAmountInPool, totalCommitment, provision, nepPrice, assurance, assurancePrice, assuranceWeight] = result
+    const [totalAmountInPool, totalCommitment, provision, nepPrice, reassurance, reassurancePrice, reassuranceWeight] = result
 
     totalAmountInPool.should.equal(helper.ether(4_000_000))
     totalCommitment.should.equal(helper.ether(0))
     provision.should.equal(helper.ether(1_000_000))
     nepPrice.should.equal(helper.ether(1))
-    assurance.should.equal(helper.ether(1_000_000))
-    assurancePrice.should.equal(helper.ether(1))
-    assuranceWeight.should.equal(helper.ether(0.5))
+    reassurance.should.equal(helper.ether(1_000_000))
+    reassurancePrice.should.equal(helper.ether(1))
+    reassuranceWeight.should.equal(helper.ether(0.5))
   })
 
   it('fee should be ~$58.33 xDai when purchasing 10K xDai cover for 1 month', async () => {

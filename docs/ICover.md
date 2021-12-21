@@ -18,7 +18,7 @@ event WhitelistUpdated(address  account, bool  status);
 ## Functions
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity)](#addcover)
+- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
@@ -62,7 +62,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable
+function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable
 ```
 
 **Arguments**
@@ -73,8 +73,8 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | info | bytes32 | IPFS info of the cover contract | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
-| assuranceToken | address | **Optional.** Token added as an assurance of this cover. <br /><br />  Assurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the assurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
+| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| initialReassuranceAmount | uint256 | **Optional.** Enter the initial amount of  reassurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
 <details>
@@ -86,8 +86,8 @@ function addCover(
     bytes32 info,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
-    address assuranceToken,
-    uint256 initialAssuranceAmount,
+    address reassuranceToken,
+    uint256 initialReassuranceAmount,
     uint256 initialLiquidity
   ) external;
 ```
@@ -200,9 +200,9 @@ function checkIfWhitelisted(address account) external view returns (bool);
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -222,8 +222,8 @@ function checkIfWhitelisted(address account) external view returns (bool);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

@@ -20,7 +20,7 @@ contract Protocol is IProtocol, ProtoBase {
     address uniswapV2RouterLike,
     address npm,
     address treasury,
-    address assuranceVault,
+    address reassuranceVault,
     uint256 coverFee,
     uint256 minStake,
     uint256 minReportingStake,
@@ -36,7 +36,7 @@ contract Protocol is IProtocol, ProtoBase {
     require(npm != address(0), "Invalid NPM");
     require(uniswapV2RouterLike != address(0), "Invalid Router");
     require(treasury != address(0), "Invalid Treasury");
-    require(assuranceVault != address(0), "Invalid Vault");
+    require(reassuranceVault != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
@@ -45,7 +45,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
     s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
     s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
-    s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
+    s.setAddressByKey(ProtoUtilV1.NS_REASSURANCE_VAULT, reassuranceVault);
 
     _setCoverFees(coverFee);
     _setMinStake(minStake);

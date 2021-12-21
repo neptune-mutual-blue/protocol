@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
-**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverAssurance](CoverAssurance.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [Commission](Commission.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -112,9 +112,9 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -134,8 +134,8 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

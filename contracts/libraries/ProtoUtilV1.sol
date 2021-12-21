@@ -10,7 +10,7 @@ library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
   bytes32 public constant NS_CORE = "proto:core";
-  bytes32 public constant NS_ASSURANCE_VAULT = "proto:core:assurance:vault";
+  bytes32 public constant NS_REASSURANCE_VAULT = "proto:core:reassurance:vault";
 
   /// @dev The address where burn tokens are sent or collected.
   /// This behavior (collection) is required if the instance of
@@ -54,9 +54,9 @@ library ProtoUtilV1 {
   /// @dev Claims processor contract address
   bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
 
-  bytes32 public constant NS_COVER_ASSURANCE = "proto:cover:assurance";
-  bytes32 public constant NS_COVER_ASSURANCE_TOKEN = "proto:cover:assurance:token";
-  bytes32 public constant NS_COVER_ASSURANCE_WEIGHT = "proto:cover:assurance:weight";
+  bytes32 public constant NS_COVER_REASSURANCE = "proto:cover:reassurance";
+  bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "proto:cover:reassurance:token";
+  bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "proto:cover:reassurance:weight";
   bytes32 public constant NS_COVER_CLAIMABLE = "proto:cover:claimable";
   bytes32 public constant NS_COVER_FEE = "proto:cover:fee";
   bytes32 public constant NS_COVER_INFO = "proto:cover:info";
@@ -147,7 +147,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
   bytes32 public constant CNAME_COVER_PROVISION = "CoverProvison";
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
-  bytes32 public constant CNAME_COVER_ASSURANCE = "CoverAssurance";
+  bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
 
   function getProtocol(IStore s) external view returns (IProtocol) {
@@ -209,8 +209,8 @@ library ProtoUtilV1 {
     return s.getAddressByKey(NS_TREASURY);
   }
 
-  function getAssuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_ASSURANCE_VAULT);
+  function getReassuranceVault(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_REASSURANCE_VAULT);
   }
 
   function getLiquidityToken(IStore s) public view returns (address) {

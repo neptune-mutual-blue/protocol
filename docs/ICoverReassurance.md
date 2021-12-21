@@ -1,30 +1,30 @@
-# ICoverAssurance.sol
+# ICoverReassurance.sol
 
-View Source: [contracts/interfaces/ICoverAssurance.sol](../contracts/interfaces/ICoverAssurance.sol)
+View Source: [contracts/interfaces/ICoverReassurance.sol](../contracts/interfaces/ICoverReassurance.sol)
 
 **↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [CoverAssurance](CoverAssurance.md)**
+**↘ Derived Contracts: [CoverReassurance](CoverReassurance.md)**
 
-**ICoverAssurance**
+**ICoverReassurance**
 
 **Events**
 
 ```js
-event AssuranceAdded(bytes32  key, uint256  amount);
+event ReassuranceAdded(bytes32  key, uint256  amount);
 ```
 
 ## Functions
 
-- [addAssurance(bytes32 key, address account, uint256 amount)](#addassurance)
+- [addReassurance(bytes32 key, address account, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 key, uint256 weight)](#setweight)
-- [getAssurance(bytes32 key)](#getassurance)
+- [getReassurance(bytes32 key)](#getreassurance)
 
-### addAssurance
+### addReassurance
 
-Adds assurance to the specified cover contract
+Adds reassurance to the specified cover contract
 
 ```solidity
-function addAssurance(bytes32 key, address account, uint256 amount) external nonpayable
+function addReassurance(bytes32 key, address account, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -39,7 +39,7 @@ function addAssurance(bytes32 key, address account, uint256 amount) external non
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addAssurance(
+function addReassurance(
     bytes32 key,
     address account,
     uint256 amount
@@ -68,12 +68,12 @@ function setWeight(bytes32 key, uint256 weight) external;
 ```
 </details>
 
-### getAssurance
+### getReassurance
 
-Gets the assurance amount of the specified cover contract
+Gets the reassurance amount of the specified cover contract
 
 ```solidity
-function getAssurance(bytes32 key) external view
+function getReassurance(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -87,7 +87,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAssurance(bytes32 key) external view returns (uint256);
+function getReassurance(bytes32 key) external view returns (uint256);
 ```
 </details>
 
@@ -102,9 +102,9 @@ function getAssurance(bytes32 key) external view returns (uint256);
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -124,8 +124,8 @@ function getAssurance(bytes32 key) external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)

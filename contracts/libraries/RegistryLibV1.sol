@@ -8,7 +8,7 @@ import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
 import "../interfaces/ICxTokenFactory.sol";
-import "../interfaces/ICoverAssurance.sol";
+import "../interfaces/ICoverReassurance.sol";
 import "../interfaces/IGovernance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
@@ -41,8 +41,8 @@ library RegistryLibV1 {
     return IPolicy(s.getContract(ProtoUtilV1.NS_COVER_POLICY));
   }
 
-  function getAssuranceContract(IStore s) public view returns (ICoverAssurance) {
-    return ICoverAssurance(s.getContract(ProtoUtilV1.NS_COVER_ASSURANCE));
+  function getReassuranceContract(IStore s) public view returns (ICoverReassurance) {
+    return ICoverReassurance(s.getContract(ProtoUtilV1.NS_COVER_REASSURANCE));
   }
 
   function getVault(IStore s, bytes32 key) public view returns (IVault) {

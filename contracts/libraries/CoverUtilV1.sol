@@ -69,9 +69,9 @@ library CoverUtilV1 {
    * @param _values[1] The total commitment amount
    * @param _values[2] The total amount of NPM provision
    * @param _values[3] NPM price
-   * @param _values[4] The total amount of assurance tokens
-   * @param _values[5] Assurance token price
-   * @param _values[6] Assurance pool weight
+   * @param _values[4] The total amount of reassurance tokens
+   * @param _values[5] Reassurance token price
+   * @param _values[6] Reassurance pool weight
    */
   function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
     require(getCoverStatus(s, key) == CoverStatus.Normal, "Invalid cover");
@@ -83,9 +83,9 @@ library CoverUtilV1 {
     _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
     _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_TOKEN, key)), 1 ether);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_ASSURANCE_WEIGHT, key);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
+    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
   }
 
   function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 floor, uint256 ceiling) {

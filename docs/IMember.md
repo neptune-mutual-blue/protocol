@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverAssurance](ICoverAssurance.md), [ICoverProvision](ICoverProvision.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
+**↘ Derived Contracts: [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverProvision](ICoverProvision.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
 
 **IMember**
 
@@ -66,9 +66,9 @@ function getName() external pure returns (bytes32);
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
-* [CoverAssurance](CoverAssurance.md)
 * [CoverBase](CoverBase.md)
 * [CoverProvision](CoverProvision.md)
+* [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
 * [cxToken](cxToken.md)
@@ -88,8 +88,8 @@ function getName() external pure returns (bytes32);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
-* [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
+* [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
 * [ICxTokenFactory](ICxTokenFactory.md)
