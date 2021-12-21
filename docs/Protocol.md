@@ -17,12 +17,16 @@ uint256 public initialized;
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod)](#initialize)
+- [initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission)](#initialize)
+- [setReportingBurnRate(uint256 value)](#setreportingburnrate)
+- [setReportingCommission(uint256 value)](#setreportingcommission)
 - [setClaimPeriod(uint256 value)](#setclaimperiod)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinStake(uint256 value)](#setminstake)
 - [setMinReportingStake(uint256 value)](#setminreportingstake)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
+- [_setReportingBurnRate(uint256 value)](#_setreportingburnrate)
+- [_setReporterCommission(uint256 value)](#_setreportercommission)
 - [_setClaimPeriod(uint256 value)](#_setclaimperiod)
 - [_setCoverFees(uint256 value)](#_setcoverfees)
 - [_setMinStake(uint256 value)](#_setminstake)
@@ -37,7 +41,7 @@ uint256 public initialized;
 
 ### 
 
-```js
+```solidity
 function (IStore store) public nonpayable ProtoBase 
 ```
 
@@ -47,10 +51,18 @@ function (IStore store) public nonpayable ProtoBase
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) ProtoBase(store) {}
+```
+</details>
+
 ### initialize
 
-```js
-function initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod) external nonpayable
+```solidity
+function initialize(address uniswapV2RouterLike, address npm, address treasury, address assuranceVault, uint256 coverFee, uint256 minStake, uint256 minReportingStake, uint256 minLiquidityPeriod, uint256 claimPeriod, uint256 burnRate, uint256 reporterCommission) external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -66,10 +78,109 @@ function initialize(address uniswapV2RouterLike, address npm, address treasury, 
 | minReportingStake | uint256 |  | 
 | minLiquidityPeriod | uint256 |  | 
 | claimPeriod | uint256 |  | 
+| burnRate | uint256 |  | 
+| reporterCommission | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function initialize(
+    address uniswapV2RouterLike,
+    address npm,
+    address treasury,
+    address assuranceVault,
+    uint256 coverFee,
+    uint256 minStake,
+    uint256 minReportingStake,
+    uint256 minLiquidityPeriod,
+    uint256 claimPeriod,
+    uint256 burnRate,
+    uint256 reporterCommission
+  ) external nonReentrant whenNotPaused {
+    // @supress-acl Can only be called once by the deployer
+    s.mustBeProtocolMember(msg.sender);
+
+    require(initialized == 0, "Already initialized");
+    require(npm != address(0), "Invalid NPM");
+    require(uniswapV2RouterLike != address(0), "Invalid Router");
+    require(treasury != address(0), "Invalid Treasury");
+    require(assuranceVault != address(0), "Invalid Vault");
+
+    s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
+    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
+    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
+
+    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
+    s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
+    s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
+    s.setAddressByKey(ProtoUtilV1.NS_ASSURANCE_VAULT, assuranceVault);
+
+    _setCoverFees(coverFee);
+    _setMinStake(minStake);
+    _setMinReportingStake(minReportingStake);
+    _setMinLiquidityPeriod(minLiquidityPeriod);
+
+    _setReportingBurnRate(burnRate);
+    _setReporterCommission(reporterCommission);
+    _setClaimPeriod(claimPeriod);
+
+    initialized = 1;
+  }
+```
+</details>
+
+### setReportingBurnRate
+
+```solidity
+function setReportingBurnRate(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReportingBurnRate(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReportingBurnRate(value);
+  }
+```
+</details>
+
+### setReportingCommission
+
+```solidity
+function setReportingCommission(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReportingCommission(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setReporterCommission(value);
+  }
+```
+</details>
 
 ### setClaimPeriod
 
-```js
+```solidity
 function setClaimPeriod(uint256 value) public nonpayable nonReentrant 
 ```
 
@@ -79,9 +190,21 @@ function setClaimPeriod(uint256 value) public nonpayable nonReentrant
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setClaimPeriod(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setClaimPeriod(value);
+  }
+```
+</details>
+
 ### setCoverFees
 
-```js
+```solidity
 function setCoverFees(uint256 value) public nonpayable nonReentrant 
 ```
 
@@ -91,9 +214,21 @@ function setCoverFees(uint256 value) public nonpayable nonReentrant
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverFees(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setCoverFees(value);
+  }
+```
+</details>
+
 ### setMinStake
 
-```js
+```solidity
 function setMinStake(uint256 value) public nonpayable nonReentrant 
 ```
 
@@ -103,9 +238,22 @@ function setMinStake(uint256 value) public nonpayable nonReentrant
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinStake(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    _setMinStake(value);
+  }
+```
+</details>
+
 ### setMinReportingStake
 
-```js
+```solidity
 function setMinReportingStake(uint256 value) public nonpayable nonReentrant 
 ```
 
@@ -115,9 +263,21 @@ function setMinReportingStake(uint256 value) public nonpayable nonReentrant
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinReportingStake(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    _setMinReportingStake(value);
+  }
+```
+</details>
+
 ### setMinLiquidityPeriod
 
-```js
+```solidity
 function setMinLiquidityPeriod(uint256 value) public nonpayable nonReentrant 
 ```
 
@@ -127,9 +287,72 @@ function setMinLiquidityPeriod(uint256 value) public nonpayable nonReentrant
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinLiquidityPeriod(uint256 value) public nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    _setMinLiquidityPeriod(value);
+  }
+```
+</details>
+
+### _setReportingBurnRate
+
+```solidity
+function _setReportingBurnRate(uint256 value) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setReportingBurnRate(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE, value);
+
+    emit ReportingBurnRateSet(previous, value);
+  }
+```
+</details>
+
+### _setReporterCommission
+
+```solidity
+function _setReporterCommission(uint256 value) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setReporterCommission(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+    s.setUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION, value);
+
+    emit ReporterCommissionSet(previous, value);
+  }
+```
+</details>
+
 ### _setClaimPeriod
 
-```js
+```solidity
 function _setClaimPeriod(uint256 value) private nonpayable
 ```
 
@@ -139,9 +362,22 @@ function _setClaimPeriod(uint256 value) private nonpayable
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setClaimPeriod(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
+
+    emit ClaimPeriodSet(previous, value);
+  }
+```
+</details>
+
 ### _setCoverFees
 
-```js
+```solidity
 function _setCoverFees(uint256 value) private nonpayable
 ```
 
@@ -151,9 +387,22 @@ function _setCoverFees(uint256 value) private nonpayable
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setCoverFees(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE, value);
+
+    emit CoverFeeSet(previous, value);
+  }
+```
+</details>
+
 ### _setMinStake
 
-```js
+```solidity
 function _setMinStake(uint256 value) private nonpayable
 ```
 
@@ -163,9 +412,22 @@ function _setMinStake(uint256 value) private nonpayable
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setMinStake(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE, value);
+
+    emit MinStakeSet(previous, value);
+  }
+```
+</details>
+
 ### _setMinReportingStake
 
-```js
+```solidity
 function _setMinReportingStake(uint256 value) private nonpayable
 ```
 
@@ -175,9 +437,22 @@ function _setMinReportingStake(uint256 value) private nonpayable
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setMinReportingStake(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE, value);
+
+    emit MinReportingStakeSet(previous, value);
+  }
+```
+</details>
+
 ### _setMinLiquidityPeriod
 
-```js
+```solidity
 function _setMinLiquidityPeriod(uint256 value) private nonpayable
 ```
 
@@ -187,10 +462,23 @@ function _setMinLiquidityPeriod(uint256 value) private nonpayable
 | ------------- |------------- | -----|
 | value | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setMinLiquidityPeriod(uint256 value) private {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD, value);
+
+    emit MinLiquidityPeriodSet(previous, value);
+  }
+```
+</details>
+
 ### upgradeContract
 
-```js
-function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable
+```solidity
+function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -201,10 +489,29 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 | previous | address |  | 
 | current | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContract(
+    bytes32 namespace,
+    address previous,
+    address current
+  ) external override nonReentrant {
+    ProtoUtilV1.mustBeProtocolMember(s, previous);
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    s.upgradeContract(namespace, previous, current);
+    emit ContractUpgraded(namespace, previous, current);
+  }
+```
+</details>
+
 ### addContract
 
-```js
-function addContract(bytes32 namespace, address contractAddress) external nonpayable
+```solidity
+function addContract(bytes32 namespace, address contractAddress) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -214,10 +521,24 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    s.addContract(namespace, contractAddress);
+    emit ContractAdded(namespace, contractAddress);
+  }
+```
+</details>
+
 ### removeMember
 
-```js
-function removeMember(address member) external nonpayable
+```solidity
+function removeMember(address member) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -225,11 +546,26 @@ function removeMember(address member) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeMember(address member) external override nonReentrant {
+    ProtoUtilV1.mustBeProtocolMember(s, member);
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    s.removeMember(member);
+    emit MemberRemoved(member);
+  }
+```
+</details>
 
 ### addMember
 
-```js
-function addMember(address member) external nonpayable
+```solidity
+function addMember(address member) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -237,12 +573,26 @@ function addMember(address member) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMember(address member) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    s.addMember(member);
+    emit MemberAdded(member);
+  }
+```
+</details>
 
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -252,11 +602,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -265,6 +625,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return "Neptune Mutual Protocol";
+  }
+```
+</details>
 
 ## Contracts
 
@@ -282,9 +652,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -302,8 +672,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -317,9 +687,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -342,12 +714,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

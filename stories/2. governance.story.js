@@ -3,7 +3,7 @@
 const BigNumber = require('bignumber.js')
 const { ethers, network } = require('hardhat')
 const composer = require('./composer')
-const { helper, cToken, key, ipfs, sample } = require('../util')
+const { helper, cxToken, key, ipfs, sample } = require('../util')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -12,7 +12,7 @@ require('chai')
 
 const constants = {
   DAYS: 86400,
-  cTokens: {},
+  cxTokens: {},
   reportInfo: {
     title: 'Test Exploit',
     observed: new Date(),
@@ -100,13 +100,13 @@ describe('Governance Stories', () => {
     let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
     let fee = (await contracts.policy.getCoverFee(...args)).fee
 
-    ; (await contracts.policy.getCToken(args[0], args[1])).cToken.should.equal(helper.zerox)
+    ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
 
     await contracts.wxDai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(...args)
 
-    let at = (await contracts.policy.getCToken(args[0], args[1])).cToken
-    constants.cTokens.kimberly = await cToken.atAddress(at, contracts.libs)
+    let at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
 
     // Purchase a cover
     args = [coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
@@ -115,19 +115,19 @@ describe('Governance Stories', () => {
     await contracts.wxDai.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(...args)
 
-    at = (await contracts.policy.getCToken(args[0], args[1])).cToken
-    constants.cTokens.lewis = await cToken.atAddress(at, contracts.libs)
+    at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)
   })
 
   it('can not claim until an incident occurs', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, lewis] = await ethers.getSigners() // eslint-disable-line
 
-    const balance = await constants.cTokens.lewis.balanceOf(lewis.address)
-    constants.cTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
+    const balance = await constants.cxTokens.lewis.balanceOf(lewis.address)
+    constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
-    await contracts.claimsProcessor.connect(lewis).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
       .should.be.revertedWith('Your claim is denied')
   })
 
@@ -313,12 +313,12 @@ describe('Governance Stories', () => {
   it('unable to claim because the incident is disputed (majority disagree)', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
 
-    const balance = await constants.cTokens.kimberly.balanceOf(kimberly.address)
-    constants.cTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
+    const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
+    constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
-    await contracts.claimsProcessor.connect(kimberly).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
       .should.be.revertedWith('Your claim is denied')
   })
 
@@ -333,12 +333,12 @@ describe('Governance Stories', () => {
   it('unable to claim because the claim period has not begun', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
 
-    const balance = await constants.cTokens.kimberly.balanceOf(kimberly.address)
-    constants.cTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
+    const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
+    constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
-    await contracts.claimsProcessor.connect(kimberly).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
       .should.be.revertedWith('Your claim is denied')
   })
 
@@ -361,15 +361,15 @@ describe('Governance Stories', () => {
   it('kimberly successfully received payout during the claim period', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
 
-    const balance = await constants.cTokens.kimberly.balanceOf(kimberly.address)
-    constants.cTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
+    const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
+    constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     const before = await contracts.wxDai.balanceOf(kimberly.address)
 
-    await contracts.claimsProcessor.connect(kimberly).claim(constants.cTokens.kimberly.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
     const after = await contracts.wxDai.balanceOf(kimberly.address)
 
     after.should.be.gt(before)
@@ -380,15 +380,15 @@ describe('Governance Stories', () => {
   it('lewis was unable to claim after the expiry period', async () => {
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, lewis] = await ethers.getSigners() // eslint-disable-line
 
-    const balance = await constants.cTokens.lewis.balanceOf(lewis.address)
-    constants.cTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
+    const balance = await constants.cxTokens.lewis.balanceOf(lewis.address)
+    constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     // This causes the claim period to expire
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.claimsProcessor.connect(lewis).claim(constants.cTokens.lewis.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.lewis.address, coverKey, incidentDate, balance)
       .should.be.revertedWith('Claim period has expired')
   })
 

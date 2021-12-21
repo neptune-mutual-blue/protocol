@@ -1,29 +1,83 @@
-# cTokenFactoryLibV1.sol
+# IUnstakable.sol
 
-View Source: [contracts/libraries/cTokenFactoryLibV1.sol](../contracts/libraries/cTokenFactoryLibV1.sol)
+View Source: [contracts/interfaces/IUnstakable.sol](../contracts/interfaces/IUnstakable.sol)
 
-**cTokenFactoryLibV1**
+**↘ Derived Contracts: [IResolution](IResolution.md), [Unstakable](Unstakable.md)**
+
+**IUnstakable**
+
+**Events**
+
+```js
+event Unstaken(address indexed caller, uint256  originalStake, uint256  reward);
+event ReporterRewardDistributed(address indexed caller, address indexed reporter, uint256  originalReward, uint256  reporterReward);
+event GovernanceBurned(address indexed caller, address indexed burner, uint256  originalReward, uint256  burnedAmount);
+```
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 key, uint256 expiryDate)](#getbytecode)
+- [unstake(bytes32 key, uint256 incidentDate)](#unstake)
+- [getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
 
-### getByteCode
+### unstake
 
-Gets the bytecode of the `cToken` contract
-
-```js
-function getByteCode(IStore s, bytes32 key, uint256 expiryDate) external pure
-returns(bytecode bytes, salt bytes32)
+```solidity
+function unstake(bytes32 key, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore | Provide the store instance | 
-| key | bytes32 | Provide the cover key | 
-| expiryDate | uint256 | Specify the expiry date of this cToken instance | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function unstake(bytes32 key, uint256 incidentDate) external;
+```
+</details>
+
+### getUnstakeInfoFor
+
+```solidity
+function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) external view
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getUnstakeInfoFor(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  )
+    external
+    view
+    returns (
+      uint256 totalStakeInWinningCamp,
+      uint256 totalStakeInLosingCamp,
+      uint256 myStakeInWinningCamp,
+      uint256 toBurn,
+      uint256 toReporter,
+      uint256 myReward
+    );
+```
+</details>
 
 ## Contracts
 
@@ -41,9 +95,9 @@ returns(bytecode bytes, salt bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -61,8 +115,8 @@ returns(bytecode bytes, salt bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -76,9 +130,11 @@ returns(bytecode bytes, salt bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -101,12 +157,14 @@ returns(bytecode bytes, salt bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

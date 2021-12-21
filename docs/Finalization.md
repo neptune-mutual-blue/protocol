@@ -2,8 +2,8 @@
 
 View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
-**↗ Extends: [IFinalization](IFinalization.md), [Recoverable](Recoverable.md)**
-**↘ Derived Contracts: [Resolution](Resolution.md)**
+**↗ Extends: [Recoverable](Recoverable.md), [IFinalization](IFinalization.md)**
+**↘ Derived Contracts: [Resolvable](Resolvable.md)**
 
 **Finalization**
 
@@ -14,7 +14,7 @@ View Source: [contracts/core/governance/resolution/Finalization.sol](../contract
 
 ### finalize
 
-```js
+```solidity
 function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
@@ -25,9 +25,26 @@ function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReen
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
+
+    s.mustBeClaimingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterClaimExpiry(key);
+
+    _finalize(key, incidentDate);
+  }
+```
+</details>
+
 ### _finalize
 
-```js
+```solidity
 function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 ```
 
@@ -37,6 +54,25 @@ function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _finalize(bytes32 key, uint256 incidentDate) internal {
+    // Reset to normal
+    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
+    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+
+    s.deleteAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
+
+    emit Finalized(key, msg.sender, incidentDate);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -54,9 +90,9 @@ function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -74,8 +110,8 @@ function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -89,9 +125,11 @@ function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -114,12 +152,14 @@ function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

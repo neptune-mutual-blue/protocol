@@ -39,7 +39,7 @@ address public lqt;
 
 Constructs this contract
 
-```js
+```solidity
 function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpayable ERC20 Recoverable 
 ```
 
@@ -51,11 +51,26 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpay
 | coverKey | bytes32 | Enter the cover key or cover this contract is related to | 
 | liquidityToken | IERC20 | Provide the liquidity token instance for this Vault | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(
+    IStore store,
+    bytes32 coverKey,
+    IERC20 liquidityToken
+  ) ERC20("Proof of Deposits", "PODs") Recoverable(store) {
+    key = coverKey;
+    lqt = address(liquidityToken);
+  }
+```
+</details>
+
 ### addLiquidityInternal
 
 Adds liquidity to the specified cover contract
 
-```js
+```solidity
 function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -67,9 +82,27 @@ function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidityInternal(
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.mustBeValidCover(key);
+    s.callerMustBeCoverContract();
+
+    _addLiquidity(coverKey, account, amount, true);
+  }
+```
+</details>
+
 ### transferGovernance
 
-```js
+```solidity
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -81,11 +114,30 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 | to | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferGovernance(
+    bytes32 coverKey,
+    address to,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.callerMustBeClaimsProcessorContract();
+    require(coverKey == key, "Forbidden");
+
+    IERC20(lqt).ensureTransfer(to, amount);
+    emit GovernanceTransfer(to, amount);
+  }
+```
+</details>
+
 ### addLiquidity
 
 Adds liquidity to the specified cover contract
 
-```js
+```solidity
 function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
 ```
 
@@ -96,11 +148,24 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonR
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
+    s.mustNotBePaused();
+    s.mustBeValidCover(key);
+
+    _addLiquidity(coverKey, msg.sender, amount, false);
+  }
+```
+</details>
+
 ### removeLiquidity
 
 Removes liquidity from the specified cover contract
 
-```js
+```solidity
 function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpayable nonReentrant 
 ```
 
@@ -111,11 +176,25 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpay
 | coverKey | bytes32 | Enter the cover key | 
 | podsToRedeem | uint256 | Enter the amount of pods to redeem | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
+    s.mustNotBePaused();
+    require(coverKey == key, "Forbidden");
+    uint256 released = VaultLibV1.removeLiquidity(s, coverKey, address(this), lqt, podsToRedeem);
+
+    emit PodsRedeemed(msg.sender, podsToRedeem, released);
+  }
+```
+</details>
+
 ### _addLiquidity
 
 Adds liquidity to the specified cover contract
 
-```js
+```solidity
 function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity) private nonpayable
 ```
 
@@ -128,11 +207,31 @@ function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool i
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 | initialLiquidity | bool |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _addLiquidity(
+    bytes32 coverKey,
+    address account,
+    uint256 amount,
+    bool initialLiquidity
+  ) private {
+    require(coverKey == key, "Forbidden");
+
+    uint256 podsToMint = VaultLibV1.addLiquidity(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
+    super._mint(account, podsToMint);
+
+    emit PodsIssued(account, podsToMint, amount);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -142,11 +241,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -155,6 +264,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -172,9 +291,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -192,8 +311,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -207,9 +326,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -232,12 +353,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

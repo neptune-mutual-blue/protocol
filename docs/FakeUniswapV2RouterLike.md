@@ -12,7 +12,7 @@ View Source: [contracts/fakes/FakeUniswapV2RouterLike.sol](../contracts/fakes/Fa
 
 ### getAmountsOut
 
-```js
+```solidity
 function getAmountsOut(uint256 multiplier, address[] ) external pure
 returns(uint256[])
 ```
@@ -23,6 +23,21 @@ returns(uint256[])
 | ------------- |------------- | -----|
 | multiplier | uint256 |  | 
 |  | address[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountsOut(uint256 multiplier, address[] calldata) external pure override returns (uint256[] memory) {
+    uint256[] memory amounts = new uint256[](2);
+
+    amounts[0] = multiplier;
+    amounts[1] = multiplier;
+
+    return amounts;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -40,9 +55,9 @@ returns(uint256[])
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -60,8 +75,8 @@ returns(uint256[])
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -75,9 +90,11 @@ returns(uint256[])
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -100,12 +117,14 @@ returns(uint256[])
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

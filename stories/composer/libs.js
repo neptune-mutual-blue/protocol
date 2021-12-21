@@ -64,7 +64,7 @@ const deployAll = async (cache) => {
     VaultLibV1: vaultLib.address
   })
 
-  const cTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cTokenFactoryLibV1', {
+  const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     BaseLibV1: baseLibV1.address,
     ValidationLibV1: validationLib.address
   })
@@ -81,7 +81,7 @@ const deployAll = async (cache) => {
     governanceLib,
     vaultFactoryLib,
     vaultLib,
-    cTokenFactoryLib,
+    cxTokenFactoryLib,
     dateLib
   }
 }

@@ -1,97 +1,122 @@
-# IClaimsProcessor.sol
+# cxToken (cxToken.sol)
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/core/cxToken/cxToken.sol](../contracts/core/cxToken/cxToken.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↗ Extends: [ICxToken](ICxToken.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
 
-**IClaimsProcessor**
+**cxToken**
 
-**Events**
+cxTokens are minted when someone purchases a cover. <br /> <br />
+ When a cover incident is successfully resolved, each unit of cxTokens can be redeemed at 1:1 ratio
+ of 1 cxToken = 1 DAI/BUSD/USDC.
+
+## Contract Members
+**Constants & Variables**
 
 ```js
-event Claimed(address indexed cxToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
+bytes32 public coverKey;
+uint256 public expiresOn;
+bool public finalized;
+
 ```
 
 ## Functions
 
-- [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [constructor(IStore store, bytes32 key, uint256 expiry)](#)
+- [mint(bytes32 key, address to, uint256 amount)](#mint)
+- [burn(uint256 amount)](#burn)
 
-### claim
+### 
+
+Constructs this contract
 
 ```solidity
-function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| amount | uint256 |  | 
+| store | IStore | Provide the store contract instance | 
+| key | bytes32 | Enter the cover key or cover this cxToken instance points to | 
+| expiry | uint256 | Provide the cover expiry timestamp of this cxToken instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function claim(
-    address cxToken,
+constructor(
+    IStore store,
     bytes32 key,
-    uint256 incidentDate,
+    uint256 expiry
+  ) ERC20("USD Cover Token", "cUSD") Recoverable(store) {
+    coverKey = key;
+    expiresOn = expiry;
+  }
+```
+</details>
+
+### mint
+
+Mints cxTokens when a policy is purchased.
+ This feature can only be accesed by the latest policy smart contract.
+
+```solidity
+function mint(bytes32 key, address to, uint256 amount) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key for which the cxTokens are being minted | 
+| to | address | Enter the address where the minted token will be sent | 
+| amount | uint256 | Specify the amount of cxTokens to mint | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(
+    bytes32 key,
+    address to,
     uint256 amount
-  ) external;
+  ) external override nonReentrant {
+    // @supress-acl Can only be called by the latest policy contract
+    s.mustNotBePaused();
+    require(key == coverKey, "Invalid cover");
+    s.callerMustBePolicyContract();
+
+    super._mint(to, amount);
+  }
 ```
 </details>
 
-### validate
+### burn
+
+Burns the tokens held by the sender
 
 ```solidity
-function validate(address cxToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
+function burn(uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| amount | uint256 | Specify the amount of tokens to burn | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validate(
-    address cxToken,
-    bytes32 key,
-    uint256 incidentDate
-  ) external view returns (bool);
-```
-</details>
+function burn(uint256 amount) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
 
-### getClaimExpiryDate
-
-```solidity
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getClaimExpiryDate(bytes32 key) external view returns (uint256);
+    s.mustNotBePaused();
+    super._burn(msg.sender, amount);
+  }
 ```
 </details>
 

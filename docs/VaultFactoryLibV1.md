@@ -12,7 +12,7 @@ View Source: [contracts/libraries/VaultFactoryLibV1.sol](../contracts/libraries/
 
 Gets the bytecode of the `Vault` contract
 
-```js
+```solidity
 function getByteCode(IStore s, bytes32 key, address liquidityToken) external pure
 returns(bytecode bytes, salt bytes32)
 ```
@@ -24,6 +24,21 @@ returns(bytecode bytes, salt bytes32)
 | s | IStore | Provide the store instance | 
 | key | bytes32 | Provide the cover key | 
 | liquidityToken | address | Specify the liquidity token for this Vault | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getByteCode(
+    IStore s,
+    bytes32 key,
+    address liquidityToken
+  ) external pure returns (bytes memory bytecode, bytes32 salt) {
+    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key));
+    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
+  }
+```
+</details>
 
 ## Contracts
 
@@ -41,9 +56,9 @@ returns(bytecode bytes, salt bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -61,8 +76,8 @@ returns(bytecode bytes, salt bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -76,9 +91,11 @@ returns(bytecode bytes, salt bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -101,12 +118,14 @@ returns(bytecode bytes, salt bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

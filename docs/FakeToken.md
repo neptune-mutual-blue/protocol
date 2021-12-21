@@ -15,7 +15,7 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 
 ### 
 
-```js
+```solidity
 function (string name, string symbol, uint256 supply) public nonpayable ERC20 
 ```
 
@@ -27,9 +27,23 @@ function (string name, string symbol, uint256 supply) public nonpayable ERC20
 | symbol | string |  | 
 | supply | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(
+    string memory name,
+    string memory symbol,
+    uint256 supply
+  ) ERC20(name, symbol) {
+    super._mint(msg.sender, supply);
+  }
+```
+</details>
+
 ### mint
 
-```js
+```solidity
 function mint(address account, uint256 amount) external nonpayable onlyOwner 
 ```
 
@@ -40,11 +54,21 @@ function mint(address account, uint256 amount) external nonpayable onlyOwner
 | account | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(address account, uint256 amount) external onlyOwner {
+    super._mint(account, amount);
+  }
+```
+</details>
+
 ### request
 
 Request 100 tokens
 
-```js
+```solidity
 function request() external nonpayable
 ```
 
@@ -53,9 +77,19 @@ function request() external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function request() external {
+    super._mint(msg.sender, 100 ether);
+  }
+```
+</details>
+
 ### burn
 
-```js
+```solidity
 function burn(uint256 amount) external nonpayable
 ```
 
@@ -64,6 +98,16 @@ function burn(uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function burn(uint256 amount) external {
+    super._burn(msg.sender, amount);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -81,9 +125,9 @@ function burn(uint256 amount) external nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -101,8 +145,8 @@ function burn(uint256 amount) external nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -116,9 +160,11 @@ function burn(uint256 amount) external nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -141,12 +187,14 @@ function burn(uint256 amount) external nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

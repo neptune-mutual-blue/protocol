@@ -37,7 +37,19 @@ library ProtoUtilV1 {
   bytes32 public constant NS_RESOLUTION = "proto:gov:resolution";
 
   /// @dev The timestamp when a tokenholder withdraws their reporting stake
+  bytes32 public constant NS_UNSTAKEN = "proto:gov:unstaken";
+
+  /// @dev The timestamp when a tokenholder withdraws their reporting stake
   bytes32 public constant NS_UNSTAKE_TS = "proto:gov:unstake:ts";
+
+  /// @dev The reward received by the winning camp
+  bytes32 public constant NS_UNSTAKE_REWARD = "proto:gov:unstake:reward";
+
+  /// @dev The stakes burned during incident resolution
+  bytes32 public constant NS_UNSTAKE_BURNED = "proto:gov:unstake:burned";
+
+  /// @dev The stakes burned during incident resolution
+  bytes32 public constant NS_UNSTAKE_REPORTER_FEE = "proto:gov:unstake:rep:fee";
 
   /// @dev Claims processor contract address
   bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
@@ -65,8 +77,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_STATUS = "proto:cover:status";
   bytes32 public constant NS_COVER_VAULT = "proto:cover:vault";
   bytes32 public constant NS_COVER_VAULT_FACTORY = "proto:cover:vault:factory";
-  bytes32 public constant NS_COVER_CTOKEN = "proto:cover:ctoken";
-  bytes32 public constant NS_COVER_CTOKEN_FACTORY = "proto:cover:ctoken:factory";
+  bytes32 public constant NS_COVER_CXTOKEN = "proto:cover:cxtoken";
+  bytes32 public constant NS_COVER_CXTOKEN_FACTORY = "proto:cover:cxtoken:factory";
   bytes32 public constant NS_COVER_WHITELIST = "proto:cover:whitelist";
   bytes32 public constant NS_TREASURY = "proto:core:treasury";
   bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
@@ -132,7 +144,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
-  bytes32 public constant CNAME_CTOKEN_FACTORY = "cTokenFactory";
+  bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
   bytes32 public constant CNAME_COVER_PROVISION = "CoverProvison";
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_ASSURANCE = "CoverAssurance";

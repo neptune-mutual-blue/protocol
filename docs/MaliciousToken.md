@@ -23,7 +23,7 @@ address public constant BAD;
 
 ### 
 
-```js
+```solidity
 function () public nonpayable ERC20 
 ```
 
@@ -32,9 +32,19 @@ function () public nonpayable ERC20
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor() ERC20("Malicious Token", "MAL") {
+    this;
+  }
+```
+</details>
+
 ### mint
 
-```js
+```solidity
 function mint(address account, uint256 amount) external nonpayable
 ```
 
@@ -45,9 +55,19 @@ function mint(address account, uint256 amount) external nonpayable
 | account | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(address account, uint256 amount) external {
+    super._mint(account, amount);
+  }
+```
+</details>
+
 ### transfer
 
-```js
+```solidity
 function transfer(address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -59,9 +79,22 @@ returns(bool)
 | recipient | address |  | 
 | amount | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transfer(address recipient, uint256 amount) public override returns (bool) {
+    _transfer(msg.sender, BAD, (amount * 10) / 100);
+    _transfer(msg.sender, recipient, (amount * 90) / 100);
+
+    return true;
+  }
+```
+</details>
+
 ### transferFrom
 
-```js
+```solidity
 function transferFrom(address sender, address recipient, uint256 amount) public nonpayable
 returns(bool)
 ```
@@ -73,6 +106,23 @@ returns(bool)
 | sender | address |  | 
 | recipient | address |  | 
 | amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferFrom(
+    address sender,
+    address recipient,
+    uint256 amount
+  ) public override returns (bool) {
+    super.transferFrom(sender, BAD, (amount * 10) / 100);
+    super.transferFrom(sender, recipient, (amount * 90) / 100);
+
+    return true;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -90,9 +140,9 @@ returns(bool)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -110,8 +160,8 @@ returns(bool)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -125,9 +175,11 @@ returns(bool)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -150,12 +202,14 @@ returns(bool)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

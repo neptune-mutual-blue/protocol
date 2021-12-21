@@ -28,7 +28,7 @@ event RoleRevoked(bytes32 indexed role, address indexed account, address indexed
 
 Returns `true` if `account` has been granted `role`.
 
-```js
+```solidity
 function hasRole(bytes32 role, address account) external view
 returns(bool)
 ```
@@ -40,13 +40,21 @@ returns(bool)
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function hasRole(bytes32 role, address account) external view returns (bool);
+```
+</details>
+
 ### getRoleAdmin
 
 Returns the admin role that controls `role`. See {grantRole} and
  {revokeRole}.
  To change a role's admin, use {AccessControl-_setRoleAdmin}.
 
-```js
+```solidity
 function getRoleAdmin(bytes32 role) external view
 returns(bytes32)
 ```
@@ -57,6 +65,14 @@ returns(bytes32)
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getRoleAdmin(bytes32 role) external view returns (bytes32);
+```
+</details>
+
 ### grantRole
 
 Grants `role` to `account`.
@@ -65,7 +81,7 @@ Grants `role` to `account`.
  Requirements:
  - the caller must have ``role``'s admin role.
 
-```js
+```solidity
 function grantRole(bytes32 role, address account) external nonpayable
 ```
 
@@ -76,6 +92,14 @@ function grantRole(bytes32 role, address account) external nonpayable
 | role | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRole(bytes32 role, address account) external;
+```
+</details>
+
 ### revokeRole
 
 Revokes `role` from `account`.
@@ -83,7 +107,7 @@ Revokes `role` from `account`.
  Requirements:
  - the caller must have ``role``'s admin role.
 
-```js
+```solidity
 function revokeRole(bytes32 role, address account) external nonpayable
 ```
 
@@ -93,6 +117,14 @@ function revokeRole(bytes32 role, address account) external nonpayable
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function revokeRole(bytes32 role, address account) external;
+```
+</details>
 
 ### renounceRole
 
@@ -105,7 +137,7 @@ Revokes `role` from the calling account.
  Requirements:
  - the caller must be `account`.
 
-```js
+```solidity
 function renounceRole(bytes32 role, address account) external nonpayable
 ```
 
@@ -115,6 +147,14 @@ function renounceRole(bytes32 role, address account) external nonpayable
 | ------------- |------------- | -----|
 | role | bytes32 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function renounceRole(bytes32 role, address account) external;
+```
+</details>
 
 ## Contracts
 
@@ -132,9 +172,9 @@ function renounceRole(bytes32 role, address account) external nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -152,8 +192,8 @@ function renounceRole(bytes32 role, address account) external nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -167,9 +207,11 @@ function renounceRole(bytes32 role, address account) external nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -192,12 +234,14 @@ function renounceRole(bytes32 role, address account) external nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

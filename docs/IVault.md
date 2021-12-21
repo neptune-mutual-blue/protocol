@@ -26,7 +26,7 @@ event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidit
 
 Adds liquidity to the specified cover contract
 
-```js
+```solidity
 function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable
 ```
 
@@ -38,11 +38,23 @@ function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidityInternal(
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### addLiquidity
 
 Adds liquidity to the specified cover contract
 
-```js
+```solidity
 function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
@@ -53,11 +65,19 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidity(bytes32 coverKey, uint256 amount) external;
+```
+</details>
+
 ### removeLiquidity
 
 Removes liquidity from the specified cover contract
 
-```js
+```solidity
 function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
@@ -68,11 +88,19 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to remove. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeLiquidity(bytes32 coverKey, uint256 amount) external;
+```
+</details>
+
 ### transferGovernance
 
 Transfers liquidity to governance contract.
 
-```js
+```solidity
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable
 ```
 
@@ -83,6 +111,18 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 | coverKey | bytes32 | Enter the cover key | 
 | to | address | Enter the destination account | 
 | amount | uint256 | Enter the amount of liquidity token to transfer. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferGovernance(
+    bytes32 coverKey,
+    address to,
+    uint256 amount
+  ) external;
+```
+</details>
 
 ## Contracts
 
@@ -100,9 +140,9 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -120,8 +160,8 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -135,9 +175,11 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -160,12 +202,14 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

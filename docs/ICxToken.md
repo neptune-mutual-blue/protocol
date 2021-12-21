@@ -1,36 +1,110 @@
-# ICTokenFactory.sol
+# ICxToken.sol
 
-View Source: [contracts/interfaces/ICTokenFactory.sol](../contracts/interfaces/ICTokenFactory.sol)
+View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToken.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [cTokenFactory](cTokenFactory.md)**
+**↗ Extends: [IERC20](IERC20.md)**
+**↘ Derived Contracts: [cxToken](cxToken.md)**
 
-**ICTokenFactory**
+**ICxToken**
 
 **Events**
 
 ```js
-event CTokenDeployed(bytes32 indexed key, address  cToken, uint256  expiryDate);
+event Finalized(uint256  amount);
 ```
 
 ## Functions
 
-- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
+- [mint(bytes32 key, address to, uint256 amount)](#mint)
+- [burn(uint256 amount)](#burn)
+- [expiresOn()](#expireson)
+- [coverKey()](#coverkey)
 
-### deploy
+### mint
 
-```js
-function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
-returns(address)
+```solidity
+function mint(bytes32 key, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | key | bytes32 |  | 
-| expiryDate | uint256 |  | 
+| to | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(
+    bytes32 key,
+    address to,
+    uint256 amount
+  ) external;
+```
+</details>
+
+### burn
+
+```solidity
+function burn(uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function burn(uint256 amount) external;
+```
+</details>
+
+### expiresOn
+
+```solidity
+function expiresOn() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function expiresOn() external view returns (uint256);
+```
+</details>
+
+### coverKey
+
+```solidity
+function coverKey() external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function coverKey() external view returns (bytes32);
+```
+</details>
 
 ## Contracts
 
@@ -48,9 +122,9 @@ returns(address)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -68,8 +142,8 @@ returns(address)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -83,9 +157,11 @@ returns(address)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -108,12 +184,14 @@ returns(address)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

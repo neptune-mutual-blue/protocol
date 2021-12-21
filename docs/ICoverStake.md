@@ -25,7 +25,7 @@ event FeeBurned(bytes32  key, uint256  amount);
 
 Increase the stake of the given cover pool
 
-```js
+```solidity
 function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable
 ```
 
@@ -38,11 +38,24 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function increaseStake(
+    bytes32 key,
+    address account,
+    uint256 amount,
+    uint256 fee
+  ) external;
+```
+</details>
+
 ### decreaseStake
 
 Decreases the stake from the given cover pool
 
-```js
+```solidity
 function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable
 ```
 
@@ -54,18 +67,26 @@ function decreaseStake(bytes32 key, address account, uint256 amount) external no
 | account | address | Enter the account to decrease the stake of | 
 | amount | uint256 | Enter the amount of stake to decrease | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function decreaseStake(
+    bytes32 key,
+    address account,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### stakeOf
 
 Gets the stake of an account for the given cover key
 
-```js
+```solidity
 function stakeOf(bytes32 key, address account) external view
 returns(uint256)
 ```
-
-**Returns**
-
-Returns the total stake of the specified account on the given cover key
 
 **Arguments**
 
@@ -73,6 +94,18 @@ Returns the total stake of the specified account on the given cover key
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 | account | address | Specify the account to obtain the stake of | 
+
+**Returns**
+
+Returns the total stake of the specified account on the given cover key
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function stakeOf(bytes32 key, address account) external view returns (uint256);
+```
+</details>
 
 ## Contracts
 
@@ -90,9 +123,9 @@ Returns the total stake of the specified account on the given cover key
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -110,8 +143,8 @@ Returns the total stake of the specified account on the given cover key
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -125,9 +158,11 @@ Returns the total stake of the specified account on the given cover key
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -150,12 +185,14 @@ Returns the total stake of the specified account on the given cover key
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

@@ -3,7 +3,7 @@
 pragma solidity 0.8.0;
 import "../Recoverable.sol";
 import "../../interfaces/IClaimsProcessor.sol";
-import "../../interfaces/ICToken.sol";
+import "../../interfaces/ICxToken.sol";
 import "../../interfaces/IVault.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/RegistryLibV1.sol";
@@ -34,46 +34,49 @@ contract Processor is IClaimsProcessor, Recoverable {
   }
 
   /**
-   * @dev Enables policyholders to claim their cTokens which results in a payout.
+   * @dev Enables policyholders to claim their cxTokens which results in a payout.
    * The payout is provided only when the active cover is marked and resolved as "Incident Happened".
    *
-   * @param cToken Provide the address of the claim token that you're using for this claim.
+   * @param cxToken Provide the address of the claim token that you're using for this claim.
    * @param key Enter the key of the cover you're claiming
    * @param incidentDate Enter the active cover's date of incident
-   * @param amount Enter the amount of cTokens you want to transfer
+   * @param amount Enter the amount of cxTokens you want to transfer
    */
   function claim(
-    address cToken,
+    address cxToken,
     bytes32 key,
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    validate(cToken, key, incidentDate);
+    // @supress-pausable Already implemented in the function `validate`
+    // @supress-acl Marking this as publicly accessible
 
-    IERC20(cToken).ensureTransferFrom(msg.sender, address(this), amount);
-    ICToken(cToken).burn(amount);
+    validate(cxToken, key, incidentDate);
+
+    IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
+    ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(key);
     //Todo: platform fees
     vault.transferGovernance(key, msg.sender, amount);
 
-    emit Claimed(cToken, key, msg.sender, incidentDate, amount);
+    emit Claimed(cxToken, key, msg.sender, incidentDate, amount);
   }
 
   /**
    * @dev Validates a given claim
-   * @param cToken Provide the address of the claim token that you're using for this claim.
+   * @param cxToken Provide the address of the claim token that you're using for this claim.
    * @param key Enter the key of the cover you're validating the claim for
    * @param incidentDate Enter the active cover's date of incident
    * @return Returns true if the given claim is valid and can result in a successful payout
    */
   function validate(
-    address cToken,
+    address cxToken,
     bytes32 key,
     uint256 incidentDate
   ) public view override returns (bool) {
     s.mustNotBePaused();
-    s.mustBeValidClaim(key, cToken, incidentDate);
+    s.mustBeValidClaim(key, cxToken, incidentDate);
 
     return true;
   }

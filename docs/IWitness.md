@@ -23,7 +23,7 @@ event Refuted(bytes32 indexed key, address indexed witness, uint256  incidentDat
 
 ### attest
 
-```js
+```solidity
 function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -35,9 +35,21 @@ function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function attest(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external;
+```
+</details>
+
 ### refute
 
-```js
+```solidity
 function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -49,9 +61,21 @@ function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function refute(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external;
+```
+</details>
+
 ### getStatus
 
-```js
+```solidity
 function getStatus(bytes32 key) external view
 returns(uint256)
 ```
@@ -62,9 +86,17 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStatus(bytes32 key) external view returns (uint256);
+```
+</details>
+
 ### getStakes
 
-```js
+```solidity
 function getStakes(bytes32 key, uint256 incidentDate) external view
 returns(uint256, uint256)
 ```
@@ -76,9 +108,17 @@ returns(uint256, uint256)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakes(bytes32 key, uint256 incidentDate) external view returns (uint256, uint256);
+```
+</details>
+
 ### getStakesOf
 
-```js
+```solidity
 function getStakesOf(bytes32 key, uint256 incidentDate, address account) external view
 returns(uint256, uint256)
 ```
@@ -90,6 +130,18 @@ returns(uint256, uint256)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakesOf(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) external view returns (uint256, uint256);
+```
+</details>
 
 ## Contracts
 
@@ -107,9 +159,9 @@ returns(uint256, uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -127,8 +179,8 @@ returns(uint256, uint256)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -142,9 +194,11 @@ returns(uint256, uint256)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -167,12 +221,14 @@ returns(uint256, uint256)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

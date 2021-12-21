@@ -12,7 +12,7 @@
  * @property {Object} governanceLib - Governance utility library
  * @property {Object} vaultFactoryLib - Vault factory library
  * @property {Object} vaultLib - Vault library
- * @property {Object} cTokenFactoryLib - cToken factory library
+ * @property {Object} cxTokenFactoryLib - cxToken factory library
  * @property {Object} dateLib - Date helper library
  */
 
@@ -27,7 +27,7 @@
  * @property {Object} assuranceContract - Assurance contract
  * @property {Object} provisionContract - NPM provision contract
  * @property {Object} vaultFactory - Liquidity vault factory
- * @property {Object} cTokenFactory - cToken factory
+ * @property {Object} cxTokenFactory - cxToken factory
  * @property {Object} cover - The base cover contract
  * @property {Object} priceDiscovery - Price discovery contract
  * @property {Object} policyAdminContract - Policy admin contract

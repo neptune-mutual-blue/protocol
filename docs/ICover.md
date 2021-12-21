@@ -28,7 +28,7 @@ event WhitelistUpdated(address  account, bool  status);
 
 Initializes this contract
 
-```js
+```solidity
 function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable
 ```
 
@@ -38,6 +38,14 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 | ------------- |------------- | -----|
 | liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
 | liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function initialize(address liquidityToken, bytes32 liquidityName) external;
+```
+</details>
 
 ### addCover
 
@@ -53,7 +61,7 @@ Adds a new coverage pool or cover contract.
  Read the documentation to learn more about the fees: <br />
  https://docs.neptunemutual.com/covers/contract-creators
 
-```js
+```solidity
 function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address assuranceToken, uint256 initialAssuranceAmount, uint256 initialLiquidity) external nonpayable
 ```
 
@@ -69,12 +77,28 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | initialAssuranceAmount | uint256 | **Optional.** Enter the initial amount of  assurance tokens you'd like to add to this pool. | 
 | initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addCover(
+    bytes32 key,
+    bytes32 info,
+    uint256 reportingPeriod,
+    uint256 stakeWithFee,
+    address assuranceToken,
+    uint256 initialAssuranceAmount,
+    uint256 initialLiquidity
+  ) external;
+```
+</details>
+
 ### updateCover
 
 Updates the cover contract.
  This feature is accessible only to the cover owner or protocol owner (governance).
 
-```js
+```solidity
 function updateCover(bytes32 key, bytes32 info) external nonpayable
 ```
 
@@ -85,9 +109,17 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable
 | key | bytes32 | Enter the cover key | 
 | info | bytes32 | Enter a new IPFS URL to update | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateCover(bytes32 key, bytes32 info) external;
+```
+</details>
+
 ### updateWhitelist
 
-```js
+```solidity
 function updateWhitelist(address account, bool whitelisted) external nonpayable
 ```
 
@@ -98,11 +130,19 @@ function updateWhitelist(address account, bool whitelisted) external nonpayable
 | account | address |  | 
 | whitelisted | bool |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateWhitelist(address account, bool whitelisted) external;
+```
+</details>
+
 ### getCover
 
 Get info of a cover contract by key
 
-```js
+```solidity
 function getCover(bytes32 key) external view
 returns(coverOwner address, info bytes32, values uint256[])
 ```
@@ -113,9 +153,24 @@ returns(coverOwner address, info bytes32, values uint256[])
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the cover key | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCover(bytes32 key)
+    external
+    view
+    returns (
+      address coverOwner,
+      bytes32 info,
+      uint256[] memory values
+    );
+```
+</details>
+
 ### checkIfWhitelisted
 
-```js
+```solidity
 function checkIfWhitelisted(address account) external view
 returns(bool)
 ```
@@ -125,6 +180,14 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function checkIfWhitelisted(address account) external view returns (bool);
+```
+</details>
 
 ## Contracts
 
@@ -142,9 +205,9 @@ returns(bool)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -162,8 +225,8 @@ returns(bool)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -177,9 +240,11 @@ returns(bool)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -202,12 +267,14 @@ returns(bool)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

@@ -1,77 +1,44 @@
-# cToken (cToken.sol)
+# cxTokenFactoryLibV1.sol
 
-View Source: [contracts/core/cToken/cToken.sol](../contracts/core/cToken/cToken.sol)
+View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/libraries/cxTokenFactoryLibV1.sol)
 
-**↗ Extends: [ICToken](ICToken.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
-
-**cToken**
-
-cTokens are minted when someone purchases a cover. <br /> <br />
- When a cover incident is successfully resolved, each unit of cTokens can be redeemed at 1:1 ratio
- of 1 cToken = 1 DAI/BUSD/USDC.
-
-## Contract Members
-**Constants & Variables**
-
-```js
-bytes32 public coverKey;
-uint256 public expiresOn;
-bool public finalized;
-
-```
+**cxTokenFactoryLibV1**
 
 ## Functions
 
-- [constructor(IStore store, bytes32 key, uint256 expiry)](#)
-- [mint(bytes32 key, address to, uint256 amount)](#mint)
-- [burn(uint256 amount)](#burn)
+- [getByteCode(IStore s, bytes32 key, uint256 expiryDate)](#getbytecode)
 
-### 
+### getByteCode
 
-Constructs this contract
+Gets the bytecode of the `cxToken` contract
 
-```js
-function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Recoverable 
+```solidity
+function getByteCode(IStore s, bytes32 key, uint256 expiryDate) external pure
+returns(bytecode bytes, salt bytes32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
-| key | bytes32 | Enter the cover key or cover this cToken instance points to | 
-| expiry | uint256 | Provide the cover expiry timestamp of this cToken instance | 
+| s | IStore | Provide the store instance | 
+| key | bytes32 | Provide the cover key | 
+| expiryDate | uint256 | Specify the expiry date of this cxToken instance | 
 
-### mint
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-Mints cTokens when a policy is purchased.
- This feature can only be accesed by the latest policy smart contract.
-
-```js
-function mint(bytes32 key, address to, uint256 amount) external nonpayable
+```javascript
+function getByteCode(
+    IStore s,
+    bytes32 key,
+    uint256 expiryDate
+  ) external pure returns (bytes memory bytecode, bytes32 salt) {
+    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
+  }
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key for which the cTokens are being minted | 
-| to | address | Enter the address where the minted token will be sent | 
-| amount | uint256 | Specify the amount of cTokens to mint | 
-
-### burn
-
-Burns the tokens held by the sender
-
-```js
-function burn(uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| amount | uint256 | Specify the amount of tokens to burn | 
+</details>
 
 ## Contracts
 
@@ -89,9 +56,9 @@ function burn(uint256 amount) external nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -109,8 +76,8 @@ function burn(uint256 amount) external nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -124,9 +91,11 @@ function burn(uint256 amount) external nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -149,12 +118,14 @@ function burn(uint256 amount) external nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

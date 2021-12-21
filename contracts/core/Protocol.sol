@@ -28,7 +28,8 @@ contract Protocol is IProtocol, ProtoBase {
     uint256 claimPeriod,
     uint256 burnRate,
     uint256 reporterCommission
-  ) external {
+  ) external nonReentrant whenNotPaused {
+    // @supress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
     require(initialized == 0, "Already initialized");
@@ -155,7 +156,7 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 namespace,
     address previous,
     address current
-  ) external override {
+  ) external override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -164,7 +165,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit ContractUpgraded(namespace, previous, current);
   }
 
-  function addContract(bytes32 namespace, address contractAddress) external override {
+  function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
@@ -172,7 +173,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit ContractAdded(namespace, contractAddress);
   }
 
-  function removeMember(address member) external override {
+  function removeMember(address member) external override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, member);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -181,7 +182,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit MemberRemoved(member);
   }
 
-  function addMember(address member) external override {
+  function addMember(address member) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 

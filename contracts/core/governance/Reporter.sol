@@ -31,6 +31,8 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
@@ -59,6 +61,8 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
     s.mustNotBePaused();
     s.mustNotHaveDispute(key);
     s.mustBeReporting(key);

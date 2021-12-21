@@ -42,6 +42,7 @@ const begin = async () => {
   const parsed = await parse(artifact)
 
   let count = 0
+  let warningCount = 0
 
   for (const name in parsed.output.sources) {
     const contract = parsed.output.sources[name]
@@ -77,31 +78,49 @@ const begin = async () => {
         continue
       }
 
-      console.log('\x1b[36m' + '* Path:', name + '\x1b[0m')
+      if (code.indexOf('nonReentrant') === -1) {
+        warnings.push('\x1b[31m' + '* Non Reentrancy logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
+      }
 
-      if (code.indexOf('AccessControl') === -1) {
+      if (code.indexOf('AccessControl') === -1 && code.toLowerCase().indexOf('@supress-acl') === -1) {
         warnings.push('\x1b[31m' + '* Access control logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
       }
 
-      if (code.toLowerCase().indexOf('pause') === -1) {
+      if (code.toLowerCase().indexOf('pause') === -1 && code.toLowerCase().indexOf('@supress-pausable') === -1) {
         warnings.push('\x1b[31m' + '* Pausable logic not found' + '\x1b[0m')
       }
 
-      if (warnings.length) {
-        console.log(`\x1b[31m* ${warnings.length} warning(s) found \x1b[0m`)
-        warnings.map(x => console.log(x))
+      if (code.toLowerCase().indexOf('erc20') > -1) {
+        warnings.push('\x1b[31m' + '* Ensure that you validate this ERC-20 token instance if the address came from user input' + '\x1b[0m')
       }
 
-      console.log(code, '\n')
+      if (code.toLowerCase().indexOf('todo') > -1 || code.toLowerCase().indexOf('to-do') > -1) {
+        warnings.push('\x1b[31m' + '* Warning: complete the todo list' + '\x1b[0m')
+      }
+
+      if (warnings.length) {
+        console.log('/*')
+        console.log('\x1b[36m' + '* Path:', name + '\x1b[0m')
+
+        console.log(`\x1b[31m* ${warnings.length} warning(s) found \x1b[0m`)
+        warnings.map(x => console.log(x))
+
+        console.log('*/')
+
+        console.log(code, '\n')
+        warningCount++
+      }
 
       count++
     }
   }
 
   console.log('/* %d functions update the state */', count)
+  console.log('/* %d functions with warnings */', warningCount)
   console.log('/* ---------------------------------------------------------- */')
 }
 
+console.log('pragma confuse vscode to supress warnings')
 console.log('\n\x1b[1m' + '/* List of contract functions that update the state */' + '\x1b[0m')
 console.log('/* ---------------------------------------------------------- */\n')
 

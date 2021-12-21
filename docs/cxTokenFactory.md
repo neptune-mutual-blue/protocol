@@ -1,97 +1,147 @@
-# IClaimsProcessor.sol
+# cxToken Factory Contract (cxTokenFactory.sol)
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/core/cxToken/cxTokenFactory.sol](../contracts/core/cxToken/cxTokenFactory.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↗ Extends: [ICxTokenFactory](ICxTokenFactory.md), [Recoverable](Recoverable.md)**
 
-**IClaimsProcessor**
+**cxTokenFactory**
 
-**Events**
-
-```js
-event Claimed(address indexed cxToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
-```
+As and when required by the protocol,
+ the cxTokenFactory contract creates new instances of
+ cxTokens on demand.
 
 ## Functions
 
-- [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [constructor(IStore store)](#)
+- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
+- [version()](#version)
+- [getName()](#getname)
 
-### claim
+### 
+
+Constructs this contract
 
 ```solidity
-function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function (IStore store) public nonpayable Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-| amount | uint256 |  | 
+| store | IStore | Provide the store contract instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function claim(
-    address cxToken,
-    bytes32 key,
-    uint256 incidentDate,
-    uint256 amount
-  ) external;
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
 ```
 </details>
 
-### validate
+### deploy
+
+Deploys a new instance of cxTokens
 
 ```solidity
-function validate(address cxToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
+function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable nonReentrant 
+returns(deployed address)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Provide the store contract instance | 
+| key | bytes32 | Enter the cover key related to this cxToken instance | 
+| expiryDate | uint256 | Specify the expiry date of this cxToken instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validate(
-    address cxToken,
+function deploy(
+    IStore s,
     bytes32 key,
-    uint256 incidentDate
-  ) external view returns (bool);
+    uint256 expiryDate
+  ) external override nonReentrant returns (address deployed) {
+    // @supress-acl Can only be called by the latest policy contract
+    s.mustNotBePaused();
+    s.mustBeValidCoverKey(key);
+    s.callerMustBePolicyContract();
+
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate);
+
+    require(s.getAddress(salt) == address(0), "Already deployed");
+
+    // solhint-disable-next-line
+    assembly {
+      deployed := create2(
+        callvalue(), // wei sent with current call
+        // Actual code starts after skipping the first 32 bytes
+        add(bytecode, 0x20),
+        mload(bytecode), // Load the size of code contained in the first 32 bytes
+        salt // Salt from function arguments
+      )
+
+      if iszero(extcodesize(deployed)) {
+        revert(0, 0)
+      }
+    }
+
+    s.setAddress(salt, deployed);
+    emit CxTokenDeployed(key, deployed, expiryDate);
+  }
 ```
 </details>
 
-### getClaimExpiryDate
+### version
+
+Version number of this contract
 
 ```solidity
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
+function version() external pure
+returns(bytes32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimExpiryDate(bytes32 key) external view returns (uint256);
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+Name of this contract
+
+```solidity
+function getName() public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_CXTOKEN_FACTORY;
+  }
 ```
 </details>
 

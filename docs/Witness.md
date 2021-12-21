@@ -42,7 +42,7 @@ Support the reported incident by staking your NPM token.
  you are completely aware and fully understand the risk that you may lose all of
  your stake.
 
-```js
+```solidity
 function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
 ```
 
@@ -53,6 +53,32 @@ function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | key | bytes32 | Enter the key of the active cover | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 | stake | uint256 | Enter the amount of NPM tokens you wish to stake.  Note that you cannot unstake this amount if the decision was not in your favor. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function attest(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+    s.mustNotBePaused();
+    s.mustBeReportingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeDuringReportingPeriod(key);
+
+    require(stake >= 0, "Enter a stake");
+
+    s.addAttestation(key, msg.sender, incidentDate, stake);
+
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+
+    emit Attested(key, msg.sender, incidentDate, stake);
+  }
+```
+</details>
 
 ### refute
 
@@ -69,7 +95,7 @@ Reject the reported incident by staking your NPM token.
  you are completely aware and fully understand the risk that you may lose all of
  your stake.
 
-```js
+```solidity
 function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
 ```
 
@@ -81,19 +107,41 @@ function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 | stake | uint256 | Enter the amount of NPM tokens you wish to stake.  Note that you cannot unstake this amount if the decision was not in your favor. | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function refute(
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 stake
+  ) external override nonReentrant {
+    // @supress-acl Marking this as publicly accessible
+
+    s.mustNotBePaused();
+    s.mustBeReportingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeDuringReportingPeriod(key);
+
+    require(stake >= 0, "Enter a stake");
+
+    s.addDispute(key, msg.sender, incidentDate, stake);
+
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+
+    emit Refuted(key, msg.sender, incidentDate, stake);
+  }
+```
+</details>
+
 ### getStatus
 
 Gets the status of a given cover
 
-```js
+```solidity
 function getStatus(bytes32 key) external view
 returns(uint256)
 ```
-
-**Returns**
-
-Returns the cover status as an integer.
- For more, check the enum `CoverStatus` on `CoverUtilV1` library.
 
 **Arguments**
 
@@ -101,18 +149,29 @@ Returns the cover status as an integer.
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the key of the cover you'd like to check the status of | 
 
+**Returns**
+
+Returns the cover status as an integer.
+ For more, check the enum `CoverStatus` on `CoverUtilV1` library.
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStatus(bytes32 key) external view override returns (uint256) {
+    return s.getStatus(key);
+  }
+```
+</details>
+
 ### getStakes
 
 Gets the stakes of each side of a given cover governance pool
 
-```js
+```solidity
 function getStakes(bytes32 key, uint256 incidentDate) external view
 returns(uint256, uint256)
 ```
-
-**Returns**
-
-Returns an array of integers --> [yes, no]
 
 **Arguments**
 
@@ -121,18 +180,28 @@ Returns an array of integers --> [yes, no]
 | key | bytes32 | Enter the key of the cover you'd like to check the stakes of | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 
+**Returns**
+
+Returns an array of integers --> [yes, no]
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakes(bytes32 key, uint256 incidentDate) external view override returns (uint256, uint256) {
+    return s.getStakes(key, incidentDate);
+  }
+```
+</details>
+
 ### getStakesOf
 
 Gets the stakes of each side of a given cover governance pool for the specified account.
 
-```js
+```solidity
 function getStakesOf(bytes32 key, uint256 incidentDate, address account) external view
 returns(uint256, uint256)
 ```
-
-**Returns**
-
-Returns an array of integers --> [yes, no]
 
 **Arguments**
 
@@ -141,6 +210,24 @@ Returns an array of integers --> [yes, no]
 | key | bytes32 | Enter the key of the cover you'd like to check the stakes of | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 | account | address | Enter the account you'd like to get the stakes of | 
+
+**Returns**
+
+Returns an array of integers --> [yes, no]
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakesOf(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) external view override returns (uint256, uint256) {
+    return s.getStakesOf(account, key, incidentDate);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -158,9 +245,9 @@ Returns an array of integers --> [yes, no]
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -178,8 +265,8 @@ Returns an array of integers --> [yes, no]
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -193,9 +280,11 @@ Returns an array of integers --> [yes, no]
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -218,12 +307,14 @@ Returns an array of integers --> [yes, no]
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

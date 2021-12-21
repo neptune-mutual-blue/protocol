@@ -5,7 +5,6 @@ import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
-import "../interfaces/ICTokenFactory.sol";
 import "../interfaces/ICoverAssurance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
@@ -116,6 +115,61 @@ library GovernanceUtilV1 {
     myReward = reward - toBurn - toReporter;
   }
 
+  function updateUnstakeDetails(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 originalStake,
+    uint256 reward,
+    uint256 burned,
+    uint256 reporterFee
+  ) public {
+    // Unstake timestamp of the account
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // Last unstake timestamp
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // ---------------------------------------------------------------------
+
+    // Amount unstaken by the account
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate, account));
+    s.setUintByKey(k, originalStake);
+
+    // Amount unstaken by everyone
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate));
+    s.addUintByKey(k, originalStake);
+
+    // ---------------------------------------------------------------------
+
+    if (reward > 0) {
+      // Reward received by the account
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate, account));
+      s.setUintByKey(k, reward);
+
+      // Total reward received
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate));
+      s.addUintByKey(k, reward);
+    }
+
+    // ---------------------------------------------------------------------
+
+    if (burned > 0) {
+      // Total burned
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_BURNED, key, incidentDate));
+      s.addUintByKey(k, burned);
+    }
+
+    if (reporterFee > 0) {
+      // Total fee paid to the final reporter
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REPORTER_FEE, key, incidentDate));
+      s.addUintByKey(k, reporterFee);
+    }
+  }
+
   function getStakesOf(
     IStore s,
     address account,
@@ -146,16 +200,6 @@ library GovernanceUtilV1 {
     }
 
     s.setStatus(key, CoverUtilV1.CoverStatus.IncidentHappened);
-  }
-
-  function setUnstakeTimestamp(
-    IStore s,
-    address account,
-    bytes32 key,
-    uint256 incidentDate
-  ) public {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
-    s.setUintByKey(k, block.timestamp); // solhint-disable-line
   }
 
   function addAttestation(

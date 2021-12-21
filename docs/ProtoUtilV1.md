@@ -16,7 +16,11 @@ bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_COVER;
 bytes32 public constant NS_GOVERNANCE;
 bytes32 public constant NS_RESOLUTION;
+bytes32 public constant NS_UNSTAKEN;
 bytes32 public constant NS_UNSTAKE_TS;
+bytes32 public constant NS_UNSTAKE_REWARD;
+bytes32 public constant NS_UNSTAKE_BURNED;
+bytes32 public constant NS_UNSTAKE_REPORTER_FEE;
 bytes32 public constant NS_CLAIMS_PROCESSOR;
 bytes32 public constant NS_COVER_ASSURANCE;
 bytes32 public constant NS_COVER_ASSURANCE_TOKEN;
@@ -41,8 +45,8 @@ bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
 bytes32 public constant NS_COVER_VAULT;
 bytes32 public constant NS_COVER_VAULT_FACTORY;
-bytes32 public constant NS_COVER_CTOKEN;
-bytes32 public constant NS_COVER_CTOKEN_FACTORY;
+bytes32 public constant NS_COVER_CXTOKEN;
+bytes32 public constant NS_COVER_CXTOKEN_FACTORY;
 bytes32 public constant NS_COVER_WHITELIST;
 bytes32 public constant NS_TREASURY;
 bytes32 public constant NS_PRICE_DISCOVERY;
@@ -55,9 +59,9 @@ bytes32 public constant NS_REPORTING_WITNESS_YES;
 bytes32 public constant NS_REPORTING_WITNESS_NO;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_REPORTING_STAKE_OWNED_NO;
+bytes32 public constant NS_SETUP_NPM;
 bytes32 public constant NS_REPORTING_BURN_RATE;
 bytes32 public constant NS_REPORTER_COMMISSION;
-bytes32 public constant NS_SETUP_NPM;
 bytes32 public constant NS_SETUP_COVER_FEE;
 bytes32 public constant NS_SETUP_MIN_STAKE;
 bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE;
@@ -75,7 +79,7 @@ bytes32 public constant CNAME_COVER;
 bytes32 public constant CNAME_GOVERNANCE;
 bytes32 public constant CNAME_RESOLUTION;
 bytes32 public constant CNAME_VAULT_FACTORY;
-bytes32 public constant CNAME_CTOKEN_FACTORY;
+bytes32 public constant CNAME_CXTOKEN_FACTORY;
 bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
 bytes32 public constant CNAME_COVER_ASSURANCE;
@@ -113,7 +117,7 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 
 ### getProtocol
 
-```js
+```solidity
 function getProtocol(IStore s) external view
 returns(contract IProtocol)
 ```
@@ -124,9 +128,19 @@ returns(contract IProtocol)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProtocol(IStore s) external view returns (IProtocol) {
+    return IProtocol(getProtocolAddress(s));
+  }
+```
+</details>
+
 ### getProtocolAddress
 
-```js
+```solidity
 function getProtocolAddress(IStore s) public view
 returns(address)
 ```
@@ -137,9 +151,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProtocolAddress(IStore s) public view returns (address) {
+    return s.getAddressByKey(NS_CORE);
+  }
+```
+</details>
+
 ### getContract
 
-```js
+```solidity
 function getContract(IStore s, bytes32 name) external view
 returns(address)
 ```
@@ -151,9 +175,19 @@ returns(address)
 | s | IStore |  | 
 | name | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getContract(IStore s, bytes32 name) external view returns (address) {
+    return _getContract(s, name);
+  }
+```
+</details>
+
 ### isProtocolMember
 
-```js
+```solidity
 function isProtocolMember(IStore s, address contractAddress) external view
 returns(bool)
 ```
@@ -165,11 +199,21 @@ returns(bool)
 | s | IStore |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isProtocolMember(IStore s, address contractAddress) external view returns (bool) {
+    return _isProtocolMember(s, contractAddress);
+  }
+```
+</details>
+
 ### mustBeProtocolMember
 
 Reverts if the caller is one of the protocol members.
 
-```js
+```solidity
 function mustBeProtocolMember(IStore s, address contractAddress) external view
 ```
 
@@ -180,11 +224,22 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view
 | s | IStore |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeProtocolMember(IStore s, address contractAddress) external view {
+    bool isMember = _isProtocolMember(s, contractAddress);
+    require(isMember, "Not a protocol member");
+  }
+```
+</details>
+
 ### mustBeExactContract
 
 Ensures that the sender matches with the exact contract having the specified name.
 
-```js
+```solidity
 function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 ```
 
@@ -196,11 +251,26 @@ function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 | name | bytes32 | Enter the name of the contract | 
 | sender | address | Enter the `msg.sender` value | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeExactContract(
+    IStore s,
+    bytes32 name,
+    address sender
+  ) public view {
+    address contractAddress = _getContract(s, name);
+    require(sender == contractAddress, "Access denied");
+  }
+```
+</details>
+
 ### callerMustBeExactContract
 
 Ensures that the sender matches with the exact contract having the specified name.
 
-```js
+```solidity
 function callerMustBeExactContract(IStore s, bytes32 name) external view
 ```
 
@@ -211,9 +281,19 @@ function callerMustBeExactContract(IStore s, bytes32 name) external view
 | s | IStore |  | 
 | name | bytes32 | Enter the name of the contract | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeExactContract(IStore s, bytes32 name) external view {
+    return mustBeExactContract(s, name, msg.sender);
+  }
+```
+</details>
+
 ### npmToken
 
-```js
+```solidity
 function npmToken(IStore s) external view
 returns(contract IERC20)
 ```
@@ -224,9 +304,20 @@ returns(contract IERC20)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function npmToken(IStore s) external view returns (IERC20) {
+    address npm = s.getAddressByKey(NS_SETUP_NPM);
+    return IERC20(npm);
+  }
+```
+</details>
+
 ### getUniswapV2Router
 
-```js
+```solidity
 function getUniswapV2Router(IStore s) external view
 returns(address)
 ```
@@ -237,9 +328,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getUniswapV2Router(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_SETUP_UNISWAP_V2_ROUTER);
+  }
+```
+</details>
+
 ### getTreasury
 
-```js
+```solidity
 function getTreasury(IStore s) external view
 returns(address)
 ```
@@ -250,9 +351,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getTreasury(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_TREASURY);
+  }
+```
+</details>
+
 ### getAssuranceVault
 
-```js
+```solidity
 function getAssuranceVault(IStore s) external view
 returns(address)
 ```
@@ -263,9 +374,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAssuranceVault(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_ASSURANCE_VAULT);
+  }
+```
+</details>
+
 ### getLiquidityToken
 
-```js
+```solidity
 function getLiquidityToken(IStore s) public view
 returns(address)
 ```
@@ -276,9 +397,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLiquidityToken(IStore s) public view returns (address) {
+    return s.getAddressByKey(NS_COVER_LIQUIDITY_TOKEN);
+  }
+```
+</details>
+
 ### getBurnAddress
 
-```js
+```solidity
 function getBurnAddress(IStore s) external view
 returns(address)
 ```
@@ -289,9 +420,19 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBurnAddress(IStore s) external view returns (address) {
+    return s.getAddressByKey(NS_BURNER);
+  }
+```
+</details>
+
 ### toKeccak256
 
-```js
+```solidity
 function toKeccak256(bytes value) external pure
 returns(bytes32)
 ```
@@ -302,9 +443,19 @@ returns(bytes32)
 | ------------- |------------- | -----|
 | value | bytes |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function toKeccak256(bytes memory value) external pure returns (bytes32) {
+    return keccak256(value);
+  }
+```
+</details>
+
 ### _isProtocolMember
 
-```js
+```solidity
 function _isProtocolMember(IStore s, address contractAddress) private view
 returns(bool)
 ```
@@ -316,9 +467,19 @@ returns(bool)
 | s | IStore |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _isProtocolMember(IStore s, address contractAddress) private view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
+  }
+```
+</details>
+
 ### _getContract
 
-```js
+```solidity
 function _getContract(IStore s, bytes32 name) private view
 returns(address)
 ```
@@ -330,9 +491,19 @@ returns(address)
 | s | IStore |  | 
 | name | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getContract(IStore s, bytes32 name) private view returns (address) {
+    return s.getAddressByKeys(NS_CONTRACTS, name);
+  }
+```
+</details>
+
 ### addContract
 
-```js
+```solidity
 function addContract(IStore s, bytes32 namespace, address contractAddress) external nonpayable
 ```
 
@@ -344,9 +515,23 @@ function addContract(IStore s, bytes32 namespace, address contractAddress) exter
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) external {
+    _addContract(s, namespace, contractAddress);
+  }
+```
+</details>
+
 ### _addContract
 
-```js
+```solidity
 function _addContract(IStore s, bytes32 namespace, address contractAddress) private nonpayable
 ```
 
@@ -358,9 +543,24 @@ function _addContract(IStore s, bytes32 namespace, address contractAddress) priv
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _addContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) private {
+    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
+    _addMember(s, contractAddress);
+  }
+```
+</details>
+
 ### deleteContract
 
-```js
+```solidity
 function deleteContract(IStore s, bytes32 namespace, address contractAddress) external nonpayable
 ```
 
@@ -372,9 +572,23 @@ function deleteContract(IStore s, bytes32 namespace, address contractAddress) ex
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) external {
+    _deleteContract(s, namespace, contractAddress);
+  }
+```
+</details>
+
 ### _deleteContract
 
-```js
+```solidity
 function _deleteContract(IStore s, bytes32 namespace, address contractAddress) private nonpayable
 ```
 
@@ -386,9 +600,24 @@ function _deleteContract(IStore s, bytes32 namespace, address contractAddress) p
 | namespace | bytes32 |  | 
 | contractAddress | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _deleteContract(
+    IStore s,
+    bytes32 namespace,
+    address contractAddress
+  ) private {
+    s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
+    _removeMember(s, contractAddress);
+  }
+```
+</details>
+
 ### upgradeContract
 
-```js
+```solidity
 function upgradeContract(IStore s, bytes32 namespace, address previous, address current) external nonpayable
 ```
 
@@ -401,9 +630,28 @@ function upgradeContract(IStore s, bytes32 namespace, address previous, address 
 | previous | address |  | 
 | current | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContract(
+    IStore s,
+    bytes32 namespace,
+    address previous,
+    address current
+  ) external {
+    bool isMember = _isProtocolMember(s, previous);
+    require(isMember, "Not a protocol member");
+
+    _deleteContract(s, namespace, previous);
+    _addContract(s, namespace, current);
+  }
+```
+</details>
+
 ### addMember
 
-```js
+```solidity
 function addMember(IStore s, address member) external nonpayable
 ```
 
@@ -414,9 +662,19 @@ function addMember(IStore s, address member) external nonpayable
 | s | IStore |  | 
 | member | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMember(IStore s, address member) external {
+    _addMember(s, member);
+  }
+```
+</details>
+
 ### removeMember
 
-```js
+```solidity
 function removeMember(IStore s, address member) external nonpayable
 ```
 
@@ -427,9 +685,19 @@ function removeMember(IStore s, address member) external nonpayable
 | s | IStore |  | 
 | member | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeMember(IStore s, address member) external {
+    _removeMember(s, member);
+  }
+```
+</details>
+
 ### _addMember
 
-```js
+```solidity
 function _addMember(IStore s, address member) private nonpayable
 ```
 
@@ -440,9 +708,20 @@ function _addMember(IStore s, address member) private nonpayable
 | s | IStore |  | 
 | member | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _addMember(IStore s, address member) private {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
+    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
+  }
+```
+</details>
+
 ### _removeMember
 
-```js
+```solidity
 function _removeMember(IStore s, address member) private nonpayable
 ```
 
@@ -452,6 +731,16 @@ function _removeMember(IStore s, address member) private nonpayable
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _removeMember(IStore s, address member) private {
+    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -469,9 +758,9 @@ function _removeMember(IStore s, address member) private nonpayable
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -489,8 +778,8 @@ function _removeMember(IStore s, address member) private nonpayable
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -504,9 +793,11 @@ function _removeMember(IStore s, address member) private nonpayable
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -529,12 +820,14 @@ function _removeMember(IStore s, address member) private nonpayable
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

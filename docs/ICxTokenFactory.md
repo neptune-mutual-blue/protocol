@@ -1,74 +1,48 @@
-# ICToken.sol
+# ICxTokenFactory.sol
 
-View Source: [contracts/interfaces/ICToken.sol](../contracts/interfaces/ICToken.sol)
+View Source: [contracts/interfaces/ICxTokenFactory.sol](../contracts/interfaces/ICxTokenFactory.sol)
 
-**↗ Extends: [IERC20](IERC20.md)**
-**↘ Derived Contracts: [cToken](cToken.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [cxTokenFactory](cxTokenFactory.md)**
 
-**ICToken**
+**ICxTokenFactory**
 
 **Events**
 
 ```js
-event Finalized(uint256  amount);
+event CxTokenDeployed(bytes32 indexed key, address  cxToken, uint256  expiryDate);
 ```
 
 ## Functions
 
-- [mint(bytes32 key, address to, uint256 amount)](#mint)
-- [burn(uint256 amount)](#burn)
-- [expiresOn()](#expireson)
-- [coverKey()](#coverkey)
+- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
 
-### mint
+### deploy
 
-```js
-function mint(bytes32 key, address to, uint256 amount) external nonpayable
+```solidity
+function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
+returns(address)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 | key | bytes32 |  | 
-| to | address |  | 
-| amount | uint256 |  | 
+| expiryDate | uint256 |  | 
 
-### burn
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function burn(uint256 amount) external nonpayable
+```javascript
+function deploy(
+    IStore s,
+    bytes32 key,
+    uint256 expiryDate
+  ) external returns (address);
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| amount | uint256 |  | 
-
-### expiresOn
-
-```js
-function expiresOn() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### coverKey
-
-```js
-function coverKey() external view
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+</details>
 
 ## Contracts
 
@@ -86,9 +60,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -106,8 +80,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -121,9 +95,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -146,12 +122,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

@@ -7,15 +7,18 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 ## Functions
 
 - [getReportingPeriod(IStore s, bytes32 key)](#getreportingperiod)
+- [getReportingBurnRate(IStore s)](#getreportingburnrate)
+- [getReporterCommission(IStore s)](#getreportercommission)
 - [getMinReportingStake(IStore s)](#getminreportingstake)
 - [getLatestIncidentDate(IStore s, bytes32 key)](#getlatestincidentdate)
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
-- [getCampStatusFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getcampstatusfor)
+- [getResolutionInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getresolutioninfofor)
+- [getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetails)
 - [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
-- [setUnstakeTimestamp(IStore s, address account, bytes32 key, uint256 incidentDate)](#setunstaketimestamp)
 - [addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#addattestation)
 - [getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate)](#getattestation)
 - [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
@@ -24,7 +27,7 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 
 ### getReportingPeriod
 
-```js
+```solidity
 function getReportingPeriod(IStore s, bytes32 key) external view
 returns(uint256)
 ```
@@ -36,9 +39,65 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
+  }
+```
+</details>
+
+### getReportingBurnRate
+
+```solidity
+function getReportingBurnRate(IStore s) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReportingBurnRate(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+  }
+```
+</details>
+
+### getReporterCommission
+
+```solidity
+function getReporterCommission(IStore s) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReporterCommission(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+  }
+```
+</details>
+
 ### getMinReportingStake
 
-```js
+```solidity
 function getMinReportingStake(IStore s) external view
 returns(uint256)
 ```
@@ -49,9 +108,19 @@ returns(uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMinReportingStake(IStore s) external view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
+  }
+```
+</details>
+
 ### getLatestIncidentDate
 
-```js
+```solidity
 function getLatestIncidentDate(IStore s, bytes32 key) external view
 returns(uint256)
 ```
@@ -63,9 +132,19 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLatestIncidentDate(IStore s, bytes32 key) external view returns (uint256) {
+    return _getLatestIncidentDate(s, key);
+  }
+```
+</details>
+
 ### getResolutionTimestamp
 
-```js
+```solidity
 function getResolutionTimestamp(IStore s, bytes32 key) external view
 returns(uint256)
 ```
@@ -77,9 +156,19 @@ returns(uint256)
 | s | IStore |  | 
 | key | bytes32 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getResolutionTimestamp(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+  }
+```
+</details>
+
 ### getReporter
 
-```js
+```solidity
 function getReporter(IStore s, bytes32 key, uint256 incidentDate) external view
 returns(address)
 ```
@@ -92,9 +181,26 @@ returns(address)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReporter(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view returns (address) {
+    (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
+
+    bytes32 prefix = yes >= no ? ProtoUtilV1.NS_REPORTING_WITNESS_YES : ProtoUtilV1.NS_REPORTING_WITNESS_NO;
+    return s.getAddressByKeys(prefix, key);
+  }
+```
+</details>
+
 ### getStakes
 
-```js
+```solidity
 function getStakes(IStore s, bytes32 key, uint256 incidentDate) public view
 returns(yes uint256, no uint256)
 ```
@@ -107,11 +213,29 @@ returns(yes uint256, no uint256)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
-### getCampStatusFor
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function getCampStatusFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
-returns(winningCampTotal uint256, losingCampTotal uint256, myStakeInWinningCamp uint256)
+```javascript
+function getStakes(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    yes = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    no = s.getUintByKey(k);
+  }
+```
+</details>
+
+### getResolutionInfoFor
+
+```solidity
+function getResolutionInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256)
 ```
 
 **Arguments**
@@ -123,9 +247,168 @@ returns(winningCampTotal uint256, losingCampTotal uint256, myStakeInWinningCamp 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getResolutionInfoFor(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  )
+    public
+    view
+    returns (
+      uint256 totalStakeInWinningCamp,
+      uint256 totalStakeInLosingCamp,
+      uint256 myStakeInWinningCamp
+    )
+  {
+    (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
+    (uint256 myYes, uint256 myNo) = getStakesOf(s, account, key, incidentDate);
+
+    totalStakeInWinningCamp = yes > no ? yes : no;
+    totalStakeInLosingCamp = yes > no ? no : yes;
+    myStakeInWinningCamp = yes > no ? myYes : myNo;
+  }
+```
+</details>
+
+### getUnstakeInfoFor
+
+```solidity
+function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getUnstakeInfoFor(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  )
+    public
+    view
+    returns (
+      uint256 totalStakeInWinningCamp,
+      uint256 totalStakeInLosingCamp,
+      uint256 myStakeInWinningCamp,
+      uint256 toBurn,
+      uint256 toReporter,
+      uint256 myReward
+    )
+  {
+    (totalStakeInWinningCamp, totalStakeInLosingCamp, myStakeInWinningCamp) = getResolutionInfoFor(s, account, key, incidentDate);
+
+    require(myStakeInWinningCamp > 0, "Nothing to unstake");
+
+    uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
+    uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
+
+    toBurn = (reward * getReportingBurnRate(s)) / 1 ether;
+    toReporter = (reward * getReporterCommission(s)) / 1 ether;
+    myReward = reward - toBurn - toReporter;
+  }
+```
+</details>
+
+### updateUnstakeDetails
+
+```solidity
+function updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| originalStake | uint256 |  | 
+| reward | uint256 |  | 
+| burned | uint256 |  | 
+| reporterFee | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateUnstakeDetails(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 originalStake,
+    uint256 reward,
+    uint256 burned,
+    uint256 reporterFee
+  ) public {
+    // Unstake timestamp of the account
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // Last unstake timestamp
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate));
+    s.setUintByKey(k, block.timestamp); // solhint-disable-line
+
+    // ---------------------------------------------------------------------
+
+    // Amount unstaken by the account
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate, account));
+    s.setUintByKey(k, originalStake);
+
+    // Amount unstaken by everyone
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate));
+    s.addUintByKey(k, originalStake);
+
+    // ---------------------------------------------------------------------
+
+    if (reward > 0) {
+      // Reward received by the account
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate, account));
+      s.setUintByKey(k, reward);
+
+      // Total reward received
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate));
+      s.addUintByKey(k, reward);
+    }
+
+    // ---------------------------------------------------------------------
+
+    if (burned > 0) {
+      // Total burned
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_BURNED, key, incidentDate));
+      s.addUintByKey(k, burned);
+    }
+
+    if (reporterFee > 0) {
+      // Total fee paid to the final reporter
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REPORTER_FEE, key, incidentDate));
+      s.addUintByKey(k, reporterFee);
+    }
+  }
+```
+</details>
+
 ### getStakesOf
 
-```js
+```solidity
 function getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate) public view
 returns(yes uint256, no uint256)
 ```
@@ -139,9 +422,28 @@ returns(yes uint256, no uint256)
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakesOf(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
+    no = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+    yes = s.getUintByKey(k);
+  }
+```
+</details>
+
 ### updateCoverStatus
 
-```js
+```solidity
 function updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate) public nonpayable
 ```
 
@@ -153,24 +455,34 @@ function updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate) public n
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
-### setUnstakeTimestamp
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-```js
-function setUnstakeTimestamp(IStore s, address account, bytes32 key, uint256 incidentDate) public nonpayable
+```javascript
+function updateCoverStatus(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) public {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    uint256 yes = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    uint256 no = s.getUintByKey(k);
+
+    if (no > yes) {
+      s.setStatus(key, CoverUtilV1.CoverStatus.FalseReporting);
+      return;
+    }
+
+    s.setStatus(key, CoverUtilV1.CoverStatus.IncidentHappened);
+  }
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+</details>
 
 ### addAttestation
 
-```js
+```solidity
 function addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -184,9 +496,39 @@ function addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addAttestation(
+    IStore s,
+    bytes32 key,
+    address who,
+    uint256 incidentDate,
+    uint256 stake
+  ) external {
+    // Add individual stake of the reporter
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
+    s.addUintByKey(k, stake);
+
+    // All "incident happened" camp witnesses combined
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    uint256 currentStake = s.getUintByKey(k);
+
+    // No has reported yet, this is the first report
+    if (currentStake == 0) {
+      s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, msg.sender);
+    }
+
+    s.addUintByKey(k, stake);
+    updateCoverStatus(s, key, incidentDate);
+  }
+```
+</details>
+
 ### getAttestation
 
-```js
+```solidity
 function getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
@@ -200,9 +542,28 @@ returns(myStake uint256, totalStake uint256)
 | who | address |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAttestation(
+    IStore s,
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
+    myStake = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    totalStake = s.getUintByKey(k);
+  }
+```
+</details>
+
 ### addDispute
 
-```js
+```solidity
 function addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
@@ -216,9 +577,38 @@ function addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, ui
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addDispute(
+    IStore s,
+    bytes32 key,
+    address who,
+    uint256 incidentDate,
+    uint256 stake
+  ) external {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
+    s.addUintByKey(k, stake);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    uint256 currentStake = s.getUintByKey(k);
+
+    if (currentStake == 0) {
+      // The first reporter who disputed
+      s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, msg.sender);
+    }
+
+    s.addUintByKey(k, stake);
+
+    updateCoverStatus(s, key, incidentDate);
+  }
+```
+</details>
+
 ### getDispute
 
-```js
+```solidity
 function getDispute(IStore s, bytes32 key, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
@@ -232,9 +622,28 @@ returns(myStake uint256, totalStake uint256)
 | who | address |  | 
 | incidentDate | uint256 |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDispute(
+    IStore s,
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
+    myStake = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    totalStake = s.getUintByKey(k);
+  }
+```
+</details>
+
 ### _getLatestIncidentDate
 
-```js
+```solidity
 function _getLatestIncidentDate(IStore s, bytes32 key) private view
 returns(uint256)
 ```
@@ -245,6 +654,16 @@ returns(uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+  }
+```
+</details>
 
 ## Contracts
 
@@ -262,9 +681,9 @@ returns(uint256)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -282,8 +701,8 @@ returns(uint256)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -297,9 +716,11 @@ returns(uint256)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -322,12 +743,14 @@ returns(uint256)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

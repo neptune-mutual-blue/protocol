@@ -17,7 +17,7 @@ View Source: [contracts/core/ProtoBase.sol](../contracts/core/ProtoBase.sol)
 
 ### 
 
-```js
+```solidity
 function (IStore store) internal nonpayable Recoverable 
 ```
 
@@ -27,9 +27,19 @@ function (IStore store) internal nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    _setAccessPolicy();
+  }
+```
+</details>
+
 ### _setAccessPolicy
 
-```js
+```solidity
 function _setAccessPolicy() private nonpayable
 ```
 
@@ -38,10 +48,30 @@ function _setAccessPolicy() private nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _setAccessPolicy() private {
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_COVER_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_LIQUIDITY_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_AGENT, AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_RECOVERY_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_PAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+    _setRoleAdmin(AccessControlLibV1.NS_ROLES_UNPAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+
+    _setupRole(AccessControlLibV1.NS_ROLES_ADMIN, msg.sender);
+  }
+```
+</details>
+
 ### setupRole
 
-```js
-function setupRole(bytes32 role, bytes32 adminRole, address account) external nonpayable
+```solidity
+function setupRole(bytes32 role, bytes32 adminRole, address account) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -52,33 +82,76 @@ function setupRole(bytes32 role, bytes32 adminRole, address account) external no
 | adminRole | bytes32 |  | 
 | account | address |  | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setupRole(
+    bytes32 role,
+    bytes32 adminRole,
+    address account
+  ) external nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeAdmin(s);
+
+    _setRoleAdmin(role, adminRole);
+
+    if (account != address(0)) {
+      _setupRole(role, account);
+    }
+  }
+```
+</details>
+
 ### pause
 
 Pauses this contract.
  Can only be called by "Pause Agents".
 
-```js
-function pause() external nonpayable
+```solidity
+function pause() external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function pause() external nonReentrant {
+    AccessControlLibV1.mustBePauseAgent(s);
+    super._pause();
+  }
+```
+</details>
 
 ### unpause
 
 Unpauses this contract.
  Can only be called by "Unpause Agents".
 
-```js
-function unpause() external nonpayable whenPaused 
+```solidity
+function unpause() external nonpayable whenPaused nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function unpause() external whenPaused nonReentrant {
+    AccessControlLibV1.mustBeUnpauseAgent(s);
+    super._unpause();
+  }
+```
+</details>
 
 ## Contracts
 
@@ -96,9 +169,9 @@ function unpause() external nonpayable whenPaused
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -116,8 +189,8 @@ function unpause() external nonpayable whenPaused
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -131,9 +204,11 @@ function unpause() external nonpayable whenPaused
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -156,12 +231,14 @@ function unpause() external nonpayable whenPaused
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

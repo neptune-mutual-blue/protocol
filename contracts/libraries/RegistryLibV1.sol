@@ -4,11 +4,10 @@ pragma solidity 0.8.0;
 
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
-
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
-import "../interfaces/ICTokenFactory.sol";
+import "../interfaces/ICxTokenFactory.sol";
 import "../interfaces/ICoverAssurance.sol";
 import "../interfaces/IGovernance.sol";
 import "../interfaces/IVault.sol";
@@ -34,8 +33,8 @@ library RegistryLibV1 {
     return ICoverStake(s.getContract(ProtoUtilV1.NS_COVER_STAKE));
   }
 
-  function getCTokenFactory(IStore s) public view returns (ICTokenFactory) {
-    return ICTokenFactory(s.getContract(ProtoUtilV1.NS_COVER_CTOKEN_FACTORY));
+  function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
+    return ICxTokenFactory(s.getContract(ProtoUtilV1.NS_COVER_CXTOKEN_FACTORY));
   }
 
   function getPolicyContract(IStore s) public view returns (IPolicy) {

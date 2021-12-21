@@ -1,80 +1,68 @@
-# cToken Factory Contract (cTokenFactory.sol)
+# IResolvable.sol
 
-View Source: [contracts/core/cToken/cTokenFactory.sol](../contracts/core/cToken/cTokenFactory.sol)
+View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IResolvable.sol)
 
-**↗ Extends: [ICTokenFactory](ICTokenFactory.md), [Recoverable](Recoverable.md)**
+**↘ Derived Contracts: [IResolution](IResolution.md), [Resolvable](Resolvable.md)**
 
-**cTokenFactory**
+**IResolvable**
 
-As and when required by the protocol,
- the cTokenFactory contract creates new instances of
- cTokens on demand.
+**Events**
+
+```js
+event Resolved(bytes32  key, uint256  incidentDate, bool  decision, bool  emergency);
+```
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
-- [version()](#version)
-- [getName()](#getname)
+- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
 
-### 
+### resolve
 
-Constructs this contract
-
-```js
-function (IStore store) public nonpayable Recoverable 
+```solidity
+function resolve(bytes32 key, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 
-### deploy
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-Deploys a new instance of cTokens
+```javascript
+function resolve(bytes32 key, uint256 incidentDate) external;
+```
+</details>
 
-```js
-function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
-returns(deployed address)
+### emergencyResolve
+
+```solidity
+function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore | Provide the store contract instance | 
-| key | bytes32 | Enter the cover key related to this cToken instance | 
-| expiryDate | uint256 | Specify the expiry date of this cToken instance | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
 
-### version
+<details>
+	<summary><strong>Source Code</strong></summary>
 
-Version number of this contract
-
-```js
-function version() external pure
-returns(bytes32)
+```javascript
+function emergencyResolve(
+    bytes32 key,
+    uint256 incidentDate,
+    bool decision
+  ) external;
 ```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-### getName
-
-Name of this contract
-
-```js
-function getName() public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
+</details>
 
 ## Contracts
 
@@ -92,9 +80,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -112,8 +100,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -127,9 +115,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -152,12 +142,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

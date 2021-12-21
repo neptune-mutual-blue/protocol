@@ -3,8 +3,8 @@
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
-import "../../interfaces/ICTokenFactory.sol";
-import "../../interfaces/ICToken.sol";
+import "../../interfaces/ICxTokenFactory.sol";
+import "../../interfaces/ICxToken.sol";
 import "../../interfaces/IPolicy.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/RegistryLibV1.sol";
@@ -23,6 +23,7 @@ contract Policy is IPolicy, Recoverable {
   using CoverUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {
     this;
@@ -30,9 +31,9 @@ contract Policy is IPolicy, Recoverable {
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
-   * When you purchase covers, you recieve equal amount of cTokens back.
-   * You need the cTokens to claim the cover when resolution occurs.
-   * Each unit of cTokens are fully redeemable at 1:1 ratio to the given
+   * When you purchase covers, you recieve equal amount of cxTokens back.
+   * You need the cxTokens to claim the cover when resolution occurs.
+   * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
    * @param key Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
@@ -43,52 +44,53 @@ contract Policy is IPolicy, Recoverable {
     uint256 coverDuration,
     uint256 amountToCover
   ) external override nonReentrant returns (address) {
+    s.mustNotBePaused();
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
     (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);
-    ICToken cToken = _getCTokenOrDeploy(key, coverDuration);
+    ICxToken cxToken = _getCxTokenOrDeploy(key, coverDuration);
 
     address liquidityToken = s.getLiquidityToken();
     require(liquidityToken != address(0), "Cover liquidity uninitialized");
 
-    // Transfer the fee to cToken contract
+    // Transfer the fee to cxToken contract
     // Todo: keep track of cover fee paid (for refunds)
     IERC20(liquidityToken).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
-    cToken.mint(key, msg.sender, amountToCover);
-    return address(cToken);
+    cxToken.mint(key, msg.sender, amountToCover);
+    return address(cxToken);
   }
 
-  function getCToken(bytes32 key, uint256 coverDuration) public view override returns (address cToken, uint256 expiryDate) {
+  function getCxToken(bytes32 key, uint256 coverDuration) public view override returns (address cxToken, uint256 expiryDate) {
     expiryDate = getExpiryDate(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
+    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate).toKeccak256();
 
-    cToken = s.getAddress(k);
+    cxToken = s.getAddress(k);
   }
 
-  function getCTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cToken) {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CTOKEN, key, expiryDate).toKeccak256();
+  function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cxToken) {
+    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate).toKeccak256();
 
-    cToken = s.getAddress(k);
+    cxToken = s.getAddress(k);
   }
 
   /**
-   * @dev Gets the instance of cToken or deploys a new one based on the cover expiry timestamp
+   * @dev Gets the instance of cxToken or deploys a new one based on the cover expiry timestamp
    * @param key Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
-  function _getCTokenOrDeploy(bytes32 key, uint256 coverDuration) private returns (ICToken) {
-    (address cToken, uint256 expiryDate) = getCToken(key, coverDuration);
+  function _getCxTokenOrDeploy(bytes32 key, uint256 coverDuration) private returns (ICxToken) {
+    (address cxToken, uint256 expiryDate) = getCxToken(key, coverDuration);
 
-    if (cToken != address(0)) {
-      return ICToken(cToken);
+    if (cxToken != address(0)) {
+      return ICxToken(cxToken);
     }
 
-    ICTokenFactory factory = s.getCTokenFactory();
-    cToken = factory.deploy(s, key, expiryDate);
-    s.addMember(cToken);
+    ICxTokenFactory factory = s.getCxTokenFactory();
+    cxToken = factory.deploy(s, key, expiryDate);
+    s.addMember(cxToken);
 
-    return ICToken(cToken);
+    return ICxToken(cxToken);
   }
 
   /**

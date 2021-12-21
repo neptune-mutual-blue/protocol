@@ -7,15 +7,17 @@
     "compile": "hardhat compile",
     "build": "hardhat compile",
     "compile:clean": "rm -rf ./artifacts && hardhat compile",
+    "build:clean": "npm run compile:clean",
     "solhint": "solhint \"contracts/**/*.sol\"",
-    "gendoc": "rm -rf build && rm -rf docs && truffle compile && solidoc2",
+    "gendoc": "npm run gendoc:local",
     "gendoc:local": "rm -rf build && rm -rf docs && truffle compile && node ../solidoc2/cli.js",
+    "gendoc:global": "rm -rf build && rm -rf docs && truffle compile && solidoc2",
     "slither": "slither .",
     "test": "npx hardhat test",
     "test:all": "npx hardhat test ./**/*.{spec,story}.js",
     "stories": "npx hardhat test ./**/*.story.js",
     "story": "yarn stories",
-    "walk": "node ./util/analyzers/chain-state"
+    "walk": "npm run compile:clean && node ./util/analyzers/chain-state | sed -r \"s/\\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g\" > ./.todo/_Walker.sol && echo View file 👉 ./.todo/_Walker.sol"
   },
   "repository": {
     "type": "git",

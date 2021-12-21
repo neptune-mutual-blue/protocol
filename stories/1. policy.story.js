@@ -132,16 +132,16 @@ describe('Policy Purchase Stories', () => {
     const args = [coverKey, 2, helper.ether(500_000)]
     const { fee } = await contracts.policy.getCoverFee(...args)
 
-   ;(await contracts.policy.getCToken(args[0], args[1]))[0].should.equal(helper.zerox)
+   ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.equal(helper.zerox)
 
     await contracts.wxDai.approve(contracts.policy.address, fee)
     await contracts.policy.purchaseCover(...args)
 
-    const { cToken: cTokenAddress } = await contracts.policy.getCToken(args[0], args[1])
-    const cToken = await composer.token.at(cTokenAddress)
+    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])
+    const cxToken = await composer.token.at(cxTokenAddress)
 
     const [owner] = await ethers.getSigners()
-    const cBal = await cToken.balanceOf(owner.address)
+    const cBal = await cxToken.balanceOf(owner.address)
 
     cBal.should.equal(args[2].toString())
   })

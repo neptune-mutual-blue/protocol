@@ -36,7 +36,7 @@ abstract contract CoverBase is ICover, Recoverable {
    * @param liquidityName Enter a description or ENS name of your liquidity token.
    *
    */
-  function initialize(address liquidityToken, bytes32 liquidityName) external override {
+  function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 

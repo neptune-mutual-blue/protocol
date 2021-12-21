@@ -97,6 +97,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param podsToRedeem Enter the amount of pods to redeem
    */
   function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
+    s.mustNotBePaused();
     require(coverKey == key, "Forbidden");
     uint256 released = VaultLibV1.removeLiquidity(s, coverKey, address(this), lqt, podsToRedeem);
 

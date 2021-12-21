@@ -1,97 +1,122 @@
-# IClaimsProcessor.sol
+# Resolvable.sol
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/core/governance/resolution/Resolvable.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Processor](Processor.md)**
+**↗ Extends: [Finalization](Finalization.md), [IResolvable](IResolvable.md)**
+**↘ Derived Contracts: [Unstakable](Unstakable.md)**
 
-**IClaimsProcessor**
-
-**Events**
-
-```js
-event Claimed(address indexed cxToken, bytes32 indexed key, address indexed account, uint256  incidentDate, uint256  amount);
-```
+**Resolvable**
 
 ## Functions
 
-- [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [_resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
 
-### claim
+### resolve
 
 ```solidity
-function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function resolve(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
-| amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function claim(
-    address cxToken,
+function resolve(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
+    s.mustBeReportingOrDisputed(key);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterReportingPeriod(key);
+
+    bool decision = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
+
+    _resolve(key, incidentDate, decision, false);
+  }
+```
+</details>
+
+### emergencyResolve
+
+```solidity
+function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| decision | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function emergencyResolve(
     bytes32 key,
     uint256 incidentDate,
-    uint256 amount
-  ) external;
+    bool decision
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterReportingPeriod(key);
+
+    _resolve(key, incidentDate, decision, true);
+  }
 ```
 </details>
 
-### validate
+### _resolve
 
 ```solidity
-function validate(address cxToken, bytes32 key, uint256 incidentDate) external view
-returns(bool)
+function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency) private nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
+| decision | bool |  | 
+| emergency | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validate(
-    address cxToken,
+function _resolve(
     bytes32 key,
-    uint256 incidentDate
-  ) external view returns (bool);
-```
-</details>
+    uint256 incidentDate,
+    bool decision,
+    bool emergency
+  ) private {
+    if (decision == false) {
+      _finalize(key, incidentDate);
+      return;
+    }
 
-### getClaimExpiryDate
+    uint256 claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
+    uint256 claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
 
-```solidity
-function getClaimExpiryDate(bytes32 key) external view
-returns(uint256)
-```
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
-**Arguments**
+    s.setStatus(key, CoverUtilV1.CoverStatus.Claimable);
 
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getClaimExpiryDate(bytes32 key) external view returns (uint256);
+    emit Resolved(key, incidentDate, decision, emergency);
+  }
 ```
 </details>
 

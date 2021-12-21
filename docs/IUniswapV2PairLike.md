@@ -13,7 +13,7 @@ View Source: [contracts/interfaces/external/IUniswapV2PairLike.sol](../contracts
 
 ### token0
 
-```js
+```solidity
 function token0() external view
 returns(address)
 ```
@@ -23,9 +23,17 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function token0() external view returns (address);
+```
+</details>
+
 ### token1
 
-```js
+```solidity
 function token1() external view
 returns(address)
 ```
@@ -35,9 +43,17 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function token1() external view returns (address);
+```
+</details>
+
 ### totalSupply
 
-```js
+```solidity
 function totalSupply() external view
 returns(uint256)
 ```
@@ -47,9 +63,17 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function totalSupply() external view returns (uint256);
+```
+</details>
+
 ### getReserves
 
-```js
+```solidity
 function getReserves() external view
 returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 ```
@@ -58,6 +82,21 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReserves()
+    external
+    view
+    returns (
+      uint112 reserve0,
+      uint112 reserve1,
+      uint32 blockTimestampLast
+    );
+```
+</details>
 
 ## Contracts
 
@@ -75,9 +114,9 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -95,8 +134,8 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -110,9 +149,11 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -135,12 +176,14 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

@@ -2,19 +2,19 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "../../interfaces/IVault.sol";
-import "../../interfaces/ICTokenFactory.sol";
-import "../../libraries/cTokenFactoryLibV1.sol";
+import "../../interfaces/ICxTokenFactory.sol";
+import "../../libraries/cxTokenFactoryLibV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../Recoverable.sol";
 
 /**
- * @title cToken Factory Contract
+ * @title cxToken Factory Contract
  * @dev As and when required by the protocol,
- * the cTokenFactory contract creates new instances of
- * cTokens on demand.
+ * the cxTokenFactory contract creates new instances of
+ * cxTokens on demand.
  */
 // solhint-disable-next-line
-contract cTokenFactory is ICTokenFactory, Recoverable {
+contract cxTokenFactory is ICxTokenFactory, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
@@ -28,21 +28,22 @@ contract cTokenFactory is ICTokenFactory, Recoverable {
   }
 
   /**
-   * @dev Deploys a new instance of cTokens
+   * @dev Deploys a new instance of cxTokens
    * @param s Provide the store contract instance
-   * @param key Enter the cover key related to this cToken instance
-   * @param expiryDate Specify the expiry date of this cToken instance
+   * @param key Enter the cover key related to this cxToken instance
+   * @param expiryDate Specify the expiry date of this cxToken instance
    */
   function deploy(
     IStore s,
     bytes32 key,
     uint256 expiryDate
-  ) external override returns (address deployed) {
+  ) external override nonReentrant returns (address deployed) {
+    // @supress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
 
-    (bytes memory bytecode, bytes32 salt) = cTokenFactoryLibV1.getByteCode(s, key, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -62,7 +63,7 @@ contract cTokenFactory is ICTokenFactory, Recoverable {
     }
 
     s.setAddress(salt, deployed);
-    emit CTokenDeployed(key, deployed, expiryDate);
+    emit CxTokenDeployed(key, deployed, expiryDate);
   }
 
   /**
@@ -76,6 +77,6 @@ contract cTokenFactory is ICTokenFactory, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_CTOKEN_FACTORY;
+    return ProtoUtilV1.CNAME_CXTOKEN_FACTORY;
   }
 }

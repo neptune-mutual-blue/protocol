@@ -20,7 +20,7 @@ Provides features to discover price of a given token, uses UniswapV2 and compati
 
 Constructs this contract
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -30,13 +30,23 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide an implmentation of IStore | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### getTokenPriceInStableCoin
 
 Gets the price of the given token against the platform's stablecoin.
  Warning: if the supplied token address (and the stablecoin pair) is not found on the UniswapV2-like decentralized exchange,
  the result will be incorrect.
 
-```js
+```solidity
 function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
 returns(uint256)
 ```
@@ -48,13 +58,24 @@ returns(uint256)
 | token | address | Provide the token address to get the price of | 
 | multiplier | uint256 | Enter the token price multiplier | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getTokenPriceInStableCoin(address token, uint256 multiplier) external view override returns (uint256) {
+    address stablecoin = s.getLiquidityToken();
+    return this.getTokenPriceInLiquidityToken(token, stablecoin, multiplier);
+  }
+```
+</details>
+
 ### getTokenPriceInLiquidityToken
 
 Gets the price of the given token against the given liquidity token.
  Warning: if both of the supplied token address aren't to be found on the UniswapV2-like decentralized exchange,
  the result will be incorrect.
 
-```js
+```solidity
 function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
 returns(uint256)
 ```
@@ -67,11 +88,37 @@ returns(uint256)
 | liquidityToken | address | Provide the liquidity token address to get the price in | 
 | multiplier | uint256 | Enter the token price multiplier | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getTokenPriceInLiquidityToken(
+    address token,
+    address liquidityToken,
+    uint256 multiplier
+  ) external view override returns (uint256) {
+    if (token == liquidityToken) {
+      return multiplier;
+    }
+
+    address[] memory pair = new address[](2);
+
+    pair[0] = token;
+    pair[1] = liquidityToken;
+
+    IUniswapV2RouterLike router = IUniswapV2RouterLike(s.getUniswapV2Router());
+
+    uint256[] memory amounts = router.getAmountsOut(multiplier, pair);
+    return amounts[amounts.length - 1];
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -81,11 +128,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() public pure
 returns(bytes32)
 ```
@@ -94,6 +151,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_PRICE_DISCOVERY;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -111,9 +178,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -131,8 +198,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -146,9 +213,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -171,12 +240,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

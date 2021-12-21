@@ -13,8 +13,8 @@ Enables the policyholders to submit a claim and receive immediate payouts during
 ## Functions
 
 - [constructor(IStore store)](#)
-- [claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cToken, bytes32 key, uint256 incidentDate)](#validate)
+- [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
+- [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
 - [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
 - [version()](#version)
 - [getName()](#getname)
@@ -23,7 +23,7 @@ Enables the policyholders to submit a claim and receive immediate payouts during
 
 Constructs this contract
 
-```js
+```solidity
 function (IStore store) public nonpayable Recoverable 
 ```
 
@@ -33,51 +33,105 @@ function (IStore store) public nonpayable Recoverable
 | ------------- |------------- | -----|
 | store | IStore | Provide an implmentation of IStore | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(IStore store) Recoverable(store) {
+    this;
+  }
+```
+</details>
+
 ### claim
 
-Enables policyholders to claim their cTokens which results in a payout.
+Enables policyholders to claim their cxTokens which results in a payout.
  The payout is provided only when the active cover is marked and resolved as "Incident Happened".
 
-```js
-function claim(address cToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
+```solidity
+function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address | Provide the address of the claim token that you're using for this claim. | 
+| cxToken | address | Provide the address of the claim token that you're using for this claim. | 
 | key | bytes32 | Enter the key of the cover you're claiming | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
-| amount | uint256 | Enter the amount of cTokens you want to transfer | 
+| amount | uint256 | Enter the amount of cxTokens you want to transfer | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function claim(
+    address cxToken,
+    bytes32 key,
+    uint256 incidentDate,
+    uint256 amount
+  ) external override nonReentrant {
+    // @supress-pausable Already implemented in the function `validate`
+    // @supress-acl Marking this as publicly accessible
+
+    validate(cxToken, key, incidentDate);
+
+    IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
+    ICxToken(cxToken).burn(amount);
+
+    IVault vault = s.getVault(key);
+    //Todo: platform fees
+    vault.transferGovernance(key, msg.sender, amount);
+
+    emit Claimed(cxToken, key, msg.sender, incidentDate, amount);
+  }
+```
+</details>
 
 ### validate
 
 Validates a given claim
 
-```js
-function validate(address cToken, bytes32 key, uint256 incidentDate) public view
+```solidity
+function validate(address cxToken, bytes32 key, uint256 incidentDate) public view
 returns(bool)
 ```
-
-**Returns**
-
-Returns true if the given claim is valid and can result in a successful payout
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cToken | address | Provide the address of the claim token that you're using for this claim. | 
+| cxToken | address | Provide the address of the claim token that you're using for this claim. | 
 | key | bytes32 | Enter the key of the cover you're validating the claim for | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
+
+**Returns**
+
+Returns true if the given claim is valid and can result in a successful payout
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function validate(
+    address cxToken,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view override returns (bool) {
+    s.mustNotBePaused();
+    s.mustBeValidClaim(key, cxToken, incidentDate);
+
+    return true;
+  }
+```
+</details>
 
 ### getClaimExpiryDate
 
 Returns claim expiry date. A policy can not be claimed after the expiry date
  even when the policy was valid.
 
-```js
+```solidity
 function getClaimExpiryDate(bytes32 key) external view
 returns(uint256)
 ```
@@ -88,11 +142,21 @@ returns(uint256)
 | ------------- |------------- | -----|
 | key | bytes32 | Enter the key of the cover you're checking | 
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getClaimExpiryDate(bytes32 key) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
 
-```js
+```solidity
 function version() external pure
 returns(bytes32)
 ```
@@ -102,11 +166,21 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
 ### getName
 
 Name of this contract
 
-```js
+```solidity
 function getName() external pure
 returns(bytes32)
 ```
@@ -115,6 +189,16 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_CLAIMS_PROCESSOR;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -132,9 +216,9 @@ returns(bytes32)
 * [CoverProvision](CoverProvision.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
-* [cToken](cToken.md)
-* [cTokenFactory](cTokenFactory.md)
-* [cTokenFactoryLibV1](cTokenFactoryLibV1.md)
+* [cxToken](cxToken.md)
+* [cxTokenFactory](cxTokenFactory.md)
+* [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
@@ -152,8 +236,8 @@ returns(bytes32)
 * [ICoverAssurance](ICoverAssurance.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverStake](ICoverStake.md)
-* [ICToken](ICToken.md)
-* [ICTokenFactory](ICTokenFactory.md)
+* [ICxToken](ICxToken.md)
+* [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
@@ -167,9 +251,11 @@ returns(bytes32)
 * [IProtocol](IProtocol.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
+* [IResolvable](IResolvable.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
+* [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
@@ -192,12 +278,14 @@ returns(bytes32)
 * [RegistryLibV1](RegistryLibV1.md)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
+* [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [Strings](Strings.md)
+* [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)

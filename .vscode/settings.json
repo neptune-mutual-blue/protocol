@@ -24,5 +24,6 @@
     "editor.suggest.insertMode": "replace",
     "editor.defaultFormatter": "vscode.json-language-features",
   },
-  "editor.padding.top": 24
+  "editor.padding.top": 24,
+  "terminal.integrated.scrollback": 50000
 }
