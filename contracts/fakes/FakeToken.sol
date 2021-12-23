@@ -18,10 +18,10 @@ contract FakeToken is ERC20, Ownable {
   }
 
   /**
-   * @dev Request 100 tokens
+   * @dev Request 100000 tokens
    */
   function request() external {
-    super._mint(msg.sender, 100 ether);
+    super._mint(msg.sender, 100000 ether);
   }
 
   function burn(uint256 amount) external {
