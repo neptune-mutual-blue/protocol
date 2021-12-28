@@ -164,8 +164,8 @@ function addLiquidity(
   ) public returns (uint256) {
     require(account != address(0), "Invalid account");
 
-    address liquidityToken = s.getLiquidityToken();
-    require(stablecoin == liquidityToken, "Vault migration required");
+    address found = s.getStablecoin();
+    require(stablecoin == found, "Vault migration required");
 
     // Update values
     s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount);

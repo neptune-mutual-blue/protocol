@@ -8,6 +8,7 @@ interface IVault is IMember, IERC20 {
   event GovernanceTransfer(address indexed to, uint256 amount);
   event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
   event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
+  event MinLiquidityPeriodSet(uint256 previous, uint256 current);
 
   /**
    * @dev Adds liquidity to the specified cover contract
@@ -46,4 +47,6 @@ interface IVault is IMember, IERC20 {
     address to,
     uint256 amount
   ) external;
+
+  function setMinLiquidityPeriod(uint256 value) external;
 }

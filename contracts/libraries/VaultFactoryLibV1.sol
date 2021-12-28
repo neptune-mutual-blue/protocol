@@ -16,7 +16,7 @@ library VaultFactoryLibV1 {
     bytes32 key,
     address liquidityToken
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key));
+    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key));
     bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
   }
 }

@@ -44,13 +44,17 @@
     "CXTOKEN",
     "IERC",
     "IERC20",
+    "IPFS",
     "iszero",
     "Keccak",
     "mload",
+    "nbsp",
     "Proto",
     "Reentrancy",
     "Unstakable",
     "unstake",
-    "Unstaken"
+    "Unstaken",
+    "WXDAI",
+    "zerox"
   ]
 }

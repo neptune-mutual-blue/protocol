@@ -118,7 +118,7 @@ contract Cover is CoverBase {
       s.getVault(key).addLiquidityInternal(key, msg.sender, initialLiquidity);
 
       // Transfer liquidity only after minting the pods
-      IERC20(s.getLiquidityToken()).ensureTransferFrom(msg.sender, address(vault), initialLiquidity);
+      IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), initialLiquidity);
     }
 
     emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
@@ -147,7 +147,7 @@ contract Cover is CoverBase {
 
     // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key, reportingPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, reportingPeriod);
 
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
@@ -159,7 +159,7 @@ contract Cover is CoverBase {
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
 
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key, deployed);
+    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
   }
 

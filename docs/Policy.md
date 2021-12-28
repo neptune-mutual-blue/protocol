@@ -84,12 +84,12 @@ function purchaseCover(
     (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);
     ICxToken cxToken = _getCxTokenOrDeploy(key, coverDuration);
 
-    address liquidityToken = s.getLiquidityToken();
-    require(liquidityToken != address(0), "Cover liquidity uninitialized");
+    address stablecoin = s.getStablecoin();
+    require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // Transfer the fee to cxToken contract
     // Todo: keep track of cover fee paid (for refunds)
-    IERC20(liquidityToken).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
+    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
     cxToken.mint(key, msg.sender, amountToCover);
 

@@ -102,8 +102,8 @@ returns(fee uint256, minStake uint256)
 
 ```javascript
 function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
-    fee = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE);
-    minStake = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+    fee = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
+    minStake = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
   }
 ```
 </details>
@@ -126,7 +126,7 @@ returns(uint256)
 
 ```javascript
 function getMinCoverStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
   }
 ```
 </details>
@@ -149,7 +149,7 @@ returns(uint256)
 
 ```javascript
 function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
   }
 ```
 </details>
@@ -172,7 +172,7 @@ returns(uint256)
 
 ```javascript
 function getClaimPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
+    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
   }
 ```
 </details>

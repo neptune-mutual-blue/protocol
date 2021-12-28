@@ -13,6 +13,9 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
 event CoverUpdated(bytes32  key, bytes32  info);
 event WhitelistUpdated(address  account, bool  status);
+event CoverFeeSet(uint256  previous, uint256  current);
+event MinCoverCreationStakeSet(uint256  previous, uint256  current);
+event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ```
 
 ## Functions
@@ -23,6 +26,8 @@ event WhitelistUpdated(address  account, bool  status);
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
+- [setCoverFees(uint256 value)](#setcoverfees)
+- [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 
 ### initialize
 
@@ -186,6 +191,46 @@ returns(bool)
 
 ```javascript
 function checkIfWhitelisted(address account) external view returns (bool);
+```
+</details>
+
+### setCoverFees
+
+```solidity
+function setCoverFees(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverFees(uint256 value) external;
+```
+</details>
+
+### setMinCoverCreationStake
+
+```solidity
+function setMinCoverCreationStake(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinCoverCreationStake(uint256 value) external;
 ```
 </details>
 

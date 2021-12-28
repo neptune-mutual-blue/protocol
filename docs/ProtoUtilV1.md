@@ -8,68 +8,71 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
-bytes32 public constant NS_CORE;
-bytes32 public constant NS_REASSURANCE_VAULT;
-bytes32 public constant NS_BURNER;
+bytes32 public constant CNS_CORE;
+bytes32 public constant CNS_NPM;
+bytes32 public constant CNS_COVER;
+bytes32 public constant CNS_UNISWAP_V2_ROUTER;
+bytes32 public constant CNS_REASSURANCE_VAULT;
+bytes32 public constant CNS_PRICE_DISCOVERY;
+bytes32 public constant CNS_TREASURY;
+bytes32 public constant CNS_COVER_REASSURANCE;
+bytes32 public constant CNS_COVER_POLICY;
+bytes32 public constant CNS_COVER_POLICY_MANAGER;
+bytes32 public constant CNS_COVER_POLICY_ADMIN;
+bytes32 public constant CNS_COVER_STAKE;
+bytes32 public constant CNS_COVER_VAULT;
+bytes32 public constant CNS_COVER_STABLECOIN;
+bytes32 public constant CNS_COVER_CXTOKEN_FACTORY;
+bytes32 public constant CNS_COVER_VAULT_FACTORY;
+bytes32 public constant CNS_GOVERNANCE;
+bytes32 public constant CNS_GOVERNANCE_RESOLUTION;
+bytes32 public constant CNS_CLAIM_PROCESSOR;
+bytes32 public constant CNS_BURNER;
 bytes32 public constant NS_MEMBERS;
 bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_COVER;
-bytes32 public constant NS_GOVERNANCE;
-bytes32 public constant NS_RESOLUTION;
-bytes32 public constant NS_UNSTAKEN;
-bytes32 public constant NS_UNSTAKE_TS;
-bytes32 public constant NS_UNSTAKE_REWARD;
-bytes32 public constant NS_UNSTAKE_BURNED;
-bytes32 public constant NS_UNSTAKE_REPORTER_FEE;
-bytes32 public constant NS_CLAIMS_PROCESSOR;
+bytes32 public constant NS_COVER_CREATION_FEE;
+bytes32 public constant NS_COVER_CREATION_MIN_STAKE;
 bytes32 public constant NS_COVER_REASSURANCE;
 bytes32 public constant NS_COVER_REASSURANCE_TOKEN;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_CLAIMABLE;
 bytes32 public constant NS_COVER_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
+bytes32 public constant NS_COVER_OWNER;
 bytes32 public constant NS_COVER_LIQUIDITY;
+bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
-bytes32 public constant NS_COVER_LIQUIDITY_TOKEN;
 bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
-bytes32 public constant NS_COVER_OWNER;
-bytes32 public constant NS_COVER_POLICY;
-bytes32 public constant NS_COVER_POLICY_ADMIN;
-bytes32 public constant NS_COVER_POLICY_MANAGER;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
 bytes32 public constant NS_COVER_PROVISION;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
-bytes32 public constant NS_COVER_VAULT;
-bytes32 public constant NS_COVER_VAULT_FACTORY;
 bytes32 public constant NS_COVER_CXTOKEN;
-bytes32 public constant NS_COVER_CXTOKEN_FACTORY;
 bytes32 public constant NS_COVER_WHITELIST;
-bytes32 public constant NS_TREASURY;
-bytes32 public constant NS_PRICE_DISCOVERY;
-bytes32 public constant NS_REPORTING_INCIDENT_DATE;
-bytes32 public constant NS_REPORTING_PERIOD;
-bytes32 public constant NS_RESOLUTION_TS;
+bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS;
+bytes32 public constant NS_GOVERNANCE_UNSTAKEN;
+bytes32 public constant NS_GOVERNANCE_UNSTAKE_TS;
+bytes32 public constant NS_GOVERNANCE_UNSTAKE_REWARD;
+bytes32 public constant NS_GOVERNANCE_UNSTAKE_BURNED;
+bytes32 public constant NS_GOVERNANCE_UNSTAKE_REPORTER_FEE;
+bytes32 public constant NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE;
+bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE;
+bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD;
+bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES;
+bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO;
+bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES;
+bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO;
+bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE;
+bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION;
+bytes32 public constant NS_CLAIM_PERIOD;
 bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
-bytes32 public constant NS_REPORTING_WITNESS_YES;
-bytes32 public constant NS_REPORTING_WITNESS_NO;
-bytes32 public constant NS_REPORTING_STAKE_OWNED_YES;
-bytes32 public constant NS_REPORTING_STAKE_OWNED_NO;
-bytes32 public constant NS_SETUP_NPM;
-bytes32 public constant NS_REPORTING_BURN_RATE;
-bytes32 public constant NS_REPORTER_COMMISSION;
-bytes32 public constant NS_SETUP_CLAIM_PLATFORM_FEE;
-bytes32 public constant NS_SETUP_CLAIM_REPORTER_COMMISSION;
-bytes32 public constant NS_SETUP_COVER_CREATION_FEE;
-bytes32 public constant NS_SETUP_MIN_STAKE;
-bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE;
-bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD;
-bytes32 public constant NS_SETUP_CLAIM_PERIOD;
-bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER;
+bytes32 public constant NS_CLAIM_PLATFORM_FEE;
+bytes32 public constant NS_CLAIM_REPORTER_COMMISSION;
 bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
@@ -102,7 +105,7 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
 - [getTreasury(IStore s)](#gettreasury)
 - [getReassuranceVault(IStore s)](#getreassurancevault)
-- [getLiquidityToken(IStore s)](#getliquiditytoken)
+- [getStablecoin(IStore s)](#getstablecoin)
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [toKeccak256(bytes value)](#tokeccak256)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
@@ -158,7 +161,7 @@ returns(address)
 
 ```javascript
 function getProtocolAddress(IStore s) public view returns (address) {
-    return s.getAddressByKey(NS_CORE);
+    return s.getAddressByKey(CNS_CORE);
   }
 ```
 </details>
@@ -311,7 +314,7 @@ returns(contract IERC20)
 
 ```javascript
 function npmToken(IStore s) external view returns (IERC20) {
-    address npm = s.getAddressByKey(NS_SETUP_NPM);
+    address npm = s.getAddressByKey(CNS_NPM);
     return IERC20(npm);
   }
 ```
@@ -335,7 +338,7 @@ returns(address)
 
 ```javascript
 function getUniswapV2Router(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_SETUP_UNISWAP_V2_ROUTER);
+    return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
   }
 ```
 </details>
@@ -358,7 +361,7 @@ returns(address)
 
 ```javascript
 function getTreasury(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_TREASURY);
+    return s.getAddressByKey(CNS_TREASURY);
   }
 ```
 </details>
@@ -381,15 +384,15 @@ returns(address)
 
 ```javascript
 function getReassuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_REASSURANCE_VAULT);
+    return s.getAddressByKey(CNS_REASSURANCE_VAULT);
   }
 ```
 </details>
 
-### getLiquidityToken
+### getStablecoin
 
 ```solidity
-function getLiquidityToken(IStore s) public view
+function getStablecoin(IStore s) public view
 returns(address)
 ```
 
@@ -403,8 +406,8 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLiquidityToken(IStore s) public view returns (address) {
-    return s.getAddressByKey(NS_COVER_LIQUIDITY_TOKEN);
+function getStablecoin(IStore s) public view returns (address) {
+    return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 ```
 </details>
@@ -427,7 +430,7 @@ returns(address)
 
 ```javascript
 function getBurnAddress(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_BURNER);
+    return s.getAddressByKey(CNS_BURNER);
   }
 ```
 </details>

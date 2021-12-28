@@ -9,138 +9,148 @@ import "./StoreKeyUtil.sol";
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
-  bytes32 public constant NS_CORE = "proto:core";
-  bytes32 public constant NS_REASSURANCE_VAULT = "proto:core:reassurance:vault";
+  /// @dev Protocol contract namespace
+  bytes32 public constant CNS_CORE = "ns:core";
 
-  /// @dev The address where burn tokens are sent or collected.
-  /// This behavior (collection) is required if the instance of
-  /// the Neptune Mutual protocol is deployed on a sidechain
-  /// or a layer-2 blockchain.
+  /// @dev The address of NPM token available in this blockchain
+  bytes32 public constant CNS_NPM = "ns:core:npm:instance";
+
+  /// @dev Key prefix for creating a new cover product on chain
+  bytes32 public constant CNS_COVER = "cns:cover";
+
+  bytes32 public constant CNS_UNISWAP_V2_ROUTER = "ns:core:uni:v2:router";
+  bytes32 public constant CNS_REASSURANCE_VAULT = "ns:core:reassurance:vault";
+  bytes32 public constant CNS_PRICE_DISCOVERY = "ns:core:price:discovery";
+  bytes32 public constant CNS_TREASURY = "ns:core:treasury";
+  bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
+  bytes32 public constant CNS_COVER_POLICY = "cns:cover:policy";
+  bytes32 public constant CNS_COVER_POLICY_MANAGER = "cns:cover:policy:manager";
+  bytes32 public constant CNS_COVER_POLICY_ADMIN = "cns:cover:policy:admin";
+  bytes32 public constant CNS_COVER_STAKE = "cns:cover:stake";
+  bytes32 public constant CNS_COVER_VAULT = "cns:cover:vault";
+  bytes32 public constant CNS_COVER_STABLECOIN = "cns:cover:stablecoin";
+  bytes32 public constant CNS_COVER_CXTOKEN_FACTORY = "cns:cover:cxtoken:factory";
+  bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
+
+  /// @dev Governance contract address
+  bytes32 public constant CNS_GOVERNANCE = "ns:gov";
+
+  /// @dev Governance:Resolution contract address
+  bytes32 public constant CNS_GOVERNANCE_RESOLUTION = "cns:gov:resolution";
+
+  /// @dev Claims processor contract address
+  bytes32 public constant CNS_CLAIM_PROCESSOR = "cns:claim:processor";
+
+  /// @dev The address where `burn tokens` are sent or collected.
+  /// The collection behavior (collection) is required if the protocol
+  /// is deployed on a sidechain or a layer-2 blockchain.
   /// &nbsp;\n
   /// The collected NPM tokens are will be periodically bridged back to Ethereum
   /// and then burned.
-  bytes32 public constant NS_BURNER = "proto:core:burner";
+  bytes32 public constant CNS_BURNER = "ns:core:burner";
 
   /// @dev Namespace for all protocol members.
-  bytes32 public constant NS_MEMBERS = "proto:members";
+  bytes32 public constant NS_MEMBERS = "ns:members";
 
   /// @dev Namespace for protocol contract members.
-  bytes32 public constant NS_CONTRACTS = "proto:contracts";
+  bytes32 public constant NS_CONTRACTS = "ns:contracts";
 
   /// @dev Key prefix for creating a new cover product on chain
-  bytes32 public constant NS_COVER = "proto:cover";
+  bytes32 public constant NS_COVER = "ns:cover";
 
-  /// @dev Governance contract address
-  bytes32 public constant NS_GOVERNANCE = "proto:gov";
+  bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
+  bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
+  bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
+  bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
+  bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
+  bytes32 public constant NS_COVER_CLAIMABLE = "ns:cover:claimable";
+  bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
+  bytes32 public constant NS_COVER_INFO = "ns:cover:info";
+  bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
 
-  /// @dev Governance:Resolution contract address
-  bytes32 public constant NS_RESOLUTION = "proto:gov:resolution";
+  bytes32 public constant NS_COVER_LIQUIDITY = "ns:cover:liquidity";
+  bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD = "ns:cover:liquidity:min:period";
+  bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
+  bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
+  bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "ns:cover:liquidity:release";
+
+  bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
+  bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
+  bytes32 public constant NS_COVER_PROVISION = "ns:cover:provision";
+
+  bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
+  bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
+  bytes32 public constant NS_COVER_STATUS = "ns:cover:status";
+  bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
+  bytes32 public constant NS_COVER_WHITELIST = "ns:cover:whitelist";
+
+  /// @dev Resolution timestamp = timestamp of first reporting + reporting period
+  bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS = "ns:gov:resolution:ts";
 
   /// @dev The timestamp when a tokenholder withdraws their reporting stake
-  bytes32 public constant NS_UNSTAKEN = "proto:gov:unstaken";
+  bytes32 public constant NS_GOVERNANCE_UNSTAKEN = "ns:gov:unstaken";
 
   /// @dev The timestamp when a tokenholder withdraws their reporting stake
-  bytes32 public constant NS_UNSTAKE_TS = "proto:gov:unstake:ts";
+  bytes32 public constant NS_GOVERNANCE_UNSTAKE_TS = "ns:gov:unstake:ts";
 
   /// @dev The reward received by the winning camp
-  bytes32 public constant NS_UNSTAKE_REWARD = "proto:gov:unstake:reward";
+  bytes32 public constant NS_GOVERNANCE_UNSTAKE_REWARD = "ns:gov:unstake:reward";
 
   /// @dev The stakes burned during incident resolution
-  bytes32 public constant NS_UNSTAKE_BURNED = "proto:gov:unstake:burned";
+  bytes32 public constant NS_GOVERNANCE_UNSTAKE_BURNED = "ns:gov:unstake:burned";
 
   /// @dev The stakes burned during incident resolution
-  bytes32 public constant NS_UNSTAKE_REPORTER_FEE = "proto:gov:unstake:rep:fee";
+  bytes32 public constant NS_GOVERNANCE_UNSTAKE_REPORTER_FEE = "ns:gov:unstake:rep:fee";
 
-  /// @dev Claims processor contract address
-  bytes32 public constant NS_CLAIMS_PROCESSOR = "proto:claims:processor";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE = "ns:gov:reporting:min:first:stake";
 
-  bytes32 public constant NS_COVER_REASSURANCE = "proto:cover:reassurance";
-  bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "proto:cover:reassurance:token";
-  bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "proto:cover:reassurance:weight";
-  bytes32 public constant NS_COVER_CLAIMABLE = "proto:cover:claimable";
-  bytes32 public constant NS_COVER_FEE_EARNING = "proto:cover:fee:earning";
-  bytes32 public constant NS_COVER_INFO = "proto:cover:info";
-  bytes32 public constant NS_COVER_LIQUIDITY = "proto:cover:liquidity";
-  bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "proto:cover:liquidity:committed";
-  bytes32 public constant NS_COVER_LIQUIDITY_NAME = "proto:cover:liquidityName";
-  bytes32 public constant NS_COVER_LIQUIDITY_TOKEN = "proto:cover:liquidityToken";
-  bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "proto:cover:liquidity:release";
-  bytes32 public constant NS_COVER_OWNER = "proto:cover:owner";
-  bytes32 public constant NS_COVER_POLICY = "proto:cover:policy";
-  bytes32 public constant NS_COVER_POLICY_ADMIN = "proto:cover:policy:admin";
-  bytes32 public constant NS_COVER_POLICY_MANAGER = "proto:cover:policy:manager";
-  bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "proto:cover:policy:rate:floor";
-  bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "proto:cover:policy:rate:ceiling";
-  bytes32 public constant NS_COVER_PROVISION = "proto:cover:provision";
-  bytes32 public constant NS_COVER_STAKE = "proto:cover:stake";
-  bytes32 public constant NS_COVER_STAKE_OWNED = "proto:cover:stake:owned";
-  bytes32 public constant NS_COVER_STATUS = "proto:cover:status";
-  bytes32 public constant NS_COVER_VAULT = "proto:cover:vault";
-  bytes32 public constant NS_COVER_VAULT_FACTORY = "proto:cover:vault:factory";
-  bytes32 public constant NS_COVER_CXTOKEN = "proto:cover:cxtoken";
-  bytes32 public constant NS_COVER_CXTOKEN_FACTORY = "proto:cover:cxtoken:factory";
-  bytes32 public constant NS_COVER_WHITELIST = "proto:cover:whitelist";
-  bytes32 public constant NS_TREASURY = "proto:core:treasury";
-  bytes32 public constant NS_PRICE_DISCOVERY = "proto:core:price:discovery";
-
-  /// @dev An approximate date and time when trigger event or cover incident occured
-  bytes32 public constant NS_REPORTING_INCIDENT_DATE = "proto:reporting:incident:date";
+  /// @dev An approximate date and time when trigger event or cover incident occurred
+  bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE = "ns:gov:reporting:incident:date";
 
   /// @dev A period (in solidity timestamp) configurable by cover creators during
   /// when NPM tokenholders can vote on incident reporting proposals
-  bytes32 public constant NS_REPORTING_PERIOD = "proto:reporting:period";
-
-  /// @dev Resolution timestamp = timestamp of first reporting + reporting period
-  bytes32 public constant NS_RESOLUTION_TS = "proto:reporting:resolution:ts";
-
-  /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
-  bytes32 public constant NS_CLAIM_BEGIN_TS = "proto:claim:begin:ts";
-
-  /// @dev Claim expiry date = Claim begin date + claim duration
-  bytes32 public constant NS_CLAIM_EXPIRY_TS = "proto:claim:expiry:ts";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD = "ns:gov:reporting:period";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who saw incident to have happened
   /// 2. For address --> The address of the first reporter
-  bytes32 public constant NS_REPORTING_WITNESS_YES = "proto:reporting:witness:yes";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES = "ns:gov:reporting:witness:yes";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting
   /// 2. For address --> The address of the first disputing reporter (disputer / candidate reporter)
-  bytes32 public constant NS_REPORTING_WITNESS_NO = "proto:reporting:witness:no";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO = "ns:gov:reporting:witness:no";
 
   /// @dev Stakes guaranteed by an individual witness supporting the "incident happened" camp
-  bytes32 public constant NS_REPORTING_STAKE_OWNED_YES = "proto:reporting:stake:owned:yes";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES = "ns:gov:reporting:stake:owned:yes";
 
   /// @dev Stakes guaranteed by an individual witness supporting the "false reporting" camp
-  bytes32 public constant NS_REPORTING_STAKE_OWNED_NO = "proto:reporting:stake:owned:no";
-
-  /// @dev The address of NPM token available in this blockchain
-  bytes32 public constant NS_SETUP_NPM = "proto:setup:npm";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:reporting:stake:owned:no";
 
   /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake reward to burn.
   /// Note that the reward comes from the losing camp after resolution is achieved.
-  bytes32 public constant NS_REPORTING_BURN_RATE = "proto:reporting:burn:rate";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:reporting:burn:rate";
 
   /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake
   /// reward to provide to the final reporter.
-  bytes32 public constant NS_REPORTER_COMMISSION = "proto:reporter:commission";
+  bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION = "ns:gov:reporter:commission";
+
+  bytes32 public constant NS_CLAIM_PERIOD = "ns:claim:period";
+
+  /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
+  bytes32 public constant NS_CLAIM_BEGIN_TS = "ns:claim:begin:ts";
+
+  /// @dev Claim expiry date = Claim begin date + claim duration
+  bytes32 public constant NS_CLAIM_EXPIRY_TS = "ns:claim:expiry:ts";
 
   /// @dev The percentage rate (x 1 ether) of amount deducted by the platform
   /// for each successful claims payout
-  bytes32 public constant NS_SETUP_CLAIM_PLATFORM_FEE = "proto:setup:claim:platform:fee";
+  bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";
 
   /// @dev The percentage rate (x 1 ether) of amount provided to the first reporter
   /// upon favorable incident resolution. This amount is a commission of the
-  /// 'proto:setup:claim:platform:fee'
-  bytes32 public constant NS_SETUP_CLAIM_REPORTER_COMMISSION = "proto:setup:claim:rep:commission";
-
-  bytes32 public constant NS_SETUP_COVER_CREATION_FEE = "proto:setup:cover:creation:fee";
-  bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
-  bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE = "proto:setup:1st:reporting:stake";
-  bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
-  bytes32 public constant NS_SETUP_CLAIM_PERIOD = "proto:setup:claim:period";
-  bytes32 public constant NS_SETUP_UNISWAP_V2_ROUTER = "proto:uniswap:v2:router";
+  /// 'ns:claim:platform:fee'
+  bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
 
   bytes32 public constant CNAME_PROTOCOL = "Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
@@ -164,7 +174,7 @@ library ProtoUtilV1 {
   }
 
   function getProtocolAddress(IStore s) public view returns (address) {
-    return s.getAddressByKey(NS_CORE);
+    return s.getAddressByKey(CNS_CORE);
   }
 
   function getContract(IStore s, bytes32 name) external view returns (address) {
@@ -206,28 +216,28 @@ library ProtoUtilV1 {
   }
 
   function npmToken(IStore s) external view returns (IERC20) {
-    address npm = s.getAddressByKey(NS_SETUP_NPM);
+    address npm = s.getAddressByKey(CNS_NPM);
     return IERC20(npm);
   }
 
   function getUniswapV2Router(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_SETUP_UNISWAP_V2_ROUTER);
+    return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
   }
 
   function getTreasury(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_TREASURY);
+    return s.getAddressByKey(CNS_TREASURY);
   }
 
   function getReassuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_REASSURANCE_VAULT);
+    return s.getAddressByKey(CNS_REASSURANCE_VAULT);
   }
 
-  function getLiquidityToken(IStore s) public view returns (address) {
-    return s.getAddressByKey(NS_COVER_LIQUIDITY_TOKEN);
+  function getStablecoin(IStore s) public view returns (address) {
+    return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 
   function getBurnAddress(IStore s) external view returns (address) {
-    return s.getAddressByKey(NS_BURNER);
+    return s.getAddressByKey(CNS_BURNER);
   }
 
   function toKeccak256(bytes memory value) external pure returns (bytes32) {

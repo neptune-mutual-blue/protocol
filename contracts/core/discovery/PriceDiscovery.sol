@@ -30,7 +30,7 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
    * @param multiplier Enter the token price multiplier
    */
   function getTokenPriceInStableCoin(address token, uint256 multiplier) external view override returns (uint256) {
-    address stablecoin = s.getLiquidityToken();
+    address stablecoin = s.getStablecoin();
     return this.getTokenPriceInLiquidityToken(token, stablecoin, multiplier);
   }
 

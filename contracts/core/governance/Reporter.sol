@@ -39,11 +39,11 @@ abstract contract Reporter is IReporter, Witness {
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake >= getMinStake(), "Stake insufficient");
 
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key, incidentDate);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
     // Set the Resolution Timestamp
     uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
-    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, resolutionDate);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key, resolutionDate);
 
     // Update the values
     s.addAttestation(key, msg.sender, incidentDate, stake);
@@ -80,8 +80,38 @@ abstract contract Reporter is IReporter, Witness {
     emit Refuted(key, msg.sender, incidentDate, stake);
   }
 
+  function setFirstReportingStake(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
+
+    emit FirstReportingStakeSet(previous, value);
+  }
+
+  function setReportingBurnRate(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, value);
+
+    emit ReportingBurnRateSet(previous, value);
+  }
+
+  function setReporterCommission(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);
+
+    emit ReporterCommissionSet(previous, value);
+  }
+
   function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
   }
 
   function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {
@@ -89,7 +119,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function getResolutionDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
   }
 
   function getMinStake() public view override returns (uint256) {

@@ -11,6 +11,9 @@ View Source: [contracts/interfaces/IReporter.sol](../contracts/interfaces/IRepor
 ```js
 event Reported(bytes32 indexed key, address indexed reporter, uint256  incidentDate, bytes32  info, uint256  initialStake);
 event Disputed(bytes32 indexed key, address indexed reporter, uint256  incidentDate, bytes32  info, uint256  initialStake);
+event ReportingBurnRateSet(uint256  previous, uint256  current);
+event FirstReportingStakeSet(uint256  previous, uint256  current);
+event ReporterCommissionSet(uint256  previous, uint256  current);
 ```
 
 ## Functions
@@ -21,6 +24,9 @@ event Disputed(bytes32 indexed key, address indexed reporter, uint256  incidentD
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
 - [getResolutionDate(bytes32 key)](#getresolutiondate)
+- [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
+- [setReportingBurnRate(uint256 value)](#setreportingburnrate)
+- [setReporterCommission(uint256 value)](#setreportercommission)
 
 ### report
 
@@ -157,6 +163,66 @@ returns(uint256)
 
 ```javascript
 function getResolutionDate(bytes32 key) external view returns (uint256);
+```
+</details>
+
+### setFirstReportingStake
+
+```solidity
+function setFirstReportingStake(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setFirstReportingStake(uint256 value) external;
+```
+</details>
+
+### setReportingBurnRate
+
+```solidity
+function setReportingBurnRate(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReportingBurnRate(uint256 value) external;
+```
+</details>
+
+### setReporterCommission
+
+```solidity
+function setReporterCommission(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReporterCommission(uint256 value) external;
 ```
 </details>
 

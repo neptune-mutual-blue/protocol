@@ -67,23 +67,23 @@ library ValidationLibV1 {
   }
 
   function callerMustBePolicyContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.NS_COVER_POLICY);
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY);
   }
 
   function callerMustBePolicyManagerContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.NS_COVER_POLICY_MANAGER);
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY_MANAGER);
   }
 
   function callerMustBeCoverContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.NS_COVER);
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER);
   }
 
   function callerMustBeGovernanceContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.NS_GOVERNANCE);
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
   }
 
   function callerMustBeClaimsProcessorContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.NS_CLAIMS_PROCESSOR);
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
   }
 
   /*********************************************************************************************
@@ -131,16 +131,16 @@ library ValidationLibV1 {
   }
 
   function mustNotHaveDispute(IStore s, bytes32 key) public view {
-    address reporter = s.getAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key);
+    address reporter = s.getAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
     require(reporter == address(0), "Already disputed");
   }
 
   function mustBeDuringReportingPeriod(IStore s, bytes32 key) public view {
-    require(s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
+    require(s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 
   function mustBeAfterReportingPeriod(IStore s, bytes32 key) public view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
+    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
   }
 
   function mustBeValidCxToken(
@@ -178,7 +178,7 @@ library ValidationLibV1 {
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
     uint256 withdrawal = s.getUintByKey(k);
 
     require(withdrawal == 0, "Already unstaken");

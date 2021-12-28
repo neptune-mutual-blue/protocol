@@ -66,7 +66,7 @@ function deploy(IStore s, bytes32 key) external override nonReentrant returns (a
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getLiquidityToken());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getStablecoin());
 
     // solhint-disable-next-line
     assembly {

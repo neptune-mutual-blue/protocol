@@ -17,7 +17,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   mapping(bytes32 => bytes32) public bytes32Storage;
   mapping(bytes32 => bool) public boolStorage;
 
-  bytes32 private constant _NS_MEMBERS = "proto:members";
+  bytes32 private constant _NS_MEMBERS = "ns:members";
 
   constructor() {
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, msg.sender))] = true;

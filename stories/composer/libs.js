@@ -61,7 +61,9 @@ const deployAll = async (cache) => {
     BaseLibV1: baseLibV1.address,
     NTransferUtilV2: transferLib.address,
     ValidationLibV1: validationLib.address,
-    VaultLibV1: vaultLib.address
+    VaultLibV1: vaultLib.address,
+    AccessControlLibV1: accessControlLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address
   })
 
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {

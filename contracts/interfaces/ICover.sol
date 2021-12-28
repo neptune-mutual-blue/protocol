@@ -7,6 +7,9 @@ interface ICover is IMember {
   event CoverCreated(bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 liquidity);
   event CoverUpdated(bytes32 key, bytes32 info);
   event WhitelistUpdated(address account, bool status);
+  event CoverFeeSet(uint256 previous, uint256 current);
+  event MinCoverCreationStakeSet(uint256 previous, uint256 current);
+  event CoverInitialized(address indexed stablecoin, bytes32 withName);
 
   /**
    * @dev Initializes this contract
@@ -85,4 +88,8 @@ interface ICover is IMember {
     );
 
   function checkIfWhitelisted(address account) external view returns (bool);
+
+  function setCoverFees(uint256 value) external;
+
+  function setMinCoverCreationStake(uint256 value) external;
 }

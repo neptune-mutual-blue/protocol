@@ -14,18 +14,13 @@ event ContractAdded(bytes32  namespace, address  contractAddress);
 event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
-event CoverFeeSet(uint256  previous, uint256  current);
-event MinStakeSet(uint256  previous, uint256  current);
-event MinReportingStakeSet(uint256  previous, uint256  current);
-event MinLiquidityPeriodSet(uint256  previous, uint256  current);
-event ReportingBurnRateSet(uint256  previous, uint256  current);
-event ReporterCommissionSet(uint256  previous, uint256  current);
-event ClaimPeriodSet(uint256  previous, uint256  current);
+event Initialized(address[]  addresses, uint256[]  values);
 ```
 
 ## Functions
 
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
+- [initialize(address[] addresses, uint256[] values)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [addMember(address member)](#addmember)
 - [removeMember(address member)](#removemember)
@@ -48,6 +43,27 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external;
+```
+</details>
+
+### initialize
+
+```solidity
+function initialize(address[] addresses, uint256[] values) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| addresses | address[] |  | 
+| values | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function initialize(address[] memory addresses, uint256[] memory values) external;
 ```
 </details>
 

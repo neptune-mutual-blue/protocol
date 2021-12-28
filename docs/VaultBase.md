@@ -32,6 +32,7 @@ address public lqt;
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem)](#removeliquidity)
 - [_addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity)](#_addliquidity)
+- [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -223,6 +224,34 @@ function _addLiquidity(
     super._mint(account, podsToMint);
 
     emit PodsIssued(account, podsToMint, amount);
+  }
+```
+</details>
+
+### setMinLiquidityPeriod
+
+```solidity
+function setMinLiquidityPeriod(uint256 value) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+
+    emit MinLiquidityPeriodSet(previous, value);
   }
 ```
 </details>

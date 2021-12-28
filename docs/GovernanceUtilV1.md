@@ -44,7 +44,7 @@ returns(uint256)
 
 ```javascript
 function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_PERIOD, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key);
   }
 ```
 </details>
@@ -67,7 +67,7 @@ returns(uint256)
 
 ```javascript
 function getReportingBurnRate(IStore s) public view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
+    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
   }
 ```
 </details>
@@ -90,7 +90,7 @@ returns(uint256)
 
 ```javascript
 function getReporterCommission(IStore s) public view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
+    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
   }
 ```
 </details>
@@ -113,7 +113,7 @@ returns(uint256)
 
 ```javascript
 function getMinReportingStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
+    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
   }
 ```
 </details>
@@ -161,7 +161,7 @@ returns(uint256)
 
 ```javascript
 function getResolutionTimestamp(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
   }
 ```
 </details>
@@ -192,7 +192,7 @@ function getReporter(
   ) external view returns (address) {
     (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
 
-    bytes32 prefix = yes >= no ? ProtoUtilV1.NS_REPORTING_WITNESS_YES : ProtoUtilV1.NS_REPORTING_WITNESS_NO;
+    bytes32 prefix = yes >= no ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
     return s.getAddressByKeys(prefix, key);
   }
 ```
@@ -222,10 +222,10 @@ function getStakes(
     bytes32 key,
     uint256 incidentDate
   ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
     yes = s.getUintByKey(k);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
     no = s.getUintByKey(k);
   }
 ```
@@ -360,32 +360,32 @@ function updateUnstakeDetails(
     uint256 reporterFee
   ) public {
     // Unstake timestamp of the account
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate, account));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
     s.setUintByKey(k, block.timestamp); // solhint-disable-line
 
     // Last unstake timestamp
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_TS, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate));
     s.setUintByKey(k, block.timestamp); // solhint-disable-line
 
     // ---------------------------------------------------------------------
 
     // Amount unstaken by the account
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate, account));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKEN, key, incidentDate, account));
     s.setUintByKey(k, originalStake);
 
     // Amount unstaken by everyone
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKEN, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKEN, key, incidentDate));
     s.addUintByKey(k, originalStake);
 
     // ---------------------------------------------------------------------
 
     if (reward > 0) {
       // Reward received by the account
-      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate, account));
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_REWARD, key, incidentDate, account));
       s.setUintByKey(k, reward);
 
       // Total reward received
-      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REWARD, key, incidentDate));
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_REWARD, key, incidentDate));
       s.addUintByKey(k, reward);
     }
 
@@ -393,13 +393,13 @@ function updateUnstakeDetails(
 
     if (burned > 0) {
       // Total burned
-      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_BURNED, key, incidentDate));
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_BURNED, key, incidentDate));
       s.addUintByKey(k, burned);
     }
 
     if (reporterFee > 0) {
       // Total fee paid to the final reporter
-      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_UNSTAKE_REPORTER_FEE, key, incidentDate));
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_REPORTER_FEE, key, incidentDate));
       s.addUintByKey(k, reporterFee);
     }
   }
@@ -432,10 +432,10 @@ function getStakesOf(
     bytes32 key,
     uint256 incidentDate
   ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
     no = s.getUintByKey(k);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
     yes = s.getUintByKey(k);
   }
 ```
@@ -464,10 +464,10 @@ function updateCoverStatus(
     bytes32 key,
     uint256 incidentDate
   ) public {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
     uint256 yes = s.getUintByKey(k);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
     uint256 no = s.getUintByKey(k);
 
     if (no > yes) {
@@ -508,16 +508,16 @@ function addAttestation(
     uint256 stake
   ) external {
     // Add individual stake of the reporter
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
     s.addUintByKey(k, stake);
 
     // All "incident happened" camp witnesses combined
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
     uint256 currentStake = s.getUintByKey(k);
 
     // No has reported yet, this is the first report
     if (currentStake == 0) {
-      s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, msg.sender);
+      s.setAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, msg.sender);
     }
 
     s.addUintByKey(k, stake);
@@ -552,10 +552,10 @@ function getAttestation(
     address who,
     uint256 incidentDate
   ) external view returns (uint256 myStake, uint256 totalStake) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
     myStake = s.getUintByKey(k);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
     totalStake = s.getUintByKey(k);
   }
 ```
@@ -588,15 +588,15 @@ function addDispute(
     uint256 incidentDate,
     uint256 stake
   ) external {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
     s.addUintByKey(k, stake);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
     uint256 currentStake = s.getUintByKey(k);
 
     if (currentStake == 0) {
       // The first reporter who disputed
-      s.setAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, msg.sender);
+      s.setAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, msg.sender);
     }
 
     s.addUintByKey(k, stake);
@@ -632,10 +632,10 @@ function getDispute(
     address who,
     uint256 incidentDate
   ) external view returns (uint256 myStake, uint256 totalStake) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
     myStake = s.getUintByKey(k);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_REPORTING_WITNESS_NO, key, incidentDate));
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
     totalStake = s.getUintByKey(k);
   }
 ```
@@ -660,7 +660,7 @@ returns(uint256)
 
 ```javascript
 function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
   }
 ```
 </details>
