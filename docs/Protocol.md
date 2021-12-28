@@ -57,7 +57,7 @@ function initialize(address[] addresses, uint256[] values) external nonpayable w
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] | [0] uniswapV2RouterLike | 
+| addresses | address[] | [0] burner | 
 | values | uint256[] | [0] coverCreationFees | 
 
 <details>
@@ -71,19 +71,20 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     require(initialized == 0, "Already initialized");
     initialized = 1;
 
-    require(addresses[0] != address(0), "Invalid Router");
-    require(addresses[1] != address(0), "Invalid NPM");
-    require(addresses[2] != address(0), "Invalid Treasury");
-    require(addresses[3] != address(0), "Invalid Vault");
+    require(addresses[0] != address(0), "Invalid Burner");
+    require(addresses[1] != address(0), "Invalid Router");
+    require(addresses[2] != address(0), "Invalid NPM");
+    require(addresses[3] != address(0), "Invalid Treasury");
+    require(addresses[4] != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
-    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, 0x0000000000000000000000000000000000000001);
+    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
-    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[0]);
-    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[1]);
-    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[2]);
-    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[3]);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[2]);
+    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[3]);
+    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[4]);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
