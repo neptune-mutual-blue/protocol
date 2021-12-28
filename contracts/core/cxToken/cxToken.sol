@@ -14,7 +14,7 @@ import "../Recoverable.sol";
  * @dev cxTokens are minted when someone purchases a cover. <br /> <br />
  *
  * When a cover incident is successfully resolved, each unit of cxTokens can be redeemed at 1:1 ratio
- * of 1 cxToken = 1 DAI/BUSD/USDC.
+ * of 1 cxToken = 1 DAI/BUSD/USDC (minus platform fees).
  *
  */
 // solhint-disable-next-line
@@ -53,7 +53,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     address to,
     uint256 amount
   ) external override nonReentrant {
-    // @supress-acl Can only be called by the latest policy contract
+    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     require(key == coverKey, "Invalid cover");
     s.callerMustBePolicyContract();
@@ -66,7 +66,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    * @param amount Specify the amount of tokens to burn
    */
   function burn(uint256 amount) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
     super._burn(msg.sender, amount);

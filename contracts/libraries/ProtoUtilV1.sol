@@ -58,7 +58,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "proto:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "proto:cover:reassurance:weight";
   bytes32 public constant NS_COVER_CLAIMABLE = "proto:cover:claimable";
-  bytes32 public constant NS_COVER_FEE = "proto:cover:fee";
+  bytes32 public constant NS_COVER_FEE_EARNING = "proto:cover:fee:earning";
   bytes32 public constant NS_COVER_INFO = "proto:cover:info";
   bytes32 public constant NS_COVER_LIQUIDITY = "proto:cover:liquidity";
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "proto:cover:liquidity:committed";
@@ -126,7 +126,16 @@ library ProtoUtilV1 {
   /// reward to provide to the final reporter.
   bytes32 public constant NS_REPORTER_COMMISSION = "proto:reporter:commission";
 
-  bytes32 public constant NS_SETUP_COVER_FEE = "proto:setup:cover:fee";
+  /// @dev The percentage rate (x 1 ether) of amount deducted by the platform
+  /// for each successful claims payout
+  bytes32 public constant NS_SETUP_CLAIM_PLATFORM_FEE = "proto:setup:claim:platform:fee";
+
+  /// @dev The percentage rate (x 1 ether) of amount provided to the first reporter
+  /// upon favorable incident resolution. This amount is a commission of the
+  /// 'proto:setup:claim:platform:fee'
+  bytes32 public constant NS_SETUP_CLAIM_REPORTER_COMMISSION = "proto:setup:claim:rep:commission";
+
+  bytes32 public constant NS_SETUP_COVER_CREATION_FEE = "proto:setup:cover:creation:fee";
   bytes32 public constant NS_SETUP_MIN_STAKE = "proto:setup:min:stake";
   bytes32 public constant NS_SETUP_FIRST_REPORTING_STAKE = "proto:setup:1st:reporting:stake";
   bytes32 public constant NS_SETUP_MIN_LIQ_PERIOD = "proto:setup:min:liq:period";
@@ -145,7 +154,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
-  bytes32 public constant CNAME_COVER_PROVISION = "CoverProvison";
+  bytes32 public constant CNAME_COVER_PROVISION = "CoverProvision";
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";

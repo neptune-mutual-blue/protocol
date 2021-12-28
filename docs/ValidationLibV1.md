@@ -24,7 +24,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustNotHaveDispute(IStore s, bytes32 key)](#mustnothavedispute)
 - [mustBeDuringReportingPeriod(IStore s, bytes32 key)](#mustbeduringreportingperiod)
 - [mustBeAfterReportingPeriod(IStore s, bytes32 key)](#mustbeafterreportingperiod)
-- [mustBeValidCxToken(bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
+- [mustBeValidCxToken(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
 - [mustBeValidClaim(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidclaim)
 - [mustNotHaveUnstaken(IStore s, address account, bytes32 key, uint256 incidentDate)](#mustnothaveunstaken)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
@@ -473,13 +473,14 @@ function mustBeAfterReportingPeriod(IStore s, bytes32 key) public view {
 ### mustBeValidCxToken
 
 ```solidity
-function mustBeValidCxToken(bytes32 key, address cxToken, uint256 incidentDate) public view
+function mustBeValidCxToken(IStore s, bytes32 key, address cxToken, uint256 incidentDate) public view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 | key | bytes32 |  | 
 | cxToken | address |  | 
 | incidentDate | uint256 |  | 
@@ -489,12 +490,13 @@ function mustBeValidCxToken(bytes32 key, address cxToken, uint256 incidentDate) 
 
 ```javascript
 function mustBeValidCxToken(
+    IStore s,
     bytes32 key,
     address cxToken,
     uint256 incidentDate
   ) public view {
-    // Vulnerability in mustBeValidCToken validation logic #5
-    // https://github.com/neptune-mutual/protocol/issues/5
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken) == true, "Unknown cxToken");
+
     bytes32 coverKey = ICxToken(cxToken).coverKey();
     require(coverKey == key, "Invalid cxToken");
 
@@ -533,7 +535,7 @@ function mustBeValidClaim(
 
     s.mustBeProtocolMember(cxToken);
     mustBeValidIncidentDate(s, key, incidentDate);
-    mustBeValidCxToken(key, cxToken, incidentDate);
+    mustBeValidCxToken(s, key, cxToken, incidentDate);
     mustBeDuringClaimPeriod(s, key);
   }
 ```

@@ -5,6 +5,13 @@ import "./Finalization.sol";
 import "../../../interfaces/IResolvable.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
+/**
+ * @title Neptune Mutual Governance: Resolvable Contract
+ * @dev Enables governance agents to resolve a contract undergoing reporting.
+ * Provides a cool-down period of 24-hours during when governance admins
+ * can perform emergency resolution to defend against governance attacks.
+ */
+
 abstract contract Resolvable is Finalization, IResolvable {
   using GovernanceUtilV1 for IStore;
   using ProtoUtilV1 for IStore;

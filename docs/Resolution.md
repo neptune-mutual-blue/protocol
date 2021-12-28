@@ -1,10 +1,15 @@
-# Resolution.sol
+# Neptune Mutual Governance: Resolution Contract (Resolution.sol)
 
 View Source: [contracts/core/governance/resolution/Resolution.sol](../contracts/core/governance/resolution/Resolution.sol)
 
 **↗ Extends: [IResolution](IResolution.md), [Unstakable](Unstakable.md)**
 
 **Resolution**
+
+This contract enables governance agents or admins to resolve
+ actively-reporting cover products. Once a resolution occurs, the
+ NPM token holders who voted for the winning camp can unstake
+ their staking during the claim period with additional rewards.
 
 ## Functions
 

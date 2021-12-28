@@ -48,7 +48,7 @@ function report(
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
     s.mustBeValidCover(key);
@@ -99,7 +99,7 @@ function dispute(
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
     s.mustNotHaveDispute(key);

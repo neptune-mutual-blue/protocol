@@ -18,6 +18,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using StoreKeyUtil for IStore;
 
   /**
    * @dev Constructs this contract
@@ -38,7 +39,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     bytes32 key,
     uint256 expiryDate
   ) external override nonReentrant returns (address deployed) {
-    // @supress-acl Can only be called by the latest policy contract
+    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
@@ -63,6 +64,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     }
 
     s.setAddress(salt, deployed);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     emit CxTokenDeployed(key, deployed, expiryDate);
   }
 

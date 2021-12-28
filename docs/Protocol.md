@@ -98,7 +98,7 @@ function initialize(
     uint256 burnRate,
     uint256 reporterCommission
   ) external nonReentrant whenNotPaused {
-    // @supress-acl Can only be called once by the deployer
+    // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
     require(initialized == 0, "Already initialized");
@@ -392,8 +392,8 @@ function _setCoverFees(uint256 value) private nonpayable
 
 ```javascript
 function _setCoverFees(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE, value);
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE);
+    s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE, value);
 
     emit CoverFeeSet(previous, value);
   }

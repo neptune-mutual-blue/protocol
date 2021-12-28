@@ -121,12 +121,12 @@ function addCover(
     uint256 initialReassuranceAmount,
     uint256 initialLiquidity
   ) external override nonReentrant {
-    // @supress-acl Can only be called by a whitelisted address
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Can only be called by a whitelisted address
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
-    require(reportingPeriod >= 7 days, "Insufficent reporting period");
+    require(reportingPeriod >= 7 days, "Insufficient reporting period");
 
     // First validate the information entered
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
@@ -199,7 +199,7 @@ function _addCover(
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
 
     // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE, key, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
 
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);

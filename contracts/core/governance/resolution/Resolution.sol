@@ -4,6 +4,13 @@ pragma solidity 0.8.0;
 import "./Unstakable.sol";
 import "../../../interfaces/IResolution.sol";
 
+/**
+ * @title Neptune Mutual Governance: Resolution Contract
+ * @dev This contract enables governance agents or admins to resolve
+ * actively-reporting cover products. Once a resolution occurs, the
+ * NPM token holders who voted for the winning camp can unstake
+ * their staking during the claim period with additional rewards.
+ */
 contract Resolution is IResolution, Unstakable {
   using GovernanceUtilV1 for IStore;
   using ProtoUtilV1 for IStore;
