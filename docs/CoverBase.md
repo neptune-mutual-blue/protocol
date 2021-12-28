@@ -11,6 +11,8 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 
 - [constructor(IStore store)](#)
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
+- [setCoverFees(uint256 value)](#setcoverfees)
+- [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 - [getCover(bytes32 key)](#getcover)
 - [version()](#version)
 - [getName()](#getname)
@@ -62,10 +64,67 @@ function initialize(address liquidityToken, bytes32 liquidityName) external over
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    require(s.getAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN) == address(0), "Already initialized");
+    require(s.getAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN) == address(0), "Already initialized");
 
-    s.setAddressByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_TOKEN, liquidityToken);
+    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
     s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
+
+    emit CoverInitialized(liquidityToken, liquidityName);
+  }
+```
+</details>
+
+### setCoverFees
+
+```solidity
+function setCoverFees(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverFees(uint256 value) public override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
+
+    emit CoverFeeSet(previous, value);
+  }
+```
+</details>
+
+### setMinCoverCreationStake
+
+```solidity
+function setMinCoverCreationStake(uint256 value) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinCoverCreationStake(uint256 value) public override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, value);
+
+    emit MinCoverCreationStakeSet(previous, value);
   }
 ```
 </details>

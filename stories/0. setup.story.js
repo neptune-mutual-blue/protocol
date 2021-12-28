@@ -37,7 +37,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.stakingContract.address.should.not.be.empty
     contracts.stakingContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_STAKE))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_STAKE))
     fetchedAddress.should.equal(contracts.stakingContract.address)
   })
 
@@ -45,7 +45,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.reassuranceContract.address.should.not.be.empty
     contracts.reassuranceContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_REASSURANCE))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_REASSURANCE))
     fetchedAddress.should.equal(contracts.reassuranceContract.address)
   })
 
@@ -61,7 +61,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.cover.address.should.not.be.empty
     contracts.cover.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER))
     fetchedAddress.should.equal(contracts.cover.address)
   })
 
@@ -69,7 +69,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.vaultFactory.address.should.not.be.empty
     contracts.vaultFactory.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_VAULT_FACTORY))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_VAULT_FACTORY))
     fetchedAddress.should.equal(contracts.vaultFactory.address)
   })
 

@@ -13,6 +13,7 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 event GovernanceTransfer(address indexed to, uint256  amount);
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
+event MinLiquidityPeriodSet(uint256  previous, uint256  current);
 ```
 
 ## Functions
@@ -21,6 +22,7 @@ event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidit
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
+- [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 
 ### addLiquidityInternal
 
@@ -121,6 +123,26 @@ function transferGovernance(
     address to,
     uint256 amount
   ) external;
+```
+</details>
+
+### setMinLiquidityPeriod
+
+```solidity
+function setMinLiquidityPeriod(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinLiquidityPeriod(uint256 value) external;
 ```
 </details>
 

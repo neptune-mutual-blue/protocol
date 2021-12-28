@@ -14,7 +14,9 @@ const getVault = async (contracts, coverKey) => {
       BaseLibV1: contracts.libs.baseLibV1.address,
       NTransferUtilV2: contracts.libs.transferLib.address,
       ValidationLibV1: contracts.libs.validationLib.address,
-      VaultLibV1: contracts.libs.vaultLib.address
+      VaultLibV1: contracts.libs.vaultLib.address,
+      AccessControlLibV1: contracts.libs.accessControlLibV1.address,
+      StoreKeyUtil: contracts.libs.storeKeyUtil.address
     }
   })
 

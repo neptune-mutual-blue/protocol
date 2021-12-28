@@ -34,7 +34,7 @@ returns(contract IPriceDiscovery)
 
 ```javascript
 function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
-    return IPriceDiscovery(s.getContract(ProtoUtilV1.NS_PRICE_DISCOVERY));
+    return IPriceDiscovery(s.getContract(ProtoUtilV1.CNS_PRICE_DISCOVERY));
   }
 ```
 </details>
@@ -57,7 +57,7 @@ returns(contract IGovernance)
 
 ```javascript
 function getGovernanceContract(IStore s) public view returns (IGovernance) {
-    return IGovernance(s.getContract(ProtoUtilV1.NS_GOVERNANCE));
+    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE));
   }
 ```
 </details>
@@ -80,7 +80,7 @@ returns(contract IGovernance)
 
 ```javascript
 function getResolutionContract(IStore s) public view returns (IGovernance) {
-    return IGovernance(s.getContract(ProtoUtilV1.NS_RESOLUTION));
+    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION));
   }
 ```
 </details>
@@ -103,7 +103,7 @@ returns(contract ICoverStake)
 
 ```javascript
 function getStakingContract(IStore s) public view returns (ICoverStake) {
-    return ICoverStake(s.getContract(ProtoUtilV1.NS_COVER_STAKE));
+    return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE));
   }
 ```
 </details>
@@ -126,7 +126,7 @@ returns(contract ICxTokenFactory)
 
 ```javascript
 function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
-    return ICxTokenFactory(s.getContract(ProtoUtilV1.NS_COVER_CXTOKEN_FACTORY));
+    return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY));
   }
 ```
 </details>
@@ -149,7 +149,7 @@ returns(contract IPolicy)
 
 ```javascript
 function getPolicyContract(IStore s) public view returns (IPolicy) {
-    return IPolicy(s.getContract(ProtoUtilV1.NS_COVER_POLICY));
+    return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY));
   }
 ```
 </details>
@@ -172,7 +172,7 @@ returns(contract ICoverReassurance)
 
 ```javascript
 function getReassuranceContract(IStore s) public view returns (ICoverReassurance) {
-    return ICoverReassurance(s.getContract(ProtoUtilV1.NS_COVER_REASSURANCE));
+    return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE));
   }
 ```
 </details>
@@ -196,7 +196,7 @@ returns(contract IVault)
 
 ```javascript
 function getVault(IStore s, bytes32 key) public view returns (IVault) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.NS_COVER_VAULT, key);
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
     return IVault(vault);
   }
 ```
@@ -220,7 +220,7 @@ returns(contract IVaultFactory)
 
 ```javascript
 function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
-    address factory = s.getContract(ProtoUtilV1.NS_COVER_VAULT_FACTORY);
+    address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);
   }
 ```

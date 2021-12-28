@@ -92,6 +92,16 @@ contract Processor is IClaimsProcessor, Recoverable {
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
   }
 
+  function setClaimPeriod(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
+
+    emit ClaimPeriodSet(previous, value);
+  }
+
   /**
    * @dev Version number of this contract
    */

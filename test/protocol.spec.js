@@ -92,17 +92,17 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
 
     protocol.address.should.not.be.empty
@@ -125,17 +125,17 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
 
     const sProtocolAddress = await store.getAddress(key.toBytes32(key.NS.CORE))
@@ -186,17 +186,17 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      helper.zerox,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        helper.zerox,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid NPM')
   })
 
@@ -216,17 +216,17 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      helper.zerox,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        helper.zerox,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid Treasury')
   })
 
@@ -246,17 +246,17 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      helper.zerox,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        helper.zerox],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     ).should.be.revertedWith('Invalid Vault')
   })
 })
@@ -292,30 +292,30 @@ describe('Adding a New Protocol Contract', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
   })
 
   it('should correctly add a new contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
   })
 
   it('should correctly set storage values', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
 
-    const sContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
+    const sContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
 
     sContractAddress.should.equal(fakeCover)
   })
@@ -352,51 +352,51 @@ describe('Upgrading Protocol Contract(s)', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
   })
 
   it('should correctly upgrade a contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), fakeCover, fakeCover2)
+    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), fakeCover, fakeCover2)
   })
 
   it('should fail when the previous address is incorrect', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.NS.COVER), fakeCover)
+    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), helper.randomAddress(), fakeCover2)
+    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), helper.randomAddress(), fakeCover2)
       .should.be.revertedWith('Not a protocol member')
   })
 
   it('should correctly set storage values', async () => {
     const cover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.NS.COVER), cover)
+    await protocol.addContract(key.toBytes32(key.CNS.COVER), cover)
 
-    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
+    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
 
     storedContractAddress.should.equal(cover)
 
     // ------- UPGRADE CONTRACT -------
 
     const cover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.NS.COVER), cover, cover2)
+    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), cover, cover2)
 
-    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.NS.COVER))
+    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
     storedContractAddress.should.equal(cover2)
   })
 })
@@ -433,17 +433,17 @@ describe('Adding a New Protocol Member', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
   })
 
@@ -498,17 +498,17 @@ describe('Removing Protocol Member(s)', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      router.address,
-      npm.address,
-      treasury,
-      reassuranceVault,
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1) // Reporter Commission: 10%
+      [router.address,
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Min liquidity period
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Burn Rate: 30%
+        helper.ether(0.1)] // Reporter Commission: 10%
     )
   })
 

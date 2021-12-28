@@ -27,6 +27,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
@@ -122,6 +123,16 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     super._mint(account, podsToMint);
 
     emit PodsIssued(account, podsToMint, amount);
+  }
+
+  function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+
+    emit MinLiquidityPeriodSet(previous, value);
   }
 
   /**

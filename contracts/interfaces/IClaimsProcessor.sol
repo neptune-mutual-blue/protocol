@@ -5,6 +5,7 @@ import "./IMember.sol";
 
 interface IClaimsProcessor is IMember {
   event Claimed(address indexed cxToken, bytes32 indexed key, address indexed account, uint256 incidentDate, uint256 amount);
+  event ClaimPeriodSet(uint256 previous, uint256 current);
 
   function claim(
     address cxToken,
@@ -18,6 +19,8 @@ interface IClaimsProcessor is IMember {
     bytes32 key,
     uint256 incidentDate
   ) external view returns (bool);
+
+  function setClaimPeriod(uint256 value) external;
 
   function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 }

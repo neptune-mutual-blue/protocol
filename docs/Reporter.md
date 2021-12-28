@@ -20,6 +20,9 @@ This contract enables any NPM tokenholder to
 
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
+- [setReportingBurnRate(uint256 value)](#setreportingburnrate)
+- [setReporterCommission(uint256 value)](#setreportercommission)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
 - [getResolutionDate(bytes32 key)](#getresolutiondate)
@@ -56,11 +59,11 @@ function report(
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake >= getMinStake(), "Stake insufficient");
 
-    s.setUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key, incidentDate);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
     // Set the Resolution Timestamp
     uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
-    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key, resolutionDate);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key, resolutionDate);
 
     // Update the values
     s.addAttestation(key, msg.sender, incidentDate, stake);
@@ -120,6 +123,90 @@ function dispute(
 ```
 </details>
 
+### setFirstReportingStake
+
+```solidity
+function setFirstReportingStake(uint256 value) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setFirstReportingStake(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
+
+    emit FirstReportingStakeSet(previous, value);
+  }
+```
+</details>
+
+### setReportingBurnRate
+
+```solidity
+function setReportingBurnRate(uint256 value) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReportingBurnRate(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, value);
+
+    emit ReportingBurnRateSet(previous, value);
+  }
+```
+</details>
+
+### setReporterCommission
+
+```solidity
+function setReporterCommission(uint256 value) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReporterCommission(uint256 value) external override nonReentrant {
+    ValidationLibV1.mustNotBePaused(s);
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);
+
+    emit ReporterCommissionSet(previous, value);
+  }
+```
+</details>
+
 ### getActiveIncidentDate
 
 ```solidity
@@ -138,7 +225,7 @@ returns(uint256)
 
 ```javascript
 function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
   }
 ```
 </details>
@@ -185,7 +272,7 @@ returns(uint256)
 
 ```javascript
 function getResolutionDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
   }
 ```
 </details>

@@ -16,140 +16,50 @@ contract Protocol is IProtocol, ProtoBase {
 
   constructor(IStore store) ProtoBase(store) {} // solhint-disable-line
 
-  function initialize(
-    address uniswapV2RouterLike,
-    address npm,
-    address treasury,
-    address reassuranceVault,
-    uint256 coverFee,
-    uint256 minStake,
-    uint256 minReportingStake,
-    uint256 minLiquidityPeriod,
-    uint256 claimPeriod,
-    uint256 burnRate,
-    uint256 reporterCommission
-  ) external nonReentrant whenNotPaused {
+  /**
+   * @dev Initializes the protocol
+   * @param addresses[0] uniswapV2RouterLike
+   * @param addresses[1] npm
+   * @param addresses[2] treasury
+   * @param addresses[3] reassuranceVault
+   * @param values[0] coverCreationFees
+   * @param values[1] minCoverCreationStake
+   * @param values[2] firstReportingStake
+   * @param values[3] minLiquidityPeriod
+   * @param values[4] claimPeriod
+   * @param values[5] burnRate
+   * @param values[6] reporterCommission
+   */
+  function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
     // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
     require(initialized == 0, "Already initialized");
-    require(npm != address(0), "Invalid NPM");
-    require(uniswapV2RouterLike != address(0), "Invalid Router");
-    require(treasury != address(0), "Invalid Treasury");
-    require(reassuranceVault != address(0), "Invalid Vault");
-
-    s.setAddressByKey(ProtoUtilV1.NS_CORE, address(this));
-    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
-    s.setAddressByKey(ProtoUtilV1.NS_BURNER, 0x0000000000000000000000000000000000000001);
-
-    s.setAddressByKey(ProtoUtilV1.NS_SETUP_NPM, npm);
-    s.setAddressByKey(ProtoUtilV1.NS_SETUP_UNISWAP_V2_ROUTER, uniswapV2RouterLike);
-    s.setAddressByKey(ProtoUtilV1.NS_TREASURY, treasury);
-    s.setAddressByKey(ProtoUtilV1.NS_REASSURANCE_VAULT, reassuranceVault);
-
-    _setCoverFees(coverFee);
-    _setMinStake(minStake);
-    _setMinReportingStake(minReportingStake);
-    _setMinLiquidityPeriod(minLiquidityPeriod);
-
-    _setReportingBurnRate(burnRate);
-    _setReporterCommission(reporterCommission);
-    _setClaimPeriod(claimPeriod);
-
     initialized = 1;
-  }
 
-  function setReportingBurnRate(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-    _setReportingBurnRate(value);
-  }
+    require(addresses[0] != address(0), "Invalid Router");
+    require(addresses[1] != address(0), "Invalid NPM");
+    require(addresses[2] != address(0), "Invalid Treasury");
+    require(addresses[3] != address(0), "Invalid Vault");
 
-  function setReportingCommission(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-    _setReporterCommission(value);
-  }
+    s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
+    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
+    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, 0x0000000000000000000000000000000000000001);
 
-  function setClaimPeriod(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-    _setClaimPeriod(value);
-  }
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[0]);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[1]);
+    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[2]);
+    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[3]);
 
-  function setCoverFees(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-    _setCoverFees(value);
-  }
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, values[2]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, values[3]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[4]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[5]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
 
-  function setMinStake(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    _setMinStake(value);
-  }
-
-  function setMinReportingStake(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeCoverManager(s);
-    _setMinReportingStake(value);
-  }
-
-  function setMinLiquidityPeriod(uint256 value) public nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    _setMinLiquidityPeriod(value);
-  }
-
-  function _setReportingBurnRate(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE);
-    s.setUintByKey(ProtoUtilV1.NS_REPORTING_BURN_RATE, value);
-
-    emit ReportingBurnRateSet(previous, value);
-  }
-
-  function _setReporterCommission(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION);
-    s.setUintByKey(ProtoUtilV1.NS_REPORTER_COMMISSION, value);
-
-    emit ReporterCommissionSet(previous, value);
-  }
-
-  function _setClaimPeriod(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_CLAIM_PERIOD, value);
-
-    emit ClaimPeriodSet(previous, value);
-  }
-
-  function _setCoverFees(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE, value);
-
-    emit CoverFeeSet(previous, value);
-  }
-
-  function _setMinStake(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE, value);
-
-    emit MinStakeSet(previous, value);
-  }
-
-  function _setMinReportingStake(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_FIRST_REPORTING_STAKE, value);
-
-    emit MinReportingStakeSet(previous, value);
-  }
-
-  function _setMinLiquidityPeriod(uint256 value) private {
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_SETUP_MIN_LIQ_PERIOD, value);
-
-    emit MinLiquidityPeriodSet(previous, value);
+    emit Initialized(addresses, values);
   }
 
   function upgradeContract(

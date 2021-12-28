@@ -36,12 +36,12 @@ abstract contract Finalization is Recoverable, IFinalization {
   function _finalize(bytes32 key, uint256 incidentDate) internal {
     // Reset to normal
     s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
-    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_INCIDENT_DATE, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_TS, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
 
-    s.deleteAddressByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_REPORTING_WITNESS_YES, key);
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
 
     emit Finalized(key, msg.sender, incidentDate);
   }
