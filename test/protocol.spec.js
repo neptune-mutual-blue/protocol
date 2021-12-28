@@ -92,7 +92,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],
@@ -125,7 +126,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],
@@ -186,7 +188,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         helper.zerox,
         treasury,
         reassuranceVault],
@@ -216,7 +219,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         helper.zerox,
         reassuranceVault],
@@ -246,7 +250,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         helper.zerox],
@@ -292,7 +297,8 @@ describe('Adding a New Protocol Contract', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],
@@ -352,7 +358,8 @@ describe('Upgrading Protocol Contract(s)', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],
@@ -433,7 +440,8 @@ describe('Adding a New Protocol Member', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],
@@ -498,7 +506,8 @@ describe('Removing Protocol Member(s)', () => {
     await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
     await protocol.initialize(
-      [router.address,
+      [helper.zero1,
+        router.address,
         npm.address,
         treasury,
         reassuranceVault],

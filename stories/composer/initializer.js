@@ -41,7 +41,8 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
 
   await intermediate(cache, protocol, 'initialize',
-    [fakes.router.address,
+    [helper.zero1,
+      fakes.router.address,
       npm.address,
       sample.fake.TREASURY,
       sample.fake.REASSURANCE_VAULT],
