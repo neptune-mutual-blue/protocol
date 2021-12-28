@@ -92,7 +92,8 @@ const initialize = async (suite, deploymentId) => {
     {
       BaseLibV1: libs.baseLibV1.address,
       cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLib.address,
+      StoreKeyUtil: libs.storeKeyUtil.address
     }
     , store.address
   )

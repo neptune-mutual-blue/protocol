@@ -29,7 +29,7 @@ library CoverUtilV1 {
   }
 
   function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
-    fee = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_FEE);
+    fee = s.getUintByKey(ProtoUtilV1.NS_SETUP_COVER_CREATION_FEE);
     minStake = s.getUintByKey(ProtoUtilV1.NS_SETUP_MIN_STAKE);
   }
 
@@ -125,7 +125,7 @@ library CoverUtilV1 {
 
     values = new uint256[](5);
 
-    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE, key);
+    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
     values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
     values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);

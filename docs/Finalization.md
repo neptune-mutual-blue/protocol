@@ -1,4 +1,4 @@
-# Finalization.sol
+# Neptune Mutual Governance: Finalization Contract (Finalization.sol)
 
 View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
@@ -6,6 +6,12 @@ View Source: [contracts/core/governance/resolution/Finalization.sol](../contract
 **↘ Derived Contracts: [Resolvable](Resolvable.md)**
 
 **Finalization**
+
+This contract allows governance agents "finalize"
+ a resolved cover product after the claim period.
+ When a cover product is finalized, it resets back to normal
+ state where tokenholders can again supply liquidity
+ and purchase policies.
 
 ## Functions
 

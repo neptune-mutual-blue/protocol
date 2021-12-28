@@ -7,6 +7,12 @@ View Source: [contracts/interfaces/IPolicy.sol](../contracts/interfaces/IPolicy.
 
 **IPolicy**
 
+**Events**
+
+```js
+event CoverPurchased(bytes32  key, address indexed account, address indexed cxToken, uint256  fee, uint256  amountToCover, uint256  expiresOn);
+```
+
 ## Functions
 
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)

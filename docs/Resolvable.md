@@ -1,4 +1,4 @@
-# Resolvable.sol
+# Neptune Mutual Governance: Resolvable Contract (Resolvable.sol)
 
 View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/core/governance/resolution/Resolvable.sol)
 
@@ -6,6 +6,10 @@ View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/
 **↘ Derived Contracts: [Unstakable](Unstakable.md)**
 
 **Resolvable**
+
+Enables governance agents to resolve a contract undergoing reporting.
+ Provides a cool-down period of 24-hours during when governance admins
+ can perform emergency resolution to defend against governance attacks.
 
 ## Functions
 

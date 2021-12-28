@@ -31,7 +31,7 @@ function (IStore store) public nonpayable Recoverable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide an implmentation of IStore | 
+| store | IStore | Provide an implementation of IStore | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -71,8 +71,8 @@ function claim(
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @supress-pausable Already implemented in the function `validate`
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-pausable Already implemented in the function `validate`
+    // @suppress-acl Marking this as publicly accessible
 
     validate(cxToken, key, incidentDate);
 
@@ -80,7 +80,9 @@ function claim(
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(key);
+
     //Todo: platform fees
+    // Todo: reporter fees
     vault.transferGovernance(key, msg.sender, amount);
 
     emit Claimed(cxToken, key, msg.sender, incidentDate, amount);

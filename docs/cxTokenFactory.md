@@ -67,7 +67,7 @@ function deploy(
     bytes32 key,
     uint256 expiryDate
   ) external override nonReentrant returns (address deployed) {
-    // @supress-acl Can only be called by the latest policy contract
+    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
@@ -92,6 +92,7 @@ function deploy(
     }
 
     s.setAddress(salt, deployed);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     emit CxTokenDeployed(key, deployed, expiryDate);
   }
 ```

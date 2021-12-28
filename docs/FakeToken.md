@@ -66,7 +66,7 @@ function mint(address account, uint256 amount) external onlyOwner {
 
 ### request
 
-Request 100 tokens
+Request 100000 tokens
 
 ```solidity
 function request() external nonpayable
@@ -82,7 +82,7 @@ function request() external nonpayable
 
 ```javascript
 function request() external {
-    super._mint(msg.sender, 100 ether);
+    super._mint(msg.sender, 100000 ether);
   }
 ```
 </details>

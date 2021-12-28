@@ -65,8 +65,8 @@ function recoverEther(address sendTo) external nonpayable nonReentrant
 
 ```javascript
 function recoverEther(address sendTo) external nonReentrant {
-    // @supress-pausable Already implemented in BaseLibV1
-    // @supress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
+    // @suppress-pausable Already implemented in BaseLibV1
+    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverEther(s, sendTo);
   }
 ```
@@ -94,8 +94,8 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 ```javascript
 function recoverToken(address token, address sendTo) external nonReentrant {
-    // @supress-pausable Already implemented in BaseLibV1
-    // @supress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
+    // @suppress-pausable Already implemented in BaseLibV1
+    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverToken(s, token, sendTo);
   }
 ```

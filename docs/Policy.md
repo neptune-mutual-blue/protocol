@@ -92,6 +92,8 @@ function purchaseCover(
     IERC20(liquidityToken).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
     cxToken.mint(key, msg.sender, amountToCover);
+
+    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
     return address(cxToken);
   }
 ```

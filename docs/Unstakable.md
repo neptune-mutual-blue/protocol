@@ -1,4 +1,4 @@
-# Unstakable.sol
+# Neptune Mutual Governance: Unstakable Contract (Unstakable.sol)
 
 View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/core/governance/resolution/Unstakable.sol)
 
@@ -6,6 +6,9 @@ View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/
 **↘ Derived Contracts: [Resolution](Resolution.md)**
 
 **Unstakable**
+
+Enables tokenholders unstake their tokens after
+ resolution is achieved on any cover product.
 
 ## Functions
 
@@ -34,7 +37,7 @@ function unstake(bytes32 key, uint256 incidentDate) external nonpayable nonReent
 
 ```javascript
 function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
 
@@ -73,7 +76,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
 
 ```javascript
 function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
     s.mustBeValidIncidentDate(key, incidentDate);

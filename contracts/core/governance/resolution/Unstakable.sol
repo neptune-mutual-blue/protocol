@@ -8,6 +8,11 @@ import "../../../libraries/GovernanceUtilV1.sol";
 import "../../../libraries/ValidationLibV1.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
+/**
+ * @title Neptune Mutual Governance: Unstakable Contract
+ * @dev Enables tokenholders unstake their tokens after
+ * resolution is achieved on any cover product.
+ */
 abstract contract Unstakable is Resolvable, IUnstakable {
   using GovernanceUtilV1 for IStore;
   using ProtoUtilV1 for IStore;
@@ -24,7 +29,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param incidentDate Enter the incident date
    */
   function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
 
@@ -48,7 +53,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param incidentDate Enter the incident date
    */
   function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
     s.mustBeValidIncidentDate(key, incidentDate);

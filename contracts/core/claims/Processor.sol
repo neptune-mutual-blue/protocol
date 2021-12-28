@@ -27,7 +27,7 @@ contract Processor is IClaimsProcessor, Recoverable {
 
   /**
    * @dev Constructs this contract
-   * @param store Provide an implmentation of IStore
+   * @param store Provide an implementation of IStore
    */
   constructor(IStore store) Recoverable(store) {
     this;
@@ -48,8 +48,8 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @supress-pausable Already implemented in the function `validate`
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-pausable Already implemented in the function `validate`
+    // @suppress-acl Marking this as publicly accessible
 
     validate(cxToken, key, incidentDate);
 
@@ -57,7 +57,9 @@ contract Processor is IClaimsProcessor, Recoverable {
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(key);
+
     //Todo: platform fees
+    // Todo: reporter fees
     vault.transferGovernance(key, msg.sender, amount);
 
     emit Claimed(cxToken, key, msg.sender, incidentDate, amount);

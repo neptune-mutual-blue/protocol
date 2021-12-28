@@ -144,12 +144,13 @@ library ValidationLibV1 {
   }
 
   function mustBeValidCxToken(
+    IStore s,
     bytes32 key,
     address cxToken,
     uint256 incidentDate
   ) public view {
-    // Vulnerability in mustBeValidCToken validation logic #5
-    // https://github.com/neptune-mutual/protocol/issues/5
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken) == true, "Unknown cxToken");
+
     bytes32 coverKey = ICxToken(cxToken).coverKey();
     require(coverKey == key, "Invalid cxToken");
 
@@ -167,7 +168,7 @@ library ValidationLibV1 {
 
     s.mustBeProtocolMember(cxToken);
     mustBeValidIncidentDate(s, key, incidentDate);
-    mustBeValidCxToken(key, cxToken, incidentDate);
+    mustBeValidCxToken(s, key, cxToken, incidentDate);
     mustBeDuringClaimPeriod(s, key);
   }
 

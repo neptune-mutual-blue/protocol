@@ -78,15 +78,25 @@ const begin = async () => {
         continue
       }
 
+      // console.info(i, filtered.length, name, selector.parameters.parameters.filter(x => x.typeName.name === 'address'))
+
+      const addressArgs = selector.parameters
+        .parameters.filter(x => x.typeName.name === 'address' &&
+            ['account', 'to', 'from', 'v', 'sendTo'].indexOf(x.name) === -1)
+
+      if (addressArgs.length) {
+        warnings.push('\x1b[31m' + `* Ensure [${addressArgs.map(x => x.name).join(',')}] can be trusted. Ensure this function has AccessControl logic. Ensure you validate address before using.` + '\x1b[0m')
+      }
+
       if (code.indexOf('nonReentrant') === -1) {
         warnings.push('\x1b[31m' + '* Non Reentrancy logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
       }
 
-      if (code.indexOf('AccessControl') === -1 && code.toLowerCase().indexOf('@supress-acl') === -1) {
+      if (code.indexOf('AccessControl') === -1 && code.toLowerCase().indexOf('@suppress-acl') === -1) {
         warnings.push('\x1b[31m' + '* Access control logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
       }
 
-      if (code.toLowerCase().indexOf('pause') === -1 && code.toLowerCase().indexOf('@supress-pausable') === -1) {
+      if (code.toLowerCase().indexOf('pause') === -1 && code.toLowerCase().indexOf('@suppress-pausable') === -1) {
         warnings.push('\x1b[31m' + '* Pausable logic not found' + '\x1b[0m')
       }
 
@@ -120,7 +130,7 @@ const begin = async () => {
   console.log('/* ---------------------------------------------------------- */')
 }
 
-console.log('pragma confuse vscode to supress warnings')
+console.log('pragma confuse vscode to suppress warnings')
 console.log('\n\x1b[1m' + '/* List of contract functions that update the state */' + '\x1b[0m')
 console.log('/* ---------------------------------------------------------- */\n')
 

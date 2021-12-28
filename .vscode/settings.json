@@ -25,5 +25,32 @@
     "editor.defaultFormatter": "vscode.json-language-features",
   },
   "editor.padding.top": 24,
-  "terminal.integrated.scrollback": 50000
+  "terminal.integrated.scrollback": 50000,
+  "cSpell.allowCompoundWords": true,
+  "cSpell.enabledLanguageIds": [
+    "javascript",
+    "json",
+    "jsonc",
+    "markdown",
+    "plaintext",
+    "text",
+    "typescript",
+    "yaml",
+    "yml",
+    "solidity"
+  ],
+  "cSpell.words": [
+    "CNAME",
+    "CXTOKEN",
+    "IERC",
+    "IERC20",
+    "iszero",
+    "Keccak",
+    "mload",
+    "Proto",
+    "Reentrancy",
+    "Unstakable",
+    "unstake",
+    "Unstaken"
+  ]
 }

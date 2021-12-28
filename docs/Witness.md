@@ -63,7 +63,7 @@ function attest(
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -116,7 +116,7 @@ function refute(
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    // @supress-acl Marking this as publicly accessible
+    // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
     s.mustBeReportingOrDisputed(key);
