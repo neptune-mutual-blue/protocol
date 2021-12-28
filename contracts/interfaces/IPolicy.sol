@@ -4,6 +4,8 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
+  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn);
+
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
    * When you purchase covers, you recieve equal amount of cxTokens back.
