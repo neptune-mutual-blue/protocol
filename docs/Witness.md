@@ -69,7 +69,7 @@ function attest(
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
-    require(stake >= 0, "Enter a stake");
+    require(stake > 0, "Enter a stake");
 
     s.addAttestation(key, msg.sender, incidentDate, stake);
 
@@ -123,7 +123,7 @@ function refute(
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
-    require(stake >= 0, "Enter a stake");
+    require(stake > 0, "Enter a stake");
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 

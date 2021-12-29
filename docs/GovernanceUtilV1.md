@@ -8,7 +8,9 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 
 - [getReportingPeriod(IStore s, bytes32 key)](#getreportingperiod)
 - [getReportingBurnRate(IStore s)](#getreportingburnrate)
-- [getReporterCommission(IStore s)](#getreportercommission)
+- [getGovernanceReporterCommission(IStore s)](#getgovernancereportercommission)
+- [getClaimPlatformFee(IStore s)](#getclaimplatformfee)
+- [getClaimReporterCommission(IStore s)](#getclaimreportercommission)
 - [getMinReportingStake(IStore s)](#getminreportingstake)
 - [getLatestIncidentDate(IStore s, bytes32 key)](#getlatestincidentdate)
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
@@ -72,10 +74,10 @@ function getReportingBurnRate(IStore s) public view returns (uint256) {
 ```
 </details>
 
-### getReporterCommission
+### getGovernanceReporterCommission
 
 ```solidity
-function getReporterCommission(IStore s) public view
+function getGovernanceReporterCommission(IStore s) public view
 returns(uint256)
 ```
 
@@ -89,8 +91,54 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getReporterCommission(IStore s) public view returns (uint256) {
+function getGovernanceReporterCommission(IStore s) public view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
+  }
+```
+</details>
+
+### getClaimPlatformFee
+
+```solidity
+function getClaimPlatformFee(IStore s) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getClaimPlatformFee(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE);
+  }
+```
+</details>
+
+### getClaimReporterCommission
+
+```solidity
+function getClaimReporterCommission(IStore s) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getClaimReporterCommission(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 ```
 </details>
@@ -317,10 +365,11 @@ function getUnstakeInfoFor(
     require(myStakeInWinningCamp > 0, "Nothing to unstake");
 
     uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
+    // slither-disable-next-line divide-before-multiply
     uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
 
     toBurn = (reward * getReportingBurnRate(s)) / 1 ether;
-    toReporter = (reward * getReporterCommission(s)) / 1 ether;
+    toReporter = (reward * getGovernanceReporterCommission(s)) / 1 ether;
     myReward = reward - toBurn - toReporter;
   }
 ```

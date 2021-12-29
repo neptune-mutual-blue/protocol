@@ -24,6 +24,7 @@ contract Processor is IClaimsProcessor, Recoverable {
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
   using StoreKeyUtil for IStore;
+  using GovernanceUtilV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -57,12 +58,18 @@ contract Processor is IClaimsProcessor, Recoverable {
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(key);
+    address finalReporter = s.getReporter(key, incidentDate);
 
-    //Todo: platform fees
-    // Todo: reporter fees
-    vault.transferGovernance(key, msg.sender, amount);
+    uint256 platformFee = (amount * s.getClaimPlatformFee()) / 1 ether;
+    // slither-disable-next-line divide-before-multiply
+    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / 1 ether;
+    uint256 claimed = amount - platformFee;
 
-    emit Claimed(cxToken, key, msg.sender, incidentDate, amount);
+    vault.transferGovernance(key, msg.sender, claimed);
+    vault.transferGovernance(key, finalReporter, reporterFee);
+    vault.transferGovernance(key, s.getTreasury(), platformFee - reporterFee);
+
+    emit Claimed(cxToken, key, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
   }
 
   /**

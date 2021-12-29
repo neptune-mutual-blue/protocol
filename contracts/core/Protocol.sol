@@ -29,7 +29,9 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[3] minLiquidityPeriod
    * @param values[4] claimPeriod
    * @param values[5] burnRate
-   * @param values[6] reporterCommission
+   * @param values[6] governanceReporterCommission
+   * @param values[7] claimPlatformFee
+   * @param values[8] claimReporterCommission
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
     // @suppress-acl Can only be called once by the deployer
@@ -60,6 +62,8 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[4]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[5]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
 
     emit Initialized(addresses, values);
   }

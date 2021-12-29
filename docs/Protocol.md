@@ -93,6 +93,8 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[4]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[5]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
 
     emit Initialized(addresses, values);
   }

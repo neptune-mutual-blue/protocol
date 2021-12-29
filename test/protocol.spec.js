@@ -102,8 +102,11 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
 
     protocol.address.should.not.be.empty
@@ -136,26 +139,29 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
 
-    const sProtocolAddress = await store.getAddress(key.toBytes32(key.NS.CORE))
+    const sProtocolAddress = await store.getAddress(key.toBytes32(key.CNS.CORE))
     sProtocolAddress.should.equal(protocol.address)
 
     const isProtocolAddress = await store.getBool(key.qualify(protocol.address))
     isProtocolAddress.should.be.true
 
-    const sNEPAddress = await store.getAddress(key.toBytes32(key.NS.SETUP_NEP))
+    const sNEPAddress = await store.getAddress(key.toBytes32(key.CNS.NPM))
     sNEPAddress.should.equal(npm.address)
 
-    const sBurner = await store.getAddress(key.toBytes32(key.NS.BURNER))
+    const sBurner = await store.getAddress(key.toBytes32(key.CNS.BURNER))
     sBurner.should.equal(helper.zero1)
 
-    const sTreasury = await store.getAddress(key.toBytes32(key.NS.TREASURY))
+    const sTreasury = await store.getAddress(key.toBytes32(key.CNS.TREASURY))
     sTreasury.should.equal(treasury)
 
-    const sReassuranceVault = await store.getAddress(key.toBytes32(key.NS.REASSURANCE_VAULT))
+    const sReassuranceVault = await store.getAddress(key.toBytes32(key.CNS.REASSURANCE_VAULT))
     sReassuranceVault.should.equal(reassuranceVault)
   })
 
@@ -198,8 +204,11 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     ).should.be.revertedWith('Invalid NPM')
   })
 
@@ -229,8 +238,11 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     ).should.be.revertedWith('Invalid Treasury')
   })
 
@@ -260,8 +272,11 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     ).should.be.revertedWith('Invalid Vault')
   })
 })
@@ -307,8 +322,11 @@ describe('Adding a New Protocol Contract', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
   })
 
@@ -368,8 +386,11 @@ describe('Upgrading Protocol Contract(s)', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
   })
 
@@ -450,8 +471,11 @@ describe('Adding a New Protocol Member', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
   })
 
@@ -516,8 +540,11 @@ describe('Removing Protocol Member(s)', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Burn Rate: 30%
-        helper.ether(0.1)] // Reporter Commission: 10%
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005) // Claim: Reporter Commission: 5%
+      ]
     )
   })
 
