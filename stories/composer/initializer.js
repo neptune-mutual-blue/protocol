@@ -51,8 +51,11 @@ const initialize = async (suite, deploymentId) => {
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
       7 * DAYS, // Claim period
-      helper.ether(0.3), // Burn Rate: 30%
-      helper.ether(0.1)] // Reporter Commission: 10%
+      helper.ether(0.3), // Governance Burn Rate: 30%
+      helper.ether(0.1), // Governance Reporter Commission: 10%
+      helper.ether(0.065), // Claim: Platform Fee: 6.5%
+      helper.ether(0.005) // Claim: Reporter Commission: 5%
+    ]
   )
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
@@ -193,7 +196,9 @@ const initialize = async (suite, deploymentId) => {
       RegistryLibV1: libs.registryLib.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLib.address,
-      AccessControlLibV1: libs.accessControlLibV1.address
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      GovernanceUtilV1: libs.governanceLib.address,
+      ProtoUtilV1: libs.protoUtilV1.address
     },
     store.address
   )
@@ -205,7 +210,7 @@ const initialize = async (suite, deploymentId) => {
     ProtoUtilV1: libs.protoUtilV1.address
   }, store.address)
 
-  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.NS.PRICE_DISCOVERY), priceDiscovery.address)
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.CNS.PRICE_DISCOVERY), priceDiscovery.address)
 
   await intermediate(cache, cover, 'initialize', wxDai.address, key.toBytes32('WXDAI'))
 

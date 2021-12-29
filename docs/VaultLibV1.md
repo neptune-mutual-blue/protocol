@@ -46,11 +46,11 @@ function calculatePods(
       revert("Liquidity/POD mismatch");
     }
 
-    if (balance == 0) {
-      return liquidityToAdd;
+    if (balance > 0) {
+      return (IERC20(pod).totalSupply() * liquidityToAdd) / balance;
     }
 
-    return (IERC20(pod).totalSupply() * liquidityToAdd) / balance;
+    return liquidityToAdd;
   }
 ```
 </details>
@@ -120,7 +120,7 @@ function redeemPods(
   ) public returns (uint256) {
     uint256 amount = calculateLiquidity(pod, stablecoin, podsToBurn);
 
-    IERC20(pod).transferFrom(account, address(this), podsToBurn);
+    IERC20(pod).ensureTransferFrom(account, address(this), podsToBurn);
     IERC20(stablecoin).ensureTransfer(account, amount);
 
     return amount;
@@ -231,7 +231,7 @@ function removeLiquidity(
     // Update values
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
 
-    IERC20(pod).transferFrom(msg.sender, address(this), podsToRedeem);
+    IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
 
     return releaseAmount;

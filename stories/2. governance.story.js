@@ -374,7 +374,7 @@ describe('Governance Stories', () => {
 
     after.should.be.gt(before)
 
-    after.sub(before).should.equal(helper.ether(constants.coverAmounts.kimberly))
+    after.sub(before).should.equal(helper.ether(constants.coverAmounts.kimberly * 0.935)) // 6.5% is platform fee
   })
 
   it('lewis was unable to claim after the expiry period', async () => {

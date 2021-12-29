@@ -25,8 +25,16 @@ library GovernanceUtilV1 {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
   }
 
-  function getReporterCommission(IStore s) public view returns (uint256) {
+  function getGovernanceReporterCommission(IStore s) public view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
+  }
+
+  function getClaimPlatformFee(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE);
+  }
+
+  function getClaimReporterCommission(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 
   function getMinReportingStake(IStore s) external view returns (uint256) {
@@ -108,10 +116,11 @@ library GovernanceUtilV1 {
     require(myStakeInWinningCamp > 0, "Nothing to unstake");
 
     uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
+    // slither-disable-next-line divide-before-multiply
     uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
 
     toBurn = (reward * getReportingBurnRate(s)) / 1 ether;
-    toReporter = (reward * getReporterCommission(s)) / 1 ether;
+    toReporter = (reward * getGovernanceReporterCommission(s)) / 1 ether;
     myReward = reward - toBurn - toReporter;
   }
 

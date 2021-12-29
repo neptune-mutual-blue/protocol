@@ -4,7 +4,17 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IClaimsProcessor is IMember {
-  event Claimed(address indexed cxToken, bytes32 indexed key, address indexed account, uint256 incidentDate, uint256 amount);
+  event Claimed(
+    address indexed cxToken,
+    bytes32 indexed key,
+    uint256 incidentDate,
+    address indexed account,
+    address reporter,
+    uint256 amount,
+    uint256 reporterFee,
+    uint256 platformFee,
+    uint256 claimed
+  );
   event ClaimPeriodSet(uint256 previous, uint256 current);
 
   function claim(

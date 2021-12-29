@@ -7,6 +7,8 @@ const qualify = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.CONTRACT
 const qualifyMember = (k) => encodeKeys(['bytes32', 'address'], [toBytes32(NS.MEMBERS), k])
 
 const CNS = {
+  CORE: 'cns:core',
+  BURNER: 'cns:core:burner',
   COVER: 'cns:cover',
   COVER_REASSURANCE: 'cns:cover:reassurance',
   COVER_POLICY: 'cns:cover:policy',
@@ -18,15 +20,16 @@ const CNS = {
   COVER_VAULT_FACTORY: 'cns:cover:vault:factory',
   GOVERNANCE: 'cns:gov',
   RESOLUTION: 'cns:gov:resolution',
-  CLAIM_PROCESSOR: 'cns:claim:processor'
+  CLAIM_PROCESSOR: 'cns:claim:processor',
+  PRICE_DISCOVERY: 'cns:core:price:discovery',
+  NPM: 'cns:core:npm:instance',
+  REASSURANCE_VAULT: 'cns:core:reassurance:vault',
+  TREASURY: 'cns:core:treasury'
 }
 
 const NS = {
-  REASSURANCE_VAULT: 'ns:core:reassurance:vault',
-  BURNER: 'ns:core:burner',
   CONTRACTS: 'ns:contracts',
   MEMBERS: 'ns:members',
-  CORE: 'ns:core',
   COVER: 'ns:cover',
   COVER_REASSURANCE_TOKEN: 'ns:cover:reassurance:token',
   COVER_CLAIMABLE: 'ns:cover:claimable',
@@ -46,13 +49,10 @@ const NS = {
   COVER_STATUS: 'ns:cover:status',
   COVER_WHITELIST: 'ns:cover:whitelist',
   COVER_CXTOKEN: 'ns:cover:cxToken',
-  TREASURY: 'ns:core:treasury',
-  SETUP_NEP: 'ns:core:npm:instance',
   SETUP_COVER_CREATION_FEE: 'ns:cover:creation:fee',
   SETUP_MIN_STAKE: 'ns:cover:creation:min:stake',
   SETUP_FIRST_REPORTING_STAKE: 'ns:gov:1st:reporting:stake',
   SETUP_MIN_LIQ_PERIOD: 'ns:cover:liquidity:min:period',
-  PRICE_DISCOVERY: 'ns:core:price:discovery',
   ROLES: {
     ADMIN: 'role:admin',
     COVER_MANAGER: 'role:cover:manager',

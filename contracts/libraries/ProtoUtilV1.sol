@@ -10,18 +10,18 @@ library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
   /// @dev Protocol contract namespace
-  bytes32 public constant CNS_CORE = "ns:core";
+  bytes32 public constant CNS_CORE = "cns:core";
 
   /// @dev The address of NPM token available in this blockchain
-  bytes32 public constant CNS_NPM = "ns:core:npm:instance";
+  bytes32 public constant CNS_NPM = "cns:core:npm:instance";
 
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant CNS_COVER = "cns:cover";
 
-  bytes32 public constant CNS_UNISWAP_V2_ROUTER = "ns:core:uni:v2:router";
-  bytes32 public constant CNS_REASSURANCE_VAULT = "ns:core:reassurance:vault";
-  bytes32 public constant CNS_PRICE_DISCOVERY = "ns:core:price:discovery";
-  bytes32 public constant CNS_TREASURY = "ns:core:treasury";
+  bytes32 public constant CNS_UNISWAP_V2_ROUTER = "cns:core:uni:v2:router";
+  bytes32 public constant CNS_REASSURANCE_VAULT = "cns:core:reassurance:vault";
+  bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
+  bytes32 public constant CNS_TREASURY = "cns:core:treasury";
   bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
   bytes32 public constant CNS_COVER_POLICY = "cns:cover:policy";
   bytes32 public constant CNS_COVER_POLICY_MANAGER = "cns:cover:policy:manager";
@@ -33,7 +33,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
 
   /// @dev Governance contract address
-  bytes32 public constant CNS_GOVERNANCE = "ns:gov";
+  bytes32 public constant CNS_GOVERNANCE = "cns:gov";
 
   /// @dev Governance:Resolution contract address
   bytes32 public constant CNS_GOVERNANCE_RESOLUTION = "cns:gov:resolution";
@@ -47,7 +47,7 @@ library ProtoUtilV1 {
   /// &nbsp;\n
   /// The collected NPM tokens are will be periodically bridged back to Ethereum
   /// and then burned.
-  bytes32 public constant CNS_BURNER = "ns:core:burner";
+  bytes32 public constant CNS_BURNER = "cns:core:burner";
 
   /// @dev Namespace for all protocol members.
   bytes32 public constant NS_MEMBERS = "ns:members";

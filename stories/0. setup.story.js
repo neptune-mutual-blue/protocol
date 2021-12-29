@@ -29,7 +29,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.protocol.address.should.not.be.empty
     contracts.protocol.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.toBytes32(key.NS.CORE))
+    const fetchedAddress = await contracts.store.getAddress(key.toBytes32(key.CNS.CORE))
     fetchedAddress.should.equal(contracts.protocol.address)
   })
 
