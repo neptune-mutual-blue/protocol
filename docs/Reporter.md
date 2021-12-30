@@ -26,7 +26,6 @@ This contract enables any NPM tokenholder to
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
 - [getResolutionDate(bytes32 key)](#getresolutiondate)
-- [getMinStake()](#getminstake)
 
 ### report
 
@@ -57,7 +56,7 @@ function report(
     s.mustBeValidCover(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
-    require(stake >= getMinStake(), "Stake insufficient");
+    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
@@ -110,7 +109,7 @@ function dispute(
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
-    require(stake >= getMinStake(), "Stake insufficient");
+    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 
@@ -273,28 +272,6 @@ returns(uint256)
 ```javascript
 function getResolutionDate(bytes32 key) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
-  }
-```
-</details>
-
-### getMinStake
-
-```solidity
-function getMinStake() public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getMinStake() public view override returns (uint256) {
-    return s.getMinReportingStake();
   }
 ```
 </details>

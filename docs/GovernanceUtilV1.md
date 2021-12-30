@@ -11,7 +11,7 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getGovernanceReporterCommission(IStore s)](#getgovernancereportercommission)
 - [getClaimPlatformFee(IStore s)](#getclaimplatformfee)
 - [getClaimReporterCommission(IStore s)](#getclaimreportercommission)
-- [getMinReportingStake(IStore s)](#getminreportingstake)
+- [getMinReportingStake(IStore s, bytes32 key)](#getminreportingstake)
 - [getLatestIncidentDate(IStore s, bytes32 key)](#getlatestincidentdate)
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
@@ -146,7 +146,7 @@ function getClaimReporterCommission(IStore s) external view returns (uint256) {
 ### getMinReportingStake
 
 ```solidity
-function getMinReportingStake(IStore s) external view
+function getMinReportingStake(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -155,13 +155,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getMinReportingStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+function getMinReportingStake(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key);
   }
 ```
 </details>

@@ -78,6 +78,7 @@ describe('Governance Stories', () => {
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
+    const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
 
     // Submit approvals
@@ -86,7 +87,7 @@ describe('Governance Stories', () => {
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
 
     // Add provision
     const provision = helper.ether(1_000_001)

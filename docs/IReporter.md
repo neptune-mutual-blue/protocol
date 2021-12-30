@@ -20,7 +20,6 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
-- [getMinStake()](#getminstake)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
 - [getResolutionDate(bytes32 key)](#getresolutiondate)
@@ -79,26 +78,6 @@ function dispute(
     bytes32 info,
     uint256 stake
   ) external;
-```
-</details>
-
-### getMinStake
-
-```solidity
-function getMinStake() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getMinStake() external view returns (uint256);
 ```
 </details>
 

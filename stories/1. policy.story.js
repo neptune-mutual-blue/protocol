@@ -31,13 +31,14 @@ describe('Policy Purchase Stories', () => {
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
+    const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {

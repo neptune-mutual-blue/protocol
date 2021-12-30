@@ -37,7 +37,7 @@ abstract contract Reporter is IReporter, Witness {
     s.mustBeValidCover(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
-    require(stake >= getMinStake(), "Stake insufficient");
+    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
@@ -69,7 +69,7 @@ abstract contract Reporter is IReporter, Witness {
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
-    require(stake >= getMinStake(), "Stake insufficient");
+    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 
@@ -120,9 +120,5 @@ abstract contract Reporter is IReporter, Witness {
 
   function getResolutionDate(bytes32 key) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
-  }
-
-  function getMinStake() public view override returns (uint256) {
-    return s.getMinReportingStake();
   }
 }

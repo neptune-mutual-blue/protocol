@@ -37,8 +37,8 @@ library GovernanceUtilV1 {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 
-  function getMinReportingStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+  function getMinReportingStake(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key);
   }
 
   function getLatestIncidentDate(IStore s, bytes32 key) external view returns (uint256) {

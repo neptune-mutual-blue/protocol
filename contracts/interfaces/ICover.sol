@@ -53,6 +53,7 @@ interface ICover is IMember {
   function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
     address reassuranceToken,

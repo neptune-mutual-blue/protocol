@@ -81,6 +81,7 @@ describe('Protocol Initialization Stories', () => {
     const stakeWithFee = helper.ether(10000)
     const initialReassuranceAmount = helper.ether(1000000)
     const initialLiquidity = helper.ether(4000000)
+    const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
@@ -95,7 +96,7 @@ describe('Protocol Initialization Stories', () => {
       reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
     }
 
-    await contracts.cover.addCover(coverKey, info, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
   })
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {
