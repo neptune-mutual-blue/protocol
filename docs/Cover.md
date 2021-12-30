@@ -15,6 +15,7 @@ The cover contract facilitates you create and update covers
 - [addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
 - [_addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 fee, address reassuranceToken)](#_addcover)
 - [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
+- [stopCover(bytes32 key, string reason)](#stopcover)
 - [updateWhitelist(address account, bool status)](#updatewhitelist)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
 
@@ -254,6 +255,35 @@ function _validateAndGetFee(
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
 
     return fee;
+  }
+```
+</details>
+
+### stopCover
+
+Enables governance admin to stop a spam cover contract
+
+```solidity
+function stopCover(bytes32 key, string reason) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 | Enter the cover key you want to stop | 
+| reason | string | Provide a reason to stop this cover | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function stopCover(bytes32 key, string memory reason) external override nonReentrant {
+    s.mustBeGovernanceAdmin();
+    s.mustBeValidCover(key);
+
+    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+    emit CoverStopped(key, msg.sender, reason);
   }
 ```
 </details>

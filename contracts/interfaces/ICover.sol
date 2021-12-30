@@ -6,6 +6,8 @@ import "./IMember.sol";
 interface ICover is IMember {
   event CoverCreated(bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 liquidity);
   event CoverUpdated(bytes32 key, bytes32 info);
+  event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
+
   event WhitelistUpdated(address account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
@@ -87,6 +89,8 @@ interface ICover is IMember {
       bytes32 info,
       uint256[] memory values
     );
+
+  function stopCover(bytes32 key, string memory reason) external;
 
   function checkIfWhitelisted(address account) external view returns (bool);
 
