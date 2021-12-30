@@ -40,7 +40,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 Reverts if the sender is not the protocol admin.
 
 ```solidity
-function mustBeAdmin(IStore s) public view
+function mustBeAdmin(IStore s) external view
 ```
 
 **Arguments**
@@ -53,7 +53,7 @@ function mustBeAdmin(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeAdmin(IStore s) public view {
+function mustBeAdmin(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_ADMIN);
   }
 ```
@@ -64,7 +64,7 @@ function mustBeAdmin(IStore s) public view {
 Reverts if the sender is not the cover manager.
 
 ```solidity
-function mustBeCoverManager(IStore s) public view
+function mustBeCoverManager(IStore s) external view
 ```
 
 **Arguments**
@@ -77,7 +77,7 @@ function mustBeCoverManager(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeCoverManager(IStore s) public view {
+function mustBeCoverManager(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
   }
 ```
@@ -88,7 +88,7 @@ function mustBeCoverManager(IStore s) public view {
 Reverts if the sender is not the cover manager.
 
 ```solidity
-function senderMustBeWhitelisted(IStore s) public view
+function senderMustBeWhitelisted(IStore s) external view
 ```
 
 **Arguments**
@@ -101,7 +101,7 @@ function senderMustBeWhitelisted(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function senderMustBeWhitelisted(IStore s) public view {
+function senderMustBeWhitelisted(IStore s) external view {
     require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, msg.sender), "Not whitelisted");
   }
 ```
@@ -112,7 +112,7 @@ function senderMustBeWhitelisted(IStore s) public view {
 Reverts if the sender is not the liquidity manager.
 
 ```solidity
-function mustBeLiquidityManager(IStore s) public view
+function mustBeLiquidityManager(IStore s) external view
 ```
 
 **Arguments**
@@ -125,7 +125,7 @@ function mustBeLiquidityManager(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeLiquidityManager(IStore s) public view {
+function mustBeLiquidityManager(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER);
   }
 ```
@@ -136,7 +136,7 @@ function mustBeLiquidityManager(IStore s) public view {
 Reverts if the sender is not a governance agent.
 
 ```solidity
-function mustBeGovernanceAgent(IStore s) public view
+function mustBeGovernanceAgent(IStore s) external view
 ```
 
 **Arguments**
@@ -149,7 +149,7 @@ function mustBeGovernanceAgent(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeGovernanceAgent(IStore s) public view {
+function mustBeGovernanceAgent(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT);
   }
 ```
@@ -160,7 +160,7 @@ function mustBeGovernanceAgent(IStore s) public view {
 Reverts if the sender is not a governance admin.
 
 ```solidity
-function mustBeGovernanceAdmin(IStore s) public view
+function mustBeGovernanceAdmin(IStore s) external view
 ```
 
 **Arguments**
@@ -173,7 +173,7 @@ function mustBeGovernanceAdmin(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeGovernanceAdmin(IStore s) public view {
+function mustBeGovernanceAdmin(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN);
   }
 ```
@@ -184,7 +184,7 @@ function mustBeGovernanceAdmin(IStore s) public view {
 Reverts if the sender is not an upgrade agent.
 
 ```solidity
-function mustBeUpgradeAgent(IStore s) public view
+function mustBeUpgradeAgent(IStore s) external view
 ```
 
 **Arguments**
@@ -197,7 +197,7 @@ function mustBeUpgradeAgent(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeUpgradeAgent(IStore s) public view {
+function mustBeUpgradeAgent(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT);
   }
 ```
@@ -208,7 +208,7 @@ function mustBeUpgradeAgent(IStore s) public view {
 Reverts if the sender is not a recovery agent.
 
 ```solidity
-function mustBeRecoveryAgent(IStore s) public view
+function mustBeRecoveryAgent(IStore s) external view
 ```
 
 **Arguments**
@@ -221,7 +221,7 @@ function mustBeRecoveryAgent(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeRecoveryAgent(IStore s) public view {
+function mustBeRecoveryAgent(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT);
   }
 ```
@@ -232,7 +232,7 @@ function mustBeRecoveryAgent(IStore s) public view {
 Reverts if the sender is not the pause agent.
 
 ```solidity
-function mustBePauseAgent(IStore s) public view
+function mustBePauseAgent(IStore s) external view
 ```
 
 **Arguments**
@@ -245,7 +245,7 @@ function mustBePauseAgent(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBePauseAgent(IStore s) public view {
+function mustBePauseAgent(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT);
   }
 ```
@@ -256,7 +256,7 @@ function mustBePauseAgent(IStore s) public view {
 Reverts if the sender is not the unpause agent.
 
 ```solidity
-function mustBeUnpauseAgent(IStore s) public view
+function mustBeUnpauseAgent(IStore s) external view
 ```
 
 **Arguments**
@@ -269,7 +269,7 @@ function mustBeUnpauseAgent(IStore s) public view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeUnpauseAgent(IStore s) public view {
+function mustBeUnpauseAgent(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT);
   }
 ```
@@ -350,7 +350,6 @@ function hasAccess(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

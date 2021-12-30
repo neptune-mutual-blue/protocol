@@ -17,6 +17,8 @@ library VaultFactoryLibV1 {
     address liquidityToken
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key));
+
+    //slither-disable-next-line too-many-digits
     bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, key, liquidityToken));
   }
 }

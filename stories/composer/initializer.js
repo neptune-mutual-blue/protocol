@@ -16,11 +16,13 @@ const initialize = async (suite, deploymentId) => {
   const store = await storeComposer.deploy(cache)
   const fakes = await fakesComposer.deployAll(cache)
 
-  const [npm, wxDai, reassuranceToken] = await tokenComposer.deploySeveral(cache, [
+  const [npm, wxDai] = await tokenComposer.deploySeveral(cache, [
     { name: 'Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Wrapped Dai', symbol: 'WXDAI' },
-    { name: 'Compound', symbol: 'CMP' }
+    { name: 'Wrapped Dai', symbol: 'WXDAI' }
   ])
+
+  // Todo: the protocol only supports stablecoin as reassurance token for now
+  const reassuranceToken = wxDai
 
   const libs = await libsComposer.deployAll(cache)
 

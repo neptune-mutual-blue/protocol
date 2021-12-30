@@ -33,9 +33,7 @@ contract CoverStake is ICoverStake, Recoverable {
    * @dev Constructs this contract
    * @param store Provide the store contract instance
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Increase the stake of the given cover pool
@@ -130,7 +128,7 @@ contract CoverStake is ICoverStake, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_COVER_STAKE;
   }
 }

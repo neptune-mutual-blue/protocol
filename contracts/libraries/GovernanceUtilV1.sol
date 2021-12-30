@@ -29,11 +29,11 @@ library GovernanceUtilV1 {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
   }
 
-  function getClaimPlatformFee(IStore s) public view returns (uint256) {
+  function getClaimPlatformFee(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE);
   }
 
-  function getClaimReporterCommission(IStore s) public view returns (uint256) {
+  function getClaimReporterCommission(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 
@@ -100,7 +100,7 @@ library GovernanceUtilV1 {
     bytes32 key,
     uint256 incidentDate
   )
-    public
+    external
     view
     returns (
       uint256 totalStakeInWinningCamp,
@@ -133,7 +133,7 @@ library GovernanceUtilV1 {
     uint256 reward,
     uint256 burned,
     uint256 reporterFee
-  ) public {
+  ) external {
     // Unstake timestamp of the account
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
     s.setUintByKey(k, block.timestamp); // solhint-disable-line

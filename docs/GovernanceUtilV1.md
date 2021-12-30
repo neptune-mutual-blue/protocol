@@ -100,7 +100,7 @@ function getGovernanceReporterCommission(IStore s) public view returns (uint256)
 ### getClaimPlatformFee
 
 ```solidity
-function getClaimPlatformFee(IStore s) public view
+function getClaimPlatformFee(IStore s) external view
 returns(uint256)
 ```
 
@@ -114,7 +114,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimPlatformFee(IStore s) public view returns (uint256) {
+function getClaimPlatformFee(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE);
   }
 ```
@@ -123,7 +123,7 @@ function getClaimPlatformFee(IStore s) public view returns (uint256) {
 ### getClaimReporterCommission
 
 ```solidity
-function getClaimReporterCommission(IStore s) public view
+function getClaimReporterCommission(IStore s) external view
 returns(uint256)
 ```
 
@@ -137,7 +137,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimReporterCommission(IStore s) public view returns (uint256) {
+function getClaimReporterCommission(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 ```
@@ -326,7 +326,7 @@ function getResolutionInfoFor(
 ### getUnstakeInfoFor
 
 ```solidity
-function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
 ```
 
@@ -349,7 +349,7 @@ function getUnstakeInfoFor(
     bytes32 key,
     uint256 incidentDate
   )
-    public
+    external
     view
     returns (
       uint256 totalStakeInWinningCamp,
@@ -378,7 +378,7 @@ function getUnstakeInfoFor(
 ### updateUnstakeDetails
 
 ```solidity
-function updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee) public nonpayable
+function updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee) external nonpayable
 ```
 
 **Arguments**
@@ -407,7 +407,7 @@ function updateUnstakeDetails(
     uint256 reward,
     uint256 burned,
     uint256 reporterFee
-  ) public {
+  ) external {
     // Unstake timestamp of the account
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
     s.setUintByKey(k, block.timestamp); // solhint-disable-line
@@ -721,7 +721,6 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

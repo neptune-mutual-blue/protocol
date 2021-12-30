@@ -16,11 +16,9 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
 
   /**
    * @dev Constructs this contract
-   * @param store Provide an implmentation of IStore
+   * @param store Provide an implementation of IStore
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Gets the price of the given token against the platform's stablecoin.
@@ -72,7 +70,7 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_PRICE_DISCOVERY;
   }
 }

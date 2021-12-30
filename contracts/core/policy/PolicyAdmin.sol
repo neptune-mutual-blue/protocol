@@ -27,9 +27,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * @dev Constructs this contract
    * @param store Provide the store contract instance
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Sets policy rates. This feature is only accessible by cover manager.
@@ -82,7 +80,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_POLICY_ADMIN;
   }
 }

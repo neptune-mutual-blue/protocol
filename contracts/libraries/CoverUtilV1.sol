@@ -99,11 +99,11 @@ library CoverUtilV1 {
     }
   }
 
-  function getLiquidity(IStore s, bytes32 key) public view returns (uint256) {
+  function getLiquidity(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
   }
 
-  function getStake(IStore s, bytes32 key) public view returns (uint256) {
+  function getStake(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
   }
 

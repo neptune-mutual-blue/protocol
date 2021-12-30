@@ -35,6 +35,8 @@ function getByteCode(
     uint256 expiryDate
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+
+    //slither-disable-next-line too-many-digits
     bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
   }
 ```
@@ -47,7 +49,6 @@ function getByteCode(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

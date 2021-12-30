@@ -77,10 +77,8 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
 ```javascript
 function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeDuringClaimPeriod(key);
+    // @suppress-pausable Already checked inside `validUnstakeWithClaim`
+    s.validUnstakeWithClaim(key, incidentDate);
 
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
@@ -155,7 +153,6 @@ function getUnstakeInfoFor(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

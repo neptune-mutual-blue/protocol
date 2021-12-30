@@ -17,14 +17,14 @@ import "../Recoverable.sol";
  * of 1 cxToken = 1 DAI/BUSD/USDC (minus platform fees).
  *
  */
-// solhint-disable-next-line
+// slither-disable-next-line naming-convention
 contract cxToken is ICxToken, Recoverable, ERC20 {
+  // solhint-disable-previous-line
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
   bytes32 public override coverKey;
   uint256 public override expiresOn;
-  bool public finalized = false;
 
   /**
    * @dev Constructs this contract
@@ -43,7 +43,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
   /**
    * @dev Mints cxTokens when a policy is purchased.
-   * This feature can only be accesed by the latest policy smart contract.
+   * This feature can only be accessed by the latest policy smart contract.
    * @param key Enter the cover key for which the cxTokens are being minted
    * @param to Enter the address where the minted token will be sent
    * @param amount Specify the amount of cxTokens to mint
@@ -70,5 +70,16 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
     s.mustNotBePaused();
     super._burn(msg.sender, amount);
+  }
+
+  function _beforeTokenTransfer(
+    address,
+    address to,
+    uint256
+  ) internal view override {
+    // solhint-disable-next-line
+    if (block.timestamp > expiresOn) {
+      require(to == address(0), "Expired cxToken");
+    }
   }
 }

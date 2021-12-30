@@ -22,7 +22,5 @@ contract Vault is VaultBase {
     IStore store,
     bytes32 coverKey,
     IERC20 liquidityToken
-  ) VaultBase(store, coverKey, liquidityToken) {
-    this;
-  }
+  ) VaultBase(store, coverKey, liquidityToken) {} // solhint-disable-line
 }

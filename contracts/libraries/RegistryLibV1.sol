@@ -17,40 +17,40 @@ library RegistryLibV1 {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
+  function getPriceDiscoveryContract(IStore s) external view returns (IPriceDiscovery) {
     return IPriceDiscovery(s.getContract(ProtoUtilV1.CNS_PRICE_DISCOVERY));
   }
 
-  function getGovernanceContract(IStore s) public view returns (IGovernance) {
+  function getGovernanceContract(IStore s) external view returns (IGovernance) {
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE));
   }
 
-  function getResolutionContract(IStore s) public view returns (IGovernance) {
+  function getResolutionContract(IStore s) external view returns (IGovernance) {
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION));
   }
 
-  function getStakingContract(IStore s) public view returns (ICoverStake) {
+  function getStakingContract(IStore s) external view returns (ICoverStake) {
     return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE));
   }
 
-  function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
+  function getCxTokenFactory(IStore s) external view returns (ICxTokenFactory) {
     return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY));
   }
 
-  function getPolicyContract(IStore s) public view returns (IPolicy) {
+  function getPolicyContract(IStore s) external view returns (IPolicy) {
     return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY));
   }
 
-  function getReassuranceContract(IStore s) public view returns (ICoverReassurance) {
+  function getReassuranceContract(IStore s) external view returns (ICoverReassurance) {
     return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE));
   }
 
-  function getVault(IStore s, bytes32 key) public view returns (IVault) {
+  function getVault(IStore s, bytes32 key) external view returns (IVault) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
     return IVault(vault);
   }
 
-  function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
+  function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {
     address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);
   }

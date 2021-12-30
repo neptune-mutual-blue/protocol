@@ -4,8 +4,9 @@ pragma solidity 0.8.0;
 
 import "../core/cxToken/cxToken.sol";
 
-// solhint-disable-next-line
+// slither-disable-next-line naming-convention
 library cxTokenFactoryLibV1 {
+  // solhint-disable-previous-line
   /**
    * @dev Gets the bytecode of the `cxToken` contract
    * @param s Provide the store instance
@@ -18,6 +19,8 @@ library cxTokenFactoryLibV1 {
     uint256 expiryDate
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+
+    //slither-disable-next-line too-many-digits
     bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
   }
 }

@@ -145,7 +145,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
   }
 }

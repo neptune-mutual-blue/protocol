@@ -36,9 +36,7 @@ function () public nonpayable ERC20
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor() ERC20("Malicious Token", "MAL") {
-    this;
-  }
+constructor() ERC20("Malicious Token", "MAL") {}
 ```
 </details>
 
@@ -131,7 +129,6 @@ function transferFrom(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

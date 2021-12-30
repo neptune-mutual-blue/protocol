@@ -21,9 +21,7 @@ contract Governance is IGovernance, Reporter {
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
 
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Version number of this contract

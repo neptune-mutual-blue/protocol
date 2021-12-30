@@ -392,7 +392,7 @@ function getReassuranceVault(IStore s) external view returns (address) {
 ### getStablecoin
 
 ```solidity
-function getStablecoin(IStore s) public view
+function getStablecoin(IStore s) external view
 returns(address)
 ```
 
@@ -406,7 +406,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoin(IStore s) public view returns (address) {
+function getStablecoin(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 ```
@@ -754,7 +754,6 @@ function _removeMember(IStore s, address member) private {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

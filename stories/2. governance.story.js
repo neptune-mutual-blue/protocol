@@ -128,7 +128,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Your claim is denied')
+      .should.be.revertedWith('Not claimable')
   })
 
   it('the cover `Compound Finance` has no known incidents', async () => {
@@ -319,7 +319,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Your claim is denied')
+      .should.be.revertedWith('Not claimable')
   })
 
   it('george again attested with a very large stake', async () => {
@@ -339,7 +339,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Your claim is denied')
+      .should.be.revertedWith('Not claimable')
   })
 
   it('a governance agent resolves the cover', async () => {

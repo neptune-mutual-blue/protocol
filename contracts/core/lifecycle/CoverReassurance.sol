@@ -29,9 +29,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
   using CoverUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Adds reassurance to the specified cover contract
@@ -85,7 +83,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_COVER_REASSURANCE;
   }
 }

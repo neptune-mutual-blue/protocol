@@ -26,9 +26,7 @@ abstract contract CoverBase is ICover, Recoverable {
    * This contract must be a member of the Protocol for write access to the storage
    *
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Initializes this contract
@@ -48,7 +46,7 @@ abstract contract CoverBase is ICover, Recoverable {
     emit CoverInitialized(liquidityToken, liquidityName);
   }
 
-  function setCoverFees(uint256 value) public override nonReentrant {
+  function setCoverFees(uint256 value) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
@@ -57,7 +55,7 @@ abstract contract CoverBase is ICover, Recoverable {
     emit CoverFeeSet(previous, value);
   }
 
-  function setMinCoverCreationStake(uint256 value) public override nonReentrant {
+  function setMinCoverCreationStake(uint256 value) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -97,7 +95,7 @@ abstract contract CoverBase is ICover, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_COVER;
   }
 }

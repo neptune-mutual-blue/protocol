@@ -84,11 +84,11 @@ const begin = async () => {
         .parameters.filter(x => x.typeName.name === 'address' &&
             ['account', 'to', 'from', 'v', 'sendTo'].indexOf(x.name) === -1)
 
-      if (addressArgs.length) {
+      if (addressArgs.length && code.toLowerCase().indexOf('@suppress-address-trust-issue') === -1) {
         warnings.push('\x1b[31m' + `* Ensure [${addressArgs.map(x => x.name).join(',')}] can be trusted. Ensure this function has AccessControl logic. Ensure you validate address before using.` + '\x1b[0m')
       }
 
-      if (code.indexOf('nonReentrant') === -1) {
+      if (code.indexOf('nonReentrant') === -1 && code.toLowerCase().indexOf('@suppress-reentrancy') === -1) {
         warnings.push('\x1b[31m' + '* Non Reentrancy logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
       }
 
@@ -106,6 +106,10 @@ const begin = async () => {
 
       if (code.toLowerCase().indexOf('todo') > -1 || code.toLowerCase().indexOf('to-do') > -1) {
         warnings.push('\x1b[31m' + '* Warning: complete the todo list' + '\x1b[0m')
+      }
+
+      if (code.toLowerCase().indexOf('not implemented') > -1 || code.toLowerCase().indexOf('to-do') > -1) {
+        warnings.push('\x1b[31m' + '* Error: implement the missing functionalities' + '\x1b[0m')
       }
 
       if (warnings.length) {

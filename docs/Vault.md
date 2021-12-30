@@ -42,9 +42,7 @@ constructor(
     IStore store,
     bytes32 coverKey,
     IERC20 liquidityToken
-  ) VaultBase(store, coverKey, liquidityToken) {
-    this;
-  }
+  ) VaultBase(store, coverKey, liquidityToken) {}
 ```
 </details>
 
@@ -55,7 +53,6 @@ constructor(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

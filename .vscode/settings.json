@@ -40,6 +40,8 @@
     "solidity"
   ],
   "cSpell.words": [
+    "Bahs",
+    "Bokky",
     "CNAME",
     "CXTOKEN",
     "IERC",
@@ -49,6 +51,7 @@
     "Keccak",
     "mload",
     "nbsp",
+    "nomiclabs",
     "Proto",
     "Reentrancy",
     "Unstakable",

@@ -19,7 +19,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 ### getPriceDiscoveryContract
 
 ```solidity
-function getPriceDiscoveryContract(IStore s) public view
+function getPriceDiscoveryContract(IStore s) external view
 returns(contract IPriceDiscovery)
 ```
 
@@ -33,7 +33,7 @@ returns(contract IPriceDiscovery)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscovery) {
+function getPriceDiscoveryContract(IStore s) external view returns (IPriceDiscovery) {
     return IPriceDiscovery(s.getContract(ProtoUtilV1.CNS_PRICE_DISCOVERY));
   }
 ```
@@ -42,7 +42,7 @@ function getPriceDiscoveryContract(IStore s) public view returns (IPriceDiscover
 ### getGovernanceContract
 
 ```solidity
-function getGovernanceContract(IStore s) public view
+function getGovernanceContract(IStore s) external view
 returns(contract IGovernance)
 ```
 
@@ -56,7 +56,7 @@ returns(contract IGovernance)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getGovernanceContract(IStore s) public view returns (IGovernance) {
+function getGovernanceContract(IStore s) external view returns (IGovernance) {
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE));
   }
 ```
@@ -65,7 +65,7 @@ function getGovernanceContract(IStore s) public view returns (IGovernance) {
 ### getResolutionContract
 
 ```solidity
-function getResolutionContract(IStore s) public view
+function getResolutionContract(IStore s) external view
 returns(contract IGovernance)
 ```
 
@@ -79,7 +79,7 @@ returns(contract IGovernance)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionContract(IStore s) public view returns (IGovernance) {
+function getResolutionContract(IStore s) external view returns (IGovernance) {
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION));
   }
 ```
@@ -88,7 +88,7 @@ function getResolutionContract(IStore s) public view returns (IGovernance) {
 ### getStakingContract
 
 ```solidity
-function getStakingContract(IStore s) public view
+function getStakingContract(IStore s) external view
 returns(contract ICoverStake)
 ```
 
@@ -102,7 +102,7 @@ returns(contract ICoverStake)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStakingContract(IStore s) public view returns (ICoverStake) {
+function getStakingContract(IStore s) external view returns (ICoverStake) {
     return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE));
   }
 ```
@@ -111,7 +111,7 @@ function getStakingContract(IStore s) public view returns (ICoverStake) {
 ### getCxTokenFactory
 
 ```solidity
-function getCxTokenFactory(IStore s) public view
+function getCxTokenFactory(IStore s) external view
 returns(contract ICxTokenFactory)
 ```
 
@@ -125,7 +125,7 @@ returns(contract ICxTokenFactory)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
+function getCxTokenFactory(IStore s) external view returns (ICxTokenFactory) {
     return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY));
   }
 ```
@@ -134,7 +134,7 @@ function getCxTokenFactory(IStore s) public view returns (ICxTokenFactory) {
 ### getPolicyContract
 
 ```solidity
-function getPolicyContract(IStore s) public view
+function getPolicyContract(IStore s) external view
 returns(contract IPolicy)
 ```
 
@@ -148,7 +148,7 @@ returns(contract IPolicy)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPolicyContract(IStore s) public view returns (IPolicy) {
+function getPolicyContract(IStore s) external view returns (IPolicy) {
     return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY));
   }
 ```
@@ -157,7 +157,7 @@ function getPolicyContract(IStore s) public view returns (IPolicy) {
 ### getReassuranceContract
 
 ```solidity
-function getReassuranceContract(IStore s) public view
+function getReassuranceContract(IStore s) external view
 returns(contract ICoverReassurance)
 ```
 
@@ -171,7 +171,7 @@ returns(contract ICoverReassurance)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getReassuranceContract(IStore s) public view returns (ICoverReassurance) {
+function getReassuranceContract(IStore s) external view returns (ICoverReassurance) {
     return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE));
   }
 ```
@@ -180,7 +180,7 @@ function getReassuranceContract(IStore s) public view returns (ICoverReassurance
 ### getVault
 
 ```solidity
-function getVault(IStore s, bytes32 key) public view
+function getVault(IStore s, bytes32 key) external view
 returns(contract IVault)
 ```
 
@@ -195,7 +195,7 @@ returns(contract IVault)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getVault(IStore s, bytes32 key) public view returns (IVault) {
+function getVault(IStore s, bytes32 key) external view returns (IVault) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
     return IVault(vault);
   }
@@ -205,7 +205,7 @@ function getVault(IStore s, bytes32 key) public view returns (IVault) {
 ### getVaultFactoryContract
 
 ```solidity
-function getVaultFactoryContract(IStore s) public view
+function getVaultFactoryContract(IStore s) external view
 returns(contract IVaultFactory)
 ```
 
@@ -219,7 +219,7 @@ returns(contract IVaultFactory)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
+function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {
     address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);
   }
@@ -233,7 +233,6 @@ function getVaultFactoryContract(IStore s) public view returns (IVaultFactory) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
