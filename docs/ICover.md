@@ -21,7 +21,7 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ## Functions
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
+- [addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
@@ -67,7 +67,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable
+function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable
 ```
 
 **Arguments**
@@ -76,6 +76,7 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | ------------- |------------- | -----|
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
+| minStakeToReport | uint256 |  | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
@@ -89,6 +90,7 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
     address reassuranceToken,

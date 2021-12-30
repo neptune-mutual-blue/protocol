@@ -12,8 +12,8 @@ The cover contract facilitates you create and update covers
 
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
-- [_addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address reassuranceToken)](#_addcover)
+- [addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
+- [_addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 fee, address reassuranceToken)](#_addcover)
 - [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 - [updateWhitelist(address account, bool status)](#updatewhitelist)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
@@ -91,7 +91,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
+function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -100,6 +100,7 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 | ------------- |------------- | -----|
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
+| minStakeToReport | uint256 | A cover creator can override default min NPM stake to avoid spam reports | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
@@ -113,6 +114,7 @@ function addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 st
 function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
     address reassuranceToken,
@@ -124,6 +126,7 @@ function addCover(
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
+    require(minStakeToReport >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
     require(reportingPeriod >= 7 days, "Insufficient reporting period");
 
@@ -131,7 +134,7 @@ function addCover(
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
 
     // Set the basic cover info
-    _addCover(key, info, reportingPeriod, fee, reassuranceToken);
+    _addCover(key, info, minStakeToReport, reportingPeriod, fee, reassuranceToken);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(key, msg.sender, stakeWithFee, fee);
@@ -159,7 +162,7 @@ function addCover(
 ### _addCover
 
 ```solidity
-function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 fee, address reassuranceToken) private nonpayable
+function _addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 fee, address reassuranceToken) private nonpayable
 ```
 
 **Arguments**
@@ -168,6 +171,7 @@ function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 f
 | ------------- |------------- | -----|
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
+| minStakeToReport | uint256 |  | 
 | reportingPeriod | uint256 | The period during when reporting happens. | 
 | fee | uint256 | Fee paid to create this cover | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. | 
@@ -179,6 +183,7 @@ function _addCover(bytes32 key, bytes32 info, uint256 reportingPeriod, uint256 f
 function _addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 fee,
     address reassuranceToken
@@ -192,6 +197,7 @@ function _addCover(
     // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, reportingPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key, minStakeToReport);
 
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);

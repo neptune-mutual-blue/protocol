@@ -23,8 +23,6 @@ interface IReporter {
     uint256 stake
   ) external;
 
-  function getMinStake() external view returns (uint256);
-
   function getActiveIncidentDate(bytes32 key) external view returns (uint256);
 
   function getReporter(bytes32 key, uint256 incidentDate) external view returns (address);

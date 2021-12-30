@@ -73,6 +73,7 @@ contract Cover is CoverBase {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
+   * @param minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
    * @param reportingPeriod The period during when reporting happens.
    * @param initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
@@ -82,6 +83,7 @@ contract Cover is CoverBase {
   function addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 stakeWithFee,
     address reassuranceToken,
@@ -93,6 +95,7 @@ contract Cover is CoverBase {
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
+    require(minStakeToReport >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
     require(reportingPeriod >= 7 days, "Insufficient reporting period");
 
@@ -100,7 +103,7 @@ contract Cover is CoverBase {
     uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
 
     // Set the basic cover info
-    _addCover(key, info, reportingPeriod, fee, reassuranceToken);
+    _addCover(key, info, minStakeToReport, reportingPeriod, fee, reassuranceToken);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(key, msg.sender, stakeWithFee, fee);
@@ -134,6 +137,7 @@ contract Cover is CoverBase {
   function _addCover(
     bytes32 key,
     bytes32 info,
+    uint256 minStakeToReport,
     uint256 reportingPeriod,
     uint256 fee,
     address reassuranceToken
@@ -147,6 +151,7 @@ contract Cover is CoverBase {
     // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, reportingPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key, minStakeToReport);
 
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
