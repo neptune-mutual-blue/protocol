@@ -12,6 +12,7 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 ```js
 event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
 event CoverUpdated(bytes32  key, bytes32  info);
+event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  reason);
 event WhitelistUpdated(address  account, bool  status);
 event CoverFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
@@ -25,6 +26,7 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
+- [stopCover(bytes32 key, string reason)](#stopcover)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
@@ -172,6 +174,27 @@ function getCover(bytes32 key)
       bytes32 info,
       uint256[] memory values
     );
+```
+</details>
+
+### stopCover
+
+```solidity
+function stopCover(bytes32 key, string reason) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| reason | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function stopCover(bytes32 key, string memory reason) external;
 ```
 </details>
 

@@ -187,6 +187,19 @@ contract Cover is CoverBase {
     return fee;
   }
 
+  /**
+   * @dev Enables governance admin to stop a spam cover contract
+   * @param key Enter the cover key you want to stop
+   * @param reason Provide a reason to stop this cover
+   */
+  function stopCover(bytes32 key, string memory reason) external override nonReentrant {
+    s.mustBeGovernanceAdmin();
+    s.mustBeValidCover(key);
+
+    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+    emit CoverStopped(key, msg.sender, reason);
+  }
+
   function updateWhitelist(address account, bool status) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
