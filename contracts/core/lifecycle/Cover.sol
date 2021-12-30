@@ -200,6 +200,13 @@ contract Cover is CoverBase {
     emit CoverStopped(key, msg.sender, reason);
   }
 
+  /**
+   * @dev Adds or removes an account to the whitelist.
+   * For the first version of the protocol, a cover creator has to be whitelisted
+   * before they can call the `addCover` function.
+   * @param account Enter the address of the cover creator
+   * @param status Set this to true if you want to add to or false to remove from the whitelist
+   */
   function updateWhitelist(address account, bool status) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
@@ -209,6 +216,9 @@ contract Cover is CoverBase {
     emit WhitelistUpdated(account, status);
   }
 
+  /**
+   * @dev Signifies if a given account is whitelisted
+   */
   function checkIfWhitelisted(address account) external view override returns (bool) {
     return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account);
   }
