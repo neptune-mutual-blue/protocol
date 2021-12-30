@@ -1,7 +1,7 @@
 {
   "compile_force_framework": false,
-  "hardhat_ignore_compile": true,
-  "detectors_to_exclude": "too-many-digits,assembly-usage,boolean-equality,solc-version",
+  "hardhat_ignore_compile": false,
+  "detectors_to_exclude": "assembly-usage,boolean-equality,solc-version",
   "exclude_informational": false,
   "exclude_low": true,
   "exclude_medium": true,

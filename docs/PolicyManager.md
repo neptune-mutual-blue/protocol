@@ -8,6 +8,57 @@ View Source: [contracts/core/policy/PolicyManager.sol](../contracts/core/policy/
 
 ## Functions
 
+- [version()](#version)
+- [getName()](#getname)
+
+### version
+
+Version number of this contract
+
+```solidity
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+Name of this contract
+
+```solidity
+function getName() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_POLICY_MANAGER;
+  }
+```
+</details>
+
 ## Contracts
 
 * [AccessControl](AccessControl.md)
@@ -15,7 +66,6 @@ View Source: [contracts/core/policy/PolicyManager.sol](../contracts/core/policy/
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

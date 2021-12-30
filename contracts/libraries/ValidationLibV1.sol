@@ -39,7 +39,7 @@ library ValidationLibV1 {
    * or if the cover is under governance.
    * @param key Enter the cover key to check
    */
-  function mustBeValidCover(IStore s, bytes32 key) public view {
+  function mustBeValidCover(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
   }
@@ -48,7 +48,7 @@ library ValidationLibV1 {
    * @dev Reverts if the key does not resolve in a valid cover contract.
    * @param key Enter the cover key to check
    */
-  function mustBeValidCoverKey(IStore s, bytes32 key) public view {
+  function mustBeValidCoverKey(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
   }
 
@@ -61,7 +61,7 @@ library ValidationLibV1 {
     IStore s,
     bytes32 key,
     address sender
-  ) public view {
+  ) external view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
     require(isCoverOwner, "Forbidden");
   }
@@ -93,11 +93,11 @@ library ValidationLibV1 {
 
   *********************************************************************************************/
 
-  function mustBeReporting(IStore s, bytes32 key) public view {
+  function mustBeReporting(IStore s, bytes32 key) external view {
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 
-  function mustBeDisputed(IStore s, bytes32 key) public view {
+  function mustBeDisputed(IStore s, bytes32 key) external view {
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
@@ -105,7 +105,7 @@ library ValidationLibV1 {
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
   }
 
-  function mustBeClaimingOrDisputed(IStore s, bytes32 key) public view {
+  function mustBeClaimingOrDisputed(IStore s, bytes32 key) external view {
     CoverUtilV1.CoverStatus status = s.getCoverStatus(key);
 
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
@@ -114,7 +114,7 @@ library ValidationLibV1 {
     require(claiming || falseReporting, "Not reported nor disputed");
   }
 
-  function mustBeReportingOrDisputed(IStore s, bytes32 key) public view {
+  function mustBeReportingOrDisputed(IStore s, bytes32 key) external view {
     CoverUtilV1.CoverStatus status = s.getCoverStatus(key);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
@@ -130,12 +130,12 @@ library ValidationLibV1 {
     require(s.getLatestIncidentDate(key) == incidentDate, "Invalid incident date");
   }
 
-  function mustNotHaveDispute(IStore s, bytes32 key) public view {
+  function mustNotHaveDispute(IStore s, bytes32 key) external view {
     address reporter = s.getAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
     require(reporter == address(0), "Already disputed");
   }
 
-  function mustBeDuringReportingPeriod(IStore s, bytes32 key) public view {
+  function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view {
     require(s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 
@@ -163,9 +163,8 @@ library ValidationLibV1 {
     bytes32 key,
     address cxToken,
     uint256 incidentDate
-  ) public view {
-    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable, "Your claim is denied");
-
+  ) external view {
+    mustBeClaimable(s, key);
     s.mustBeProtocolMember(cxToken);
     mustBeValidIncidentDate(s, key, incidentDate);
     mustBeValidCxToken(s, key, cxToken, incidentDate);
@@ -184,6 +183,27 @@ library ValidationLibV1 {
     require(withdrawal == 0, "Already unstaken");
   }
 
+  function validUnstakeWithClaim(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view {
+    mustNotBePaused(s);
+    mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    mustBeValidIncidentDate(s, key, incidentDate);
+
+    bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
+
+    if (incidentHappened) {
+      // Incident occurred. Must unstake with claim during the claim period.
+      mustBeDuringClaimPeriod(s, key);
+      return;
+    }
+
+    // Incident did not occur.
+    mustBeAfterReportingPeriod(s, key);
+  }
+
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
     uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
     require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
@@ -192,7 +212,7 @@ library ValidationLibV1 {
     require(block.timestamp <= expiresAt, "Claim period has expired"); // solhint-disable-line
   }
 
-  function mustBeAfterClaimExpiry(IStore s, bytes32 key) public view {
+  function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
     require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key), "Claim still active"); // solhint-disable-line
   }
 }

@@ -30,9 +30,7 @@ contract Processor is IClaimsProcessor, Recoverable {
    * @dev Constructs this contract
    * @param store Provide an implementation of IStore
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Enables policyholders to claim their cxTokens which results in a payout.

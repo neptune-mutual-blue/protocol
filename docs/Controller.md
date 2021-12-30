@@ -26,9 +26,7 @@ function (IStore store) public nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
+constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
@@ -39,7 +37,6 @@ constructor(IStore store) Recoverable(store) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

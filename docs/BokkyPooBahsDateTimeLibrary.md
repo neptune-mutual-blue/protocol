@@ -1161,7 +1161,6 @@ function diffSeconds(uint256 fromTimestamp, uint256 toTimestamp) internal pure r
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

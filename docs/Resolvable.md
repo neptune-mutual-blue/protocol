@@ -106,10 +106,7 @@ function _resolve(
     bool decision,
     bool emergency
   ) private {
-    if (decision == false) {
-      _finalize(key, incidentDate);
-      return;
-    }
+    CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
     uint256 claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
     uint256 claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
@@ -117,7 +114,7 @@ function _resolve(
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
-    s.setStatus(key, CoverUtilV1.CoverStatus.Claimable);
+    s.setStatus(key, status);
 
     emit Resolved(key, incidentDate, decision, emergency);
   }
@@ -131,7 +128,6 @@ function _resolve(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

@@ -13,8 +13,9 @@ import "../Recoverable.sol";
  * the cxTokenFactory contract creates new instances of
  * cxTokens on demand.
  */
-// solhint-disable-next-line
+// slither-disable-next-line naming-convention
 contract cxTokenFactory is ICxTokenFactory, Recoverable {
+  // solhint-disable-previous-line
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
@@ -24,9 +25,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
    * @dev Constructs this contract
    * @param store Provide the store contract instance
    */
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Deploys a new instance of cxTokens
@@ -78,7 +77,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_CXTOKEN_FACTORY;
   }
 }

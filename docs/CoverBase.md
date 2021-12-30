@@ -35,9 +35,7 @@ function (IStore store) internal nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
+constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
@@ -77,7 +75,7 @@ function initialize(address liquidityToken, bytes32 liquidityName) external over
 ### setCoverFees
 
 ```solidity
-function setCoverFees(uint256 value) public nonpayable nonReentrant 
+function setCoverFees(uint256 value) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -90,7 +88,7 @@ function setCoverFees(uint256 value) public nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverFees(uint256 value) public override nonReentrant {
+function setCoverFees(uint256 value) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
@@ -104,7 +102,7 @@ function setCoverFees(uint256 value) public override nonReentrant {
 ### setMinCoverCreationStake
 
 ```solidity
-function setMinCoverCreationStake(uint256 value) public nonpayable nonReentrant 
+function setMinCoverCreationStake(uint256 value) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -117,7 +115,7 @@ function setMinCoverCreationStake(uint256 value) public nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setMinCoverCreationStake(uint256 value) public override nonReentrant {
+function setMinCoverCreationStake(uint256 value) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -192,7 +190,7 @@ function version() external pure override returns (bytes32) {
 Name of this contract
 
 ```solidity
-function getName() public pure
+function getName() external pure
 returns(bytes32)
 ```
 
@@ -205,7 +203,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() public pure override returns (bytes32) {
+function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_COVER;
   }
 ```
@@ -218,7 +216,6 @@ function getName() public pure override returns (bytes32) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

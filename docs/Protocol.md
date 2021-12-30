@@ -65,6 +65,7 @@ function initialize(address[] addresses, uint256[] values) external nonpayable w
 
 ```javascript
 function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
+    // @suppress-reentrancy Can only be initialized once and only by a protocol member
     // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
@@ -128,6 +129,7 @@ function upgradeContract(
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
+    // @suppress-address-trust-issue Checked
     s.upgradeContract(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
@@ -243,7 +245,7 @@ function version() external pure override returns (bytes32) {
 Name of this contract
 
 ```solidity
-function getName() public pure
+function getName() external pure
 returns(bytes32)
 ```
 
@@ -256,8 +258,8 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() public pure override returns (bytes32) {
-    return "Neptune Mutual Protocol";
+function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_POLICY_MANAGER;
   }
 ```
 </details>
@@ -269,7 +271,6 @@ function getName() public pure override returns (bytes32) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

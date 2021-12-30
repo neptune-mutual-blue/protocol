@@ -45,9 +45,7 @@ function (IStore store) public nonpayable CoverBase
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) CoverBase(store) {
-    this;
-  }
+constructor(IStore store) CoverBase(store) {}
 ```
 </details>
 
@@ -135,6 +133,7 @@ function addCover(
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
+    require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
     require(reportingPeriod >= 7 days, "Insufficient reporting period");
 
     // First validate the information entered
@@ -205,7 +204,9 @@ function _addCover(
 
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
+
+    // s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 1 ether); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
@@ -318,7 +319,6 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Address](docs/Address.md)
 * [BaseLibV1](docs/BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](docs/BokkyPooBahsDateTimeLibrary.md)
-* [Commission](docs/Commission.md)
 * [Context](docs/Context.md)
 * [Controller](docs/Controller.md)
 * [Cover](docs/Cover.md)

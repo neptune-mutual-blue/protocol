@@ -42,16 +42,14 @@ function (IStore store) public nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
+constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
 ### purchaseCover
 
 Purchase cover for the specified amount. <br /> <br />
- When you purchase covers, you recieve equal amount of cxTokens back.
+ When you purchase covers, you receive equal amount of cxTokens back.
  You need the cxTokens to claim the cover when resolution occurs.
  Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
@@ -239,7 +237,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) public pure overrid
 ### getCommitment
 
 ```solidity
-function getCommitment(bytes32 ) external view
+function getCommitment(bytes32 ) external pure
 returns(uint256)
 ```
 
@@ -255,8 +253,7 @@ returns(uint256)
 ```javascript
 function getCommitment(
     bytes32 /*key*/
-  ) external view override returns (uint256) {
-    this;
+  ) external pure override returns (uint256) {
     revert("Not implemented");
   }
 ```
@@ -265,7 +262,7 @@ function getCommitment(
 ### getCoverable
 
 ```solidity
-function getCoverable(bytes32 ) external view
+function getCoverable(bytes32 ) external pure
 returns(uint256)
 ```
 
@@ -281,8 +278,7 @@ returns(uint256)
 ```javascript
 function getCoverable(
     bytes32 /*key*/
-  ) external view override returns (uint256) {
-    this;
+  ) external pure override returns (uint256) {
     revert("Not implemented");
   }
 ```
@@ -524,7 +520,7 @@ function version() external pure override returns (bytes32) {
 Name of this contract
 
 ```solidity
-function getName() public pure
+function getName() external pure
 returns(bytes32)
 ```
 
@@ -537,7 +533,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() public pure override returns (bytes32) {
+function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_POLICY;
   }
 ```
@@ -550,7 +546,6 @@ function getName() public pure override returns (bytes32) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

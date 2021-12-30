@@ -303,7 +303,7 @@ function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 fl
 ### getLiquidity
 
 ```solidity
-function getLiquidity(IStore s, bytes32 key) public view
+function getLiquidity(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -318,7 +318,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLiquidity(IStore s, bytes32 key) public view returns (uint256) {
+function getLiquidity(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
   }
 ```
@@ -327,7 +327,7 @@ function getLiquidity(IStore s, bytes32 key) public view returns (uint256) {
 ### getStake
 
 ```solidity
-function getStake(IStore s, bytes32 key) public view
+function getStake(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -342,7 +342,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStake(IStore s, bytes32 key) public view returns (uint256) {
+function getStake(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
   }
 ```
@@ -481,7 +481,6 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

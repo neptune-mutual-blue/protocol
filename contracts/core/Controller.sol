@@ -6,7 +6,5 @@ import "../libraries/ProtoUtilV1.sol";
 import "./Recoverable.sol";
 
 contract Controller is Recoverable {
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 }

@@ -39,9 +39,7 @@ function (IStore store) public nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    this;
-  }
+constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
@@ -169,7 +167,7 @@ function version() external pure override returns (bytes32) {
 Name of this contract
 
 ```solidity
-function getName() public pure
+function getName() external pure
 returns(bytes32)
 ```
 
@@ -182,7 +180,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() public pure override returns (bytes32) {
+function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_COVER_REASSURANCE;
   }
 ```
@@ -195,7 +193,6 @@ function getName() public pure override returns (bytes32) {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

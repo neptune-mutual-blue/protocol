@@ -3,7 +3,6 @@
 View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICommission.sol)
 
 **↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [Commission](Commission.md)**
 
 **ICommission**
 
@@ -16,7 +15,6 @@ View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICom
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

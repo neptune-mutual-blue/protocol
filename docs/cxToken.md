@@ -16,7 +16,6 @@ cxTokens are minted when someone purchases a cover. <br /> <br />
 ```js
 bytes32 public coverKey;
 uint256 public expiresOn;
-bool public finalized;
 
 ```
 
@@ -25,6 +24,7 @@ bool public finalized;
 - [constructor(IStore store, bytes32 key, uint256 expiry)](#)
 - [mint(bytes32 key, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
+- [_beforeTokenTransfer(address , address to, uint256 )](#_beforetokentransfer)
 
 ### 
 
@@ -60,7 +60,7 @@ constructor(
 ### mint
 
 Mints cxTokens when a policy is purchased.
- This feature can only be accesed by the latest policy smart contract.
+ This feature can only be accessed by the latest policy smart contract.
 
 ```solidity
 function mint(bytes32 key, address to, uint256 amount) external nonpayable nonReentrant 
@@ -120,6 +120,37 @@ function burn(uint256 amount) external override nonReentrant {
 ```
 </details>
 
+### _beforeTokenTransfer
+
+```solidity
+function _beforeTokenTransfer(address , address to, uint256 ) internal view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+|  | address |  | 
+| to | address |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _beforeTokenTransfer(
+    address,
+    address to,
+    uint256
+  ) internal view override {
+    // solhint-disable-next-line
+    if (block.timestamp > expiresOn) {
+      require(to == address(0), "Expired cxToken");
+    }
+  }
+```
+</details>
+
 ## Contracts
 
 * [AccessControl](AccessControl.md)
@@ -127,7 +158,6 @@ function burn(uint256 amount) external override nonReentrant {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

@@ -25,9 +25,7 @@ contract Cover is CoverBase {
    * @dev Constructs this contract
    * @param store Enter the store
    */
-  constructor(IStore store) CoverBase(store) {
-    this;
-  }
+  constructor(IStore store) CoverBase(store) {} // solhint-disable-line
 
   /**
    * @dev Updates the cover contract.
@@ -95,6 +93,7 @@ contract Cover is CoverBase {
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
+    require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
     require(reportingPeriod >= 7 days, "Insufficient reporting period");
 
     // First validate the information entered
@@ -151,7 +150,9 @@ contract Cover is CoverBase {
 
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
+
+    // s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 1 ether); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);

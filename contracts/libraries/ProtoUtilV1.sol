@@ -152,7 +152,7 @@ library ProtoUtilV1 {
   /// 'ns:claim:platform:fee'
   bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
 
-  bytes32 public constant CNAME_PROTOCOL = "Protocol";
+  bytes32 public constant CNAME_PROTOCOL = "Neptune Mutual Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
   bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
@@ -232,7 +232,7 @@ library ProtoUtilV1 {
     return s.getAddressByKey(CNS_REASSURANCE_VAULT);
   }
 
-  function getStablecoin(IStore s) public view returns (address) {
+  function getStablecoin(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 

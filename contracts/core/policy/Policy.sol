@@ -25,13 +25,11 @@ contract Policy is IPolicy, Recoverable {
   using NTransferUtilV2 for IERC20;
   using ValidationLibV1 for IStore;
 
-  constructor(IStore store) Recoverable(store) {
-    this;
-  }
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
-   * When you purchase covers, you recieve equal amount of cxTokens back.
+   * When you purchase covers, you receive equal amount of cxTokens back.
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
@@ -131,8 +129,7 @@ contract Policy is IPolicy, Recoverable {
    */
   function getCommitment(
     bytes32 /*key*/
-  ) external view override returns (uint256) {
-    this;
+  ) external pure override returns (uint256) {
     revert("Not implemented");
   }
 
@@ -141,8 +138,7 @@ contract Policy is IPolicy, Recoverable {
    */
   function getCoverable(
     bytes32 /*key*/
-  ) external view override returns (uint256) {
-    this;
+  ) external pure override returns (uint256) {
     revert("Not implemented");
   }
 
@@ -281,7 +277,7 @@ contract Policy is IPolicy, Recoverable {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
+  function getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_POLICY;
   }
 }

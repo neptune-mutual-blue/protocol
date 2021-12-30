@@ -6,9 +6,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 contract MaliciousToken is ERC20 {
   address public constant BAD = 0x0000000000000000000000000000000000000010;
 
-  constructor() ERC20("Malicious Token", "MAL") {
-    this;
-  }
+  constructor() ERC20("Malicious Token", "MAL") {} // solhint-disable-line
 
   function mint(address account, uint256 amount) external {
     super._mint(account, amount);

@@ -95,7 +95,7 @@ Internal function to redeem pods by burning. <br /> <br />
  This Contract --> Transfers Your Share of Liquidity Tokens
 
 ```solidity
-function redeemPods(address pod, address stablecoin, address account, uint256 podsToBurn) public nonpayable
+function redeemPods(address pod, address stablecoin, address account, uint256 podsToBurn) external nonpayable
 returns(uint256)
 ```
 
@@ -117,7 +117,7 @@ function redeemPods(
     address stablecoin,
     address account,
     uint256 podsToBurn
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     uint256 amount = calculateLiquidity(pod, stablecoin, podsToBurn);
 
     IERC20(pod).ensureTransferFrom(account, address(this), podsToBurn);
@@ -133,7 +133,7 @@ function redeemPods(
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity) public nonpayable
+function addLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity) external nonpayable
 returns(uint256)
 ```
 
@@ -161,7 +161,7 @@ function addLiquidity(
     address account,
     uint256 amount,
     bool initialLiquidity
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     require(account != address(0), "Invalid account");
 
     address found = s.getStablecoin();
@@ -190,7 +190,7 @@ function addLiquidity(
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToRedeem) public nonpayable
+function removeLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToRedeem) external nonpayable
 returns(uint256)
 ```
 
@@ -214,7 +214,7 @@ function removeLiquidity(
     address pod,
     address stablecoin,
     uint256 podsToRedeem
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     s.mustBeValidCover(coverKey);
 
     uint256 available = s.getPolicyContract().getCoverable(coverKey);
@@ -246,7 +246,6 @@ function removeLiquidity(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
-* [Commission](Commission.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)

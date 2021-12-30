@@ -67,7 +67,7 @@ library VaultLibV1 {
     address stablecoin,
     address account,
     uint256 podsToBurn
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     uint256 amount = calculateLiquidity(pod, stablecoin, podsToBurn);
 
     IERC20(pod).ensureTransferFrom(account, address(this), podsToBurn);
@@ -90,7 +90,7 @@ library VaultLibV1 {
     address account,
     uint256 amount,
     bool initialLiquidity
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     require(account != address(0), "Invalid account");
 
     address found = s.getStablecoin();
@@ -123,7 +123,7 @@ library VaultLibV1 {
     address pod,
     address stablecoin,
     uint256 podsToRedeem
-  ) public returns (uint256) {
+  ) external returns (uint256) {
     s.mustBeValidCover(coverKey);
 
     uint256 available = s.getPolicyContract().getCoverable(coverKey);

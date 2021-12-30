@@ -34,6 +34,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[8] claimReporterCommission
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
+    // @suppress-reentrancy Can only be initialized once and only by a protocol member
     // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
@@ -77,6 +78,7 @@ contract Protocol is IProtocol, ProtoBase {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
+    // @suppress-address-trust-issue Checked
     s.upgradeContract(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
@@ -116,7 +118,7 @@ contract Protocol is IProtocol, ProtoBase {
   /**
    * @dev Name of this contract
    */
-  function getName() public pure override returns (bytes32) {
-    return "Neptune Mutual Protocol";
+  function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_POLICY_MANAGER;
   }
 }
