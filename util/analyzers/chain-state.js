@@ -46,7 +46,7 @@ const begin = async () => {
 
   for (const name in parsed.output.sources) {
     const contract = parsed.output.sources[name]
-    const contractNode = contract.ast.nodes.filter(x => x.contractKind === 'contract')
+    const contractNode = contract.ast.nodes.filter(x => ['contract', 'library'].indexOf(x.contractKind) > -1)
 
     const nodes = findNodesHavingKey(contractNode, 'nodeType', 'FunctionDefinition')
 
@@ -94,6 +94,10 @@ const begin = async () => {
 
       if (code.indexOf('AccessControl') === -1 && code.toLowerCase().indexOf('@suppress-acl') === -1) {
         warnings.push('\x1b[31m' + '* Access control logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m')
+      }
+
+      if (code.toLowerCase().indexOf('revert') > -1 && code.toLowerCase().indexOf('@suppress-revert') === -1) {
+        warnings.push('\x1b[31m' + '* Ensure that the usage of revert is correct' + '\x1b[0m')
       }
 
       if (code.toLowerCase().indexOf('pause') === -1 && code.toLowerCase().indexOf('@suppress-pausable') === -1) {

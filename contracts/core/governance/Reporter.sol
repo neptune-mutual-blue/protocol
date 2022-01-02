@@ -90,6 +90,10 @@ abstract contract Reporter is IReporter, Witness {
     emit FirstReportingStakeSet(previous, value);
   }
 
+  function getFirstReportingStake() external view override returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+  }
+
   function setReportingBurnRate(uint256 value) external override nonReentrant {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeCoverManager(s);

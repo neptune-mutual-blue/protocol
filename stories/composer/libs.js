@@ -71,6 +71,21 @@ const deployAll = async (cache) => {
     ValidationLibV1: validationLib.address
   })
 
+  const stakingPoolLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    NTransferUtilV2: transferLib.address
+  })
+
+  const bondPoolLibV1 = await deployer.deployWithLibraries(cache, 'BondPoolLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    AccessControlLibV1: accessControlLibV1.address,
+    ValidationLibV1: validationLib.address,
+    NTransferUtilV2: transferLib.address
+
+  })
+
   return {
     baseLibV1,
     accessControlLibV1,
@@ -84,7 +99,9 @@ const deployAll = async (cache) => {
     vaultFactoryLib,
     vaultLib,
     cxTokenFactoryLib,
-    dateLib
+    dateLib,
+    bondPoolLibV1,
+    stakingPoolLibV1
   }
 }
 

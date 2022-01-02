@@ -299,6 +299,10 @@ function stopCover(bytes32 key, string memory reason) external override nonReent
 
 ### updateWhitelist
 
+Adds or removes an account to the whitelist.
+ For the first version of the protocol, a cover creator has to be whitelisted
+ before they can call the `addCover` function.
+
 ```solidity
 function updateWhitelist(address account, bool status) external nonpayable nonReentrant 
 ```
@@ -307,8 +311,8 @@ function updateWhitelist(address account, bool status) external nonpayable nonRe
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address |  | 
-| status | bool |  | 
+| account | address | Enter the address of the cover creator | 
+| status | bool | Set this to true if you want to add to or false to remove from the whitelist | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -326,6 +330,8 @@ function updateWhitelist(address account, bool status) external override nonReen
 </details>
 
 ### checkIfWhitelisted
+
+Signifies if a given account is whitelisted
 
 ```solidity
 function checkIfWhitelisted(address account) external view
@@ -355,6 +361,9 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Address](docs/Address.md)
 * [BaseLibV1](docs/BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](docs/BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](docs/BondPool.md)
+* [BondPoolBase](docs/BondPoolBase.md)
+* [BondPoolLibV1](docs/BondPoolLibV1.md)
 * [Context](docs/Context.md)
 * [Controller](docs/Controller.md)
 * [Cover](docs/Cover.md)
@@ -372,11 +381,13 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [FakeRecoverable](docs/FakeRecoverable.md)
 * [FakeStore](docs/FakeStore.md)
 * [FakeToken](docs/FakeToken.md)
+* [FakeUniswapPair](docs/FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](docs/FakeUniswapV2RouterLike.md)
 * [Finalization](docs/Finalization.md)
 * [Governance](docs/Governance.md)
 * [GovernanceUtilV1](docs/GovernanceUtilV1.md)
 * [IAccessControl](docs/IAccessControl.md)
+* [IBondPool](docs/IBondPool.md)
 * [IClaimsProcessor](docs/IClaimsProcessor.md)
 * [ICommission](docs/ICommission.md)
 * [ICover](docs/ICover.md)
@@ -399,6 +410,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IReporter](docs/IReporter.md)
 * [IResolution](docs/IResolution.md)
 * [IResolvable](docs/IResolvable.md)
+* [IStakingPools](docs/IStakingPools.md)
 * [IStore](docs/IStore.md)
 * [IUniswapV2PairLike](docs/IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](docs/IUniswapV2RouterLike.md)
@@ -428,6 +440,11 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Resolvable](docs/Resolvable.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [SafeMath](docs/SafeMath.md)
+* [StakingPoolBase](docs/StakingPoolBase.md)
+* [StakingPoolInfo](docs/StakingPoolInfo.md)
+* [StakingPoolLibV1](docs/StakingPoolLibV1.md)
+* [StakingPoolReward](docs/StakingPoolReward.md)
+* [StakingPools](docs/StakingPools.md)
 * [Store](docs/Store.md)
 * [StoreBase](docs/StoreBase.md)
 * [StoreKeyUtil](docs/StoreKeyUtil.md)

@@ -5,6 +5,7 @@ pragma solidity 0.8.0;
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
 import "../interfaces/IPolicy.sol";
+import "../interfaces/IBondPool.sol";
 import "../interfaces/ICoverStake.sol";
 import "../interfaces/IPriceDiscovery.sol";
 import "../interfaces/ICxTokenFactory.sol";
@@ -43,6 +44,10 @@ library RegistryLibV1 {
 
   function getReassuranceContract(IStore s) external view returns (ICoverReassurance) {
     return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE));
+  }
+
+  function getBondPoolContract(IStore s) external view returns (IBondPool) {
+    return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
   }
 
   function getVault(IStore s, bytes32 key) external view returns (IVault) {

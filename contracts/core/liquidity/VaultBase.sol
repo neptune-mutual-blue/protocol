@@ -60,6 +60,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     address account,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();

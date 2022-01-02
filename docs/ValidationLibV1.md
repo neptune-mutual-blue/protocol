@@ -27,7 +27,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidCxToken(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
 - [mustBeValidClaim(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidclaim)
 - [mustNotHaveUnstaken(IStore s, address account, bytes32 key, uint256 incidentDate)](#mustnothaveunstaken)
-- [validUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate)](#validunstakewithclaim)
+- [validateUnstakeAfterClaimPeriod(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakeafterclaimperiod)
+- [validateUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakewithclaim)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
 - [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
 
@@ -532,10 +533,10 @@ function mustBeValidClaim(
     address cxToken,
     uint256 incidentDate
   ) external view {
-    mustBeClaimable(s, key);
     s.mustBeProtocolMember(cxToken);
-    mustBeValidIncidentDate(s, key, incidentDate);
     mustBeValidCxToken(s, key, cxToken, incidentDate);
+    mustBeClaimable(s, key);
+    mustBeValidIncidentDate(s, key, incidentDate);
     mustBeDuringClaimPeriod(s, key);
   }
 ```
@@ -574,10 +575,10 @@ function mustNotHaveUnstaken(
 ```
 </details>
 
-### validUnstakeWithClaim
+### validateUnstakeAfterClaimPeriod
 
 ```solidity
-function validUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate) external view
+function validateUnstakeAfterClaimPeriod(IStore s, bytes32 key, uint256 incidentDate) external view
 ```
 
 **Arguments**
@@ -592,7 +593,36 @@ function validUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate) exte
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validUnstakeWithClaim(
+function validateUnstakeAfterClaimPeriod(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view {
+    mustNotBePaused(s);
+    mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+  }
+```
+</details>
+
+### validateUnstakeWithClaim
+
+```solidity
+function validateUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function validateUnstakeWithClaim(
     IStore s,
     bytes32 key,
     uint256 incidentDate
@@ -672,6 +702,9 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -689,11 +722,13 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -716,6 +751,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -745,6 +781,11 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

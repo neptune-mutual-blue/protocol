@@ -30,8 +30,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    */
   function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
+    // @suppress-pausable Already checked inside `validateUnstakeAfterClaimPeriod`
+    s.validateUnstakeAfterClaimPeriod(key, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoFor(msg.sender, key, incidentDate);
 
@@ -54,8 +54,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    */
   function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already checked inside `validUnstakeWithClaim`
-    s.validUnstakeWithClaim(key, incidentDate);
+    // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
+    s.validateUnstakeWithClaim(key, incidentDate);
 
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();

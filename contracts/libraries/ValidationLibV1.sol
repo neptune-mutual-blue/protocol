@@ -164,10 +164,10 @@ library ValidationLibV1 {
     address cxToken,
     uint256 incidentDate
   ) external view {
-    mustBeClaimable(s, key);
     s.mustBeProtocolMember(cxToken);
-    mustBeValidIncidentDate(s, key, incidentDate);
     mustBeValidCxToken(s, key, cxToken, incidentDate);
+    mustBeClaimable(s, key);
+    mustBeValidIncidentDate(s, key, incidentDate);
     mustBeDuringClaimPeriod(s, key);
   }
 
@@ -183,7 +183,16 @@ library ValidationLibV1 {
     require(withdrawal == 0, "Already unstaken");
   }
 
-  function validUnstakeWithClaim(
+  function validateUnstakeAfterClaimPeriod(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view {
+    mustNotBePaused(s);
+    mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+  }
+
+  function validateUnstakeWithClaim(
     IStore s,
     bytes32 key,
     uint256 incidentDate

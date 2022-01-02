@@ -95,6 +95,25 @@ library StoreKeyUtil {
     return s.subtractUint(keccak256(abi.encodePacked(key1, key2, account)), value);
   }
 
+  function setStringByKey(
+    IStore s,
+    bytes32 key,
+    string memory value
+  ) external {
+    require(key > 0, "Invalid key");
+    s.setString(key, value);
+  }
+
+  function setStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    string memory value
+  ) external {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.setString(keccak256(abi.encodePacked(key1, key2)), value);
+  }
+
   function setBytes32ByKey(
     IStore s,
     bytes32 key,
@@ -293,6 +312,20 @@ library StoreKeyUtil {
   ) external view returns (uint256) {
     require(key1 > 0 && key2 > 0, "Invalid key(s)");
     return s.getUint(keccak256(abi.encodePacked(key1, key2, account)));
+  }
+
+  function getStringByKey(IStore s, bytes32 key) external view returns (string memory) {
+    require(key > 0, "Invalid key");
+    return s.getString(key);
+  }
+
+  function getStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (string memory) {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.getString(keccak256(abi.encodePacked(key1, key2)));
   }
 
   function getBytes32ByKey(IStore s, bytes32 key) external view returns (bytes32) {
