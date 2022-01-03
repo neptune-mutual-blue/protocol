@@ -1,8 +1,7 @@
 const { deployer } = require('../../util')
 
 const deploy = async (cache) => {
-  const store = await deployer.deploy(cache, 'Store')
-  return store
+  return deployer.deploy(cache, 'Store')
 }
 
 module.exports = { deploy }

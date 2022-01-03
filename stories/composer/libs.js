@@ -2,7 +2,7 @@ const { deployer } = require('../../util')
 
 /**
  * Deploys all libraries
- * @return {Libraries}
+ * @return {Promise<Libraries>}
  */
 const deployAll = async (cache) => {
   const dateLib = await deployer.deploy(cache, 'BokkyPooBahsDateTimeLibrary')

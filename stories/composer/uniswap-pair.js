@@ -3,7 +3,7 @@ const { deployer } = require('../../util')
 const deploySeveral = async (cache, pairInfo) => {
   const contracts = []
 
-  for (let i = 0; i < pairInfo.length; i++) {
+  for (const i in pairInfo) {
     const { token0, token1 } = pairInfo[i]
 
     const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0, token1)
@@ -15,7 +15,7 @@ const deploySeveral = async (cache, pairInfo) => {
 
 const at = async (address) => {
   const fakePair = await ethers.getContractFactory('FakeUniswapPair')
-  return await fakePair.attach(address)
+  return fakePair.attach(address)
 }
 
 module.exports = { deploySeveral, at }

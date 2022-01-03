@@ -3,7 +3,6 @@ const DEPLOYMENT_ID = 4
 
 const deploy = async () => {
   global.log = true
-
   await composer.initializer.initialize(false, DEPLOYMENT_ID)
 }
 

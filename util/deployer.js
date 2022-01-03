@@ -26,7 +26,7 @@ const prepare = async (cache, contractName, libraries, ...args) => {
 
   if (address) {
     global.log && console.info('[skip] No need to deploy %s: %s', contractName, address)
-    return await contract.attach(address)
+    return contract.attach(address)
   }
 
   const instance = await contract.deploy(...args)

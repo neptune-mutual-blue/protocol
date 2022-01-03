@@ -20,8 +20,7 @@ const getVault = async (contracts, coverKey) => {
     }
   })
 
-  const vault = await Vault.attach(vaultAddress)
-  return vault
+  return Vault.attach(vaultAddress)
 }
 
 module.exports = { getVault }

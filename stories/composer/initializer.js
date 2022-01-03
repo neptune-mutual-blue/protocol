@@ -8,7 +8,7 @@ const DAYS = 86400
 
 /**
  * Initializes all contracts
- * @return {Contracts}
+ * @return {Promise<Contracts>}
  */
 const initialize = async (suite, deploymentId) => {
   const [owner] = await ethers.getSigners()

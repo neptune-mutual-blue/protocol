@@ -11,7 +11,7 @@ const atAddress = async (at, libraries) => {
     }
   })
 
-  return await cxToken.attach(at)
+  return cxToken.attach(at)
 }
 
 module.exports = { atAddress }

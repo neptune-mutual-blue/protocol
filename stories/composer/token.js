@@ -4,7 +4,7 @@ const { deployer, helper } = require('../../util')
 const deploySeveral = async (cache, tokens) => {
   const contracts = []
 
-  for (let i = 0; i < tokens.length; i++) {
+  for (const i in tokens) {
     const { name, symbol, supply } = tokens[i]
 
     const contract = await deployer.deploy(cache, 'FakeToken', name, symbol, supply || helper.ether(100_000_000_000_000_000_000_000))
@@ -34,7 +34,7 @@ const deploySeveral = async (cache, tokens) => {
 
 const at = async (address) => {
   const token = await ethers.getContractFactory('FakeToken')
-  return await token.attach(address)
+  return token.attach(address)
 }
 
 module.exports = { deploySeveral, at }
