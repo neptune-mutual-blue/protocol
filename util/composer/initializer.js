@@ -30,7 +30,7 @@ const initialize = async (suite, deploymentId) => {
     { token0: bal.address, token1: wxDai.address }
   ])
 
-  // Todo: the protocol only supports stablecoin as reassurance token for now
+  // The protocol only supports stablecoin as reassurance token for now
   const reassuranceToken = wxDai
 
   const libs = await libsComposer.deployAll(cache)
