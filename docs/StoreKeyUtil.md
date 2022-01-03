@@ -15,6 +15,8 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [subtractUintByKey(IStore s, bytes32 key, uint256 value)](#subtractuintbykey)
 - [subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value)](#subtractuintbykeys)
 - [subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value)](#subtractuintbykeys)
+- [setStringByKey(IStore s, bytes32 key, string value)](#setstringbykey)
+- [setStringByKeys(IStore s, bytes32 key1, bytes32 key2, string value)](#setstringbykeys)
 - [setBytes32ByKey(IStore s, bytes32 key, bytes32 value)](#setbytes32bykey)
 - [setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value)](#setbytes32bykeys)
 - [setBoolByKey(IStore s, bytes32 key, bool value)](#setboolbykey)
@@ -38,6 +40,8 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [getUintByKey(IStore s, bytes32 key)](#getuintbykey)
 - [getUintByKeys(IStore s, bytes32 key1, bytes32 key2)](#getuintbykeys)
 - [getUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account)](#getuintbykeys)
+- [getStringByKey(IStore s, bytes32 key)](#getstringbykey)
+- [getStringByKeys(IStore s, bytes32 key1, bytes32 key2)](#getstringbykeys)
 - [getBytes32ByKey(IStore s, bytes32 key)](#getbytes32bykey)
 - [getBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2)](#getbytes32bykeys)
 - [getBoolByKey(IStore s, bytes32 key)](#getboolbykey)
@@ -325,6 +329,66 @@ function subtractUintByKeys(
   ) external {
     require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
     return s.subtractUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+  }
+```
+</details>
+
+### setStringByKey
+
+```solidity
+function setStringByKey(IStore s, bytes32 key, string value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| value | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setStringByKey(
+    IStore s,
+    bytes32 key,
+    string memory value
+  ) external {
+    require(key > 0, "Invalid key");
+    s.setString(key, value);
+  }
+```
+</details>
+
+### setStringByKeys
+
+```solidity
+function setStringByKeys(IStore s, bytes32 key1, bytes32 key2, string value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| value | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    string memory value
+  ) external {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.setString(keccak256(abi.encodePacked(key1, key2)), value);
   }
 ```
 </details>
@@ -1000,6 +1064,61 @@ function getUintByKeys(
 ```
 </details>
 
+### getStringByKey
+
+```solidity
+function getStringByKey(IStore s, bytes32 key) external view
+returns(string)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStringByKey(IStore s, bytes32 key) external view returns (string memory) {
+    require(key > 0, "Invalid key");
+    return s.getString(key);
+  }
+```
+</details>
+
+### getStringByKeys
+
+```solidity
+function getStringByKeys(IStore s, bytes32 key1, bytes32 key2) external view
+returns(string)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (string memory) {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return s.getString(keccak256(abi.encodePacked(key1, key2)));
+  }
+```
+</details>
+
 ### getBytes32ByKey
 
 ```solidity
@@ -1330,6 +1449,9 @@ function getAddressBooleanByKeys(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -1347,11 +1469,13 @@ function getAddressBooleanByKeys(
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -1374,6 +1498,7 @@ function getAddressBooleanByKeys(
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -1403,6 +1528,11 @@ function getAddressBooleanByKeys(
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

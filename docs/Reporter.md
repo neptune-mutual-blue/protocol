@@ -21,6 +21,7 @@ This contract enables any NPM tokenholder to
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
 - [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
+- [getFirstReportingStake()](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
@@ -146,6 +147,28 @@ function setFirstReportingStake(uint256 value) external override nonReentrant {
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
 
     emit FirstReportingStakeSet(previous, value);
+  }
+```
+</details>
+
+### getFirstReportingStake
+
+```solidity
+function getFirstReportingStake() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getFirstReportingStake() external view override returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
   }
 ```
 </details>
@@ -283,6 +306,9 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -300,11 +326,13 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -327,6 +355,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -356,6 +385,11 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

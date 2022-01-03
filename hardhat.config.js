@@ -8,7 +8,7 @@ require('dotenv').config()
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
+const config = {
   defaultNetwork: 'hardhat',
   networks: {
     ropsten: {
@@ -18,14 +18,14 @@ module.exports = {
       gasPrice: 30000000000,
       gas: 'auto'
     },
-    bsctestnet: {
+    bscTestnet: {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
       chainId: 97,
       accounts: [process.env.PRIVATE_KEY],
       gasPrice: 30000000000,
       gas: 'auto'
     },
-    mumbai: {
+    polygonMumbai: {
       url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
@@ -45,11 +45,6 @@ module.exports = {
       runs: 200
     }
   },
-  contractSizer: {
-    alphaSort: false,
-    runOnCompile: true,
-    disambiguatePaths: false
-  },
   paths: {
     sources: './contracts',
     tests: './test',
@@ -63,7 +58,22 @@ module.exports = {
     currency: 'ETH',
     gasPrice: 21
   },
+  contractSizer: {
+    alphaSort: false,
+    runOnCompile: true,
+    disambiguatePaths: false
+  },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    apiKey: process.env.BSCSCAN_API_KEY,
+    apiKeyAll: {
+      mainnet: process.env.ETHERSCAN_API_KEY,
+      ropsten: process.env.ETHERSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+      mumbai: process.env.POLYGONSCAN_API_KEY,
+      bsc: process.env.BSCSCAN_API_KEY,
+      bscTestnet: process.env.BSCSCAN_API_KEY
+    }
   }
 }
+
+module.exports = config

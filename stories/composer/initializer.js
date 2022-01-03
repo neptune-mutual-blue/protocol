@@ -1,6 +1,7 @@
 const fakesComposer = require('./fakes')
 const storeComposer = require('./store')
-const tokenComposer = require('./token')
+const fakeTokenComposer = require('./token')
+const fakeUniswapPairComposer = require('./uniswap-pair')
 const libsComposer = require('./libs')
 const { deployer, key, sample, helper, intermediate, fileCache } = require('../../util')
 const DAYS = 86400
@@ -16,9 +17,17 @@ const initialize = async (suite, deploymentId) => {
   const store = await storeComposer.deploy(cache)
   const fakes = await fakesComposer.deployAll(cache)
 
-  const [npm, wxDai] = await tokenComposer.deploySeveral(cache, [
+  const [npm, wxDai, comp, bal] = await fakeTokenComposer.deploySeveral(cache, [
     { name: 'Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Wrapped Dai', symbol: 'WXDAI' }
+    { name: 'Wrapped Dai', symbol: 'WXDAI' },
+    { name: 'Compound', symbol: 'COMP' },
+    { name: 'Balancer', symbol: 'BAL' }
+  ])
+
+  const [npmUsdPair, compUsdPair, balUsdPair] = await fakeUniswapPairComposer.deploySeveral(cache, [
+    { token0: npm.address, token1: wxDai.address },
+    { token0: comp.address, token1: wxDai.address },
+    { token0: bal.address, token1: wxDai.address }
   ])
 
   // Todo: the protocol only supports stablecoin as reassurance token for now
@@ -59,6 +68,36 @@ const initialize = async (suite, deploymentId) => {
       helper.ether(0.005) // Claim: Reporter Commission: 5%
     ]
   )
+
+  const bondPoolContract = await deployer.deployWithLibraries(cache, 'BondPool', {
+    BondPoolLibV1: libs.bondPoolLibV1.address,
+    BaseLibV1: libs.baseLibV1.address
+  }, store.address)
+
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.CNS.BOND_POOL), bondPoolContract.address)
+
+  await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000_000))
+  let addresses = [npmUsdPair.address, sample.fake.TREASURY]
+  let values = [helper.ether(0.0075625), helper.ether(10_000), 7 * DAYS, helper.ether(2_000_000)]
+
+  await intermediate(cache, bondPoolContract, 'setup', addresses, values)
+
+  const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
+    StakingPoolLibV1: libs.stakingPoolLibV1.address,
+    AccessControlLibV1: libs.accessControlLibV1.address,
+    NTransferUtilV2: libs.transferLib.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
+    ValidationLibV1: libs.validationLib.address,
+    BaseLibV1: libs.baseLibV1.address
+  }, store.address)
+
+  await intermediate(cache, protocol, 'addContract', key.toBytes32(key.CNS.STAKING_POOL), stakingPoolContract.address)
+
+  await intermediate(cache, comp, 'approve', stakingPoolContract.address, helper.ether(10_000))
+  addresses = [npm.address, npmUsdPair.address, comp.address, compUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.ether(0.025), 342, 1 * DAYS, helper.ether(10_000)]
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Compound'), 'Compound Staking Pool', 1, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     BaseLibV1: libs.baseLibV1.address,
@@ -220,6 +259,11 @@ const initialize = async (suite, deploymentId) => {
     store,
     npm,
     wxDai,
+    comp,
+    bal,
+    npmUsdPair,
+    compUsdPair,
+    balUsdPair,
     reassuranceToken,
     protocol,
     stakingContract,
@@ -234,6 +278,8 @@ const initialize = async (suite, deploymentId) => {
     governance,
     resolution,
     claimsProcessor,
+    bondPoolContract,
+    stakingPoolContract,
     libs
   }
 }

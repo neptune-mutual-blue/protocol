@@ -16,6 +16,7 @@ bytes32 public constant CNS_REASSURANCE_VAULT;
 bytes32 public constant CNS_PRICE_DISCOVERY;
 bytes32 public constant CNS_TREASURY;
 bytes32 public constant CNS_COVER_REASSURANCE;
+bytes32 public constant CNS_POOL_BOND;
 bytes32 public constant CNS_COVER_POLICY;
 bytes32 public constant CNS_COVER_POLICY_MANAGER;
 bytes32 public constant CNS_COVER_POLICY_ADMIN;
@@ -24,6 +25,8 @@ bytes32 public constant CNS_COVER_VAULT;
 bytes32 public constant CNS_COVER_STABLECOIN;
 bytes32 public constant CNS_COVER_CXTOKEN_FACTORY;
 bytes32 public constant CNS_COVER_VAULT_FACTORY;
+bytes32 public constant CNS_BOND_POOL;
+bytes32 public constant CNS_STAKING_POOL;
 bytes32 public constant CNS_GOVERNANCE;
 bytes32 public constant CNS_GOVERNANCE_RESOLUTION;
 bytes32 public constant CNS_CLAIM_PROCESSOR;
@@ -78,6 +81,9 @@ bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
 bytes32 public constant CNAME_POLICY_ADMIN;
 bytes32 public constant CNAME_POLICY_MANAGER;
+bytes32 public constant CNAME_BOND_POOL;
+bytes32 public constant CNAME_STAKING_POOL;
+bytes32 public constant CNAME_POD_STAKING_POOL;
 bytes32 public constant CNAME_CLAIMS_PROCESSOR;
 bytes32 public constant CNAME_PRICE_DISCOVERY;
 bytes32 public constant CNAME_COVER;
@@ -754,6 +760,9 @@ function _removeMember(IStore s, address member) private {
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -771,11 +780,13 @@ function _removeMember(IStore s, address member) private {
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -798,6 +809,7 @@ function _removeMember(IStore s, address member) private {
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -827,6 +839,11 @@ function _removeMember(IStore s, address member) private {
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

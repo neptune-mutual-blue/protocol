@@ -40,8 +40,10 @@
     "solidity"
   ],
   "cSpell.words": [
+    "alloc",
     "Bahs",
     "Bokky",
+    "BSCSCAN",
     "CNAME",
     "CXTOKEN",
     "IERC",

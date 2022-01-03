@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} Libraries
  * @property {Object} store - Store contract
- * @property {Object} storeKeyUtil - Store uitility library
+ * @property {Object} storeKeyUtil - Store utility library
  * @property {Object} accessControlLibV1 - Access control library
  * @property {Object} baseLibV1 - Access control library
  * @property {Object} protoUtilV1 - Protocol utility library
@@ -14,13 +14,20 @@
  * @property {Object} vaultLib - Vault library
  * @property {Object} cxTokenFactoryLib - cxToken factory library
  * @property {Object} dateLib - Date helper library
+ * @property {Object} bondPoolLibV1 - Bond pool library
+ * @property {Object} stakingPoolLibV1 - Staking pool library
  */
 
 /**
  * @typedef {Object} Contracts
  * @property {Object} store - Store contract
  * @property {Object} npm - NPM Token contract
- * @property {Object} wxDai - wxDai contract
+ * @property {Object} wxDai - wxDai token contract
+ * @property {Object} comp - comp token contract
+ * @property {Object} bal - balancer token contract
+ * @property {Object} npmUsdPair NPM/DAI Uniswap Pair,
+ * @property {Object} compUsdPair COMP/DAI Uniswap Pair
+ * @property {Object} balUsdPair BAL/DAI Uniswap Pair
  * @property {Object} reassuranceToken - Reassurance token
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract
@@ -35,5 +42,7 @@
  * @property {Object} governance - Governance contract
  * @property {Object} resolution - Resolution contract
  * @property {Object} claimsProcessor - Claims processor contract
+ * @property {Object} bondPoolContract - Bond pool contract
+ * @property {Object} stakingPoolContract - Staking pool contract
  * @property {Libraries} libs - All libraries
  */

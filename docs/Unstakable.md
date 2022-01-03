@@ -38,8 +38,8 @@ function unstake(bytes32 key, uint256 incidentDate) external nonpayable nonReent
 ```javascript
 function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustNotHaveUnstaken(msg.sender, key, incidentDate);
+    // @suppress-pausable Already checked inside `validateUnstakeAfterClaimPeriod`
+    s.validateUnstakeAfterClaimPeriod(key, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoFor(msg.sender, key, incidentDate);
 
@@ -77,8 +77,8 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
 ```javascript
 function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already checked inside `validUnstakeWithClaim`
-    s.validUnstakeWithClaim(key, incidentDate);
+    // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
+    s.validateUnstakeWithClaim(key, incidentDate);
 
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
@@ -153,6 +153,9 @@ function getUnstakeInfoFor(
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -170,11 +173,13 @@ function getUnstakeInfoFor(
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -197,6 +202,7 @@ function getUnstakeInfoFor(
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -226,6 +232,11 @@ function getUnstakeInfoFor(
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

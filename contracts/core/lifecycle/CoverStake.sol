@@ -48,6 +48,7 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
+    // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBeCoverContract();
@@ -78,6 +79,8 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
+    // Note: @todo this function is not called anywhere
+    // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
     s.callerMustBeCoverContract();

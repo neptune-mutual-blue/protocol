@@ -40,7 +40,7 @@ const fetchValue = async (cache, key) => {
   return ''
 }
 
-const cacheValue = async (cache, key, value) => {
+const cacheValue = async (cache, key, value, deploymentInfo) => {
   if (!cache) {
     return
   }
@@ -53,7 +53,12 @@ const cacheValue = async (cache, key, value) => {
     parsed[id] = {}
   }
 
+  if (!parsed[id].deployments) {
+    parsed[id].deployments = {}
+  }
+
   parsed[id][key] = value
+  parsed[id].deployments[key] = deploymentInfo
 
   await fs.writeFile(file, JSON.stringify(parsed, null, 2))
 }

@@ -1,5 +1,5 @@
 const composer = require('../stories/composer')
-const DEPLOYMENT_ID = 3
+const DEPLOYMENT_ID = 4
 
 const deploy = async () => {
   global.log = true

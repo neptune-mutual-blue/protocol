@@ -23,6 +23,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
   bytes32 public constant CNS_TREASURY = "cns:core:treasury";
   bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
+  bytes32 public constant CNS_POOL_BOND = "cns:pool:bond";
   bytes32 public constant CNS_COVER_POLICY = "cns:cover:policy";
   bytes32 public constant CNS_COVER_POLICY_MANAGER = "cns:cover:policy:manager";
   bytes32 public constant CNS_COVER_POLICY_ADMIN = "cns:cover:policy:admin";
@@ -31,6 +32,8 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER_STABLECOIN = "cns:cover:stablecoin";
   bytes32 public constant CNS_COVER_CXTOKEN_FACTORY = "cns:cover:cxtoken:factory";
   bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
+  bytes32 public constant CNS_BOND_POOL = "cns:pools:bond";
+  bytes32 public constant CNS_STAKING_POOL = "cns:pools:staking";
 
   /// @dev Governance contract address
   bytes32 public constant CNS_GOVERNANCE = "cns:gov";
@@ -157,6 +160,9 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_POLICY = "Policy";
   bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
   bytes32 public constant CNAME_POLICY_MANAGER = "PolicyManager";
+  bytes32 public constant CNAME_BOND_POOL = "BondPool";
+  bytes32 public constant CNAME_STAKING_POOL = "StakingPool";
+  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStakingPool";
   bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
   bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";

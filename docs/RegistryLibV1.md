@@ -13,6 +13,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getCxTokenFactory(IStore s)](#getcxtokenfactory)
 - [getPolicyContract(IStore s)](#getpolicycontract)
 - [getReassuranceContract(IStore s)](#getreassurancecontract)
+- [getBondPoolContract(IStore s)](#getbondpoolcontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
 
@@ -177,6 +178,29 @@ function getReassuranceContract(IStore s) external view returns (ICoverReassuran
 ```
 </details>
 
+### getBondPoolContract
+
+```solidity
+function getBondPoolContract(IStore s) external view
+returns(contract IBondPool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBondPoolContract(IStore s) external view returns (IBondPool) {
+    return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
+  }
+```
+</details>
+
 ### getVault
 
 ```solidity
@@ -233,6 +257,9 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [Address](Address.md)
 * [BaseLibV1](BaseLibV1.md)
 * [BokkyPooBahsDateTimeLibrary](BokkyPooBahsDateTimeLibrary.md)
+* [BondPool](BondPool.md)
+* [BondPoolBase](BondPoolBase.md)
+* [BondPoolLibV1](BondPoolLibV1.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -250,11 +277,13 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
+* [FakeUniswapPair](FakeUniswapPair.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAccessControl](IAccessControl.md)
+* [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
 * [ICover](ICover.md)
@@ -277,6 +306,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
+* [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -306,6 +336,11 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [SafeMath](SafeMath.md)
+* [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolInfo](StakingPoolInfo.md)
+* [StakingPoolLibV1](StakingPoolLibV1.md)
+* [StakingPoolReward](StakingPoolReward.md)
+* [StakingPools](StakingPools.md)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)

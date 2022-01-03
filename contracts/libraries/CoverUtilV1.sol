@@ -74,7 +74,6 @@ library CoverUtilV1 {
    * @param _values[6] Reassurance pool weight
    */
   function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
-    require(getCoverStatus(s, key) == CoverStatus.Normal, "Invalid cover");
     IPriceDiscovery discovery = s.getPriceDiscoveryContract();
 
     _values = new uint256[](7);

@@ -13,5 +13,6 @@ module.exports = async (cache, contract, action, ...args) => {
   global.log && console.log('[tx] %s(%s) to %s', action, JSON.stringify(args), contract.address)
 
   const tx = await contract[action](...args)
+  await tx.wait()
   await io.cacheValue(cache, key, tx.hash)
 }

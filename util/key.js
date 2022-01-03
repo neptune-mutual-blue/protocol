@@ -11,6 +11,7 @@ const CNS = {
   BURNER: 'cns:core:burner',
   COVER: 'cns:cover',
   COVER_REASSURANCE: 'cns:cover:reassurance',
+  POOL_BOND: 'cns:pool:bond',
   COVER_POLICY: 'cns:cover:policy',
   COVER_STAKE: 'cns:cover:stake',
   COVER_POLICY_ADMIN: 'cns:cover:policy:admin',
@@ -24,7 +25,9 @@ const CNS = {
   PRICE_DISCOVERY: 'cns:core:price:discovery',
   NPM: 'cns:core:npm:instance',
   REASSURANCE_VAULT: 'cns:core:reassurance:vault',
-  TREASURY: 'cns:core:treasury'
+  TREASURY: 'cns:core:treasury',
+  BOND_POOL: 'cns:pools:bond',
+  STAKING_POOL: 'cns:pools:staking'
 }
 
 const NS = {
