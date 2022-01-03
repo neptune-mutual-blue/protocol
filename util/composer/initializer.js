@@ -3,7 +3,7 @@ const storeComposer = require('./store')
 const fakeTokenComposer = require('./token')
 const fakeUniswapPairComposer = require('./uniswap-pair')
 const libsComposer = require('./libs')
-const { deployer, key, sample, helper, intermediate, fileCache } = require('../../util')
+const { deployer, key, sample, helper, intermediate, fileCache } = require('..')
 const DAYS = 86400
 
 /**

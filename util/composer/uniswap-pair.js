@@ -1,4 +1,4 @@
-const { deployer } = require('../../util')
+const { deployer } = require('..')
 
 const deploySeveral = async (cache, pairInfo) => {
   const contracts = []

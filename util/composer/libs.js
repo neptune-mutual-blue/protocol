@@ -1,4 +1,4 @@
-const { deployer } = require('../../util')
+const { deployer } = require('..')
 
 /**
  * Deploys all libraries

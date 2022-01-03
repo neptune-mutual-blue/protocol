@@ -53,7 +53,7 @@ const validate = async (name, code, selector) => {
     console.log('\x1b[36m' + '* Path:', name + '\x1b[0m')
 
     console.log(`\x1b[31m* ${warnings.length} warning(s) found \x1b[0m`)
-    warnings.map(x => console.log(x))
+    warnings.forEach(x => console.log(x))
 
     console.log('*/')
 

@@ -1,4 +1,4 @@
-const { deployer } = require('../../util')
+const { deployer } = require('..')
 
 const deploy = async (cache) => {
   return deployer.deploy(cache, 'Store')

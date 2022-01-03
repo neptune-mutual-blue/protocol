@@ -1,4 +1,4 @@
-const composer = require('../stories/composer')
+const composer = require('../util/composer')
 const DEPLOYMENT_ID = 4
 
 const deploy = async () => {

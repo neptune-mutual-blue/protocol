@@ -2,7 +2,7 @@
 
 const BigNumber = require('bignumber.js')
 const { ethers, network } = require('hardhat')
-const composer = require('./composer')
+const composer = require('../util/composer')
 const { helper, cxToken, key, ipfs, sample } = require('../util')
 
 require('chai')

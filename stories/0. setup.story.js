@@ -2,7 +2,7 @@
 
 const BigNumber = require('bignumber.js')
 const { helper, key, storeUtil, ipfs, sample } = require('../util')
-const composer = require('./composer')
+const composer = require('../util/composer')
 
 require('chai')
   .use(require('chai-as-promised'))

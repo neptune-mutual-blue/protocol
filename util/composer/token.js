@@ -1,5 +1,5 @@
 const { network } = require('hardhat')
-const { deployer, helper } = require('../../util')
+const { deployer, helper } = require('..')
 
 const deploySeveral = async (cache, tokens) => {
   const contracts = []
