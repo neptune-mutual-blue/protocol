@@ -32,6 +32,8 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[6] governanceReporterCommission
    * @param values[7] claimPlatformFee
    * @param values[8] claimReporterCommission
+   * @param values[9] flashLoanFee
+   * @param values[10] flashLoanFeeProtocol
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
     // @suppress-reentrancy Can only be initialized once and only by a protocol member
@@ -65,6 +67,8 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[9]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[10]);
 
     emit Initialized(addresses, values);
   }
@@ -78,33 +82,36 @@ contract Protocol is IProtocol, ProtoBase {
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    // @suppress-address-trust-issue Checked
-    s.upgradeContract(namespace, previous, current);
+    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
+    s.upgradeContractInternal(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
 
   function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
+    // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addContract(namespace, contractAddress);
+    s.addContractInternal(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);
   }
 
   function removeMember(address member) external override nonReentrant {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ProtoUtilV1.mustBeProtocolMember(s, member);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.removeMember(member);
+    s.removeMemberInternal(member);
     emit MemberRemoved(member);
   }
 
   function addMember(address member) external override nonReentrant {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addMember(member);
+    s.addMemberInternal(member);
     emit MemberAdded(member);
   }
 

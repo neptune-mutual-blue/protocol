@@ -21,7 +21,7 @@ abstract contract Recoverable is ReentrancyGuard {
   function recoverEther(address sendTo) external nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverEther(s, sendTo);
+    BaseLibV1.recoverEtherInternal(s, sendTo);
   }
 
   /**
@@ -33,6 +33,7 @@ abstract contract Recoverable is ReentrancyGuard {
   function recoverToken(address token, address sendTo) external nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverToken(s, token, sendTo);
+    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    BaseLibV1.recoverTokenInternal(s, token, sendTo);
   }
 }

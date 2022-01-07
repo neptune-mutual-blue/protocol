@@ -58,6 +58,7 @@ const deployAll = async (cache) => {
   })
 
   const vaultFactoryLib = await deployer.deployWithLibraries(cache, 'VaultFactoryLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
     BaseLibV1: baseLibV1.address,
     NTransferUtilV2: transferLib.address,
     ValidationLibV1: validationLib.address,

@@ -55,12 +55,13 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
    */
-  function addLiquidityInternal(
+  function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
     uint256 amount
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
+    // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
     s.mustNotBePaused();
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();
@@ -101,7 +102,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
     s.mustNotBePaused();
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidity(s, coverKey, address(this), lqt, podsToRedeem);
+    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -118,9 +119,10 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 amount,
     bool initialLiquidity
   ) private {
+    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
     require(coverKey == key, "Forbidden");
 
-    uint256 podsToMint = VaultLibV1.addLiquidity(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
+    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
     super._mint(account, podsToMint);
 
     emit PodsIssued(account, podsToMint, amount);

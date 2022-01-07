@@ -1,82 +1,51 @@
-# Neptune Mutual Governance: Finalization Contract (Finalization.sol)
+# IERC3156FlashBorrower.sol
 
-View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
+View Source: [openzeppelin-solidity/contracts/interfaces/IERC3156FlashBorrower.sol](../openzeppelin-solidity/contracts/interfaces/IERC3156FlashBorrower.sol)
 
-**↗ Extends: [Recoverable](Recoverable.md), [IFinalization](IFinalization.md)**
-**↘ Derived Contracts: [Resolvable](Resolvable.md)**
+**IERC3156FlashBorrower**
 
-**Finalization**
-
-This contract allows governance agents "finalize"
- a resolved cover product after the claim period.
- When a cover product is finalized, it resets back to normal
- state where tokenholders can again supply liquidity
- and purchase policies.
+Interface of the ERC3156 FlashBorrower, as defined in
+ https://eips.ethereum.org/EIPS/eip-3156[ERC-3156].
+ _Available since v4.1._
 
 ## Functions
 
-- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
-- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
+- [onFlashLoan(address initiator, address token, uint256 amount, uint256 fee, bytes data)](#onflashloan)
 
-### finalize
+### onFlashLoan
+
+Receive a flash loan.
 
 ```solidity
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function onFlashLoan(address initiator, address token, uint256 amount, uint256 fee, bytes data) external nonpayable
+returns(bytes32)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| initiator | address | The initiator of the loan. | 
+| token | address | The loan currency. | 
+| amount | uint256 | The amount of tokens lent. | 
+| fee | uint256 | The additional amount of tokens to repay. | 
+| data | bytes | Arbitrary data structure, intended to contain user-defined parameters. | 
+
+**Returns**
+
+The keccak256 hash of "ERC3156FlashBorrower.onFlashLoan"
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
-
-    s.mustBeClaimingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterClaimExpiry(key);
-
-    _finalize(key, incidentDate);
-  }
-```
-</details>
-
-### _finalize
-
-```solidity
-function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _finalize(bytes32 key, uint256 incidentDate) internal {
-    // Reset to normal
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
-
-    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-
-    emit Finalized(key, msg.sender, incidentDate);
-  }
+function onFlashLoan(
+        address initiator,
+        address token,
+        uint256 amount,
+        uint256 fee,
+        bytes calldata data
+    ) external returns (bytes32);
 ```
 </details>
 

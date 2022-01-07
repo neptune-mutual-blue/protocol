@@ -70,8 +70,10 @@ function claim(
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-pausable Already implemented in the function `validate`
     // @suppress-acl Marking this as publicly accessible
+    // @suppress-pausable Already implemented in the function `validate`
+    // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
+    // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
     validate(cxToken, key, incidentDate);
 
@@ -81,9 +83,9 @@ function claim(
     IVault vault = s.getVault(key);
     address finalReporter = s.getReporter(key, incidentDate);
 
-    uint256 platformFee = (amount * s.getClaimPlatformFee()) / 1 ether;
+    uint256 platformFee = (amount * s.getClaimPlatformFee()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     // slither-disable-next-line divide-before-multiply
-    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / 1 ether;
+    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     uint256 claimed = amount - platformFee;
 
     vault.transferGovernance(key, msg.sender, claimed);
@@ -280,6 +282,8 @@ function getName() external pure override returns (bytes32) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -320,7 +324,6 @@ function getName() external pure override returns (bytes32) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -337,4 +340,5 @@ function getName() external pure override returns (bytes32) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

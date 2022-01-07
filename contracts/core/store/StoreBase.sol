@@ -37,6 +37,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external onlyOwner {
+    // @suppress-address-trust-issue Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));

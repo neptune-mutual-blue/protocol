@@ -14,22 +14,23 @@ event GovernanceTransfer(address indexed to, uint256  amount);
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event MinLiquidityPeriodSet(uint256  previous, uint256  current);
+event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
 ```
 
 ## Functions
 
-- [addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)](#addliquidityinternal)
+- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount)](#addliquiditymemberonly)
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 
-### addLiquidityInternal
+### addLiquidityMemberOnly
 
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable
+function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -44,7 +45,7 @@ function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidityInternal(
+function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
     uint256 amount
@@ -191,6 +192,8 @@ function setMinLiquidityPeriod(uint256 value) external;
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -231,7 +234,6 @@ function setMinLiquidityPeriod(uint256 value) external;
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -248,4 +250,5 @@ function setMinLiquidityPeriod(uint256 value) external;
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

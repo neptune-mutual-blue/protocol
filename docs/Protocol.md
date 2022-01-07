@@ -96,6 +96,8 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[9]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[10]);
 
     emit Initialized(addresses, values);
   }
@@ -129,8 +131,8 @@ function upgradeContract(
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    // @suppress-address-trust-issue Checked
-    s.upgradeContract(namespace, previous, current);
+    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
+    s.upgradeContractInternal(namespace, previous, current);
     emit ContractUpgraded(namespace, previous, current);
   }
 ```
@@ -154,10 +156,11 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
+    // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addContract(namespace, contractAddress);
+    s.addContractInternal(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);
   }
 ```
@@ -180,11 +183,12 @@ function removeMember(address member) external nonpayable nonReentrant
 
 ```javascript
 function removeMember(address member) external override nonReentrant {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ProtoUtilV1.mustBeProtocolMember(s, member);
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.removeMember(member);
+    s.removeMemberInternal(member);
     emit MemberRemoved(member);
   }
 ```
@@ -207,10 +211,11 @@ function addMember(address member) external nonpayable nonReentrant
 
 ```javascript
 function addMember(address member) external override nonReentrant {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ValidationLibV1.mustNotBePaused(s);
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addMember(member);
+    s.addMemberInternal(member);
     emit MemberAdded(member);
   }
 ```
@@ -309,6 +314,8 @@ function getName() external pure override returns (bytes32) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -349,7 +356,6 @@ function getName() external pure override returns (bytes32) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -366,4 +372,5 @@ function getName() external pure override returns (bytes32) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

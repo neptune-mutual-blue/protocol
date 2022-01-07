@@ -47,8 +47,10 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-pausable Already implemented in the function `validate`
     // @suppress-acl Marking this as publicly accessible
+    // @suppress-pausable Already implemented in the function `validate`
+    // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
+    // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
     validate(cxToken, key, incidentDate);
 
@@ -58,9 +60,9 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(key);
     address finalReporter = s.getReporter(key, incidentDate);
 
-    uint256 platformFee = (amount * s.getClaimPlatformFee()) / 1 ether;
+    uint256 platformFee = (amount * s.getClaimPlatformFee()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     // slither-disable-next-line divide-before-multiply
-    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / 1 ether;
+    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     uint256 claimed = amount - platformFee;
 
     vault.transferGovernance(key, msg.sender, claimed);

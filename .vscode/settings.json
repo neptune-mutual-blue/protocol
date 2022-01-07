@@ -15,7 +15,7 @@
   "javascript.suggestionActions.enabled": false,
   "[javascript]": {
     "editor.formatOnSave": false,
-    "editor.defaultFormatter": "vscode.json-language-features"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[json]": {
     "editor.quickSuggestions": {

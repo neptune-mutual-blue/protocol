@@ -9,6 +9,8 @@ import "./StoreKeyUtil.sol";
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
+  uint256 public constant PERCENTAGE_DIVISOR = 1 ether;
+
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
 
@@ -77,6 +79,9 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
   bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "ns:cover:liquidity:release";
 
+  bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE = "ns:cover:liquidity:fl:fee";
+  bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL = "ns:proto:cover:liquidity:fl:fee";
+
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
   bytes32 public constant NS_COVER_PROVISION = "ns:cover:provision";
@@ -130,11 +135,11 @@ library ProtoUtilV1 {
   /// @dev Stakes guaranteed by an individual witness supporting the "false reporting" camp
   bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:reporting:stake:owned:no";
 
-  /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake reward to burn.
+  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake reward to burn.
   /// Note that the reward comes from the losing camp after resolution is achieved.
   bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:reporting:burn:rate";
 
-  /// @dev The percentage rate (x 1 ether) of amount of reporting/unstake
+  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake
   /// reward to provide to the final reporter.
   bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION = "ns:gov:reporter:commission";
 
@@ -146,11 +151,11 @@ library ProtoUtilV1 {
   /// @dev Claim expiry date = Claim begin date + claim duration
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "ns:claim:expiry:ts";
 
-  /// @dev The percentage rate (x 1 ether) of amount deducted by the platform
+  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount deducted by the platform
   /// for each successful claims payout
   bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";
 
-  /// @dev The percentage rate (x 1 ether) of amount provided to the first reporter
+  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount provided to the first reporter
   /// upon favorable incident resolution. This amount is a commission of the
   /// 'ns:claim:platform:fee'
   bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
@@ -258,11 +263,12 @@ library ProtoUtilV1 {
     return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 
-  function addContract(
+  function addContractInternal(
     IStore s,
     bytes32 namespace,
     address contractAddress
   ) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addContract(s, namespace, contractAddress);
   }
 
@@ -275,13 +281,14 @@ library ProtoUtilV1 {
     _addMember(s, contractAddress);
   }
 
-  function deleteContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) external {
-    _deleteContract(s, namespace, contractAddress);
-  }
+  // function deleteContractInternal(
+  //   IStore s,
+  //   bytes32 namespace,
+  //   address contractAddress
+  // ) external {
+  //   // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+  //   _deleteContract(s, namespace, contractAddress);
+  // }
 
   function _deleteContract(
     IStore s,
@@ -292,12 +299,13 @@ library ProtoUtilV1 {
     _removeMember(s, contractAddress);
   }
 
-  function upgradeContract(
+  function upgradeContractInternal(
     IStore s,
     bytes32 namespace,
     address previous,
     address current
   ) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     bool isMember = _isProtocolMember(s, previous);
     require(isMember, "Not a protocol member");
 
@@ -305,11 +313,13 @@ library ProtoUtilV1 {
     _addContract(s, namespace, current);
   }
 
-  function addMember(IStore s, address member) external {
+  function addMemberInternal(IStore s, address member) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addMember(s, member);
   }
 
-  function removeMember(IStore s, address member) external {
+  function removeMemberInternal(IStore s, address member) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _removeMember(s, member);
   }
 

@@ -187,7 +187,7 @@ Gets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function getCoverStatus(IStore s, bytes32 key) public view
+function getCoverStatus(IStore s, bytes32 key) external view
 returns(enum CoverUtilV1.CoverStatus)
 ```
 
@@ -202,7 +202,7 @@ returns(enum CoverUtilV1.CoverStatus)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverStatus(IStore s, bytes32 key) public view returns (CoverStatus) {
+function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatus) {
     return CoverStatus(getStatus(s, key));
   }
 ```
@@ -260,9 +260,9 @@ function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint2
     _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
     _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), ProtoUtilV1.PERCENTAGE_DIVISOR);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), ProtoUtilV1.PERCENTAGE_DIVISOR);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
   }
 ```
@@ -518,6 +518,8 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -558,7 +560,6 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -575,4 +576,5 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

@@ -67,7 +67,7 @@ function recoverEther(address sendTo) external nonpayable nonReentrant
 function recoverEther(address sendTo) external nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverEther(s, sendTo);
+    BaseLibV1.recoverEtherInternal(s, sendTo);
   }
 ```
 </details>
@@ -96,7 +96,8 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 function recoverToken(address token, address sendTo) external nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverToken(s, token, sendTo);
+    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    BaseLibV1.recoverTokenInternal(s, token, sendTo);
   }
 ```
 </details>
@@ -146,6 +147,8 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -186,7 +189,6 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -203,4 +205,5 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

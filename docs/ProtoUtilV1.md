@@ -8,6 +8,7 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
+uint256 public constant PERCENTAGE_DIVISOR;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -48,6 +49,8 @@ bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
 bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
+bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
+bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
 bytes32 public constant NS_COVER_PROVISION;
@@ -116,13 +119,12 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [toKeccak256(bytes value)](#tokeccak256)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
 - [_getContract(IStore s, bytes32 name)](#_getcontract)
-- [addContract(IStore s, bytes32 namespace, address contractAddress)](#addcontract)
+- [addContractInternal(IStore s, bytes32 namespace, address contractAddress)](#addcontractinternal)
 - [_addContract(IStore s, bytes32 namespace, address contractAddress)](#_addcontract)
-- [deleteContract(IStore s, bytes32 namespace, address contractAddress)](#deletecontract)
 - [_deleteContract(IStore s, bytes32 namespace, address contractAddress)](#_deletecontract)
-- [upgradeContract(IStore s, bytes32 namespace, address previous, address current)](#upgradecontract)
-- [addMember(IStore s, address member)](#addmember)
-- [removeMember(IStore s, address member)](#removemember)
+- [upgradeContractInternal(IStore s, bytes32 namespace, address previous, address current)](#upgradecontractinternal)
+- [addMemberInternal(IStore s, address member)](#addmemberinternal)
+- [removeMemberInternal(IStore s, address member)](#removememberinternal)
 - [_addMember(IStore s, address member)](#_addmember)
 - [_removeMember(IStore s, address member)](#_removemember)
 
@@ -512,10 +514,10 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 ```
 </details>
 
-### addContract
+### addContractInternal
 
 ```solidity
-function addContract(IStore s, bytes32 namespace, address contractAddress) external nonpayable
+function addContractInternal(IStore s, bytes32 namespace, address contractAddress) external nonpayable
 ```
 
 **Arguments**
@@ -530,11 +532,12 @@ function addContract(IStore s, bytes32 namespace, address contractAddress) exter
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addContract(
+function addContractInternal(
     IStore s,
     bytes32 namespace,
     address contractAddress
   ) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addContract(s, namespace, contractAddress);
   }
 ```
@@ -569,34 +572,6 @@ function _addContract(
 ```
 </details>
 
-### deleteContract
-
-```solidity
-function deleteContract(IStore s, bytes32 namespace, address contractAddress) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function deleteContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) external {
-    _deleteContract(s, namespace, contractAddress);
-  }
-```
-</details>
-
 ### _deleteContract
 
 ```solidity
@@ -626,10 +601,10 @@ function _deleteContract(
 ```
 </details>
 
-### upgradeContract
+### upgradeContractInternal
 
 ```solidity
-function upgradeContract(IStore s, bytes32 namespace, address previous, address current) external nonpayable
+function upgradeContractInternal(IStore s, bytes32 namespace, address previous, address current) external nonpayable
 ```
 
 **Arguments**
@@ -645,12 +620,13 @@ function upgradeContract(IStore s, bytes32 namespace, address previous, address 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function upgradeContract(
+function upgradeContractInternal(
     IStore s,
     bytes32 namespace,
     address previous,
     address current
   ) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     bool isMember = _isProtocolMember(s, previous);
     require(isMember, "Not a protocol member");
 
@@ -660,10 +636,10 @@ function upgradeContract(
 ```
 </details>
 
-### addMember
+### addMemberInternal
 
 ```solidity
-function addMember(IStore s, address member) external nonpayable
+function addMemberInternal(IStore s, address member) external nonpayable
 ```
 
 **Arguments**
@@ -677,16 +653,17 @@ function addMember(IStore s, address member) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addMember(IStore s, address member) external {
+function addMemberInternal(IStore s, address member) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addMember(s, member);
   }
 ```
 </details>
 
-### removeMember
+### removeMemberInternal
 
 ```solidity
-function removeMember(IStore s, address member) external nonpayable
+function removeMemberInternal(IStore s, address member) external nonpayable
 ```
 
 **Arguments**
@@ -700,7 +677,8 @@ function removeMember(IStore s, address member) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function removeMember(IStore s, address member) external {
+function removeMemberInternal(IStore s, address member) external {
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _removeMember(s, member);
   }
 ```
@@ -798,6 +776,8 @@ function _removeMember(IStore s, address member) private {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -838,7 +818,6 @@ function _removeMember(IStore s, address member) private {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -855,4 +834,5 @@ function _removeMember(IStore s, address member) private {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

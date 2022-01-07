@@ -35,6 +35,7 @@ abstract contract CoverBase is ICover, Recoverable {
    *
    */
   function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
+    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 

@@ -46,7 +46,10 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     require(amount > 0, "Provide valid amount");
 
-    IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    // IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
+    IERC20 reassuranceToken = IERC20(s.getStablecoin());
+
     address vault = s.getReassuranceVault();
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);

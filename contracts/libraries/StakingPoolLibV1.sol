@@ -276,7 +276,7 @@ library StakingPoolLibV1 {
     s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
     s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
-    platformFee = (rewards * s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key)) / 1 ether;
+    platformFee = (rewards * s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
 
     IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
     IERC20(rewardToken).ensureTransfer(s.getTreasury(), rewards);
