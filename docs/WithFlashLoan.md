@@ -1,81 +1,135 @@
-# Neptune Mutual Governance: Finalization Contract (Finalization.sol)
+# With Flash Loan Contract (WithFlashLoan.sol)
 
-View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
+View Source: [contracts/core/liquidity/WithFlashLoan.sol](../contracts/core/liquidity/WithFlashLoan.sol)
 
-**↗ Extends: [Recoverable](Recoverable.md), [IFinalization](IFinalization.md)**
-**↘ Derived Contracts: [Resolvable](Resolvable.md)**
+**↗ Extends: [VaultBase](VaultBase.md), [IERC3156FlashLender](IERC3156FlashLender.md)**
+**↘ Derived Contracts: [Vault](Vault.md)**
 
-**Finalization**
+**WithFlashLoan**
 
-This contract allows governance agents "finalize"
- a resolved cover product after the claim period.
- When a cover product is finalized, it resets back to normal
- state where tokenholders can again supply liquidity
- and purchase policies.
+WithFlashLoan contract implements `EIP-3156 Flash Loan`.
+ Using flash loans, you can borrow up to the total available amount of
+ the stablecoin liquidity available in this cover liquidity pool.
+ You need to return back the borrowed amount + fee in the same transaction.
+ The function `flashFee` enables you to check, in advance, fee that
+ you need to pay to take out the loan.
 
 ## Functions
 
-- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
-- [_finalize(bytes32 key, uint256 incidentDate)](#_finalize)
+- [flashFee(address token, uint256 amount)](#flashfee)
+- [maxFlashLoan(address token)](#maxflashloan)
+- [flashLoan(IERC3156FlashBorrower receiver, address token, uint256 amount, bytes data)](#flashloan)
 
-### finalize
+### flashFee
+
+The fee to be charged for a given loan.
 
 ```solidity
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function flashFee(address token, uint256 amount) external view
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| token | address | The loan currency. | 
+| amount | uint256 | The amount of tokens lent. | 
+
+**Returns**
+
+The amount of `token` to be charged for the loan, on top of the returned principal.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
-
-    s.mustBeClaimingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterClaimExpiry(key);
-
-    _finalize(key, incidentDate);
+function flashFee(address token, uint256 amount) external view override returns (uint256) {
+    (uint256 fee, ) = s.getFlashFeeInternal(token, amount);
+    return fee;
   }
 ```
 </details>
 
-### _finalize
+### maxFlashLoan
+
+The amount of currency available to be lent.
 
 ```solidity
-function _finalize(bytes32 key, uint256 incidentDate) internal nonpayable
+function maxFlashLoan(address token) external view
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| token | address | The loan currency. | 
+
+**Returns**
+
+The amount of `token` that can be borrowed.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _finalize(bytes32 key, uint256 incidentDate) internal {
-    // Reset to normal
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+function maxFlashLoan(address token) external view override returns (uint256) {
+    return s.getMaxFlashLoanInternal(token);
+  }
+```
+</details>
 
-    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
+### flashLoan
 
-    emit Finalized(key, msg.sender, incidentDate);
+Initiate a flash loan.
+
+```solidity
+function flashLoan(IERC3156FlashBorrower receiver, address token, uint256 amount, bytes data) external nonpayable nonReentrant 
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| receiver | IERC3156FlashBorrower | The receiver of the tokens in the loan, and the receiver of the callback. | 
+| token | address | The loan currency. | 
+| amount | uint256 | The amount of tokens lent. | 
+| data | bytes | Arbitrary data structure, intended to contain user-defined parameters. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function flashLoan(
+    IERC3156FlashBorrower receiver,
+    address token,
+    uint256 amount,
+    bytes calldata data
+  ) external override nonReentrant returns (bool) {
+    // @suppress-address-trust-issue The instance of `token` can be trusted because we're ensuring it matches with the protocol stablecoin address.
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+    (uint256 fee, uint256 protocolFee) = s.getFlashFeeInternal(token, amount);
+    uint256 previousBalance = stablecoin.balanceOf(address(this));
+
+    s.mustNotBePaused();
+
+    require(address(stablecoin) == token, "Unknown token");
+    require(amount > 0, "Loan too small");
+    require(fee > 0, "Fee too little");
+    require(previousBalance >= amount, "Balance insufficient");
+
+    stablecoin.ensureTransfer(address(receiver), amount);
+    require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
+    stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
+    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
+
+    uint256 finalBalance = stablecoin.balanceOf(address(this));
+    require(finalBalance >= previousBalance + fee, "Access is denied");
+
+    emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
+    return true;
   }
 ```
 </details>

@@ -547,7 +547,7 @@ function withdrawRewardsInternal(
     s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
     s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
-    platformFee = (rewards * s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key)) / 1 ether;
+    platformFee = (rewards * s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
 
     IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
     IERC20(rewardToken).ensureTransfer(s.getTreasury(), rewards);
@@ -600,6 +600,8 @@ function withdrawRewardsInternal(
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -640,7 +642,6 @@ function withdrawRewardsInternal(
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -657,4 +658,5 @@ function withdrawRewardsInternal(
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

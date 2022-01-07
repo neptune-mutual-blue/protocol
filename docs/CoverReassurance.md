@@ -73,7 +73,10 @@ function addReassurance(
 
     require(amount > 0, "Provide valid amount");
 
-    IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    // IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
+    // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
+    IERC20 reassuranceToken = IERC20(s.getStablecoin());
+
     address vault = s.getReassuranceVault();
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);
@@ -231,6 +234,8 @@ function getName() external pure override returns (bytes32) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -271,7 +276,6 @@ function getName() external pure override returns (bytes32) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -288,4 +292,5 @@ function getName() external pure override returns (bytes32) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

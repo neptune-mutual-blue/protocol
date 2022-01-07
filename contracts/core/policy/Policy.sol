@@ -88,7 +88,7 @@ contract Policy is IPolicy, Recoverable {
 
     ICxTokenFactory factory = s.getCxTokenFactory();
     cxToken = factory.deploy(s, key, expiryDate);
-    s.addMember(cxToken);
+    s.addMemberInternal(cxToken);
 
     return ICxToken(cxToken);
   }
@@ -229,13 +229,17 @@ contract Policy is IPolicy, Recoverable {
     require(values[0] - values[1] > amountToCover, "Insufficient fund");
 
     // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (1 ether * values[1]) / values[0];
+    utilizationRatio = (ProtoUtilV1.PERCENTAGE_DIVISOR * values[1]) / values[0];
 
     // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (1 ether * 1 ether));
+    totalAvailableLiquidity =
+      values[0] -
+      values[1] +
+      ((values[2] * values[3]) / ProtoUtilV1.PERCENTAGE_DIVISOR) +
+      ((values[4] * values[5] * values[6]) / (ProtoUtilV1.PERCENTAGE_DIVISOR * ProtoUtilV1.PERCENTAGE_DIVISOR));
 
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((1 ether * coverDuration * amountToCover) / totalAvailableLiquidity);
+    coverRatio = utilizationRatio + ((ProtoUtilV1.PERCENTAGE_DIVISOR * coverDuration * amountToCover) / totalAvailableLiquidity);
 
     rate = _getCoverFeeRate(floor, ceiling, coverRatio);
     fee = (amountToCover * rate * coverDuration) / (12 ether);

@@ -3,7 +3,7 @@
 View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidity/VaultBase.sol)
 
 **↗ Extends: [IVault](IVault.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
-**↘ Derived Contracts: [Vault](Vault.md)**
+**↘ Derived Contracts: [WithFlashLoan](WithFlashLoan.md)**
 
 **VaultBase**
 
@@ -27,7 +27,7 @@ address public lqt;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)](#addliquidityinternal)
+- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount)](#addliquiditymemberonly)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem)](#removeliquidity)
@@ -67,12 +67,12 @@ constructor(
 ```
 </details>
 
-### addLiquidityInternal
+### addLiquidityMemberOnly
 
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
+function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -87,12 +87,13 @@ function addLiquidityInternal(bytes32 coverKey, address account, uint256 amount)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidityInternal(
+function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
     uint256 amount
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
+    // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
     s.mustNotBePaused();
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();
@@ -185,7 +186,7 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpay
 function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
     s.mustNotBePaused();
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidity(s, coverKey, address(this), lqt, podsToRedeem);
+    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -219,9 +220,10 @@ function _addLiquidity(
     uint256 amount,
     bool initialLiquidity
   ) private {
+    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
     require(coverKey == key, "Forbidden");
 
-    uint256 podsToMint = VaultLibV1.addLiquidity(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
+    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
     super._mint(account, podsToMint);
 
     emit PodsIssued(account, podsToMint, amount);
@@ -350,6 +352,8 @@ function getName() external pure override returns (bytes32) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -390,7 +394,6 @@ function getName() external pure override returns (bytes32) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -407,4 +410,5 @@ function getName() external pure override returns (bytes32) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

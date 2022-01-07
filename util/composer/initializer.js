@@ -65,7 +65,9 @@ const initialize = async (suite, deploymentId) => {
       helper.ether(0.3), // Governance Burn Rate: 30%
       helper.ether(0.1), // Governance Reporter Commission: 10%
       helper.ether(0.065), // Claim: Platform Fee: 6.5%
-      helper.ether(0.005) // Claim: Reporter Commission: 5%
+      helper.ether(0.005), // Claim: Reporter Commission: 5%
+      helper.ether(0.0005), // Flash Loan Fee: 0.5%
+      helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
     ]
   )
 

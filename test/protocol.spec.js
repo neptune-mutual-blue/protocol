@@ -105,7 +105,9 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
 
@@ -142,7 +144,9 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
 
@@ -207,7 +211,9 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     ).should.be.revertedWith('Invalid NPM')
   })
@@ -241,7 +247,9 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     ).should.be.revertedWith('Invalid Treasury')
   })
@@ -275,7 +283,9 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     ).should.be.revertedWith('Invalid Vault')
   })
@@ -325,7 +335,9 @@ describe('Adding a New Protocol Contract', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
   })
@@ -389,7 +401,9 @@ describe('Upgrading Protocol Contract(s)', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
   })
@@ -474,7 +488,9 @@ describe('Adding a New Protocol Member', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
   })
@@ -543,7 +559,9 @@ describe('Removing Protocol Member(s)', () => {
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005) // Claim: Reporter Commission: 5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
     )
   })

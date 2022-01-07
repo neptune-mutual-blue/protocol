@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 
-import "./VaultBase.sol";
+import "./WithFlashLoan.sol";
 
 /**
  * @title Cover Vault for Liquidity
@@ -17,7 +17,11 @@ import "./VaultBase.sol";
  * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NPM provision.
  * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `reassurance token` allocation.
  */
-contract Vault is VaultBase {
+contract Vault is WithFlashLoan {
+  using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
+  using VaultLibV1 for IStore;
+
   constructor(
     IStore store,
     bytes32 coverKey,

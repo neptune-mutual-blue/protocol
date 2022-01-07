@@ -68,6 +68,23 @@ const findNonReadableFunctions = (nodes) => nodes.filter(x =>
       ['view', 'pure'].indexOf(x.stateMutability) === -1
 )
 
+const checkIfIgnored = (name) => {
+  const ignored = ['StoreKeyUtil.sol', 'Store.sol', 'Fake', 'Migrations.sol']
+
+  if (!name.startsWith('contracts/')) {
+    return true
+  }
+
+  for (const i in ignored) {
+    const term = ignored[i]
+    if (name.toLowerCase().indexOf(term.toLowerCase()) > -1) {
+      return true
+    }
+  }
+
+  return false
+}
+
 const begin = async () => {
   const artifact = await getArtifact()
   const parsed = await parse(artifact)
@@ -100,7 +117,7 @@ const begin = async () => {
       const [start, length] = selector.src.split(':')
       const code = source.content.substr(start, length)
 
-      if (!name.startsWith('contracts/') || name.startsWith('contracts/fake') || name === 'contracts/Migrations.sol') {
+      if (checkIfIgnored(name)) {
         continue
       }
 

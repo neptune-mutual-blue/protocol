@@ -16,7 +16,7 @@ library BaseLibV1 {
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
    */
-  function recoverEther(IStore s, address sendTo) external {
+  function recoverEtherInternal(IStore s, address sendTo) external {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
 
@@ -30,11 +30,12 @@ library BaseLibV1 {
    * not have any significance in the SDK or the UI.
    * @param token IERC-20 The address of the token contract
    */
-  function recoverToken(
+  function recoverTokenInternal(
     IStore s,
     address token,
     address sendTo
   ) external {
+    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
 

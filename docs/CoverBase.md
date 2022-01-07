@@ -59,6 +59,7 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 
 ```javascript
 function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
+    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -254,6 +255,8 @@ function getName() external pure override returns (bytes32) {
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -294,7 +297,6 @@ function getName() external pure override returns (bytes32) {
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -311,4 +313,5 @@ function getName() external pure override returns (bytes32) {
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

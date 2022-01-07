@@ -119,8 +119,8 @@ library GovernanceUtilV1 {
     // slither-disable-next-line divide-before-multiply
     uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
 
-    toBurn = (reward * getReportingBurnRate(s)) / 1 ether;
-    toReporter = (reward * getGovernanceReporterCommission(s)) / 1 ether;
+    toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     myReward = reward - toBurn - toReporter;
   }
 
@@ -218,6 +218,7 @@ library GovernanceUtilV1 {
     uint256 incidentDate,
     uint256 stake
   ) external {
+    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
     // Add individual stake of the reporter
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
     s.addUintByKey(k, stake);
@@ -255,6 +256,8 @@ library GovernanceUtilV1 {
     uint256 incidentDate,
     uint256 stake
   ) external {
+    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
+
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
     s.addUintByKey(k, stake);
 

@@ -133,6 +133,7 @@ function addCover(
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
+    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
@@ -158,9 +159,10 @@ function addCover(
     if (initialLiquidity > 0) {
       IVault vault = s.getVault(key);
 
-      s.getVault(key).addLiquidityInternal(key, msg.sender, initialLiquidity);
+      s.getVault(key).addLiquidityMemberOnly(key, msg.sender, initialLiquidity);
 
       // Transfer liquidity only after minting the pods
+      // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
       IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), initialLiquidity);
     }
 
@@ -212,8 +214,7 @@ function _addCover(
     // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
 
-    // s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 500000000 gwei); // Default 50% weight
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, 1 ether); // 100% weight because it's a stablecoin
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, ProtoUtilV1.PERCENTAGE_DIVISOR); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
@@ -399,6 +400,8 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IERC165](docs/IERC165.md)
 * [IERC20](docs/IERC20.md)
 * [IERC20Metadata](docs/IERC20Metadata.md)
+* [IERC3156FlashBorrower](docs/IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](docs/IERC3156FlashLender.md)
 * [IFinalization](docs/IFinalization.md)
 * [IGovernance](docs/IGovernance.md)
 * [IMember](docs/IMember.md)
@@ -439,7 +442,6 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Resolution](docs/Resolution.md)
 * [Resolvable](docs/Resolvable.md)
 * [SafeERC20](docs/SafeERC20.md)
-* [SafeMath](docs/SafeMath.md)
 * [StakingPoolBase](docs/StakingPoolBase.md)
 * [StakingPoolInfo](docs/StakingPoolInfo.md)
 * [StakingPoolLibV1](docs/StakingPoolLibV1.md)
@@ -456,6 +458,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [VaultFactory](docs/VaultFactory.md)
 * [VaultFactoryLibV1](docs/VaultFactoryLibV1.md)
 * [VaultLibV1](docs/VaultLibV1.md)
+* [WithFlashLoan](docs/WithFlashLoan.md)
 * [Witness](docs/Witness.md)
 
 [comment]: #solidoc End

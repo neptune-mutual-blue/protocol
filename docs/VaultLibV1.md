@@ -6,18 +6,20 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 
 ## Functions
 
-- [calculatePods(address pod, address stablecoin, uint256 liquidityToAdd)](#calculatepods)
-- [calculateLiquidity(address pod, address stablecoin, uint256 podsToBurn)](#calculateliquidity)
-- [redeemPods(address pod, address stablecoin, address account, uint256 podsToBurn)](#redeempods)
-- [addLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity)](#addliquidity)
-- [removeLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToRedeem)](#removeliquidity)
+- [_calculatePods(address pod, address stablecoin, uint256 liquidityToAdd)](#_calculatepods)
+- [_calculateLiquidity(address pod, address stablecoin, uint256 podsToBurn)](#_calculateliquidity)
+- [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity)](#addliquidityinternal)
+- [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#removeliquidityinternal)
+- [getFlashFeeInternal(IStore s, address token, uint256 amount)](#getflashfeeinternal)
+- [getProtocolFlashLoanFee(IStore s)](#getprotocolflashloanfee)
+- [getMaxFlashLoanInternal(IStore s, address token)](#getmaxflashloaninternal)
 
-### calculatePods
+### _calculatePods
 
 Calculates the amount of PODS to mint for the given amount of liquidity to transfer
 
 ```solidity
-function calculatePods(address pod, address stablecoin, uint256 liquidityToAdd) public view
+function _calculatePods(address pod, address stablecoin, uint256 liquidityToAdd) private view
 returns(uint256)
 ```
 
@@ -33,11 +35,11 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculatePods(
+function _calculatePods(
     address pod,
     address stablecoin,
     uint256 liquidityToAdd
-  ) public view returns (uint256) {
+  ) private view returns (uint256) {
     uint256 balance = IERC20(stablecoin).balanceOf(address(this));
     uint256 podSupply = IERC20(pod).totalSupply();
 
@@ -55,12 +57,12 @@ function calculatePods(
 ```
 </details>
 
-### calculateLiquidity
+### _calculateLiquidity
 
 Calculates the amount of liquidity to transfer for the given amount of PODs to burn
 
 ```solidity
-function calculateLiquidity(address pod, address stablecoin, uint256 podsToBurn) public view
+function _calculateLiquidity(address pod, address stablecoin, uint256 podsToBurn) private view
 returns(uint256)
 ```
 
@@ -76,64 +78,23 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculateLiquidity(
+function _calculateLiquidity(
     address pod,
     address stablecoin,
     uint256 podsToBurn
-  ) public view returns (uint256) {
+  ) private view returns (uint256) {
     uint256 balance = IERC20(stablecoin).balanceOf(address(this));
     return (balance * podsToBurn) / IERC20(pod).totalSupply();
   }
 ```
 </details>
 
-### redeemPods
-
-Internal function to redeem pods by burning. <br /> <br />
- **How Does This Work?**
- Transfer PODs --> This Contract --> Burn the PODs
- This Contract --> Transfers Your Share of Liquidity Tokens
-
-```solidity
-function redeemPods(address pod, address stablecoin, address account, uint256 podsToBurn) external nonpayable
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| pod | address | sToBurn Enter the amount of PODs to burn | 
-| stablecoin | address |  | 
-| account | address | Specify the address to burn the PODs from | 
-| podsToBurn | uint256 | Enter the amount of PODs to burn | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function redeemPods(
-    address pod,
-    address stablecoin,
-    address account,
-    uint256 podsToBurn
-  ) external returns (uint256) {
-    uint256 amount = calculateLiquidity(pod, stablecoin, podsToBurn);
-
-    IERC20(pod).ensureTransferFrom(account, address(this), podsToBurn);
-    IERC20(stablecoin).ensureTransfer(account, amount);
-
-    return amount;
-  }
-```
-</details>
-
-### addLiquidity
+### addLiquidityInternal
 
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity) external nonpayable
+function addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity) external nonpayable
 returns(uint256)
 ```
 
@@ -153,7 +114,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidity(
+function addLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
@@ -162,10 +123,10 @@ function addLiquidity(
     uint256 amount,
     bool initialLiquidity
   ) external returns (uint256) {
+    // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+    // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
-
-    address found = s.getStablecoin();
-    require(stablecoin == found, "Vault migration required");
+    require(stablecoin == s.getStablecoin(), "Vault migration required");
 
     // Update values
     s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount);
@@ -173,7 +134,7 @@ function addLiquidity(
     uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
     s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
 
-    uint256 podsToMint = calculatePods(pod, stablecoin, amount);
+    uint256 podsToMint = _calculatePods(pod, stablecoin, amount);
 
     if (initialLiquidity == false) {
       // First deposit the tokens
@@ -185,12 +146,12 @@ function addLiquidity(
 ```
 </details>
 
-### removeLiquidity
+### removeLiquidityInternal
 
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToRedeem) external nonpayable
+function removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem) external nonpayable
 returns(uint256)
 ```
 
@@ -201,24 +162,26 @@ returns(uint256)
 | s | IStore |  | 
 | coverKey | bytes32 | Enter the cover key | 
 | pod | address | sToRedeem Enter the amount of liquidity token to remove. | 
-| stablecoin | address |  | 
 | podsToRedeem | uint256 | Enter the amount of liquidity token to remove. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function removeLiquidity(
+function removeLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
-    address stablecoin,
     uint256 podsToRedeem
   ) external returns (uint256) {
+    // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
     s.mustBeValidCover(coverKey);
+    s.mustBeProtocolMember(pod);
+
+    address stablecoin = s.getStablecoin();
 
     uint256 available = s.getPolicyContract().getCoverable(coverKey);
-    uint256 releaseAmount = calculateLiquidity(pod, stablecoin, podsToRedeem);
+    uint256 releaseAmount = _calculateLiquidity(pod, stablecoin, podsToRedeem);
 
     /*
      * You need to wait for the policy term to expire before you can withdraw
@@ -235,6 +198,116 @@ function removeLiquidity(
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
 
     return releaseAmount;
+  }
+```
+</details>
+
+### getFlashFeeInternal
+
+The fee to be charged for a given loan.
+
+```solidity
+function getFlashFeeInternal(IStore s, address token, uint256 amount) external view
+returns(fee uint256, protocolFee uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore | Provide an instance of the store | 
+| token | address | The loan currency. | 
+| amount | uint256 | The amount of tokens lent. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getFlashFeeInternal(
+    IStore s,
+    address token,
+    uint256 amount
+  ) external view returns (uint256 fee, uint256 protocolFee) {
+    address stablecoin = s.getStablecoin();
+
+    /*
+    https://eips.ethereum.org/EIPS/eip-3156
+
+    The flashFee function MUST return the fee charged for a loan of amount token.
+    If the token is not supported flashFee MUST revert.
+    */
+    require(stablecoin == token, "Unsupported token");
+
+    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
+    uint256 protocolRate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
+
+    fee = (amount * rate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    protocolFee = (fee * protocolRate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+  }
+```
+</details>
+
+### getProtocolFlashLoanFee
+
+```solidity
+function getProtocolFlashLoanFee(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProtocolFlashLoanFee(IStore s) external view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
+  }
+```
+</details>
+
+### getMaxFlashLoanInternal
+
+The amount of currency available to be lent.
+
+```solidity
+function getMaxFlashLoanInternal(IStore s, address token) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| token | address | The loan currency. | 
+
+**Returns**
+
+The amount of `token` that can be borrowed.
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMaxFlashLoanInternal(IStore s, address token) external view returns (uint256) {
+    address stablecoin = s.getStablecoin();
+
+    if (stablecoin == token) {
+      return IERC20(stablecoin).balanceOf(address(this));
+    }
+
+    /*
+    https://eips.ethereum.org/EIPS/eip-3156
+
+    The maxFlashLoan function MUST return the maximum loan possible for token.
+    If a token is not currently supported maxFlashLoan MUST return 0, instead of reverting.    
+    */
+    return 0;
   }
 ```
 </details>
@@ -284,6 +357,8 @@ function removeLiquidity(
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -324,7 +399,6 @@ function removeLiquidity(
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -341,4 +415,5 @@ function removeLiquidity(
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

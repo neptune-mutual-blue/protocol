@@ -55,7 +55,7 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function getCoverStatus(IStore s, bytes32 key) public view returns (CoverStatus) {
+  function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatus) {
     return CoverStatus(getStatus(s, key));
   }
 
@@ -81,9 +81,9 @@ library CoverUtilV1 {
     _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
     _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), ProtoUtilV1.PERCENTAGE_DIVISOR);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), ProtoUtilV1.PERCENTAGE_DIVISOR);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
   }
 

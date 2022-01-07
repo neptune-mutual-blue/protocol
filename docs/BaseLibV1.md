@@ -6,17 +6,17 @@ View Source: [contracts/libraries/BaseLibV1.sol](../contracts/libraries/BaseLibV
 
 ## Functions
 
-- [recoverEther(IStore s, address sendTo)](#recoverether)
-- [recoverToken(IStore s, address token, address sendTo)](#recovertoken)
+- [recoverEtherInternal(IStore s, address sendTo)](#recoveretherinternal)
+- [recoverTokenInternal(IStore s, address token, address sendTo)](#recovertokeninternal)
 
-### recoverEther
+### recoverEtherInternal
 
 Recover all Ether held by the contract.
  On success, no event is emitted because the recovery feature does
  not have any significance in the SDK or the UI.
 
 ```solidity
-function recoverEther(IStore s, address sendTo) external nonpayable
+function recoverEtherInternal(IStore s, address sendTo) external nonpayable
 ```
 
 **Arguments**
@@ -30,7 +30,7 @@ function recoverEther(IStore s, address sendTo) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverEther(IStore s, address sendTo) external {
+function recoverEtherInternal(IStore s, address sendTo) external {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
 
@@ -40,14 +40,14 @@ function recoverEther(IStore s, address sendTo) external {
 ```
 </details>
 
-### recoverToken
+### recoverTokenInternal
 
 Recover all IERC-20 compatible tokens sent to this address.
  On success, no event is emitted because the recovery feature does
  not have any significance in the SDK or the UI.
 
 ```solidity
-function recoverToken(IStore s, address token, address sendTo) external nonpayable
+function recoverTokenInternal(IStore s, address token, address sendTo) external nonpayable
 ```
 
 **Arguments**
@@ -62,11 +62,12 @@ function recoverToken(IStore s, address token, address sendTo) external nonpayab
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverToken(
+function recoverTokenInternal(
     IStore s,
     address token,
     address sendTo
   ) external {
+    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
 
@@ -123,6 +124,8 @@ function recoverToken(
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
 * [IERC20Metadata](IERC20Metadata.md)
+* [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
+* [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [IMember](IMember.md)
@@ -163,7 +166,6 @@ function recoverToken(
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
-* [SafeMath](SafeMath.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
@@ -180,4 +182,5 @@ function recoverToken(
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)
