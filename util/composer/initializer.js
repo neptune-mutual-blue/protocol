@@ -49,7 +49,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualify(protocol.address), true)
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
-  await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
+  await intermediate(cache, protocol, 'grantRole', key.NS.ROLES.UPGRADE_AGENT, owner.address)
 
   await intermediate(cache, protocol, 'initialize',
     [helper.zero1,
@@ -217,7 +217,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.toBytes32(key.CNS.COVER_POLICY_ADMIN), policyAdminContract.address)
 
-  await intermediate(cache, protocol, 'grantRole', key.toBytes32(key.NS.ROLES.COVER_MANAGER), owner.address)
+  await intermediate(cache, protocol, 'grantRole', key.NS.ROLES.COVER_MANAGER, owner.address)
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.ether(0.07), helper.ether(0.45))
   await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
 

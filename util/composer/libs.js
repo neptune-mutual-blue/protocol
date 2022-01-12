@@ -40,7 +40,8 @@ const deployAll = async (cache) => {
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     CoverUtilV1: coverUtil.address,
-    GovernanceUtilV1: governanceLib.address
+    GovernanceUtilV1: governanceLib.address,
+    RegistryLibV1: registryLib.address
   })
 
   const vaultLib = await deployer.deployWithLibraries(cache, 'VaultLibV1', {

@@ -18,6 +18,7 @@ library ValidationLibV1 {
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
   using GovernanceUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
 
   /*********************************************************************************************
     _______ ______    ________ ______
@@ -64,6 +65,22 @@ library ValidationLibV1 {
   ) external view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
     require(isCoverOwner, "Forbidden");
+  }
+
+  /**
+   * @dev Reverts if the sender is not the cover owner or the cover contract
+   * @param key Enter the cover key to check
+   * @param sender The `msg.sender` value
+   */
+  function mustBeCoverOwnerOrCoverContract(
+    IStore s,
+    bytes32 key,
+    address sender
+  ) external view {
+    bool isCoverOwner = s.getCoverOwner(key) == sender;
+    bool isCoverContract = address(s.getCoverContract()) == sender;
+
+    require(isCoverOwner || isCoverContract, "Forbidden");
   }
 
   function callerMustBePolicyContract(IStore s) external view {
@@ -215,9 +232,12 @@ library ValidationLibV1 {
 
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
     uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
-    require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
-
     uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+
+    require(beginsFrom > 0, "Invalid claim begin date");
+    require(expiresAt > beginsFrom, "Invalid claim period");
+
+    require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
     require(block.timestamp <= expiresAt, "Claim period has expired"); // solhint-disable-line
   }
 

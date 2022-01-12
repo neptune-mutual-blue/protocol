@@ -4,6 +4,7 @@ pragma solidity 0.8.0;
 
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
+import "../interfaces/ICover.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/IBondPool.sol";
 import "../interfaces/ICoverStake.sol";
@@ -48,6 +49,11 @@ library RegistryLibV1 {
 
   function getBondPoolContract(IStore s) external view returns (IBondPool) {
     return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
+  }
+
+  function getCoverContract(IStore s) external view returns (ICover) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER);
+    return ICover(vault);
   }
 
   function getVault(IStore s, bytes32 key) external view returns (IVault) {

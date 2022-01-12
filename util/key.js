@@ -57,20 +57,21 @@ const NS = {
   SETUP_FIRST_REPORTING_STAKE: 'ns:gov:1st:reporting:stake',
   SETUP_MIN_LIQ_PERIOD: 'ns:cover:liquidity:min:period',
   ROLES: {
-    ADMIN: 'role:admin',
-    COVER_MANAGER: 'role:cover:manager',
-    LIQUIDITY_MANAGER: 'role:liquidity:manager',
-    GOVERNANCE_ADMIN: 'role:governance:admin',
-    GOVERNANCE_AGENT: 'role:governance:agent',
-    UPGRADE_AGENT: 'role:upgrade:agent',
-    RECOVERY_AGENT: 'role:recovery:agent',
-    PAUSE_AGENT: 'role:pause:agent',
-    UNPAUSE_AGENT: 'role:unpause:agent'
+    ADMIN: toBytes32('role:admin'),
+    COVER_MANAGER: toBytes32('role:cover:manager'),
+    LIQUIDITY_MANAGER: toBytes32('role:liquidity:manager'),
+    GOVERNANCE_ADMIN: toBytes32('role:governance:admin'),
+    GOVERNANCE_AGENT: toBytes32('role:governance:agent'),
+    UPGRADE_AGENT: toBytes32('role:upgrade:agent'),
+    RECOVERY_AGENT: toBytes32('role:recovery:agent'),
+    PAUSE_AGENT: toBytes32('role:pause:agent'),
+    UNPAUSE_AGENT: toBytes32('role:unpause:agent')
   }
 }
 
 const CNAME = {
   PROTOCOL: 'Protocol',
+  PROCESSOR: 'ClaimsProcessor',
   TREASURY: 'Treasury',
   POLICY: 'Policy',
   PRICE_DISCOVERY: 'PriceDiscovery',
@@ -86,6 +87,7 @@ const CNAME = {
 // Note the protocol automatically prefixes these intermediate keys when adding
 const CNAME_KEYS = {
   PROTOCOL: toBytes32(CNAME.PROTOCOL),
+  PROCESSOR: toBytes32(CNAME.PROCESSOR),
   TREASURY: toBytes32(CNAME.TREASURY),
   POLICY: toBytes32(CNAME.POLICY),
   PRICE_DISCOVERY: toBytes32(CNAME.PRICE_DISCOVERY),
@@ -98,25 +100,11 @@ const CNAME_KEYS = {
   LIQUIDITY_VAULT: toBytes32(CNAME.LIQUIDITY_VAULT)
 }
 
-const CNAME_KEYS_FQN = {
-  PROTOCOL: qualifyBytes32(CNAME.PROTOCOL),
-  TREASURY: qualifyBytes32(CNAME.TREASURY),
-  POLICY: qualifyBytes32(CNAME.POLICY),
-  COVER: qualifyBytes32(CNAME.COVER),
-  VAULT_FACTORY: qualifyBytes32(CNAME.VAULT_FACTORY),
-  CXTOKEN_FACTORY: qualifyBytes32(CNAME.CXTOKEN_FACTORY),
-  COVER_PROVISION: qualifyBytes32(CNAME.COVER_PROVISION),
-  COVER_STAKE: qualifyBytes32(CNAME.COVER_STAKE),
-  COVER_REASSURANCE: qualifyBytes32(CNAME.COVER_REASSURANCE),
-  LIQUIDITY_VAULT: qualifyBytes32(CNAME.LIQUIDITY_VAULT)
-}
-
 module.exports = {
   NS,
   CNS,
   CNAME,
   CNAME_KEYS,
-  CNAME_KEYS_FQN,
   encodeKey,
   encodeKeys,
   toBytes32,

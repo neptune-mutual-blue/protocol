@@ -41,8 +41,10 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-acl Reassurance can only be added by cover owner or latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
+    s.mustBeCoverOwnerOrCoverContract(key, msg.sender);
 
     require(amount > 0, "Provide valid amount");
 
