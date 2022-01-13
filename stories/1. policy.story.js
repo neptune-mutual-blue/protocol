@@ -47,7 +47,7 @@ describe('Policy Purchase Stories', () => {
 
     await contracts.npm.approve(contracts.provisionContract.address, provision)
 
-    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.LIQUIDITY_MANAGER), owner.address)
+    await contracts.protocol.grantRole(key.NS.ROLES.LIQUIDITY_MANAGER, owner.address)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     await contracts.provisionContract.decreaseProvision(coverKey, helper.ether(1))

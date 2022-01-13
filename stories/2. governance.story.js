@@ -94,7 +94,7 @@ describe('Governance Stories', () => {
 
     await contracts.npm.approve(contracts.provisionContract.address, provision)
 
-    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.LIQUIDITY_MANAGER), _o.address)
+    await contracts.protocol.grantRole(key.NS.ROLES.LIQUIDITY_MANAGER, _o.address)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     // Purchase a cover
@@ -346,8 +346,8 @@ describe('Governance Stories', () => {
   it('a governance agent resolves the cover', async () => {
     const [_o, _a] = await ethers.getSigners() // eslint-disable-line
 
-    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.GOVERNANCE_ADMIN), _o.address)
-    await contracts.protocol.grantRole(key.toBytes32(key.NS.ROLES.GOVERNANCE_AGENT), _a.address)
+    await contracts.protocol.grantRole(key.NS.ROLES.GOVERNANCE_ADMIN, _o.address)
+    await contracts.protocol.grantRole(key.NS.ROLES.GOVERNANCE_AGENT, _a.address)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 

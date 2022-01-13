@@ -47,7 +47,8 @@ const deployDependencies = async () => {
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     CoverUtilV1: coverUtilV1.address,
-    GovernanceUtilV1: governanceUtilV1.address
+    GovernanceUtilV1: governanceUtilV1.address,
+    RegistryLibV1: registryLibV1.address
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
@@ -316,7 +317,7 @@ describe('Adding a New Protocol Contract', () => {
       store.address
     )
 
-    await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
+    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
 
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
@@ -385,7 +386,7 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
+    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
@@ -471,8 +472,8 @@ describe('Adding a New Protocol Member', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
-    await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
+    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
@@ -543,7 +544,7 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.toBytes32(key.NS.ROLES.UPGRADE_AGENT), owner.address)
+    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
