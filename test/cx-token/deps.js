@@ -10,14 +10,8 @@ const deployDependencies = async () => {
 
   return {
     dependencies: {
-      BaseLibV1: all.baseLibV1.address,
-      NTransferUtilV2: all.transferLib.address,
-      RegistryLibV1: all.registryLib.address,
-      StoreKeyUtil: all.storeKeyUtil.address,
       ValidationLibV1: all.validationLib.address,
-      AccessControlLibV1: all.accessControlLibV1.address,
-      GovernanceUtilV1: all.governanceLib.address,
-      ProtoUtilV1: all.protoUtilV1.address
+      BaseLibV1: all.baseLibV1.address
     },
     all
   }
