@@ -2,7 +2,7 @@
 
 View Source: [openzeppelin-solidity/contracts/access/IAccessControl.sol](../openzeppelin-solidity/contracts/access/IAccessControl.sol)
 
-**↘ Derived Contracts: [AccessControl](AccessControl.md)**
+**↘ Derived Contracts: [AccessControl](AccessControl.md), [IProtocol](IProtocol.md)**
 
 **IAccessControl**
 
@@ -216,6 +216,7 @@ function renounceRole(bytes32 role, address account) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -224,6 +225,13 @@ function renounceRole(bytes32 role, address account) external;
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

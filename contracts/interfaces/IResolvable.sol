@@ -3,7 +3,7 @@
 pragma solidity 0.8.0;
 
 interface IResolvable {
-  event Resolved(bytes32 key, uint256 incidentDate, bool decision, bool emergency);
+  event Resolved(bytes32 key, uint256 incidentDate, bool decision, bool emergency, uint256 claimBeginsFrom, uint256 claimExpiresAt);
 
   function resolve(bytes32 key, uint256 incidentDate) external;
 

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/access/IAccessControl.sol";
 import "./IMember.sol";
 
-interface IProtocol is IMember {
+interface IProtocol is IMember, IAccessControl {
   event ContractAdded(bytes32 namespace, address contractAddress);
   event ContractUpgraded(bytes32 namespace, address indexed previous, address indexed current);
   event MemberAdded(address member);

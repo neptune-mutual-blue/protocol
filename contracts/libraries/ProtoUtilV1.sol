@@ -21,6 +21,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER = "cns:cover";
 
   bytes32 public constant CNS_UNISWAP_V2_ROUTER = "cns:core:uni:v2:router";
+  bytes32 public constant CNS_UNISWAP_V2_FACTORY = "cns:core:uni:v2:factory";
   bytes32 public constant CNS_REASSURANCE_VAULT = "cns:core:reassurance:vault";
   bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
   bytes32 public constant CNS_TREASURY = "cns:core:treasury";
@@ -110,34 +111,34 @@ library ProtoUtilV1 {
   /// @dev The stakes burned during incident resolution
   bytes32 public constant NS_GOVERNANCE_UNSTAKE_REPORTER_FEE = "ns:gov:unstake:rep:fee";
 
-  bytes32 public constant NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE = "ns:gov:reporting:min:first:stake";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE = "ns:gov:rep:min:first:stake";
 
   /// @dev An approximate date and time when trigger event or cover incident occurred
-  bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE = "ns:gov:reporting:incident:date";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE = "ns:gov:rep:incident:date";
 
   /// @dev A period (in solidity timestamp) configurable by cover creators during
   /// when NPM tokenholders can vote on incident reporting proposals
-  bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD = "ns:gov:reporting:period";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD = "ns:gov:rep:period";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who saw incident to have happened
   /// 2. For address --> The address of the first reporter
-  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES = "ns:gov:reporting:witness:yes";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES = "ns:gov:rep:witness:yes";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting
   /// 2. For address --> The address of the first disputing reporter (disputer / candidate reporter)
-  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO = "ns:gov:reporting:witness:no";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO = "ns:gov:rep:witness:no";
 
   /// @dev Stakes guaranteed by an individual witness supporting the "incident happened" camp
-  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES = "ns:gov:reporting:stake:owned:yes";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES = "ns:gov:rep:stake:owned:yes";
 
   /// @dev Stakes guaranteed by an individual witness supporting the "false reporting" camp
-  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:reporting:stake:owned:no";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:rep:stake:owned:no";
 
   /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake reward to burn.
   /// Note that the reward comes from the losing camp after resolution is achieved.
-  bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:reporting:burn:rate";
+  bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:rep:burn:rate";
 
   /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake
   /// reward to provide to the final reporter.

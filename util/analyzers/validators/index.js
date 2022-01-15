@@ -6,5 +6,6 @@ const notImplemented = require('./not-implemented')
 const pausable = require('./pausable')
 const revert = require('./revert')
 const todo = require('./todo')
+const initialization = require('./initialization')
 
-module.exports = [acl, address, erc20, nonReentrancy, notImplemented, pausable, revert, todo]
+module.exports = [acl, address, erc20, nonReentrancy, notImplemented, pausable, revert, todo, initialization]

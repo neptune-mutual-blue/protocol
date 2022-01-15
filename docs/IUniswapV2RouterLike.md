@@ -9,6 +9,7 @@ View Source: [contracts/interfaces/external/IUniswapV2RouterLike.sol](../contrac
 ## Functions
 
 - [getAmountsOut(uint256 amountIn, address[] path)](#getamountsout)
+- [addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline)](#addliquidity)
 
 ### getAmountsOut
 
@@ -29,6 +30,49 @@ returns(amounts uint256[])
 
 ```javascript
 function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
+```
+</details>
+
+### addLiquidity
+
+```solidity
+function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) external nonpayable
+returns(amountA uint256, amountB uint256, liquidity uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| tokenA | address |  | 
+| tokenB | address |  | 
+| amountADesired | uint256 |  | 
+| amountBDesired | uint256 |  | 
+| amountAMin | uint256 |  | 
+| amountBMin | uint256 |  | 
+| to | address |  | 
+| deadline | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidity(
+    address tokenA,
+    address tokenB,
+    uint256 amountADesired,
+    uint256 amountBDesired,
+    uint256 amountAMin,
+    uint256 amountBMin,
+    address to,
+    uint256 deadline
+  )
+    external
+    returns (
+      uint256 amountA,
+      uint256 amountB,
+      uint256 liquidity
+    );
 ```
 </details>
 
@@ -92,6 +136,7 @@ function getAmountsOut(uint256 amountIn, address[] calldata path) external view 
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -100,6 +145,13 @@ function getAmountsOut(uint256 amountIn, address[] calldata path) external view 
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

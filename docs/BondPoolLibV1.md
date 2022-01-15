@@ -25,7 +25,7 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 
 - [calculateTokensForLpInternal(uint256 lpTokens)](#calculatetokensforlpinternal)
 - [getNpmMarketPrice()](#getnpmmarketprice)
-- [getBondPoolInfoInternal(IStore s)](#getbondpoolinfointernal)
+- [getBondPoolInfoInternal(IStore s, address you)](#getbondpoolinfointernal)
 - [createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired)](#createbondinternal)
 - [claimBondInternal(IStore s)](#claimbondinternal)
 - [setupBondPoolInternal(IStore s, address[] addresses, uint256[] values)](#setupbondpoolinternal)
@@ -79,8 +79,10 @@ function getNpmMarketPrice() public pure returns (uint256) {
 
 ### getBondPoolInfoInternal
 
+Gets the bond pool information
+
 ```solidity
-function getBondPoolInfoInternal(IStore s) external view
+function getBondPoolInfoInternal(IStore s, address you) external view
 returns(addresses address[], values uint256[])
 ```
 
@@ -88,15 +90,16 @@ returns(addresses address[], values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Provide a store instance | 
+| you | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getBondPoolInfoInternal(IStore s) external view returns (address[] memory addresses, uint256[] memory values) {
+function getBondPoolInfoInternal(IStore s, address you) external view returns (address[] memory addresses, uint256[] memory values) {
     addresses = new address[](1);
-    values = new uint256[](7);
+    values = new uint256[](10);
 
     addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
 
@@ -107,6 +110,10 @@ function getBondPoolInfoInternal(IStore s) external view returns (address[] memo
     values[4] = s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED); // totalNpmAllocated
     values[5] = s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED); // totalNpmDistributed
     values[6] = IERC20(s.npmToken()).balanceOf(address(this)); // npmAvailable
+
+    values[7] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you))); // bondContribution --> total lp tokens contributed by you
+    values[8] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you))); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+    values[9] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you))); // unlockDate --> your vesting period end or "unlock date"
   }
 ```
 </details>
@@ -324,6 +331,7 @@ function setupBondPoolInternal(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -332,6 +340,13 @@ function setupBondPoolInternal(
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

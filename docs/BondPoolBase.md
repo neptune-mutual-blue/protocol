@@ -12,7 +12,7 @@ View Source: [contracts/pool/Bond/BondPoolBase.sol](../contracts/pool/Bond/BondP
 - [constructor(IStore s)](#)
 - [getNpmMarketPrice()](#getnpmmarketprice)
 - [calculateTokensForLp(uint256 lpTokens)](#calculatetokensforlp)
-- [getInfo()](#getinfo)
+- [getInfo(address forAccount)](#getinfo)
 - [setup(address[] addresses, uint256[] values)](#setup)
 - [version()](#version)
 - [getName()](#getname)
@@ -84,8 +84,10 @@ function calculateTokensForLp(uint256 lpTokens) external pure override returns (
 
 ### getInfo
 
+Gets the bond pool information
+
 ```solidity
-function getInfo() external view
+function getInfo(address forAccount) external view
 returns(addresses address[], values uint256[])
 ```
 
@@ -93,13 +95,14 @@ returns(addresses address[], values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| forAccount | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo() external view override returns (address[] memory addresses, uint256[] memory values) {
-    return s.getBondPoolInfoInternal();
+function getInfo(address forAccount) external view override returns (address[] memory addresses, uint256[] memory values) {
+    return s.getBondPoolInfoInternal(forAccount);
   }
 ```
 </details>
@@ -239,6 +242,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -247,6 +251,13 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

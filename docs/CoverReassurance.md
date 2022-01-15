@@ -68,8 +68,10 @@ function addReassurance(
     address account,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-acl Reassurance can only be added by cover owner or latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
+    s.mustBeCoverOwnerOrCoverContract(key, msg.sender);
 
     require(amount > 0, "Provide valid amount");
 
@@ -249,6 +251,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -257,6 +260,13 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

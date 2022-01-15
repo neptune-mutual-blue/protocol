@@ -73,19 +73,21 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     initialized = 1;
 
     require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Router");
-    require(addresses[2] != address(0), "Invalid NPM");
-    require(addresses[3] != address(0), "Invalid Treasury");
-    require(addresses[4] != address(0), "Invalid Vault");
+    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    require(addresses[3] != address(0), "Invalid NPM");
+    require(addresses[4] != address(0), "Invalid Treasury");
+    require(addresses[5] != address(0), "Invalid Vault");
 
     s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
     s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
-    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[2]);
-    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[3]);
-    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[4]);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
+    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
+    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[5]);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
@@ -329,6 +331,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -337,6 +340,13 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

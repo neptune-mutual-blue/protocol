@@ -1,6 +1,5 @@
-const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key } = require('../../util')
 const { deployDependencies } = require('./deps')
 const attacher = require('../util/attach')
 const DAYS = 86400
@@ -33,8 +32,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
-    await protocol.setupRole(key.NS.ROLES.ADMIN, key.NS.ROLES.ADMIN, owner.address)
-    await protocol.setupRole(key.NS.ROLES.COVER_MANAGER, key.NS.ROLES.ADMIN, owner.address)
+    await protocol.setupRole(key.ACCESS_CONTROL.ADMIN, key.ACCESS_CONTROL.ADMIN, owner.address)
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
 
     const tx = await processor.setClaimPeriod(newClaimPeriod)
     const { events } = await tx.wait()
@@ -43,8 +42,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     events.length.should.equal(1)
 
     event.event.should.equal('ClaimPeriodSet')
-    event.args.previous.should.equal('0')
-    event.args.current.should.equal(newClaimPeriod)
+    event.args.previous.toNumber().should.equal(0)
+    event.args.current.toNumber().should.equal(newClaimPeriod)
   })
 
   it('must reject if the protocol is paused', async () => {
@@ -58,7 +57,7 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
 
     await protocol.setPaused(true)
 
-    await processor.setClaimPeriod(newClaimPeriod).should.be.revertedWith('Protocol is paused')
+    await processor.setClaimPeriod(newClaimPeriod).should.be.rejectedWith('Protocol is paused')
   })
 
   it('must reject if accessed by anyone else but cover manager', async () => {
@@ -66,6 +65,6 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const coverKey = key.toBytes32('test')
 
     await store.initialize(coverKey, cxToken.address)
-    await processor.setClaimPeriod(newClaimPeriod).should.be.revertedWith('Forbidden')
+    await processor.setClaimPeriod(newClaimPeriod).should.be.rejectedWith('Forbidden')
   })
 })

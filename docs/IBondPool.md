@@ -22,7 +22,7 @@ event BondClaimed(address indexed account, uint256  amount);
 - [claimBond()](#claimbond)
 - [getNpmMarketPrice()](#getnpmmarketprice)
 - [calculateTokensForLp(uint256 lpTokens)](#calculatetokensforlp)
-- [getInfo()](#getinfo)
+- [getInfo(address forAccount)](#getinfo)
 
 ### setup
 
@@ -129,7 +129,7 @@ function calculateTokensForLp(uint256 lpTokens) external view returns (uint256);
 ### getInfo
 
 ```solidity
-function getInfo() external view
+function getInfo(address forAccount) external view
 returns(addresses address[], values uint256[])
 ```
 
@@ -137,12 +137,13 @@ returns(addresses address[], values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| forAccount | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo() external view returns (address[] memory addresses, uint256[] memory values);
+function getInfo(address forAccount) external view returns (address[] memory addresses, uint256[] memory values);
 ```
 </details>
 
@@ -206,6 +207,7 @@ function getInfo() external view returns (address[] memory addresses, uint256[] 
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -214,6 +216,13 @@ function getInfo() external view returns (address[] memory addresses, uint256[] 
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

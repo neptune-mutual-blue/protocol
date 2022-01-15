@@ -51,7 +51,7 @@ abstract contract Reporter is IReporter, Witness {
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Reported(key, msg.sender, incidentDate, info, stake);
+    emit Reported(key, msg.sender, incidentDate, info, stake, resolutionDate);
     emit Attested(key, msg.sender, incidentDate, stake);
   }
 

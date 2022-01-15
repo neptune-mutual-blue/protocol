@@ -18,8 +18,22 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
     return BondPoolLibV1.calculateTokensForLpInternal(lpTokens);
   }
 
-  function getInfo() external view override returns (address[] memory addresses, uint256[] memory values) {
-    return s.getBondPoolInfoInternal();
+  /**
+   * @dev Gets the bond pool information
+   * @param addresses[0] lpToken -> Returns the LP token address
+   * @param values[0] marketPrice -> Returns the market price of NPM token
+   * @param values[1] discountRate -> Returns the discount rate for bonding
+   * @param values[2] vestingTerm -> Returns the bond vesting period
+   * @param values[3] maxBond -> Returns maximum amount of bond. To clarify, this means the final NPM amount received by bonders after vesting period.
+   * @param values[4] totalNpmAllocated -> Returns the total amount of NPM tokens allocated for bonding.
+   * @param values[5] totalNpmDistributed -> Returns the total amount of NPM tokens that have been distributed under bond.
+   * @param values[6] npmAvailable -> Returns the available NPM tokens that can be still bonded.
+   * @param values[7] bondContribution --> total lp tokens contributed by you
+   * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+   * @param values[9] unlockDate --> your vesting period end or "unlock date"
+   */
+  function getInfo(address forAccount) external view override returns (address[] memory addresses, uint256[] memory values) {
+    return s.getBondPoolInfoInternal(forAccount);
   }
 
   /**

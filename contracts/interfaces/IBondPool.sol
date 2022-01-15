@@ -18,5 +18,5 @@ interface IBondPool is IMember {
 
   function calculateTokensForLp(uint256 lpTokens) external view returns (uint256);
 
-  function getInfo() external view returns (address[] memory addresses, uint256[] memory values);
+  function getInfo(address forAccount) external view returns (address[] memory addresses, uint256[] memory values);
 }

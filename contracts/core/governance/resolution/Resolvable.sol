@@ -62,6 +62,6 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.setStatus(key, status);
 
-    emit Resolved(key, incidentDate, decision, emergency);
+    emit Resolved(key, incidentDate, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }
 }

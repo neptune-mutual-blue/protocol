@@ -3,7 +3,7 @@
 pragma solidity 0.8.0;
 
 interface IReporter {
-  event Reported(bytes32 indexed key, address indexed reporter, uint256 incidentDate, bytes32 info, uint256 initialStake);
+  event Reported(bytes32 indexed key, address indexed reporter, uint256 incidentDate, bytes32 info, uint256 initialStake, uint256 resolutionTimestamp);
   event Disputed(bytes32 indexed key, address indexed reporter, uint256 incidentDate, bytes32 info, uint256 initialStake);
 
   event ReportingBurnRateSet(uint256 previous, uint256 current);

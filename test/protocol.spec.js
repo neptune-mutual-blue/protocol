@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-expressions */
-
 const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../util')
 const DAYS = 86400
@@ -95,6 +94,7 @@ describe('Constructor & Initializer', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
@@ -134,6 +134,7 @@ describe('Constructor & Initializer', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
@@ -151,22 +152,22 @@ describe('Constructor & Initializer', () => {
       ]
     )
 
-    const sProtocolAddress = await store.getAddress(key.toBytes32(key.CNS.CORE))
+    const sProtocolAddress = await store.getAddress(key.PROTOCOL.CNS.CORE)
     sProtocolAddress.should.equal(protocol.address)
 
     const isProtocolAddress = await store.getBool(key.qualify(protocol.address))
     isProtocolAddress.should.be.true
 
-    const sNEPAddress = await store.getAddress(key.toBytes32(key.CNS.NPM))
-    sNEPAddress.should.equal(npm.address)
+    const npmAddress = await store.getAddress(key.PROTOCOL.CNS.NPM)
+    npmAddress.should.equal(npm.address)
 
-    const sBurner = await store.getAddress(key.toBytes32(key.CNS.BURNER))
+    const sBurner = await store.getAddress(key.PROTOCOL.CNS.BURNER)
     sBurner.should.equal(helper.zero1)
 
-    const sTreasury = await store.getAddress(key.toBytes32(key.CNS.TREASURY))
+    const sTreasury = await store.getAddress(key.PROTOCOL.CNS.TREASURY)
     sTreasury.should.equal(treasury)
 
-    const sReassuranceVault = await store.getAddress(key.toBytes32(key.CNS.REASSURANCE_VAULT))
+    const sReassuranceVault = await store.getAddress(key.PROTOCOL.CNS.REASSURANCE_VAULT)
     sReassuranceVault.should.equal(reassuranceVault)
   })
 
@@ -180,7 +181,7 @@ describe('Constructor & Initializer', () => {
         BaseLibV1: baseLibV1.address
       },
       helper.zerox
-    ).should.be.revertedWith('Invalid Store')
+    ).should.be.rejectedWith('Invalid Store')
   })
 
   it('should fail when zero address is provided as NPM', async () => {
@@ -201,6 +202,7 @@ describe('Constructor & Initializer', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         helper.zerox,
         treasury,
         reassuranceVault],
@@ -216,7 +218,7 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
-    ).should.be.revertedWith('Invalid NPM')
+    ).should.be.rejectedWith('Invalid NPM')
   })
 
   it('should fail when zero address is provided as treasury', async () => {
@@ -237,6 +239,7 @@ describe('Constructor & Initializer', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         helper.zerox,
         reassuranceVault],
@@ -252,7 +255,7 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
-    ).should.be.revertedWith('Invalid Treasury')
+    ).should.be.rejectedWith('Invalid Treasury')
   })
 
   it('should fail when zero address is provided as reassurance vault', async () => {
@@ -273,6 +276,7 @@ describe('Constructor & Initializer', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         helper.zerox],
@@ -288,7 +292,7 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
       ]
-    ).should.be.revertedWith('Invalid Vault')
+    ).should.be.rejectedWith('Invalid Vault')
   })
 })
 
@@ -317,7 +321,7 @@ describe('Adding a New Protocol Contract', () => {
       store.address
     )
 
-    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
 
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
@@ -325,6 +329,7 @@ describe('Adding a New Protocol Contract', () => {
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
@@ -345,16 +350,16 @@ describe('Adding a New Protocol Contract', () => {
 
   it('should correctly add a new contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
   })
 
   it('should correctly set storage values', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
 
-    const sContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
+    const storedAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
 
-    sContractAddress.should.equal(fakeCover)
+    storedAddress.should.equal(fakeCover)
   })
 })
 
@@ -386,11 +391,12 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
@@ -411,35 +417,35 @@ describe('Upgrading Protocol Contract(s)', () => {
 
   it('should correctly upgrade a contract', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), fakeCover, fakeCover2)
+    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, fakeCover, fakeCover2)
   })
 
   it('should fail when the previous address is incorrect', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.CNS.COVER), fakeCover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
 
     const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), helper.randomAddress(), fakeCover2)
-      .should.be.revertedWith('Not a protocol member')
+    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, helper.randomAddress(), fakeCover2)
+      .should.be.rejectedWith('Not a protocol member')
   })
 
   it('should correctly set storage values', async () => {
     const cover = helper.randomAddress()
-    await protocol.addContract(key.toBytes32(key.CNS.COVER), cover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, cover)
 
-    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
+    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
 
     storedContractAddress.should.equal(cover)
 
     // ------- UPGRADE CONTRACT -------
 
     const cover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.toBytes32(key.CNS.COVER), cover, cover2)
+    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, cover, cover2)
 
-    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.CNS.COVER))
+    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
     storedContractAddress.should.equal(cover2)
   })
 })
@@ -472,12 +478,13 @@ describe('Adding a New Protocol Member', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
@@ -504,7 +511,7 @@ describe('Adding a New Protocol Member', () => {
   it('should reject adding the same member twice', async () => {
     const fakeMember = helper.randomAddress()
     await protocol.addMember(fakeMember)
-    await protocol.addMember(fakeMember).should.be.revertedWith('Already exists')
+    await protocol.addMember(fakeMember).should.be.rejectedWith('Already exists')
   })
 
   it('should correctly set storage values', async () => {
@@ -544,11 +551,12 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.NS.ROLES.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
 
     await protocol.initialize(
       [helper.zero1,
         router.address,
+        helper.randomAddress(), // factory
         npm.address,
         treasury,
         reassuranceVault],
