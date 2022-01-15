@@ -44,7 +44,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
     s.mustBeAdmin();
 
     s.addOrEditPoolInternal(key, name, addresses, values);
-    emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[2]);
+    emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[4], values[2]);
   }
 
   function validateAddOrEditPool(

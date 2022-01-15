@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
 
-**↗ Extends: [IMember](IMember.md)**
+**↗ Extends: [IMember](IMember.md), [IAccessControl](IAccessControl.md)**
 **↘ Derived Contracts: [Protocol](Protocol.md)**
 
 **IProtocol**
@@ -193,6 +193,7 @@ function removeMember(address member) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -201,6 +202,13 @@ function removeMember(address member) external;
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

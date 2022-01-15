@@ -15,7 +15,7 @@ library StakingPoolLibV1 {
   bytes32 public constant NS_POOL = "ns:pool:staking";
   bytes32 public constant NS_POOL_NAME = "ns:pool:staking:name";
   bytes32 public constant NS_POOL_LOCKED = "ns:pool:staking:locked";
-  bytes32 public constant NS_POOL_LOCKEDUP_PERIOD = "ns:pool:staking:lockup:period";
+  bytes32 public constant NS_POOL_LOCKUP_PERIOD = "ns:pool:staking:lockup:period";
   bytes32 public constant NS_POOL_STAKING_TARGET = "ns:pool:staking:target";
   bytes32 public constant NS_POOL_CUMULATIVE_STAKING_AMOUNT = "ns:pool:staking:cum:amount";
   bytes32 public constant NS_POOL_STAKING_TOKEN = "ns:pool:staking:token";
@@ -105,7 +105,7 @@ library StakingPoolLibV1 {
     address account
   ) external view returns (uint256) {
     uint256 lastDepositHeight = s.getUintByKeys(NS_POOL_DEPOSIT_HEIGHTS, key, account);
-    uint256 lockupPeriod = s.getUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key);
+    uint256 lockupPeriod = s.getUintByKeys(NS_POOL_LOCKUP_PERIOD, key);
 
     return lastDepositHeight + lockupPeriod;
   }
@@ -214,8 +214,7 @@ library StakingPoolLibV1 {
     }
 
     if (values[4] > 0) {
-      s.addUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key, values[4]);
-      s.addUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key, values[4]);
+      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD, key, values[4]);
     }
 
     if (values[5] > 0) {

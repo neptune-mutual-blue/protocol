@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-expressions */
-
 const BigNumber = require('bignumber.js')
 const { helper, key, storeUtil, ipfs, sample } = require('../util')
 const composer = require('../util/composer')
@@ -29,7 +28,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.protocol.address.should.not.be.empty
     contracts.protocol.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.toBytes32(key.CNS.CORE))
+    const fetchedAddress = await contracts.store.getAddress(key.PROTOCOL.CNS.CORE)
     fetchedAddress.should.equal(contracts.protocol.address)
   })
 
@@ -37,7 +36,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.stakingContract.address.should.not.be.empty
     contracts.stakingContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_STAKE))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER_STAKE))
     fetchedAddress.should.equal(contracts.stakingContract.address)
   })
 
@@ -45,7 +44,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.reassuranceContract.address.should.not.be.empty
     contracts.reassuranceContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_REASSURANCE))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER_REASSURANCE))
     fetchedAddress.should.equal(contracts.reassuranceContract.address)
   })
 
@@ -53,7 +52,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.provisionContract.address.should.not.be.empty
     contracts.provisionContract.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.NS.COVER_PROVISION))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.NS.COVER_PROVISION))
     fetchedAddress.should.equal(contracts.provisionContract.address)
   })
 
@@ -61,7 +60,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.cover.address.should.not.be.empty
     contracts.cover.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
     fetchedAddress.should.equal(contracts.cover.address)
   })
 
@@ -69,7 +68,7 @@ describe('Protocol Initialization Stories', () => {
     contracts.vaultFactory.address.should.not.be.empty
     contracts.vaultFactory.address.should.not.equal(helper.zerox)
 
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.CNS.COVER_VAULT_FACTORY))
+    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER_VAULT_FACTORY))
     fetchedAddress.should.equal(contracts.vaultFactory.address)
   })
 
@@ -104,7 +103,7 @@ describe('Protocol Initialization Stories', () => {
     const balance = await contracts.wxDai.balanceOf(vault.address)
 
     const expected = helper.add(previous.wxDaiBalance, helper.ether(4000000))
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.wxDaiBalance = expected
   })
@@ -115,7 +114,7 @@ describe('Protocol Initialization Stories', () => {
     const balance = await contracts.reassuranceToken.balanceOf(vault)
 
     const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000))
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.reassuranceTokenBalance = expected
   })
@@ -130,7 +129,7 @@ describe('Protocol Initialization Stories', () => {
     const expected = helper.add(previous.wxDaiBalance, liquidity)
 
     const balance = await contracts.wxDai.balanceOf(vault.address)
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.wxDaiBalance = expected
   })
@@ -140,7 +139,7 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.should.equal(previous.wxDaiBalance.toString())
+    pods.toString().should.equal(previous.wxDaiBalance.toString())
   })
 
   it('reassurance token allocation was increased', async () => {
@@ -155,7 +154,7 @@ describe('Protocol Initialization Stories', () => {
 
     const balance = await contracts.reassuranceToken.balanceOf(vault)
 
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.reassuranceTokenBalance = expected
   })
@@ -171,7 +170,7 @@ describe('Protocol Initialization Stories', () => {
     const expected = helper.add(previous.wxDaiBalance, liquidity)
 
     const balance = await contracts.wxDai.balanceOf(vault.address)
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.wxDaiBalance = expected
   })
@@ -186,7 +185,7 @@ describe('Protocol Initialization Stories', () => {
     const expected = helper.add(previous.wxDaiBalance, liquidity)
 
     const balance = await contracts.wxDai.balanceOf(vault.address)
-    balance.should.equal(expected)
+    balance.toString().should.equal(expected.toString())
 
     previous.wxDaiBalance = expected
   })

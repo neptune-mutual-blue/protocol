@@ -28,7 +28,7 @@ describe('Claims Processor: Constructor & Initializer', () => {
   })
 
   it('must ensure correct contract namespace', async () => {
-    (await processor.getName()).should.equal(key.CNAME_KEYS)
+    (await processor.getName()).should.equal(key.PROTOCOL.CNAME.CLAIMS_PROCESSOR)
   })
 })
 
@@ -51,7 +51,7 @@ describe('Claims Processor: `getClaimExpiryDate` function', () => {
 
     const date = await processor.getClaimExpiryDate(coverKey)
 
-    date.should.be.gt(startedOn.add(100, 'd').unix())
-    date.should.be.lt(startedOn.add(101, 'd').unix())
+    date.toNumber().should.be.greaterThan(startedOn.add(100, 'd').unix())
+    date.toNumber().should.be.lessThan(startedOn.add(101, 'd').unix())
   })
 })

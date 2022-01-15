@@ -13,6 +13,7 @@ bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
 bytes32 public constant CNS_UNISWAP_V2_ROUTER;
+bytes32 public constant CNS_UNISWAP_V2_FACTORY;
 bytes32 public constant CNS_REASSURANCE_VAULT;
 bytes32 public constant CNS_PRICE_DISCOVERY;
 bytes32 public constant CNS_TREASURY;
@@ -791,6 +792,7 @@ function _removeMember(IStore s, address member) private {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -799,6 +801,13 @@ function _removeMember(IStore s, address member) private {
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

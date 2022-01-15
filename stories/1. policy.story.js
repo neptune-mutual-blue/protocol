@@ -47,34 +47,34 @@ describe('Policy Purchase Stories', () => {
 
     await contracts.npm.approve(contracts.provisionContract.address, provision)
 
-    await contracts.protocol.grantRole(key.NS.ROLES.LIQUIDITY_MANAGER, owner.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, owner.address)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     await contracts.provisionContract.decreaseProvision(coverKey, helper.ether(1))
 
     const existing = await contracts.provisionContract.getProvision(coverKey)
-    existing.should.equal(helper.ether(1_000_000))
+    existing.toString().should.equal(helper.ether(1_000_000))
   })
 
   it('cover pool summary values are accurate', async () => {
     const result = await contracts.policy.getCoverPoolSummary(coverKey)
-    const [totalAmountInPool, totalCommitment, provision, nepPrice, reassurance, reassurancePrice, reassuranceWeight] = result
+    const [totalAmountInPool, totalCommitment, provision, npmPrice, reassurance, reassurancePrice, reassuranceWeight] = result
 
-    totalAmountInPool.should.equal(helper.ether(4_000_000))
-    totalCommitment.should.equal(helper.ether(0))
-    provision.should.equal(helper.ether(1_000_000))
-    nepPrice.should.equal(helper.ether(1))
-    reassurance.should.equal(helper.ether(1_000_000))
-    reassurancePrice.should.equal(helper.ether(1))
-    reassuranceWeight.should.equal(helper.ether(1))
+    totalAmountInPool.toString().should.equal(helper.ether(4_000_000))
+    totalCommitment.toString().should.equal(helper.ether(0))
+    provision.toString().should.equal(helper.ether(1_000_000))
+    npmPrice.toString().should.equal(helper.ether(1))
+    reassurance.toString().should.equal(helper.ether(1_000_000))
+    reassurancePrice.toString().should.equal(helper.ether(1))
+    reassuranceWeight.toString().should.equal(helper.ether(1))
   })
 
   it('fee should be ~$58.33 xDai when purchasing 10K xDai cover for 1 month', async () => {
     const result = await contracts.policy.getCoverFee(coverKey, 1, helper.ether(10_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
-    utilizationRatio.should.equal(helper.ether(0))
-    totalAvailableLiquidity.should.equal(helper.ether(6_000_000))
+    utilizationRatio.toString().should.equal(helper.ether(0))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
 
     helper.weiToEther(coverRatio).toFixed(4).should.equal('0.0017') // 0.17%
     helper.weiToEther(floor).toFixed(4).should.equal('0.0700') // 7%
@@ -88,8 +88,8 @@ describe('Policy Purchase Stories', () => {
     const result = await contracts.policy.getCoverFee(coverKey, 3, helper.ether(250_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
-    utilizationRatio.should.equal(helper.ether(0))
-    totalAvailableLiquidity.should.equal(helper.ether(6_000_000))
+    utilizationRatio.toString().should.equal(helper.ether(0))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
 
     helper.weiToEther(coverRatio).toFixed(4).should.equal('0.1250') // 12.50%
     helper.weiToEther(rate).toFixed(4).should.equal('0.1224') // 12.24%
@@ -101,8 +101,8 @@ describe('Policy Purchase Stories', () => {
     const result = await contracts.policy.getCoverFee(coverKey, 1, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
-    utilizationRatio.should.equal(helper.ether(0))
-    totalAvailableLiquidity.should.equal(helper.ether(6_000_000))
+    utilizationRatio.toString().should.equal(helper.ether(0))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
 
     helper.weiToEther(coverRatio).toFixed(4).should.equal('0.0833') // 8.33%
     helper.weiToEther(rate).toFixed(4).should.equal('0.1052') // 10.52%
@@ -114,8 +114,8 @@ describe('Policy Purchase Stories', () => {
     const result = await contracts.policy.getCoverFee(coverKey, 2, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
-    utilizationRatio.should.equal(helper.ether(0))
-    totalAvailableLiquidity.should.equal(helper.ether(6_000_000))
+    utilizationRatio.toString().should.equal(helper.ether(0))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
 
     helper.weiToEther(coverRatio).toFixed(4).should.equal('0.1667') // 16.67%
     helper.weiToEther(rate).toFixed(4).should.equal('0.1333') // 13.63%
@@ -138,6 +138,6 @@ describe('Policy Purchase Stories', () => {
     const [owner] = await ethers.getSigners()
     const cBal = await cxToken.balanceOf(owner.address)
 
-    cBal.should.equal(args[2].toString())
+    cBal.toString().should.equal(args[2].toString())
   })
 })

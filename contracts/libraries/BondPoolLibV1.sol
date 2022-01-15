@@ -37,9 +37,24 @@ library BondPoolLibV1 {
     return 2 ether;
   }
 
-  function getBondPoolInfoInternal(IStore s) external view returns (address[] memory addresses, uint256[] memory values) {
+  /**
+   * @dev Gets the bond pool information
+   * @param s Provide a store instance
+   * @param addresses[0] lpToken -> Returns the LP token address
+   * @param values[0] marketPrice -> Returns the market price of NPM token
+   * @param values[1] discountRate -> Returns the discount rate for bonding
+   * @param values[2] vestingTerm -> Returns the bond vesting period
+   * @param values[3] maxBond -> Returns maximum amount of bond. To clarify, this means the final NPM amount received by bonders after vesting period.
+   * @param values[4] totalNpmAllocated -> Returns the total amount of NPM tokens allocated for bonding.
+   * @param values[5] totalNpmDistributed -> Returns the total amount of NPM tokens that have been distributed under bond.
+   * @param values[6] npmAvailable -> Returns the available NPM tokens that can be still bonded.
+   * @param values[7] bondContribution --> total lp tokens contributed by you
+   * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+   * @param values[9] unlockDate --> your vesting period end or "unlock date"
+   */
+  function getBondPoolInfoInternal(IStore s, address you) external view returns (address[] memory addresses, uint256[] memory values) {
     addresses = new address[](1);
-    values = new uint256[](7);
+    values = new uint256[](10);
 
     addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
 
@@ -50,6 +65,10 @@ library BondPoolLibV1 {
     values[4] = s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED); // totalNpmAllocated
     values[5] = s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED); // totalNpmDistributed
     values[6] = IERC20(s.npmToken()).balanceOf(address(this)); // npmAvailable
+
+    values[7] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you))); // bondContribution --> total lp tokens contributed by you
+    values[8] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you))); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+    values[9] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you))); // unlockDate --> your vesting period end or "unlock date"
   }
 
   function createBondInternal(

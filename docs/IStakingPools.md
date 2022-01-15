@@ -20,7 +20,7 @@ enum StakingPoolType {
 **Events**
 
 ```js
-event PoolUpdated(bytes32 indexed key, string  name, enum IStakingPools.StakingPoolType  poolType, address indexed stakingToken, address  uniStakingTokenDollarPair, address indexed rewardToken, address  uniRewardTokenDollarPair, uint256  rewardTokenDeposit, uint256  maxStake, uint256  rewardPerBlock, uint256  platformFee);
+event PoolUpdated(bytes32 indexed key, string  name, enum IStakingPools.StakingPoolType  poolType, address indexed stakingToken, address  uniStakingTokenDollarPair, address indexed rewardToken, address  uniRewardTokenDollarPair, uint256  rewardTokenDeposit, uint256  maxStake, uint256  rewardPerBlock, uint256  lockupPeriod, uint256  platformFee);
 event PoolClosed(bytes32 indexed key, string  name);
 event Deposited(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
 event Withdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
@@ -375,6 +375,7 @@ function canWithdrawFrom(bytes32 key, address account) external view returns (ui
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -383,6 +384,13 @@ function canWithdrawFrom(bytes32 key, address account) external view returns (ui
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

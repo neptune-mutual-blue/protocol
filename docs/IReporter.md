@@ -9,7 +9,7 @@ View Source: [contracts/interfaces/IReporter.sol](../contracts/interfaces/IRepor
 **Events**
 
 ```js
-event Reported(bytes32 indexed key, address indexed reporter, uint256  incidentDate, bytes32  info, uint256  initialStake);
+event Reported(bytes32 indexed key, address indexed reporter, uint256  incidentDate, bytes32  info, uint256  initialStake, uint256  resolutionTimestamp);
 event Disputed(bytes32 indexed key, address indexed reporter, uint256  incidentDate, bytes32  info, uint256  initialStake);
 event ReportingBurnRateSet(uint256  previous, uint256  current);
 event FirstReportingStakeSet(uint256  previous, uint256  current);
@@ -286,6 +286,7 @@ function setReporterCommission(uint256 value) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -294,6 +295,13 @@ function setReporterCommission(uint256 value) external;
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -71,7 +71,7 @@ function report(
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Reported(key, msg.sender, incidentDate, info, stake);
+    emit Reported(key, msg.sender, incidentDate, info, stake, resolutionDate);
     emit Attested(key, msg.sender, incidentDate, stake);
   }
 ```
@@ -359,6 +359,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -367,6 +368,13 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

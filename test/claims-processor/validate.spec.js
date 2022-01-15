@@ -43,7 +43,7 @@ describe('Claims Processor: `validate` function', () => {
     await protocol.setPaused(true)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Protocol is paused')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Protocol is paused')
     await protocol.setPaused(false)
   })
 
@@ -54,7 +54,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.initialize(coverKey, helper.zerox)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Not a protocol member')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Not a protocol member')
   })
 
   it('must reject if the cxToken is not associated with the given cover key', async () => {
@@ -65,7 +65,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.disassociateCxToken(cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Unknown cxToken')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Unknown cxToken')
   })
 
   it('must reject if the cxToken key does not match with the given cover key', async () => {
@@ -75,7 +75,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.initialize(coverKey, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Invalid cxToken')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Invalid cxToken')
   })
 
   it('must reject if the cxToken has already expired', async () => {
@@ -85,7 +85,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.initialize(coverKey, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate.unix()).should.be.revertedWith('Invalid or expired cxToken')
+    await processor.validate(cxToken.address, coverKey, incidentDate.unix()).should.be.rejectedWith('Invalid or expired cxToken')
   })
 
   it('must reject if the cover is not resolved, i.e. claimable', async () => {
@@ -96,7 +96,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.setCoverStatus(coverKey, 1)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Not claimable')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Not claimable')
   })
 
   it('must reject if incident date is invalid', async () => {
@@ -106,7 +106,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.initialize(coverKey, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Invalid incident date')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Invalid incident date')
   })
 
   it('must reject if there is no claim begin date set', async () => {
@@ -119,7 +119,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Invalid claim begin date')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Invalid claim begin date')
   })
 
   it('must reject if claim expiry date is greater than claim begin date', async () => {
@@ -132,7 +132,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-01').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Invalid claim period')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Invalid claim period')
   })
 
   it('must reject if claim period has not begun', async () => {
@@ -145,7 +145,7 @@ describe('Claims Processor: `validate` function', () => {
     await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Claim period hasn\'t begun')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Claim period hasn\'t begun')
   })
 
   it('must reject if claim period is over or expired', async () => {
@@ -158,6 +158,6 @@ describe('Claims Processor: `validate` function', () => {
     await store.setClaimExpiryTimestamp(coverKey, moment('2010-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.revertedWith('Claim period has expired')
+    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Claim period has expired')
   })
 })

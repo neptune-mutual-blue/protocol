@@ -86,4 +86,16 @@ const findFiles = async (extension, directoryName, results = []) => {
   return results
 }
 
-module.exports = { saveToDisk, ensureDirectory, ensureFile, cacheValue, fetchValue, findFiles, readFile }
+const exists = async (filePath) => {
+  try {
+    await fs.access(filePath)
+    return true
+  } catch (error) {
+    console.error(error.message)
+    // file not found
+  }
+
+  return false
+}
+
+module.exports = { saveToDisk, ensureDirectory, ensureFile, cacheValue, fetchValue, findFiles, readFile, exists }

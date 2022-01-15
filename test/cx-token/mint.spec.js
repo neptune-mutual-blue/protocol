@@ -45,7 +45,7 @@ describe('cxToken: Constructor', () => {
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
     await protocol.setPaused(true)
 
-    await policy.callMint(coverKey, to, amount).should.be.revertedWith('Protocol is paused')
+    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Protocol is paused')
   })
 
   it('must reject when invalid cover key is supplied', async () => {
@@ -56,7 +56,7 @@ describe('cxToken: Constructor', () => {
     await store.registerPolicyContract(policy.address)
 
     await policy.callMint(key.toBytes32('foobar'), to, amount)
-      .should.be.revertedWith('Invalid cover')
+      .should.be.rejectedWith('Invalid cover')
   })
 
   it('must reject when the caller is not policy contract', async () => {
@@ -65,6 +65,6 @@ describe('cxToken: Constructor', () => {
 
     await store.initialize()
 
-    await policy.callMint(coverKey, to, amount).should.be.revertedWith('Access denied')
+    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Access denied')
   })
 })

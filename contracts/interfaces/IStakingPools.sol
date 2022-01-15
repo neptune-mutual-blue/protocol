@@ -20,10 +20,14 @@ interface IStakingPools is IMember {
     uint256 rewardTokenDeposit,
     uint256 maxStake,
     uint256 rewardPerBlock,
+    uint256 lockupPeriod,
     uint256 platformFee
   );
 
   event PoolClosed(bytes32 indexed key, string name);
+  event Deposited(bytes32 indexed key, address indexed account, address indexed token, uint256 amount);
+  event Withdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256 amount);
+  event RewardsWithdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256 rewards, uint256 platformFee);
 
   /**
    * @dev Adds or edits the pool by key
@@ -75,8 +79,4 @@ interface IStakingPools is IMember {
   function getPoolStakeBalance(bytes32 key) external view returns (uint256);
 
   function canWithdrawFrom(bytes32 key, address account) external view returns (uint256);
-
-  event Deposited(bytes32 indexed key, address indexed account, address indexed token, uint256 amount);
-  event Withdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256 amount);
-  event RewardsWithdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256 rewards, uint256 platformFee);
 }

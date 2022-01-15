@@ -6,9 +6,19 @@ View Source: [contracts/fakes/FakeUniswapV2RouterLike.sol](../contracts/fakes/Fa
 
 **FakeUniswapV2RouterLike**
 
+## Contract Members
+**Constants & Variables**
+
+```js
+address public tokenA;
+address public tokenB;
+
+```
+
 ## Functions
 
 - [getAmountsOut(uint256 multiplier, address[] )](#getamountsout)
+- [addLiquidity(address _tokenA, address _tokenB, uint256 _amountADesired, uint256 _amountBDesired, uint256 , uint256 , address , uint256 )](#addliquidity)
 
 ### getAmountsOut
 
@@ -35,6 +45,58 @@ function getAmountsOut(uint256 multiplier, address[] calldata) external pure ove
     amounts[1] = multiplier;
 
     return amounts;
+  }
+```
+</details>
+
+### addLiquidity
+
+```solidity
+function addLiquidity(address _tokenA, address _tokenB, uint256 _amountADesired, uint256 _amountBDesired, uint256 , uint256 , address , uint256 ) external nonpayable
+returns(amountA uint256, amountB uint256, liquidity uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| _tokenA | address |  | 
+| _tokenB | address |  | 
+| _amountADesired | uint256 |  | 
+| _amountBDesired | uint256 |  | 
+|  | uint256 |  | 
+|  | uint256 |  | 
+|  | address |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addLiquidity(
+    address _tokenA,
+    address _tokenB,
+    uint256 _amountADesired,
+    uint256 _amountBDesired,
+    uint256,
+    uint256,
+    address,
+    uint256
+  )
+    external
+    override
+    returns (
+      uint256 amountA,
+      uint256 amountB,
+      uint256 liquidity
+    )
+  {
+    tokenA = _tokenA;
+    tokenB = _tokenB;
+
+    amountA = _amountADesired;
+    amountB = _amountBDesired;
+    liquidity = 1;
   }
 ```
 </details>
@@ -99,6 +161,7 @@ function getAmountsOut(uint256 multiplier, address[] calldata) external pure ove
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -107,6 +170,13 @@ function getAmountsOut(uint256 multiplier, address[] calldata) external pure ove
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

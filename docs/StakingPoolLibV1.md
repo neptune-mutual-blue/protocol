@@ -11,7 +11,7 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 bytes32 public constant NS_POOL;
 bytes32 public constant NS_POOL_NAME;
 bytes32 public constant NS_POOL_LOCKED;
-bytes32 public constant NS_POOL_LOCKEDUP_PERIOD;
+bytes32 public constant NS_POOL_LOCKUP_PERIOD;
 bytes32 public constant NS_POOL_STAKING_TARGET;
 bytes32 public constant NS_POOL_CUMULATIVE_STAKING_AMOUNT;
 bytes32 public constant NS_POOL_STAKING_TOKEN;
@@ -280,7 +280,7 @@ function canWithdrawFromInternal(
     address account
   ) external view returns (uint256) {
     uint256 lastDepositHeight = s.getUintByKeys(NS_POOL_DEPOSIT_HEIGHTS, key, account);
-    uint256 lockupPeriod = s.getUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key);
+    uint256 lockupPeriod = s.getUintByKeys(NS_POOL_LOCKUP_PERIOD, key);
 
     return lastDepositHeight + lockupPeriod;
   }
@@ -451,8 +451,7 @@ function _updatePoolValues(
     }
 
     if (values[4] > 0) {
-      s.addUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key, values[4]);
-      s.addUintByKeys(NS_POOL_LOCKEDUP_PERIOD, key, values[4]);
+      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD, key, values[4]);
     }
 
     if (values[5] > 0) {
@@ -615,6 +614,7 @@ function withdrawRewardsInternal(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -623,6 +623,13 @@ function withdrawRewardsInternal(
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

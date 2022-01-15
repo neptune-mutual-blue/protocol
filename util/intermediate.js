@@ -1,7 +1,7 @@
 const io = require('./io')
 
 module.exports = async (cache, contract, action, ...args) => {
-  const key = [action, contract.interface.encodeFunctionData(action, [...args])].join('.')
+  const key = [action, contract.address, contract.interface.encodeFunctionData(action, [...args])].join('.')
 
   const persisted = await io.fetchValue(cache, key)
 

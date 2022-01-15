@@ -14,6 +14,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getPolicyContract(IStore s)](#getpolicycontract)
 - [getReassuranceContract(IStore s)](#getreassurancecontract)
 - [getBondPoolContract(IStore s)](#getbondpoolcontract)
+- [getCoverContract(IStore s)](#getcovercontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
 
@@ -201,6 +202,30 @@ function getBondPoolContract(IStore s) external view returns (IBondPool) {
 ```
 </details>
 
+### getCoverContract
+
+```solidity
+function getCoverContract(IStore s) external view
+returns(contract ICover)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverContract(IStore s) external view returns (ICover) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER);
+    return ICover(vault);
+  }
+```
+</details>
+
 ### getVault
 
 ```solidity
@@ -310,6 +335,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -318,6 +344,13 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

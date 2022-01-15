@@ -10,6 +10,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidCover(IStore s, bytes32 key)](#mustbevalidcover)
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
 - [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
+- [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender)](#mustbecoverownerorcovercontract)
 - [callerMustBePolicyContract(IStore s)](#callermustbepolicycontract)
 - [callerMustBePolicyManagerContract(IStore s)](#callermustbepolicymanagercontract)
 - [callerMustBeCoverContract(IStore s)](#callermustbecovercontract)
@@ -136,6 +137,39 @@ function mustBeCoverOwner(
   ) external view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
     require(isCoverOwner, "Forbidden");
+  }
+```
+</details>
+
+### mustBeCoverOwnerOrCoverContract
+
+Reverts if the sender is not the cover owner or the cover contract
+
+```solidity
+function mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore | ender The `msg.sender` value | 
+| key | bytes32 | Enter the cover key to check | 
+| sender | address | The `msg.sender` value | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeCoverOwnerOrCoverContract(
+    IStore s,
+    bytes32 key,
+    address sender
+  ) external view {
+    bool isCoverOwner = s.getCoverOwner(key) == sender;
+    bool isCoverContract = address(s.getCoverContract()) == sender;
+
+    require(isCoverOwner || isCoverContract, "Forbidden");
   }
 ```
 </details>
@@ -664,9 +698,12 @@ function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view
 ```javascript
 function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
     uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
-    require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
-
     uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+
+    require(beginsFrom > 0, "Invalid claim begin date");
+    require(expiresAt > beginsFrom, "Invalid claim period");
+
+    require(block.timestamp >= beginsFrom, "Claim period hasn't begun"); // solhint-disable-line
     require(block.timestamp <= expiresAt, "Claim period has expired"); // solhint-disable-line
   }
 ```
@@ -755,6 +792,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
@@ -763,6 +801,13 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IWitness](IWitness.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
+* [MockCxToken](MockCxToken.md)
+* [MockCxTokenPolicy](MockCxTokenPolicy.md)
+* [MockCxTokenStore](MockCxTokenStore.md)
+* [MockProcessorStore](MockProcessorStore.md)
+* [MockProtocol](MockProtocol.md)
+* [MockStore](MockStore.md)
+* [MockVault](MockVault.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

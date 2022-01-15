@@ -94,14 +94,14 @@ describe('Governance Stories', () => {
 
     await contracts.npm.approve(contracts.provisionContract.address, provision)
 
-    await contracts.protocol.grantRole(key.NS.ROLES.LIQUIDITY_MANAGER, _o.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, _o.address)
     await contracts.provisionContract.increaseProvision(coverKey, provision)
 
     // Purchase a cover
     let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
     let fee = (await contracts.policy.getCoverFee(...args)).fee
 
-    ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
+      ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
 
     await contracts.wxDai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(...args)
@@ -121,7 +121,7 @@ describe('Governance Stories', () => {
   })
 
   it('can not claim until an incident occurs', async () => {
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, lewis] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , , , , , , lewis] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.lewis.balanceOf(lewis.address)
     constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
@@ -129,15 +129,15 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Not claimable')
+      .should.be.rejectedWith('Not claimable')
   })
 
   it('the cover `Compound Finance` has no known incidents', async () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
-    incidentDate.should.equal(0)
+    incidentDate.toNumber().should.equal(0)
 
     const status = await contracts.governance.getStatus(coverKey)
-    status.should.equal(helper.coverStatus.normal)
+    status.toNumber().should.equal(helper.coverStatus.normal)
   })
 
   it('alice submitted an incident with 250 stake', async () => {
@@ -150,12 +150,12 @@ describe('Governance Stories', () => {
 
     await contracts.npm.connect(alice).approve(contracts.governance.address, stake)
     await contracts.governance.connect(alice).report(coverKey, info, helper.ether(1))
-      .should.be.revertedWith('Stake insufficient')
+      .should.be.rejectedWith('Stake insufficient')
 
     await contracts.governance.connect(alice).report(coverKey, info, stake)
 
     const current = await contracts.npm.balanceOf(alice.address)
-    previous.sub(current).should.equal(stake)
+    previous.sub(current).toString().should.equal(stake)
   })
 
   it('no reporter should be accepted other than alice', async () => {
@@ -166,15 +166,15 @@ describe('Governance Stories', () => {
 
     await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
     await contracts.governance.connect(bob).report(coverKey, info, stake)
-      .should.be.revertedWith('Actively Reporting')
+      .should.be.rejectedWith('Actively Reporting')
   })
 
   it('the cover is now reporting and has an incident date', async () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
-    incidentDate.should.be.gt(0)
+    incidentDate.toNumber().should.be.greaterThan(0)
 
     const status = await contracts.governance.getStatus(coverKey)
-    status.should.equal(helper.coverStatus.incidentHappened)
+    status.toNumber().should.equal(helper.coverStatus.incidentHappened)
   })
 
   it('alice is the reporter', async () => {
@@ -195,7 +195,7 @@ describe('Governance Stories', () => {
     await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
 
     await contracts.governance.connect(bob).dispute(coverKey, incidentDate, info, helper.ether(1))
-      .should.be.revertedWith('Stake insufficient')
+      .should.be.rejectedWith('Stake insufficient')
 
     await contracts.governance.connect(bob).dispute(coverKey, incidentDate, info, stake)
   })
@@ -208,7 +208,7 @@ describe('Governance Stories', () => {
 
     await contracts.npm.connect(chris).approve(contracts.governance.address, stake)
     await contracts.governance.connect(chris).dispute(coverKey, incidentDate, info, stake)
-      .should.be.revertedWith('Already disputed')
+      .should.be.rejectedWith('Already disputed')
   })
 
   it('bob became the new reporter', async () => {
@@ -220,7 +220,7 @@ describe('Governance Stories', () => {
     reporter.should.equal(bob.address)
 
     const status = await contracts.governance.getStatus(coverKey)
-    status.should.equal(helper.coverStatus.falseReporting)
+    status.toNumber().should.equal(helper.coverStatus.falseReporting)
   })
 
   it('david, franklin, and john refuted the incident reporting', async () => {
@@ -234,7 +234,7 @@ describe('Governance Stories', () => {
   })
 
   it('chris, isabel, and george attested the incident reporting', async () => {
-    const [_, _a, _b, chris, _d, _e, _f, george, _h, isabel] = await ethers.getSigners() // eslint-disable-line
+    const [, , , chris, , , , george, , isabel] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -283,8 +283,8 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
     const [yes, no] = await contracts.governance.getStakes(coverKey, incidentDate)
 
-    yes.should.equal(sumOf(constants.stakes.yes))
-    no.should.equal(sumOf(constants.stakes.no))
+    yes.toString().should.equal(sumOf(constants.stakes.yes))
+    no.toString().should.equal(sumOf(constants.stakes.no))
   })
 
   it('individual stakes are also correct', async () => {
@@ -294,8 +294,8 @@ describe('Governance Stories', () => {
     const ensureStake = async (account, y, n) => {
       const [yes, no] = await contracts.governance.getStakesOf(coverKey, incidentDate, account.address)
 
-      y && yes.should.equal(y)
-      n && no.should.equal(n)
+      y && yes.toString().should.equal(y)
+      n && no.toString().should.equal(n)
     }
 
     const sum = helper.sum
@@ -320,7 +320,7 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Not claimable')
+      .should.be.rejectedWith('Not claimable')
   })
 
   it('george again attested with a very large stake', async () => {
@@ -340,14 +340,14 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Not claimable')
+      .should.be.rejectedWith('Not claimable')
   })
 
   it('a governance agent resolves the cover', async () => {
     const [_o, _a] = await ethers.getSigners() // eslint-disable-line
 
-    await contracts.protocol.grantRole(key.NS.ROLES.GOVERNANCE_ADMIN, _o.address)
-    await contracts.protocol.grantRole(key.NS.ROLES.GOVERNANCE_AGENT, _a.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, _o.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, _a.address)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -356,7 +356,7 @@ describe('Governance Stories', () => {
     await contracts.resolution.connect(_a).resolve(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
-    status.should.equal(helper.coverStatus.claimable)
+    status.toNumber().should.equal(helper.coverStatus.claimable)
   })
 
   it('kimberly successfully received payout during the claim period', async () => {
@@ -373,9 +373,9 @@ describe('Governance Stories', () => {
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
     const after = await contracts.wxDai.balanceOf(kimberly.address)
 
-    after.should.be.gt(before)
+    parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 
-    after.sub(before).should.equal(helper.ether(constants.coverAmounts.kimberly * 0.935)) // 6.5% is platform fee
+    after.sub(before).toString().should.equal(helper.ether(constants.coverAmounts.kimberly * 0.935)) // 6.5% is platform fee
   })
 
   it('lewis was unable to claim after the expiry period', async () => {
@@ -390,7 +390,7 @@ describe('Governance Stories', () => {
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.lewis.address, coverKey, incidentDate, balance)
-      .should.be.revertedWith('Claim period has expired')
+      .should.be.rejectedWith('Claim period has expired')
   })
 
   it('a governance agent finalizes the cover', async () => {
@@ -403,6 +403,6 @@ describe('Governance Stories', () => {
     await contracts.resolution.connect(_a).finalize(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
-    status.should.equal(helper.coverStatus.normal)
+    status.toNumber().should.equal(helper.coverStatus.normal)
   })
 })

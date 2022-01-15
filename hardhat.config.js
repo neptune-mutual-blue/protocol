@@ -11,6 +11,12 @@ require('dotenv').config()
 const config = {
   defaultNetwork: 'hardhat',
   networks: {
+    hardhat: {
+      // forking: {
+      //   url: process.env.ALCHEMY_API_URL,
+      //   blockNumber: 11819774
+      // }
+    },
     ropsten: {
       url: 'https://ropsten.infura.io/v3/04f673a8619b4e3f89a49232d453f6f2',
       chainId: 3,

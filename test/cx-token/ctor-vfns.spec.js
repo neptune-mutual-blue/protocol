@@ -29,6 +29,6 @@ describe('cxToken: Constructor', () => {
 
   it('must correctly store the storage variables', async () => {
     (await cxToken.coverKey()).should.equal(coverKey)
-    ; (await cxToken.expiresOn()).should.equal(expiryDate)
+    ; (await cxToken.expiresOn()).toNumber().should.equal(expiryDate)
   })
 })
