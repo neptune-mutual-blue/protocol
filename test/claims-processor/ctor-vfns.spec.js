@@ -28,7 +28,7 @@ describe('Claims Processor: Constructor & Initializer', () => {
   })
 
   it('must ensure correct contract namespace', async () => {
-    (await processor.getName()).should.equal(key.CNAME_KEYS.PROCESSOR)
+    (await processor.getName()).should.equal(key.CNAME_KEYS)
   })
 })
 

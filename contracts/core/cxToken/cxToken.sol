@@ -20,7 +20,6 @@ import "../Recoverable.sol";
 // slither-disable-next-line naming-convention
 contract cxToken is ICxToken, Recoverable, ERC20 {
   // solhint-disable-previous-line
-  using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
   bytes32 public override coverKey;
