@@ -32,7 +32,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER_POLICY_ADMIN = "cns:cover:policy:admin";
   bytes32 public constant CNS_COVER_STAKE = "cns:cover:stake";
   bytes32 public constant CNS_COVER_VAULT = "cns:cover:vault";
-  bytes32 public constant CNS_COVER_STABLECOIN = "cns:cover:stablecoin";
+  bytes32 public constant CNS_COVER_STABLECOIN = "cns:cover:sc";
   bytes32 public constant CNS_COVER_CXTOKEN_FACTORY = "cns:cover:cxtoken:factory";
   bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
   bytes32 public constant CNS_BOND_POOL = "cns:pools:bond";
@@ -75,11 +75,15 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
 
   bytes32 public constant NS_COVER_LIQUIDITY = "ns:cover:liquidity";
+  bytes32 public constant NS_COVER_LIQUIDITY_ADDED = "ns:cover:liquidity:add";
+  bytes32 public constant NS_COVER_LIQUIDITY_REMOVED = "ns:cover:liquidity:rem";
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD = "ns:cover:liquidity:min:period";
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
   bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "ns:cover:liquidity:release";
+  bytes32 public constant NS_COVER_STABLECOIN_LENT_TOTAL = "ns:cover:sc:total:lent";
 
+  bytes32 public constant NS_COVER_HAS_FLASH_LOAN = "ns:cover:has:fl";
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE = "ns:cover:liquidity:fl:fee";
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL = "ns:proto:cover:liquidity:fl:fee";
 

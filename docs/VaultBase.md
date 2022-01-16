@@ -33,6 +33,9 @@ address public lqt;
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem)](#removeliquidity)
 - [_addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity)](#_addliquidity)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
+- [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
+- [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
+- [getInfo(address whom)](#getinfo)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -255,6 +258,85 @@ function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
 
     emit MinLiquidityPeriodSet(previous, value);
+  }
+```
+</details>
+
+### calculatePods
+
+Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+
+```solidity
+function calculatePods(uint256 forStablecoinUnits) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| forStablecoinUnits | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
+    return VaultLibV1.calculatePodsInternal(address(this), lqt, forStablecoinUnits);
+  }
+```
+</details>
+
+### calculateLiquidity
+
+Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+
+```solidity
+function calculateLiquidity(uint256 podsToBurn) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| podsToBurn | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
+    /***************************************************************************
+    @todo Need to revisit this later and fix the following issue
+    https://github.com/neptune-mutual/protocol/issues/23
+    ***************************************************************************/
+    return s.calculateLiquidityInternal(key, address(this), lqt, podsToBurn);
+  }
+```
+</details>
+
+### getInfo
+
+Gets information of a given vault by the cover key
+
+```solidity
+function getInfo(address whom) external view
+returns(values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| whom | address | The address for which the info will be customized | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getInfo(address whom) external view override returns (uint256[] memory values) {
+    return s.getInfoInternal(key, address(this), lqt, whom);
   }
 ```
 </details>

@@ -34,6 +34,7 @@ enum CoverStatus {
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
 - [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
+- [getReassuranceAmountInternal(IStore s, bytes32 key)](#getreassuranceamountinternal)
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
 
 ### getCoverOwner
@@ -444,6 +445,32 @@ function setStatus(
     CoverStatus status
   ) external {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
+  }
+```
+</details>
+
+### getReassuranceAmountInternal
+
+Gets the reassurance amount of the specified cover contract
+
+```solidity
+function getReassuranceAmountInternal(IStore s, bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 | Enter the cover key | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceAmountInternal(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
   }
 ```
 </details>

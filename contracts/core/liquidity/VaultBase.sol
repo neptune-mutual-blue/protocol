@@ -26,6 +26,7 @@ import "../../libraries/NTransferUtilV2.sol";
 abstract contract VaultBase is IVault, Recoverable, ERC20 {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using VaultLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
@@ -136,6 +137,42 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
 
     emit MinLiquidityPeriodSet(previous, value);
+  }
+
+  /**
+   * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+   */
+  function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
+    return VaultLibV1.calculatePodsInternal(address(this), lqt, forStablecoinUnits);
+  }
+
+  /**
+   * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+   */
+  function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
+    /***************************************************************************
+    @todo Need to revisit this later and fix the following issue
+    https://github.com/neptune-mutual/protocol/issues/23
+    ***************************************************************************/
+    return s.calculateLiquidityInternal(key, address(this), lqt, podsToBurn);
+  }
+
+  /**
+   * @dev Gets information of a given vault by the cover key
+   * @param whom The address for which the info will be customized
+   * @param values[0] totalPods --> Total PODs in existence
+   * @param values[1] balance --> Stablecoins held in the vault
+   * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
+   * @param values[3] totalReassurance -- > Total reassurance for this cover
+   * @param values[4] lockup --> Deposit lockup period
+   * @param values[5] myPodBalance --> Your POD Balance
+   * @param values[6] myDeposits --> Sum of your deposits (in stablecoin)
+   * @param values[7] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
+   * @param values[8] myShare --> My share of the liquidity pool (in stablecoin)
+   * @param values[9] releaseDate --> My liquidity release date
+   */
+  function getInfo(address whom) external view override returns (uint256[] memory values) {
+    return s.getInfoInternal(key, address(this), lqt, whom);
   }
 
   /**

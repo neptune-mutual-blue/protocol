@@ -154,6 +154,7 @@ const initialize = async (suite, deploymentId) => {
 
   const reassuranceContract = await deployer.deployWithLibraries(cache, 'CoverReassurance', {
     BaseLibV1: libs.baseLibV1.address,
+    CoverUtilV1: libs.coverUtil.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ProtoUtilV1: libs.protoUtilV1.address,

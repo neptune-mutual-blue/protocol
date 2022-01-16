@@ -150,6 +150,14 @@ library CoverUtilV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
   }
 
+  /**
+   * @dev Gets the reassurance amount of the specified cover contract
+   * @param key Enter the cover key
+   */
+  function getReassuranceAmountInternal(IStore s, bytes32 key) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+  }
+
   function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
     // Todo: deduct the expired cover amounts
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
