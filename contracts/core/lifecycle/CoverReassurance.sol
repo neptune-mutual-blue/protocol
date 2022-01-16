@@ -75,7 +75,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
    * @param key Enter the cover key
    */
   function getReassurance(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+    return s.getReassuranceAmountInternal(key);
   }
 
   /**

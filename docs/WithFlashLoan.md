@@ -120,6 +120,8 @@ function flashLoan(
     require(fee > 0, "Fee too little");
     require(previousBalance >= amount, "Balance insufficient");
 
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, true);
+
     stablecoin.ensureTransfer(address(receiver), amount);
     require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
     stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
@@ -129,6 +131,7 @@ function flashLoan(
     require(finalBalance >= previousBalance + fee, "Access is denied");
 
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, false);
     return true;
   }
 ```

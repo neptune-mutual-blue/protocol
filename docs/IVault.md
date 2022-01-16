@@ -24,6 +24,9 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 - [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
+- [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
+- [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
+- [getInfo(address forAccount)](#getinfo)
 
 ### addLiquidityMemberOnly
 
@@ -144,6 +147,69 @@ function setMinLiquidityPeriod(uint256 value) external nonpayable
 
 ```javascript
 function setMinLiquidityPeriod(uint256 value) external;
+```
+</details>
+
+### calculatePods
+
+```solidity
+function calculatePods(uint256 forStablecoinUnits) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| forStablecoinUnits | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function calculatePods(uint256 forStablecoinUnits) external view returns (uint256);
+```
+</details>
+
+### calculateLiquidity
+
+```solidity
+function calculateLiquidity(uint256 podsToBurn) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| podsToBurn | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function calculateLiquidity(uint256 podsToBurn) external view returns (uint256);
+```
+</details>
+
+### getInfo
+
+```solidity
+function getInfo(address forAccount) external view
+returns(result uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| forAccount | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getInfo(address forAccount) external view returns (uint256[] memory result);
 ```
 </details>
 
