@@ -150,10 +150,34 @@ library VaultLibV1 {
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = s.getMinLiquidityPeriod(); // Lockup period
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[7] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+    values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
+    values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
     values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[1]); //  My share of the liquidity pool (in stablecoin)
-    values[9] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, you); // My liquidity release date
+    values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
+  }
+
+  function _getCoverLiquidityAddedInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, you);
+  }
+
+  function _getCoverLiquidityRemovedInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
+  }
+
+  function _getLiquidityReleaseDateInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, you);
   }
 
   function getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
@@ -223,12 +247,12 @@ library VaultLibV1 {
      * your liquidity.
      */
     require(available >= releaseAmount, "Insufficient balance"); // Insufficient balance. Please wait for the policy to expire.
-    require(s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, msg.sender) > 0, "Invalid request");
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
+    require(_getLiquidityReleaseDateInternal(s, coverKey, msg.sender) > 0, "Invalid request");
+    require(block.timestamp > _getLiquidityReleaseDateInternal(s, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
 
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
@@ -259,14 +283,18 @@ library VaultLibV1 {
     */
     require(stablecoin == token, "Unsupported token");
 
-    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
-    uint256 protocolRate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
+    uint256 rate = _getFlashLoanFeeRateInternal(s);
+    uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
 
     fee = (amount * rate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     protocolFee = (fee * protocolRate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
   }
 
-  function getProtocolFlashLoanFee(IStore s) external view returns (uint256) {
+  function _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
+  }
+
+  function _getProtocolFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
   }
 

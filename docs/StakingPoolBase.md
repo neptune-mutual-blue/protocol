@@ -125,9 +125,9 @@ function closePool(bytes32 key) external override nonReentrant {
     s.mustNotBePaused();
     s.mustBeAdmin();
 
-    s.setBoolByKeys(StakingPoolLibV1.NS_POOL, key, false);
+    s.setBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key, false);
 
-    emit PoolClosed(key, s.getStringByKeys(StakingPoolLibV1.NS_POOL, key));
+    emit PoolClosed(key, s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key));
   }
 ```
 </details>
@@ -276,6 +276,7 @@ function getName() external pure override returns (bytes32) {
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)

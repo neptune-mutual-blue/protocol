@@ -9,11 +9,15 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [calculatePodsInternal(address pod, address stablecoin, uint256 liquidityToAdd)](#calculatepodsinternal)
 - [calculateLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToBurn)](#calculateliquidityinternal)
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address you)](#getinfointernal)
+- [_getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityaddedinternal)
+- [_getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityremovedinternal)
+- [_getLiquidityReleaseDateInternal(IStore s, bytes32 coverKey, address you)](#_getliquidityreleasedateinternal)
 - [getLendingTotal(IStore s, bytes32 coverKey)](#getlendingtotal)
 - [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity)](#addliquidityinternal)
 - [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#removeliquidityinternal)
 - [getFlashFeeInternal(IStore s, address token, uint256 amount)](#getflashfeeinternal)
-- [getProtocolFlashLoanFee(IStore s)](#getprotocolflashloanfee)
+- [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
+- [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
 - [getMaxFlashLoanInternal(IStore s, address token)](#getmaxflashloaninternal)
 
 ### calculatePodsInternal
@@ -184,10 +188,100 @@ nction getInfoInternal(
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = s.getMinLiquidityPeriod(); // Lockup period
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[7] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+    values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
+    values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
     values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[1]); //  My share of the liquidity pool (in stablecoin)
-    values[9] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, you); // My liquidity release date
+    values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
+  }
+
+```
+</details>
+
+### _getCoverLiquidityAddedInternal
+
+```solidity
+function _getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _getCoverLiquidityAddedInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, you);
+  }
+
+```
+</details>
+
+### _getCoverLiquidityRemovedInternal
+
+```solidity
+function _getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _getCoverLiquidityRemovedInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
+  }
+
+```
+</details>
+
+### _getLiquidityReleaseDateInternal
+
+```solidity
+function _getLiquidityReleaseDateInternal(IStore s, bytes32 coverKey, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _getLiquidityReleaseDateInternal(
+    IStore s,
+    bytes32 coverKey,
+    address you
+  ) private view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, you);
   }
 
 ```
@@ -320,12 +414,12 @@ nction removeLiquidityInternal(
      * your liquidity.
      */
     require(available >= releaseAmount, "Insufficient balance"); // Insufficient balance. Please wait for the policy to expire.
-    require(s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, msg.sender) > 0, "Invalid request");
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
+    require(_getLiquidityReleaseDateInternal(s, coverKey, msg.sender) > 0, "Invalid request");
+    require(block.timestamp > _getLiquidityReleaseDateInternal(s, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
 
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
@@ -372,8 +466,8 @@ nction getFlashFeeInternal(
     */
     require(stablecoin == token, "Unsupported token");
 
-    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
-    uint256 protocolRate = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
+    uint256 rate = _getFlashLoanFeeRateInternal(s);
+    uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
 
     fee = (amount * rate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
     protocolFee = (fee * protocolRate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
@@ -382,10 +476,10 @@ nction getFlashFeeInternal(
 ```
 </details>
 
-### getProtocolFlashLoanFee
+### _getFlashLoanFeeRateInternal
 
 ```solidity
-function getProtocolFlashLoanFee(IStore s) external view
+function _getFlashLoanFeeRateInternal(IStore s) private view
 returns(uint256)
 ```
 
@@ -399,7 +493,31 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getProtocolFlashLoanFee(IStore s) external view returns (uint256) {
+nction _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
+  }
+
+```
+</details>
+
+### _getProtocolFlashLoanFeeRateInternal
+
+```solidity
+function _getProtocolFlashLoanFeeRateInternal(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _getProtocolFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
   }
 
@@ -545,6 +663,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)

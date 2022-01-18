@@ -15,6 +15,7 @@
  * @property {Object} cxTokenFactoryLib - cxToken factory library
  * @property {Object} dateLib - Date helper library
  * @property {Object} bondPoolLibV1 - Bond pool library
+ * @property {Object} stakingPoolCoreLibV1 - Staking pool core library
  * @property {Object} stakingPoolLibV1 - Staking pool library
  */
 

@@ -18,10 +18,10 @@ const config = {
       // }
     },
     ropsten: {
-      url: 'https://ropsten.infura.io/v3/04f673a8619b4e3f89a49232d453f6f2',
+      url: `${process.env.ROPSTEN_RPC_URL}`,
       chainId: 3,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 30000000000,
+      gasPrice: 60000000000,
       gas: 'auto'
     },
     bscTestnet: {

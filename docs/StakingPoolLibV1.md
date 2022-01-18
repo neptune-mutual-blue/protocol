@@ -4,127 +4,80 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 
 **StakingPoolLibV1**
 
-## Contract Members
-**Constants & Variables**
-
-```js
-bytes32 public constant NS_POOL;
-bytes32 public constant NS_POOL_NAME;
-bytes32 public constant NS_POOL_LOCKED;
-bytes32 public constant NS_POOL_LOCKUP_PERIOD;
-bytes32 public constant NS_POOL_STAKING_TARGET;
-bytes32 public constant NS_POOL_CUMULATIVE_STAKING_AMOUNT;
-bytes32 public constant NS_POOL_STAKING_TOKEN;
-bytes32 public constant NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR;
-bytes32 public constant NS_POOL_REWARD_TOKEN;
-bytes32 public constant NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR;
-bytes32 public constant NS_POOL_STAKING_TOKEN_BALANCE;
-bytes32 public constant NS_POOL_REWARD_TOKEN_DEPOSITS;
-bytes32 public constant NS_POOL_REWARD_TOKEN_DISTRIBUTION;
-bytes32 public constant NS_POOL_MAX_STAKE;
-bytes32 public constant NS_POOL_REWARD_PER_BLOCK;
-bytes32 public constant NS_POOL_REWARD_PLATFORM_FEE;
-bytes32 public constant NS_POOL_REWARD_TOKEN_BALANCE;
-bytes32 public constant NS_POOL_DEPOSIT_HEIGHTS;
-bytes32 public constant NS_POOL_REWARD_HEIGHTS;
-bytes32 public constant NS_POOL_TOTAL_REWARD_GIVEN;
-
-```
-
 ## Functions
 
-- [getAvailableToStakeInternal(IStore s, bytes32 key)](#getavailabletostakeinternal)
-- [getMaximumStakeInternal(IStore s, bytes32 key)](#getmaximumstakeinternal)
-- [getStakingTokenAddressInternal(IStore s, bytes32 key)](#getstakingtokenaddressinternal)
+- [getInfoInternal(IStore s, bytes32 key, address you)](#getinfointernal)
 - [getPoolStakeBalanceInternal(IStore s, bytes32 key)](#getpoolstakebalanceinternal)
+- [getPoolCumulativeDeposits(IStore s, bytes32 key)](#getpoolcumulativedeposits)
 - [getAccountStakingBalanceInternal(IStore s, bytes32 key, address account)](#getaccountstakingbalanceinternal)
 - [getTotalBlocksSinceLastRewardInternal(IStore s, bytes32 key, address account)](#gettotalblockssincelastrewardinternal)
-- [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
 - [canWithdrawFromInternal(IStore s, bytes32 key, address account)](#canwithdrawfrominternal)
-- [ensureValidStakingPool(IStore s, bytes32 key)](#ensurevalidstakingpool)
-- [validateAddOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#validateaddoreditpoolinternal)
-- [addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#addoreditpoolinternal)
-- [_updatePoolValues(IStore s, bytes32 key, uint256[] values)](#_updatepoolvalues)
-- [_initializeNewPool(IStore s, bytes32 key, address[] addresses)](#_initializenewpool)
+- [getLastDepositHeight(IStore s, bytes32 key, address account)](#getlastdepositheight)
+- [getLastRewardHeight(IStore s, bytes32 key, address account)](#getlastrewardheight)
+- [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
 - [withdrawRewardsInternal(IStore s, bytes32 key, address account)](#withdrawrewardsinternal)
+- [depositInternal(IStore s, bytes32 key, uint256 amount)](#depositinternal)
+- [withdrawInternal(IStore s, bytes32 key, uint256 amount)](#withdrawinternal)
 
-### getAvailableToStakeInternal
+### getInfoInternal
 
-Reports the remaining amount of tokens that can be staked in this pool
+Gets the info of a given staking pool by key
 
 ```solidity
-function getAvailableToStakeInternal(IStore s, bytes32 key) external view
-returns(uint256)
+function getInfoInternal(IStore s, bytes32 key, address you) external view
+returns(name string, addresses address[], values uint256[])
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
+| s | IStore | Specify the store instance | 
+| key | bytes32 | Provide the staking pool key to fetch info for | 
+| you | address | Specify the address to customize the info for | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAvailableToStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 totalStaked = s.getUintByKeys(NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
-    uint256 target = s.getUintByKeys(NS_POOL_STAKING_TARGET, key);
+function getInfoInternal(
+    IStore s,
+    bytes32 key,
+    address you
+  )
+    external
+    view
+    returns (
+      string memory name,
+      address[] memory addresses,
+      uint256[] memory values
+    )
+  {
+    addresses = new address[](4);
+    values = new uint256[](15);
 
-    if (totalStaked >= target) {
-      return 0;
-    }
+    name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-    return target - totalStaked;
-  }
-```
-</details>
+    addresses[0] = s.getStakingTokenAddressInternal(key);
+    addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
+    addresses[2] = s.getRewardTokenAddressInternal(key);
+    addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
 
-### getMaximumStakeInternal
-
-```solidity
-function getMaximumStakeInternal(IStore s, bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getMaximumStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(StakingPoolLibV1.NS_POOL_MAX_STAKE, key);
-  }
-```
-</details>
-
-### getStakingTokenAddressInternal
-
-```solidity
-function getStakingTokenAddressInternal(IStore s, bytes32 key) external view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStakingTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
-    return s.getAddressByKeys(StakingPoolLibV1.NS_POOL_STAKING_TOKEN, key);
+    values[0] = s.getTotalStaked(key);
+    values[1] = s.getTarget(key);
+    values[2] = s.getMaximumStakeInternal(key);
+    values[3] = getPoolStakeBalanceInternal(s, key);
+    values[4] = getPoolCumulativeDeposits(s, key);
+    values[5] = s.getRewardPerBlock(key);
+    values[6] = s.getRewardPlatformFee(key);
+    values[7] = s.getLockupPeriod(key);
+    values[8] = s.getRewardTokenBalance(key);
+    values[9] = getAccountStakingBalanceInternal(s, key, you);
+    values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
+    values[11] = calculateRewardsInternal(s, key, you);
+    values[12] = canWithdrawFromInternal(s, key, you);
+    values[13] = getLastDepositHeight(s, key, you);
+    values[14] = getLastRewardHeight(s, key, you);
   }
 ```
 </details>
@@ -132,7 +85,7 @@ function getStakingTokenAddressInternal(IStore s, bytes32 key) external view ret
 ### getPoolStakeBalanceInternal
 
 ```solidity
-function getPoolStakeBalanceInternal(IStore s, bytes32 key) external view
+function getPoolStakeBalanceInternal(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -147,8 +100,33 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPoolStakeBalanceInternal(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 totalStake = s.getUintByKeys(NS_POOL_STAKING_TOKEN_BALANCE, key);
+function getPoolStakeBalanceInternal(IStore s, bytes32 key) public view returns (uint256) {
+    uint256 totalStake = s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key);
+    return totalStake;
+  }
+```
+</details>
+
+### getPoolCumulativeDeposits
+
+```solidity
+function getPoolCumulativeDeposits(IStore s, bytes32 key) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getPoolCumulativeDeposits(IStore s, bytes32 key) public view returns (uint256) {
+    uint256 totalStake = s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
     return totalStake;
   }
 ```
@@ -178,7 +156,7 @@ function getAccountStakingBalanceInternal(
     bytes32 key,
     address account
   ) public view returns (uint256) {
-    return s.getUintByKeys(StakingPoolLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, account);
+    return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, account);
   }
 ```
 </details>
@@ -207,13 +185,103 @@ function getTotalBlocksSinceLastRewardInternal(
     bytes32 key,
     address account
   ) public view returns (uint256) {
-    uint256 from = s.getUintByKeys(NS_POOL_REWARD_HEIGHTS, key, account);
+    uint256 from = getLastRewardHeight(s, key, account);
 
     if (from == 0) {
       return 0;
     }
 
     return block.number - from;
+  }
+```
+</details>
+
+### canWithdrawFromInternal
+
+```solidity
+function canWithdrawFromInternal(IStore s, bytes32 key, address account) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function canWithdrawFromInternal(
+    IStore s,
+    bytes32 key,
+    address account
+  ) public view returns (uint256) {
+    uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
+    uint256 lockupPeriod = s.getLockupPeriod(key);
+
+    return lastDepositHeight + lockupPeriod;
+  }
+```
+</details>
+
+### getLastDepositHeight
+
+```solidity
+function getLastDepositHeight(IStore s, bytes32 key, address account) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLastDepositHeight(
+    IStore s,
+    bytes32 key,
+    address account
+  ) public view returns (uint256) {
+    return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_DEPOSIT_HEIGHTS, key, account);
+  }
+```
+</details>
+
+### getLastRewardHeight
+
+```solidity
+function getLastRewardHeight(IStore s, bytes32 key, address account) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLastRewardHeight(
+    IStore s,
+    bytes32 key,
+    address account
+  ) public view returns (uint256) {
+    return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account);
   }
 ```
 </details>
@@ -248,252 +316,9 @@ function calculateRewardsInternal(
       return 0;
     }
 
-    uint256 rewardPerBlock = s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
+    uint256 rewardPerBlock = s.getRewardPerBlock(key);
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
     return (myStake * rewardPerBlock * totalBlocks) / 1 ether;
-  }
-```
-</details>
-
-### canWithdrawFromInternal
-
-```solidity
-function canWithdrawFromInternal(IStore s, bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function canWithdrawFromInternal(
-    IStore s,
-    bytes32 key,
-    address account
-  ) external view returns (uint256) {
-    uint256 lastDepositHeight = s.getUintByKeys(NS_POOL_DEPOSIT_HEIGHTS, key, account);
-    uint256 lockupPeriod = s.getUintByKeys(NS_POOL_LOCKUP_PERIOD, key);
-
-    return lastDepositHeight + lockupPeriod;
-  }
-```
-</details>
-
-### ensureValidStakingPool
-
-```solidity
-function ensureValidStakingPool(IStore s, bytes32 key) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function ensureValidStakingPool(IStore s, bytes32 key) external view {
-    require(s.getBoolByKeys(NS_POOL, key), "Pool invalid or closed");
-  }
-```
-</details>
-
-### validateAddOrEditPoolInternal
-
-```solidity
-function validateAddOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values) public view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| name | string |  | 
-| addresses | address[] |  | 
-| values | uint256[] |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function validateAddOrEditPoolInternal(
-    IStore s,
-    bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
-  ) public view returns (bool) {
-    require(key > 0, "Invalid key");
-
-    bool exists = s.getBoolByKeys(NS_POOL, key);
-
-    if (exists == false) {
-      require(bytes(name).length > 0, "Invalid name");
-      require(addresses[0] != address(0), "Invalid staking token");
-      require(addresses[1] != address(0), "Invalid staking token pair");
-      require(addresses[2] != address(0), "Invalid reward token");
-      require(addresses[3] != address(0), "Invalid reward token pair");
-      require(values[4] > 0, "Provide lockup period");
-      require(values[5] > 0, "Provide reward token balance");
-      require(values[3] > 0, "Provide reward per block");
-      require(values[0] > 0, "Please provide staking target");
-    }
-
-    return exists;
-  }
-```
-</details>
-
-### addOrEditPoolInternal
-
-Adds or edits the pool by key
-
-```solidity
-function addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| name | string | Enter a name for this pool | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addOrEditPoolInternal(
-    IStore s,
-    bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
-  ) external {
-    bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
-
-    if (poolExists == false) {
-      _initializeNewPool(s, key, addresses);
-    }
-
-    if (bytes(name).length > 0) {
-      s.setStringByKeys(NS_POOL, key, name);
-    }
-
-    _updatePoolValues(s, key, values);
-
-    // If `values[5] --> rewardTokenDeposit` is specified, the contract
-    // pulls the reward tokens to this contract address
-    if (values[5] > 0) {
-      IERC20(addresses[2]).ensureTransferFrom(msg.sender, address(this), values[5]);
-    }
-  }
-```
-</details>
-
-### _updatePoolValues
-
-Updates the values of a staking pool by the given key
-
-```solidity
-function _updatePoolValues(IStore s, bytes32 key, uint256[] values) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Provide an instance of the store | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _updatePoolValues(
-    IStore s,
-    bytes32 key,
-    uint256[] memory values
-  ) private {
-    if (values[0] > 0) {
-      s.setUintByKeys(NS_POOL_STAKING_TARGET, key, values[0]);
-    }
-
-    if (values[1] > 0) {
-      s.setUintByKeys(NS_POOL_MAX_STAKE, key, values[1]);
-    }
-
-    if (values[2] > 0) {
-      s.setUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key, values[2]);
-    }
-
-    if (values[3] > 0) {
-      s.setUintByKeys(NS_POOL_REWARD_PER_BLOCK, key, values[3]);
-    }
-
-    if (values[4] > 0) {
-      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD, key, values[4]);
-    }
-
-    if (values[5] > 0) {
-      s.addUintByKeys(NS_POOL_REWARD_TOKEN_DEPOSITS, key, values[5]);
-      s.addUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key, values[5]);
-    }
-  }
-```
-</details>
-
-### _initializeNewPool
-
-Initializes a new pool by the given key. Assumes that the pool does not exist.
- Warning: this feature should not be accessible outside of this library.
-
-```solidity
-function _initializeNewPool(IStore s, bytes32 key, address[] addresses) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Provide an instance of the store | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _initializeNewPool(
-    IStore s,
-    bytes32 key,
-    address[] memory addresses
-  ) private {
-    s.setAddressByKeys(NS_POOL_STAKING_TOKEN, key, addresses[0]);
-    s.setAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[1]);
-    s.setAddressByKeys(NS_POOL_REWARD_TOKEN, key, addresses[2]);
-    s.setAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[3]);
-
-    s.setBoolByKeys(NS_POOL, key, true);
   }
 ```
 </details>
@@ -501,7 +326,7 @@ function _initializeNewPool(
 ### withdrawRewardsInternal
 
 ```solidity
-function withdrawRewardsInternal(IStore s, bytes32 key, address account) external nonpayable
+function withdrawRewardsInternal(IStore s, bytes32 key, address account) public nonpayable
 returns(rewardToken address, rewards uint256, platformFee uint256)
 ```
 
@@ -522,7 +347,7 @@ function withdrawRewardsInternal(
     bytes32 key,
     address account
   )
-    external
+    public
     returns (
       address rewardToken,
       uint256 rewards,
@@ -531,25 +356,118 @@ function withdrawRewardsInternal(
   {
     rewards = calculateRewardsInternal(s, key, account);
 
-    s.setUintByKeys(NS_POOL_REWARD_HEIGHTS, key, account, block.number);
+    s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account, block.number);
 
     if (rewards == 0) {
       return (address(0), 0, 0);
     }
 
-    rewardToken = s.getAddressByKeys(NS_POOL_REWARD_TOKEN, key);
+    rewardToken = s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key);
 
     // Update (decrease) the balance of reward token
-    s.subtractUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key, rewards);
+    s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN_BALANCE, key, rewards);
 
     // Update total rewards given
-    s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
-    s.addUintByKeys(NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
+    s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
+    s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
-    platformFee = (rewards * s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
 
     IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
     IERC20(rewardToken).ensureTransfer(s.getTreasury(), rewards);
+  }
+```
+</details>
+
+### depositInternal
+
+```solidity
+function depositInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
+returns(stakingToken address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function depositInternal(
+    IStore s,
+    bytes32 key,
+    uint256 amount
+  ) external returns (address stakingToken) {
+    require(key > 0, "Invalid key");
+    require(amount > 0, "Enter an amount");
+    require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
+    require(amount <= s.getAvailableToStakeInternal(key), "Target achieved or cap exceeded");
+
+    stakingToken = s.getStakingTokenAddressInternal(key);
+
+    // First withdraw your rewards
+    withdrawRewardsInternal(s, key, msg.sender);
+
+    // Individual state
+    s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
+    s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_DEPOSIT_HEIGHTS, key, msg.sender, block.number);
+
+    // Global state
+    s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
+    s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key, amount);
+
+    IERC20(stakingToken).ensureTransferFrom(msg.sender, address(this), amount);
+  }
+```
+</details>
+
+### withdrawInternal
+
+```solidity
+function withdrawInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
+returns(stakingToken address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function withdrawInternal(
+    IStore s,
+    bytes32 key,
+    uint256 amount
+  ) external returns (address stakingToken) {
+    require(key > 0, "Invalid key");
+    require(amount > 0, "Enter an amount");
+
+    require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
+    require(block.number > canWithdrawFromInternal(s, key, msg.sender), "Withdrawal too early");
+
+    stakingToken = s.getStakingTokenAddressInternal(key);
+
+    // First withdraw your rewards
+    withdrawRewardsInternal(s, key, msg.sender);
+
+    // Individual state
+    s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
+
+    // Global state
+    s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
+
+    IERC20(stakingToken).ensureTransfer(msg.sender, amount);
   }
 ```
 </details>
@@ -650,6 +568,7 @@ function withdrawRewardsInternal(
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)

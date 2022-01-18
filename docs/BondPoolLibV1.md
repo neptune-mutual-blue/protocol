@@ -26,6 +26,14 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 - [calculateTokensForLpInternal(uint256 lpTokens)](#calculatetokensforlpinternal)
 - [getNpmMarketPrice()](#getnpmmarketprice)
 - [getBondPoolInfoInternal(IStore s, address you)](#getbondpoolinfointernal)
+- [_getYourBondContribution(IStore s, address you)](#_getyourbondcontribution)
+- [_getYourBondClaimable(IStore s, address you)](#_getyourbondclaimable)
+- [_getYourBondUnlockDate(IStore s, address you)](#_getyourbondunlockdate)
+- [_getDiscountRate(IStore s)](#_getdiscountrate)
+- [_getVestingTerm(IStore s)](#_getvestingterm)
+- [_getMaxBondInUnit(IStore s)](#_getmaxbondinunit)
+- [_getTotalNpmAllocated(IStore s)](#_gettotalnpmallocated)
+- [_getTotalNpmDistributed(IStore s)](#_gettotalnpmdistributed)
 - [createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired)](#createbondinternal)
 - [claimBondInternal(IStore s)](#claimbondinternal)
 - [setupBondPoolInternal(IStore s, address[] addresses, uint256[] values)](#setupbondpoolinternal)
@@ -104,16 +112,203 @@ function getBondPoolInfoInternal(IStore s, address you) external view returns (a
     addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
 
     values[0] = getNpmMarketPrice(); // marketPrice
-    values[1] = s.getUintByKey(NS_BOND_DISCOUNT_RATE); // discountRate
-    values[2] = s.getUintByKey(NS_BOND_VESTING_TERM); // vestingTerm
-    values[3] = s.getUintByKey(NS_BOND_MAX_UNIT); // maxBond
-    values[4] = s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED); // totalNpmAllocated
-    values[5] = s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED); // totalNpmDistributed
+    values[1] = _getDiscountRate(s); // discountRate
+    values[2] = _getVestingTerm(s); // vestingTerm
+    values[3] = _getMaxBondInUnit(s); // maxBond
+    values[4] = _getTotalNpmAllocated(s); // totalNpmAllocated
+    values[5] = _getTotalNpmDistributed(s); // totalNpmDistributed
     values[6] = IERC20(s.npmToken()).balanceOf(address(this)); // npmAvailable
 
-    values[7] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you))); // bondContribution --> total lp tokens contributed by you
-    values[8] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you))); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
-    values[9] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you))); // unlockDate --> your vesting period end or "unlock date"
+    values[7] = _getYourBondContribution(s, you); // bondContribution --> total lp tokens contributed by you
+    values[8] = _getYourBondClaimable(s, you); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+    values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
+  }
+```
+</details>
+
+### _getYourBondContribution
+
+```solidity
+function _getYourBondContribution(IStore s, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getYourBondContribution(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you)));
+  }
+```
+</details>
+
+### _getYourBondClaimable
+
+```solidity
+function _getYourBondClaimable(IStore s, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getYourBondClaimable(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you)));
+  }
+```
+</details>
+
+### _getYourBondUnlockDate
+
+```solidity
+function _getYourBondUnlockDate(IStore s, address you) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getYourBondUnlockDate(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you)));
+  }
+```
+</details>
+
+### _getDiscountRate
+
+```solidity
+function _getDiscountRate(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getDiscountRate(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_DISCOUNT_RATE);
+  }
+```
+</details>
+
+### _getVestingTerm
+
+```solidity
+function _getVestingTerm(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getVestingTerm(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_VESTING_TERM);
+  }
+```
+</details>
+
+### _getMaxBondInUnit
+
+```solidity
+function _getMaxBondInUnit(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getMaxBondInUnit(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_MAX_UNIT);
+  }
+```
+</details>
+
+### _getTotalNpmAllocated
+
+```solidity
+function _getTotalNpmAllocated(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getTotalNpmAllocated(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED);
+  }
+```
+</details>
+
+### _getTotalNpmDistributed
+
+```solidity
+function _getTotalNpmDistributed(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED);
   }
 ```
 </details>
@@ -162,7 +357,7 @@ function createBondInternal(
     s.addUintByKey(k, lpTokens);
 
     // unlock date
-    values[1] = block.timestamp + s.getUintByKey(BondPoolLibV1.NS_BOND_VESTING_TERM); // solhint-disable-line
+    values[1] = block.timestamp + _getVestingTerm(s); // solhint-disable-line
 
     // Unlock date
     k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
@@ -193,18 +388,15 @@ function claimBondInternal(IStore s) external returns (uint256[] memory values) 
 
     values = new uint256[](1);
 
-    bytes32 k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender));
-    values[0] = s.getUintByKey(k); // npmToTransfer
+    values[0] = _getYourBondClaimable(s, msg.sender); // npmToTransfer
 
     // Clear the claim amount
-    s.setUintByKey(k, 0);
+    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)), 0);
 
-    // Unlock date
-    k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
-    uint256 unlocksOn = s.getUintByKey(k);
+    uint256 unlocksOn = _getYourBondUnlockDate(s, msg.sender);
 
     // Clear the unlock date
-    s.setUintByKey(k, 0);
+    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)), 0);
 
     require(block.timestamp >= unlocksOn, "Still vesting"); // solhint-disable-line
     require(values[0] > 0, "Nothing to claim");
@@ -367,6 +559,7 @@ function setupBondPoolInternal(
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)
