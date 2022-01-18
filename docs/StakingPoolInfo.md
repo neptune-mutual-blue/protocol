@@ -10,11 +10,7 @@ View Source: [contracts/pool/Staking/StakingPoolInfo.sol](../contracts/pool/Stak
 ## Functions
 
 - [constructor(IStore s)](#)
-- [getAvailableToStake(bytes32 key)](#getavailabletostake)
-- [getTotalBlocksSinceLastReward(bytes32 key, address account)](#gettotalblockssincelastreward)
-- [getPoolStakeBalance(bytes32 key)](#getpoolstakebalance)
-- [canWithdrawFrom(bytes32 key, address account)](#canwithdrawfrom)
-- [getAccountStakingBalance(bytes32 key, address account)](#getaccountstakingbalance)
+- [getInfo(bytes32 key, address you)](#getinfo)
 
 ### 
 
@@ -36,122 +32,37 @@ constructor(IStore s) StakingPoolReward(s) {}
 ```
 </details>
 
-### getAvailableToStake
+### getInfo
 
-Reports the remaining amount of tokens that can be staked in this pool
+Gets the info of a given staking pool by key
 
 ```solidity
-function getAvailableToStake(bytes32 key) external view
-returns(uint256)
+function getInfo(bytes32 key, address you) external view
+returns(name string, addresses address[], values uint256[])
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Provide the staking pool key to fetch info for | 
+| you | address | Specify the address to customize the info for | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAvailableToStake(bytes32 key) external view override returns (uint256) {
-    return s.getAvailableToStakeInternal(key);
-  }
-```
-</details>
-
-### getTotalBlocksSinceLastReward
-
-```solidity
-function getTotalBlocksSinceLastReward(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getTotalBlocksSinceLastReward(bytes32 key, address account) external view override returns (uint256) {
-    return s.getTotalBlocksSinceLastRewardInternal(key, account);
-  }
-```
-</details>
-
-### getPoolStakeBalance
-
-```solidity
-function getPoolStakeBalance(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPoolStakeBalance(bytes32 key) external view override returns (uint256) {
-    return s.getPoolStakeBalanceInternal(key);
-  }
-```
-</details>
-
-### canWithdrawFrom
-
-```solidity
-function canWithdrawFrom(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function canWithdrawFrom(bytes32 key, address account) external view override returns (uint256) {
-    return s.canWithdrawFromInternal(key, account);
-  }
-```
-</details>
-
-### getAccountStakingBalance
-
-```solidity
-function getAccountStakingBalance(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAccountStakingBalance(bytes32 key, address account) external view override returns (uint256) {
-    return s.getAccountStakingBalanceInternal(key, account);
+function getInfo(bytes32 key, address you)
+    external
+    view
+    override
+    returns (
+      string memory name,
+      address[] memory addresses,
+      uint256[] memory values
+    )
+  {
+    return s.getInfoInternal(key, you);
   }
 ```
 </details>
@@ -252,6 +163,7 @@ function getAccountStakingBalance(bytes32 key, address account) external view ov
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)

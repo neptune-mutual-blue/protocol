@@ -73,7 +73,13 @@ const deployAll = async (cache) => {
     ValidationLibV1: validationLib.address
   })
 
+  const stakingPoolCoreLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolCoreLibV1', {
+    StoreKeyUtil: storeKeyUtil.address,
+    NTransferUtilV2: transferLib.address
+  })
+
   const stakingPoolLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolLibV1', {
+    StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     NTransferUtilV2: transferLib.address
@@ -103,6 +109,7 @@ const deployAll = async (cache) => {
     cxTokenFactoryLib,
     dateLib,
     bondPoolLibV1,
+    stakingPoolCoreLibV1,
     stakingPoolLibV1
   }
 }

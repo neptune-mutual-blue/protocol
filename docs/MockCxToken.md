@@ -196,6 +196,7 @@ function coverKey() external pure returns (bytes32) {
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)

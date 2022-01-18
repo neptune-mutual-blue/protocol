@@ -111,9 +111,9 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, bondPoolContract, 'setup', addresses, values)
 
   const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
+    StakingPoolCoreLibV1: libs.stakingPoolCoreLibV1.address,
     StakingPoolLibV1: libs.stakingPoolLibV1.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
-    NTransferUtilV2: libs.transferLib.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address,
     BaseLibV1: libs.baseLibV1.address

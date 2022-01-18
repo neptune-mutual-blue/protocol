@@ -39,6 +39,6 @@ module.exports = [
     type: 'staking:pool',
     prefix: 'NS_POOL_',
     expression: /.*constant NS_POOL_.*\n/g,
-    src: './contracts/Libraries/StakingPoolLibV1.sol'
+    src: './contracts/Libraries/StakingPoolCoreLibV1.sol'
   }
 ]

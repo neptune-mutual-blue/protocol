@@ -4,6 +4,7 @@ import "./StakingPoolBase.sol";
 
 abstract contract StakingPoolReward is StakingPoolBase {
   using ValidationLibV1 for IStore;
+  using StakingPoolCoreLibV1 for IStore;
   using StakingPoolLibV1 for IStore;
 
   constructor(IStore s) StakingPoolBase(s) {} //solhint-disable-line

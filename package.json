@@ -16,6 +16,7 @@
     "replace:abis": "npm run genabi && cp ./abis/*.json ../web3/@neptunemutual/sdk/src/config/abis",
     "genkey": "node ./util/extract/keys/index.js > ./util/key.js  && standard --fix ./util/key.js",
     "genkey:ts": "touch ./.ignored/key-util.ts && node ./util/extract/keys --ts > ./.ignored/key-util.ts",
+    "genkey:as": "touch ./.ignored/key-util.ts && node ./util/extract/keys --as > ./.ignored/key-util.ts",
     "gendoc": "npm run gendoc:local",
     "gendoc:local": "rm -rf build && rm -rf docs && truffle compile && node ../solidoc2/cli.js",
     "gendoc:global": "rm -rf build && rm -rf docs && truffle compile && solidoc2",

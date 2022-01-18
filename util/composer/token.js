@@ -2,6 +2,8 @@ const hre = require('hardhat')
 const { deployer, helper } = require('..')
 const { getNetworkInfo } = require('../network')
 const erc20 = require('../contract-helper/erc20')
+const faucet = require('../contract-helper/faucet')
+const { ethers } = hre
 
 const sendTransfers = async (contract) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
@@ -32,7 +34,12 @@ const deploySeveral = async (cache, tokens) => {
 
     if (tokenAt) {
       console.info('The token', symbol, 'was not deployed but picked up from the network config')
-      contracts.push(await erc20.getInstance(tokenAt))
+
+      const token = await erc20.getInstance(tokenAt)
+      // @todo parameterize this on network config
+      await faucet.request(token)
+
+      contracts.push(token)
       continue
     }
 

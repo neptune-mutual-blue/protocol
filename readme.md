@@ -451,6 +451,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Resolvable](docs/Resolvable.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [StakingPoolBase](docs/StakingPoolBase.md)
+* [StakingPoolCoreLibV1](docs/StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](docs/StakingPoolInfo.md)
 * [StakingPoolLibV1](docs/StakingPoolLibV1.md)
 * [StakingPoolReward](docs/StakingPoolReward.md)

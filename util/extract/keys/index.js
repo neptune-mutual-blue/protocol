@@ -1,13 +1,15 @@
 const Enumerable = require('node-enumerable')
 const files = require('./requirement')
-const code = require('./code-generator')
+const codegen = require('./code-generator')
+const codegenAs = require('./code-generator-as')
 const processor = require('./processor')
 const template = require('./template')
 const [, , type] = process.argv
 
 const start = async () => {
   const candidates = []
-  const { pre, post } = template.get(type && type.replace('--', ''))
+  const mode = type && type.replace('--', '')
+  const { pre, post } = template.get(mode)
 
   console.log(pre)
   console.log('\n')
@@ -17,9 +19,14 @@ const start = async () => {
     candidates.push(...result)
   }
 
+  if (mode === 'as') {
+    await codegenAs.generate(candidates)
+    return
+  }
+
   Enumerable.from(candidates)
     .groupBy(x => x.scope)
-    .each(async (scope) => code.generate(scope.key, scope.toArray()))
+    .each(async (scope) => codegen.generate(scope.key, scope.toArray()))
 
   const scopes = Enumerable.from(candidates).select(x => x.scope).distinct().toArray().join(', ')
 

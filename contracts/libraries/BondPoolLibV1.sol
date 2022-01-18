@@ -59,16 +59,48 @@ library BondPoolLibV1 {
     addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
 
     values[0] = getNpmMarketPrice(); // marketPrice
-    values[1] = s.getUintByKey(NS_BOND_DISCOUNT_RATE); // discountRate
-    values[2] = s.getUintByKey(NS_BOND_VESTING_TERM); // vestingTerm
-    values[3] = s.getUintByKey(NS_BOND_MAX_UNIT); // maxBond
-    values[4] = s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED); // totalNpmAllocated
-    values[5] = s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED); // totalNpmDistributed
+    values[1] = _getDiscountRate(s); // discountRate
+    values[2] = _getVestingTerm(s); // vestingTerm
+    values[3] = _getMaxBondInUnit(s); // maxBond
+    values[4] = _getTotalNpmAllocated(s); // totalNpmAllocated
+    values[5] = _getTotalNpmDistributed(s); // totalNpmDistributed
     values[6] = IERC20(s.npmToken()).balanceOf(address(this)); // npmAvailable
 
-    values[7] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you))); // bondContribution --> total lp tokens contributed by you
-    values[8] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you))); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
-    values[9] = s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you))); // unlockDate --> your vesting period end or "unlock date"
+    values[7] = _getYourBondContribution(s, you); // bondContribution --> total lp tokens contributed by you
+    values[8] = _getYourBondClaimable(s, you); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+    values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
+  }
+
+  function _getYourBondContribution(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you)));
+  }
+
+  function _getYourBondClaimable(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you)));
+  }
+
+  function _getYourBondUnlockDate(IStore s, address you) private view returns (uint256) {
+    return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you)));
+  }
+
+  function _getDiscountRate(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_DISCOUNT_RATE);
+  }
+
+  function _getVestingTerm(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_VESTING_TERM);
+  }
+
+  function _getMaxBondInUnit(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_MAX_UNIT);
+  }
+
+  function _getTotalNpmAllocated(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED);
+  }
+
+  function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
+    return s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED);
   }
 
   function createBondInternal(
@@ -96,7 +128,7 @@ library BondPoolLibV1 {
     s.addUintByKey(k, lpTokens);
 
     // unlock date
-    values[1] = block.timestamp + s.getUintByKey(BondPoolLibV1.NS_BOND_VESTING_TERM); // solhint-disable-line
+    values[1] = block.timestamp + _getVestingTerm(s); // solhint-disable-line
 
     // Unlock date
     k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
@@ -108,18 +140,15 @@ library BondPoolLibV1 {
 
     values = new uint256[](1);
 
-    bytes32 k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender));
-    values[0] = s.getUintByKey(k); // npmToTransfer
+    values[0] = _getYourBondClaimable(s, msg.sender); // npmToTransfer
 
     // Clear the claim amount
-    s.setUintByKey(k, 0);
+    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)), 0);
 
-    // Unlock date
-    k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
-    uint256 unlocksOn = s.getUintByKey(k);
+    uint256 unlocksOn = _getYourBondUnlockDate(s, msg.sender);
 
     // Clear the unlock date
-    s.setUintByKey(k, 0);
+    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)), 0);
 
     require(block.timestamp >= unlocksOn, "Still vesting"); // solhint-disable-line
     require(values[0] > 0, "Nothing to claim");

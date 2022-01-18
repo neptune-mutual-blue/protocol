@@ -1,12 +1,17 @@
-const js = require('./template-js')
-const ts = require('./template-ts')
+const tas = require('./template-as')
+const tjs = require('./template-js')
+const tts = require('./template-ts')
 
 const get = (type) => {
   if (type === 'ts') {
-    return ts
+    return tts
   }
 
-  return js
+  if (type === 'as') {
+    return tas
+  }
+
+  return tjs
 }
 
 module.exports = { get }

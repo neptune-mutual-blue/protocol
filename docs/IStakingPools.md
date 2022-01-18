@@ -36,11 +36,7 @@ event RewardsWithdrawn(bytes32 indexed key, address indexed account, address ind
 - [withdraw(bytes32 key, uint256 amount)](#withdraw)
 - [withdrawRewards(bytes32 key)](#withdrawrewards)
 - [calculateRewards(bytes32 key, address account)](#calculaterewards)
-- [getAvailableToStake(bytes32 key)](#getavailabletostake)
-- [getTotalBlocksSinceLastReward(bytes32 key, address account)](#gettotalblockssincelastreward)
-- [getAccountStakingBalance(bytes32 key, address account)](#getaccountstakingbalance)
-- [getPoolStakeBalance(bytes32 key)](#getpoolstakebalance)
-- [canWithdrawFrom(bytes32 key, address account)](#canwithdrawfrom)
+- [getInfo(bytes32 key, address you)](#getinfo)
 
 ### addOrEditPool
 
@@ -207,111 +203,34 @@ function calculateRewards(bytes32 key, address account) external view returns (u
 ```
 </details>
 
-### getAvailableToStake
+### getInfo
+
+Gets the info of a given staking pool by key
 
 ```solidity
-function getAvailableToStake(bytes32 key) external view
-returns(uint256)
+function getInfo(bytes32 key, address you) external view
+returns(name string, addresses address[], values uint256[])
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| key | bytes32 | Provide the staking pool key to fetch info for | 
+| you | address | Specify the address to customize the info for | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAvailableToStake(bytes32 key) external view returns (uint256);
-```
-</details>
-
-### getTotalBlocksSinceLastReward
-
-```solidity
-function getTotalBlocksSinceLastReward(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getTotalBlocksSinceLastReward(bytes32 key, address account) external view returns (uint256);
-```
-</details>
-
-### getAccountStakingBalance
-
-```solidity
-function getAccountStakingBalance(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAccountStakingBalance(bytes32 key, address account) external view returns (uint256);
-```
-</details>
-
-### getPoolStakeBalance
-
-```solidity
-function getPoolStakeBalance(bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPoolStakeBalance(bytes32 key) external view returns (uint256);
-```
-</details>
-
-### canWithdrawFrom
-
-```solidity
-function canWithdrawFrom(bytes32 key, address account) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function canWithdrawFrom(bytes32 key, address account) external view returns (uint256);
+function getInfo(bytes32 key, address you)
+    external
+    view
+    returns (
+      string memory name,
+      address[] memory addresses,
+      uint256[] memory values
+    );
 ```
 </details>
 
@@ -411,6 +330,7 @@ function canWithdrawFrom(bytes32 key, address account) external view returns (ui
 * [Resolvable](Resolvable.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
+* [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
 * [StakingPoolInfo](StakingPoolInfo.md)
 * [StakingPoolLibV1](StakingPoolLibV1.md)
 * [StakingPoolReward](StakingPoolReward.md)
