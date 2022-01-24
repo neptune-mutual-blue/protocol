@@ -7,7 +7,7 @@ View Source: [contracts/core/governance/Witness.sol](../contracts/core/governanc
 
 **Witness**
 
-The witenss contract enables NPM tokenholders to
+The witeness contract enables NPM tokenholders to
  participate in an already-reported cover incident.
  <br />
  The participants can choose to support an incident by `attesting`
@@ -231,6 +231,7 @@ function getStakesOf(
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -243,6 +244,7 @@ function getStakesOf(
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -257,10 +259,13 @@ function getStakesOf(
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -278,6 +283,7 @@ function getStakesOf(
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -296,12 +302,14 @@ function getStakesOf(
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -313,6 +321,7 @@ function getStakesOf(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -323,6 +332,7 @@ function getStakesOf(
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -333,6 +343,7 @@ function getStakesOf(
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

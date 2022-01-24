@@ -10,12 +10,15 @@ import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
+import "./RoutineInvokerLibV1.sol";
 import "./StoreKeyUtil.sol";
 import "./CoverUtilV1.sol";
 
 library GovernanceUtilV1 {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ProtoUtilV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   function getReportingPeriod(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key);
@@ -119,8 +122,8 @@ library GovernanceUtilV1 {
     // slither-disable-next-line divide-before-multiply
     uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
 
-    toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
-    toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.MULTIPLIER;
+    toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.MULTIPLIER;
     myReward = reward - toBurn - toReporter;
   }
 
@@ -234,6 +237,8 @@ library GovernanceUtilV1 {
 
     s.addUintByKey(k, stake);
     updateCoverStatus(s, key, incidentDate);
+
+    s.updateStateAndLiquidity(key);
   }
 
   function getAttestation(
@@ -272,6 +277,8 @@ library GovernanceUtilV1 {
     s.addUintByKey(k, stake);
 
     updateCoverStatus(s, key, incidentDate);
+
+    s.updateStateAndLiquidity(key);
   }
 
   function getDispute(

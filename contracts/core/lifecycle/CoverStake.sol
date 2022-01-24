@@ -28,6 +28,7 @@ contract CoverStake is ICoverStake, Recoverable {
   using CoverUtilV1 for IStore;
   using ValidationLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -79,7 +80,7 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    // Note: @todo this function is not called anywhere
+    // @todo this function is not called anywhere. Remove this.
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
@@ -92,6 +93,10 @@ contract CoverStake is ICoverStake, Recoverable {
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount);
 
     s.npmToken().ensureTransfer(account, amount);
+
+    // Remove if the strategy is being invoked on the cover contract during this transaction
+    s.updateStateAndLiquidity(key);
+
     emit StakeRemoved(key, amount);
   }
 

@@ -10,6 +10,7 @@ import "./StoreKeyUtil.sol";
 import "./ValidationLibV1.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
+import "./RoutineInvokerLibV1.sol";
 
 library VaultLibV1 {
   using NTransferUtilV2 for IERC20;
@@ -18,6 +19,7 @@ library VaultLibV1 {
   using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
@@ -257,6 +259,8 @@ library VaultLibV1 {
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
 
+    s.updateStateAndLiquidity(coverKey);
+
     return releaseAmount;
   }
 
@@ -286,8 +290,8 @@ library VaultLibV1 {
     uint256 rate = _getFlashLoanFeeRateInternal(s);
     uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
 
-    fee = (amount * rate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
-    protocolFee = (fee * protocolRate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    fee = (amount * rate) / ProtoUtilV1.MULTIPLIER;
+    protocolFee = (fee * protocolRate) / ProtoUtilV1.MULTIPLIER;
   }
 
   function _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
@@ -317,5 +321,20 @@ library VaultLibV1 {
     If a token is not currently supported maxFlashLoan MUST return 0, instead of reverting.    
     */
     return 0;
+  }
+
+  function setMinLiquidityPeriodInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 value
+  ) external returns (uint256 previous) {
+    previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+
+    s.updateStateAndLiquidity(coverKey);
+  }
+
+  function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
   }
 }

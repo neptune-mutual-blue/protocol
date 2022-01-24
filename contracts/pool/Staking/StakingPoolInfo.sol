@@ -23,7 +23,7 @@ abstract contract StakingPoolInfo is StakingPoolReward {
    * @param values[3] stakeBalance --> Returns the amount of staking token currently locked in the pool
    * @param values[4] cumulativeDeposits --> Returns the total amount tokens which were deposited in this pool
    * @param values[5] rewardPerBlock --> Returns the unit of reward tokens awarded on each block for each unit of staking token
-   * @param values[6] platformFee --> Returns the % rate (multipled by ProtoUtilV1.PERCENTAGE_DIVISOR) charged by protocol on rewards
+   * @param values[6] platformFee --> Returns the % rate (multipled by ProtoUtilV1.MULTIPLIER) charged by protocol on rewards
    * @param values[7] lockupPeriod --> Returns the period until when a stake can't be withdrawn
    * @param values[8] rewardTokenBalance --> Returns the balance of the reward tokens still left in the pool
    * @param values[9] accountStakeBalance --> Returns your stake amount

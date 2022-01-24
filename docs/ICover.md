@@ -10,7 +10,7 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 **Events**
 
 ```js
-event CoverCreated(bytes32  key, bytes32  info, uint256  stakeWithFee, uint256  liquidity);
+event CoverCreated(bytes32  key, bytes32  info);
 event CoverUpdated(bytes32  key, bytes32  info);
 event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  reason);
 event WhitelistUpdated(address  account, bool  status);
@@ -22,7 +22,7 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ## Functions
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
+- [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
@@ -69,7 +69,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable
+function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values) external nonpayable
 ```
 
 **Arguments**
@@ -78,12 +78,8 @@ function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 r
 | ------------- |------------- | -----|
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
-| minStakeToReport | uint256 |  | 
-| reportingPeriod | uint256 | The period during when reporting happens. | 
-| stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| initialReassuranceAmount | uint256 | **Optional.** Enter the initial amount of  reassurance tokens you'd like to add to this pool. | 
-| initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
+| values | uint256[] | [0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -92,12 +88,8 @@ function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 r
 function addCover(
     bytes32 key,
     bytes32 info,
-    uint256 minStakeToReport,
-    uint256 reportingPeriod,
-    uint256 stakeWithFee,
     address reassuranceToken,
-    uint256 initialReassuranceAmount,
-    uint256 initialLiquidity
+    uint256[] memory values
   ) external;
 ```
 </details>
@@ -261,6 +253,7 @@ function setMinCoverCreationStake(uint256 value) external;
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -273,6 +266,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -287,10 +281,13 @@ function setMinCoverCreationStake(uint256 value) external;
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -308,6 +305,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -326,12 +324,14 @@ function setMinCoverCreationStake(uint256 value) external;
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -343,6 +343,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -353,6 +354,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -363,6 +365,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

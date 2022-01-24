@@ -34,8 +34,10 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   constructor(
     IStore store,
     bytes32 key,
-    uint256 expiry
-  ) ERC20("USD Cover Token", "cUSD") Recoverable(store) {
+    uint256 expiry,
+    string memory name,
+    string memory symbol
+  ) ERC20(name, symbol) Recoverable(store) {
     coverKey = key;
     expiresOn = expiry;
   }

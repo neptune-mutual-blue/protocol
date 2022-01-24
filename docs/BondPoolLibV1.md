@@ -23,9 +23,9 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 
 ## Functions
 
-- [calculateTokensForLpInternal(uint256 lpTokens)](#calculatetokensforlpinternal)
-- [getNpmMarketPrice()](#getnpmmarketprice)
+- [calculateTokensForLpInternal(IStore s, uint256 lpTokens)](#calculatetokensforlpinternal)
 - [getBondPoolInfoInternal(IStore s, address you)](#getbondpoolinfointernal)
+- [_getLpTokenAddress(IStore s)](#_getlptokenaddress)
 - [_getYourBondContribution(IStore s, address you)](#_getyourbondcontribution)
 - [_getYourBondClaimable(IStore s, address you)](#_getyourbondclaimable)
 - [_getYourBondUnlockDate(IStore s, address you)](#_getyourbondunlockdate)
@@ -41,7 +41,7 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 ### calculateTokensForLpInternal
 
 ```solidity
-function calculateTokensForLpInternal(uint256 lpTokens) public pure
+function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view
 returns(uint256)
 ```
 
@@ -49,38 +49,24 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| s | IStore |  | 
 | lpTokens | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculateTokensForLpInternal(uint256 lpTokens) public pure returns (uint256) {
-    // @todo: implement this function
-    return 3 * lpTokens;
-  }
-```
-</details>
+function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
+    IUniswapV2PairLike pair = IUniswapV2PairLike(_getLpTokenAddress(s));
+    uint256 dollarValue = s.getPairLiquidityInStablecoin(pair, lpTokens);
 
-### getNpmMarketPrice
+    uint256 npmPrice = s.getNpmPriceInternal(1 ether);
+    uint256 discount = _getDiscountRate(s);
+    uint256 discountedNpmPrice = (npmPrice * (ProtoUtilV1.MULTIPLIER - discount)) / ProtoUtilV1.MULTIPLIER;
 
-```solidity
-function getNpmMarketPrice() public pure
-returns(uint256)
-```
+    uint256 npmForContribution = (dollarValue * 1 ether) / discountedNpmPrice;
 
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getNpmMarketPrice() public pure returns (uint256) {
-    // @todo
-    return 2 ether;
+    return npmForContribution;
   }
 ```
 </details>
@@ -109,9 +95,9 @@ function getBondPoolInfoInternal(IStore s, address you) external view returns (a
     addresses = new address[](1);
     values = new uint256[](10);
 
-    addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
+    addresses[0] = _getLpTokenAddress(s);
 
-    values[0] = getNpmMarketPrice(); // marketPrice
+    values[0] = s.getNpmPriceInternal(1 ether); // marketPrice
     values[1] = _getDiscountRate(s); // discountRate
     values[2] = _getVestingTerm(s); // vestingTerm
     values[3] = _getMaxBondInUnit(s); // maxBond
@@ -122,6 +108,29 @@ function getBondPoolInfoInternal(IStore s, address you) external view returns (a
     values[7] = _getYourBondContribution(s, you); // bondContribution --> total lp tokens contributed by you
     values[8] = _getYourBondClaimable(s, you); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
     values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
+  }
+```
+</details>
+
+### _getLpTokenAddress
+
+```solidity
+function _getLpTokenAddress(IStore s) private view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getLpTokenAddress(IStore s) private view returns (address) {
+    return s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN);
   }
 ```
 </details>
@@ -340,7 +349,7 @@ function createBondInternal(
     s.mustNotBePaused();
 
     values = new uint256[](2);
-    values[0] = calculateTokensForLpInternal(lpTokens); // npmToVest
+    values[0] = calculateTokensForLpInternal(s, lpTokens); // npmToVest
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
@@ -465,6 +474,7 @@ function setupBondPoolInternal(
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -477,6 +487,7 @@ function setupBondPoolInternal(
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -491,10 +502,13 @@ function setupBondPoolInternal(
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -512,6 +526,7 @@ function setupBondPoolInternal(
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -530,12 +545,14 @@ function setupBondPoolInternal(
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -547,6 +564,7 @@ function setupBondPoolInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -557,6 +575,7 @@ function setupBondPoolInternal(
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -567,6 +586,7 @@ function setupBondPoolInternal(
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

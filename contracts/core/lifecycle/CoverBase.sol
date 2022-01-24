@@ -3,22 +3,17 @@
 pragma solidity 0.8.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICover.sol";
-import "../../libraries/ProtoUtilV1.sol";
+import "../../libraries/CoverLibV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
-import "../../libraries/CoverUtilV1.sol";
-import "../../libraries/RegistryLibV1.sol";
-import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**
  * @title Base Cover Contract
  */
 abstract contract CoverBase is ICover, Recoverable {
-  using ProtoUtilV1 for bytes;
-  using CoverUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
+  using CoverLibV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
    * @dev Constructs this smart contract
@@ -41,28 +36,23 @@ abstract contract CoverBase is ICover, Recoverable {
 
     require(s.getAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN) == address(0), "Already initialized");
 
-    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
-    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
-
+    s.initializeCoverInternal(liquidityToken, liquidityName);
     emit CoverInitialized(liquidityToken, liquidityName);
   }
 
   function setCoverFees(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
 
+    uint256 previous = s.setCoverFeesInternal(value);
     emit CoverFeeSet(previous, value);
   }
 
   function setMinCoverCreationStake(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, value);
-
+    uint256 previous = s.setMinCoverCreationStakeInternal(value);
     emit MinCoverCreationStakeSet(previous, value);
   }
 

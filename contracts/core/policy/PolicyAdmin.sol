@@ -22,6 +22,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -41,6 +42,8 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
 
+    s.updateStateAndLiquidity(0);
+
     emit PolicyRateSet(floor, ceiling);
   }
 
@@ -59,6 +62,8 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);
+
+    s.updateStateAndLiquidity(key);
 
     emit CoverPolicyRateSet(key, floor, ceiling);
   }

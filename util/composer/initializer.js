@@ -28,7 +28,7 @@ const initialize = async (suite, deploymentId) => {
   }
 
   if (!factory) {
-    factory = helper.randomAddress()
+    factory = fakes.factory.address
   }
 
   const [npm, wxDai, cpool, ht, okb, axs] = await fakeTokenComposer.deploySeveral(cache, [
@@ -55,11 +55,11 @@ const initialize = async (suite, deploymentId) => {
 
   const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
     {
-      StoreKeyUtil: libs.storeKeyUtil.address,
-      ProtoUtilV1: libs.protoUtilV1.address,
       AccessControlLibV1: libs.accessControlLibV1.address,
-      ValidationLibV1: libs.validationLib.address,
-      BaseLibV1: libs.baseLibV1.address
+      BaseLibV1: libs.baseLibV1.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     },
     store.address
   )
@@ -88,35 +88,36 @@ const initialize = async (suite, deploymentId) => {
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Min liquidity period
       7 * DAYS, // Claim period
-      helper.ether(0.3), // Governance Burn Rate: 30%
-      helper.ether(0.1), // Governance Reporter Commission: 10%
-      helper.ether(0.065), // Claim: Platform Fee: 6.5%
-      helper.ether(0.005), // Claim: Reporter Commission: 5%
-      helper.ether(0.0005), // Flash Loan Fee: 0.5%
-      helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+      helper.percentage(30), // Governance Burn Rate: 30%
+      helper.percentage(10), // Governance Reporter Commission: 10%
+      helper.percentage(6.5), // Claim: Platform Fee: 6.5%
+      helper.percentage(5), // Claim: Reporter Commission: 5%
+      helper.percentage(0.5), // Flash Loan Fee: 0.5%
+      helper.percentage(2.5) // Flash Loan Protocol Fee: 2.5%
     ]
   )
 
   const bondPoolContract = await deployer.deployWithLibraries(cache, 'BondPool', {
     BondPoolLibV1: libs.bondPoolLibV1.address,
-    BaseLibV1: libs.baseLibV1.address
+    BaseLibV1: libs.baseLibV1.address,
+    PriceLibV1: libs.priceLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.BOND_POOL, bondPoolContract.address)
 
   await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000))
   let addresses = [npmUsdPair.address, sample.fake.TREASURY]
-  let values = [helper.ether(0.0075625), helper.ether(10_000), 7 * DAYS, helper.ether(2_000)]
+  let values = [helper.percentage(0.75), helper.ether(10_000), 7 * DAYS, helper.ether(2_000)]
 
   await intermediate(cache, bondPoolContract, 'setup', addresses, values)
 
   const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
+    BaseLibV1: libs.baseLibV1.address,
     StakingPoolCoreLibV1: libs.stakingPoolCoreLibV1.address,
     StakingPoolLibV1: libs.stakingPoolLibV1.address,
-    AccessControlLibV1: libs.accessControlLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address,
-    BaseLibV1: libs.baseLibV1.address
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STAKING_POOL, stakingPoolContract.address)
@@ -143,22 +144,24 @@ const initialize = async (suite, deploymentId) => {
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     BaseLibV1: libs.baseLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    CoverUtilV1: libs.coverUtil.address,
+    CoverUtilV1: libs.coverUtilV1.address,
+    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_STAKE, stakingContract.address)
 
   const reassuranceContract = await deployer.deployWithLibraries(cache, 'CoverReassurance', {
-    BaseLibV1: libs.baseLibV1.address,
-    CoverUtilV1: libs.coverUtil.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
+    BaseLibV1: libs.baseLibV1.address,
+    CoverUtilV1: libs.coverUtilV1.address,
+    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
@@ -168,8 +171,8 @@ const initialize = async (suite, deploymentId) => {
     {
       BaseLibV1: libs.baseLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
-      VaultFactoryLibV1: libs.vaultFactoryLib.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLib.address,
+      VaultFactoryLibV1: libs.vaultFactoryLib.address
     }
     , store.address
   )
@@ -180,8 +183,9 @@ const initialize = async (suite, deploymentId) => {
     {
       BaseLibV1: libs.baseLibV1.address,
       cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
-      ValidationLibV1: libs.validationLib.address,
-      StoreKeyUtil: libs.storeKeyUtil.address
+      ProtoUtilV1: libs.protoUtilV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     }
     , store.address
   )
@@ -190,15 +194,15 @@ const initialize = async (suite, deploymentId) => {
 
   const governance = await deployer.deployWithLibraries(cache, 'Governance',
     {
+      AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
-      StoreKeyUtil: libs.storeKeyUtil.address,
-      ProtoUtilV1: libs.protoUtilV1.address,
-      CoverUtilV1: libs.coverUtil.address,
-      NTransferUtilV2: libs.transferLib.address,
-      ValidationLibV1: libs.validationLib.address,
+      CoverUtilV1: libs.coverUtilV1.address,
       GovernanceUtilV1: libs.governanceLib.address,
-      RegistryLibV1: libs.registryLib.address,
-      AccessControlLibV1: libs.accessControlLibV1.address
+      NTransferUtilV2: libs.transferLib.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     },
     store.address
   )
@@ -209,9 +213,10 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
+      RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
-      CoverUtilV1: libs.coverUtil.address,
+      CoverUtilV1: libs.coverUtilV1.address,
       NTransferUtilV2: libs.transferLib.address,
       ValidationLibV1: libs.validationLib.address,
       GovernanceUtilV1: libs.governanceLib.address
@@ -223,14 +228,12 @@ const initialize = async (suite, deploymentId) => {
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
     {
-      BaseLibV1: libs.baseLibV1.address,
-      StoreKeyUtil: libs.storeKeyUtil.address,
-      ProtoUtilV1: libs.protoUtilV1.address,
       AccessControlLibV1: libs.accessControlLibV1.address,
-      CoverUtilV1: libs.coverUtil.address,
-      NTransferUtilV2: libs.transferLib.address,
-      ValidationLibV1: libs.validationLib.address,
-      RegistryLibV1: libs.registryLib.address
+      BaseLibV1: libs.baseLibV1.address,
+      CoverLibV1: libs.coverLibV1.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     },
     store.address
   )
@@ -238,36 +241,37 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER, cover.address)
 
   const provisionContract = await deployer.deployWithLibraries(cache, 'CoverProvision', {
-    BaseLibV1: libs.baseLibV1.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
+    BaseLibV1: libs.baseLibV1.address,
+    CoverLibV1: libs.coverLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    NTransferUtilV2: libs.transferLib.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.NS.COVER_PROVISION, provisionContract.address)
 
   const policyAdminContract = await deployer.deployWithLibraries(cache, 'PolicyAdmin', {
-    BaseLibV1: libs.baseLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
     AccessControlLibV1: libs.accessControlLibV1.address,
-    ValidationLibV1: libs.validationLib.address,
-    CoverUtilV1: libs.coverUtil.address
+    BaseLibV1: libs.baseLibV1.address,
+    CoverUtilV1: libs.coverUtilV1.address,
+    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY_ADMIN, policyAdminContract.address)
 
   await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
-  await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.ether(0.07), helper.ether(0.45))
+  await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
   await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
     BaseLibV1: libs.baseLibV1.address,
-    CoverUtilV1: libs.coverUtil.address,
+    CoverUtilV1: libs.coverUtilV1.address,
+    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
-    RegistryLibV1: libs.registryLib.address,
+    RegistryLibV1: libs.registryLibV1.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
@@ -275,14 +279,15 @@ const initialize = async (suite, deploymentId) => {
 
   const claimsProcessor = await deployer.deployWithLibraries(cache, 'Processor',
     {
-      BaseLibV1: libs.baseLibV1.address,
-      NTransferUtilV2: libs.transferLib.address,
-      RegistryLibV1: libs.registryLib.address,
-      StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address,
       AccessControlLibV1: libs.accessControlLibV1.address,
+      BaseLibV1: libs.baseLibV1.address,
       GovernanceUtilV1: libs.governanceLib.address,
-      ProtoUtilV1: libs.protoUtilV1.address
+      RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+      NTransferUtilV2: libs.transferLib.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
     },
     store.address
   )
@@ -291,6 +296,7 @@ const initialize = async (suite, deploymentId) => {
 
   const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
     BaseLibV1: libs.baseLibV1.address,
+    PriceLibV1: libs.priceLibV1.address,
     ProtoUtilV1: libs.protoUtilV1.address
   }, store.address)
 

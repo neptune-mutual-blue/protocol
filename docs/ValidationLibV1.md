@@ -14,6 +14,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [callerMustBePolicyContract(IStore s)](#callermustbepolicycontract)
 - [callerMustBePolicyManagerContract(IStore s)](#callermustbepolicymanagercontract)
 - [callerMustBeCoverContract(IStore s)](#callermustbecovercontract)
+- [callerMustBeVaultContract(IStore s, bytes32 key)](#callermustbevaultcontract)
 - [callerMustBeGovernanceContract(IStore s)](#callermustbegovernancecontract)
 - [callerMustBeClaimsProcessorContract(IStore s)](#callermustbeclaimsprocessorcontract)
 - [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
@@ -236,6 +237,30 @@ function callerMustBeCoverContract(IStore s) external view
 ```javascript
 function callerMustBeCoverContract(IStore s) external view {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER);
+  }
+```
+</details>
+
+### callerMustBeVaultContract
+
+```solidity
+function callerMustBeVaultContract(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeVaultContract(IStore s, bytes32 key) external view {
+    address vault = s.getVaultAddress(key);
+    require(msg.sender == vault, "Forbidden");
   }
 ```
 </details>
@@ -734,6 +759,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -746,6 +772,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -760,10 +787,13 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -781,6 +811,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -799,12 +830,14 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -816,6 +849,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -826,6 +860,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -836,6 +871,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

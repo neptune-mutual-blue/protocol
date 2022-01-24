@@ -81,7 +81,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function setFirstReportingStake(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
@@ -95,7 +95,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function setReportingBurnRate(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
@@ -105,7 +105,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function setReporterCommission(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);

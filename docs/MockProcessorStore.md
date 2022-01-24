@@ -8,11 +8,172 @@ View Source: [contracts/mock/claims-processor/MockProcessorStore.sol](../contrac
 
 ## Functions
 
+- [initialize(MockStore s, bytes32 key, address cxToken)](#initialize)
+- [disassociateCxToken(MockStore s, address cxToken)](#disassociatecxtoken)
+- [setCoverStatus(MockStore s, bytes32 key, uint256 value)](#setcoverstatus)
+- [setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value)](#setclaimbegintimestamp)
+- [setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value)](#setclaimexpirytimestamp)
 - [initialize(bytes32 key, address cxToken)](#initialize)
 - [disassociateCxToken(address cxToken)](#disassociatecxtoken)
 - [setCoverStatus(bytes32 key, uint256 value)](#setcoverstatus)
 - [setClaimBeginTimestamp(bytes32 key, uint256 value)](#setclaimbegintimestamp)
 - [setClaimExpiryTimestamp(bytes32 key, uint256 value)](#setclaimexpirytimestamp)
+
+### initialize
+
+```solidity
+function initialize(MockStore s, bytes32 key, address cxToken) public nonpayable
+returns(values address[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | MockStore |  | 
+| key | bytes32 |  | 
+| cxToken | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function initialize(
+    MockStore s,
+    bytes32 key,
+    address cxToken
+  ) public returns (address[] memory values) {
+    MockProtocol protocol = new MockProtocol();
+    MockVault vault = new MockVault();
+
+    s.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
+    s.setAddress(ProtoUtilV1.CNS_COVER_STABLECOIN, cxToken);
+
+    s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
+    s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
+    s.setUint(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, 1234);
+
+    s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
+    s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", key, address(vault));
+
+    setCoverStatus(s, key, 4);
+    setClaimBeginTimestamp(s, key, block.timestamp - 100 days); // solhint-disable-line
+    setClaimExpiryTimestamp(s, key, block.timestamp + 100 days); // solhint-disable-line
+
+    values = new address[](2);
+
+    values[0] = address(protocol);
+    values[1] = address(vault);
+  }
+```
+</details>
+
+### disassociateCxToken
+
+```solidity
+function disassociateCxToken(MockStore s, address cxToken) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | MockStore |  | 
+| cxToken | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function disassociateCxToken(MockStore s, address cxToken) public {
+    s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
+  }
+```
+</details>
+
+### setCoverStatus
+
+```solidity
+function setCoverStatus(MockStore s, bytes32 key, uint256 value) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | MockStore |  | 
+| key | bytes32 |  | 
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverStatus(
+    MockStore s,
+    bytes32 key,
+    uint256 value
+  ) public {
+    s.setUint(ProtoUtilV1.NS_COVER_STATUS, key, value);
+  }
+```
+</details>
+
+### setClaimBeginTimestamp
+
+```solidity
+function setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | MockStore |  | 
+| key | bytes32 |  | 
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setClaimBeginTimestamp(
+    MockStore s,
+    bytes32 key,
+    uint256 value
+  ) public {
+    s.setUint(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, value);
+  }
+```
+</details>
+
+### setClaimExpiryTimestamp
+
+```solidity
+function setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | MockStore |  | 
+| key | bytes32 |  | 
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setClaimExpiryTimestamp(
+    MockStore s,
+    bytes32 key,
+    uint256 value
+  ) public {
+    s.setUint(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, value);
+  }
+```
+</details>
 
 ### initialize
 
@@ -33,26 +194,7 @@ returns(values address[])
 
 ```javascript
 function initialize(bytes32 key, address cxToken) public returns (address[] memory values) {
-    MockProtocol protocol = new MockProtocol();
-    MockVault vault = new MockVault();
-
-    this.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
-
-    super.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
-    super.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
-    super.setUint(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, 1234);
-
-    super.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
-    super.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", key, address(vault));
-
-    setCoverStatus(key, 4);
-    setClaimBeginTimestamp(key, block.timestamp - 100 days); // solhint-disable-line
-    setClaimExpiryTimestamp(key, block.timestamp + 100 days); // solhint-disable-line
-
-    values = new address[](2);
-
-    values[0] = address(protocol);
-    values[1] = address(vault);
+    return MockProcessorStoreLib.initialize(this, key, cxToken);
   }
 ```
 </details>
@@ -74,7 +216,7 @@ function disassociateCxToken(address cxToken) public nonpayable
 
 ```javascript
 function disassociateCxToken(address cxToken) public {
-    super.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
+    MockProcessorStoreLib.disassociateCxToken(this, cxToken);
   }
 ```
 </details>
@@ -97,7 +239,7 @@ function setCoverStatus(bytes32 key, uint256 value) public nonpayable
 
 ```javascript
 function setCoverStatus(bytes32 key, uint256 value) public {
-    super.setUint(ProtoUtilV1.NS_COVER_STATUS, key, value);
+    MockProcessorStoreLib.setCoverStatus(this, key, value);
   }
 ```
 </details>
@@ -120,7 +262,7 @@ function setClaimBeginTimestamp(bytes32 key, uint256 value) public nonpayable
 
 ```javascript
 function setClaimBeginTimestamp(bytes32 key, uint256 value) public {
-    super.setUint(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, value);
+    MockProcessorStoreLib.setClaimBeginTimestamp(this, key, value);
   }
 ```
 </details>
@@ -143,13 +285,14 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public nonpayable
 
 ```javascript
 function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
-    super.setUint(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, value);
+    MockProcessorStoreLib.setClaimExpiryTimestamp(this, key, value);
   }
 ```
 </details>
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -162,6 +305,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -176,10 +320,13 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -197,6 +344,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -215,12 +363,14 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -232,6 +382,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -242,6 +393,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -252,6 +404,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
