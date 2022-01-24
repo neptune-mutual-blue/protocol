@@ -95,6 +95,11 @@ library ValidationLibV1 {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER);
   }
 
+  function callerMustBeVaultContract(IStore s, bytes32 key) external view {
+    address vault = s.getVaultAddress(key);
+    require(msg.sender == vault, "Forbidden");
+  }
+
   function callerMustBeGovernanceContract(IStore s) external view {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
   }

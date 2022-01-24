@@ -21,7 +21,7 @@ uint256 public expiresOn;
 
 ## Functions
 
-- [constructor(IStore store, bytes32 key, uint256 expiry)](#)
+- [constructor(IStore store, bytes32 key, uint256 expiry, string name, string symbol)](#)
 - [mint(bytes32 key, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address , address to, uint256 )](#_beforetokentransfer)
@@ -31,7 +31,7 @@ uint256 public expiresOn;
 Constructs this contract
 
 ```solidity
-function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Recoverable 
+function (IStore store, bytes32 key, uint256 expiry, string name, string symbol) public nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
@@ -41,6 +41,8 @@ function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Rec
 | store | IStore | Provide the store contract instance | 
 | key | bytes32 | Enter the cover key or cover this cxToken instance points to | 
 | expiry | uint256 | Provide the cover expiry timestamp of this cxToken instance | 
+| name | string |  | 
+| symbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -49,8 +51,10 @@ function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Rec
 constructor(
     IStore store,
     bytes32 key,
-    uint256 expiry
-  ) ERC20("USD Cover Token", "cUSD") Recoverable(store) {
+    uint256 expiry,
+    string memory name,
+    string memory symbol
+  ) ERC20(name, symbol) Recoverable(store) {
     coverKey = key;
     expiresOn = expiry;
   }
@@ -153,6 +157,7 @@ function _beforeTokenTransfer(
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -165,6 +170,7 @@ function _beforeTokenTransfer(
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -179,10 +185,13 @@ function _beforeTokenTransfer(
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -200,6 +209,7 @@ function _beforeTokenTransfer(
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -218,12 +228,14 @@ function _beforeTokenTransfer(
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -235,6 +247,7 @@ function _beforeTokenTransfer(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -245,6 +258,7 @@ function _beforeTokenTransfer(
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -255,6 +269,7 @@ function _beforeTokenTransfer(
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

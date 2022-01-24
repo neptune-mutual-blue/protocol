@@ -20,8 +20,7 @@ library StoreKeyUtil {
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setUint(_getKey(key1, key2), value);
   }
 
   function setUintByKeys(
@@ -31,8 +30,7 @@ library StoreKeyUtil {
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.setUint(_getKey(key1, key2, account), value);
   }
 
   function addUintByKey(
@@ -50,8 +48,7 @@ library StoreKeyUtil {
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.addUint(_getKey(key1, key2), value);
   }
 
   function addUintByKeys(
@@ -61,8 +58,7 @@ library StoreKeyUtil {
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.addUint(_getKey(key1, key2, account), value);
   }
 
   function subtractUintByKey(
@@ -80,8 +76,7 @@ library StoreKeyUtil {
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.subtractUint(_getKey(key1, key2), value);
   }
 
   function subtractUintByKeys(
@@ -91,8 +86,7 @@ library StoreKeyUtil {
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.subtractUint(_getKey(key1, key2, account), value);
   }
 
   function setStringByKey(
@@ -110,8 +104,7 @@ library StoreKeyUtil {
     bytes32 key2,
     string memory value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setString(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setString(_getKey(key1, key2), value);
   }
 
   function setBytes32ByKey(
@@ -129,8 +122,7 @@ library StoreKeyUtil {
     bytes32 key2,
     bytes32 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBytes32(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setBytes32(_getKey(key1, key2), value);
   }
 
   function setBoolByKey(
@@ -148,8 +140,7 @@ library StoreKeyUtil {
     bytes32 key2,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setBool(_getKey(key1, key2), value);
   }
 
   function setBoolByKeys(
@@ -158,8 +149,7 @@ library StoreKeyUtil {
     address account,
     bool value
   ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key, account)), value);
+    return s.setBool(_getKey(key, account), value);
   }
 
   function setAddressByKey(
@@ -177,8 +167,7 @@ library StoreKeyUtil {
     bytes32 key2,
     address value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setAddress(_getKey(key1, key2), value);
   }
 
   function setAddressByKeys(
@@ -188,8 +177,35 @@ library StoreKeyUtil {
     bytes32 key3,
     address value
   ) external {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2, key3)), value);
+    return s.setAddress(_getKey(key1, key2, key3), value);
+  }
+
+  function setAddressArrayByKey(
+    IStore s,
+    bytes32 key,
+    address value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.setAddressArrayItem(key, value);
+  }
+
+  function setAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address value
+  ) external {
+    return s.setAddressArrayItem(_getKey(key1, key2), value);
+  }
+
+  function setAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address value
+  ) external {
+    return s.setAddressArrayItem(_getKey(key1, key2, key3), value);
   }
 
   function setAddressBooleanByKey(
@@ -209,8 +225,7 @@ library StoreKeyUtil {
     address account,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account, value);
+    return s.setAddressBoolean(_getKey(key1, key2), account, value);
   }
 
   function setAddressBooleanByKeys(
@@ -221,8 +236,7 @@ library StoreKeyUtil {
     address account,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account, value);
+    return s.setAddressBoolean(_getKey(key1, key2, key3), account, value);
   }
 
   function deleteUintByKey(IStore s, bytes32 key) external {
@@ -235,8 +249,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteUint(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteUint(_getKey(key1, key2));
   }
 
   function deleteBytes32ByKey(IStore s, bytes32 key) external {
@@ -249,8 +262,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBytes32(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteBytes32(_getKey(key1, key2));
   }
 
   function deleteBoolByKey(IStore s, bytes32 key) external {
@@ -263,8 +275,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteBool(_getKey(key1, key2));
   }
 
   function deleteBoolByKeys(
@@ -272,8 +283,7 @@ library StoreKeyUtil {
     bytes32 key,
     address account
   ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key, account)));
+    return s.deleteBool(_getKey(key, account));
   }
 
   function deleteAddressByKey(IStore s, bytes32 key) external {
@@ -286,8 +296,63 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteAddress(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteAddress(_getKey(key1, key2));
+  }
+
+  function deleteAddressArrayByKey(
+    IStore s,
+    bytes32 key,
+    address value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteAddressArrayItem(key, value);
+  }
+
+  function deleteAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address value
+  ) external {
+    return s.deleteAddressArrayItem(_getKey(key1, key2), value);
+  }
+
+  function deleteAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address value
+  ) external {
+    return s.deleteAddressArrayItem(_getKey(key1, key2, key3), value);
+  }
+
+  function deleteAddressArrayByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteAddressArrayItemByIndex(key, index);
+  }
+
+  function deleteAddressArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external {
+    return s.deleteAddressArrayItemByIndex(_getKey(key1, key2), index);
+  }
+
+  function deleteAddressArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external {
+    return s.deleteAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
   }
 
   function getUintByKey(IStore s, bytes32 key) external view returns (uint256) {
@@ -300,8 +365,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2)));
+    return s.getUint(_getKey(key1, key2));
   }
 
   function getUintByKeys(
@@ -310,8 +374,7 @@ library StoreKeyUtil {
     bytes32 key2,
     address account
   ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2, account)));
+    return s.getUint(_getKey(key1, key2, account));
   }
 
   function getStringByKey(IStore s, bytes32 key) external view returns (string memory) {
@@ -324,8 +387,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external view returns (string memory) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getString(keccak256(abi.encodePacked(key1, key2)));
+    return s.getString(_getKey(key1, key2));
   }
 
   function getBytes32ByKey(IStore s, bytes32 key) external view returns (bytes32) {
@@ -338,8 +400,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external view returns (bytes32) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBytes32(keccak256(abi.encodePacked(key1, key2)));
+    return s.getBytes32(_getKey(key1, key2));
   }
 
   function getBoolByKey(IStore s, bytes32 key) external view returns (bool) {
@@ -352,8 +413,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external view returns (bool) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key1, key2)));
+    return s.getBool(_getKey(key1, key2));
   }
 
   function getBoolByKeys(
@@ -361,8 +421,7 @@ library StoreKeyUtil {
     bytes32 key,
     address account
   ) external view returns (bool) {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key, account)));
+    return s.getBool(_getKey(key, account));
   }
 
   function getAddressByKey(IStore s, bytes32 key) external view returns (address) {
@@ -375,8 +434,7 @@ library StoreKeyUtil {
     bytes32 key1,
     bytes32 key2
   ) external view returns (address) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2)));
+    return s.getAddress(_getKey(key1, key2));
   }
 
   function getAddressByKeys(
@@ -385,8 +443,7 @@ library StoreKeyUtil {
     bytes32 key2,
     bytes32 key3
   ) external view returns (address) {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2, key3)));
+    return s.getAddress(_getKey(key1, key2, key3));
   }
 
   function getAddressBooleanByKey(
@@ -404,8 +461,7 @@ library StoreKeyUtil {
     bytes32 key2,
     address account
   ) external view returns (bool) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account);
+    return s.getAddressBoolean(_getKey(key1, key2), account);
   }
 
   function getAddressBooleanByKeys(
@@ -415,7 +471,134 @@ library StoreKeyUtil {
     bytes32 key3,
     address account
   ) external view returns (bool) {
+    return s.getAddressBoolean(_getKey(key1, key2, key3), account);
+  }
+
+  function countAddressArrayByKey(IStore s, bytes32 key) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.countAddressArrayItems(key);
+  }
+
+  function countAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (uint256) {
+    return s.countAddressArrayItems(_getKey(key1, key2));
+  }
+
+  function countAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.countAddressArrayItems(_getKey(key1, key2, key3));
+  }
+
+  function getAddressArrayByKey(IStore s, bytes32 key) external view returns (address[] memory) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArray(key);
+  }
+
+  function getAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (address[] memory) {
+    return s.getAddressArray(_getKey(key1, key2));
+  }
+
+  function getAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (address[] memory) {
+    return s.getAddressArray(_getKey(key1, key2, key3));
+  }
+
+  function getAddressArrayItemPositionByKey(
+    IStore s,
+    bytes32 key,
+    address addressToFind
+  ) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArrayItemPosition(key, addressToFind);
+  }
+
+  function getAddressArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address addressToFind
+  ) external view returns (uint256) {
+    return s.getAddressArrayItemPosition(_getKey(key1, key2), addressToFind);
+  }
+
+  function getAddressArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address addressToFind
+  ) external view returns (uint256) {
+    return s.getAddressArrayItemPosition(_getKey(key1, key2, key3), addressToFind);
+  }
+
+  function getAddressArrayItemByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external view returns (address) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArrayItemByIndex(key, index);
+  }
+
+  function getAddressArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external view returns (address) {
+    return s.getAddressArrayItemByIndex(_getKey(key1, key2), index);
+  }
+
+  function getAddressArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external view returns (address) {
+    return s.getAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
+  }
+
+  function _getKey(bytes32 key1, bytes32 key2) private pure returns (bytes32) {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return keccak256(abi.encodePacked(key1, key2));
+  }
+
+  function _getKey(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) private pure returns (bytes32) {
     require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account);
+    return keccak256(abi.encodePacked(key1, key2, key3));
+  }
+
+  function _getKey(bytes32 key, address account) private pure returns (bytes32) {
+    require(key > 0 && account != address(0), "Invalid key(s)");
+    return keccak256(abi.encodePacked(key, account));
+  }
+
+  function _getKey(
+    bytes32 key1,
+    bytes32 key2,
+    address account
+  ) private pure returns (bytes32) {
+    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
+    return keccak256(abi.encodePacked(key1, key2, account));
   }
 }

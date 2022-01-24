@@ -35,7 +35,7 @@ address public lqt;
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
-- [getInfo(address whom)](#getinfo)
+- [getInfo(address you)](#getinfo)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -63,7 +63,7 @@ constructor(
     IStore store,
     bytes32 coverKey,
     IERC20 liquidityToken
-  ) ERC20("Proof of Deposits", "PODs") Recoverable(store) {
+  ) ERC20(VaultLibV1.getPodTokenNameInternal(coverKey), "POD") Recoverable(store) {
     key = coverKey;
     lqt = address(liquidityToken);
   }
@@ -100,6 +100,9 @@ function addLiquidityMemberOnly(
     s.mustNotBePaused();
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();
+
+    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
+    require(coverKey == key, "Forbidden");
 
     _addLiquidity(coverKey, account, amount, true);
   }
@@ -188,6 +191,7 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpay
 ```javascript
 function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
     s.mustNotBePaused();
+
     require(coverKey == key, "Forbidden");
     uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
 
@@ -223,11 +227,10 @@ function _addLiquidity(
     uint256 amount,
     bool initialLiquidity
   ) private {
-    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
-    require(coverKey == key, "Forbidden");
-
     uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
     super._mint(account, podsToMint);
+
+    s.updateStateAndLiquidity(key);
 
     emit PodsIssued(account, podsToMint, amount);
   }
@@ -251,11 +254,10 @@ function setMinLiquidityPeriod(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+    uint256 previous = s.setMinLiquidityPeriodInternal(key, value);
 
     emit MinLiquidityPeriodSet(previous, value);
   }
@@ -321,7 +323,7 @@ function calculateLiquidity(uint256 podsToBurn) external view override returns (
 Gets information of a given vault by the cover key
 
 ```solidity
-function getInfo(address whom) external view
+function getInfo(address you) external view
 returns(values uint256[])
 ```
 
@@ -329,14 +331,14 @@ returns(values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| whom | address | The address for which the info will be customized | 
+| you | address | The address for which the info will be customized | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address whom) external view override returns (uint256[] memory values) {
-    return s.getInfoInternal(key, address(this), lqt, whom);
+function getInfo(address you) external view override returns (uint256[] memory values) {
+    return s.getInfoInternal(key, address(this), lqt, you);
   }
 ```
 </details>
@@ -391,6 +393,7 @@ function getName() external pure override returns (bytes32) {
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -403,6 +406,7 @@ function getName() external pure override returns (bytes32) {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -417,10 +421,13 @@ function getName() external pure override returns (bytes32) {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -438,6 +445,7 @@ function getName() external pure override returns (bytes32) {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -456,12 +464,14 @@ function getName() external pure override returns (bytes32) {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -473,6 +483,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -483,6 +494,7 @@ function getName() external pure override returns (bytes32) {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -493,6 +505,7 @@ function getName() external pure override returns (bytes32) {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

@@ -15,7 +15,9 @@ describe('Claims Processor: `claim` function', () => {
   beforeEach(async () => {
     libraries = await deployDependencies()
 
-    store = await deployer.deploy(cache, 'MockProcessorStore')
+    const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')
+
+    store = await deployer.deployWithLibraries(cache, 'MockProcessorStore', { MockProcessorStoreLib: storeLib.address })
     cxToken = await deployer.deploy(cache, 'MockCxToken')
     processor = await deployer.deployWithLibraries(cache, 'Processor', libraries.dependencies, store.address)
   })

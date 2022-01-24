@@ -20,6 +20,7 @@ abstract contract WithFlashLoan is VaultBase, IERC3156FlashLender {
   using ValidationLibV1 for IStore;
   using VaultLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev The fee to be charged for a given loan.
@@ -78,6 +79,9 @@ abstract contract WithFlashLoan is VaultBase, IERC3156FlashLender {
 
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, false);
+
+    s.updateStateAndLiquidity(key);
+
     return true;
   }
 }

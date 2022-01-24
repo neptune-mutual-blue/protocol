@@ -1,8 +1,8 @@
-const moment = require('moment')
 const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../util')
 const { deployDependencies } = require('./deps')
 const attacher = require('../util/attach')
+const blockHelper = require('../util/block')
 
 const cache = null
 
@@ -11,16 +11,18 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('cxToken: Constructor', () => {
+describe('cxToken: `mint` function', () => {
   let libraries, cxToken, store, policy
 
   const coverKey = key.toBytes32('test')
-  const expiryDate = moment(new Date()).add(2, 'd').unix()
 
   beforeEach(async () => {
+    const blockTimestamp = await blockHelper.getTimestamp()
+    const expiryDate = blockTimestamp.add(2, 'd').unix()
+
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate, 'cxToken', 'cxToken')
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 

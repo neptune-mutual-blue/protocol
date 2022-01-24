@@ -7,15 +7,16 @@ import "../../core/Recoverable.sol";
 
 abstract contract BondPoolBase is IBondPool, Recoverable {
   using BondPoolLibV1 for IStore;
+  using PriceLibV1 for IStore;
 
   constructor(IStore s) Recoverable(s) {} //solhint-disable-line
 
-  function getNpmMarketPrice() external pure override returns (uint256) {
-    return BondPoolLibV1.getNpmMarketPrice();
+  function getNpmMarketPrice() external view override returns (uint256) {
+    return s.getNpmPriceInternal(1 ether);
   }
 
-  function calculateTokensForLp(uint256 lpTokens) external pure override returns (uint256) {
-    return BondPoolLibV1.calculateTokensForLpInternal(lpTokens);
+  function calculateTokensForLp(uint256 lpTokens) external view override returns (uint256) {
+    return s.calculateTokensForLpInternal(lpTokens);
   }
 
   /**

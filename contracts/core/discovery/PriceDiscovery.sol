@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "../../interfaces/IPriceDiscovery.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/external/IUniswapV2RouterLike.sol";
-import "../../libraries/ProtoUtilV1.sol";
+import "../../libraries/PriceLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -13,6 +13,8 @@ import "../Recoverable.sol";
  */
 contract PriceDiscovery is IPriceDiscovery, Recoverable {
   using ProtoUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using PriceLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -22,7 +24,7 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
 
   /**
    * @dev Gets the price of the given token against the platform's stablecoin.
-   * Warning: if the supplied token address (and the stablecoin pair) is not found on the UniswapV2-like decentralized exchange,
+   * Warning: the `token` and `liquidityToken` must have a Uniswap V2 Pair.
    * the result will be incorrect.
    * @param token Provide the token address to get the price of
    * @param multiplier Enter the token price multiplier
@@ -34,8 +36,7 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
 
   /**
    * @dev Gets the price of the given token against the given liquidity token.
-   * Warning: if both of the supplied token address aren't to be found on the UniswapV2-like decentralized exchange,
-   * the result will be incorrect.
+   * Warning: the `token` and `liquidityToken` must have a Uniswap V2 Pair.
    * @param token Provide the token address to get the price of
    * @param liquidityToken Provide the liquidity token address to get the price in
    * @param multiplier Enter the token price multiplier
@@ -49,15 +50,9 @@ contract PriceDiscovery is IPriceDiscovery, Recoverable {
       return multiplier;
     }
 
-    address[] memory pair = new address[](2);
+    uint256 price = s.getPriceInternal(token, liquidityToken, multiplier);
 
-    pair[0] = token;
-    pair[1] = liquidityToken;
-
-    IUniswapV2RouterLike router = IUniswapV2RouterLike(s.getUniswapV2Router());
-
-    uint256[] memory amounts = router.getAmountsOut(multiplier, pair);
-    return amounts[amounts.length - 1];
+    return price;
   }
 
   /**

@@ -86,12 +86,14 @@ function purchaseCover(
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // Transfer the fee to cxToken contract
-    // Todo: keep track of cover fee paid (for refunds)
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
     cxToken.mint(key, msg.sender, amountToCover);
 
     emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
+
+    s.updateStateAndLiquidity(key);
+
     return address(cxToken);
   }
 ```
@@ -414,26 +416,23 @@ function _getCoverFee(
 
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
-    uint256[] memory values = s.getCoverPoolSummary(key);
+    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
 
     // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
     require(values[0] - values[1] > amountToCover, "Insufficient fund");
 
     // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (ProtoUtilV1.PERCENTAGE_DIVISOR * values[1]) / values[0];
+    utilizationRatio = (ProtoUtilV1.MULTIPLIER * values[1]) / values[0];
 
     // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity =
-      values[0] -
-      values[1] +
-      ((values[2] * values[3]) / ProtoUtilV1.PERCENTAGE_DIVISOR) +
-      ((values[4] * values[5] * values[6]) / (ProtoUtilV1.PERCENTAGE_DIVISOR * ProtoUtilV1.PERCENTAGE_DIVISOR));
+    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (ProtoUtilV1.MULTIPLIER * 1 ether));
 
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((ProtoUtilV1.PERCENTAGE_DIVISOR * coverDuration * amountToCover) / totalAvailableLiquidity);
+    coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
 
     rate = _getCoverFeeRate(floor, ceiling, coverRatio);
-    fee = (amountToCover * rate * coverDuration) / (12 ether);
+
+    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 ```
 </details>
@@ -458,7 +457,7 @@ returns(_values uint256[])
 
 ```javascript
 function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
-    return s.getCoverPoolSummary(key);
+    return s.getCoverPoolSummaryInternal(key);
   }
 ```
 </details>
@@ -545,6 +544,7 @@ function getName() external pure override returns (bytes32) {
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -557,6 +557,7 @@ function getName() external pure override returns (bytes32) {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -571,10 +572,13 @@ function getName() external pure override returns (bytes32) {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -592,6 +596,7 @@ function getName() external pure override returns (bytes32) {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -610,12 +615,14 @@ function getName() external pure override returns (bytes32) {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -627,6 +634,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -637,6 +645,7 @@ function getName() external pure override returns (bytes32) {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -647,6 +656,7 @@ function getName() external pure override returns (bytes32) {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

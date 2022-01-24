@@ -38,7 +38,7 @@ describe('Policy Purchase Stories', () => {
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
@@ -63,10 +63,10 @@ describe('Policy Purchase Stories', () => {
     totalAmountInPool.toString().should.equal(helper.ether(4_000_000))
     totalCommitment.toString().should.equal(helper.ether(0))
     provision.toString().should.equal(helper.ether(1_000_000))
-    npmPrice.toString().should.equal(helper.ether(1))
+    npmPrice.toString().should.equal(helper.ether(2))
     reassurance.toString().should.equal(helper.ether(1_000_000))
     reassurancePrice.toString().should.equal(helper.ether(1))
-    reassuranceWeight.toString().should.equal(helper.ether(1))
+    reassuranceWeight.toString().should.equal(helper.percentage(100))
   })
 
   it('fee should be ~$58.33 xDai when purchasing 10K xDai cover for 1 month', async () => {
@@ -74,53 +74,55 @@ describe('Policy Purchase Stories', () => {
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
-    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000)) /
 
-    helper.weiToEther(coverRatio).toFixed(4).should.equal('0.0017') // 0.17%
-    helper.weiToEther(floor).toFixed(4).should.equal('0.0700') // 7%
-    helper.weiToEther(ceiling).toFixed(4).should.equal('0.4500') // 45%
-    helper.weiToEther(rate).toFixed(4).should.equal('0.0700') // 7%
+    helper.toPercentageString(coverRatio).should.equal('0.14')
+    helper.toPercentageString(floor).should.equal('7.00')
+    helper.toPercentageString(ceiling).should.equal('45.00')
+    helper.toPercentageString(rate).should.equal('7.00')
 
     helper.weiToEther(fee).toFixed(2).should.equal('58.33')
   })
 
-  it('fee should be ~$7,650.58 when purchasing 250K xDai cover for 3 months', async () => {
+  it('fee should be ~$7,255.84 when purchasing 250K xDai cover for 3 months', async () => {
     const result = await contracts.policy.getCoverFee(coverKey, 3, helper.ether(250_000))
-    const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
+    const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
-    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000))
 
-    helper.weiToEther(coverRatio).toFixed(4).should.equal('0.1250') // 12.50%
-    helper.weiToEther(rate).toFixed(4).should.equal('0.1224') // 12.24%
+    helper.toPercentageString(coverRatio).should.equal('10.71')
+    helper.toPercentageString(floor).should.equal('7.00')
+    helper.toPercentageString(ceiling).should.equal('45.00')
+    helper.toPercentageString(rate).should.equal('11.60')
 
-    helper.weiToEther(fee).toFixed(2).should.equal('7650.58')
+    helper.weiToEther(fee).toFixed(2).should.equal('7250.00')
   })
 
-  it('fee should be ~$4,384.74 when purchasing 500K xDai cover for 1 month', async () => {
+  it('fee should be ~4095.83 when purchasing 500K xDai cover for 1 month', async () => {
     const result = await contracts.policy.getCoverFee(coverKey, 1, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
-    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000))
 
-    helper.weiToEther(coverRatio).toFixed(4).should.equal('0.0833') // 8.33%
-    helper.weiToEther(rate).toFixed(4).should.equal('0.1052') // 10.52%
+    helper.toPercentageString(coverRatio).should.equal('7.14')
+    helper.toPercentageString(rate).should.equal('9.83')
 
-    helper.weiToEther(fee).toFixed(2).should.equal('4384.74')
+    helper.weiToEther(fee).toFixed(2).should.equal('4095.83')
   })
 
-  it('fee should be ~$11,107.19 when purchasing 500K xDai cover for 2 months', async () => {
+  it('fee should be ~$10633.33 when purchasing 500K xDai cover for 2 months', async () => {
     const result = await contracts.policy.getCoverFee(coverKey, 2, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
-    totalAvailableLiquidity.toString().should.equal(helper.ether(6_000_000))
+    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000))
 
-    helper.weiToEther(coverRatio).toFixed(4).should.equal('0.1667') // 16.67%
-    helper.weiToEther(rate).toFixed(4).should.equal('0.1333') // 13.63%
+    helper.toPercentageString(coverRatio).should.equal('14.28')
+    helper.toPercentageString(rate).should.equal('12.76')
 
-    helper.weiToEther(fee).toFixed(2).should.equal('11107.19')
+    helper.weiToEther(fee).toFixed(2).should.equal('10633.33')
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {

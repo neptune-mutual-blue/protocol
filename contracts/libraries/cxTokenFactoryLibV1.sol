@@ -16,11 +16,13 @@ library cxTokenFactoryLibV1 {
   function getByteCode(
     IStore s,
     bytes32 key,
-    uint256 expiryDate
+    uint256 expiryDate,
+    string memory name,
+    string memory symbol
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
 
     //slither-disable-next-line too-many-digits
-    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
+    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate, name, symbol));
   }
 }

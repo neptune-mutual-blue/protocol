@@ -40,10 +40,12 @@
     "solidity"
   ],
   "cSpell.words": [
+    "Aave",
     "alloc",
     "Bahs",
     "Bokky",
     "BSCSCAN",
+    "chainid",
     "CNAME",
     "cpool",
     "CXTOKEN",
@@ -59,6 +61,7 @@
     "nomiclabs",
     "Proto",
     "Reentrancy",
+    "struct",
     "Unstakable",
     "unstake",
     "Unstaken",

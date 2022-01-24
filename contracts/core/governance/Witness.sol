@@ -14,7 +14,7 @@ import "../../interfaces/IVault.sol";
 
 /**
  * @title Neptune Mutual Governance: Witness Contract
- * @dev The witenss contract enables NPM tokenholders to
+ * @dev The witeness contract enables NPM tokenholders to
  * participate in an already-reported cover incident.
  * <br />
  * The participants can choose to support an incident by `attesting`

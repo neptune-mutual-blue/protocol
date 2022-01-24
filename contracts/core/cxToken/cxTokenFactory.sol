@@ -21,6 +21,15 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
+  function _getTokenName(bytes32 key) private pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
+  }
+
+  function _getTokenSymbol() private view returns (string memory) {
+    string memory suffix = ERC20(s.getStablecoin()).symbol();
+    return string(abi.encodePacked("cx", suffix));
+  }
+
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
@@ -43,7 +52,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, _getTokenName(key), _getTokenSymbol());
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 

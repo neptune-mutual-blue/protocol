@@ -21,9 +21,7 @@ The cover contract facilitates you create and update covers
 
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity)](#addcover)
-- [_addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 fee, address reassuranceToken)](#_addcover)
-- [_validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
+- [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
 - [stopCover(bytes32 key, string reason)](#stopcover)
 - [updateWhitelist(address account, bool status)](#updatewhitelist)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
@@ -80,7 +78,7 @@ function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
+    s.updateCoverInternal(key, info);
     emit CoverUpdated(key, info);
   }
 ```
@@ -101,7 +99,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 stakeWithFee, address reassuranceToken, uint256 initialReassuranceAmount, uint256 initialLiquidity) external nonpayable nonReentrant 
+function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -110,12 +108,8 @@ function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 r
 | ------------- |------------- | -----|
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
-| minStakeToReport | uint256 | A cover creator can override default min NPM stake to avoid spam reports | 
-| reportingPeriod | uint256 | The period during when reporting happens. | 
-| stakeWithFee | uint256 | Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| initialReassuranceAmount | uint256 | **Optional.** Enter the initial amount of  reassurance tokens you'd like to add to this pool. | 
-| initialLiquidity | uint256 | **Optional.** Enter the initial stablecoin liquidity for this cover. | 
+| values | uint256[] | [0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -124,12 +118,8 @@ function addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 r
 function addCover(
     bytes32 key,
     bytes32 info,
-    uint256 minStakeToReport,
-    uint256 reportingPeriod,
-    uint256 stakeWithFee,
     address reassuranceToken,
-    uint256 initialReassuranceAmount,
-    uint256 initialLiquidity
+    uint256[] memory values
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
@@ -137,134 +127,12 @@ function addCover(
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
-    require(minStakeToReport >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
+    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
-    require(reportingPeriod >= 7 days, "Insufficient reporting period");
+    require(values[1] >= 7 days, "Insufficient reporting period"); // @todo: parameterize this magic number
 
-    // First validate the information entered
-    uint256 fee = _validateAndGetFee(key, info, stakeWithFee);
-
-    // Set the basic cover info
-    _addCover(key, info, minStakeToReport, reportingPeriod, fee, reassuranceToken);
-
-    // Stake the supplied NPM tokens and burn the fees
-    s.getStakingContract().increaseStake(key, msg.sender, stakeWithFee, fee);
-
-    // Add cover reassurance
-    if (initialReassuranceAmount > 0) {
-      s.getReassuranceContract().addReassurance(key, msg.sender, initialReassuranceAmount);
-    }
-
-    // Add initial liquidity
-    if (initialLiquidity > 0) {
-      IVault vault = s.getVault(key);
-
-      s.getVault(key).addLiquidityMemberOnly(key, msg.sender, initialLiquidity);
-
-      // Transfer liquidity only after minting the pods
-      // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
-      IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), initialLiquidity);
-    }
-
-    emit CoverCreated(key, info, stakeWithFee, initialLiquidity);
-  }
-```
-</details>
-
-### _addCover
-
-```solidity
-function _addCover(bytes32 key, bytes32 info, uint256 minStakeToReport, uint256 reportingPeriod, uint256 fee, address reassuranceToken) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter a unique key for this cover | 
-| info | bytes32 | IPFS info of the cover contract | 
-| minStakeToReport | uint256 |  | 
-| reportingPeriod | uint256 | The period during when reporting happens. | 
-| fee | uint256 | Fee paid to create this cover | 
-| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addCover(
-    bytes32 key,
-    bytes32 info,
-    uint256 minStakeToReport,
-    uint256 reportingPeriod,
-    uint256 fee,
-    address reassuranceToken
-  ) private {
-    // Add a new cover
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
-
-    // Set cover owner
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, msg.sender);
-
-    // Set cover info
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, reportingPeriod);
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key, minStakeToReport);
-
-    // Set reassurance token
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
-
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, ProtoUtilV1.PERCENTAGE_DIVISOR); // 100% weight because it's a stablecoin
-
-    // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
-
-    // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(s, key);
-
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key, deployed);
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
-  }
-```
-</details>
-
-### _validateAndGetFee
-
-Validation checks before adding a new cover
-
-```solidity
-function _validateAndGetFee(bytes32 key, bytes32 info, uint256 stakeWithFee) private view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| info | bytes32 |  | 
-| stakeWithFee | uint256 |  | 
-
-**Returns**
-
-Returns fee required to create a new cover
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _validateAndGetFee(
-    bytes32 key,
-    bytes32 info,
-    uint256 stakeWithFee
-  ) private view returns (uint256) {
-    require(info > 0, "Invalid info");
-    (uint256 fee, uint256 minStake) = s.getCoverFee();
-
-    require(stakeWithFee > fee + minStake, "NPM Insufficient");
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
-
-    return fee;
+    s.addCoverInternal(key, info, reassuranceToken, values);
+    emit CoverCreated(key, info);
   }
 ```
 </details>
@@ -292,7 +160,7 @@ function stopCover(bytes32 key, string memory reason) external override nonReent
     s.mustBeGovernanceAdmin();
     s.mustBeValidCover(key);
 
-    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+    s.stopCoverInternal(key);
     emit CoverStopped(key, msg.sender, reason);
   }
 ```
@@ -320,11 +188,10 @@ function updateWhitelist(address account, bool status) external nonpayable nonRe
 
 ```javascript
 function updateWhitelist(address account, bool status) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account, status);
-
+    s.updateWhitelistInternal(account, status);
     emit WhitelistUpdated(account, status);
   }
 ```
@@ -357,6 +224,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 
 ## Contracts
 
+* [AaveStrategy](docs/AaveStrategy.md)
 * [AccessControl](docs/AccessControl.md)
 * [AccessControlLibV1](docs/AccessControlLibV1.md)
 * [Address](docs/Address.md)
@@ -369,6 +237,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Controller](docs/Controller.md)
 * [Cover](docs/Cover.md)
 * [CoverBase](docs/CoverBase.md)
+* [CoverLibV1](docs/CoverLibV1.md)
 * [CoverProvision](docs/CoverProvision.md)
 * [CoverReassurance](docs/CoverReassurance.md)
 * [CoverStake](docs/CoverStake.md)
@@ -383,10 +252,13 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [FakeStore](docs/FakeStore.md)
 * [FakeToken](docs/FakeToken.md)
 * [FakeUniswapPair](docs/FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](docs/FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](docs/FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](docs/FakeUniswapV2RouterLike.md)
 * [Finalization](docs/Finalization.md)
 * [Governance](docs/Governance.md)
 * [GovernanceUtilV1](docs/GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](docs/IAaveV2LendingPoolLike.md)
 * [IAccessControl](docs/IAccessControl.md)
 * [IBondPool](docs/IBondPool.md)
 * [IClaimsProcessor](docs/IClaimsProcessor.md)
@@ -404,6 +276,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IERC3156FlashLender](docs/IERC3156FlashLender.md)
 * [IFinalization](docs/IFinalization.md)
 * [IGovernance](docs/IGovernance.md)
+* [ILendingStrategy](docs/ILendingStrategy.md)
 * [IMember](docs/IMember.md)
 * [IPausable](docs/IPausable.md)
 * [IPolicy](docs/IPolicy.md)
@@ -422,12 +295,14 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IVault](docs/IVault.md)
 * [IVaultFactory](docs/IVaultFactory.md)
 * [IWitness](docs/IWitness.md)
+* [LiquidityEngine](docs/LiquidityEngine.md)
 * [MaliciousToken](docs/MaliciousToken.md)
 * [Migrations](docs/Migrations.md)
 * [MockCxToken](docs/MockCxToken.md)
 * [MockCxTokenPolicy](docs/MockCxTokenPolicy.md)
 * [MockCxTokenStore](docs/MockCxTokenStore.md)
 * [MockProcessorStore](docs/MockProcessorStore.md)
+* [MockProcessorStoreLib](docs/MockProcessorStoreLib.md)
 * [MockProtocol](docs/MockProtocol.md)
 * [MockStore](docs/MockStore.md)
 * [MockVault](docs/MockVault.md)
@@ -439,6 +314,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [PolicyAdmin](docs/PolicyAdmin.md)
 * [PolicyManager](docs/PolicyManager.md)
 * [PriceDiscovery](docs/PriceDiscovery.md)
+* [PriceLibV1](docs/PriceLibV1.md)
 * [Processor](docs/Processor.md)
 * [ProtoBase](docs/ProtoBase.md)
 * [Protocol](docs/Protocol.md)
@@ -449,6 +325,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Reporter](docs/Reporter.md)
 * [Resolution](docs/Resolution.md)
 * [Resolvable](docs/Resolvable.md)
+* [RoutineInvokerLibV1](docs/RoutineInvokerLibV1.md)
 * [SafeERC20](docs/SafeERC20.md)
 * [StakingPoolBase](docs/StakingPoolBase.md)
 * [StakingPoolCoreLibV1](docs/StakingPoolCoreLibV1.md)
@@ -459,6 +336,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Store](docs/Store.md)
 * [StoreBase](docs/StoreBase.md)
 * [StoreKeyUtil](docs/StoreKeyUtil.md)
+* [StrategyLibV1](docs/StrategyLibV1.md)
 * [Strings](docs/Strings.md)
 * [Unstakable](docs/Unstakable.md)
 * [ValidationLibV1](docs/ValidationLibV1.md)

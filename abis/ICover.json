@@ -13,18 +13,6 @@
         "internalType": "bytes32",
         "name": "info",
         "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "stakeWithFee",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "liquidity",
-        "type": "uint256"
       }
     ],
     "name": "CoverCreated",
@@ -163,34 +151,14 @@
         "type": "bytes32"
       },
       {
-        "internalType": "uint256",
-        "name": "minStakeToReport",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "reportingPeriod",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "stakeWithFee",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "reassuranceToken",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "initialReassuranceAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "initialLiquidity",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
       }
     ],
     "name": "addCover",

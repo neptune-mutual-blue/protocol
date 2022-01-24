@@ -19,6 +19,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
   using ValidationLibV1 for bytes32;
   using NTransferUtilV2 for IERC20;
 
@@ -39,6 +40,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
+    s.updateStateAndLiquidity(key);
+
     emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
   }
 
@@ -70,6 +73,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
     s.npmToken().ensureTransfer(finalReporter, toReporter);
     s.npmToken().ensureTransfer(burner, toBurn);
+
+    s.updateStateAndLiquidity(key);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
     emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);

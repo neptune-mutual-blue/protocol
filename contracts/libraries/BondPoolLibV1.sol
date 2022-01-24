@@ -6,15 +6,17 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ValidationLibV1.sol";
 import "./NTransferUtilV2.sol";
 import "./AccessControlLibV1.sol";
+import "./PriceLibV1.sol";
 import "../interfaces/IProtocol.sol";
 import "../interfaces/IPausable.sol";
 
 library BondPoolLibV1 {
+  using AccessControlLibV1 for IStore;
+  using NTransferUtilV2 for IERC20;
+  using PriceLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using AccessControlLibV1 for IStore;
   using ValidationLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   bytes32 public constant NS_BOND_TO_CLAIM = "ns:pool:bond:to:claim";
   bytes32 public constant NS_BOND_CONTRIBUTION = "ns:pool:bond:contribution";
@@ -27,14 +29,17 @@ library BondPoolLibV1 {
   bytes32 public constant NS_BOND_TOTAL_NPM_ALLOCATED = "ns:pool:bond:total:npm:alloc";
   bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED = "ns:pool:bond:total:npm:distrib";
 
-  function calculateTokensForLpInternal(uint256 lpTokens) public pure returns (uint256) {
-    // @todo: implement this function
-    return 3 * lpTokens;
-  }
+  function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
+    IUniswapV2PairLike pair = IUniswapV2PairLike(_getLpTokenAddress(s));
+    uint256 dollarValue = s.getPairLiquidityInStablecoin(pair, lpTokens);
 
-  function getNpmMarketPrice() public pure returns (uint256) {
-    // @todo
-    return 2 ether;
+    uint256 npmPrice = s.getNpmPriceInternal(1 ether);
+    uint256 discount = _getDiscountRate(s);
+    uint256 discountedNpmPrice = (npmPrice * (ProtoUtilV1.MULTIPLIER - discount)) / ProtoUtilV1.MULTIPLIER;
+
+    uint256 npmForContribution = (dollarValue * 1 ether) / discountedNpmPrice;
+
+    return npmForContribution;
   }
 
   /**
@@ -56,9 +61,9 @@ library BondPoolLibV1 {
     addresses = new address[](1);
     values = new uint256[](10);
 
-    addresses[0] = s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN); // lpToken
+    addresses[0] = _getLpTokenAddress(s);
 
-    values[0] = getNpmMarketPrice(); // marketPrice
+    values[0] = s.getNpmPriceInternal(1 ether); // marketPrice
     values[1] = _getDiscountRate(s); // discountRate
     values[2] = _getVestingTerm(s); // vestingTerm
     values[3] = _getMaxBondInUnit(s); // maxBond
@@ -69,6 +74,10 @@ library BondPoolLibV1 {
     values[7] = _getYourBondContribution(s, you); // bondContribution --> total lp tokens contributed by you
     values[8] = _getYourBondClaimable(s, you); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
     values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
+  }
+
+  function _getLpTokenAddress(IStore s) private view returns (address) {
+    return s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN);
   }
 
   function _getYourBondContribution(IStore s, address you) private view returns (uint256) {
@@ -111,7 +120,7 @@ library BondPoolLibV1 {
     s.mustNotBePaused();
 
     values = new uint256[](2);
-    values[0] = calculateTokensForLpInternal(lpTokens); // npmToVest
+    values[0] = calculateTokensForLpInternal(s, lpTokens); // npmToVest
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");

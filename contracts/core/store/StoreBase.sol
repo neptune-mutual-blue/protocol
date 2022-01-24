@@ -16,6 +16,8 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   mapping(bytes32 => bytes) public bytesStorage;
   mapping(bytes32 => bytes32) public bytes32Storage;
   mapping(bytes32 => bool) public boolStorage;
+  mapping(bytes32 => address[]) public addressArrayStorage;
+  mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositionMap;
 
   bytes32 private constant _NS_MEMBERS = "ns:members";
 

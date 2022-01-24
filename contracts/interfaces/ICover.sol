@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 liquidity);
+  event CoverCreated(bytes32 key, bytes32 info);
   event CoverUpdated(bytes32 key, bytes32 info);
   event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
 
@@ -46,21 +46,18 @@ interface ICover is IMember {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
-   * @param reportingPeriod The period during when reporting happens.
-   * @param initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+   * @param values[1] reportingPeriod The period during when reporting happens.
+   * @param values[2] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+   * @param values[3] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
-   * @param stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
+   * @param values[4] initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
    */
   function addCover(
     bytes32 key,
     bytes32 info,
-    uint256 minStakeToReport,
-    uint256 reportingPeriod,
-    uint256 stakeWithFee,
     address reassuranceToken,
-    uint256 initialReassuranceAmount,
-    uint256 initialLiquidity
+    uint256[] memory values
   ) external;
 
   /**

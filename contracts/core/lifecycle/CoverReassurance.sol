@@ -28,6 +28,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
@@ -58,6 +59,8 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     reassuranceToken.ensureTransferFrom(account, vault, amount);
 
+    s.updateStateAndLiquidity(key);
+
     emit ReassuranceAdded(key, amount);
   }
 
@@ -68,6 +71,8 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     s.mustBeValidCoverKey(key);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
+
+    s.updateStateAndLiquidity(key);
   }
 
   /**

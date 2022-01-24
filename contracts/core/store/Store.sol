@@ -88,6 +88,16 @@ contract Store is StoreBase {
     bytes32Storage[k] = v;
   }
 
+  function setAddressArrayItem(bytes32 k, address v) external override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    if (addressArrayAddressPositionMap[k][v] == 0) {
+      addressArrayStorage[k].push(v);
+      addressArrayAddressPositionMap[k][v] = addressArrayStorage[k].length;
+    }
+  }
+
   function deleteAddress(bytes32 k) external override {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
@@ -144,6 +154,35 @@ contract Store is StoreBase {
     delete bytes32Storage[k];
   }
 
+  function deleteAddressArrayItem(bytes32 k, address v) public override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    require(addressArrayAddressPositionMap[k][v] > 0, "Not found");
+
+    uint256 i = addressArrayAddressPositionMap[k][v] - 1;
+    uint256 count = addressArrayStorage[k].length;
+
+    if (i + 1 != count) {
+      addressArrayStorage[k][i] = addressArrayStorage[k][count - 1];
+      address theThenLastAddress = addressArrayStorage[k][i];
+      addressArrayAddressPositionMap[k][theThenLastAddress] = i + 1;
+    }
+
+    addressArrayStorage[k].pop();
+    delete addressArrayAddressPositionMap[k][v];
+  }
+
+  function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    require(i < addressArrayStorage[k].length, "Invalid key");
+
+    address v = addressArrayStorage[k][i];
+    deleteAddressArrayItem(k, v);
+  }
+
   function getAddress(bytes32 k) external view override returns (address) {
     return addressStorage[k];
   }
@@ -178,5 +217,22 @@ contract Store is StoreBase {
 
   function getBytes32(bytes32 k) external view override returns (bytes32) {
     return bytes32Storage[k];
+  }
+
+  function getAddressArray(bytes32 k) external view override returns (address[] memory) {
+    return addressArrayStorage[k];
+  }
+
+  function getAddressArrayItemPosition(bytes32 k, address toFind) external view override returns (uint256) {
+    return addressArrayAddressPositionMap[k][toFind];
+  }
+
+  function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view override returns (address) {
+    require(addressArrayStorage[k].length > i, "Invalid index");
+    return addressArrayStorage[k][i];
+  }
+
+  function countAddressArrayItems(bytes32 k) external view override returns (uint256) {
+    return addressArrayStorage[k].length;
   }
 }
