@@ -14,7 +14,7 @@ library StakingPoolCoreLibV1 {
   bytes32 public constant NS_POOL = "ns:pool:staking";
   bytes32 public constant NS_POOL_NAME = "ns:pool:staking:name";
   bytes32 public constant NS_POOL_LOCKED = "ns:pool:staking:locked";
-  bytes32 public constant NS_POOL_LOCKUP_PERIOD = "ns:pool:staking:lockup:period";
+  bytes32 public constant NS_POOL_LOCKUP_PERIOD_IN_BLOCKS = "ns:pool:staking:lockup:period";
   bytes32 public constant NS_POOL_STAKING_TARGET = "ns:pool:staking:target";
   bytes32 public constant NS_POOL_CUMULATIVE_STAKING_AMOUNT = "ns:pool:staking:cum:amount";
   bytes32 public constant NS_POOL_STAKING_TOKEN = "ns:pool:staking:token";
@@ -63,8 +63,8 @@ library StakingPoolCoreLibV1 {
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
   }
 
-  function getLockupPeriod(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD, key);
+  function getLockupPeriodInBlocks(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 
   function getRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
@@ -112,7 +112,7 @@ library StakingPoolCoreLibV1 {
       require(addresses[1] != address(0), "Invalid staking token pair");
       require(addresses[2] != address(0), "Invalid reward token");
       require(addresses[3] != address(0), "Invalid reward token pair");
-      require(values[4] > 0, "Provide lockup period");
+      require(values[4] > 0, "Provide lockup period in blocks");
       require(values[5] > 0, "Provide reward token balance");
       require(values[3] > 0, "Provide reward per block");
       require(values[0] > 0, "Please provide staking target");
@@ -133,7 +133,7 @@ library StakingPoolCoreLibV1 {
    * @param values[1] maxStake Specify the maximum amount that can be staken at a time.
    * @param values[2] platformFee Enter the platform fee which is deducted on reward and on the reward token
    * @param values[3] rewardPerBlock Specify the amount of reward token awarded per block
-   * @param values[4] lockupPeriod Enter a lockup period during when the staked tokens can't be withdrawn
+   * @param values[4] lockupPeriodInBlocks Enter a lockup period during when the staked tokens can't be withdrawn
    * @param values[5] rewardTokenDeposit Enter the value of reward token you are depositing in this transaction.
    */
   function addOrEditPoolInternal(
@@ -170,7 +170,7 @@ library StakingPoolCoreLibV1 {
    * @param values[1] maxStake Specify the maximum amount that can be staken at a time.
    * @param values[2] platformFee Enter the platform fee which is deducted on reward and on the reward token
    * @param values[3] rewardPerBlock Specify the amount of reward token awarded per block
-   * @param values[4] lockupPeriod Enter a lockup period during when the staked tokens can't be withdrawn
+   * @param values[4] lockupPeriodInBlocks Enter a lockup period during when the staked tokens can't be withdrawn
    * @param values[5] rewardTokenDeposit Enter the value of reward token you are depositing in this transaction.
    */
   function _updatePoolValues(
@@ -195,7 +195,7 @@ library StakingPoolCoreLibV1 {
     }
 
     if (values[4] > 0) {
-      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD, key, values[4]);
+      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key, values[4]);
     }
 
     if (values[5] > 0) {

@@ -20,7 +20,7 @@ interface IStakingPools is IMember {
     uint256 rewardTokenDeposit,
     uint256 maxStake,
     uint256 rewardPerBlock,
-    uint256 lockupPeriod,
+    uint256 lockupPeriodInBlocks,
     uint256 platformFee
   );
 
@@ -86,12 +86,12 @@ interface IStakingPools is IMember {
    * @param values[4] cumulativeDeposits --> Returns the total amount tokens which were deposited in this pool
    * @param values[5] rewardPerBlock --> Returns the unit of reward tokens awarded on each block for each unit of staking token
    * @param values[6] platformFee --> Returns the % rate (multipled by ProtoUtilV1.PERCENTAGE_DIVISOR) charged by protocol on rewards
-   * @param values[7] lockupPeriod --> Returns the period until when a stake can't be withdrawn
+   * @param values[7] lockupPeriodInBlocks --> Returns the period until when a stake can't be withdrawn
    * @param values[8] rewardTokenBalance --> Returns the balance of the reward tokens still left in the pool
    * @param values[9] accountStakeBalance --> Returns your stake amount
    * @param values[10] totalBlockSinceLastReward --> Returns the number of blocks since your last reward
    * @param values[11] rewards --> The amount of reward tokens you have accumulated till this block
-   * @param values[12] canWithdrawFrom --> The timestamp after which you are allowed to withdraw your stake
+   * @param values[12] canWithdrawFromBlockHeight --> The block height after which you are allowed to withdraw your stake
    * @param values[13] lastDepositHeight --> Returns the block number of your last deposit
    * @param values[14] lastRewardHeight --> Returns the block number of your last reward
    */
