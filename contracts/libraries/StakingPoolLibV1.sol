@@ -38,7 +38,7 @@ library StakingPoolLibV1 {
    * @param values[9] accountStakeBalance --> Returns your stake amount
    * @param values[10] totalBlockSinceLastReward --> Returns the number of blocks since your last reward
    * @param values[11] rewards --> The amount of reward tokens you have accumulated till this block
-   * @param values[12] canWithdrawFrom --> The timestamp after which you are allowed to withdraw your stake
+   * @param values[12] canWithdrawFromBlockHeight --> The block height after which you are allowed to withdraw your stake
    * @param values[13] lastDepositHeight --> Returns the block number of your last deposit
    * @param values[14] lastRewardHeight --> Returns the block number of your last reward
    */
@@ -72,12 +72,12 @@ library StakingPoolLibV1 {
     values[4] = getPoolCumulativeDeposits(s, key);
     values[5] = s.getRewardPerBlock(key);
     values[6] = s.getRewardPlatformFee(key);
-    values[7] = s.getLockupPeriod(key);
+    values[7] = s.getLockupPeriodInBlocks(key);
     values[8] = s.getRewardTokenBalance(key);
     values[9] = getAccountStakingBalanceInternal(s, key, you);
     values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
     values[11] = calculateRewardsInternal(s, key, you);
-    values[12] = canWithdrawFromInternal(s, key, you);
+    values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
     values[13] = getLastDepositHeight(s, key, you);
     values[14] = getLastRewardHeight(s, key, you);
   }
@@ -114,13 +114,13 @@ library StakingPoolLibV1 {
     return block.number - from;
   }
 
-  function canWithdrawFromInternal(
+  function canWithdrawFromBlockHeightInternal(
     IStore s,
     bytes32 key,
     address account
   ) public view returns (uint256) {
     uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
-    uint256 lockupPeriod = s.getLockupPeriod(key);
+    uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
 
     return lastDepositHeight + lockupPeriod;
   }
@@ -227,7 +227,7 @@ library StakingPoolLibV1 {
     require(amount > 0, "Enter an amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
-    require(block.number > canWithdrawFromInternal(s, key, msg.sender), "Withdrawal too early");
+    require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 

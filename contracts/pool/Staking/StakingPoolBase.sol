@@ -30,7 +30,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
    * @param values[1] maxStake Specify the maximum amount that can be staken at a time.
    * @param values[2] platformFee Enter the platform fee which is deducted on reward and on the reward token
    * @param values[3] rewardPerBlock Specify the amount of reward token awarded per block
-   * @param values[4] lockupPeriod Enter a lockup period during when the staked tokens can't be withdrawn
+   * @param values[4] lockupPeriodInBlocks Enter a lockup period during when the staked tokens can't be withdrawn
    * @param values[5] rewardTokenDeposit Enter the value of reward token you are depositing in this transaction.
    */
   function addOrEditPool(
