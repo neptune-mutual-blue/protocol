@@ -9,7 +9,7 @@ import "./StoreKeyUtil.sol";
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
-  uint256 public constant PERCENTAGE_DIVISOR = 1 ether;
+  uint256 public constant MULTIPLIER = 10_000;
 
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
@@ -140,11 +140,11 @@ library ProtoUtilV1 {
   /// @dev Stakes guaranteed by an individual witness supporting the "false reporting" camp
   bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:rep:stake:owned:no";
 
-  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake reward to burn.
+  /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake reward to burn.
   /// Note that the reward comes from the losing camp after resolution is achieved.
   bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:rep:burn:rate";
 
-  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount of reporting/unstake
+  /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake
   /// reward to provide to the final reporter.
   bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION = "ns:gov:reporter:commission";
 
@@ -156,14 +156,22 @@ library ProtoUtilV1 {
   /// @dev Claim expiry date = Claim begin date + claim duration
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "ns:claim:expiry:ts";
 
-  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount deducted by the platform
+  /// @dev The percentage rate (x MULTIPLIER) of amount deducted by the platform
   /// for each successful claims payout
   bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";
 
-  /// @dev The percentage rate (x PERCENTAGE_DIVISOR) of amount provided to the first reporter
+  /// @dev The percentage rate (x MULTIPLIER) of amount provided to the first reporter
   /// upon favorable incident resolution. This amount is a commission of the
   /// 'ns:claim:platform:fee'
   bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
+
+  bytes32 public constant NS_LP_RESERVE0 = "ns:uni:lp:reserve0";
+  bytes32 public constant NS_LP_RESERVE1 = "ns:uni:lp:reserve1";
+  bytes32 public constant NS_LP_TOTAL_SUPPLY = "ns:uni:lp:totalSupply";
+
+  bytes32 public constant NS_TOKEN_PRICE_LAST_UPDATE = "ns:token:price:last:update";
+  bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
+  bytes32 public constant NS_LENDING_STRATEGY_DISABLED = "ns:lending:strategy:disabled";
 
   bytes32 public constant CNAME_PROTOCOL = "Neptune Mutual Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
@@ -232,12 +240,20 @@ library ProtoUtilV1 {
   }
 
   function npmToken(IStore s) external view returns (IERC20) {
+    return IERC20(getNpmTokenAddress(s));
+  }
+
+  function getNpmTokenAddress(IStore s) public view returns (address) {
     address npm = s.getAddressByKey(CNS_NPM);
-    return IERC20(npm);
+    return npm;
   }
 
   function getUniswapV2Router(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
+  }
+
+  function getUniswapV2Factory(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
   }
 
   function getTreasury(IStore s) external view returns (address) {

@@ -11,6 +11,7 @@ import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import "../../libraries/NTransferUtilV2.sol";
+import "../../libraries/RoutineInvokerLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -24,6 +25,7 @@ contract Policy is IPolicy, Recoverable {
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
@@ -52,12 +54,14 @@ contract Policy is IPolicy, Recoverable {
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // Transfer the fee to cxToken contract
-    // Todo: keep track of cover fee paid (for refunds)
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
 
     cxToken.mint(key, msg.sender, amountToCover);
 
     emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
+
+    s.updateStateAndLiquidity(key);
+
     return address(cxToken);
   }
 
@@ -223,26 +227,23 @@ contract Policy is IPolicy, Recoverable {
 
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
-    uint256[] memory values = s.getCoverPoolSummary(key);
+    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
 
     // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
     require(values[0] - values[1] > amountToCover, "Insufficient fund");
 
     // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (ProtoUtilV1.PERCENTAGE_DIVISOR * values[1]) / values[0];
+    utilizationRatio = (ProtoUtilV1.MULTIPLIER * values[1]) / values[0];
 
     // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity =
-      values[0] -
-      values[1] +
-      ((values[2] * values[3]) / ProtoUtilV1.PERCENTAGE_DIVISOR) +
-      ((values[4] * values[5] * values[6]) / (ProtoUtilV1.PERCENTAGE_DIVISOR * ProtoUtilV1.PERCENTAGE_DIVISOR));
+    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (ProtoUtilV1.MULTIPLIER * 1 ether));
 
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((ProtoUtilV1.PERCENTAGE_DIVISOR * coverDuration * amountToCover) / totalAvailableLiquidity);
+    coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
 
     rate = _getCoverFeeRate(floor, ceiling, coverRatio);
-    fee = (amountToCover * rate * coverDuration) / (12 ether);
+
+    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 
   /**
@@ -256,7 +257,7 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[6] Reassurance pool weight
    */
   function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
-    return s.getCoverPoolSummary(key);
+    return s.getCoverPoolSummaryInternal(key);
   }
 
   /**

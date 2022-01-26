@@ -25,6 +25,9 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [setAddressByKey(IStore s, bytes32 key, address value)](#setaddressbykey)
 - [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#setaddressbykeys)
 - [setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#setaddressbykeys)
+- [setAddressArrayByKey(IStore s, bytes32 key, address value)](#setaddressarraybykey)
+- [setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#setaddressarraybykeys)
+- [setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#setaddressarraybykeys)
 - [setAddressBooleanByKey(IStore s, bytes32 key, address account, bool value)](#setaddressbooleanbykey)
 - [setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account, bool value)](#setaddressbooleanbykeys)
 - [setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account, bool value)](#setaddressbooleanbykeys)
@@ -37,6 +40,12 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [deleteBoolByKeys(IStore s, bytes32 key, address account)](#deleteboolbykeys)
 - [deleteAddressByKey(IStore s, bytes32 key)](#deleteaddressbykey)
 - [deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2)](#deleteaddressbykeys)
+- [deleteAddressArrayByKey(IStore s, bytes32 key, address value)](#deleteaddressarraybykey)
+- [deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#deleteaddressarraybykeys)
+- [deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#deleteaddressarraybykeys)
+- [deleteAddressArrayByIndexByKey(IStore s, bytes32 key, uint256 index)](#deleteaddressarraybyindexbykey)
+- [deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 index)](#deleteaddressarraybyindexbykeys)
+- [deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, uint256 index)](#deleteaddressarraybyindexbykeys)
 - [getUintByKey(IStore s, bytes32 key)](#getuintbykey)
 - [getUintByKeys(IStore s, bytes32 key1, bytes32 key2)](#getuintbykeys)
 - [getUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account)](#getuintbykeys)
@@ -53,6 +62,22 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [getAddressBooleanByKey(IStore s, bytes32 key, address account)](#getaddressbooleanbykey)
 - [getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address account)](#getaddressbooleanbykeys)
 - [getAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address account)](#getaddressbooleanbykeys)
+- [countAddressArrayByKey(IStore s, bytes32 key)](#countaddressarraybykey)
+- [countAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2)](#countaddressarraybykeys)
+- [countAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)](#countaddressarraybykeys)
+- [getAddressArrayByKey(IStore s, bytes32 key)](#getaddressarraybykey)
+- [getAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2)](#getaddressarraybykeys)
+- [getAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)](#getaddressarraybykeys)
+- [getAddressArrayItemPositionByKey(IStore s, bytes32 key, address addressToFind)](#getaddressarrayitempositionbykey)
+- [getAddressArrayItemPositionByKeys(IStore s, bytes32 key1, bytes32 key2, address addressToFind)](#getaddressarrayitempositionbykeys)
+- [getAddressArrayItemPositionByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address addressToFind)](#getaddressarrayitempositionbykeys)
+- [getAddressArrayItemByIndexByKey(IStore s, bytes32 key, uint256 index)](#getaddressarrayitembyindexbykey)
+- [getAddressArrayItemByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 index)](#getaddressarrayitembyindexbykeys)
+- [getAddressArrayItemByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, uint256 index)](#getaddressarrayitembyindexbykeys)
+- [_getKey(bytes32 key1, bytes32 key2)](#_getkey)
+- [_getKey(bytes32 key1, bytes32 key2, bytes32 key3)](#_getkey)
+- [_getKey(bytes32 key, address account)](#_getkey)
+- [_getKey(bytes32 key1, bytes32 key2, address account)](#_getkey)
 
 ### setUintByKey
 
@@ -108,8 +133,7 @@ function setUintByKeys(
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setUint(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -141,8 +165,7 @@ function setUintByKeys(
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.setUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.setUint(_getKey(key1, key2, account), value);
   }
 ```
 </details>
@@ -201,8 +224,7 @@ function addUintByKeys(
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.addUint(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -234,8 +256,7 @@ function addUintByKeys(
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.addUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.addUint(_getKey(key1, key2, account), value);
   }
 ```
 </details>
@@ -294,8 +315,7 @@ function subtractUintByKeys(
     bytes32 key2,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.subtractUint(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -327,8 +347,7 @@ function subtractUintByKeys(
     address account,
     uint256 value
   ) external {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
-    return s.subtractUint(keccak256(abi.encodePacked(key1, key2, account)), value);
+    return s.subtractUint(_getKey(key1, key2, account), value);
   }
 ```
 </details>
@@ -387,8 +406,7 @@ function setStringByKeys(
     bytes32 key2,
     string memory value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setString(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setString(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -447,8 +465,7 @@ function setBytes32ByKeys(
     bytes32 key2,
     bytes32 value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBytes32(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setBytes32(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -507,8 +524,7 @@ function setBoolByKeys(
     bytes32 key2,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setBool(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -538,8 +554,7 @@ function setBoolByKeys(
     address account,
     bool value
   ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.setBool(keccak256(abi.encodePacked(key, account)), value);
+    return s.setBool(_getKey(key, account), value);
   }
 ```
 </details>
@@ -598,8 +613,7 @@ function setAddressByKeys(
     bytes32 key2,
     address value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2)), value);
+    return s.setAddress(_getKey(key1, key2), value);
   }
 ```
 </details>
@@ -631,8 +645,98 @@ function setAddressByKeys(
     bytes32 key3,
     address value
   ) external {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.setAddress(keccak256(abi.encodePacked(key1, key2, key3)), value);
+    return s.setAddress(_getKey(key1, key2, key3), value);
+  }
+```
+</details>
+
+### setAddressArrayByKey
+
+```solidity
+function setAddressArrayByKey(IStore s, bytes32 key, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setAddressArrayByKey(
+    IStore s,
+    bytes32 key,
+    address value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.setAddressArrayItem(key, value);
+  }
+```
+</details>
+
+### setAddressArrayByKeys
+
+```solidity
+function setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address value
+  ) external {
+    return s.setAddressArrayItem(_getKey(key1, key2), value);
+  }
+```
+</details>
+
+### setAddressArrayByKeys
+
+```solidity
+function setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address value
+  ) external {
+    return s.setAddressArrayItem(_getKey(key1, key2, key3), value);
   }
 ```
 </details>
@@ -695,8 +799,7 @@ function setAddressBooleanByKeys(
     address account,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account, value);
+    return s.setAddressBoolean(_getKey(key1, key2), account, value);
   }
 ```
 </details>
@@ -730,8 +833,7 @@ function setAddressBooleanByKeys(
     address account,
     bool value
   ) external {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.setAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account, value);
+    return s.setAddressBoolean(_getKey(key1, key2, key3), account, value);
   }
 ```
 </details>
@@ -783,8 +885,7 @@ function deleteUintByKeys(
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteUint(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteUint(_getKey(key1, key2));
   }
 ```
 </details>
@@ -836,8 +937,7 @@ function deleteBytes32ByKeys(
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBytes32(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteBytes32(_getKey(key1, key2));
   }
 ```
 </details>
@@ -889,8 +989,7 @@ function deleteBoolByKeys(
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteBool(_getKey(key1, key2));
   }
 ```
 </details>
@@ -918,8 +1017,7 @@ function deleteBoolByKeys(
     bytes32 key,
     address account
   ) external {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.deleteBool(keccak256(abi.encodePacked(key, account)));
+    return s.deleteBool(_getKey(key, account));
   }
 ```
 </details>
@@ -971,8 +1069,189 @@ function deleteAddressByKeys(
     bytes32 key1,
     bytes32 key2
   ) external {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.deleteAddress(keccak256(abi.encodePacked(key1, key2)));
+    return s.deleteAddress(_getKey(key1, key2));
+  }
+```
+</details>
+
+### deleteAddressArrayByKey
+
+```solidity
+function deleteAddressArrayByKey(IStore s, bytes32 key, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByKey(
+    IStore s,
+    bytes32 key,
+    address value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteAddressArrayItem(key, value);
+  }
+```
+</details>
+
+### deleteAddressArrayByKeys
+
+```solidity
+function deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address value
+  ) external {
+    return s.deleteAddressArrayItem(_getKey(key1, key2), value);
+  }
+```
+</details>
+
+### deleteAddressArrayByKeys
+
+```solidity
+function deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address value
+  ) external {
+    return s.deleteAddressArrayItem(_getKey(key1, key2, key3), value);
+  }
+```
+</details>
+
+### deleteAddressArrayByIndexByKey
+
+```solidity
+function deleteAddressArrayByIndexByKey(IStore s, bytes32 key, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteAddressArrayItemByIndex(key, index);
+  }
+```
+</details>
+
+### deleteAddressArrayByIndexByKeys
+
+```solidity
+function deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external {
+    return s.deleteAddressArrayItemByIndex(_getKey(key1, key2), index);
+  }
+```
+</details>
+
+### deleteAddressArrayByIndexByKeys
+
+```solidity
+function deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external {
+    return s.deleteAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
   }
 ```
 </details>
@@ -1026,8 +1305,7 @@ function getUintByKeys(
     bytes32 key1,
     bytes32 key2
   ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2)));
+    return s.getUint(_getKey(key1, key2));
   }
 ```
 </details>
@@ -1058,8 +1336,7 @@ function getUintByKeys(
     bytes32 key2,
     address account
   ) external view returns (uint256) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getUint(keccak256(abi.encodePacked(key1, key2, account)));
+    return s.getUint(_getKey(key1, key2, account));
   }
 ```
 </details>
@@ -1113,8 +1390,7 @@ function getStringByKeys(
     bytes32 key1,
     bytes32 key2
   ) external view returns (string memory) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getString(keccak256(abi.encodePacked(key1, key2)));
+    return s.getString(_getKey(key1, key2));
   }
 ```
 </details>
@@ -1168,8 +1444,7 @@ function getBytes32ByKeys(
     bytes32 key1,
     bytes32 key2
   ) external view returns (bytes32) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBytes32(keccak256(abi.encodePacked(key1, key2)));
+    return s.getBytes32(_getKey(key1, key2));
   }
 ```
 </details>
@@ -1223,8 +1498,7 @@ function getBoolByKeys(
     bytes32 key1,
     bytes32 key2
   ) external view returns (bool) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key1, key2)));
+    return s.getBool(_getKey(key1, key2));
   }
 ```
 </details>
@@ -1253,8 +1527,7 @@ function getBoolByKeys(
     bytes32 key,
     address account
   ) external view returns (bool) {
-    require(key > 0 && account != address(0), "Invalid key(s)");
-    return s.getBool(keccak256(abi.encodePacked(key, account)));
+    return s.getBool(_getKey(key, account));
   }
 ```
 </details>
@@ -1308,8 +1581,7 @@ function getAddressByKeys(
     bytes32 key1,
     bytes32 key2
   ) external view returns (address) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2)));
+    return s.getAddress(_getKey(key1, key2));
   }
 ```
 </details>
@@ -1340,8 +1612,7 @@ function getAddressByKeys(
     bytes32 key2,
     bytes32 key3
   ) external view returns (address) {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.getAddress(keccak256(abi.encodePacked(key1, key2, key3)));
+    return s.getAddress(_getKey(key1, key2, key3));
   }
 ```
 </details>
@@ -1402,8 +1673,7 @@ function getAddressBooleanByKeys(
     bytes32 key2,
     address account
   ) external view returns (bool) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
-    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2)), account);
+    return s.getAddressBoolean(_getKey(key1, key2), account);
   }
 ```
 </details>
@@ -1436,14 +1706,482 @@ function getAddressBooleanByKeys(
     bytes32 key3,
     address account
   ) external view returns (bool) {
+    return s.getAddressBoolean(_getKey(key1, key2, key3), account);
+  }
+```
+</details>
+
+### countAddressArrayByKey
+
+```solidity
+function countAddressArrayByKey(IStore s, bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countAddressArrayByKey(IStore s, bytes32 key) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.countAddressArrayItems(key);
+  }
+```
+</details>
+
+### countAddressArrayByKeys
+
+```solidity
+function countAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (uint256) {
+    return s.countAddressArrayItems(_getKey(key1, key2));
+  }
+```
+</details>
+
+### countAddressArrayByKeys
+
+```solidity
+function countAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.countAddressArrayItems(_getKey(key1, key2, key3));
+  }
+```
+</details>
+
+### getAddressArrayByKey
+
+```solidity
+function getAddressArrayByKey(IStore s, bytes32 key) external view
+returns(address[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayByKey(IStore s, bytes32 key) external view returns (address[] memory) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArray(key);
+  }
+```
+</details>
+
+### getAddressArrayByKeys
+
+```solidity
+function getAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2) external view
+returns(address[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (address[] memory) {
+    return s.getAddressArray(_getKey(key1, key2));
+  }
+```
+</details>
+
+### getAddressArrayByKeys
+
+```solidity
+function getAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) external view
+returns(address[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (address[] memory) {
+    return s.getAddressArray(_getKey(key1, key2, key3));
+  }
+```
+</details>
+
+### getAddressArrayItemPositionByKey
+
+```solidity
+function getAddressArrayItemPositionByKey(IStore s, bytes32 key, address addressToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| addressToFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemPositionByKey(
+    IStore s,
+    bytes32 key,
+    address addressToFind
+  ) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArrayItemPosition(key, addressToFind);
+  }
+```
+</details>
+
+### getAddressArrayItemPositionByKeys
+
+```solidity
+function getAddressArrayItemPositionByKeys(IStore s, bytes32 key1, bytes32 key2, address addressToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| addressToFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    address addressToFind
+  ) external view returns (uint256) {
+    return s.getAddressArrayItemPosition(_getKey(key1, key2), addressToFind);
+  }
+```
+</details>
+
+### getAddressArrayItemPositionByKeys
+
+```solidity
+function getAddressArrayItemPositionByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address addressToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| addressToFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    address addressToFind
+  ) external view returns (uint256) {
+    return s.getAddressArrayItemPosition(_getKey(key1, key2, key3), addressToFind);
+  }
+```
+</details>
+
+### getAddressArrayItemByIndexByKey
+
+```solidity
+function getAddressArrayItemByIndexByKey(IStore s, bytes32 key, uint256 index) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external view returns (address) {
+    require(key > 0, "Invalid key");
+    return s.getAddressArrayItemByIndex(key, index);
+  }
+```
+</details>
+
+### getAddressArrayItemByIndexByKeys
+
+```solidity
+function getAddressArrayItemByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 index) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external view returns (address) {
+    return s.getAddressArrayItemByIndex(_getKey(key1, key2), index);
+  }
+```
+</details>
+
+### getAddressArrayItemByIndexByKeys
+
+```solidity
+function getAddressArrayItemByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, uint256 index) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external view returns (address) {
+    return s.getAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
+  }
+```
+</details>
+
+### _getKey
+
+```solidity
+function _getKey(bytes32 key1, bytes32 key2) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getKey(bytes32 key1, bytes32 key2) private pure returns (bytes32) {
+    require(key1 > 0 && key2 > 0, "Invalid key(s)");
+    return keccak256(abi.encodePacked(key1, key2));
+  }
+```
+</details>
+
+### _getKey
+
+```solidity
+function _getKey(bytes32 key1, bytes32 key2, bytes32 key3) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getKey(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) private pure returns (bytes32) {
     require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
-    return s.getAddressBoolean(keccak256(abi.encodePacked(key1, key2, key3)), account);
+    return keccak256(abi.encodePacked(key1, key2, key3));
+  }
+```
+</details>
+
+### _getKey
+
+```solidity
+function _getKey(bytes32 key, address account) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getKey(bytes32 key, address account) private pure returns (bytes32) {
+    require(key > 0 && account != address(0), "Invalid key(s)");
+    return keccak256(abi.encodePacked(key, account));
+  }
+```
+</details>
+
+### _getKey
+
+```solidity
+function _getKey(bytes32 key1, bytes32 key2, address account) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getKey(
+    bytes32 key1,
+    bytes32 key2,
+    address account
+  ) private pure returns (bytes32) {
+    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
+    return keccak256(abi.encodePacked(key1, key2, account));
   }
 ```
 </details>
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -1456,6 +2194,7 @@ function getAddressBooleanByKeys(
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -1470,10 +2209,13 @@ function getAddressBooleanByKeys(
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -1491,6 +2233,7 @@ function getAddressBooleanByKeys(
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1509,12 +2252,14 @@ function getAddressBooleanByKeys(
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -1526,6 +2271,7 @@ function getAddressBooleanByKeys(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -1536,6 +2282,7 @@ function getAddressBooleanByKeys(
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -1546,6 +2293,7 @@ function getAddressBooleanByKeys(
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

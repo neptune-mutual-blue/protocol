@@ -47,6 +47,8 @@ function unstake(bytes32 key, uint256 incidentDate) external override nonReentra
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
+    s.updateStateAndLiquidity(key);
+
     emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
   }
 ```
@@ -93,6 +95,8 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentra
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
     s.npmToken().ensureTransfer(finalReporter, toReporter);
     s.npmToken().ensureTransfer(burner, toBurn);
+
+    s.updateStateAndLiquidity(key);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
     emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);
@@ -148,6 +152,7 @@ function getUnstakeInfoFor(
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -160,6 +165,7 @@ function getUnstakeInfoFor(
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -174,10 +180,13 @@ function getUnstakeInfoFor(
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -195,6 +204,7 @@ function getUnstakeInfoFor(
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -213,12 +223,14 @@ function getUnstakeInfoFor(
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -230,6 +242,7 @@ function getUnstakeInfoFor(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -240,6 +253,7 @@ function getUnstakeInfoFor(
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -250,6 +264,7 @@ function getUnstakeInfoFor(
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

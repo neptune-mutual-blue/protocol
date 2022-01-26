@@ -57,8 +57,12 @@ library RegistryLibV1 {
   }
 
   function getVault(IStore s, bytes32 key) external view returns (IVault) {
+    return IVault(getVaultAddress(s, key));
+  }
+
+  function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
-    return IVault(vault);
+    return vault;
   }
 
   function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {

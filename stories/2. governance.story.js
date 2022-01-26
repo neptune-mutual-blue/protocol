@@ -87,7 +87,7 @@ describe('Governance Stories', () => {
     await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
 
     // Add provision
     const provision = helper.ether(1_000_001)

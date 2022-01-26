@@ -19,6 +19,8 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
 - [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
 - [getMaxFlashLoanInternal(IStore s, address token)](#getmaxflashloaninternal)
+- [setMinLiquidityPeriodInternal(IStore s, bytes32 coverKey, uint256 value)](#setminliquidityperiodinternal)
+- [getPodTokenNameInternal(bytes32 coverKey)](#getpodtokennameinternal)
 
 ### calculatePodsInternal
 
@@ -424,6 +426,8 @@ nction removeLiquidityInternal(
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
 
+    s.updateStateAndLiquidity(coverKey);
+
     return releaseAmount;
   }
 
@@ -469,8 +473,8 @@ nction getFlashFeeInternal(
     uint256 rate = _getFlashLoanFeeRateInternal(s);
     uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
 
-    fee = (amount * rate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
-    protocolFee = (fee * protocolRate) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    fee = (amount * rate) / ProtoUtilV1.MULTIPLIER;
+    protocolFee = (fee * protocolRate) / ProtoUtilV1.MULTIPLIER;
   }
 
 ```
@@ -563,12 +567,70 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
     */
     return 0;
   }
+
+```
+</details>
+
+### setMinLiquidityPeriodInternal
+
+```solidity
+function setMinLiquidityPeriodInternal(IStore s, bytes32 coverKey, uint256 value) external nonpayable
+returns(previous uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction setMinLiquidityPeriodInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 value
+  ) external returns (uint256 previous) {
+    previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+
+    s.updateStateAndLiquidity(coverKey);
+  }
+
+```
+</details>
+
+### getPodTokenNameInternal
+
+```solidity
+function getPodTokenNameInternal(bytes32 coverKey) external pure
+returns(string)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
+  }
 }
 ```
 </details>
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -581,6 +643,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -595,10 +658,13 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -616,6 +682,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -634,12 +701,14 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -651,6 +720,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -661,6 +731,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -671,6 +742,7 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

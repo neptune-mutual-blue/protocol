@@ -110,7 +110,13 @@ const PROTOCOL = {
     CLAIM_BEGIN_TS: toBytes32('ns:claim:begin:ts'),
     CLAIM_EXPIRY_TS: toBytes32('ns:claim:expiry:ts'),
     CLAIM_PLATFORM_FEE: toBytes32('ns:claim:platform:fee'),
-    CLAIM_REPORTER_COMMISSION: toBytes32('ns:claim:reporter:commission')
+    CLAIM_REPORTER_COMMISSION: toBytes32('ns:claim:reporter:commission'),
+    LP_RESERVE0: toBytes32('ns:uni:lp:reserve0'),
+    LP_RESERVE1: toBytes32('ns:uni:lp:reserve1'),
+    LP_TOTAL_SUPPLY: toBytes32('ns:uni:lp:totalSupply'),
+    TOKEN_PRICE_LAST_UPDATE: toBytes32('ns:token:price:last:update'),
+    LENDING_STRATEGY_ACTIVE: toBytes32('ns:lending:strategy:active'),
+    LENDING_STRATEGY_DISABLED: toBytes32('ns:lending:strategy:disabled')
   },
   CNAME: {
     PROTOCOL: toBytes32('Neptune Mutual Protocol'),

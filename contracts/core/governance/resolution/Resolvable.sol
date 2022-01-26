@@ -17,6 +17,7 @@ abstract contract Resolvable is Finalization, IResolvable {
   using ProtoUtilV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using RoutineInvokerLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
   using NTransferUtilV2 for IERC20;
@@ -61,6 +62,8 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
     s.setStatus(key, status);
+
+    s.updateStateAndLiquidity(key);
 
     emit Resolved(key, incidentDate, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }

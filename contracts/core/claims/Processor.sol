@@ -10,6 +10,7 @@ import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/StoreKeyUtil.sol";
+import "../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Claims Processor Contract
@@ -18,13 +19,14 @@ import "../../libraries/StoreKeyUtil.sol";
  * and therefore receive no payouts.
  */
 contract Processor is IClaimsProcessor, Recoverable {
+  using GovernanceUtilV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
+  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
+  using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
-  using StoreKeyUtil for IStore;
-  using GovernanceUtilV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -60,14 +62,16 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(key);
     address finalReporter = s.getReporter(key, incidentDate);
 
-    uint256 platformFee = (amount * s.getClaimPlatformFee()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    uint256 platformFee = (amount * s.getClaimPlatformFee()) / ProtoUtilV1.MULTIPLIER;
     // slither-disable-next-line divide-before-multiply
-    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / ProtoUtilV1.MULTIPLIER;
     uint256 claimed = amount - platformFee;
 
     vault.transferGovernance(key, msg.sender, claimed);
     vault.transferGovernance(key, finalReporter, reporterFee);
     vault.transferGovernance(key, s.getTreasury(), platformFee - reporterFee);
+
+    s.updateStateAndLiquidity(key);
 
     emit Claimed(cxToken, key, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
   }
@@ -100,7 +104,7 @@ contract Processor is IClaimsProcessor, Recoverable {
   }
 
   function setClaimPeriod(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);

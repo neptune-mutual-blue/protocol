@@ -3,11 +3,10 @@
 pragma solidity 0.8.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICoverProvision.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/CoverLibV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
+import "../../libraries/RoutineInvokerLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -20,12 +19,10 @@ import "../Recoverable.sol";
  * for the rainy day.
  */
 contract CoverProvision is ICoverProvision, Recoverable {
-  using ProtoUtilV1 for bytes;
-  using ProtoUtilV1 for IStore;
+  using CoverLibV1 for IStore;
   using StoreKeyUtil for IStore;
+  using RoutineInvokerLibV1 for IStore;
   using ValidationLibV1 for IStore;
-  using CoverUtilV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   /**
    * @dev Constructs this contract
@@ -45,13 +42,8 @@ contract CoverProvision is ICoverProvision, Recoverable {
 
     s.mustBeValidCover(key);
 
-    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
-
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
-
-    emit ProvisionIncreased(key, privision, privision + amount);
+    uint256 provision = s.increaseProvisionInternal(key, amount);
+    emit ProvisionIncreased(key, provision, provision + amount);
   }
 
   /**
@@ -66,14 +58,8 @@ contract CoverProvision is ICoverProvision, Recoverable {
 
     s.mustBeValidCover(key);
 
-    uint256 privision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-
-    require(privision >= amount, "Exceeds Balance"); // Exceeds balance
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
-
-    s.npmToken().ensureTransfer(msg.sender, amount);
-
-    emit ProvisionDecreased(key, privision, privision - amount);
+    uint256 provision = s.decreaseProvisionInternal(key, amount);
+    emit ProvisionDecreased(key, provision, provision - amount);
   }
 
   /**

@@ -95,7 +95,7 @@ describe('Protocol Initialization Stories', () => {
       reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
     }
 
-    await contracts.cover.addCover(coverKey, info, minReportingStake, reportingPeriod, stakeWithFee, contracts.reassuranceToken.address, initialReassuranceAmount, initialLiquidity)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
   })
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {

@@ -25,14 +25,13 @@ enum CoverStatus {
 - [getMinCoverStake(IStore s)](#getmincoverstake)
 - [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
 - [getClaimPeriod(IStore s)](#getclaimperiod)
+- [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
 - [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
-- [getCoverPoolSummary(IStore s, bytes32 key)](#getcoverpoolsummary)
 - [getPolicyRates(IStore s, bytes32 key)](#getpolicyrates)
 - [getLiquidity(IStore s, bytes32 key)](#getliquidity)
 - [getStake(IStore s, bytes32 key)](#getstake)
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
-- [getCoverInfo(IStore s, bytes32 key)](#getcoverinfo)
 - [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
 - [getReassuranceAmountInternal(IStore s, bytes32 key)](#getreassuranceamountinternal)
 - [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
@@ -88,7 +87,7 @@ function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
 ### getCoverFee
 
 ```solidity
-function getCoverFee(IStore s) external view
+function getCoverFee(IStore s) public view
 returns(fee uint256, minStake uint256)
 ```
 
@@ -102,7 +101,7 @@ returns(fee uint256, minStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverFee(IStore s) external view returns (uint256 fee, uint256 minStake) {
+function getCoverFee(IStore s) public view returns (uint256 fee, uint256 minStake) {
     fee = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
     minStake = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
   }
@@ -178,6 +177,42 @@ function getClaimPeriod(IStore s) external view returns (uint256) {
 ```
 </details>
 
+### getCoverPoolSummaryInternal
+
+Returns the values of the given cover key
+
+```solidity
+function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view
+returns(_values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
+    IPriceDiscovery discovery = s.getPriceDiscoveryContract();
+
+    _values = new uint256[](7);
+
+    _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
+    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
+    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
+  }
+```
+</details>
+
 ### getCoverStatus
 
 Gets the current status of a given cover
@@ -229,42 +264,6 @@ returns(uint256)
 ```javascript
 function getStatus(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
-  }
-```
-</details>
-
-### getCoverPoolSummary
-
-Todo: Returns the values of the given cover key
-
-```solidity
-function getCoverPoolSummary(IStore s, bytes32 key) external view
-returns(_values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverPoolSummary(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
-    IPriceDiscovery discovery = s.getPriceDiscoveryContract();
-
-    _values = new uint256[](7);
-
-    _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
-    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), ProtoUtilV1.PERCENTAGE_DIVISOR);
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), ProtoUtilV1.PERCENTAGE_DIVISOR);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
   }
 ```
 </details>
@@ -372,48 +371,6 @@ function getClaimable(IStore s, bytes32 key) external view returns (uint256) {
 ```
 </details>
 
-### getCoverInfo
-
-```solidity
-function getCoverInfo(IStore s, bytes32 key) external view
-returns(owner address, info bytes32, values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverInfo(IStore s, bytes32 key)
-    external
-    view
-    returns (
-      address owner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    info = s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key);
-    owner = s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
-
-    values = new uint256[](5);
-
-    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
-    values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-    values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
-    values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-
-    values[4] = _getClaimable(s, key);
-  }
-```
-</details>
-
 ### setStatus
 
 Sets the current status of a given cover
@@ -424,7 +381,7 @@ Sets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) external nonpayable
+function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) public nonpayable
 ```
 
 **Arguments**
@@ -443,7 +400,7 @@ function setStatus(
     IStore s,
     bytes32 key,
     CoverStatus status
-  ) external {
+  ) public {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
   }
 ```
@@ -494,7 +451,7 @@ returns(uint256)
 
 ```javascript
 function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
-    // Todo: deduct the expired cover amounts
+    // @important @todo: deduct the expired cover amounts
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
   }
 ```
@@ -502,6 +459,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -514,6 +472,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -528,10 +487,13 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -549,6 +511,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -567,12 +530,14 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -584,6 +549,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -594,6 +560,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -604,6 +571,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

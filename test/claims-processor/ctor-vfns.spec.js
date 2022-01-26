@@ -15,7 +15,9 @@ describe('Claims Processor: Constructor & Initializer', () => {
 
   beforeEach(async () => {
     libraries = await deployDependencies()
-    store = await deployer.deploy(cache, 'MockProcessorStore')
+    const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')
+
+    store = await deployer.deployWithLibraries(cache, 'MockProcessorStore', { MockProcessorStoreLib: storeLib.address })
     processor = await deployer.deployWithLibraries(cache, 'Processor', libraries.dependencies, store.address)
   })
 
@@ -38,7 +40,9 @@ describe('Claims Processor: `getClaimExpiryDate` function', () => {
   beforeEach(async () => {
     libraries = await deployDependencies()
     cxToken = await deployer.deploy(cache, 'MockCxToken')
-    store = await deployer.deploy(cache, 'MockProcessorStore')
+    const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')
+
+    store = await deployer.deployWithLibraries(cache, 'MockProcessorStore', { MockProcessorStoreLib: storeLib.address })
     processor = await deployer.deployWithLibraries(cache, 'Processor', libraries.dependencies, store.address)
   })
 

@@ -8,7 +8,7 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
-uint256 public constant PERCENTAGE_DIVISOR;
+uint256 public constant MULTIPLIER;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -84,6 +84,12 @@ bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
 bytes32 public constant NS_CLAIM_PLATFORM_FEE;
 bytes32 public constant NS_CLAIM_REPORTER_COMMISSION;
+bytes32 public constant NS_LP_RESERVE0;
+bytes32 public constant NS_LP_RESERVE1;
+bytes32 public constant NS_LP_TOTAL_SUPPLY;
+bytes32 public constant NS_TOKEN_PRICE_LAST_UPDATE;
+bytes32 public constant NS_LENDING_STRATEGY_ACTIVE;
+bytes32 public constant NS_LENDING_STRATEGY_DISABLED;
 bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
@@ -116,7 +122,9 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
 - [callerMustBeExactContract(IStore s, bytes32 name)](#callermustbeexactcontract)
 - [npmToken(IStore s)](#npmtoken)
+- [getNpmTokenAddress(IStore s)](#getnpmtokenaddress)
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
+- [getUniswapV2Factory(IStore s)](#getuniswapv2factory)
 - [getTreasury(IStore s)](#gettreasury)
 - [getReassuranceVault(IStore s)](#getreassurancevault)
 - [getStablecoin(IStore s)](#getstablecoin)
@@ -327,8 +335,31 @@ returns(contract IERC20)
 
 ```javascript
 function npmToken(IStore s) external view returns (IERC20) {
+    return IERC20(getNpmTokenAddress(s));
+  }
+```
+</details>
+
+### getNpmTokenAddress
+
+```solidity
+function getNpmTokenAddress(IStore s) public view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getNpmTokenAddress(IStore s) public view returns (address) {
     address npm = s.getAddressByKey(CNS_NPM);
-    return IERC20(npm);
+    return npm;
   }
 ```
 </details>
@@ -352,6 +383,29 @@ returns(address)
 ```javascript
 function getUniswapV2Router(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
+  }
+```
+</details>
+
+### getUniswapV2Factory
+
+```solidity
+function getUniswapV2Factory(IStore s) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getUniswapV2Factory(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
   }
 ```
 </details>
@@ -738,6 +792,7 @@ function _removeMember(IStore s, address member) private {
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -750,6 +805,7 @@ function _removeMember(IStore s, address member) private {
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -764,10 +820,13 @@ function _removeMember(IStore s, address member) private {
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -785,6 +844,7 @@ function _removeMember(IStore s, address member) private {
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -803,12 +863,14 @@ function _removeMember(IStore s, address member) private {
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -820,6 +882,7 @@ function _removeMember(IStore s, address member) private {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -830,6 +893,7 @@ function _removeMember(IStore s, address member) private {
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -840,6 +904,7 @@ function _removeMember(IStore s, address member) private {
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

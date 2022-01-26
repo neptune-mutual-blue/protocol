@@ -140,7 +140,7 @@ function setFirstReportingStake(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setFirstReportingStake(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
@@ -190,7 +190,7 @@ function setReportingBurnRate(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setReportingBurnRate(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
@@ -218,7 +218,7 @@ function setReporterCommission(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setReporterCommission(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
@@ -301,6 +301,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -313,6 +314,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -327,10 +329,13 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -348,6 +353,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -366,12 +372,14 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -383,6 +391,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -393,6 +402,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -403,6 +413,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

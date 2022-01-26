@@ -369,8 +369,8 @@ function getUnstakeInfoFor(
     // slither-disable-next-line divide-before-multiply
     uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
 
-    toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
-    toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.PERCENTAGE_DIVISOR;
+    toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.MULTIPLIER;
+    toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.MULTIPLIER;
     myReward = reward - toBurn - toReporter;
   }
 ```
@@ -573,6 +573,8 @@ function addAttestation(
 
     s.addUintByKey(k, stake);
     updateCoverStatus(s, key, incidentDate);
+
+    s.updateStateAndLiquidity(key);
   }
 ```
 </details>
@@ -655,6 +657,8 @@ function addDispute(
     s.addUintByKey(k, stake);
 
     updateCoverStatus(s, key, incidentDate);
+
+    s.updateStateAndLiquidity(key);
   }
 ```
 </details>
@@ -720,6 +724,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 
 ## Contracts
 
+* [AaveStrategy](AaveStrategy.md)
 * [AccessControl](AccessControl.md)
 * [AccessControlLibV1](AccessControlLibV1.md)
 * [Address](Address.md)
@@ -732,6 +737,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
+* [CoverLibV1](CoverLibV1.md)
 * [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
@@ -746,10 +752,13 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
 * [FakeUniswapPair](FakeUniswapPair.md)
+* [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
+* [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [Finalization](Finalization.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
+* [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
@@ -767,6 +776,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [IERC3156FlashLender](IERC3156FlashLender.md)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
+* [ILendingStrategy](ILendingStrategy.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -785,12 +795,14 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [IVault](IVault.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
+* [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
 * [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockProcessorStore](MockProcessorStore.md)
+* [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
@@ -802,6 +814,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyManager](PolicyManager.md)
 * [PriceDiscovery](PriceDiscovery.md)
+* [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
 * [Protocol](Protocol.md)
@@ -812,6 +825,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [Reporter](Reporter.md)
 * [Resolution](Resolution.md)
 * [Resolvable](Resolvable.md)
+* [RoutineInvokerLibV1](RoutineInvokerLibV1.md)
 * [SafeERC20](SafeERC20.md)
 * [StakingPoolBase](StakingPoolBase.md)
 * [StakingPoolCoreLibV1](StakingPoolCoreLibV1.md)
@@ -822,6 +836,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [Store](Store.md)
 * [StoreBase](StoreBase.md)
 * [StoreKeyUtil](StoreKeyUtil.md)
+* [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)

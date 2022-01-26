@@ -5,6 +5,7 @@ import "../../Recoverable.sol";
 import "../../../interfaces/IFinalization.sol";
 import "../../../libraries/GovernanceUtilV1.sol";
 import "../../../libraries/ValidationLibV1.sol";
+import "../../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Neptune Mutual Governance: Finalization Contract
@@ -20,6 +21,8 @@ abstract contract Finalization is Recoverable, IFinalization {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
+  using ProtoUtilV1 for IStore;
   using ValidationLibV1 for bytes32;
 
   function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
@@ -43,6 +46,7 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
 
+    s.updateStateAndLiquidity(key);
     emit Finalized(key, msg.sender, incidentDate);
   }
 }

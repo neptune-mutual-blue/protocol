@@ -5,9 +5,10 @@
  * @property {Object} accessControlLibV1 - Access control library
  * @property {Object} baseLibV1 - Access control library
  * @property {Object} protoUtilV1 - Protocol utility library
- * @property {Object} coverUtil - Cover  utility library
+ * @property {Object} coverLibV1 - Cover library
+ * @property {Object} coverUtilV1 - Cover utility library
  * @property {Object} transferLib - Transfer helper library
- * @property {Object} registryLib - Registry helper library
+ * @property {Object} registryLibV1 - Registry helper library
  * @property {Object} validationLib - Validation helper library
  * @property {Object} governanceLib - Governance utility library
  * @property {Object} vaultFactoryLib - Vault factory library
@@ -17,6 +18,9 @@
  * @property {Object} bondPoolLibV1 - Bond pool library
  * @property {Object} stakingPoolCoreLibV1 - Staking pool core library
  * @property {Object} stakingPoolLibV1 - Staking pool library
+ * @property {Object} priceLibV1 - Price library
+ * @property {Object} RoutineInvokerLibV1 - Housekeeping library
+ * @property {Object} strategyLibV1 - Price library
  */
 
 /**

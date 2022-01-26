@@ -10,6 +10,7 @@ import "./ProtoBase.sol";
 contract Protocol is IProtocol, ProtoBase {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
   uint256 public initialized = 0;
@@ -82,7 +83,7 @@ contract Protocol is IProtocol, ProtoBase {
     address current
   ) external override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, previous);
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
@@ -92,7 +93,7 @@ contract Protocol is IProtocol, ProtoBase {
 
   function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.addContractInternal(namespace, contractAddress);
@@ -102,7 +103,7 @@ contract Protocol is IProtocol, ProtoBase {
   function removeMember(address member) external override nonReentrant {
     // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ProtoUtilV1.mustBeProtocolMember(s, member);
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.removeMemberInternal(member);
@@ -111,7 +112,7 @@ contract Protocol is IProtocol, ProtoBase {
 
   function addMember(address member) external override nonReentrant {
     // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     s.addMemberInternal(member);

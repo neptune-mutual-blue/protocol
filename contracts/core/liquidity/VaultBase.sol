@@ -31,6 +31,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using RoutineInvokerLibV1 for IStore;
 
   bytes32 public key;
   address public lqt;
@@ -45,7 +46,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     IStore store,
     bytes32 coverKey,
     IERC20 liquidityToken
-  ) ERC20("Proof of Deposits", "PODs") Recoverable(store) {
+  ) ERC20(VaultLibV1.getPodTokenNameInternal(coverKey), "POD") Recoverable(store) {
     key = coverKey;
     lqt = address(liquidityToken);
   }
@@ -66,6 +67,9 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     s.mustNotBePaused();
     s.mustBeValidCover(key);
     s.callerMustBeCoverContract();
+
+    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
+    require(coverKey == key, "Forbidden");
 
     _addLiquidity(coverKey, account, amount, true);
   }
@@ -102,6 +106,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    */
   function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
     s.mustNotBePaused();
+
     require(coverKey == key, "Forbidden");
     uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
 
@@ -120,21 +125,19 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 amount,
     bool initialLiquidity
   ) private {
-    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
-    require(coverKey == key, "Forbidden");
-
     uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
     super._mint(account, podsToMint);
+
+    s.updateStateAndLiquidity(key);
 
     emit PodsIssued(account, podsToMint, amount);
   }
 
   function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
-    ValidationLibV1.mustNotBePaused(s);
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
+    uint256 previous = s.setMinLiquidityPeriodInternal(key, value);
 
     emit MinLiquidityPeriodSet(previous, value);
   }
@@ -159,7 +162,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
 
   /**
    * @dev Gets information of a given vault by the cover key
-   * @param whom The address for which the info will be customized
+   * @param you The address for which the info will be customized
    * @param values[0] totalPods --> Total PODs in existence
    * @param values[1] balance --> Stablecoins held in the vault
    * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
@@ -171,8 +174,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param values[8] myShare --> My share of the liquidity pool (in stablecoin)
    * @param values[9] releaseDate --> My liquidity release date
    */
-  function getInfo(address whom) external view override returns (uint256[] memory values) {
-    return s.getInfoInternal(key, address(this), lqt, whom);
+  function getInfo(address you) external view override returns (uint256[] memory values) {
+    return s.getInfoInternal(key, address(this), lqt, you);
   }
 
   /**
