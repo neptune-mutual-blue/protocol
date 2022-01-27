@@ -129,7 +129,6 @@ function addCover(
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
-    require(values[1] >= 7 days, "Insufficient reporting period"); // @todo: parameterize this magic number
 
     s.addCoverInternal(key, info, reassuranceToken, values);
     emit CoverCreated(key, info);
@@ -248,6 +247,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Destroyable](docs/Destroyable.md)
 * [ERC165](docs/ERC165.md)
 * [ERC20](docs/ERC20.md)
+* [FakeAaveLendingPool](docs/FakeAaveLendingPool.md)
 * [FakeRecoverable](docs/FakeRecoverable.md)
 * [FakeStore](docs/FakeStore.md)
 * [FakeToken](docs/FakeToken.md)
@@ -271,6 +271,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [ICxTokenFactory](docs/ICxTokenFactory.md)
 * [IERC165](docs/IERC165.md)
 * [IERC20](docs/IERC20.md)
+* [IERC20Detailed](docs/IERC20Detailed.md)
 * [IERC20Metadata](docs/IERC20Metadata.md)
 * [IERC3156FlashBorrower](docs/IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](docs/IERC3156FlashLender.md)
@@ -283,6 +284,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IPolicyAdmin](docs/IPolicyAdmin.md)
 * [IPriceDiscovery](docs/IPriceDiscovery.md)
 * [IProtocol](docs/IProtocol.md)
+* [IRecoverable](docs/IRecoverable.md)
 * [IReporter](docs/IReporter.md)
 * [IResolution](docs/IResolution.md)
 * [IResolvable](docs/IResolvable.md)

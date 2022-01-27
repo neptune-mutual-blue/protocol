@@ -108,6 +108,10 @@ library ValidationLibV1 {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
   }
 
+  function callerMustBeProtocolMember(IStore s) external view {
+    require(s.isProtocolMember(msg.sender), "Forbidden");
+  }
+
   /*********************************************************************************************
    ______  _____  _    _ _______  ______ __   _ _______ __   _ _______ _______
   |  ____ |     |  \  /  |______ |_____/ | \  | |_____| | \  | |       |______
@@ -221,6 +225,7 @@ library ValidationLibV1 {
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    // If a cover is finalized, this incident date will not be valid anymore
     mustBeValidIncidentDate(s, key, incidentDate);
 
     bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;

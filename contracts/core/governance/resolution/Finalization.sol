@@ -41,6 +41,7 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
 
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);

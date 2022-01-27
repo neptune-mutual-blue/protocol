@@ -11,7 +11,7 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 - [getPoolCumulativeDeposits(IStore s, bytes32 key)](#getpoolcumulativedeposits)
 - [getAccountStakingBalanceInternal(IStore s, bytes32 key, address account)](#getaccountstakingbalanceinternal)
 - [getTotalBlocksSinceLastRewardInternal(IStore s, bytes32 key, address account)](#gettotalblockssincelastrewardinternal)
-- [canWithdrawFromInternal(IStore s, bytes32 key, address account)](#canwithdrawfrominternal)
+- [canWithdrawFromBlockHeightInternal(IStore s, bytes32 key, address account)](#canwithdrawfromblockheightinternal)
 - [getLastDepositHeight(IStore s, bytes32 key, address account)](#getlastdepositheight)
 - [getLastRewardHeight(IStore s, bytes32 key, address account)](#getlastrewardheight)
 - [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
@@ -70,12 +70,12 @@ function getInfoInternal(
     values[4] = getPoolCumulativeDeposits(s, key);
     values[5] = s.getRewardPerBlock(key);
     values[6] = s.getRewardPlatformFee(key);
-    values[7] = s.getLockupPeriod(key);
+    values[7] = s.getLockupPeriodInBlocks(key);
     values[8] = s.getRewardTokenBalance(key);
     values[9] = getAccountStakingBalanceInternal(s, key, you);
     values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
     values[11] = calculateRewardsInternal(s, key, you);
-    values[12] = canWithdrawFromInternal(s, key, you);
+    values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
     values[13] = getLastDepositHeight(s, key, you);
     values[14] = getLastRewardHeight(s, key, you);
   }
@@ -196,10 +196,10 @@ function getTotalBlocksSinceLastRewardInternal(
 ```
 </details>
 
-### canWithdrawFromInternal
+### canWithdrawFromBlockHeightInternal
 
 ```solidity
-function canWithdrawFromInternal(IStore s, bytes32 key, address account) public view
+function canWithdrawFromBlockHeightInternal(IStore s, bytes32 key, address account) public view
 returns(uint256)
 ```
 
@@ -215,13 +215,13 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function canWithdrawFromInternal(
+function canWithdrawFromBlockHeightInternal(
     IStore s,
     bytes32 key,
     address account
   ) public view returns (uint256) {
     uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
-    uint256 lockupPeriod = s.getLockupPeriod(key);
+    uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
 
     return lastDepositHeight + lockupPeriod;
   }
@@ -454,7 +454,7 @@ function withdrawInternal(
     require(amount > 0, "Enter an amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
-    require(block.number > canWithdrawFromInternal(s, key, msg.sender), "Withdrawal too early");
+    require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 
@@ -498,6 +498,7 @@ function withdrawInternal(
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -521,6 +522,7 @@ function withdrawInternal(
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -533,6 +535,7 @@ function withdrawInternal(
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

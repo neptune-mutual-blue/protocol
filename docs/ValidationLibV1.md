@@ -17,6 +17,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [callerMustBeVaultContract(IStore s, bytes32 key)](#callermustbevaultcontract)
 - [callerMustBeGovernanceContract(IStore s)](#callermustbegovernancecontract)
 - [callerMustBeClaimsProcessorContract(IStore s)](#callermustbeclaimsprocessorcontract)
+- [callerMustBeProtocolMember(IStore s)](#callermustbeprotocolmember)
 - [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
 - [mustBeDisputed(IStore s, bytes32 key)](#mustbedisputed)
 - [mustBeClaimable(IStore s, bytes32 key)](#mustbeclaimable)
@@ -305,6 +306,28 @@ function callerMustBeClaimsProcessorContract(IStore s) external view
 ```javascript
 function callerMustBeClaimsProcessorContract(IStore s) external view {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
+  }
+```
+</details>
+
+### callerMustBeProtocolMember
+
+```solidity
+function callerMustBeProtocolMember(IStore s) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeProtocolMember(IStore s) external view {
+    require(s.isProtocolMember(msg.sender), "Forbidden");
   }
 ```
 </details>
@@ -688,6 +711,7 @@ function validateUnstakeWithClaim(
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    // If a cover is finalized, this incident date will not be valid anymore
     mustBeValidIncidentDate(s, key, incidentDate);
 
     bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
@@ -783,6 +807,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -806,6 +831,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -818,6 +844,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

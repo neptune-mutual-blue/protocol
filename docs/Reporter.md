@@ -22,6 +22,7 @@ This contract enables any NPM tokenholder to
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
 - [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake()](#getfirstreportingstake)
+- [getFirstReportingStake(bytes32 key)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
@@ -169,6 +170,29 @@ returns(uint256)
 ```javascript
 function getFirstReportingStake() external view override returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+  }
+```
+</details>
+
+### getFirstReportingStake
+
+```solidity
+function getFirstReportingStake(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getFirstReportingStake(bytes32 key) external view override returns (uint256) {
+    return s.getMinReportingStake(key);
   }
 ```
 </details>
@@ -325,6 +349,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -348,6 +373,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -360,6 +386,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

@@ -54,6 +54,8 @@ const PROTOCOL = {
     COVER_VAULT_FACTORY: toBytes32('cns:cover:vault:factory'),
     BOND_POOL: toBytes32('cns:pools:bond'),
     STAKING_POOL: toBytes32('cns:pools:staking'),
+    LIQUIDITY_ENGINE: toBytes32('cns:liquidity:engine'),
+    STRATEGY_AAVE: toBytes32('cns:strategy:aave'),
     GOVERNANCE: toBytes32('cns:gov'),
     GOVERNANCE_RESOLUTION: toBytes32('cns:gov:resolution'),
     CLAIM_PROCESSOR: toBytes32('cns:claim:processor'),
@@ -144,7 +146,7 @@ const PROTOCOL = {
 const STAKING = {
   NAME: toBytes32('ns:pool:staking:name'),
   LOCKED: toBytes32('ns:pool:staking:locked'),
-  LOCKUP_PERIOD: toBytes32('ns:pool:staking:lockup:period'),
+  LOCKUP_PERIOD_IN_BLOCKS: toBytes32('ns:pool:staking:lockup:period'),
   STAKING_TARGET: toBytes32('ns:pool:staking:target'),
   CUMULATIVE_STAKING_AMOUNT: toBytes32('ns:pool:staking:cum:amount'),
   STAKING_TOKEN: toBytes32('ns:pool:staking:token'),

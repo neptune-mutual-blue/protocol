@@ -2,7 +2,7 @@
 
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
-**↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
+**↗ Extends: [ReentrancyGuard](ReentrancyGuard.md), [IRecoverable](IRecoverable.md)**
 **↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
@@ -64,7 +64,7 @@ function recoverEther(address sendTo) external nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverEther(address sendTo) external nonReentrant {
+function recoverEther(address sendTo) external override nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverEtherInternal(s, sendTo);
@@ -93,7 +93,7 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverToken(address token, address sendTo) external nonReentrant {
+function recoverToken(address token, address sendTo) external override nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
@@ -128,6 +128,7 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -151,6 +152,7 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -163,6 +165,7 @@ function recoverToken(address token, address sendTo) external nonReentrant {
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

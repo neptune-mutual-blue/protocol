@@ -55,11 +55,16 @@ abstract contract Resolvable is Finalization, IResolvable {
   ) private {
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
-    uint256 claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
-    uint256 claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
+    uint256 claimBeginsFrom = 0; // solhint-disable-line
+    uint256 claimExpiresAt = 0;
 
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
+    if (decision) {
+      claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
+      claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
+
+      s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
+      s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
+    }
 
     s.setStatus(key, status);
 

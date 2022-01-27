@@ -11,7 +11,7 @@ View Source: [contracts/libraries/StakingPoolCoreLibV1.sol](../contracts/librari
 bytes32 public constant NS_POOL;
 bytes32 public constant NS_POOL_NAME;
 bytes32 public constant NS_POOL_LOCKED;
-bytes32 public constant NS_POOL_LOCKUP_PERIOD;
+bytes32 public constant NS_POOL_LOCKUP_PERIOD_IN_BLOCKS;
 bytes32 public constant NS_POOL_STAKING_TARGET;
 bytes32 public constant NS_POOL_CUMULATIVE_STAKING_AMOUNT;
 bytes32 public constant NS_POOL_STAKING_TOKEN;
@@ -38,7 +38,7 @@ bytes32 public constant NS_POOL_TOTAL_REWARD_GIVEN;
 - [getRewardPlatformFee(IStore s, bytes32 key)](#getrewardplatformfee)
 - [getTotalStaked(IStore s, bytes32 key)](#gettotalstaked)
 - [getRewardPerBlock(IStore s, bytes32 key)](#getrewardperblock)
-- [getLockupPeriod(IStore s, bytes32 key)](#getlockupperiod)
+- [getLockupPeriodInBlocks(IStore s, bytes32 key)](#getlockupperiodinblocks)
 - [getRewardTokenBalance(IStore s, bytes32 key)](#getrewardtokenbalance)
 - [getMaximumStakeInternal(IStore s, bytes32 key)](#getmaximumstakeinternal)
 - [getStakingTokenAddressInternal(IStore s, bytes32 key)](#getstakingtokenaddressinternal)
@@ -180,10 +180,10 @@ function getRewardPerBlock(IStore s, bytes32 key) public view returns (uint256) 
 ```
 </details>
 
-### getLockupPeriod
+### getLockupPeriodInBlocks
 
 ```solidity
-function getLockupPeriod(IStore s, bytes32 key) public view
+function getLockupPeriodInBlocks(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -198,8 +198,8 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLockupPeriod(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD, key);
+function getLockupPeriodInBlocks(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 ```
 </details>
@@ -406,10 +406,10 @@ function validateAddOrEditPoolInternal(
     if (exists == false) {
       require(bytes(name).length > 0, "Invalid name");
       require(addresses[0] != address(0), "Invalid staking token");
-      require(addresses[1] != address(0), "Invalid staking token pair");
+      // require(addresses[1] != address(0), "Invalid staking token pair"); // A POD doesn't have any pair with stablecion
       require(addresses[2] != address(0), "Invalid reward token");
       require(addresses[3] != address(0), "Invalid reward token pair");
-      require(values[4] > 0, "Provide lockup period");
+      require(values[4] > 0, "Provide lockup period in blocks");
       require(values[5] > 0, "Provide reward token balance");
       require(values[3] > 0, "Provide reward per block");
       require(values[0] > 0, "Please provide staking target");
@@ -512,7 +512,7 @@ function _updatePoolValues(
     }
 
     if (values[4] > 0) {
-      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD, key, values[4]);
+      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key, values[4]);
     }
 
     if (values[5] > 0) {
@@ -585,6 +585,7 @@ function _initializeNewPool(
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -608,6 +609,7 @@ function _initializeNewPool(
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -620,6 +622,7 @@ function _initializeNewPool(
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

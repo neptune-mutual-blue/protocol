@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/security/ReentrancyGuard.sol";
+import "../interfaces/IRecoverable.sol";
 import "../libraries/BaseLibV1.sol";
 import "../libraries/ValidationLibV1.sol";
 
-abstract contract Recoverable is ReentrancyGuard {
-  IStore public s;
+abstract contract Recoverable is ReentrancyGuard, IRecoverable {
+  IStore public override s;
 
   constructor(IStore store) {
     require(address(store) != address(0), "Invalid Store");
@@ -18,7 +19,7 @@ abstract contract Recoverable is ReentrancyGuard {
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
    */
-  function recoverEther(address sendTo) external nonReentrant {
+  function recoverEther(address sendTo) external override nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     BaseLibV1.recoverEtherInternal(s, sendTo);
@@ -30,7 +31,7 @@ abstract contract Recoverable is ReentrancyGuard {
    * not have any significance in the SDK or the UI.
    * @param token IERC-20 The address of the token contract
    */
-  function recoverToken(address token, address sendTo) external nonReentrant {
+  function recoverToken(address token, address sendTo) external override nonReentrant {
     // @suppress-pausable Already implemented in BaseLibV1
     // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.

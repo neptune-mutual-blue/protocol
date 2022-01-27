@@ -37,6 +37,8 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
   bytes32 public constant CNS_BOND_POOL = "cns:pools:bond";
   bytes32 public constant CNS_STAKING_POOL = "cns:pools:staking";
+  bytes32 public constant CNS_LIQUIDITY_ENGINE = "cns:liquidity:engine";
+  bytes32 public constant CNS_STRATEGY_AAVE = "cns:strategy:aave";
 
   /// @dev Governance contract address
   bytes32 public constant CNS_GOVERNANCE = "cns:gov";

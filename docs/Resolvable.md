@@ -108,11 +108,16 @@ function _resolve(
   ) private {
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
-    uint256 claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
-    uint256 claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
+    uint256 claimBeginsFrom = 0; // solhint-disable-line
+    uint256 claimExpiresAt = 0;
 
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
+    if (decision) {
+      claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
+      claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
+
+      s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
+      s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
+    }
 
     s.setStatus(key, status);
 
@@ -149,6 +154,7 @@ function _resolve(
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -172,6 +178,7 @@ function _resolve(
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -184,6 +191,7 @@ function _resolve(
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

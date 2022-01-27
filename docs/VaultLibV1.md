@@ -192,7 +192,7 @@ nction getInfoInternal(
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
     values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
     values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[1]); //  My share of the liquidity pool (in stablecoin)
+    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
     values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
   }
 
@@ -654,6 +654,7 @@ nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string m
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -677,6 +678,7 @@ nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string m
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -689,6 +691,7 @@ nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string m
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

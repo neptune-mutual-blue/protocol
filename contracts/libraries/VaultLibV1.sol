@@ -154,7 +154,7 @@ library VaultLibV1 {
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
     values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
     values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[1]); //  My share of the liquidity pool (in stablecoin)
+    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
     values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
   }
 

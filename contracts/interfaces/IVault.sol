@@ -11,6 +11,10 @@ interface IVault is IMember, IERC20 {
   event MinLiquidityPeriodSet(uint256 previous, uint256 current);
   event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256 amount, uint256 fee);
 
+  function key() external view returns (bytes32);
+
+  function lqt() external view returns (address);
+
   /**
    * @dev Adds liquidity to the specified cover contract
    * @param coverKey Enter the cover key

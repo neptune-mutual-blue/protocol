@@ -1,22 +1,49 @@
 require('dotenv').config()
 const wallet = require('../../../util/wallet')
-
-const testnetAdmins = ['0xA96813969437F3bad7B59335934aa75933670615']
+const MINUTES = 60
+const { ACCESS_CONTROL } = require('../../../util/key')
 
 const config = {
   3: {
     network: 'Ropsten Test Network',
     chainId: 3,
-    knownAccounts: {
-      admins: [wallet.toWalletAddress(process.env.PRIVATE_KEY), ...testnetAdmins]
+    cover: {
+      minLiquidityPeriod: 5 * MINUTES,
+      claimPeriod: 120 * MINUTES
     },
+    knownAccounts: [
+      {
+        account: '0xA96813969437F3bad7B59335934aa75933670615',
+        roles: [
+          ACCESS_CONTROL.ADMIN,
+          ACCESS_CONTROL.COVER_MANAGER,
+          ACCESS_CONTROL.LIQUIDITY_MANAGER,
+          ACCESS_CONTROL.GOVERNANCE_ADMIN,
+          ACCESS_CONTROL.RECOVERY_AGENT,
+          ACCESS_CONTROL.UNPAUSE_AGENT,
+          ACCESS_CONTROL.UPGRADE_AGENT
+        ]
+      }, {
+        account: wallet.toWalletAddress(process.env.PRIVATE_KEY),
+        roles: [
+          ACCESS_CONTROL.ADMIN,
+          ACCESS_CONTROL.COVER_MANAGER,
+          ACCESS_CONTROL.LIQUIDITY_MANAGER,
+          ACCESS_CONTROL.GOVERNANCE_ADMIN,
+          ACCESS_CONTROL.RECOVERY_AGENT,
+          ACCESS_CONTROL.UNPAUSE_AGENT,
+          ACCESS_CONTROL.UPGRADE_AGENT
+        ]
+      }
+    ],
     deployedTokens: {
       DAI: '0x963bd459c5bdf9396aacD59FE9621B64c921574E',
       NPM: '0xa2F795CB8cdCa83f8D3d5F2D84BFC45c9b3A4197',
       CPOOL: '0x9912B6Fc42675DC940313551b20c022219b98Adb',
       HT: '0xe2e3cAA55dEdb93f802B16314B4579c9a57d3B0e',
       OKB: '0x1DC3318aaAfE76BC825365DcF3518B83e2137894',
-      AXS: '0xaBccBfdfd5Ff2855236C371D70Dc7951a3F3ba5B'
+      AXS: '0xaBccBfdfd5Ff2855236C371D70Dc7951a3F3ba5B',
+      aToken: '0x86067C23557D97286027095b868DF6A765aaED5f'
     },
     stablecoinPairs: {
       NPM_DAI: '0x773992D8d8932e3153Eab3499a1b662E2e57E283',
@@ -31,6 +58,14 @@ const config = {
         factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
         router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
         masterChef: '0x80C7DD17B01855a6D2347444a0FCC36136a314de'
+      }
+    },
+    aave: {
+      description: 'Aave on Ropsten', // @todo
+      addresses: {
+        lendingPool: '0x9E5C7835E4b13368fd628196C4f1c6cEc89673Fa',
+        router: null,
+        masterChef: null
       }
     }
   }

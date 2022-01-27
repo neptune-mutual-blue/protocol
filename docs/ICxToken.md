@@ -17,6 +17,7 @@ event Finalized(uint256  amount);
 
 - [mint(bytes32 key, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
+- [createdOn()](#createdon)
 - [expiresOn()](#expireson)
 - [coverKey()](#coverkey)
 
@@ -63,6 +64,26 @@ function burn(uint256 amount) external nonpayable
 
 ```javascript
 function burn(uint256 amount) external;
+```
+</details>
+
+### createdOn
+
+```solidity
+function createdOn() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function createdOn() external view returns (uint256);
 ```
 </details>
 
@@ -132,6 +153,7 @@ function coverKey() external view returns (bytes32);
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -155,6 +177,7 @@ function coverKey() external view returns (bytes32);
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -167,6 +190,7 @@ function coverKey() external view returns (bytes32);
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)
