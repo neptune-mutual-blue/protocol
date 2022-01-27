@@ -300,7 +300,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
 
-  const contracts = {
+  return {
     intermediate,
     cache,
     store,
@@ -334,8 +334,6 @@ const initialize = async (suite, deploymentId) => {
     stakingPoolContract,
     libs
   }
-
-  return contracts
 }
 
 module.exports = { initialize }
