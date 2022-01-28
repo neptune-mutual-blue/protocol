@@ -15,6 +15,8 @@ interface ICxToken is IERC20 {
 
   function burn(uint256 amount) external;
 
+  function createdOn() external view returns (uint256);
+
   function expiresOn() external view returns (uint256);
 
   function coverKey() external view returns (bytes32);

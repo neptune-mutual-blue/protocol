@@ -2,7 +2,7 @@
 
 View Source: [openzeppelin-solidity/contracts/token/ERC20/IERC20.sol](../openzeppelin-solidity/contracts/token/ERC20/IERC20.sol)
 
-**↘ Derived Contracts: [ERC20](ERC20.md), [ICxToken](ICxToken.md), [IERC20Metadata](IERC20Metadata.md), [IVault](IVault.md)**
+**↘ Derived Contracts: [ERC20](ERC20.md), [ICxToken](ICxToken.md), [IERC20Detailed](IERC20Detailed.md), [IERC20Metadata](IERC20Metadata.md), [IVault](IVault.md)**
 
 **IERC20**
 
@@ -213,6 +213,7 @@ function transferFrom(
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -236,6 +237,7 @@ function transferFrom(
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -248,6 +250,7 @@ function transferFrom(
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

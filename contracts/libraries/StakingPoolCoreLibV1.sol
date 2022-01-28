@@ -109,7 +109,7 @@ library StakingPoolCoreLibV1 {
     if (exists == false) {
       require(bytes(name).length > 0, "Invalid name");
       require(addresses[0] != address(0), "Invalid staking token");
-      require(addresses[1] != address(0), "Invalid staking token pair");
+      // require(addresses[1] != address(0), "Invalid staking token pair"); // A POD doesn't have any pair with stablecion
       require(addresses[2] != address(0), "Invalid reward token");
       require(addresses[3] != address(0), "Invalid reward token pair");
       require(values[4] > 0, "Provide lockup period in blocks");

@@ -91,7 +91,6 @@ contract Cover is CoverBase {
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
-    require(values[1] >= 7 days, "Insufficient reporting period"); // @todo: parameterize this magic number
 
     s.addCoverInternal(key, info, reassuranceToken, values);
     emit CoverCreated(key, info);

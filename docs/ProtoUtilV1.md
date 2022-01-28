@@ -29,6 +29,8 @@ bytes32 public constant CNS_COVER_CXTOKEN_FACTORY;
 bytes32 public constant CNS_COVER_VAULT_FACTORY;
 bytes32 public constant CNS_BOND_POOL;
 bytes32 public constant CNS_STAKING_POOL;
+bytes32 public constant CNS_LIQUIDITY_ENGINE;
+bytes32 public constant CNS_STRATEGY_AAVE;
 bytes32 public constant CNS_GOVERNANCE;
 bytes32 public constant CNS_GOVERNANCE_RESOLUTION;
 bytes32 public constant CNS_CLAIM_PROCESSOR;
@@ -816,6 +818,7 @@ function _removeMember(IStore s, address member) private {
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -839,6 +842,7 @@ function _removeMember(IStore s, address member) private {
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -851,6 +855,7 @@ function _removeMember(IStore s, address member) private {
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

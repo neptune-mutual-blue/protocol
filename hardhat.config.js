@@ -24,18 +24,25 @@ const config = {
       gasPrice: 60000000000,
       gas: 'auto'
     },
+    kovan: {
+      url: `${process.env.KOVAN_RPC_URL}`,
+      chainId: 42,
+      accounts: [process.env.PRIVATE_KEY],
+      // gasPrice: 60000000000,
+      gas: 'auto'
+    },
     bscTestnet: {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
       chainId: 97,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 30000000000,
+      // gasPrice: 30000000000,
       gas: 'auto'
     },
     polygonMumbai: {
       url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 30000000000,
+      // gasPrice: 30000000000,
       gas: 'auto'
     },
     local: {

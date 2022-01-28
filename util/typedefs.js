@@ -46,6 +46,8 @@
  * @property {Object} cxTokenFactory - cxToken factory
  * @property {Object} cover - The base cover contract
  * @property {Object} priceDiscovery - Price discovery contract
+ * @property {Object} liquidityEngine - Liquidity engine contract
+ * @property {Object} aaveStrategy - Aave lending strategy contract
  * @property {Object} policyAdminContract - Policy admin contract
  * @property {Object} policy - Policy contract
  * @property {Object} governance - Governance contract
@@ -54,4 +56,11 @@
  * @property {Object} bondPoolContract - Bond pool contract
  * @property {Object} stakingPoolContract - Staking pool contract
  * @property {Libraries} libs - All libraries
+ */
+
+/**
+ * @typedef {Object} ExternalProtocols
+ * @property {Object} router - UniswapV2-like router
+ * @property {Object} factory - UniswapV2-like factory
+ * @property {Object} aaveLendingPool - Aave lending pool
  */

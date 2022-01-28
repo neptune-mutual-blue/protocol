@@ -115,7 +115,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "lockupPeriod",
+        "name": "lockupPeriodInBlocks",
         "type": "uint256"
       },
       {

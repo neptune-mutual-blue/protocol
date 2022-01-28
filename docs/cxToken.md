@@ -15,6 +15,7 @@ cxTokens are minted when someone purchases a cover. <br /> <br />
 
 ```js
 bytes32 public coverKey;
+uint256 public createdOn;
 uint256 public expiresOn;
 
 ```
@@ -56,6 +57,8 @@ constructor(
     string memory symbol
   ) ERC20(name, symbol) Recoverable(store) {
     coverKey = key;
+
+    createdOn = block.timestamp; // solhint-disable-line
     expiresOn = expiry;
   }
 ```
@@ -181,6 +184,7 @@ function _beforeTokenTransfer(
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -204,6 +208,7 @@ function _beforeTokenTransfer(
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -216,6 +221,7 @@ function _beforeTokenTransfer(
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

@@ -115,12 +115,12 @@ describe('Constructor & Initializer', () => {
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.percentage(30), // Governance Burn Rate: 30%
+        helper.percentage(10), // Governance Reporter Commission: 10%
+        helper.percentage(6.5), // Claim: Platform Fee: 6.5%
+        helper.percentage(5), // Claim: Reporter Commission: 5%
+        helper.percentage(0.5), // Flash Loan Fee: 0.5%
+        helper.percentage(2.5) // Flash Loan Protocol Fee: 2.5%
       ]
     )
 

@@ -38,6 +38,8 @@ const deploySeveral = async (cache, tokens) => {
       const token = await erc20.getInstance(tokenAt)
       // @todo parameterize this on network config
       await faucet.request(token)
+      await faucet.request(token)
+      await faucet.request(token)
 
       contracts.push(token)
       continue
@@ -57,4 +59,18 @@ const at = async (address) => {
   return token.attach(address)
 }
 
-module.exports = { deploySeveral, at }
+const compose = async (cache) => {
+  const [npm, wxDai, cpool, ht, okb, axs, aToken] = await deploySeveral(cache, [
+    { name: 'Fake Neptune Mutual Token', symbol: 'NPM' },
+    { name: 'Fake Dai', symbol: 'DAI' },
+    { name: 'Fake Clearpool Token', symbol: 'CPOOL' },
+    { name: 'Fake Huobi Token', symbol: 'HT' },
+    { name: 'Fake OKB Token', symbol: 'OKB' },
+    { name: 'Fake AXS Token', symbol: 'AXS' },
+    { name: 'Fake aToken Token', symbol: 'aToken' }
+  ])
+
+  return [npm, wxDai, cpool, ht, okb, axs, aToken]
+}
+
+module.exports = { deploySeveral, at, compose }

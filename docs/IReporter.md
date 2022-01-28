@@ -25,6 +25,7 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 - [getResolutionDate(bytes32 key)](#getresolutiondate)
 - [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake()](#getfirstreportingstake)
+- [getFirstReportingStake(bytes32 key)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
 
@@ -186,6 +187,27 @@ function getFirstReportingStake() external view returns (uint256);
 ```
 </details>
 
+### getFirstReportingStake
+
+```solidity
+function getFirstReportingStake(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getFirstReportingStake(bytes32 key) external view returns (uint256);
+```
+</details>
+
 ### setReportingBurnRate
 
 ```solidity
@@ -252,6 +274,7 @@ function setReporterCommission(uint256 value) external;
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -275,6 +298,7 @@ function setReporterCommission(uint256 value) external;
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -287,6 +311,7 @@ function setReporterCommission(uint256 value) external;
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

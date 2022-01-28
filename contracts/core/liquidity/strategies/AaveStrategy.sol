@@ -11,6 +11,7 @@ import "../../../libraries/StoreKeyUtil.sol";
 contract AaveStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "aave", "v2"));
@@ -56,6 +57,9 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     uint256 amount,
     address onBehalfOf
   ) external override nonReentrant returns (uint256 certificateReceived) {
+    s.mustNotBePaused();
+    s.callerMustBeProtocolMember();
+
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
@@ -75,6 +79,9 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   }
 
   function withdraw(bytes32 coverKey, address sendTo) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+    s.mustNotBePaused();
+    s.callerMustBeProtocolMember();
+
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
     uint256 aTokenAmount = aToken.balanceOf(sendTo);

@@ -33,8 +33,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   using NTransferUtilV2 for IERC20;
   using RoutineInvokerLibV1 for IStore;
 
-  bytes32 public key;
-  address public lqt;
+  bytes32 public override key;
+  address public override lqt;
 
   /**
    * @dev Constructs this contract

@@ -2,7 +2,7 @@ const hre = require('hardhat')
 const path = require('path')
 const { io, fileCache } = require('../util')
 
-const DEPLOYMENT_ID = 5
+const DEPLOYMENT_ID = 6
 
 const updateCache = async (name) => {
   const cache = await fileCache.from(DEPLOYMENT_ID)

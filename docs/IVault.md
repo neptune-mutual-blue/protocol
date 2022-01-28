@@ -19,6 +19,8 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 
 ## Functions
 
+- [key()](#key)
+- [lqt()](#lqt)
 - [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount)](#addliquiditymemberonly)
 - [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
@@ -27,6 +29,46 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
 - [getInfo(address forAccount)](#getinfo)
+
+### key
+
+```solidity
+function key() external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function key() external view returns (bytes32);
+```
+</details>
+
+### lqt
+
+```solidity
+function lqt() external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function lqt() external view returns (address);
+```
+</details>
 
 ### addLiquidityMemberOnly
 
@@ -239,6 +281,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -262,6 +305,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -274,6 +318,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

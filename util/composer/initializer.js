@@ -1,12 +1,14 @@
-const fakesComposer = require('./fakes')
 const storeComposer = require('./store')
 const fakeTokenComposer = require('./token')
 const fakeUniswapPairComposer = require('./uniswap-pair')
 const libsComposer = require('./libs')
 const { deployer, key, sample, helper, intermediate, fileCache } = require('..')
 const { getNetworkInfo } = require('../network')
+const { grantRoles } = require('./grant-roles')
+const { getExternalProtocols } = require('./external-protocols')
 
 const DAYS = 86400
+const MINUTES = 60
 
 /**
  * Initializes all contracts
@@ -16,37 +18,16 @@ const initialize = async (suite, deploymentId) => {
   const [owner] = await ethers.getSigners()
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
-  const admins = network?.knownAccounts?.admins || []
-  let router = network?.uniswapV2Like?.addresses?.router
-  let factory = network?.uniswapV2Like?.addresses?.factory
+  const minLiquidityPeriod = network.cover.minLiquidityPeriod
+  const claimPeriod = network.cover.claimPeriod
 
   const store = await storeComposer.deploy(cache)
-  const fakes = await fakesComposer.deployAll(cache)
+  const { router, factory, aaveLendingPool } = await getExternalProtocols(cache)
+  const tokens = await fakeTokenComposer.compose(cache)
 
-  if (!router) {
-    router = fakes.router.address
-  }
-
-  if (!factory) {
-    factory = fakes.factory.address
-  }
-
-  const [npm, wxDai, cpool, ht, okb, axs] = await fakeTokenComposer.deploySeveral(cache, [
-    { name: 'Fake Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Fake Dai', symbol: 'DAI' },
-    { name: 'Fake Clearpool Token', symbol: 'CPOOL' },
-    { name: 'Fake Huobi Token', symbol: 'HT' },
-    { name: 'Fake OKB Token', symbol: 'OKB' },
-    { name: 'Fake AXS Token', symbol: 'AXS' }
-  ])
-
-  const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, axsUsdPair] = await fakeUniswapPairComposer.deploySeveral(cache, [
-    { token0: npm.address, token1: wxDai.address, name: 'NPM/WXDAI' },
-    { token0: cpool.address, token1: wxDai.address, name: 'CPOOL/WXDAI' },
-    { token0: ht.address, token1: wxDai.address, name: 'HT/WXDAI' },
-    { token0: okb.address, token1: wxDai.address, name: 'OKB/WXDAI' },
-    { token0: axs.address, token1: wxDai.address, name: 'AXS/WXDAI' }
-  ])
+  const [npm, wxDai, cpool, ht, okb, axs, aToken] = tokens
+  const pairs = await fakeUniswapPairComposer.compose(cache, tokens)
+  const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, axsUsdPair] = pairs
 
   // The protocol only supports stablecoin as reassurance token for now
   const reassuranceToken = wxDai
@@ -67,14 +48,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualify(protocol.address), true)
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
-  for (const i in admins) {
-    const admin = admins[i]
-    console.log('Adding custom admin', admin)
-    await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.ADMIN, admin)
-  }
-
-  await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-  await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+  await grantRoles(intermediate, cache, protocol)
 
   await intermediate(cache, protocol, 'initialize',
     [helper.zero1,
@@ -86,8 +60,8 @@ const initialize = async (suite, deploymentId) => {
     [helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Min liquidity period
-      7 * DAYS, // Claim period
+      minLiquidityPeriod,
+      claimPeriod,
       helper.percentage(30), // Governance Burn Rate: 30%
       helper.percentage(10), // Governance Reporter Commission: 10%
       helper.percentage(6.5), // Claim: Platform Fee: 6.5%
@@ -122,25 +96,26 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STAKING_POOL, stakingPoolContract.address)
 
+  // @todo: only applicable to testnet
   await intermediate(cache, cpool, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, cpool.address, cpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.ether(0.025), 342, 1 * DAYS, helper.ether(10_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Cpool'), 'Clearpool Staking', 1, addresses, values)
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Cpool'), 'Clearpool Staking', 0, addresses, values)
 
   await intermediate(cache, ht, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, ht.address, htUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.ether(0.025), 342, 1 * DAYS, helper.ether(10_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 1, addresses, values)
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
 
   await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, okb.address, okbUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.ether(0.025), 342, 1 * DAYS, helper.ether(10_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 1, addresses, values)
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 0, addresses, values)
 
   await intermediate(cache, axs, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, axs.address, axsUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.ether(0.025), 342, 1 * DAYS, helper.ether(10_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('AXS'), 'AXS Staking', 1, addresses, values)
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('AXS'), 'AXS Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     BaseLibV1: libs.baseLibV1.address,
@@ -262,7 +237,6 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY_ADMIN, policyAdminContract.address)
 
   await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
-  await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
   await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
@@ -294,6 +268,26 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.CLAIM_PROCESSOR, claimsProcessor.address)
 
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
+    BaseLibV1: libs.baseLibV1.address,
+    StrategyLibV1: libs.strategyLibV1.address,
+    ValidationLibV1: libs.validationLib.address
+  }, store.address)
+
+  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
+  const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
+    BaseLibV1: libs.baseLibV1.address,
+    NTransferUtilV2: libs.transferLib.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
+    ValidationLibV1: libs.validationLib.address
+  }, store.address, aaveLendingPool, aToken.address)
+
+  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)
+  await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [aaveStrategy.address])
+
   const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
     BaseLibV1: libs.baseLibV1.address,
     PriceLibV1: libs.priceLibV1.address,
@@ -304,7 +298,11 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, cover, 'initialize', wxDai.address, key.toBytes32('WXDAI'))
 
+  await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
+
   return {
+    intermediate,
+    cache,
     store,
     npm,
     wxDai,
@@ -325,6 +323,7 @@ const initialize = async (suite, deploymentId) => {
     vaultFactory,
     cxTokenFactory,
     cover,
+    liquidityEngine,
     priceDiscovery,
     policyAdminContract,
     policy,

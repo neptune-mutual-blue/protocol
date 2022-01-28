@@ -33,6 +33,8 @@ interface IReporter {
 
   function getFirstReportingStake() external view returns (uint256);
 
+  function getFirstReportingStake(bytes32 key) external view returns (uint256);
+
   function setReportingBurnRate(uint256 value) external;
 
   function setReporterCommission(uint256 value) external;

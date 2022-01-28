@@ -20,7 +20,7 @@ enum StakingPoolType {
 **Events**
 
 ```js
-event PoolUpdated(bytes32 indexed key, string  name, enum IStakingPools.StakingPoolType  poolType, address indexed stakingToken, address  uniStakingTokenDollarPair, address indexed rewardToken, address  uniRewardTokenDollarPair, uint256  rewardTokenDeposit, uint256  maxStake, uint256  rewardPerBlock, uint256  lockupPeriod, uint256  platformFee);
+event PoolUpdated(bytes32 indexed key, string  name, enum IStakingPools.StakingPoolType  poolType, address indexed stakingToken, address  uniStakingTokenDollarPair, address indexed rewardToken, address  uniRewardTokenDollarPair, uint256  rewardTokenDeposit, uint256  maxStake, uint256  rewardPerBlock, uint256  lockupPeriodInBlocks, uint256  platformFee);
 event PoolClosed(bytes32 indexed key, string  name);
 event Deposited(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
 event Withdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
@@ -260,6 +260,7 @@ function getInfo(bytes32 key, address you)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -283,6 +284,7 @@ function getInfo(bytes32 key, address you)
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -295,6 +297,7 @@ function getInfo(bytes32 key, address you)
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

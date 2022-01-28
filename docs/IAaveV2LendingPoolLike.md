@@ -2,6 +2,8 @@
 
 View Source: [contracts/interfaces/external/IAaveV2LendingPoolLike.sol](../contracts/interfaces/external/IAaveV2LendingPoolLike.sol)
 
+**↘ Derived Contracts: [FakeAaveLendingPool](FakeAaveLendingPool.md)**
+
 **IAaveV2LendingPoolLike**
 
 ## Structs
@@ -17,9 +19,6 @@ struct UserConfigurationMap {
 
 - [deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)](#deposit)
 - [withdraw(address asset, uint256 amount, address to)](#withdraw)
-- [getUserAccountData(address user)](#getuseraccountdata)
-- [getUserConfiguration(address user)](#getuserconfiguration)
-- [getReserveNormalizedIncome(address asset)](#getreservenormalizedincome)
 
 ### deposit
 
@@ -86,97 +85,6 @@ function withdraw(
 ```
 </details>
 
-### getUserAccountData
-
-Returns the user account data across all the reserves
-
-```solidity
-function getUserAccountData(address user) external view
-returns(totalCollateralETH uint256, totalDebtETH uint256, availableBorrowsETH uint256, currentLiquidationThreshold uint256, ltv uint256, healthFactor uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| user | address | The address of the user | 
-
-**Returns**
-
-totalCollateralETH the total collateral in ETH of the user
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUserAccountData(address user)
-    external
-    view
-    returns (
-      uint256 totalCollateralETH,
-      uint256 totalDebtETH,
-      uint256 availableBorrowsETH,
-      uint256 currentLiquidationThreshold,
-      uint256 ltv,
-      uint256 healthFactor
-    );
-```
-</details>
-
-### getUserConfiguration
-
-Returns the configuration of the user across all the reserves
-
-```solidity
-function getUserConfiguration(address user) external view
-returns(struct IAaveV2LendingPoolLike.UserConfigurationMap)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| user | address | The user address | 
-
-**Returns**
-
-The configuration of the user*
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getUserConfiguration(address user) external view returns (UserConfigurationMap memory);
-```
-</details>
-
-### getReserveNormalizedIncome
-
-Returns the normalized income normalized income of the reserve
-
-```solidity
-function getReserveNormalizedIncome(address asset) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| asset | address | The address of the underlying asset of the reserve | 
-
-**Returns**
-
-The reserve's normalized income
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReserveNormalizedIncome(address asset) external view returns (uint256);
-```
-</details>
-
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -203,6 +111,7 @@ function getReserveNormalizedIncome(address asset) external view returns (uint25
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
+* [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -226,6 +135,7 @@ function getReserveNormalizedIncome(address asset) external view returns (uint25
 * [ICxTokenFactory](ICxTokenFactory.md)
 * [IERC165](IERC165.md)
 * [IERC20](IERC20.md)
+* [IERC20Detailed](IERC20Detailed.md)
 * [IERC20Metadata](IERC20Metadata.md)
 * [IERC3156FlashBorrower](IERC3156FlashBorrower.md)
 * [IERC3156FlashLender](IERC3156FlashLender.md)
@@ -238,6 +148,7 @@ function getReserveNormalizedIncome(address asset) external view returns (uint25
 * [IPolicyAdmin](IPolicyAdmin.md)
 * [IPriceDiscovery](IPriceDiscovery.md)
 * [IProtocol](IProtocol.md)
+* [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
 * [IResolution](IResolution.md)
 * [IResolvable](IResolvable.md)

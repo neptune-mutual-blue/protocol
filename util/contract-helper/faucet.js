@@ -12,7 +12,10 @@ const request = async (token) => {
   const contract = await new ethers.Contract(token.address, ['function request() external'], owner)
   console.info('Requesting tokens')
 
-  const tx = await contract.request()
+  let tx = await contract.request()
+  await tx.wait()
+
+  tx = await contract.request()
   await tx.wait()
 }
 

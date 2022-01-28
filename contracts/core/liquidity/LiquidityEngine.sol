@@ -8,11 +8,10 @@ import "../../libraries/StrategyLibV1.sol";
 import "../../interfaces/ILendingStrategy.sol";
 
 contract LiquidityEngine is Recoverable {
-  using StoreKeyUtil for IStore;
-  using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
-  using ValidationLibV1 for IStore;
+  using StoreKeyUtil for IStore;
   using StrategyLibV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore s) Recoverable(s) {} // solhint-disable-line
 

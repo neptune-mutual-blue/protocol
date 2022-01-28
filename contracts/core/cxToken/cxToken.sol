@@ -22,8 +22,9 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   // solhint-disable-previous-line
   using ValidationLibV1 for IStore;
 
-  bytes32 public override coverKey;
-  uint256 public override expiresOn;
+  bytes32 public immutable override coverKey;
+  uint256 public immutable override createdOn;
+  uint256 public immutable override expiresOn;
 
   /**
    * @dev Constructs this contract
@@ -39,6 +40,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     string memory symbol
   ) ERC20(name, symbol) Recoverable(store) {
     coverKey = key;
+
+    createdOn = block.timestamp; // solhint-disable-line
     expiresOn = expiry;
   }
 

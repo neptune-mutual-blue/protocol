@@ -21,8 +21,8 @@ const createPairs = async (routerAt, factoryAt, pairInfo) => {
     if (pair === zerox) {
       console.log(`Attempting to provide ${name} liquidity to a Uniswap-like DEX`)
 
-      await erc20.approve(token0, routerAt)
-      await erc20.approve(token1, routerAt)
+      await erc20.approve(token0, routerAt, owner)
+      await erc20.approve(token1, routerAt, owner)
 
       const deadline = moment(new Date()).add(1, 'month').unix()
 
@@ -65,4 +65,16 @@ const at = async (address) => {
   return fakePair.attach(address)
 }
 
-module.exports = { deploySeveral, at }
+const compose = async (cache, tokens) => {
+  const [npm, wxDai, cpool, ht, okb, axs] = tokens
+
+  return deploySeveral(cache, [
+    { token0: npm.address, token1: wxDai.address, name: 'NPM/WXDAI' },
+    { token0: cpool.address, token1: wxDai.address, name: 'CPOOL/WXDAI' },
+    { token0: ht.address, token1: wxDai.address, name: 'HT/WXDAI' },
+    { token0: okb.address, token1: wxDai.address, name: 'OKB/WXDAI' },
+    { token0: axs.address, token1: wxDai.address, name: 'AXS/WXDAI' }
+  ])
+}
+
+module.exports = { deploySeveral, at, compose }
