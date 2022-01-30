@@ -11,7 +11,7 @@ library MockProcessorStoreLib {
     MockStore s,
     bytes32 key,
     address cxToken
-  ) public returns (address[] memory values) {
+  ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
     MockVault vault = new MockVault();
 
@@ -35,7 +35,7 @@ library MockProcessorStoreLib {
     values[1] = address(vault);
   }
 
-  function disassociateCxToken(MockStore s, address cxToken) public {
+  function disassociateCxToken(MockStore s, address cxToken) external {
     s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
   }
 
@@ -65,23 +65,23 @@ library MockProcessorStoreLib {
 }
 
 contract MockProcessorStore is MockStore {
-  function initialize(bytes32 key, address cxToken) public returns (address[] memory values) {
+  function initialize(bytes32 key, address cxToken) external returns (address[] memory values) {
     return MockProcessorStoreLib.initialize(this, key, cxToken);
   }
 
-  function disassociateCxToken(address cxToken) public {
+  function disassociateCxToken(address cxToken) external {
     MockProcessorStoreLib.disassociateCxToken(this, cxToken);
   }
 
-  function setCoverStatus(bytes32 key, uint256 value) public {
+  function setCoverStatus(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setCoverStatus(this, key, value);
   }
 
-  function setClaimBeginTimestamp(bytes32 key, uint256 value) public {
+  function setClaimBeginTimestamp(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setClaimBeginTimestamp(this, key, value);
   }
 
-  function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
+  function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setClaimExpiryTimestamp(this, key, value);
   }
 }

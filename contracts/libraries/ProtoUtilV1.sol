@@ -77,6 +77,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
 
   bytes32 public constant NS_COVER_LIQUIDITY = "ns:cover:liquidity";
+  bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE = "ns:cover:liquidity:min:stake";
+  bytes32 public constant NS_COVER_LIQUIDITY_STAKE = "ns:cover:liquidity:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_ADDED = "ns:cover:liquidity:add";
   bytes32 public constant NS_COVER_LIQUIDITY_REMOVED = "ns:cover:liquidity:rem";
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD = "ns:cover:liquidity:min:period";

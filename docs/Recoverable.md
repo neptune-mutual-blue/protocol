@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md), [IRecoverable](IRecoverable.md)**
-**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -113,6 +113,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -144,6 +145,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

@@ -4,17 +4,17 @@ pragma solidity 0.8.0;
 import "../../interfaces/ICxToken.sol";
 
 contract MockCxTokenPolicy {
-  ICxToken public _cxToken;
+  ICxToken public cxToken;
 
-  constructor(ICxToken cxToken) {
-    _cxToken = cxToken;
+  constructor(ICxToken _cxToken) {
+    cxToken = _cxToken;
   }
 
   function callMint(
     bytes32 key,
     address to,
     uint256 amount
-  ) public {
-    _cxToken.mint(key, to, amount);
+  ) external {
+    cxToken.mint(key, to, amount);
   }
 }

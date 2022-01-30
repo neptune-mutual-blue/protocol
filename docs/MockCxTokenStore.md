@@ -14,7 +14,7 @@ View Source: [contracts/mock/cx-token/MockCxTokenStore.sol](../contracts/mock/cx
 ### initialize
 
 ```solidity
-function initialize() public nonpayable
+function initialize() external nonpayable
 returns(address)
 ```
 
@@ -27,7 +27,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize() public returns (address) {
+function initialize() external returns (address) {
     MockProtocol protocol = new MockProtocol();
     this.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
 
@@ -39,7 +39,7 @@ function initialize() public returns (address) {
 ### registerPolicyContract
 
 ```solidity
-function registerPolicyContract(address policy) public nonpayable
+function registerPolicyContract(address policy) external nonpayable
 ```
 
 **Arguments**
@@ -52,7 +52,7 @@ function registerPolicyContract(address policy) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function registerPolicyContract(address policy) public {
+function registerPolicyContract(address policy) external {
     super.setAddress(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_POLICY, policy);
   }
 ```
@@ -69,6 +69,7 @@ function registerPolicyContract(address policy) public {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -100,6 +101,7 @@ function registerPolicyContract(address policy) public {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

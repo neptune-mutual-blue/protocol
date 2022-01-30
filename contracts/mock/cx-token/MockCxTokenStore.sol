@@ -6,14 +6,14 @@ import "../base/MockProtocol.sol";
 import "../../libraries/ProtoUtilV1.sol";
 
 contract MockCxTokenStore is MockStore {
-  function initialize() public returns (address) {
+  function initialize() external returns (address) {
     MockProtocol protocol = new MockProtocol();
     this.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
 
     return address(protocol);
   }
 
-  function registerPolicyContract(address policy) public {
+  function registerPolicyContract(address policy) external {
     super.setAddress(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_POLICY, policy);
   }
 }

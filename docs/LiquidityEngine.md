@@ -89,7 +89,7 @@ function disableStrategy(IStore s, address strategy) external nonReentrant {
 ### getDisabledStrategies
 
 ```solidity
-function getDisabledStrategies(IStore s) public view
+function getDisabledStrategies(IStore s) external view
 returns(strategies address[])
 ```
 
@@ -103,7 +103,7 @@ returns(strategies address[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getDisabledStrategies(IStore s) public view returns (address[] memory strategies) {
+function getDisabledStrategies(IStore s) external view returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }
 ```
@@ -112,7 +112,7 @@ function getDisabledStrategies(IStore s) public view returns (address[] memory s
 ### getActiveStrategies
 
 ```solidity
-function getActiveStrategies(IStore s) public view
+function getActiveStrategies(IStore s) external view
 returns(strategies address[])
 ```
 
@@ -126,7 +126,7 @@ returns(strategies address[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveStrategies(IStore s) public view returns (address[] memory strategies) {
+function getActiveStrategies(IStore s) external view returns (address[] memory strategies) {
     return s.getActiveStrategiesInternal();
   }
 ```
@@ -143,6 +143,7 @@ function getActiveStrategies(IStore s) public view returns (address[] memory str
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -174,6 +175,7 @@ function getActiveStrategies(IStore s) public view returns (address[] memory str
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

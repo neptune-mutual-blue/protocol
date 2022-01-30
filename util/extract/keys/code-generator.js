@@ -10,11 +10,11 @@ const generate = async (groupKey, group) => {
     const candidates = item.toArray()
 
     if (prefixes.length === 1) {
-      const code = candidates.map(x => `  ${x.key}: toBytes32('${x.value}'),`)
+      const code = candidates.map(x => `  ${x.key}: toBytes32('${x.value === '0x00' ? '' : x.value}'),`)
       builder.push(...code)
     } else {
       builder.push(`  ${item.key.slice(0, -1)}: {`)
-      const code = candidates.map(x => `    ${x.key}: toBytes32('${x.value}'),`)
+      const code = candidates.map(x => `    ${x.key}: toBytes32('${x.value === '0x00' ? '' : x.value}'),`)
       builder.push(...code)
       builder.push('  },')
     }

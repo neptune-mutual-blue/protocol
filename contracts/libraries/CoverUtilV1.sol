@@ -32,13 +32,40 @@ library CoverUtilV1 {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
   }
 
-  function getCoverFee(IStore s) public view returns (uint256 fee, uint256 minStake) {
+  function getCoverFee(IStore s)
+    external
+    view
+    returns (
+      uint256 fee,
+      uint256 minCoverCreationStake,
+      uint256 minStakeToAddLiquidity
+    )
+  {
     fee = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
-    minStake = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+    minCoverCreationStake = getMinCoverCreationStake(s);
+    minStakeToAddLiquidity = getMinStakeToAddLiquidity(s);
   }
 
-  function getMinCoverStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+  function getMinCoverCreationStake(IStore s) public view returns (uint256) {
+    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+
+    if (value == 0) {
+      // Fallback to 250 NPM
+      value = 250 ether;
+    }
+
+    return value;
+  }
+
+  function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
+    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
+
+    if (value == 0) {
+      // Fallback to 250 NPM
+      value = 250 ether;
+    }
+
+    return value;
   }
 
   function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
@@ -64,8 +91,8 @@ library CoverUtilV1 {
 
     _values = new uint256[](7);
 
-    _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
-    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
+    _values[0] = getCoverPoolLiquidity(s, key);
+    _values[1] = getCoverLiquidityCommitted(s, key);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
     _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
@@ -102,8 +129,13 @@ library CoverUtilV1 {
     }
   }
 
-  function getLiquidity(IStore s, bytes32 key) external view returns (uint256) {
+  function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+  }
+
+  function getCoverLiquidityCommitted(IStore s, bytes32 key) public view returns (uint256) {
+    // @todo: liquidity commitment should expire as policies expire
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key);
   }
 
   function getStake(IStore s, bytes32 key) external view returns (uint256) {
@@ -128,7 +160,7 @@ library CoverUtilV1 {
     IStore s,
     bytes32 key,
     CoverStatus status
-  ) public {
+  ) external {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
   }
 

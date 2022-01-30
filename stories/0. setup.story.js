@@ -121,10 +121,14 @@ describe('Protocol Initialization Stories', () => {
 
   it('xDai liquidity was added again', async () => {
     const liquidity = helper.ether(50000)
+    const npmToStake = helper.ether(250)
+
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await contracts.wxDai.approve(vault.address, liquidity)
-    await vault.addLiquidity(coverKey, liquidity)
+    await contracts.npm.approve(vault.address, npmToStake)
+
+    await vault.addLiquidity(coverKey, liquidity, npmToStake)
 
     const expected = helper.add(previous.wxDaiBalance, liquidity)
 
@@ -177,10 +181,14 @@ describe('Protocol Initialization Stories', () => {
 
   it('xDai liquidity was added once again', async () => {
     const liquidity = helper.ether(1000)
+    const npmToStake = helper.ether(250)
+
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await contracts.wxDai.approve(vault.address, liquidity)
-    await vault.addLiquidity(coverKey, liquidity)
+    await contracts.npm.approve(vault.address, npmToStake)
+
+    await vault.addLiquidity(coverKey, liquidity, npmToStake)
 
     const expected = helper.add(previous.wxDaiBalance, liquidity)
 

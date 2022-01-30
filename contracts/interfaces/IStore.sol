@@ -51,9 +51,13 @@ interface IStore {
 
   function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external;
 
+  function getAddressValues(bytes32[] memory keys) external view returns (address[] memory values);
+
   function getAddress(bytes32 k) external view returns (address);
 
   function getAddressBoolean(bytes32 k, address a) external view returns (bool);
+
+  function getUintValues(bytes32[] memory keys) external view returns (uint256[] memory values);
 
   function getUint(bytes32 k) external view returns (uint256);
 

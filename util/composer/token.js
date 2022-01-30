@@ -5,6 +5,8 @@ const erc20 = require('../contract-helper/erc20')
 const faucet = require('../contract-helper/faucet')
 const { ethers } = hre
 
+const supportedNetworks = [31337]
+
 const sendTransfers = async (contract) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
@@ -36,13 +38,19 @@ const deploySeveral = async (cache, tokens) => {
       console.info('The token', symbol, 'was not deployed but picked up from the network config')
 
       const token = await erc20.getInstance(tokenAt)
-      // @todo parameterize this on network config
-      await faucet.request(token)
-      await faucet.request(token)
-      await faucet.request(token)
+
+      if (symbol !== 'DAI') {
+        await faucet.request(token)
+        await faucet.request(token)
+        await faucet.request(token)
+      }
 
       contracts.push(token)
       continue
+    }
+
+    if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
+      throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
     const contract = await deployer.deploy(cache, 'FakeToken', name, symbol, supply || helper.ether(1_000_000))

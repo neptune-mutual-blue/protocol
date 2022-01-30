@@ -4,12 +4,12 @@ pragma solidity 0.8.0;
 import "../../fakes/FakeStore.sol";
 
 contract MockStore is FakeStore {
-  function setBool(bytes32 prefix, address a) public {
+  function setBool(bytes32 prefix, address a) external {
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
     this.setBool(k, true);
   }
 
-  function unsetBool(bytes32 prefix, address a) public {
+  function unsetBool(bytes32 prefix, address a) external {
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
     this.deleteBool(k);
   }
@@ -27,7 +27,7 @@ contract MockStore is FakeStore {
     bytes32 k2,
     bytes32 k3,
     address v
-  ) public {
+  ) external {
     this.setAddress(keccak256(abi.encodePacked(k1, k2, k3)), v);
   }
 
@@ -35,7 +35,7 @@ contract MockStore is FakeStore {
     bytes32 k1,
     bytes32 k2,
     uint256 v
-  ) public {
+  ) external {
     this.setUint(keccak256(abi.encodePacked(k1, k2)), v);
   }
 }

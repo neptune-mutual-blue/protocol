@@ -3,15 +3,16 @@
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/access/AccessControl.sol";
 
+// slither-disable-next-line missing-inheritance
 contract MockProtocol is AccessControl {
-  bool public _state = false;
+  bool public state = false;
 
-  function setPaused(bool state) public {
-    _state = state;
+  function setPaused(bool s) external {
+    state = s;
   }
 
-  function paused() public view returns (bool) {
-    return _state;
+  function paused() external view returns (bool) {
+    return state;
   }
 
   function setupRole(

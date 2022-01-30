@@ -29,7 +29,7 @@ const createPodStakingPools = async ({ intermediate, cache, contracts, provider 
       stakingTarget,
       maxStake,
       rewardPerBlock,
-      lockupPeriod,
+      lockupPeriodInBlocks,
       rewardTokenDeposit
     } = stakingPool.settings[hre.network.config.chainId] || {}
 
@@ -49,7 +49,7 @@ const createPodStakingPools = async ({ intermediate, cache, contracts, provider 
       maxStake,
       platformFee: percentage(0.25),
       rewardPerBlock,
-      lockupPeriod: lockupPeriod.toString(),
+      lockupPeriodInBlocks: lockupPeriodInBlocks.toString(),
       rewardTokenDeposit
     })
   }

@@ -183,12 +183,28 @@ contract Store is StoreBase {
     deleteAddressArrayItem(k, v);
   }
 
+  function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+    values = new address[](keys.length + 1);
+
+    for (uint256 i = 0; i < keys.length; i++) {
+      values[i] = addressStorage[keys[i]];
+    }
+  }
+
   function getAddress(bytes32 k) external view override returns (address) {
     return addressStorage[k];
   }
 
   function getAddressBoolean(bytes32 k, address a) external view override returns (bool) {
     return addressBooleanStorage[k][a];
+  }
+
+  function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+    values = new uint256[](keys.length + 1);
+
+    for (uint256 i = 0; i < keys.length; i++) {
+      values[i] = uintStorage[keys[i]];
+    }
   }
 
   function getUint(bytes32 k) external view override returns (uint256) {

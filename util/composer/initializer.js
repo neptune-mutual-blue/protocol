@@ -1,3 +1,4 @@
+const hre = require('hardhat')
 const storeComposer = require('./store')
 const fakeTokenComposer = require('./token')
 const fakeUniswapPairComposer = require('./uniswap-pair')
@@ -5,6 +6,7 @@ const libsComposer = require('./libs')
 const { deployer, key, sample, helper, intermediate, fileCache } = require('..')
 const { getNetworkInfo } = require('../network')
 const { grantRoles } = require('./grant-roles')
+const { minutesToBlocks } = require('../block-time')
 const { getExternalProtocols } = require('./external-protocols')
 
 const DAYS = 86400
@@ -15,6 +17,7 @@ const MINUTES = 60
  * @return {Promise<Contracts>}
  */
 const initialize = async (suite, deploymentId) => {
+  const chaindId = hre.network.config.chainId
   const [owner] = await ethers.getSigners()
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
@@ -99,22 +102,22 @@ const initialize = async (suite, deploymentId) => {
   // @todo: only applicable to testnet
   await intermediate(cache, cpool, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, cpool.address, cpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Cpool'), 'Clearpool Staking', 0, addresses, values)
 
   await intermediate(cache, ht, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, ht.address, htUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
 
   await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, okb.address, okbUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 0, addresses, values)
 
   await intermediate(cache, axs, 'approve', stakingPoolContract.address, helper.ether(10_000))
   addresses = [npm.address, npmUsdPair.address, axs.address, axsUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, 5 * MINUTES, helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('AXS'), 'AXS Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {

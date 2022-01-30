@@ -60,7 +60,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
-    uint256 amount
+    uint256 amount,
+    uint256 npmStake
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
     // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
@@ -71,7 +72,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
     require(coverKey == key, "Forbidden");
 
-    _addLiquidity(coverKey, account, amount, true);
+    _addLiquidity(coverKey, account, amount, npmStake, true);
   }
 
   function transferGovernance(
@@ -91,24 +92,34 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @dev Adds liquidity to the specified cover contract
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
+   * @param npmStakeToAdd Enter the amount of NPM token to stake.
    */
-  function addLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
+  function addLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStakeToAdd
+  ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
-    _addLiquidity(coverKey, msg.sender, amount, false);
+    _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
   }
 
   /**
    * @dev Removes liquidity from the specified cover contract
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of pods to redeem
+   * @param npmStakeToRemove Enter the amount of NPM stake to remove.
    */
-  function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
+  function removeLiquidity(
+    bytes32 coverKey,
+    uint256 podsToRedeem,
+    uint256 npmStakeToRemove
+  ) external override nonReentrant {
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
+    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -118,14 +129,16 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param coverKey Enter the cover key
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
+   * @param npmStake Enter the amount of NPM token to stake.
    */
   function _addLiquidity(
     bytes32 coverKey,
     address account,
     uint256 amount,
+    uint256 npmStake,
     bool initialLiquidity
   ) private {
-    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
+    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
     super._mint(account, podsToMint);
 
     s.updateStateAndLiquidity(key);

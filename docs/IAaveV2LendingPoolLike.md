@@ -6,15 +6,6 @@ View Source: [contracts/interfaces/external/IAaveV2LendingPoolLike.sol](../contr
 
 **IAaveV2LendingPoolLike**
 
-## Structs
-### UserConfigurationMap
-
-```js
-struct UserConfigurationMap {
- uint256 data
-}
-```
-
 ## Functions
 
 - [deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)](#deposit)
@@ -96,6 +87,7 @@ function withdraw(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -127,6 +119,7 @@ function withdraw(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

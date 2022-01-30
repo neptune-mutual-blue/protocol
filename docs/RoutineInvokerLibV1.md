@@ -135,6 +135,7 @@ function _invokeAssetManagement(IStore s, bytes32 key) private {
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
       uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(vault);
 
+      // @todo: update `ProtoUtilV1.NS_COVER_LIQUIDITY` to add lending income difference
       if (balance > 0) {
         strategy.withdraw(key, vault);
       }
@@ -302,6 +303,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -333,6 +335,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

@@ -1,4 +1,5 @@
 const { ether } = require('../util/helper')
+const { minutesToBlocks } = require('../util/block-time')
 
 const MINUTES = 60
 
@@ -91,7 +92,7 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(30_000)
         },
         31337: {
@@ -100,7 +101,7 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
         42: {
@@ -109,7 +110,7 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(30_000)
         }
       }
@@ -158,7 +159,7 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(25_000)
         },
         31337: {
@@ -167,7 +168,7 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(25_000)
         },
         42: {
@@ -176,7 +177,7 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(25_000)
         }
       }
@@ -225,8 +226,8 @@ const covers = [
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
-          lockupPeriod: 5 * MINUTES,
-          rewardTokenDeposit: ether(100_000)
+          lockupPeriodInBlocks: minutesToBlocks(3, 5),
+          rewardTokenDeposit: ether(15_000)
         },
         31337: {
           rewardToken: '',
@@ -234,8 +235,8 @@ const covers = [
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
-          lockupPeriod: 5 * MINUTES,
-          rewardTokenDeposit: ether(100_000)
+          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
+          rewardTokenDeposit: ether(15_000)
         },
         42: {
           rewardToken: '0x6575efCb04306Af46414e0425162a54734B9e024',
@@ -243,8 +244,8 @@ const covers = [
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
-          lockupPeriod: 5 * MINUTES,
-          rewardTokenDeposit: ether(100_000)
+          lockupPeriodInBlocks: minutesToBlocks(42, 5),
+          rewardTokenDeposit: ether(15_000)
         }
       }
     },
@@ -292,8 +293,8 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
-          lockupPeriod: 5 * MINUTES,
-          rewardTokenDeposit: ether(200_000)
+          lockupPeriodInBlocks: minutesToBlocks(3, 5),
+          rewardTokenDeposit: ether(70_000)
         },
         31337: {
           rewardToken: '',
@@ -301,7 +302,7 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
-          lockupPeriod: 5 * MINUTES,
+          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(200_000)
         },
         42: {
@@ -310,8 +311,8 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
-          lockupPeriod: 5 * MINUTES,
-          rewardTokenDeposit: ether(200_000)
+          lockupPeriodInBlocks: minutesToBlocks(42, 5),
+          rewardTokenDeposit: ether(70_000)
         }
       }
     },

@@ -21,9 +21,9 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 
 - [key()](#key)
 - [lqt()](#lqt)
-- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount)](#addliquiditymemberonly)
-- [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
-- [removeLiquidity(bytes32 coverKey, uint256 amount)](#removeliquidity)
+- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquiditymemberonly)
+- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
+- [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
@@ -75,7 +75,7 @@ function lqt() external view returns (address);
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount) external nonpayable
+function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable
 ```
 
 **Arguments**
@@ -85,6 +85,7 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 | coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStake | uint256 | Enter the amount of NPM token to stake. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -93,7 +94,8 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
-    uint256 amount
+    uint256 amount,
+    uint256 npmStake
   ) external;
 ```
 </details>
@@ -103,7 +105,7 @@ function addLiquidityMemberOnly(
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
+function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) external nonpayable
 ```
 
 **Arguments**
@@ -112,12 +114,17 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStake | uint256 | Enter the amount of NPM token to stake. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidity(bytes32 coverKey, uint256 amount) external;
+function addLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStake
+  ) external;
 ```
 </details>
 
@@ -126,7 +133,7 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external;
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
+function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) external nonpayable
 ```
 
 **Arguments**
@@ -135,12 +142,17 @@ function removeLiquidity(bytes32 coverKey, uint256 amount) external nonpayable
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to remove. | 
+| npmStake | uint256 | Enter the amount of NPM stake to remove. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function removeLiquidity(bytes32 coverKey, uint256 amount) external;
+function removeLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStake
+  ) external;
 ```
 </details>
 
@@ -266,6 +278,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -297,6 +310,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

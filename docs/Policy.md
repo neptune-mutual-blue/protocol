@@ -77,6 +77,8 @@ function purchaseCover(
     uint256 amountToCover
   ) external override nonReentrant returns (address) {
     s.mustNotBePaused();
+    s.mustBeValidCover(key);
+
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
     (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);
@@ -553,6 +555,7 @@ function getName() external pure override returns (bytes32) {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -584,6 +587,7 @@ function getName() external pure override returns (bytes32) {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

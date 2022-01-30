@@ -121,7 +121,7 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 yourStake = stakeOf(key, account);
     bool isOwner = account == s.getCoverOwner(key);
 
-    uint256 minStake = s.getMinCoverStake();
+    uint256 minStake = s.getMinCoverCreationStake();
 
     return isOwner ? yourStake - minStake : yourStake;
   }

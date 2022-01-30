@@ -13,6 +13,7 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
+- [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
 - [getCover(bytes32 key)](#getcover)
 - [version()](#version)
 - [getName()](#getname)
@@ -123,6 +124,32 @@ function setMinCoverCreationStake(uint256 value) external override nonReentrant 
 ```
 </details>
 
+### setMinStakeToAddLiquidity
+
+```solidity
+function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.setMinStakeToAddLiquidityInternal(value);
+    emit MinStakeToAddLiquiditySet(previous, value);
+  }
+```
+</details>
+
 ### getCover
 
 Get more information about this cover contract
@@ -216,6 +243,7 @@ function getName() external pure override returns (bytes32) {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -247,6 +275,7 @@ function getName() external pure override returns (bytes32) {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

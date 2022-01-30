@@ -10,34 +10,34 @@ View Source: [contracts/mock/base/MockProtocol.sol](../contracts/mock/base/MockP
 **Constants & Variables**
 
 ```js
-bool public _state;
+bool public state;
 
 ```
 
 ## Functions
 
-- [setPaused(bool state)](#setpaused)
+- [setPaused(bool s)](#setpaused)
 - [paused()](#paused)
 - [setupRole(bytes32 role, bytes32 adminRole, address account)](#setuprole)
 
 ### setPaused
 
 ```solidity
-function setPaused(bool state) public nonpayable
+function setPaused(bool s) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| state | bool |  | 
+| s | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setPaused(bool state) public {
-    _state = state;
+function setPaused(bool s) external {
+    state = s;
   }
 ```
 </details>
@@ -45,7 +45,7 @@ function setPaused(bool state) public {
 ### paused
 
 ```solidity
-function paused() public view
+function paused() external view
 returns(bool)
 ```
 
@@ -58,8 +58,8 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function paused() public view returns (bool) {
-    return _state;
+function paused() external view returns (bool) {
+    return state;
   }
 ```
 </details>
@@ -107,6 +107,7 @@ function setupRole(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -138,6 +139,7 @@ function setupRole(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

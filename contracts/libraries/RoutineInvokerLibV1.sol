@@ -58,6 +58,7 @@ library RoutineInvokerLibV1 {
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
       uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(vault);
 
+      // @todo: update `ProtoUtilV1.NS_COVER_LIQUIDITY` to add lending income difference
       if (balance > 0) {
         strategy.withdraw(key, vault);
       }
