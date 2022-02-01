@@ -201,7 +201,7 @@ function _getDrawingPower(bytes32 key, address account) private view returns (ui
     uint256 yourStake = stakeOf(key, account);
     bool isOwner = account == s.getCoverOwner(key);
 
-    uint256 minStake = s.getMinCoverStake();
+    uint256 minStake = s.getMinCoverCreationStake();
 
     return isOwner ? yourStake - minStake : yourStake;
   }
@@ -267,6 +267,7 @@ function getName() external pure override returns (bytes32) {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -298,6 +299,7 @@ function getName() external pure override returns (bytes32) {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

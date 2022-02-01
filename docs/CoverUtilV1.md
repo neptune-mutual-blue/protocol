@@ -22,14 +22,16 @@ enum CoverStatus {
 - [getCoverOwner(IStore s, bytes32 key)](#getcoverowner)
 - [_getCoverOwner(IStore s, bytes32 key)](#_getcoverowner)
 - [getCoverFee(IStore s)](#getcoverfee)
-- [getMinCoverStake(IStore s)](#getmincoverstake)
+- [getMinCoverCreationStake(IStore s)](#getmincovercreationstake)
+- [getMinStakeToAddLiquidity(IStore s)](#getminstaketoaddliquidity)
 - [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
 - [getClaimPeriod(IStore s)](#getclaimperiod)
 - [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
 - [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
 - [getPolicyRates(IStore s, bytes32 key)](#getpolicyrates)
-- [getLiquidity(IStore s, bytes32 key)](#getliquidity)
+- [getCoverPoolLiquidity(IStore s, bytes32 key)](#getcoverpoolliquidity)
+- [getCoverLiquidityCommitted(IStore s, bytes32 key)](#getcoverliquiditycommitted)
 - [getStake(IStore s, bytes32 key)](#getstake)
 - [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
@@ -87,8 +89,8 @@ function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
 ### getCoverFee
 
 ```solidity
-function getCoverFee(IStore s) public view
-returns(fee uint256, minStake uint256)
+function getCoverFee(IStore s) external view
+returns(fee uint256, minCoverCreationStake uint256, minStakeToAddLiquidity uint256)
 ```
 
 **Arguments**
@@ -101,17 +103,26 @@ returns(fee uint256, minStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverFee(IStore s) public view returns (uint256 fee, uint256 minStake) {
+function getCoverFee(IStore s)
+    external
+    view
+    returns (
+      uint256 fee,
+      uint256 minCoverCreationStake,
+      uint256 minStakeToAddLiquidity
+    )
+  {
     fee = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
-    minStake = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+    minCoverCreationStake = getMinCoverCreationStake(s);
+    minStakeToAddLiquidity = getMinStakeToAddLiquidity(s);
   }
 ```
 </details>
 
-### getMinCoverStake
+### getMinCoverCreationStake
 
 ```solidity
-function getMinCoverStake(IStore s) external view
+function getMinCoverCreationStake(IStore s) public view
 returns(uint256)
 ```
 
@@ -125,8 +136,45 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getMinCoverStake(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+function getMinCoverCreationStake(IStore s) public view returns (uint256) {
+    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+
+    if (value == 0) {
+      // Fallback to 250 NPM
+      value = 250 ether;
+    }
+
+    return value;
+  }
+```
+</details>
+
+### getMinStakeToAddLiquidity
+
+```solidity
+function getMinStakeToAddLiquidity(IStore s) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
+    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
+
+    if (value == 0) {
+      // Fallback to 250 NPM
+      value = 250 ether;
+    }
+
+    return value;
   }
 ```
 </details>
@@ -202,8 +250,8 @@ function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view return
 
     _values = new uint256[](7);
 
-    _values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
-    _values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key); // <-- Todo: liquidity commitment should expire as policies expire
+    _values[0] = getCoverPoolLiquidity(s, key);
+    _values[1] = getCoverLiquidityCommitted(s, key);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
     _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
@@ -299,10 +347,10 @@ function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 fl
 ```
 </details>
 
-### getLiquidity
+### getCoverPoolLiquidity
 
 ```solidity
-function getLiquidity(IStore s, bytes32 key) external view
+function getCoverPoolLiquidity(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -317,8 +365,33 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLiquidity(IStore s, bytes32 key) external view returns (uint256) {
+function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+  }
+```
+</details>
+
+### getCoverLiquidityCommitted
+
+```solidity
+function getCoverLiquidityCommitted(IStore s, bytes32 key) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityCommitted(IStore s, bytes32 key) public view returns (uint256) {
+    // @todo: liquidity commitment should expire as policies expire
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key);
   }
 ```
 </details>
@@ -381,7 +454,7 @@ Sets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) public nonpayable
+function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) external nonpayable
 ```
 
 **Arguments**
@@ -400,7 +473,7 @@ function setStatus(
     IStore s,
     bytes32 key,
     CoverStatus status
-  ) public {
+  ) external {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
   }
 ```
@@ -468,6 +541,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -499,6 +573,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

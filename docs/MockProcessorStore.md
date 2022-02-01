@@ -22,7 +22,7 @@ View Source: [contracts/mock/claims-processor/MockProcessorStore.sol](../contrac
 ### initialize
 
 ```solidity
-function initialize(MockStore s, bytes32 key, address cxToken) public nonpayable
+function initialize(MockStore s, bytes32 key, address cxToken) external nonpayable
 returns(values address[])
 ```
 
@@ -42,7 +42,7 @@ function initialize(
     MockStore s,
     bytes32 key,
     address cxToken
-  ) public returns (address[] memory values) {
+  ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
     MockVault vault = new MockVault();
 
@@ -71,7 +71,7 @@ function initialize(
 ### disassociateCxToken
 
 ```solidity
-function disassociateCxToken(MockStore s, address cxToken) public nonpayable
+function disassociateCxToken(MockStore s, address cxToken) external nonpayable
 ```
 
 **Arguments**
@@ -85,7 +85,7 @@ function disassociateCxToken(MockStore s, address cxToken) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function disassociateCxToken(MockStore s, address cxToken) public {
+function disassociateCxToken(MockStore s, address cxToken) external {
     s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
   }
 ```
@@ -178,7 +178,7 @@ function setClaimExpiryTimestamp(
 ### initialize
 
 ```solidity
-function initialize(bytes32 key, address cxToken) public nonpayable
+function initialize(bytes32 key, address cxToken) external nonpayable
 returns(values address[])
 ```
 
@@ -193,7 +193,7 @@ returns(values address[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(bytes32 key, address cxToken) public returns (address[] memory values) {
+function initialize(bytes32 key, address cxToken) external returns (address[] memory values) {
     return MockProcessorStoreLib.initialize(this, key, cxToken);
   }
 ```
@@ -202,7 +202,7 @@ function initialize(bytes32 key, address cxToken) public returns (address[] memo
 ### disassociateCxToken
 
 ```solidity
-function disassociateCxToken(address cxToken) public nonpayable
+function disassociateCxToken(address cxToken) external nonpayable
 ```
 
 **Arguments**
@@ -215,7 +215,7 @@ function disassociateCxToken(address cxToken) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function disassociateCxToken(address cxToken) public {
+function disassociateCxToken(address cxToken) external {
     MockProcessorStoreLib.disassociateCxToken(this, cxToken);
   }
 ```
@@ -224,7 +224,7 @@ function disassociateCxToken(address cxToken) public {
 ### setCoverStatus
 
 ```solidity
-function setCoverStatus(bytes32 key, uint256 value) public nonpayable
+function setCoverStatus(bytes32 key, uint256 value) external nonpayable
 ```
 
 **Arguments**
@@ -238,7 +238,7 @@ function setCoverStatus(bytes32 key, uint256 value) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverStatus(bytes32 key, uint256 value) public {
+function setCoverStatus(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setCoverStatus(this, key, value);
   }
 ```
@@ -247,7 +247,7 @@ function setCoverStatus(bytes32 key, uint256 value) public {
 ### setClaimBeginTimestamp
 
 ```solidity
-function setClaimBeginTimestamp(bytes32 key, uint256 value) public nonpayable
+function setClaimBeginTimestamp(bytes32 key, uint256 value) external nonpayable
 ```
 
 **Arguments**
@@ -261,7 +261,7 @@ function setClaimBeginTimestamp(bytes32 key, uint256 value) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimBeginTimestamp(bytes32 key, uint256 value) public {
+function setClaimBeginTimestamp(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setClaimBeginTimestamp(this, key, value);
   }
 ```
@@ -270,7 +270,7 @@ function setClaimBeginTimestamp(bytes32 key, uint256 value) public {
 ### setClaimExpiryTimestamp
 
 ```solidity
-function setClaimExpiryTimestamp(bytes32 key, uint256 value) public nonpayable
+function setClaimExpiryTimestamp(bytes32 key, uint256 value) external nonpayable
 ```
 
 **Arguments**
@@ -284,7 +284,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
+function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
     MockProcessorStoreLib.setClaimExpiryTimestamp(this, key, value);
   }
 ```
@@ -301,6 +301,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -332,6 +333,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) public {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

@@ -49,8 +49,10 @@ mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositi
 - [deleteBytes32(bytes32 k)](#deletebytes32)
 - [deleteAddressArrayItem(bytes32 k, address v)](#deleteaddressarrayitem)
 - [deleteAddressArrayItemByIndex(bytes32 k, uint256 i)](#deleteaddressarrayitembyindex)
+- [getAddressValues(bytes32[] keys)](#getaddressvalues)
 - [getAddress(bytes32 k)](#getaddress)
 - [getAddressBoolean(bytes32 k, address a)](#getaddressboolean)
+- [getUintValues(bytes32[] keys)](#getuintvalues)
 - [getUint(bytes32 k)](#getuint)
 - [getUints(bytes32 k)](#getuints)
 - [getString(bytes32 k)](#getstring)
@@ -588,6 +590,33 @@ function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
 ```
 </details>
 
+### getAddressValues
+
+```solidity
+function getAddressValues(bytes32[] keys) external view
+returns(values address[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| keys | bytes32[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+    values = new address[](keys.length + 1);
+
+    for (uint256 i = 0; i < keys.length; i++) {
+      values[i] = addressStorage[keys[i]];
+    }
+  }
+```
+</details>
+
 ### getAddress
 
 ```solidity
@@ -631,6 +660,33 @@ returns(bool)
 ```javascript
 function getAddressBoolean(bytes32 k, address a) external view override returns (bool) {
     return addressBooleanStorage[k][a];
+  }
+```
+</details>
+
+### getUintValues
+
+```solidity
+function getUintValues(bytes32[] keys) external view
+returns(values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| keys | bytes32[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+    values = new uint256[](keys.length + 1);
+
+    for (uint256 i = 0; i < keys.length; i++) {
+      values[i] = uintStorage[keys[i]];
+    }
   }
 ```
 </details>
@@ -902,6 +958,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -933,6 +990,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

@@ -16,6 +16,7 @@ event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  
 event WhitelistUpdated(address  account, bool  status);
 event CoverFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
+event MinStakeToAddLiquiditySet(uint256  previous, uint256  current);
 event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ```
 
@@ -30,6 +31,7 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
+- [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
 
 ### initialize
 
@@ -251,6 +253,26 @@ function setMinCoverCreationStake(uint256 value) external;
 ```
 </details>
 
+### setMinStakeToAddLiquidity
+
+```solidity
+function setMinStakeToAddLiquidity(uint256 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMinStakeToAddLiquidity(uint256 value) external;
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -262,6 +284,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -293,6 +316,7 @@ function setMinCoverCreationStake(uint256 value) external;
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

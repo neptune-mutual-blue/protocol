@@ -13,9 +13,9 @@ const config = {
     },
     knownAccounts: [
       {
-        account: '0xA96813969437F3bad7B59335934aa75933670615',
+        account: wallet.toWalletAddress(process.env.PRIVATE_KEY),
         roles: [
-          ACCESS_CONTROL.ADMIN,
+          // ACCESS_CONTROL.ADMIN, // Already an admin
           ACCESS_CONTROL.COVER_MANAGER,
           ACCESS_CONTROL.LIQUIDITY_MANAGER,
           ACCESS_CONTROL.GOVERNANCE_ADMIN,
@@ -23,10 +23,10 @@ const config = {
           ACCESS_CONTROL.UNPAUSE_AGENT,
           ACCESS_CONTROL.UPGRADE_AGENT
         ]
-      }, {
-        account: wallet.toWalletAddress(process.env.PRIVATE_KEY),
+      },
+      {
+        account: '0xA96813969437F3bad7B59335934aa75933670615',
         roles: [
-          ACCESS_CONTROL.ADMIN,
           ACCESS_CONTROL.COVER_MANAGER,
           ACCESS_CONTROL.LIQUIDITY_MANAGER,
           ACCESS_CONTROL.GOVERNANCE_ADMIN,
@@ -37,7 +37,7 @@ const config = {
       }
     ],
     deployedTokens: {
-      DAI: '0x963bd459c5bdf9396aacD59FE9621B64c921574E',
+      DAI: '0xf80a32a835f79d7787e8a8ee5721d0feafd78108', // Aave Ropsten DAI
       NPM: '0xa2F795CB8cdCa83f8D3d5F2D84BFC45c9b3A4197',
       CPOOL: '0x9912B6Fc42675DC940313551b20c022219b98Adb',
       HT: '0xe2e3cAA55dEdb93f802B16314B4579c9a57d3B0e',
@@ -61,11 +61,14 @@ const config = {
       }
     },
     aave: {
-      description: 'Aave on Ropsten', // @todo
+      description: 'Aave on Ropsten',
       addresses: {
-        lendingPool: '0x9E5C7835E4b13368fd628196C4f1c6cEc89673Fa',
-        router: null,
-        masterChef: null
+        lendingPool: '0x9E5C7835E4b13368fd628196C4f1c6cEc89673Fa'
+      }
+    },
+    compound: {
+      dai: {
+        delegator: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
       }
     }
   }

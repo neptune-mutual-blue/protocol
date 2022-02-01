@@ -56,6 +56,14 @@ abstract contract CoverBase is ICover, Recoverable {
     emit MinCoverCreationStakeSet(previous, value);
   }
 
+  function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    uint256 previous = s.setMinStakeToAddLiquidityInternal(value);
+    emit MinStakeToAddLiquiditySet(previous, value);
+  }
+
   /**
    * @dev Get more information about this cover contract
    * @param key Enter the cover key

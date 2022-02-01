@@ -154,6 +154,9 @@ library VaultLibV1 {
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
     values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
     values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+
+    // @todo: The function calculateLiquidityInternal has issues.
+    // Check the function to learn more
     values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
     values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
   }
@@ -192,6 +195,7 @@ library VaultLibV1 {
    * @param coverKey Enter the cover key
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
+   * @param npmStakeToAdd Enter the amount of NPM token to stake.
    */
   function addLiquidityInternal(
     IStore s,
@@ -200,6 +204,7 @@ library VaultLibV1 {
     address stablecoin,
     address account,
     uint256 amount,
+    uint256 npmStakeToAdd,
     bool initialLiquidity
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
@@ -208,11 +213,9 @@ library VaultLibV1 {
     require(stablecoin == s.getStablecoin(), "Vault migration required");
 
     // Update values
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount); // Total liquidity
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account, amount); // Your liquidity
-
-    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+    _updateNpmStake(s, coverKey, account, npmStakeToAdd);
+    _updateCoverLiquidity(s, coverKey, account, amount);
+    _updateReleaseDate(s, coverKey, account);
 
     uint256 podsToMint = calculatePodsInternal(pod, stablecoin, amount);
 
@@ -224,6 +227,57 @@ library VaultLibV1 {
     return podsToMint;
   }
 
+  function _updateNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) private {
+    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, account);
+    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidity(), "Insufficient stake");
+
+    if (amount > 0) {
+      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
+      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account, amount); // Your stake
+    }
+  }
+
+  function _updateCoverLiquidity(
+    IStore s,
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) private {
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount); // Total liquidity
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account, amount); // Your liquidity
+  }
+
+  function _updateReleaseDate(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) private {
+    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+  }
+
+  function _getMyNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) private view returns (uint256 myStake) {
+    (, myStake) = getCoverNpmStake(s, coverKey, account);
+  }
+
+  function getCoverNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) public view returns (uint256 totalStake, uint256 myStake) {
+    totalStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey);
+    myStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account);
+  }
+
   /**
    * @dev Removes liquidity from the specified cover contract
    * @param coverKey Enter the cover key
@@ -233,24 +287,54 @@ library VaultLibV1 {
     IStore s,
     bytes32 coverKey,
     address pod,
-    uint256 podsToRedeem
+    uint256 podsToRedeem,
+    uint256 npmStakeToRemove
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
     s.mustBeValidCover(coverKey);
-    s.mustBeProtocolMember(pod);
 
+    // Unstake NPM tokens
+    _unStakeNpm(s, coverKey, npmStakeToRemove);
+
+    // Redeem the PODs and receive DAI
+    uint256 releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);
+
+    s.updateStateAndLiquidity(coverKey);
+
+    return releaseAmount;
+  }
+
+  function _unStakeNpm(
+    IStore s,
+    bytes32 coverKey,
+    uint256 amount
+  ) private {
+    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, msg.sender);
+    require(myPreviousStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, msg.sender, amount); // Your stake
+  }
+
+  function _redeemPods(
+    IStore s,
+    bytes32 coverKey,
+    address pod,
+    uint256 podsToRedeem
+  ) private returns (uint256) {
+    s.mustBeProtocolMember(pod);
     address stablecoin = s.getStablecoin();
 
     uint256 available = s.getPolicyContract().getCoverable(coverKey);
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, stablecoin, podsToRedeem);
+    uint256 releaseDate = _getLiquidityReleaseDateInternal(s, coverKey, msg.sender);
 
-    /*
-     * You need to wait for the policy term to expire before you can withdraw
-     * your liquidity.
-     */
-    require(available >= releaseAmount, "Insufficient balance"); // Insufficient balance. Please wait for the policy to expire.
-    require(_getLiquidityReleaseDateInternal(s, coverKey, msg.sender) > 0, "Invalid request");
-    require(block.timestamp > _getLiquidityReleaseDateInternal(s, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
+    // You may need to wait till active policies expire
+    require(available >= releaseAmount, "Insufficient balance, wait till policy expiry."); // solhint-disable-line
+
+    // You never added any liquidity
+    require(releaseDate > 0, "Invalid request");
+    require(block.timestamp > releaseDate, "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
@@ -258,8 +342,6 @@ library VaultLibV1 {
 
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
-
-    s.updateStateAndLiquidity(coverKey);
 
     return releaseAmount;
   }

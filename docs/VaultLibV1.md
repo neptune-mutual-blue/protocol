@@ -13,8 +13,15 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [_getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityremovedinternal)
 - [_getLiquidityReleaseDateInternal(IStore s, bytes32 coverKey, address you)](#_getliquidityreleasedateinternal)
 - [getLendingTotal(IStore s, bytes32 coverKey)](#getlendingtotal)
-- [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity)](#addliquidityinternal)
-- [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#removeliquidityinternal)
+- [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd, bool initialLiquidity)](#addliquidityinternal)
+- [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
+- [_updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatecoverliquidity)
+- [_updateReleaseDate(IStore s, bytes32 coverKey, address account)](#_updatereleasedate)
+- [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
+- [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
+- [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidityinternal)
+- [_unStakeNpm(IStore s, bytes32 coverKey, uint256 amount)](#_unstakenpm)
+- [_redeemPods(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempods)
 - [getFlashFeeInternal(IStore s, address token, uint256 amount)](#getflashfeeinternal)
 - [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
 - [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
@@ -192,6 +199,9 @@ nction getInfoInternal(
     values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
     values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
     values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+
+    // @todo: The function calculateLiquidityInternal has issues.
+    // Check the function to learn more
     values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
     values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
   }
@@ -320,7 +330,7 @@ nction getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256)
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, bool initialLiquidity) external nonpayable
+function addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd, bool initialLiquidity) external nonpayable
 returns(uint256)
 ```
 
@@ -334,6 +344,7 @@ returns(uint256)
 | stablecoin | address |  | 
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
 | initialLiquidity | bool |  | 
 
 <details>
@@ -347,6 +358,7 @@ nction addLiquidityInternal(
     address stablecoin,
     address account,
     uint256 amount,
+    uint256 npmStakeToAdd,
     bool initialLiquidity
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
@@ -355,11 +367,9 @@ nction addLiquidityInternal(
     require(stablecoin == s.getStablecoin(), "Vault migration required");
 
     // Update values
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount); // Total liquidity
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account, amount); // Your liquidity
-
-    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+    _updateNpmStake(s, coverKey, account, npmStakeToAdd);
+    _updateCoverLiquidity(s, coverKey, account, amount);
+    _updateReleaseDate(s, coverKey, account);
 
     uint256 podsToMint = calculatePodsInternal(pod, stablecoin, amount);
 
@@ -374,12 +384,172 @@ nction addLiquidityInternal(
 ```
 </details>
 
+### _updateNpmStake
+
+```solidity
+function _updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| account | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _updateNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) private {
+    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, account);
+    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidity(), "Insufficient stake");
+
+    if (amount > 0) {
+      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
+      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account, amount); // Your stake
+    }
+  }
+
+```
+</details>
+
+### _updateCoverLiquidity
+
+```solidity
+function _updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| account | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _updateCoverLiquidity(
+    IStore s,
+    bytes32 coverKey,
+    address account,
+    uint256 amount
+  ) private {
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount); // Total liquidity
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account, amount); // Your liquidity
+  }
+
+```
+</details>
+
+### _updateReleaseDate
+
+```solidity
+function _updateReleaseDate(IStore s, bytes32 coverKey, address account) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _updateReleaseDate(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) private {
+    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+  }
+
+```
+</details>
+
+### _getMyNpmStake
+
+```solidity
+function _getMyNpmStake(IStore s, bytes32 coverKey, address account) private view
+returns(myStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _getMyNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) private view returns (uint256 myStake) {
+    (, myStake) = getCoverNpmStake(s, coverKey, account);
+  }
+
+```
+</details>
+
+### getCoverNpmStake
+
+```solidity
+function getCoverNpmStake(IStore s, bytes32 coverKey, address account) public view
+returns(totalStake uint256, myStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction getCoverNpmStake(
+    IStore s,
+    bytes32 coverKey,
+    address account
+  ) public view returns (uint256 totalStake, uint256 myStake) {
+    totalStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey);
+    myStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account);
+  }
+
+```
+</details>
+
 ### removeLiquidityInternal
 
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem) external nonpayable
+function removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove) external nonpayable
 returns(uint256)
 ```
 
@@ -391,6 +561,7 @@ returns(uint256)
 | coverKey | bytes32 | Enter the cover key | 
 | pod | address | sToRedeem Enter the amount of liquidity token to remove. | 
 | podsToRedeem | uint256 | Enter the amount of liquidity token to remove. | 
+| npmStakeToRemove | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -400,24 +571,98 @@ nction removeLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
-    uint256 podsToRedeem
+    uint256 podsToRedeem,
+    uint256 npmStakeToRemove
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
     s.mustBeValidCover(coverKey);
-    s.mustBeProtocolMember(pod);
 
+    // Unstake NPM tokens
+    _unStakeNpm(s, coverKey, npmStakeToRemove);
+
+    // Redeem the PODs and receive DAI
+    uint256 releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);
+
+    s.updateStateAndLiquidity(coverKey);
+
+    return releaseAmount;
+  }
+
+```
+</details>
+
+### _unStakeNpm
+
+```solidity
+function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _unStakeNpm(
+    IStore s,
+    bytes32 coverKey,
+    uint256 amount
+  ) private {
+    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, msg.sender);
+    require(myPreviousStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, msg.sender, amount); // Your stake
+  }
+
+```
+</details>
+
+### _redeemPods
+
+```solidity
+function _redeemPods(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem) private nonpayable
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| pod | address |  | 
+| podsToRedeem | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+nction _redeemPods(
+    IStore s,
+    bytes32 coverKey,
+    address pod,
+    uint256 podsToRedeem
+  ) private returns (uint256) {
+    s.mustBeProtocolMember(pod);
     address stablecoin = s.getStablecoin();
 
     uint256 available = s.getPolicyContract().getCoverable(coverKey);
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, stablecoin, podsToRedeem);
+    uint256 releaseDate = _getLiquidityReleaseDateInternal(s, coverKey, msg.sender);
 
-    /*
-     * You need to wait for the policy term to expire before you can withdraw
-     * your liquidity.
-     */
-    require(available >= releaseAmount, "Insufficient balance"); // Insufficient balance. Please wait for the policy to expire.
-    require(_getLiquidityReleaseDateInternal(s, coverKey, msg.sender) > 0, "Invalid request");
-    require(block.timestamp > _getLiquidityReleaseDateInternal(s, coverKey, msg.sender), "Withdrawal too early"); // solhint-disable-line
+    // You may need to wait till active policies expire
+    require(available >= releaseAmount, "Insufficient balance, wait till policy expiry."); // solhint-disable-line
+
+    // You never added any liquidity
+    require(releaseDate > 0, "Invalid request");
+    require(block.timestamp > releaseDate, "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
@@ -425,8 +670,6 @@ nction removeLiquidityInternal(
 
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, releaseAmount);
-
-    s.updateStateAndLiquidity(coverKey);
 
     return releaseAmount;
   }
@@ -639,6 +882,7 @@ nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string m
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -670,6 +914,7 @@ nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string m
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

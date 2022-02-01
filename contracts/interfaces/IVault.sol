@@ -20,26 +20,38 @@ interface IVault is IMember, IERC20 {
    * @param coverKey Enter the cover key
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
+   * @param npmStake Enter the amount of NPM token to stake.
    */
   function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
-    uint256 amount
+    uint256 amount,
+    uint256 npmStake
   ) external;
 
   /**
    * @dev Adds liquidity to the specified cover contract
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
+   * @param npmStake Enter the amount of NPM token to stake.
    */
-  function addLiquidity(bytes32 coverKey, uint256 amount) external;
+  function addLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStake
+  ) external;
 
   /**
    * @dev Removes liquidity from the specified cover contract
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to remove.
+   * @param npmStake Enter the amount of NPM stake to remove.
    */
-  function removeLiquidity(bytes32 coverKey, uint256 amount) external;
+  function removeLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStake
+  ) external;
 
   /**
    * @dev Transfers liquidity to governance contract.

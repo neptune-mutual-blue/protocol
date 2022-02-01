@@ -51,7 +51,7 @@ library StakingPoolCoreLibV1 {
     return s.getUintByKeys(NS_POOL_STAKING_TARGET, key);
   }
 
-  function getRewardPlatformFee(IStore s, bytes32 key) public view returns (uint256) {
+  function getRewardPlatformFee(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key);
   }
 
@@ -59,35 +59,35 @@ library StakingPoolCoreLibV1 {
     return s.getUintByKeys(NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
   }
 
-  function getRewardPerBlock(IStore s, bytes32 key) public view returns (uint256) {
+  function getRewardPerBlock(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
   }
 
-  function getLockupPeriodInBlocks(IStore s, bytes32 key) public view returns (uint256) {
+  function getLockupPeriodInBlocks(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 
-  function getRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
+  function getRewardTokenBalance(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key);
   }
 
-  function getMaximumStakeInternal(IStore s, bytes32 key) public view returns (uint256) {
+  function getMaximumStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_MAX_STAKE, key);
   }
 
-  function getStakingTokenAddressInternal(IStore s, bytes32 key) public view returns (address) {
+  function getStakingTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN, key);
   }
 
-  function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view returns (address) {
+  function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key);
   }
 
-  function getRewardTokenAddressInternal(IStore s, bytes32 key) public view returns (address) {
+  function getRewardTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN, key);
   }
 
-  function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view returns (address) {
+  function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key);
   }
 

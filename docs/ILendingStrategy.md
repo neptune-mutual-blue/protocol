@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces/ILendingStrategy.sol)
 
-**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md)**
+**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [CompoundStrategy](CompoundStrategy.md)**
 
 **ILendingStrategy**
 
@@ -11,6 +11,7 @@ View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces
 ```js
 event Deposited(bytes32 indexed key, address indexed onBehalfOf, uint256  stablecoinDeposited);
 event Withdrawn(bytes32 indexed key, address indexed sendTo, uint256  stablecoinWithdrawn);
+event Drained(IERC20 indexed asset, uint256  amount);
 ```
 
 ## Functions
@@ -186,6 +187,7 @@ function withdraw(bytes32 coverKey, address sendTo) external returns (uint256 st
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -217,6 +219,7 @@ function withdraw(bytes32 coverKey, address sendTo) external returns (uint256 st
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

@@ -111,7 +111,7 @@ function getTarget(IStore s, bytes32 key) public view returns (uint256) {
 ### getRewardPlatformFee
 
 ```solidity
-function getRewardPlatformFee(IStore s, bytes32 key) public view
+function getRewardPlatformFee(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -126,7 +126,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardPlatformFee(IStore s, bytes32 key) public view returns (uint256) {
+function getRewardPlatformFee(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key);
   }
 ```
@@ -159,7 +159,7 @@ function getTotalStaked(IStore s, bytes32 key) public view returns (uint256) {
 ### getRewardPerBlock
 
 ```solidity
-function getRewardPerBlock(IStore s, bytes32 key) public view
+function getRewardPerBlock(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -174,7 +174,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardPerBlock(IStore s, bytes32 key) public view returns (uint256) {
+function getRewardPerBlock(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
   }
 ```
@@ -183,7 +183,7 @@ function getRewardPerBlock(IStore s, bytes32 key) public view returns (uint256) 
 ### getLockupPeriodInBlocks
 
 ```solidity
-function getLockupPeriodInBlocks(IStore s, bytes32 key) public view
+function getLockupPeriodInBlocks(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -198,7 +198,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLockupPeriodInBlocks(IStore s, bytes32 key) public view returns (uint256) {
+function getLockupPeriodInBlocks(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 ```
@@ -207,7 +207,7 @@ function getLockupPeriodInBlocks(IStore s, bytes32 key) public view returns (uin
 ### getRewardTokenBalance
 
 ```solidity
-function getRewardTokenBalance(IStore s, bytes32 key) public view
+function getRewardTokenBalance(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -222,7 +222,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
+function getRewardTokenBalance(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key);
   }
 ```
@@ -231,7 +231,7 @@ function getRewardTokenBalance(IStore s, bytes32 key) public view returns (uint2
 ### getMaximumStakeInternal
 
 ```solidity
-function getMaximumStakeInternal(IStore s, bytes32 key) public view
+function getMaximumStakeInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -246,7 +246,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getMaximumStakeInternal(IStore s, bytes32 key) public view returns (uint256) {
+function getMaximumStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_MAX_STAKE, key);
   }
 ```
@@ -255,7 +255,7 @@ function getMaximumStakeInternal(IStore s, bytes32 key) public view returns (uin
 ### getStakingTokenAddressInternal
 
 ```solidity
-function getStakingTokenAddressInternal(IStore s, bytes32 key) public view
+function getStakingTokenAddressInternal(IStore s, bytes32 key) external view
 returns(address)
 ```
 
@@ -270,7 +270,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStakingTokenAddressInternal(IStore s, bytes32 key) public view returns (address) {
+function getStakingTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN, key);
   }
 ```
@@ -279,7 +279,7 @@ function getStakingTokenAddressInternal(IStore s, bytes32 key) public view retur
 ### getStakingTokenStablecoinPairAddressInternal
 
 ```solidity
-function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view
+function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view
 returns(address)
 ```
 
@@ -294,7 +294,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view returns (address) {
+function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key);
   }
 ```
@@ -303,7 +303,7 @@ function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) pub
 ### getRewardTokenAddressInternal
 
 ```solidity
-function getRewardTokenAddressInternal(IStore s, bytes32 key) public view
+function getRewardTokenAddressInternal(IStore s, bytes32 key) external view
 returns(address)
 ```
 
@@ -318,7 +318,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardTokenAddressInternal(IStore s, bytes32 key) public view returns (address) {
+function getRewardTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN, key);
   }
 ```
@@ -327,7 +327,7 @@ function getRewardTokenAddressInternal(IStore s, bytes32 key) public view return
 ### getRewardTokenStablecoinPairAddressInternal
 
 ```solidity
-function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view
+function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view
 returns(address)
 ```
 
@@ -342,7 +342,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) public view returns (address) {
+function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key);
   }
 ```
@@ -570,6 +570,7 @@ function _initializeNewPool(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -601,6 +602,7 @@ function _initializeNewPool(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

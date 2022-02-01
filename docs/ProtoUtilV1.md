@@ -48,6 +48,8 @@ bytes32 public constant NS_COVER_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
 bytes32 public constant NS_COVER_LIQUIDITY;
+bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
+bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_ADDED;
 bytes32 public constant NS_COVER_LIQUIDITY_REMOVED;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD;
@@ -803,6 +805,7 @@ function _removeMember(IStore s, address member) private {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -834,6 +837,7 @@ function _removeMember(IStore s, address member) private {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

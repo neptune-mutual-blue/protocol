@@ -37,7 +37,7 @@ library CoverLibV1 {
 
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
     values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-    values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+    values[2] = s.getCoverPoolLiquidity(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
     values[4] = s.getClaimable(key);
@@ -95,7 +95,7 @@ library CoverLibV1 {
     uint256[] memory values
   ) external {
     // First validate the information entered
-    uint256 fee = _validateAndGetFee(s, key, info, values[2]);
+    (uint256 fee, , uint256 minStakeToAddLiquidity) = _validateAndGetFee(s, key, info, values[2], values[4]);
 
     // Set the basic cover info
     _addCover(s, key, info, reassuranceToken, values, fee);
@@ -112,7 +112,7 @@ library CoverLibV1 {
     if (values[4] > 0) {
       IVault vault = s.getVault(key);
 
-      s.getVault(key).addLiquidityMemberOnly(key, msg.sender, values[4]);
+      s.getVault(key).addLiquidityMemberOnly(key, msg.sender, values[4], minStakeToAddLiquidity);
 
       // Transfer liquidity only after minting the pods
       // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
@@ -158,21 +158,33 @@ library CoverLibV1 {
 
   /**
    * @dev Validation checks before adding a new cover
-   * @return Returns fee required to create a new cover
    */
   function _validateAndGetFee(
     IStore s,
     bytes32 key,
     bytes32 info,
-    uint256 stakeWithFee
-  ) private view returns (uint256) {
+    uint256 stakeWithFee,
+    uint256 initialLiquidity
+  )
+    private
+    view
+    returns (
+      uint256 fee,
+      uint256 minCoverCreationStake,
+      uint256 minStakeToAddLiquidity
+    )
+  {
     require(info > 0, "Invalid info");
-    (uint256 fee, uint256 minStake) = s.getCoverFee();
+    (fee, minCoverCreationStake, minStakeToAddLiquidity) = s.getCoverFee();
 
-    require(stakeWithFee > fee + minStake, "NPM Insufficient");
+    uint256 minStake = fee + minCoverCreationStake;
+
+    if (initialLiquidity > 0) {
+      minStake += minStakeToAddLiquidity;
+    }
+
+    require(stakeWithFee > minStake, "NPM Insufficient");
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");
-
-    return fee;
   }
 
   function updateCoverInternal(
@@ -206,8 +218,18 @@ library CoverLibV1 {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
+    previous = s.getMinCoverCreationStake();
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, value);
+
+    s.updateStateAndLiquidity(0);
+  }
+
+  function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external returns (uint256 previous) {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    previous = s.getMinStakeToAddLiquidity();
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, value);
 
     s.updateStateAndLiquidity(0);
   }

@@ -82,7 +82,7 @@ library PriceLibV1 {
     IStore s,
     IUniswapV2PairLike pair,
     uint256 lpTokens
-  ) public view returns (uint256) {
+  ) external view returns (uint256) {
     uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
     uint256 reserve0 = values[0];
     uint256 reserve1 = values[1];

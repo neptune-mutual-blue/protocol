@@ -8,33 +8,33 @@ View Source: [contracts/mock/cx-token/MockCxTokenPolicy.sol](../contracts/mock/c
 **Constants & Variables**
 
 ```js
-contract ICxToken public _cxToken;
+contract ICxToken public cxToken;
 
 ```
 
 ## Functions
 
-- [constructor(ICxToken cxToken)](#)
+- [constructor(ICxToken _cxToken)](#)
 - [callMint(bytes32 key, address to, uint256 amount)](#callmint)
 
 ### 
 
 ```solidity
-function (ICxToken cxToken) public nonpayable
+function (ICxToken _cxToken) public nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| cxToken | ICxToken |  | 
+| _cxToken | ICxToken |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(ICxToken cxToken) {
-    _cxToken = cxToken;
+constructor(ICxToken _cxToken) {
+    cxToken = _cxToken;
   }
 ```
 </details>
@@ -42,7 +42,7 @@ constructor(ICxToken cxToken) {
 ### callMint
 
 ```solidity
-function callMint(bytes32 key, address to, uint256 amount) public nonpayable
+function callMint(bytes32 key, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -61,8 +61,8 @@ function callMint(
     bytes32 key,
     address to,
     uint256 amount
-  ) public {
-    _cxToken.mint(key, to, amount);
+  ) external {
+    cxToken.mint(key, to, amount);
   }
 ```
 </details>
@@ -78,6 +78,7 @@ function callMint(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -109,6 +110,7 @@ function callMint(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

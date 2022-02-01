@@ -11,6 +11,7 @@ interface ICover is IMember {
   event WhitelistUpdated(address account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
+  event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
   event CoverInitialized(address indexed stablecoin, bytes32 withName);
 
   /**
@@ -94,4 +95,6 @@ interface ICover is IMember {
   function setCoverFees(uint256 value) external;
 
   function setMinCoverCreationStake(uint256 value) external;
+
+  function setMinStakeToAddLiquidity(uint256 value) external;
 }

@@ -18,7 +18,7 @@ View Source: [contracts/mock/base/MockStore.sol](../contracts/mock/base/MockStor
 ### setBool
 
 ```solidity
-function setBool(bytes32 prefix, address a) public nonpayable
+function setBool(bytes32 prefix, address a) external nonpayable
 ```
 
 **Arguments**
@@ -32,7 +32,7 @@ function setBool(bytes32 prefix, address a) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setBool(bytes32 prefix, address a) public {
+function setBool(bytes32 prefix, address a) external {
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
     this.setBool(k, true);
   }
@@ -42,7 +42,7 @@ function setBool(bytes32 prefix, address a) public {
 ### unsetBool
 
 ```solidity
-function unsetBool(bytes32 prefix, address a) public nonpayable
+function unsetBool(bytes32 prefix, address a) external nonpayable
 ```
 
 **Arguments**
@@ -56,7 +56,7 @@ function unsetBool(bytes32 prefix, address a) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unsetBool(bytes32 prefix, address a) public {
+function unsetBool(bytes32 prefix, address a) external {
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
     this.deleteBool(k);
   }
@@ -94,7 +94,7 @@ function setAddress(
 ### setAddress
 
 ```solidity
-function setAddress(bytes32 k1, bytes32 k2, bytes32 k3, address v) public nonpayable
+function setAddress(bytes32 k1, bytes32 k2, bytes32 k3, address v) external nonpayable
 ```
 
 **Arguments**
@@ -115,7 +115,7 @@ function setAddress(
     bytes32 k2,
     bytes32 k3,
     address v
-  ) public {
+  ) external {
     this.setAddress(keccak256(abi.encodePacked(k1, k2, k3)), v);
   }
 ```
@@ -124,7 +124,7 @@ function setAddress(
 ### setUint
 
 ```solidity
-function setUint(bytes32 k1, bytes32 k2, uint256 v) public nonpayable
+function setUint(bytes32 k1, bytes32 k2, uint256 v) external nonpayable
 ```
 
 **Arguments**
@@ -143,7 +143,7 @@ function setUint(
     bytes32 k1,
     bytes32 k2,
     uint256 v
-  ) public {
+  ) external {
     this.setUint(keccak256(abi.encodePacked(k1, k2)), v);
   }
 ```
@@ -160,6 +160,7 @@ function setUint(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -191,6 +192,7 @@ function setUint(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

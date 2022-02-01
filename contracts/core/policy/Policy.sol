@@ -45,6 +45,8 @@ contract Policy is IPolicy, Recoverable {
     uint256 amountToCover
   ) external override nonReentrant returns (address) {
     s.mustNotBePaused();
+    s.mustBeValidCover(key);
+
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
     (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);

@@ -29,11 +29,11 @@ contract LiquidityEngine is Recoverable {
     s.disableStrategyInternal(strategy);
   }
 
-  function getDisabledStrategies(IStore s) public view returns (address[] memory strategies) {
+  function getDisabledStrategies(IStore s) external view returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }
 
-  function getActiveStrategies(IStore s) public view returns (address[] memory strategies) {
+  function getActiveStrategies(IStore s) external view returns (address[] memory strategies) {
     return s.getActiveStrategiesInternal();
   }
 }

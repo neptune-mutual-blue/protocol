@@ -39,6 +39,16 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     return IERC20(depositCertificate);
   }
 
+  function _drain(IERC20 asset) private {
+    uint256 amount = asset.balanceOf(address(this));
+
+    if (amount > 0) {
+      asset.ensureTransfer(s.getTreasury(), amount);
+
+      emit Drained(asset, amount);
+    }
+  }
+
   /**
    * @dev Gets info of this strategy by cover key
    * @param coverKey Enter the cover key
@@ -52,49 +62,79 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     values[1] = s.getUintByKey(_getWithdrawalsKey(coverKey));
   }
 
+  function _getCertificateBalance() private view returns (uint256) {
+    return getDepositCertificate().balanceOf(address(this));
+  }
+
+  /**
+   * @dev Lends stablecoin to the Aave protocol
+   * Ensure that you `approve` stablecoin before you call this function
+   */
   function deposit(
     bytes32 coverKey,
     uint256 amount,
-    address onBehalfOf
-  ) external override nonReentrant returns (uint256 certificateReceived) {
+    address fromVault
+  ) external override nonReentrant returns (uint256 aTokenReceived) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
-    require(stablecoin.balanceOf(onBehalfOf) >= amount, "Balance insufficient");
+    require(stablecoin.balanceOf(fromVault) >= amount, "Balance insufficient");
 
-    stablecoin.ensureTransferFrom(onBehalfOf, address(this), amount);
+    // This strategy should never have token balances
+    _drain(aToken);
+    _drain(stablecoin);
 
+    // Transfer DAI to this contract; then approve and deposit it to Aave Lending Pool to receive aToken certificates
+    stablecoin.ensureTransferFrom(fromVault, address(this), amount);
+    stablecoin.approve(address(lendingPool), amount);
     lendingPool.deposit(address(getDepositAsset()), amount, address(this), 0);
 
-    certificateReceived = aToken.balanceOf(address(this));
+    // Check how many aTokens we received
+    aTokenReceived = _getCertificateBalance();
 
-    aToken.ensureTransferFrom(address(this), onBehalfOf, amount);
+    // Immediately send aTokens to the original vault stablecoin came from
+    aToken.ensureTransferFrom(address(this), fromVault, amount);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
-
-    emit Deposited(coverKey, onBehalfOf, amount);
+    emit Deposited(coverKey, fromVault, amount);
   }
 
+  /**
+   * @dev Redeems aToken from Aave to receive stablecoin
+   * Ensure that you `approve` aToken before you call this function
+   */
   function withdraw(bytes32 coverKey, address sendTo) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
+
+    // This strategy should never have token balances
+    _drain(aToken);
+    _drain(stablecoin);
+
     uint256 aTokenAmount = aToken.balanceOf(sendTo);
 
     if (aTokenAmount == 0) {
       return 0;
     }
 
+    // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back DAI + rewards
+    aToken.ensureTransferFrom(sendTo, address(this), aTokenAmount);
+    aToken.approve(address(lendingPool), aTokenAmount);
     lendingPool.withdraw(address(stablecoin), aTokenAmount, address(this));
+
+    // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
-    s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
+    // Immediately send DAI to the vault aToken came from
+    stablecoin.ensureTransfer(sendTo, stablecoinWithdrawn);
 
+    s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
     emit Withdrawn(coverKey, sendTo, stablecoinWithdrawn);
   }
 

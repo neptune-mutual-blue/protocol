@@ -6,8 +6,43 @@ View Source: [contracts/libraries/NTransferUtilV2.sol](../contracts/libraries/NT
 
 ## Functions
 
+- [ensureApproval(IERC20 malicious, address spender, uint256 amount)](#ensureapproval)
 - [ensureTransfer(IERC20 malicious, address recipient, uint256 amount)](#ensuretransfer)
 - [ensureTransferFrom(IERC20 malicious, address sender, address recipient, uint256 amount)](#ensuretransferfrom)
+
+### ensureApproval
+
+```solidity
+function ensureApproval(IERC20 malicious, address spender, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| malicious | IERC20 |  | 
+| spender | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function ensureApproval(
+    IERC20 malicious,
+    address spender,
+    uint256 amount
+  ) external {
+    // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
+    // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
+    require(address(malicious) != address(0), "Invalid address");
+    require(spender != address(0), "Invalid spender");
+    require(amount > 0, "Invalid transfer amount");
+
+    malicious.safeIncreaseAllowance(spender, amount);
+  }
+```
+</details>
 
 ### ensureTransfer
 
@@ -34,7 +69,7 @@ function ensureTransfer(
   ) external {
     // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-
+    require(address(malicious) != address(0), "Invalid address");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
@@ -76,6 +111,7 @@ function ensureTransferFrom(
   ) external {
     // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
+    require(address(malicious) != address(0), "Invalid address");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
@@ -100,6 +136,7 @@ function ensureTransferFrom(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -131,6 +168,7 @@ function ensureTransferFrom(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

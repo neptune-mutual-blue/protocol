@@ -13,7 +13,7 @@ const config = {
     },
     knownAccounts: [
       {
-        account: '0xA96813969437F3bad7B59335934aa75933670615',
+        account: wallet.toWalletAddress(process.env.PRIVATE_KEY),
         roles: [
           ACCESS_CONTROL.ADMIN,
           ACCESS_CONTROL.COVER_MANAGER,
@@ -24,7 +24,7 @@ const config = {
           ACCESS_CONTROL.UPGRADE_AGENT
         ]
       }, {
-        account: wallet.toWalletAddress(process.env.PRIVATE_KEY),
+        account: '0xA96813969437F3bad7B59335934aa75933670615',
         roles: [
           ACCESS_CONTROL.ADMIN,
           ACCESS_CONTROL.COVER_MANAGER,
@@ -61,11 +61,14 @@ const config = {
       }
     },
     aave: {
-      description: 'Aave on Kovan', // @todo
+      description: 'Aave on Kovan',
       addresses: {
-        lendingPool: null,
-        router: null,
-        masterChef: null
+        lendingPool: '0x580D4Fdc4BF8f9b5ae2fb9225D584fED4AD5375c'
+      }
+    },
+    compound: {
+      dai: {
+        delegator: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
       }
     }
   }

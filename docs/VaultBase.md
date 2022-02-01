@@ -27,11 +27,11 @@ address public lqt;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount)](#addliquiditymemberonly)
+- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquiditymemberonly)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
-- [addLiquidity(bytes32 coverKey, uint256 amount)](#addliquidity)
-- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem)](#removeliquidity)
-- [_addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity)](#_addliquidity)
+- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
+- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidity)
+- [_addLiquidity(bytes32 coverKey, address account, uint256 amount, uint256 npmStake, bool initialLiquidity)](#_addliquidity)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
@@ -75,7 +75,7 @@ constructor(
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
+function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -85,6 +85,7 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 | coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStake | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -93,7 +94,8 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 function addLiquidityMemberOnly(
     bytes32 coverKey,
     address account,
-    uint256 amount
+    uint256 amount,
+    uint256 npmStake
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
     // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
@@ -104,7 +106,7 @@ function addLiquidityMemberOnly(
     // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
     require(coverKey == key, "Forbidden");
 
-    _addLiquidity(coverKey, account, amount, true);
+    _addLiquidity(coverKey, account, amount, npmStake, true);
   }
 ```
 </details>
@@ -147,7 +149,7 @@ function transferGovernance(
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
+function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -156,16 +158,21 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external nonpayable nonR
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidity(bytes32 coverKey, uint256 amount) external override nonReentrant {
+function addLiquidity(
+    bytes32 coverKey,
+    uint256 amount,
+    uint256 npmStakeToAdd
+  ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
-    _addLiquidity(coverKey, msg.sender, amount, false);
+    _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
   }
 ```
 </details>
@@ -175,7 +182,7 @@ function addLiquidity(bytes32 coverKey, uint256 amount) external override nonRee
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpayable nonReentrant 
+function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -184,16 +191,21 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external nonpay
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
 | podsToRedeem | uint256 | Enter the amount of pods to redeem | 
+| npmStakeToRemove | uint256 | Enter the amount of NPM stake to remove. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external override nonReentrant {
+function removeLiquidity(
+    bytes32 coverKey,
+    uint256 podsToRedeem,
+    uint256 npmStakeToRemove
+  ) external override nonReentrant {
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem);
+    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -205,7 +217,7 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem) external overri
 Adds liquidity to the specified cover contract
 
 ```solidity
-function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool initialLiquidity) private nonpayable
+function _addLiquidity(bytes32 coverKey, address account, uint256 amount, uint256 npmStake, bool initialLiquidity) private nonpayable
 ```
 
 **Arguments**
@@ -215,6 +227,7 @@ function _addLiquidity(bytes32 coverKey, address account, uint256 amount, bool i
 | coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
+| npmStake | uint256 | Enter the amount of NPM token to stake. | 
 | initialLiquidity | bool |  | 
 
 <details>
@@ -225,9 +238,10 @@ function _addLiquidity(
     bytes32 coverKey,
     address account,
     uint256 amount,
+    uint256 npmStake,
     bool initialLiquidity
   ) private {
-    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, initialLiquidity);
+    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
     super._mint(account, podsToMint);
 
     s.updateStateAndLiquidity(key);
@@ -402,6 +416,7 @@ function getName() external pure override returns (bytes32) {
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -433,6 +448,7 @@ function getName() external pure override returns (bytes32) {
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)

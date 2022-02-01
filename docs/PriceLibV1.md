@@ -164,7 +164,7 @@ function _setTokenPrice(
 ### getPairLiquidityInStablecoin
 
 ```solidity
-function getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens) public view
+function getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens) external view
 returns(uint256)
 ```
 
@@ -184,7 +184,7 @@ function getPairLiquidityInStablecoin(
     IStore s,
     IUniswapV2PairLike pair,
     uint256 lpTokens
-  ) public view returns (uint256) {
+  ) external view returns (uint256) {
     uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
     uint256 reserve0 = values[0];
     uint256 reserve1 = values[1];
@@ -461,6 +461,7 @@ function _getPair(
 * [BondPool](BondPool.md)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
+* [CompoundStrategy](CompoundStrategy.md)
 * [Context](Context.md)
 * [Controller](Controller.md)
 * [Cover](Cover.md)
@@ -492,6 +493,7 @@ function _getPair(
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICommission](ICommission.md)
+* [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
