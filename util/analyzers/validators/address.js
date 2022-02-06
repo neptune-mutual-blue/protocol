@@ -1,4 +1,10 @@
-const validate = async (code, selector) => {
+const { isMock } = require('./mock')
+
+const validate = async (code, selector, name) => {
+  if (isMock(name)) {
+    return null
+  }
+
   const addressArgs = selector.parameters
     .parameters.filter(x => x.typeName.name === 'address' &&
             ['account', 'to', 'from', 'v', 'sendTo'].indexOf(x.name) === -1)

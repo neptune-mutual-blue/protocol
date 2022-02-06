@@ -119,7 +119,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+    return s.getActiveIncidentDateInternal(key);
   }
 
   function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {

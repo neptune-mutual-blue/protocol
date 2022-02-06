@@ -181,9 +181,6 @@ library BondPoolLibV1 {
     address[] memory addresses,
     uint256[] memory values
   ) external {
-    s.mustNotBePaused();
-    s.mustBeAdmin();
-
     if (addresses[0] != address(0)) {
       s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, addresses[0]);
     }

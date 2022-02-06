@@ -11,6 +11,7 @@ contract StakingPools is StakingPoolInfo {
   constructor(IStore s) StakingPoolInfo(s) {} //solhint-disable-line
 
   function deposit(bytes32 key, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -19,6 +20,7 @@ contract StakingPools is StakingPoolInfo {
   }
 
   function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 

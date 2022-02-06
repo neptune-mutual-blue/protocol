@@ -8,6 +8,7 @@ const { getNetworkInfo } = require('../network')
 const { grantRoles } = require('./grant-roles')
 const { minutesToBlocks } = require('../block-time')
 const { getExternalProtocols } = require('./external-protocols')
+const erc20 = require('../contract-helper/erc20')
 
 const DAYS = 86400
 const MINUTES = 60
@@ -25,15 +26,17 @@ const initialize = async (suite, deploymentId) => {
   const claimPeriod = network.cover.claimPeriod
 
   const store = await storeComposer.deploy(cache)
-  const { router, factory, aaveLendingPool } = await getExternalProtocols(cache)
   const tokens = await fakeTokenComposer.compose(cache)
 
-  const [npm, wxDai, cpool, ht, okb, axs, aToken] = tokens
+  const { npm, dai, cpool, ht, okb, axs, aToken, cDai } = tokens
+
+  const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
+
   const pairs = await fakeUniswapPairComposer.compose(cache, tokens)
   const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, axsUsdPair] = pairs
 
   // The protocol only supports stablecoin as reassurance token for now
-  const reassuranceToken = wxDai
+  const reassuranceToken = dai
 
   const libs = await libsComposer.deployAll(cache)
 
@@ -75,9 +78,11 @@ const initialize = async (suite, deploymentId) => {
   )
 
   const bondPoolContract = await deployer.deployWithLibraries(cache, 'BondPool', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
     BondPoolLibV1: libs.bondPoolLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
-    PriceLibV1: libs.priceLibV1.address
+    PriceLibV1: libs.priceLibV1.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.BOND_POOL, bondPoolContract.address)
@@ -121,6 +126,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('AXS'), 'AXS Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
     RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
@@ -147,6 +153,7 @@ const initialize = async (suite, deploymentId) => {
 
   const vaultFactory = await deployer.deployWithLibraries(cache, 'VaultFactory',
     {
+      AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       ValidationLibV1: libs.validationLib.address,
@@ -159,6 +166,7 @@ const initialize = async (suite, deploymentId) => {
 
   const cxTokenFactory = await deployer.deployWithLibraries(cache, 'cxTokenFactory',
     {
+      AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
       ProtoUtilV1: libs.protoUtilV1.address,
@@ -231,7 +239,7 @@ const initialize = async (suite, deploymentId) => {
   const policyAdminContract = await deployer.deployWithLibraries(cache, 'PolicyAdmin', {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
-    CoverUtilV1: libs.coverUtilV1.address,
+    PolicyHelperV1: libs.policyHelperV1.address,
     RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address
@@ -243,12 +251,10 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
-    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
-    NTransferUtilV2: libs.transferLib.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    RegistryLibV1: libs.registryLibV1.address,
+    PolicyHelperV1: libs.policyHelperV1.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
@@ -280,26 +286,48 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
-  const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
+  // @todo: remove from production, only for testnet: 5 minutes deposit period, 1 minute withdrawal period
+  await intermediate(cache, liquidityEngine, 'setLendingPeriods', key.toBytes32(''), '300', '60')
+
+  if (aaveLendingPool) {
+    const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      BaseLibV1: libs.baseLibV1.address,
+      NTransferUtilV2: libs.transferLib.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLib.address
+    }, store.address, aaveLendingPool, aToken.address)
+
+    await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)
+    await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [aaveStrategy.address])
+  }
+
+  const compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
+    RegistryLibV1: libs.registryLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address
-  }, store.address, aaveLendingPool, aToken.address)
+  }, store.address, compoundDaiDelegator, cDai.address)
 
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)
-  await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [aaveStrategy.address])
+  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
+  await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [compoundStrategy.address])
 
   const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
+    AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     PriceLibV1: libs.priceLibV1.address,
-    ProtoUtilV1: libs.protoUtilV1.address
+    ProtoUtilV1: libs.protoUtilV1.address,
+    ValidationLibV1: libs.validationLib.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.PRICE_DISCOVERY, priceDiscovery.address)
 
-  await intermediate(cache, cover, 'initialize', wxDai.address, key.toBytes32('WXDAI'))
+  await intermediate(cache, cover, 'initialize', dai.address, key.toBytes32('DAI'))
 
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
 
@@ -308,7 +336,7 @@ const initialize = async (suite, deploymentId) => {
     cache,
     store,
     npm,
-    wxDai,
+    dai,
     cpool,
     ht,
     okb,

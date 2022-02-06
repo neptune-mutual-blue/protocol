@@ -211,11 +211,6 @@
   {
     "inputs": [
       {
-        "internalType": "contract IStore",
-        "name": "s",
-        "type": "address"
-      },
-      {
         "internalType": "address",
         "name": "account",
         "type": "address"

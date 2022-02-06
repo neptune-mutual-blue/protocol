@@ -14,6 +14,7 @@ abstract contract StakingPoolReward is StakingPoolBase {
   }
 
   function withdrawRewards(bytes32 key) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 

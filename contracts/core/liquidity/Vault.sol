@@ -14,8 +14,8 @@ import "./WithFlashLoan.sol";
  * - Cover fees paid in stablecoin get added to the liquidity pool.
  * - The protocol supplies a small portion of idle assets to lending protocols (v2).
  * - Flash loan interest also gets added back to the pool.
- * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NPM provision.
- * - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `reassurance token` allocation.
+ * - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through NPM provision.
+ * - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through `reassurance token` allocation.
  */
 contract Vault is WithFlashLoan {
   using ProtoUtilV1 for IStore;

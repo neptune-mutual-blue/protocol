@@ -63,7 +63,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = getUnstakeInfoFor(s, msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
@@ -83,7 +83,6 @@ abstract contract Unstakable is Resolvable, IUnstakable {
 
   /**
    * @dev s Gets the unstake information for the supplied account
-   * @param s Provide store instance
    * @param account Enter account to get the unstake information of
    * @param key Enter the cover key
    * @param incidentDate Enter the incident date
@@ -95,12 +94,11 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param myReward Returns the amount of tokens that the supplied account will receive as `reporting reward`
    */
   function getUnstakeInfoFor(
-    IStore s,
     address account,
     bytes32 key,
     uint256 incidentDate
   )
-    public
+    external
     view
     override
     returns (
@@ -112,6 +110,6 @@ abstract contract Unstakable is Resolvable, IUnstakable {
       uint256 myReward
     )
   {
-    return s.getUnstakeInfoFor(account, key, incidentDate);
+    return s.getUnstakeInfoForInternal(account, key, incidentDate);
   }
 }

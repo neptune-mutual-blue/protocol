@@ -28,7 +28,7 @@ interface IPolicy is IMember {
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
-  function getCoverFee(
+  function getCoverFeeInfo(
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover

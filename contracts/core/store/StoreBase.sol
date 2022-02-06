@@ -30,6 +30,8 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    * @dev Recover all Ether held by the contract.
    */
   function recoverEther(address sendTo) external onlyOwner {
+    // @suppress-pausable Can only be called by the owner
+    // @suppress-reentrancy Can only be called by the owner
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -39,6 +41,8 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external onlyOwner {
+    // @suppress-pausable Can only be called by the owner
+    // @suppress-reentrancy Can only be called by the owner
     // @suppress-address-trust-issue Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
@@ -47,10 +51,12 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   }
 
   function pause() external onlyOwner {
+    // @suppress-reentrancy Can only be called by the owner
     super._pause();
   }
 
   function unpause() external onlyOwner {
+    // @suppress-reentrancy Can only be called by the owner
     super._unpause();
   }
 

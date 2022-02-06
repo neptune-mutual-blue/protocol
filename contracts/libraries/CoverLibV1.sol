@@ -40,7 +40,7 @@ library CoverLibV1 {
     values[2] = s.getCoverPoolLiquidity(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
-    values[4] = s.getClaimable(key);
+    values[4] = s.getCoverLiquidityCommitted(key);
   }
 
   function initializeCoverInternal(
@@ -112,7 +112,7 @@ library CoverLibV1 {
     if (values[4] > 0) {
       IVault vault = s.getVault(key);
 
-      s.getVault(key).addLiquidityMemberOnly(key, msg.sender, values[4], minStakeToAddLiquidity);
+      s.getVault(key).addLiquidityInternalOnly(key, msg.sender, values[4], minStakeToAddLiquidity);
 
       // Transfer liquidity only after minting the pods
       // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.

@@ -6,6 +6,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 interface IVault is IMember, IERC20 {
   event GovernanceTransfer(address indexed to, uint256 amount);
+  event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
+  event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
   event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
   event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
   event MinLiquidityPeriodSet(uint256 previous, uint256 current);
@@ -22,7 +24,7 @@ interface IVault is IMember, IERC20 {
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStake Enter the amount of NPM token to stake.
    */
-  function addLiquidityMemberOnly(
+  function addLiquidityInternalOnly(
     bytes32 coverKey,
     address account,
     uint256 amount,
@@ -65,6 +67,32 @@ interface IVault is IMember, IERC20 {
     uint256 amount
   ) external;
 
+  /**
+   * @dev Transfers liquidity to strategy contract.
+   * @param coverKey Enter the cover key
+   * @param strategyName Enter the strategy's name
+   * @param amount Enter the amount of liquidity token to transfer.
+   */
+  function transferToStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external;
+
+  /**
+   * @dev Receives from strategy contract.
+   * @param coverKey Enter the cover key
+   * @param strategyName Enter the strategy's name
+   * @param amount Enter the amount of liquidity token to transfer.
+   */
+  function receiveFromStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external;
+
   function setMinLiquidityPeriod(uint256 value) external;
 
   function calculatePods(uint256 forStablecoinUnits) external view returns (uint256);
@@ -72,4 +100,10 @@ interface IVault is IMember, IERC20 {
   function calculateLiquidity(uint256 podsToBurn) external view returns (uint256);
 
   function getInfo(address forAccount) external view returns (uint256[] memory result);
+
+  /**
+   * @dev Returns the stablecoin balance of this vault
+   * This also includes amounts lent out in lending strategies
+   */
+  function getStablecoinBalanceOf() external view returns (uint256);
 }

@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/IPolicyAdmin.sol";
-import "../../libraries/CoverUtilV1.sol";
+import "../../libraries/PolicyHelperV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
@@ -17,6 +17,7 @@ import "../Recoverable.sol";
  */
 contract PolicyAdmin is IPolicyAdmin, Recoverable {
   using ProtoUtilV1 for bytes;
+  using PolicyHelperV1 for IStore;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
   using CoverUtilV1 for IStore;
@@ -72,7 +73,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * @dev Gets the cover policy rates for the given cover key
    */
   function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRates(key);
+    return s.getPolicyRatesInternal(key);
   }
 
   /**

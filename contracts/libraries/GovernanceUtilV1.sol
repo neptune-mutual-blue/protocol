@@ -97,7 +97,7 @@ library GovernanceUtilV1 {
     myStakeInWinningCamp = yes > no ? myYes : myNo;
   }
 
-  function getUnstakeInfoFor(
+  function getUnstakeInfoForInternal(
     IStore s,
     address account,
     bytes32 key,

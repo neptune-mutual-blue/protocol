@@ -41,7 +41,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
     uint256[] memory values
   ) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeAdmin();
+    AccessControlLibV1.mustBeAdmin(s);
 
     s.addOrEditPoolInternal(key, name, addresses, values);
     emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[4], values[2]);
@@ -58,7 +58,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
 
   function closePool(bytes32 key) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeAdmin();
+    AccessControlLibV1.mustBeAdmin(s);
 
     s.setBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key, false);
 

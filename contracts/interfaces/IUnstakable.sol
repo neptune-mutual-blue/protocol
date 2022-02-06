@@ -11,7 +11,6 @@ interface IUnstakable {
   function unstake(bytes32 key, uint256 incidentDate) external;
 
   function getUnstakeInfoFor(
-    IStore s,
     address account,
     bytes32 key,
     uint256 incidentDate

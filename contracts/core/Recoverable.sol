@@ -7,6 +7,7 @@ import "../libraries/BaseLibV1.sol";
 import "../libraries/ValidationLibV1.sol";
 
 abstract contract Recoverable is ReentrancyGuard, IRecoverable {
+  using ValidationLibV1 for IStore;
   IStore public override s;
 
   constructor(IStore store) {
@@ -20,9 +21,9 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * not have any significance in the SDK or the UI.
    */
   function recoverEther(address sendTo) external override nonReentrant {
-    // @suppress-pausable Already implemented in BaseLibV1
-    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverEtherInternal(s, sendTo);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+    BaseLibV1.recoverEtherInternal(sendTo);
   }
 
   /**
@@ -32,9 +33,9 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-pausable Already implemented in BaseLibV1
-    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
-    BaseLibV1.recoverTokenInternal(s, token, sendTo);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+    BaseLibV1.recoverTokenInternal(token, sendTo);
   }
 }

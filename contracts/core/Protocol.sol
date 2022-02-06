@@ -37,8 +37,8 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[9] flashLoanFee
    * @param values[10] flashLoanFeeProtocol
    */
-  function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
-    // @suppress-reentrancy Can only be initialized once and only by a protocol member
+  function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
+    // @suppress-initialization Can only be initialized once by the deployer
     // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 

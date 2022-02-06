@@ -108,6 +108,15 @@ library ValidationLibV1 {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
   }
 
+  function callerMustBeStrategyContract(IStore s) external view {
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+    require(callerIsStrategyContract == true, "Not a strategy contract");
+  }
+
+  function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
+  }
+
   function callerMustBeProtocolMember(IStore s) external view {
     require(s.isProtocolMember(msg.sender), "Forbidden");
   }

@@ -6,15 +6,18 @@ import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./NTransferUtilV2.sol";
 import "./ProtoUtilV1.sol";
+import "./PolicyHelperV1.sol";
 import "./StoreKeyUtil.sol";
 import "./ValidationLibV1.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
+import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 
 library VaultLibV1 {
   using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
+  using PolicyHelperV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
@@ -25,11 +28,12 @@ library VaultLibV1 {
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
    */
   function calculatePodsInternal(
+    IStore s,
+    bytes32 coverKey,
     address pod,
-    address stablecoin,
     uint256 liquidityToAdd
   ) public view returns (uint256) {
-    uint256 balance = IERC20(stablecoin).balanceOf(address(this));
+    uint256 balance = getStablecoinBalanceOfInternal(s, coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
 
     // This smart contract contains stablecoins without liquidity provider contribution
@@ -136,6 +140,7 @@ library VaultLibV1 {
    * @param values[7] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
    * @param values[8] myShare --> My share of the liquidity pool (in stablecoin)
    * @param values[9] releaseDate --> My liquidity release date
+   * @param values[10] fullBalance --> Gets the full stablecoin balance of this vault (including amounts lent out)
    */
   function getInfoInternal(
     IStore s,
@@ -144,7 +149,7 @@ library VaultLibV1 {
     address stablecoin,
     address you
   ) external view returns (uint256[] memory values) {
-    values = new uint256[](10);
+    values = new uint256[](11);
 
     values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
     values[1] = IERC20(stablecoin).balanceOf(address(this)); // Stablecoins in the pool
@@ -159,6 +164,7 @@ library VaultLibV1 {
     // Check the function to learn more
     values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
     values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
+    values[10] = getStablecoinBalanceOfInternal(s, coverKey);
   }
 
   function _getCoverLiquidityAddedInternal(
@@ -166,7 +172,7 @@ library VaultLibV1 {
     bytes32 coverKey,
     address you
   ) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, you);
+    return s.getUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, you));
   }
 
   function _getCoverLiquidityRemovedInternal(
@@ -182,12 +188,11 @@ library VaultLibV1 {
     bytes32 coverKey,
     address you
   ) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, you);
+    return s.getUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, you));
   }
 
   function getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    // @todo Update `NS_COVER_STABLECOIN_LENT_TOTAL` when building lending
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STABLECOIN_LENT_TOTAL, coverKey);
+    return s.getUintByKey(CoverUtilV1.getCoverTotalLentKey(coverKey));
   }
 
   /**
@@ -217,7 +222,7 @@ library VaultLibV1 {
     _updateCoverLiquidity(s, coverKey, account, amount);
     _updateReleaseDate(s, coverKey, account);
 
-    uint256 podsToMint = calculatePodsInternal(pod, stablecoin, amount);
+    uint256 podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
 
     if (initialLiquidity == false) {
       // First deposit the tokens
@@ -237,8 +242,8 @@ library VaultLibV1 {
     require(amount + myPreviousStake >= s.getMinStakeToAddLiquidity(), "Insufficient stake");
 
     if (amount > 0) {
-      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
-      s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account, amount); // Your stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
     }
   }
 
@@ -248,8 +253,8 @@ library VaultLibV1 {
     address account,
     uint256 amount
   ) private {
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, amount); // Total liquidity
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account, amount); // Your liquidity
+    s.addUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), amount); // Total liquidity
+    s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
   }
 
   function _updateReleaseDate(
@@ -258,7 +263,7 @@ library VaultLibV1 {
     address account
   ) private {
     uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account, block.timestamp + minLiquidityPeriod); // solhint-disable-line
+    s.setUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, account), block.timestamp + minLiquidityPeriod); // solhint-disable-line
   }
 
   function _getMyNpmStake(
@@ -274,8 +279,8 @@ library VaultLibV1 {
     bytes32 coverKey,
     address account
   ) public view returns (uint256 totalStake, uint256 myStake) {
-    totalStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey);
-    myStake = s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account);
+    totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey));
+    myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account));
   }
 
   /**
@@ -312,8 +317,8 @@ library VaultLibV1 {
     uint256 myPreviousStake = _getMyNpmStake(s, coverKey, msg.sender);
     require(myPreviousStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
 
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, amount); // Total stake
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, msg.sender, amount); // Your stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
   }
 
   function _redeemPods(
@@ -325,7 +330,7 @@ library VaultLibV1 {
     s.mustBeProtocolMember(pod);
     address stablecoin = s.getStablecoin();
 
-    uint256 available = s.getPolicyContract().getCoverable(coverKey);
+    uint256 available = s.getCoverableInternal(coverKey);
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, stablecoin, podsToRedeem);
     uint256 releaseDate = _getLiquidityReleaseDateInternal(s, coverKey, msg.sender);
 
@@ -337,7 +342,7 @@ library VaultLibV1 {
     require(block.timestamp > releaseDate, "Withdrawal too early"); // solhint-disable-line
 
     // Update values
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey, releaseAmount);
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), releaseAmount);
     s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
 
     IERC20(pod).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
@@ -354,12 +359,13 @@ library VaultLibV1 {
    * @param fee The amount of `token` to be charged for the loan, on top of the returned principal.
    * @param protocolFee The fee received by the protocol
    */
-  function getFlashFeeInternal(
+  function getFlashFeesInternal(
     IStore s,
     address token,
     uint256 amount
-  ) external view returns (uint256 fee, uint256 protocolFee) {
+  ) public view returns (uint256 fee, uint256 protocolFee) {
     address stablecoin = s.getStablecoin();
+    require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     /*
     https://eips.ethereum.org/EIPS/eip-3156
@@ -374,6 +380,15 @@ library VaultLibV1 {
 
     fee = (amount * rate) / ProtoUtilV1.MULTIPLIER;
     protocolFee = (fee * protocolRate) / ProtoUtilV1.MULTIPLIER;
+  }
+
+  function getFlashFeeInternal(
+    IStore s,
+    address token,
+    uint256 amount
+  ) external view returns (uint256) {
+    (uint256 fee, ) = getFlashFeesInternal(s, token, amount);
+    return fee;
   }
 
   function _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
@@ -391,6 +406,7 @@ library VaultLibV1 {
    */
   function getMaxFlashLoanInternal(IStore s, address token) external view returns (uint256) {
     address stablecoin = s.getStablecoin();
+    require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     if (stablecoin == token) {
       return IERC20(stablecoin).balanceOf(address(this));
@@ -418,5 +434,152 @@ library VaultLibV1 {
 
   function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
     return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
+  }
+
+  function transferToStrategyInternal(
+    IStore s,
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external {
+    token.ensureTransfer(msg.sender, amount);
+
+    _addToStrategyOut(s, coverKey, token, amount);
+    _addToSpecificStrategyOut(s, coverKey, strategyName, token, amount);
+  }
+
+  function _addToStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    IERC20 token,
+    uint256 amountToAdd
+  ) private {
+    bytes32 k = _getStrategyOutKey(coverKey, token);
+    s.addUintByKey(k, amountToAdd);
+  }
+
+  function _clearStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    IERC20 token
+  ) private {
+    bytes32 k = _getStrategyOutKey(coverKey, token);
+    s.deleteUintByKey(k);
+  }
+
+  function _addToSpecificStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    IERC20 token,
+    uint256 amountToAdd
+  ) private {
+    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
+    s.addUintByKey(k, amountToAdd);
+  }
+
+  function _clearSpecificStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    IERC20 token
+  ) private {
+    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
+    s.deleteUintByKey(k);
+  }
+
+  function _getStrategyOutKey(bytes32 coverKey, IERC20 token) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
+  }
+
+  function _getSpecificStrategyOutKey(
+    bytes32 coverKey,
+    bytes32 strategyName,
+    IERC20 token
+  ) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, strategyName, token));
+  }
+
+  function receiveFromStrategyInternal(
+    IStore s,
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external {
+    token.ensureTransferFrom(msg.sender, address(this), amount);
+
+    _clearStrategyOut(s, coverKey, token);
+    _clearSpecificStrategyOut(s, coverKey, strategyName, token);
+  }
+
+  function getAmountInStrategies(
+    IStore s,
+    bytes32 coverKey,
+    IERC20 token
+  ) public view returns (uint256) {
+    bytes32 k = _getStrategyOutKey(coverKey, token);
+    return s.getUintByKey(k);
+  }
+
+  function getAmountInStrategy(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    IERC20 token
+  ) external view returns (uint256) {
+    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
+    return s.getUintByKey(k);
+  }
+
+  function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+
+    uint256 balance = stablecoin.balanceOf(address(this));
+    uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
+
+    return balance + inStrategies;
+  }
+
+  /**
+   * @dev Initiate a flash loan.
+   * @param receiver The receiver of the tokens in the loan, and the receiver of the callback.
+   * @param token The loan currency.
+   * @param amount The amount of tokens lent.
+   * @param data Arbitrary data structure, intended to contain user-defined parameters.
+   */
+  function flashLoanInternal(
+    IStore s,
+    IERC3156FlashBorrower receiver,
+    bytes32 key,
+    address token,
+    uint256 amount,
+    bytes calldata data
+  ) external returns (uint256) {
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+    (uint256 fee, uint256 protocolFee) = getFlashFeesInternal(s, token, amount);
+    uint256 previousBalance = stablecoin.balanceOf(address(this));
+
+    require(address(stablecoin) == token, "Unknown token");
+    require(amount > 0, "Loan too small");
+    require(fee > 0, "Fee too little");
+    require(previousBalance >= amount, "Balance insufficient");
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, true);
+
+    stablecoin.ensureTransfer(address(receiver), amount);
+    require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
+    stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
+    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
+
+    uint256 finalBalance = stablecoin.balanceOf(address(this));
+    require(finalBalance >= previousBalance + fee, "Access is denied");
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, false);
+
+    s.updateStateAndLiquidity(key);
+
+    return fee;
   }
 }

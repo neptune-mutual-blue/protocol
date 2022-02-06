@@ -42,6 +42,7 @@ const deployDependencies = async () => {
   })
 
   const RoutineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
+    CoverUtilV1: coverUtilV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StrategyLibV1: strategyLibV1.address,
@@ -63,8 +64,6 @@ const deployDependencies = async () => {
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
-    ValidationLibV1: validationLibV1.address,
-    AccessControlLibV1: accessControlLibV1.address
   })
 
   return { npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, registryLibV1, coverUtilV1, governanceUtilV1, validationLibV1, baseLibV1 }

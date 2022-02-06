@@ -57,7 +57,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
    */
-  function addLiquidityMemberOnly(
+  function addLiquidityInternalOnly(
     bytes32 coverKey,
     address account,
     uint256 amount,
@@ -88,6 +88,42 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     emit GovernanceTransfer(to, amount);
   }
 
+  function transferToStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.callerMustBeStrategyContract();
+    require(coverKey == key, "Forbidden");
+
+    s.transferToStrategyInternal(token, coverKey, strategyName, amount);
+    emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
+  }
+
+  function receiveFromStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.callerMustBeStrategyContract();
+    require(coverKey == key, "Forbidden");
+
+    s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
+    emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+  }
+
+  /**
+   * @dev Returns the stablecoin balance of this vault
+   * This also includes amounts lent out in lending strategies
+   */
+  function getStablecoinBalanceOf() external view override returns (uint256) {
+    return s.getStablecoinBalanceOfInternal(key);
+  }
+
   /**
    * @dev Adds liquidity to the specified cover contract
    * @param coverKey Enter the cover key
@@ -99,6 +135,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
@@ -116,10 +153,11 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 podsToRedeem,
     uint256 npmStakeToRemove
   ) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem, npmStakeToRemove);
+    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -138,7 +176,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 npmStake,
     bool initialLiquidity
   ) private {
-    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
+    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
     super._mint(account, podsToMint);
 
     s.updateStateAndLiquidity(key);
@@ -159,7 +197,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
    */
   function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
-    return VaultLibV1.calculatePodsInternal(address(this), lqt, forStablecoinUnits);
+    return s.calculatePodsInternal(key, address(this), forStablecoinUnits);
   }
 
   /**

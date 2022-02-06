@@ -16,10 +16,7 @@ library BaseLibV1 {
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
    */
-  function recoverEtherInternal(IStore s, address sendTo) external {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeRecoveryAgent(s);
-
+  function recoverEtherInternal(address sendTo) external {
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -30,15 +27,8 @@ library BaseLibV1 {
    * not have any significance in the SDK or the UI.
    * @param token IERC-20 The address of the token contract
    */
-  function recoverTokenInternal(
-    IStore s,
-    address token,
-    address sendTo
-  ) external {
+  function recoverTokenInternal(address token, address sendTo) external {
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeRecoveryAgent(s);
-
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));

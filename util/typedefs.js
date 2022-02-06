@@ -21,13 +21,14 @@
  * @property {Object} priceLibV1 - Price library
  * @property {Object} RoutineInvokerLibV1 - Housekeeping library
  * @property {Object} strategyLibV1 - Price library
+ * @property {Object} policyHelperV1 - Price library
  */
 
 /**
  * @typedef {Object} Contracts
  * @property {Object} store - Store contract
  * @property {Object} npm - NPM Token contract
- * @property {Object} wxDai - wxDai token contract
+ * @property {Object} dai - dai token contract
  * @property {Object} cpool - Clearpool token contract
  * @property {Object} ht - Huobi token contract
  * @property {Object} okb - OKB token contract
@@ -63,4 +64,5 @@
  * @property {Object} router - UniswapV2-like router
  * @property {Object} factory - UniswapV2-like factory
  * @property {Object} aaveLendingPool - Aave lending pool
+ * @property {Object} compoundDaiDelegator - Compound Dai delegator
  */

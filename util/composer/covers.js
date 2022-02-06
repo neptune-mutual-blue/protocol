@@ -4,10 +4,10 @@ const ipfs = require('../ipfs')
 
 const createCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
-  const { wxDai, npm, reassuranceContract, stakingContract, cover } = contracts
+  const { dai, npm, reassuranceContract, stakingContract, cover } = contracts
 
-  await intermediate(cache, wxDai, 'approve', cover.address, ethers.constants.MaxUint256)
-  await intermediate(cache, wxDai, 'approve', reassuranceContract.address, ethers.constants.MaxUint256)
+  await intermediate(cache, dai, 'approve', cover.address, ethers.constants.MaxUint256)
+  await intermediate(cache, dai, 'approve', reassuranceContract.address, ethers.constants.MaxUint256)
   await intermediate(cache, npm, 'approve', stakingContract.address, ethers.constants.MaxUint256)
 
   for (const i in covers) {
@@ -19,7 +19,7 @@ const createCovers = async (payload) => {
 
 const create = async (payload, info) => {
   const { intermediate, cache, contracts } = payload
-  const { wxDai, cover } = contracts
+  const { dai, cover } = contracts
 
   const { key } = info
   const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, initialLiquidity } = info
@@ -31,7 +31,7 @@ const create = async (payload, info) => {
     reassurance.toString(),
     initialLiquidity.toString()]
 
-  await intermediate(cache, cover, 'addCover', key, hashBytes32, wxDai.address, values)
+  await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, values)
 }
 
 module.exports = { createCovers }

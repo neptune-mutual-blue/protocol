@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-contract FakeToken is ERC20, Ownable {
+contract FakeToken is ERC20 {
   constructor(
     string memory name,
     string memory symbol,
@@ -13,7 +12,7 @@ contract FakeToken is ERC20, Ownable {
     super._mint(msg.sender, supply);
   }
 
-  function mint(address account, uint256 amount) external onlyOwner {
+  function mint(address account, uint256 amount) external {
     super._mint(account, amount);
   }
 

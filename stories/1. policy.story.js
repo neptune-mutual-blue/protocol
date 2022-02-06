@@ -36,7 +36,7 @@ describe('Policy Purchase Stories', () => {
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
-    await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
+    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
   })
@@ -70,11 +70,11 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('fee should be ~$58.33 xDai when purchasing 10K xDai cover for 1 month', async () => {
-    const result = await contracts.policy.getCoverFee(coverKey, 1, helper.ether(10_000))
+    const result = await contracts.policy.getCoverFeeInfo(coverKey, 1, helper.ether(10_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
-    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000)) /
+    totalAvailableLiquidity.toString().should.equal(helper.ether(7_000_000))
 
     helper.toPercentageString(coverRatio).should.equal('0.14')
     helper.toPercentageString(floor).should.equal('7.00')
@@ -85,7 +85,7 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('fee should be ~$7,255.84 when purchasing 250K xDai cover for 3 months', async () => {
-    const result = await contracts.policy.getCoverFee(coverKey, 3, helper.ether(250_000))
+    const result = await contracts.policy.getCoverFeeInfo(coverKey, 3, helper.ether(250_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
@@ -100,7 +100,7 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('fee should be ~4095.83 when purchasing 500K xDai cover for 1 month', async () => {
-    const result = await contracts.policy.getCoverFee(coverKey, 1, helper.ether(500_000))
+    const result = await contracts.policy.getCoverFeeInfo(coverKey, 1, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
@@ -113,7 +113,7 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('fee should be ~$10633.33 when purchasing 500K xDai cover for 2 months', async () => {
-    const result = await contracts.policy.getCoverFee(coverKey, 2, helper.ether(500_000))
+    const result = await contracts.policy.getCoverFeeInfo(coverKey, 2, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
     utilizationRatio.toString().should.equal(helper.ether(0))
@@ -127,11 +127,11 @@ describe('Policy Purchase Stories', () => {
 
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {
     const args = [coverKey, 2, helper.ether(500_000)]
-    const { fee } = await contracts.policy.getCoverFee(...args)
+    const { fee } = await contracts.policy.getCoverFeeInfo(...args)
 
    ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.equal(helper.zerox)
 
-    await contracts.wxDai.approve(contracts.policy.address, fee)
+    await contracts.dai.approve(contracts.policy.address, fee)
     await contracts.policy.purchaseCover(...args)
 
     const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])

@@ -85,13 +85,12 @@ describe('Protocol Initialization Stories', () => {
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
-    await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
+    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
-    const vault = await composer.vault.getVault(contracts, coverKey)
     const reassuranceVault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
     previous = {
-      wxDaiBalance: (await contracts.wxDai.balanceOf(vault.address)).toString(),
+      daiBalance: '0',
       reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
     }
 
@@ -100,12 +99,12 @@ describe('Protocol Initialization Stories', () => {
 
   it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {
     const vault = await composer.vault.getVault(contracts, coverKey)
-    const balance = await contracts.wxDai.balanceOf(vault.address)
+    const balance = await vault.getStablecoinBalanceOf()
 
-    const expected = helper.add(previous.wxDaiBalance, helper.ether(4000000))
+    const expected = helper.add(previous.daiBalance, helper.ether(4000000))
     balance.toString().should.equal(expected.toString())
 
-    previous.wxDaiBalance = expected
+    previous.daiBalance = expected
   })
 
   it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
@@ -125,17 +124,18 @@ describe('Protocol Initialization Stories', () => {
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.wxDai.approve(vault.address, liquidity)
+    await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
     await vault.addLiquidity(coverKey, liquidity, npmToStake)
 
-    const expected = helper.add(previous.wxDaiBalance, liquidity)
+    const expected = helper.add(previous.daiBalance, liquidity)
 
-    const balance = await contracts.wxDai.balanceOf(vault.address)
+    const balance = await vault.getStablecoinBalanceOf()
+
     balance.toString().should.equal(expected.toString())
 
-    previous.wxDaiBalance = expected
+    previous.daiBalance = expected
   })
 
   it('correctness rule: pods should match the number of tokens deposited', async () => {
@@ -143,7 +143,7 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.toString().should.equal(previous.wxDaiBalance.toString())
+    pods.toString().should.equal(previous.daiBalance.toString())
   })
 
   it('reassurance token allocation was increased', async () => {
@@ -168,15 +168,17 @@ describe('Protocol Initialization Stories', () => {
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     // Directly transferring xDai to simulate an income earned from external source(s)
-    await contracts.wxDai.transfer(vault.address, liquidity)
+    await contracts.dai.transfer(vault.address, liquidity)
     // await vault.addLiquidity(coverKey, liquidity)
 
-    const expected = helper.add(previous.wxDaiBalance, liquidity)
+    const expected = helper.add(previous.daiBalance, liquidity)
 
-    const balance = await contracts.wxDai.balanceOf(vault.address)
+    // const balance = await contracts.dai.balanceOf(vault.address)
+    const balance = await vault.getStablecoinBalanceOf()
+
     balance.toString().should.equal(expected.toString())
 
-    previous.wxDaiBalance = expected
+    previous.daiBalance = expected
   })
 
   it('xDai liquidity was added once again', async () => {
@@ -185,17 +187,18 @@ describe('Protocol Initialization Stories', () => {
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.wxDai.approve(vault.address, liquidity)
+    await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
     await vault.addLiquidity(coverKey, liquidity, npmToStake)
 
-    const expected = helper.add(previous.wxDaiBalance, liquidity)
+    const expected = helper.add(previous.daiBalance, liquidity)
 
-    const balance = await contracts.wxDai.balanceOf(vault.address)
+    const balance = await vault.getStablecoinBalanceOf()
+
     balance.toString().should.equal(expected.toString())
 
-    previous.wxDaiBalance = expected
+    previous.daiBalance = expected
   })
 
   it('correctness rule: pods should now be less than the number of tokens deposited', async () => {
@@ -203,6 +206,6 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    parseInt(pods.toString()).should.be.lessThan(parseInt(previous.wxDaiBalance.toString()))
+    parseInt(pods.toString()).should.be.lessThan(parseInt(previous.daiBalance.toString()))
   })
 })

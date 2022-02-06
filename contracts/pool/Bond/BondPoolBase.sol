@@ -6,8 +6,10 @@ import "../../libraries/BondPoolLibV1.sol";
 import "../../core/Recoverable.sol";
 
 abstract contract BondPoolBase is IBondPool, Recoverable {
+  using AccessControlLibV1 for IStore;
   using BondPoolLibV1 for IStore;
   using PriceLibV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore s) Recoverable(s) {} //solhint-disable-line
 
@@ -47,6 +49,9 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
    * @param values[3] - NPM to Top Up Now
    */
   function setup(address[] memory addresses, uint256[] memory values) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeAdmin(s);
+
     s.setupBondPoolInternal(addresses, values);
 
     emit BondPoolSetup(addresses, values);

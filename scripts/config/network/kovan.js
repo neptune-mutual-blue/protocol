@@ -43,7 +43,8 @@ const config = {
       HT: '0x921e65d8A0F071caa170efD316Cd1bc2bf6225e0',
       OKB: '0x20B69b8a65B235d1FDA63B074Dc8e0E74bb35e19',
       AXS: '0x6575efCb04306Af46414e0425162a54734B9e024',
-      aToken: '0x6fbc884362dA5aE46445Cf906475Dd9a13462fB4'
+      aToken: '0xdcf0af9e59c002fa3aa091a46196b37530fd48a8',
+      cDai: '0xF49eBE5A0d62cc8f0318AD14620D17dcc2D53935'
     },
     stablecoinPairs: {
       NPM_DAI: '0x68783fD3030035DE814B00Aa6051EA253A6E31e0',
@@ -61,14 +62,14 @@ const config = {
       }
     },
     aave: {
-      description: 'Aave on Kovan',
+      description: 'Aave V2 on Kovan',
       addresses: {
-        lendingPool: '0x580D4Fdc4BF8f9b5ae2fb9225D584fED4AD5375c'
+        lendingPool: '0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe'
       }
     },
     compound: {
       dai: {
-        delegator: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
+        delegator: '0xF49eBE5A0d62cc8f0318AD14620D17dcc2D53935'
       }
     }
   }

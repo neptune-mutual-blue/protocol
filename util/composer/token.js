@@ -25,7 +25,7 @@ const sendTransfers = async (contract) => {
   await contract.transfer(lewis.address, helper.ether(1_000_000))
 }
 
-const deploySeveral = async (cache, tokens) => {
+const deployOrGetFromConfig = async (cache, tokens) => {
   const contracts = []
 
   const network = await getNetworkInfo()
@@ -39,7 +39,7 @@ const deploySeveral = async (cache, tokens) => {
 
       const token = await erc20.getInstance(tokenAt)
 
-      if (symbol !== 'DAI') {
+      if (['DAI', 'cDai', 'aToken'].indexOf(symbol) === -1) {
         await faucet.request(token)
         await faucet.request(token)
         await faucet.request(token)
@@ -53,7 +53,7 @@ const deploySeveral = async (cache, tokens) => {
       throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
-    const contract = await deployer.deploy(cache, 'FakeToken', name, symbol, supply || helper.ether(1_000_000))
+    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(1_000_000))
     hre.network.name === 'hardhat' && sendTransfers(contract)
 
     contracts.push(contract)
@@ -68,17 +68,20 @@ const at = async (address) => {
 }
 
 const compose = async (cache) => {
-  const [npm, wxDai, cpool, ht, okb, axs, aToken] = await deploySeveral(cache, [
-    { name: 'Fake Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Fake Dai', symbol: 'DAI' },
-    { name: 'Fake Clearpool Token', symbol: 'CPOOL' },
-    { name: 'Fake Huobi Token', symbol: 'HT' },
-    { name: 'Fake OKB Token', symbol: 'OKB' },
-    { name: 'Fake AXS Token', symbol: 'AXS' },
-    { name: 'Fake aToken Token', symbol: 'aToken' }
-  ])
+  const list = [
+    { name: 'Neptune Mutual Token', symbol: 'NPM' },
+    { name: 'Dai', symbol: 'DAI' },
+    { name: 'Clearpool Token', symbol: 'CPOOL' },
+    { name: 'Huobi Token', symbol: 'HT' },
+    { name: 'OKB Token', symbol: 'OKB' },
+    { name: 'AXS Token', symbol: 'AXS' },
+    { name: 'aToken', symbol: 'aToken' },
+    { name: 'cDai', symbol: 'cDai' }
+  ]
 
-  return [npm, wxDai, cpool, ht, okb, axs, aToken]
+  const [npm, dai, cpool, ht, okb, axs, aToken, cDai] = await deployOrGetFromConfig(cache, list)
+
+  return { npm, dai, cpool, ht, okb, axs, aToken, cDai }
 }
 
-module.exports = { deploySeveral, at, compose }
+module.exports = { deploySeveral: deployOrGetFromConfig, at, compose }

@@ -102,8 +102,9 @@ contract Cover is CoverBase {
    * @param reason Provide a reason to stop this cover
    */
   function stopCover(bytes32 key, string memory reason) external override nonReentrant {
-    s.mustBeGovernanceAdmin();
+    s.mustNotBePaused();
     s.mustBeValidCover(key);
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     s.stopCoverInternal(key);
     emit CoverStopped(key, msg.sender, reason);

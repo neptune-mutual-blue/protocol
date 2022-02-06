@@ -84,7 +84,7 @@ describe('Governance Stories', () => {
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
-    await contracts.wxDai.approve(contracts.cover.address, initialLiquidity)
+    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
@@ -99,11 +99,11 @@ describe('Governance Stories', () => {
 
     // Purchase a cover
     let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
-    let fee = (await contracts.policy.getCoverFee(...args)).fee
+    let fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
 
       ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
 
-    await contracts.wxDai.connect(kimberly).approve(contracts.policy.address, fee)
+    await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(...args)
 
     let at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
@@ -111,9 +111,9 @@ describe('Governance Stories', () => {
 
     // Purchase a cover
     args = [coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
-    fee = (await contracts.policy.getCoverFee(...args)).fee
+    fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
 
-    await contracts.wxDai.connect(lewis).approve(contracts.policy.address, fee)
+    await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(...args)
 
     at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
@@ -159,7 +159,7 @@ describe('Governance Stories', () => {
   })
 
   it('no reporter should be accepted other than alice', async () => {
-    const [_, _a, bob] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob] = await ethers.getSigners() // eslint-disable-line
 
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)
@@ -178,7 +178,7 @@ describe('Governance Stories', () => {
   })
 
   it('alice is the reporter', async () => {
-    const [_, alice] = await ethers.getSigners() // eslint-disable-line
+    const [, alice] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
     const reporter = await contracts.governance.getReporter(coverKey, incidentDate)
@@ -187,7 +187,7 @@ describe('Governance Stories', () => {
   })
 
   it('bob disputed the current incident with 250 stake', async () => {
-    const [_, _a, bob] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob] = await ethers.getSigners() // eslint-disable-line
     const stake = helper.ether(constants.stakes.no.reporting)
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
@@ -201,7 +201,7 @@ describe('Governance Stories', () => {
   })
 
   it('no disputer is accepted other than bob', async () => {
-    const [_, _a, _b, chris] = await ethers.getSigners() // eslint-disable-line
+    const [, , , chris] = await ethers.getSigners() // eslint-disable-line
     const stake = helper.ether(constants.stakes.no.reporting)
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
@@ -212,7 +212,7 @@ describe('Governance Stories', () => {
   })
 
   it('bob became the new reporter', async () => {
-    const [_, _a, bob] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
     const reporter = await contracts.governance.getReporter(coverKey, incidentDate)
@@ -224,7 +224,7 @@ describe('Governance Stories', () => {
   })
 
   it('david, franklin, and john refuted the incident reporting', async () => {
-    const [_, _a, _b, _c, david, _e, franklin, _g, _h, _i, john] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , david, , franklin, , , , john] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -244,7 +244,7 @@ describe('Governance Stories', () => {
   })
 
   it('bob, franklin, and john refuted the incident reporting', async () => {
-    const [_, _a, bob, _c, _d, _e, franklin, _g, _h, _i, john] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob, , , , franklin, , , , john] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -254,7 +254,7 @@ describe('Governance Stories', () => {
   })
 
   it('emily and chris attested the incident reporting', async () => {
-    const [_, _a, _b, chris, _d, emily] = await ethers.getSigners() // eslint-disable-line
+    const [, , , chris, , emily] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -263,7 +263,7 @@ describe('Governance Stories', () => {
   })
 
   it('bob and henry refuted the incident reporting', async () => {
-    const [_, _a, bob, _c, _d, _e, _f, _g, henry] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob, , , , , , henry] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -272,7 +272,7 @@ describe('Governance Stories', () => {
   })
 
   it('george attested the incident reporting', async () => {
-    const [_, _a, _b, _c, _d, _e, _f, george] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , george] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -288,7 +288,7 @@ describe('Governance Stories', () => {
   })
 
   it('individual stakes are also correct', async () => {
-    const [_o, _a, bob, chris, david, emily, franklin, george, harry, isabel, john] = await ethers.getSigners() // eslint-disable-line
+    const [, , bob, chris, david, emily, franklin, george, harry, isabel, john] = await ethers.getSigners() // eslint-disable-line
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     const ensureStake = async (account, y, n) => {
@@ -312,7 +312,7 @@ describe('Governance Stories', () => {
   })
 
   it('unable to claim because the incident is disputed (majority disagree)', async () => {
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , , , , , kimberly] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
     constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
@@ -324,7 +324,7 @@ describe('Governance Stories', () => {
   })
 
   it('george again attested with a very large stake', async () => {
-    const [_, _a, _b, _c, _d, _e, _f, george] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , george] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
@@ -332,7 +332,7 @@ describe('Governance Stories', () => {
   })
 
   it('unable to claim because the claim period has not begun', async () => {
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , , , , , kimberly] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
     constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
@@ -344,23 +344,23 @@ describe('Governance Stories', () => {
   })
 
   it('a governance agent resolves the cover', async () => {
-    const [_o, _a] = await ethers.getSigners() // eslint-disable-line
+    const [owner, alex] = await ethers.getSigners() // eslint-disable-line
 
-    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, _o.address)
-    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, _a.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, alex.address)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.resolution.connect(_a).resolve(coverKey, incidentDate)
+    await contracts.resolution.connect(alex).resolve(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
     status.toNumber().should.equal(helper.coverStatus.claimable)
   })
 
   it('kimberly successfully received payout during the claim period', async () => {
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , , , , , kimberly] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.kimberly.balanceOf(kimberly.address)
     constants.cxTokens.kimberly.connect(kimberly).approve(contracts.claimsProcessor.address, balance)
@@ -368,10 +368,10 @@ describe('Governance Stories', () => {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
-    const before = await contracts.wxDai.balanceOf(kimberly.address)
+    const before = await contracts.dai.balanceOf(kimberly.address)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, incidentDate, balance)
-    const after = await contracts.wxDai.balanceOf(kimberly.address)
+    const after = await contracts.dai.balanceOf(kimberly.address)
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 
@@ -379,7 +379,7 @@ describe('Governance Stories', () => {
   })
 
   it('lewis was unable to claim after the expiry period', async () => {
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, lewis] = await ethers.getSigners() // eslint-disable-line
+    const [, , , , , , , , , , , , lewis] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.lewis.balanceOf(lewis.address)
     constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
@@ -394,13 +394,13 @@ describe('Governance Stories', () => {
   })
 
   it('a governance agent finalizes the cover', async () => {
-    const [_o, _a] = await ethers.getSigners() // eslint-disable-line
+    const [, alex] = await ethers.getSigners() // eslint-disable-line
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.resolution.connect(_a).finalize(coverKey, incidentDate)
+    await contracts.resolution.connect(alex).finalize(coverKey, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey)
     status.toNumber().should.equal(helper.coverStatus.normal)

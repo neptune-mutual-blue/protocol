@@ -49,6 +49,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
       )
 
       if iszero(extcodesize(addr)) {
+        // @suppress-revert This is correct usage
         revert(0, 0)
       }
     }

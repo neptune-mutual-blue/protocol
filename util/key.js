@@ -56,6 +56,7 @@ const PROTOCOL = {
     STAKING_POOL: toBytes32('cns:pools:staking'),
     LIQUIDITY_ENGINE: toBytes32('cns:liquidity:engine'),
     STRATEGY_AAVE: toBytes32('cns:strategy:aave'),
+    STRATEGY_COMPOUND: toBytes32('cns:strategy:compound'),
     GOVERNANCE: toBytes32('cns:gov'),
     GOVERNANCE_RESOLUTION: toBytes32('cns:gov:resolution'),
     CLAIM_PROCESSOR: toBytes32('cns:claim:processor'),
@@ -70,11 +71,13 @@ const PROTOCOL = {
     COVER_REASSURANCE: toBytes32('ns:cover:reassurance'),
     COVER_REASSURANCE_TOKEN: toBytes32('ns:cover:reassurance:token'),
     COVER_REASSURANCE_WEIGHT: toBytes32('ns:cover:reassurance:weight'),
-    COVER_CLAIMABLE: toBytes32('ns:cover:claimable'),
     COVER_FEE_EARNING: toBytes32('ns:cover:fee:earning'),
     COVER_INFO: toBytes32('ns:cover:info'),
     COVER_OWNER: toBytes32('ns:cover:owner'),
+    VAULT_STRATEGY_OUT: toBytes32('ns:vault:strategy:out'),
     COVER_LIQUIDITY: toBytes32('ns:cover:liquidity'),
+    COVER_LIQUIDITY_LENDING_PERIOD: toBytes32('ns:cover:liquidity:len:p'),
+    COVER_LIQUIDITY_WITHDRAWAL_WINDOW: toBytes32('ns:cover:liquidity:ww'),
     COVER_LIQUIDITY_MIN_STAKE: toBytes32('ns:cover:liquidity:min:stake'),
     COVER_LIQUIDITY_STAKE: toBytes32('ns:cover:liquidity:stake'),
     COVER_LIQUIDITY_ADDED: toBytes32('ns:cover:liquidity:add'),
@@ -120,7 +123,10 @@ const PROTOCOL = {
     LP_TOTAL_SUPPLY: toBytes32('ns:uni:lp:totalSupply'),
     TOKEN_PRICE_LAST_UPDATE: toBytes32('ns:token:price:last:update'),
     LENDING_STRATEGY_ACTIVE: toBytes32('ns:lending:strategy:active'),
-    LENDING_STRATEGY_DISABLED: toBytes32('ns:lending:strategy:disabled')
+    LENDING_STRATEGY_DISABLED: toBytes32('ns:lending:strategy:disabled'),
+    LENDING_STRATEGY_DEPOSITS: toBytes32('ns:lending:strategy:deposits'),
+    LENDING_STRATEGY_WITHDRAWAL_START: toBytes32('ns:lending:strategy:w:start'),
+    LENDING_STRATEGY_WITHDRAWAL_END: toBytes32('ns:lending:strategy:w:end')
   },
   CNAME: {
     PROTOCOL: toBytes32('Neptune Mutual Protocol'),
@@ -141,7 +147,9 @@ const PROTOCOL = {
     COVER_PROVISION: toBytes32('CoverProvision'),
     COVER_STAKE: toBytes32('CoverStake'),
     COVER_REASSURANCE: toBytes32('CoverReassurance'),
-    LIQUIDITY_VAULT: toBytes32('Vault')
+    LIQUIDITY_VAULT: toBytes32('Vault'),
+    STRATEGY_AAVE: toBytes32('AaveStrategy'),
+    STRATEGY_COMPOUND: toBytes32('CompoundStrategy')
   }
 }
 

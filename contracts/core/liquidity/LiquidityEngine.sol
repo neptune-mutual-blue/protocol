@@ -29,6 +29,24 @@ contract LiquidityEngine is Recoverable {
     s.disableStrategyInternal(strategy);
   }
 
+  function setLendingPeriods(
+    bytes32 coverKey,
+    uint256 lendingPeriod,
+    uint256 withdrawalWindow
+  ) external nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+  }
+
+  function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
+  }
+
   function getDisabledStrategies(IStore s) external view returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }

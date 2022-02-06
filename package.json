@@ -30,7 +30,7 @@
     "test:all": "npx hardhat test ./**/*.{spec,story}.js",
     "coverage": "npx hardhat coverage",
     "stories": "npx hardhat test ./**/*.story.js",
-    "story": "yarn stories",
+    "story": "npm run stories",
     "walk": "node ./util/analyzers/chain-state | sed -r \"s/\\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g\" > ./.todo/_Walker.sol && echo View file 👉 ./.todo/_Walker.sol"
   },
   "repository": {

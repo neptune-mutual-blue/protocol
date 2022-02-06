@@ -8,10 +8,13 @@ import "../../../interfaces/external/ICompoundERC20DelegatorLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
 
+// import "hardhat/console.sol";
+
 contract CompoundStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
+  using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "compound", "v2"));
@@ -70,26 +73,29 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * @dev Deposits the tokens to Compound
    * Ensure that you `approve` stablecoin before you call this function
    */
-  function deposit(
-    bytes32 coverKey,
-    uint256 amount,
-    address fromVault
-  ) external override nonReentrant returns (uint256 cDaiMinted) {
+  function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 cDaiMinted) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+
+    IVault vault = s.getVault(coverKey);
+
+    if (amount == 0) {
+      return 0;
+    }
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
 
-    require(stablecoin.balanceOf(fromVault) >= amount, "Balance insufficient");
+    require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
     _drain(cDai);
     _drain(stablecoin);
 
     // Transfer DAI to this contract; then approve and send it to delegator to mint cDAI
-    stablecoin.ensureTransferFrom(fromVault, address(this), amount);
-    stablecoin.approve(address(delegator), amount);
+    vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
+    stablecoin.ensureApproval(address(delegator), amount);
+
     uint256 result = delegator.mint(amount);
 
     require(result == 0, "Compound delegator mint failed");
@@ -97,20 +103,27 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     // Check how many cDAI we received
     cDaiMinted = _getCertificateBalance();
 
+    require(cDaiMinted > 0, "Minting cDai failed");
+
     // Immediately send cDai to the original vault stablecoin came from
-    cDai.ensureTransferFrom(address(this), fromVault, amount);
+    cDai.ensureApproval(address(vault), cDaiMinted);
+    vault.receiveFromStrategy(cDai, coverKey, getName(), cDaiMinted);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
-    emit Deposited(coverKey, fromVault, amount);
+
+    // console.log("Compound deposit: [%s] --> %s", uint256(coverKey), amount);
+
+    emit Deposited(coverKey, address(vault), amount);
   }
 
   /**
    * @dev Redeems cDai from Compound to receive stablecoin
    * Ensure that you `approve` cDai before you call this function
    */
-  function withdraw(bytes32 coverKey, address sendTo) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+  function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+    IVault vault = s.getVault(coverKey);
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
@@ -119,15 +132,15 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _drain(cDai);
     _drain(stablecoin);
 
-    uint256 cDaiBalance = cDai.balanceOf(sendTo);
+    uint256 cDaiBalance = cDai.balanceOf(address(vault));
 
     if (cDaiBalance == 0) {
       return 0;
     }
 
     // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    cDai.ensureTransferFrom(sendTo, address(this), cDaiBalance);
-    cDai.approve(address(delegator), cDaiBalance);
+    vault.transferToStrategy(cDai, coverKey, getName(), cDaiBalance);
+    cDai.ensureApproval(address(delegator), cDaiBalance);
     uint256 result = delegator.redeem(cDaiBalance);
 
     require(result == 0, "Compound delegator redeem failed");
@@ -136,10 +149,14 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     // Immediately send DAI to the vault cDAI came from
-    stablecoin.ensureTransfer(sendTo, stablecoinWithdrawn);
+    stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
+    vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-    emit Withdrawn(coverKey, sendTo, stablecoinWithdrawn);
+
+    // console.log("Compound withdrawal: [%s] --> %s", uint256(coverKey), stablecoinWithdrawn);
+
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
   }
 
   function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {
@@ -151,10 +168,24 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   }
 
   function getWeight() external pure override returns (uint256) {
-    return 500;
+    return 10_000; // 100%
   }
 
   function getKey() external pure override returns (bytes32) {
     return _KEY;
+  }
+
+  /**
+   * @dev Version number of this contract
+   */
+  function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+
+  /**
+   * @dev Name of this contract
+   */
+  function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_STRATEGY_COMPOUND;
   }
 }

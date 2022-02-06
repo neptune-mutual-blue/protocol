@@ -79,11 +79,6 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
       }
     ],
     "name": "deposit",
@@ -157,6 +152,19 @@
   },
   {
     "inputs": [],
+    "name": "getName",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getWeight",
     "outputs": [
       {
@@ -169,16 +177,24 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "version",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "sendTo",
-        "type": "address"
       }
     ],
     "name": "withdraw",

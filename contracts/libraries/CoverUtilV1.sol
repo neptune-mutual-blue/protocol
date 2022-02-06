@@ -5,9 +5,11 @@ import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
 import "./AccessControlLibV1.sol";
+import "./BokkyPooBahsDateTimeLibrary.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./NTransferUtilV2.sol";
+import "../interfaces/ICxToken.sol";
 
 library CoverUtilV1 {
   using RegistryLibV1 for IStore;
@@ -118,32 +120,82 @@ library CoverUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
   }
 
-  function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 floor, uint256 ceiling) {
-    floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key);
-    ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key);
-
-    if (floor == 0) {
-      // Fallback to default values
-      floor = s.getUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR);
-      ceiling = s.getUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING);
-    }
+  function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKey(getCoverLiquidityKey(key));
   }
 
-  function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+  function getCoverLiquidityKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey));
+  }
+
+  function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account));
+  }
+
+  function getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account));
+  }
+
+  function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey));
+  }
+
+  function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
+  }
+
+  function getCoverTotalLentKey(bytes32 coverKey) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STABLECOIN_LENT_TOTAL, coverKey));
+  }
+
+  function getCommitmentKey(bytes32 coverKey, uint256 expiryDate) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, coverKey, expiryDate));
   }
 
   function getCoverLiquidityCommitted(IStore s, bytes32 key) public view returns (uint256) {
-    // @todo: liquidity commitment should expire as policies expire
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key);
+    (uint256 reporting, uint256 active) = getCoverLiquidityCommitmentInfo(s, key);
+    return reporting + active;
+  }
+
+  function getCoverLiquidityCommitmentInfo(IStore s, bytes32 key) public view returns (uint256 reporting, uint256 active) {
+    reporting = getCommitmentsUnderReporting(s, key);
+    active = getCurrentCommitments(s, key);
+  }
+
+  function getCommitmentsUnderReporting(IStore s, bytes32 key) public view returns (uint256) {
+    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, key);
+
+    // There isn't any incident for this cover
+    // and therefore no need to pay
+    if (incidentDateIfAny == 0) {
+      return 0;
+    }
+
+    uint256 expiryDate = _getMonthEndDate(incidentDateIfAny);
+    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+
+    if (address(cxToken) != address(0)) {
+      return cxToken.totalSupply();
+    }
+
+    return 0;
+  }
+
+  function getCurrentCommitments(IStore s, bytes32 key) public view returns (uint256 sum) {
+    uint256 maxMonthsToProtect = 3;
+
+    for (uint256 i = 0; i < maxMonthsToProtect; i++) {
+      uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
+      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+
+      if (address(cxToken) != address(0)) {
+        sum += cxToken.totalSupply();
+      }
+    }
   }
 
   function getStake(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-  }
-
-  function getClaimable(IStore s, bytes32 key) external view returns (uint256) {
-    return _getClaimable(s, key);
   }
 
   /**
@@ -172,8 +224,58 @@ library CoverUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
   }
 
-  function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
-    // @important @todo: deduct the expired cover amounts
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
+  /**
+   * @dev Gets the expiry date based on cover duration
+   * @param today Enter the current timestamp
+   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
+   */
+  function getExpiryDateInternal(uint256 today, uint256 coverDuration) external pure returns (uint256) {
+    // Get the day of the month
+    (, , uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(today);
+
+    // Cover duration of 1 month means current month
+    // unless today is the 25th calendar day or later
+    uint256 monthToAdd = coverDuration - 1;
+
+    if (day >= 25) {
+      // Add one month
+      monthToAdd += 1;
+    }
+
+    return _getNextMonthEndDate(today, monthToAdd);
+  }
+
+  // function _getPreviousMonthEndDate(uint256 date, uint256 monthsToSubtract) private pure returns (uint256) {
+  //   uint256 pastDate = BokkyPooBahsDateTimeLibrary.subMonths(date, monthsToSubtract);
+  //   return _getMonthEndDate(pastDate);
+  // }
+
+  function _getNextMonthEndDate(uint256 date, uint256 monthsToAdd) private pure returns (uint256) {
+    uint256 futureDate = BokkyPooBahsDateTimeLibrary.addMonths(date, monthsToAdd);
+    return _getMonthEndDate(futureDate);
+  }
+
+  function _getMonthEndDate(uint256 date) private pure returns (uint256) {
+    // Get the year and month from the date
+    (uint256 year, uint256 month, ) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
+
+    // Count the total number of days of that month and year
+    uint256 daysInMonth = BokkyPooBahsDateTimeLibrary._getDaysInMonth(year, month);
+
+    // Get the month end date
+    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
+  }
+
+  function getActiveIncidentDateInternal(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+  }
+
+  function getCxTokenByExpiryDateInternal(
+    IStore s,
+    bytes32 key,
+    uint256 expiryDate
+  ) public view returns (address cxToken) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    cxToken = s.getAddress(k);
   }
 }

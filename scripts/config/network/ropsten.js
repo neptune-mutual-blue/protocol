@@ -43,7 +43,8 @@ const config = {
       HT: '0xe2e3cAA55dEdb93f802B16314B4579c9a57d3B0e',
       OKB: '0x1DC3318aaAfE76BC825365DcF3518B83e2137894',
       AXS: '0xaBccBfdfd5Ff2855236C371D70Dc7951a3F3ba5B',
-      aToken: '0x86067C23557D97286027095b868DF6A765aaED5f'
+      aToken: '0x86067C23557D97286027095b868DF6A765aaED5f',
+      cDai: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
     },
     stablecoinPairs: {
       NPM_DAI: '0x773992D8d8932e3153Eab3499a1b662E2e57E283',
@@ -61,9 +62,9 @@ const config = {
       }
     },
     aave: {
-      description: 'Aave on Ropsten',
+      description: 'Aave V2 on Ropsten',
       addresses: {
-        lendingPool: '0x9E5C7835E4b13368fd628196C4f1c6cEc89673Fa'
+        lendingPool: null
       }
     },
     compound: {

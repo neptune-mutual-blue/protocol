@@ -41,7 +41,7 @@ const validate = async (name, code, selector) => {
   const warnings = []
 
   for (const validator of validators) {
-    const result = await validator(code, selector)
+    const result = await validator(code, selector, name)
 
     if (result) {
       warnings.push(result)
