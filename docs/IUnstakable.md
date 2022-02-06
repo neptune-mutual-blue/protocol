@@ -17,7 +17,7 @@ event GovernanceBurned(address indexed caller, address indexed burner, uint256  
 ## Functions
 
 - [unstake(bytes32 key, uint256 incidentDate)](#unstake)
-- [getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
@@ -43,7 +43,7 @@ function unstake(bytes32 key, uint256 incidentDate) external;
 ### getUnstakeInfoFor
 
 ```solidity
-function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) external view
+function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
 ```
 
@@ -51,7 +51,6 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | account | address |  | 
 | key | bytes32 |  | 
 | incidentDate | uint256 |  | 
@@ -61,7 +60,6 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 ```javascript
 function getUnstakeInfoFor(
-    IStore s,
     address account,
     bytes32 key,
     uint256 incidentDate
@@ -107,6 +105,7 @@ function getUnstakeInfoFor(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -174,7 +173,7 @@ function getUnstakeInfoFor(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

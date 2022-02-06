@@ -30,12 +30,14 @@ mapping(uint256 => bool) public supportedChains;
 - [_drain(IERC20 asset)](#_drain)
 - [getInfo(bytes32 coverKey)](#getinfo)
 - [_getCertificateBalance()](#_getcertificatebalance)
-- [deposit(bytes32 coverKey, uint256 amount, address fromVault)](#deposit)
-- [withdraw(bytes32 coverKey, address sendTo)](#withdraw)
+- [deposit(bytes32 coverKey, uint256 amount)](#deposit)
+- [withdraw(bytes32 coverKey)](#withdraw)
 - [_getDepositsKey(bytes32 coverKey)](#_getdepositskey)
 - [_getWithdrawalsKey(bytes32 coverKey)](#_getwithdrawalskey)
 - [getWeight()](#getweight)
 - [getKey()](#getkey)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -194,7 +196,7 @@ Lends stablecoin to the Aave protocol
  Ensure that you `approve` stablecoin before you call this function
 
 ```solidity
-function deposit(bytes32 coverKey, uint256 amount, address fromVault) external nonpayable nonReentrant 
+function deposit(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
 returns(aTokenReceived uint256)
 ```
 
@@ -204,42 +206,50 @@ returns(aTokenReceived uint256)
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | amount | uint256 |  | 
-| fromVault | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(
-    bytes32 coverKey,
-    uint256 amount,
-    address fromVault
-  ) external override nonReentrant returns (uint256 aTokenReceived) {
+function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+
+    IVault vault = s.getVault(coverKey);
+
+    if (amount == 0) {
+      return 0;
+    }
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
-    require(stablecoin.balanceOf(fromVault) >= amount, "Balance insufficient");
+    require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
     _drain(aToken);
     _drain(stablecoin);
 
     // Transfer DAI to this contract; then approve and deposit it to Aave Lending Pool to receive aToken certificates
-    stablecoin.ensureTransferFrom(fromVault, address(this), amount);
-    stablecoin.approve(address(lendingPool), amount);
+    // stablecoin.ensureTransferFrom(fromVault, address(this), amount);
+
+    vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
+    stablecoin.ensureApproval(address(lendingPool), amount);
     lendingPool.deposit(address(getDepositAsset()), amount, address(this), 0);
 
     // Check how many aTokens we received
     aTokenReceived = _getCertificateBalance();
+    require(aTokenReceived > 0, "Deposit to Aave failed");
 
     // Immediately send aTokens to the original vault stablecoin came from
-    aToken.ensureTransferFrom(address(this), fromVault, amount);
+    aToken.ensureApproval(address(vault), aTokenReceived);
+    vault.receiveFromStrategy(aToken, coverKey, getName(), aTokenReceived);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
-    emit Deposited(coverKey, fromVault, amount);
+
+    // console.log("Aave deposit: [%s] --> %s", uint256(coverKey), amount);
+
+    emit Deposited(coverKey, address(vault), amount);
   }
 ```
 </details>
@@ -250,7 +260,7 @@ Redeems aToken from Aave to receive stablecoin
  Ensure that you `approve` aToken before you call this function
 
 ```solidity
-function withdraw(bytes32 coverKey, address sendTo) external nonpayable nonReentrant 
+function withdraw(bytes32 coverKey) external nonpayable nonReentrant 
 returns(stablecoinWithdrawn uint256)
 ```
 
@@ -259,15 +269,15 @@ returns(stablecoinWithdrawn uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| sendTo | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdraw(bytes32 coverKey, address sendTo) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+    IVault vault = s.getVault(coverKey);
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
@@ -276,25 +286,30 @@ function withdraw(bytes32 coverKey, address sendTo) external virtual override no
     _drain(aToken);
     _drain(stablecoin);
 
-    uint256 aTokenAmount = aToken.balanceOf(sendTo);
+    uint256 aTokenAmount = aToken.balanceOf(address(vault));
 
     if (aTokenAmount == 0) {
       return 0;
     }
 
     // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back DAI + rewards
-    aToken.ensureTransferFrom(sendTo, address(this), aTokenAmount);
-    aToken.approve(address(lendingPool), aTokenAmount);
+    vault.transferToStrategy(aToken, coverKey, getName(), aTokenAmount);
+
+    aToken.ensureApproval(address(lendingPool), aTokenAmount);
     lendingPool.withdraw(address(stablecoin), aTokenAmount, address(this));
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     // Immediately send DAI to the vault aToken came from
-    stablecoin.ensureTransfer(sendTo, stablecoinWithdrawn);
+    stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
+    vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-    emit Withdrawn(coverKey, sendTo, stablecoinWithdrawn);
+
+    // console.log("Aave withdrawal: [%s] --> %s", uint256(coverKey), stablecoinWithdrawn);
+
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
   }
 ```
 </details>
@@ -362,7 +377,7 @@ returns(uint256)
 
 ```javascript
 function getWeight() external pure override returns (uint256) {
-    return 500;
+    return 10_000; // 100%
   }
 ```
 </details>
@@ -385,6 +400,54 @@ returns(bytes32)
 ```javascript
 function getKey() external pure override returns (bytes32) {
     return _KEY;
+  }
+```
+</details>
+
+### version
+
+Version number of this contract
+
+```solidity
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+Name of this contract
+
+```solidity
+function getName() public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_STRATEGY_AAVE;
   }
 ```
 </details>
@@ -417,6 +480,7 @@ function getKey() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -484,7 +548,7 @@ function getKey() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

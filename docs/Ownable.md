@@ -3,7 +3,7 @@
 View Source: [openzeppelin-solidity/contracts/access/Ownable.sol](../openzeppelin-solidity/contracts/access/Ownable.sol)
 
 **↗ Extends: [Context](Context.md)**
-**↘ Derived Contracts: [FakeToken](FakeToken.md), [StoreBase](StoreBase.md)**
+**↘ Derived Contracts: [StoreBase](StoreBase.md)**
 
 **Ownable**
 
@@ -209,6 +209,7 @@ function _transferOwnership(address newOwner) internal virtual {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -276,7 +277,7 @@ function _transferOwnership(address newOwner) internal virtual {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

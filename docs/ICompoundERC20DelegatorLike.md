@@ -2,6 +2,8 @@
 
 View Source: [contracts/interfaces/external/ICompoundERC20DelegatorLike.sol](../contracts/interfaces/external/ICompoundERC20DelegatorLike.sol)
 
+**↘ Derived Contracts: [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)**
+
 **ICompoundERC20DelegatorLike**
 
 ## Functions
@@ -91,6 +93,7 @@ function redeem(uint256 redeemTokens) external returns (uint256);
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -158,7 +161,7 @@ function redeem(uint256 redeemTokens) external returns (uint256);
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

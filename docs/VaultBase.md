@@ -27,8 +27,11 @@ address public lqt;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquiditymemberonly)
+- [addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquidityinternalonly)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
+- [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
+- [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
+- [getStablecoinBalanceOf()](#getstablecoinbalanceof)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidity)
 - [_addLiquidity(bytes32 coverKey, address account, uint256 amount, uint256 npmStake, bool initialLiquidity)](#_addliquidity)
@@ -70,12 +73,12 @@ constructor(
 ```
 </details>
 
-### addLiquidityMemberOnly
+### addLiquidityInternalOnly
 
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable nonReentrant 
+function addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -91,7 +94,7 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidityMemberOnly(
+function addLiquidityInternalOnly(
     bytes32 coverKey,
     address account,
     uint256 amount,
@@ -144,6 +147,101 @@ function transferGovernance(
 ```
 </details>
 
+### transferToStrategy
+
+```solidity
+function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 |  | 
+| strategyName | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferToStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.callerMustBeStrategyContract();
+    require(coverKey == key, "Forbidden");
+
+    s.transferToStrategyInternal(token, coverKey, strategyName, amount);
+    emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
+  }
+```
+</details>
+
+### receiveFromStrategy
+
+```solidity
+function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 |  | 
+| strategyName | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function receiveFromStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    s.callerMustBeStrategyContract();
+    require(coverKey == key, "Forbidden");
+
+    s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
+    emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+  }
+```
+</details>
+
+### getStablecoinBalanceOf
+
+Returns the stablecoin balance of this vault
+ This also includes amounts lent out in lending strategies
+
+```solidity
+function getStablecoinBalanceOf() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinBalanceOf() external view override returns (uint256) {
+    return s.getStablecoinBalanceOfInternal(key);
+  }
+```
+</details>
+
 ### addLiquidity
 
 Adds liquidity to the specified cover contract
@@ -169,6 +267,7 @@ function addLiquidity(
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
@@ -202,10 +301,11 @@ function removeLiquidity(
     uint256 podsToRedeem,
     uint256 npmStakeToRemove
   ) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = VaultLibV1.removeLiquidityInternal(s, coverKey, address(this), podsToRedeem, npmStakeToRemove);
+    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -241,7 +341,7 @@ function _addLiquidity(
     uint256 npmStake,
     bool initialLiquidity
   ) private {
-    uint256 podsToMint = VaultLibV1.addLiquidityInternal(s, coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
+    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
     super._mint(account, podsToMint);
 
     s.updateStateAndLiquidity(key);
@@ -298,7 +398,7 @@ returns(uint256)
 
 ```javascript
 function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
-    return VaultLibV1.calculatePodsInternal(address(this), lqt, forStablecoinUnits);
+    return s.calculatePodsInternal(key, address(this), forStablecoinUnits);
   }
 ```
 </details>
@@ -433,6 +533,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -500,7 +601,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

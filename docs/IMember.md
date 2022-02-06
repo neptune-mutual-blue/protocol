@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverProvision](ICoverProvision.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md), [PolicyManager](PolicyManager.md)**
+**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverProvision](ICoverProvision.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md)**
 
 **IMember**
 
@@ -83,6 +83,7 @@ function getName() external pure returns (bytes32);
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -150,7 +151,7 @@ function getName() external pure returns (bytes32);
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

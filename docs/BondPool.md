@@ -50,6 +50,10 @@ function createBond(uint256 lpTokens, uint256 minNpmDesired) external nonpayable
 
 ```javascript
 function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
+
+    s.mustNotBePaused();
+
     uint256[] memory values = s.createBondInternal(lpTokens, minNpmDesired);
     emit BondCreated(msg.sender, lpTokens, values[0], values[1]);
   }
@@ -72,6 +76,9 @@ function claimBond() external nonpayable nonReentrant
 
 ```javascript
 function claimBond() external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
+    s.mustNotBePaused();
+
     uint256[] memory values = s.claimBondInternal();
     emit BondClaimed(msg.sender, values[0]);
   }
@@ -106,6 +113,7 @@ function claimBond() external override nonReentrant {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -173,7 +181,7 @@ function claimBond() external override nonReentrant {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

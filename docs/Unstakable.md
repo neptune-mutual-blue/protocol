@@ -14,7 +14,7 @@ Enables tokenholders unstake their tokens after
 
 - [unstake(bytes32 key, uint256 incidentDate)](#unstake)
 - [unstakeWithClaim(bytes32 key, uint256 incidentDate)](#unstakewithclaim)
-- [getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
@@ -85,7 +85,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentra
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = getUnstakeInfoFor(s, msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
@@ -110,7 +110,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentra
 s Gets the unstake information for the supplied account
 
 ```solidity
-function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
 ```
 
@@ -118,7 +118,6 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore | Provide store instance | 
 | account | address | Enter account to get the unstake information of | 
 | key | bytes32 | Enter the cover key | 
 | incidentDate | uint256 | Enter the incident date | 
@@ -128,12 +127,11 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 ```javascript
 function getUnstakeInfoFor(
-    IStore s,
     address account,
     bytes32 key,
     uint256 incidentDate
   )
-    public
+    external
     view
     override
     returns (
@@ -145,7 +143,7 @@ function getUnstakeInfoFor(
       uint256 myReward
     )
   {
-    return s.getUnstakeInfoFor(account, key, incidentDate);
+    return s.getUnstakeInfoForInternal(account, key, incidentDate);
   }
 ```
 </details>
@@ -178,6 +176,7 @@ function getUnstakeInfoFor(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -245,7 +244,7 @@ function getUnstakeInfoFor(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

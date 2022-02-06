@@ -131,7 +131,7 @@ returns(floor uint256, ceiling uint256)
 
 ```javascript
 function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRates(key);
+    return s.getPolicyRatesInternal(key);
   }
 ```
 </details>
@@ -212,6 +212,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -279,7 +280,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

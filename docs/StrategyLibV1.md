@@ -15,8 +15,13 @@ uint256 public constant MAX_LENDING_RATIO;
 ## Functions
 
 - [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
+- [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
 - [disableStrategyInternal(IStore s, address toFind)](#disablestrategyinternal)
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
+- [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
+- [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
+- [getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey)](#getlendingperiodkey)
+- [getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey)](#getwithdrawalwindowkey)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
 - [getDisabledStrategiesInternal(IStore s)](#getdisabledstrategiesinternal)
 - [getActiveStrategiesInternal(IStore s)](#getactivestrategiesinternal)
@@ -45,6 +50,30 @@ function _deleteStrategy(IStore s, address toFind) private {
     require(pos > 1, "Invalid strategy");
 
     s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+  }
+```
+</details>
+
+### _getIsActiveStrategyKey
+
+```solidity
+function _getIsActiveStrategyKey(address strategyAddress) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategyAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 ```
 </details>
@@ -92,12 +121,135 @@ function addStrategiesInternal(IStore s, address[] strategies) external nonpayab
 
 ```javascript
 function addStrategiesInternal(IStore s, address[] memory strategies) external {
-    // only liquidity manager
-
     for (uint256 i = 0; i < strategies.length; i++) {
       address strategy = strategies[i];
       _addStrategy(s, strategy);
     }
+  }
+```
+</details>
+
+### getLendingPeriodsInternal
+
+```solidity
+function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view
+returns(lendingPeriod uint256, withdrawalWindow uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey, true));
+    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey, true));
+
+    if (lendingPeriod == 0) {
+      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0, true));
+      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0, true));
+    }
+  }
+```
+</details>
+
+### setLendingPeriodsInternal
+
+```solidity
+function setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| lendingPeriod | uint256 |  | 
+| withdrawalWindow | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setLendingPeriodsInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 lendingPeriod,
+    uint256 withdrawalWindow
+  ) external {
+    s.setUintByKey(getLendingPeriodKey(coverKey, true), lendingPeriod);
+    s.setUintByKey(getWithdrawalWindowKey(coverKey, true), withdrawalWindow);
+  }
+```
+</details>
+
+### getLendingPeriodKey
+
+```solidity
+function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| ignoreMissingKey | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
+    if (ignoreMissingKey == false) {
+      require(coverKey > 0, "Invalid Cover Key");
+    }
+
+    if (coverKey > 0) {
+      return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
+    }
+
+    return ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD;
+  }
+```
+</details>
+
+### getWithdrawalWindowKey
+
+```solidity
+function getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| ignoreMissingKey | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
+    if (ignoreMissingKey == false) {
+      require(coverKey > 0, "Invalid Cover Key");
+    }
+
+    if (coverKey > 0) {
+      return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
+    }
+
+    return ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
   }
 ```
 </details>
@@ -121,8 +273,9 @@ function _addStrategy(IStore s, address deployedOn) private nonpayable
 ```javascript
 function _addStrategy(IStore s, address deployedOn) private {
     ILendingStrategy strategy = ILendingStrategy(deployedOn);
-    require(strategy.getWeight() <= MAX_LENDING_RATIO, "Weight too much");
+    require(strategy.getWeight() <= ProtoUtilV1.MULTIPLIER, "Weight too much");
 
+    s.setBoolByKey(_getIsActiveStrategyKey(deployedOn), true);
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, deployedOn);
   }
 ```
@@ -202,6 +355,7 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -269,7 +423,7 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

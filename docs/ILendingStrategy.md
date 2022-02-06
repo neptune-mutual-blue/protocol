@@ -2,6 +2,7 @@
 
 View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces/ILendingStrategy.sol)
 
+**↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [CompoundStrategy](CompoundStrategy.md)**
 
 **ILendingStrategy**
@@ -21,8 +22,8 @@ event Drained(IERC20 indexed asset, uint256  amount);
 - [getDepositAsset()](#getdepositasset)
 - [getDepositCertificate()](#getdepositcertificate)
 - [getInfo(bytes32 coverKey)](#getinfo)
-- [deposit(bytes32 coverKey, uint256 amount, address onBehalfOf)](#deposit)
-- [withdraw(bytes32 coverKey, address sendTo)](#withdraw)
+- [deposit(bytes32 coverKey, uint256 amount)](#deposit)
+- [withdraw(bytes32 coverKey)](#withdraw)
 
 ### getKey
 
@@ -130,7 +131,7 @@ function getInfo(bytes32 coverKey) external view returns (uint256[] memory value
 ### deposit
 
 ```solidity
-function deposit(bytes32 coverKey, uint256 amount, address onBehalfOf) external nonpayable
+function deposit(bytes32 coverKey, uint256 amount) external nonpayable
 returns(certificateReceived uint256)
 ```
 
@@ -140,24 +141,19 @@ returns(certificateReceived uint256)
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | amount | uint256 |  | 
-| onBehalfOf | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(
-    bytes32 coverKey,
-    uint256 amount,
-    address onBehalfOf
-  ) external returns (uint256 certificateReceived);
+function deposit(bytes32 coverKey, uint256 amount) external returns (uint256 certificateReceived);
 ```
 </details>
 
 ### withdraw
 
 ```solidity
-function withdraw(bytes32 coverKey, address sendTo) external nonpayable
+function withdraw(bytes32 coverKey) external nonpayable
 returns(stablecoinWithdrawn uint256)
 ```
 
@@ -166,13 +162,12 @@ returns(stablecoinWithdrawn uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| sendTo | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdraw(bytes32 coverKey, address sendTo) external returns (uint256 stablecoinWithdrawn);
+function withdraw(bytes32 coverKey) external returns (uint256 stablecoinWithdrawn);
 ```
 </details>
 
@@ -204,6 +199,7 @@ function withdraw(bytes32 coverKey, address sendTo) external returns (uint256 st
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -271,7 +267,7 @@ function withdraw(bytes32 coverKey, address sendTo) external returns (uint256 st
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

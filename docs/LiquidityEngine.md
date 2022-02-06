@@ -11,6 +11,8 @@ View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/li
 - [constructor(IStore s)](#)
 - [addStrategies(IStore s, address[] strategies)](#addstrategies)
 - [disableStrategy(IStore s, address strategy)](#disablestrategy)
+- [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
+- [setMeta(uint256 lendingPeriod, uint256 withdrawalWindow)](#setmeta)
 - [getDisabledStrategies(IStore s)](#getdisabledstrategies)
 - [getActiveStrategies(IStore s)](#getactivestrategies)
 
@@ -82,6 +84,63 @@ function disableStrategy(IStore s, address strategy) external nonReentrant {
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.disableStrategyInternal(strategy);
+  }
+```
+</details>
+
+### setLendingPeriods
+
+```solidity
+function setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| lendingPeriod | uint256 |  | 
+| withdrawalWindow | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setLendingPeriods(
+    bytes32 coverKey,
+    uint256 lendingPeriod,
+    uint256 withdrawalWindow
+  ) external nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+  }
+```
+</details>
+
+### setMeta
+
+```solidity
+function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| lendingPeriod | uint256 |  | 
+| withdrawalWindow | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
@@ -160,6 +219,7 @@ function getActiveStrategies(IStore s) external view returns (address[] memory s
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -227,7 +287,7 @@ function getActiveStrategies(IStore s) external view returns (address[] memory s
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

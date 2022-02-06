@@ -60,7 +60,9 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 
 ```javascript
 function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
+    // @suppress-initialization Can only be initialized once by a cover manager
     // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -260,6 +262,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -327,7 +330,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

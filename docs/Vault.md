@@ -13,8 +13,8 @@ Liquidity providers can earn fees by adding stablecoin liquidity
  - Cover fees paid in stablecoin get added to the liquidity pool.
  - The protocol supplies a small portion of idle assets to lending protocols (v2).
  - Flash loan interest also gets added back to the pool.
- - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through NPM provision.
- - To protect liquidity providers from cover incidents, they can redeem upto 25% of the cover payouts through `reassurance token` allocation.
+ - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through NPM provision.
+ - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through `reassurance token` allocation.
 
 ## Functions
 
@@ -74,6 +74,7 @@ constructor(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -141,7 +142,7 @@ constructor(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

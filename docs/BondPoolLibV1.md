@@ -441,9 +441,6 @@ function setupBondPoolInternal(
     address[] memory addresses,
     uint256[] memory values
   ) external {
-    s.mustNotBePaused();
-    s.mustBeAdmin();
-
     if (addresses[0] != address(0)) {
       s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, addresses[0]);
     }
@@ -500,6 +497,7 @@ function setupBondPoolInternal(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -567,7 +565,7 @@ function setupBondPoolInternal(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

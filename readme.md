@@ -156,8 +156,9 @@ function stopCover(bytes32 key, string reason) external nonpayable nonReentrant
 
 ```javascript
 function stopCover(bytes32 key, string memory reason) external override nonReentrant {
-    s.mustBeGovernanceAdmin();
+    s.mustNotBePaused();
     s.mustBeValidCover(key);
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     s.stopCoverInternal(key);
     emit CoverStopped(key, msg.sender, reason);
@@ -249,6 +250,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [ERC165](docs/ERC165.md)
 * [ERC20](docs/ERC20.md)
 * [FakeAaveLendingPool](docs/FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](docs/FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](docs/FakeRecoverable.md)
 * [FakeStore](docs/FakeStore.md)
 * [FakeToken](docs/FakeToken.md)
@@ -316,7 +318,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [Pausable](docs/Pausable.md)
 * [Policy](docs/Policy.md)
 * [PolicyAdmin](docs/PolicyAdmin.md)
-* [PolicyManager](docs/PolicyManager.md)
+* [PolicyHelperV1](docs/PolicyHelperV1.md)
 * [PriceDiscovery](docs/PriceDiscovery.md)
 * [PriceLibV1](docs/PriceLibV1.md)
 * [Processor](docs/Processor.md)

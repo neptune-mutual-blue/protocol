@@ -50,7 +50,7 @@ constructor(IStore store) ProtoBase(store) {}
 Initializes the protocol
 
 ```solidity
-function initialize(address[] addresses, uint256[] values) external nonpayable whenNotPaused 
+function initialize(address[] addresses, uint256[] values) external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -64,8 +64,8 @@ function initialize(address[] addresses, uint256[] values) external nonpayable w
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address[] memory addresses, uint256[] memory values) external override whenNotPaused {
-    // @suppress-reentrancy Can only be initialized once and only by a protocol member
+function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
+    // @suppress-initialization Can only be initialized once by the deployer
     // @suppress-acl Can only be called once by the deployer
     s.mustBeProtocolMember(msg.sender);
 
@@ -299,6 +299,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -366,7 +367,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

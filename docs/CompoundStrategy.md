@@ -30,12 +30,14 @@ mapping(uint256 => bool) public supportedChains;
 - [getInfo(bytes32 coverKey)](#getinfo)
 - [_getCertificateBalance()](#_getcertificatebalance)
 - [_drain(IERC20 asset)](#_drain)
-- [deposit(bytes32 coverKey, uint256 amount, address fromVault)](#deposit)
-- [withdraw(bytes32 coverKey, address sendTo)](#withdraw)
+- [deposit(bytes32 coverKey, uint256 amount)](#deposit)
+- [withdraw(bytes32 coverKey)](#withdraw)
 - [_getDepositsKey(bytes32 coverKey)](#_getdepositskey)
 - [_getWithdrawalsKey(bytes32 coverKey)](#_getwithdrawalskey)
 - [getWeight()](#getweight)
 - [getKey()](#getkey)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -194,7 +196,7 @@ Deposits the tokens to Compound
  Ensure that you `approve` stablecoin before you call this function
 
 ```solidity
-function deposit(bytes32 coverKey, uint256 amount, address fromVault) external nonpayable nonReentrant 
+function deposit(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
 returns(cDaiMinted uint256)
 ```
 
@@ -204,32 +206,34 @@ returns(cDaiMinted uint256)
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | amount | uint256 |  | 
-| fromVault | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(
-    bytes32 coverKey,
-    uint256 amount,
-    address fromVault
-  ) external override nonReentrant returns (uint256 cDaiMinted) {
+function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 cDaiMinted) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+
+    IVault vault = s.getVault(coverKey);
+
+    if (amount == 0) {
+      return 0;
+    }
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
 
-    require(stablecoin.balanceOf(fromVault) >= amount, "Balance insufficient");
+    require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
     _drain(cDai);
     _drain(stablecoin);
 
     // Transfer DAI to this contract; then approve and send it to delegator to mint cDAI
-    stablecoin.ensureTransferFrom(fromVault, address(this), amount);
-    stablecoin.approve(address(delegator), amount);
+    vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
+    stablecoin.ensureApproval(address(delegator), amount);
+
     uint256 result = delegator.mint(amount);
 
     require(result == 0, "Compound delegator mint failed");
@@ -237,11 +241,17 @@ function deposit(
     // Check how many cDAI we received
     cDaiMinted = _getCertificateBalance();
 
+    require(cDaiMinted > 0, "Minting cDai failed");
+
     // Immediately send cDai to the original vault stablecoin came from
-    cDai.ensureTransferFrom(address(this), fromVault, amount);
+    cDai.ensureApproval(address(vault), cDaiMinted);
+    vault.receiveFromStrategy(cDai, coverKey, getName(), cDaiMinted);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
-    emit Deposited(coverKey, fromVault, amount);
+
+    // console.log("Compound deposit: [%s] --> %s", uint256(coverKey), amount);
+
+    emit Deposited(coverKey, address(vault), amount);
   }
 ```
 </details>
@@ -252,7 +262,7 @@ Redeems cDai from Compound to receive stablecoin
  Ensure that you `approve` cDai before you call this function
 
 ```solidity
-function withdraw(bytes32 coverKey, address sendTo) external nonpayable nonReentrant 
+function withdraw(bytes32 coverKey) external nonpayable nonReentrant 
 returns(stablecoinWithdrawn uint256)
 ```
 
@@ -261,15 +271,15 @@ returns(stablecoinWithdrawn uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| sendTo | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdraw(bytes32 coverKey, address sendTo) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
     s.callerMustBeProtocolMember();
+    IVault vault = s.getVault(coverKey);
 
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
@@ -278,15 +288,15 @@ function withdraw(bytes32 coverKey, address sendTo) external virtual override no
     _drain(cDai);
     _drain(stablecoin);
 
-    uint256 cDaiBalance = cDai.balanceOf(sendTo);
+    uint256 cDaiBalance = cDai.balanceOf(address(vault));
 
     if (cDaiBalance == 0) {
       return 0;
     }
 
     // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    cDai.ensureTransferFrom(sendTo, address(this), cDaiBalance);
-    cDai.approve(address(delegator), cDaiBalance);
+    vault.transferToStrategy(cDai, coverKey, getName(), cDaiBalance);
+    cDai.ensureApproval(address(delegator), cDaiBalance);
     uint256 result = delegator.redeem(cDaiBalance);
 
     require(result == 0, "Compound delegator redeem failed");
@@ -295,10 +305,14 @@ function withdraw(bytes32 coverKey, address sendTo) external virtual override no
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     // Immediately send DAI to the vault cDAI came from
-    stablecoin.ensureTransfer(sendTo, stablecoinWithdrawn);
+    stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
+    vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-    emit Withdrawn(coverKey, sendTo, stablecoinWithdrawn);
+
+    // console.log("Compound withdrawal: [%s] --> %s", uint256(coverKey), stablecoinWithdrawn);
+
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
   }
 ```
 </details>
@@ -366,7 +380,7 @@ returns(uint256)
 
 ```javascript
 function getWeight() external pure override returns (uint256) {
-    return 500;
+    return 10_000; // 100%
   }
 ```
 </details>
@@ -389,6 +403,54 @@ returns(bytes32)
 ```javascript
 function getKey() external pure override returns (bytes32) {
     return _KEY;
+  }
+```
+</details>
+
+### version
+
+Version number of this contract
+
+```solidity
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+Name of this contract
+
+```solidity
+function getName() public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() public pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_STRATEGY_COMPOUND;
   }
 ```
 </details>
@@ -421,6 +483,7 @@ function getKey() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -488,7 +551,7 @@ function getKey() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

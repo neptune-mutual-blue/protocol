@@ -81,6 +81,8 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 
 ```javascript
 function recoverEther(address sendTo) external onlyOwner {
+    // @suppress-pausable Can only be called by the owner
+    // @suppress-reentrancy Can only be called by the owner
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -107,6 +109,8 @@ function recoverToken(address token, address sendTo) external nonpayable onlyOwn
 
 ```javascript
 function recoverToken(address token, address sendTo) external onlyOwner {
+    // @suppress-pausable Can only be called by the owner
+    // @suppress-reentrancy Can only be called by the owner
     // @suppress-address-trust-issue Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
@@ -132,6 +136,7 @@ function pause() external nonpayable onlyOwner
 
 ```javascript
 function pause() external onlyOwner {
+    // @suppress-reentrancy Can only be called by the owner
     super._pause();
   }
 ```
@@ -153,6 +158,7 @@ function unpause() external nonpayable onlyOwner
 
 ```javascript
 function unpause() external onlyOwner {
+    // @suppress-reentrancy Can only be called by the owner
     super._unpause();
   }
 ```
@@ -251,6 +257,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -318,7 +325,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

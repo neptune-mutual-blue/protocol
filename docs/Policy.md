@@ -14,15 +14,11 @@ The policy contract enables you to a purchase cover
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)
 - [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
-- [_getCxTokenOrDeploy(bytes32 key, uint256 coverDuration)](#_getcxtokenordeploy)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
-- [getCommitment(bytes32 )](#getcommitment)
-- [getCoverable(bytes32 )](#getcoverable)
-- [_getCoverFeeRate(uint256 floor, uint256 ceiling, uint256 coverRatio)](#_getcoverfeerate)
-- [getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfee)
-- [_getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#_getcoverfee)
+- [getCommitment(bytes32 key)](#getcommitment)
+- [getCoverable(bytes32 key)](#getcoverable)
+- [getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
 - [getCoverPoolSummary(bytes32 key)](#getcoverpoolsummary)
-- [getHarmonicMean(uint256 x, uint256 y, uint256 z)](#getharmonicmean)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -76,26 +72,15 @@ function purchaseCover(
     uint256 coverDuration,
     uint256 amountToCover
   ) external override nonReentrant returns (address) {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCover(key);
 
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (uint256 fee, , , , , , ) = _getCoverFee(key, coverDuration, amountToCover);
-    ICxToken cxToken = _getCxTokenOrDeploy(key, coverDuration);
-
-    address stablecoin = s.getStablecoin();
-    require(stablecoin != address(0), "Cover liquidity uninitialized");
-
-    // Transfer the fee to cxToken contract
-    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
-
-    cxToken.mint(key, msg.sender, amountToCover);
+    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
 
     emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
-
-    s.updateStateAndLiquidity(key);
-
     return address(cxToken);
   }
 ```
@@ -104,7 +89,7 @@ function purchaseCover(
 ### getCxToken
 
 ```solidity
-function getCxToken(bytes32 key, uint256 coverDuration) public view
+function getCxToken(bytes32 key, uint256 coverDuration) external view
 returns(cxToken address, expiryDate uint256)
 ```
 
@@ -119,11 +104,8 @@ returns(cxToken address, expiryDate uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCxToken(bytes32 key, uint256 coverDuration) public view override returns (address cxToken, uint256 expiryDate) {
-    expiryDate = getExpiryDate(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate).toKeccak256();
-
-    cxToken = s.getAddress(k);
+function getCxToken(bytes32 key, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
+    return s.getCxTokenInternal(key, coverDuration);
   }
 ```
 </details>
@@ -147,45 +129,7 @@ returns(cxToken address)
 
 ```javascript
 function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cxToken) {
-    bytes32 k = abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate).toKeccak256();
-
-    cxToken = s.getAddress(k);
-  }
-```
-</details>
-
-### _getCxTokenOrDeploy
-
-Gets the instance of cxToken or deploys a new one based on the cover expiry timestamp
-
-```solidity
-function _getCxTokenOrDeploy(bytes32 key, uint256 coverDuration) private nonpayable
-returns(contract ICxToken)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-| coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCxTokenOrDeploy(bytes32 key, uint256 coverDuration) private returns (ICxToken) {
-    (address cxToken, uint256 expiryDate) = getCxToken(key, coverDuration);
-
-    if (cxToken != address(0)) {
-      return ICxToken(cxToken);
-    }
-
-    ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(s, key, expiryDate);
-    s.addMemberInternal(cxToken);
-
-    return ICxToken(cxToken);
+    return s.getCxTokenByExpiryDateInternal(key, expiryDate);
   }
 ```
 </details>
@@ -195,7 +139,7 @@ function _getCxTokenOrDeploy(bytes32 key, uint256 coverDuration) private returns
 Gets the expiry date based on cover duration
 
 ```solidity
-function getExpiryDate(uint256 today, uint256 coverDuration) public pure
+function getExpiryDate(uint256 today, uint256 coverDuration) external pure
 returns(uint256)
 ```
 
@@ -210,30 +154,8 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getExpiryDate(uint256 today, uint256 coverDuration) public pure override returns (uint256) {
-    // Get the day of the month
-    (, , uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(today);
-
-    // Cover duration of 1 month means current month
-    // unless today is the 25th calendar day or later
-    uint256 monthToAdd = coverDuration - 1;
-
-    if (day >= 25) {
-      // Add one month if today is the 25th calendar day or more
-      monthToAdd += 1;
-    }
-
-    // Add the number of months to reach to any future date in that month
-    uint256 futureDate = BokkyPooBahsDateTimeLibrary.addMonths(today, monthToAdd);
-
-    // Only get the year and month from the future date
-    (uint256 year, uint256 month, ) = BokkyPooBahsDateTimeLibrary.timestampToDate(futureDate);
-
-    // Obtain the number of days for the given month and year
-    uint256 daysInMonth = BokkyPooBahsDateTimeLibrary._getDaysInMonth(year, month);
-
-    // Get the month end date
-    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
+function getExpiryDate(uint256 today, uint256 coverDuration) external pure override returns (uint256) {
+    return CoverUtilV1.getExpiryDateInternal(today, coverDuration);
   }
 ```
 </details>
@@ -241,7 +163,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) public pure overrid
 ### getCommitment
 
 ```solidity
-function getCommitment(bytes32 ) external pure
+function getCommitment(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -249,16 +171,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCommitment(
-    bytes32 /*key*/
-  ) external pure override returns (uint256) {
-    revert("Not implemented");
+function getCommitment(bytes32 key) external view override returns (uint256) {
+    return s.getCommitmentInternal(key);
   }
 ```
 </details>
@@ -266,7 +186,7 @@ function getCommitment(
 ### getCoverable
 
 ```solidity
-function getCoverable(bytes32 ) external pure
+function getCoverable(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -274,68 +194,24 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverable(
-    bytes32 /*key*/
-  ) external pure override returns (uint256) {
-    revert("Not implemented");
+function getCoverable(bytes32 key) external view override returns (uint256) {
+    return s.getCoverableInternal(key);
   }
 ```
 </details>
 
-### _getCoverFeeRate
-
-Gets the harmonic mean rate of the given ratios. Stops/truncates at min/max values.
-
-```solidity
-function _getCoverFeeRate(uint256 floor, uint256 ceiling, uint256 coverRatio) private pure
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate | 
-| ceiling | uint256 | The highest cover fee rate | 
-| coverRatio | uint256 | Enter the ratio of the cover vs liquidity | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCoverFeeRate(
-    uint256 floor,
-    uint256 ceiling,
-    uint256 coverRatio
-  ) private pure returns (uint256) {
-    // COVER FEE RATE = HARMEAN(FLOOR, COVER RATIO, CEILING)
-    uint256 rate = getHarmonicMean(floor, coverRatio, ceiling);
-
-    if (rate < floor) {
-      return floor;
-    }
-
-    if (rate > ceiling) {
-      return ceiling;
-    }
-
-    return rate;
-  }
-```
-</details>
-
-### getCoverFee
+### getCoverFeeInfo
 
 Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
-function getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
+function getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
 ```
 
@@ -351,7 +227,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverFee(
+function getCoverFeeInfo(
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover
@@ -369,72 +245,7 @@ function getCoverFee(
       uint256 rate
     )
   {
-    return _getCoverFee(key, coverDuration, amountToCover);
-  }
-```
-</details>
-
-### _getCoverFee
-
-Gets the cover fee info for the given cover key, duration, and amount
-
-```solidity
-function _getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover) private view
-returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-| coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCoverFee(
-    bytes32 key,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
-    private
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    require(coverDuration <= 3, "Invalid duration");
-
-    (floor, ceiling) = s.getPolicyRates(key);
-
-    require(floor > 0 && ceiling > floor, "Policy rate config error");
-
-    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
-
-    // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
-    require(values[0] - values[1] > amountToCover, "Insufficient fund");
-
-    // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (ProtoUtilV1.MULTIPLIER * values[1]) / values[0];
-
-    // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (ProtoUtilV1.MULTIPLIER * 1 ether));
-
-    // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
-
-    rate = _getCoverFeeRate(floor, ceiling, coverRatio);
-
-    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
+    return s.getCoverFeeInfoInternal(key, coverDuration, amountToCover);
   }
 ```
 </details>
@@ -460,38 +271,6 @@ returns(_values uint256[])
 ```javascript
 function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummaryInternal(key);
-  }
-```
-</details>
-
-### getHarmonicMean
-
-Returns the harmonic mean of the supplied values.
-
-```solidity
-function getHarmonicMean(uint256 x, uint256 y, uint256 z) public pure
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| x | uint256 |  | 
-| y | uint256 |  | 
-| z | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getHarmonicMean(
-    uint256 x,
-    uint256 y,
-    uint256 z
-  ) public pure returns (uint256) {
-    require(x > 0 && y > 0 && z > 0, "Invalid arg");
-    return 3e36 / ((1e36 / (x)) + (1e36 / (y)) + (1e36 / (z)));
   }
 ```
 </details>
@@ -572,6 +351,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -639,7 +419,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

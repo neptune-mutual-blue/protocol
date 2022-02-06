@@ -11,6 +11,8 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 
 ```js
 event GovernanceTransfer(address indexed to, uint256  amount);
+event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
+event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event MinLiquidityPeriodSet(uint256  previous, uint256  current);
@@ -21,14 +23,17 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 
 - [key()](#key)
 - [lqt()](#lqt)
-- [addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquiditymemberonly)
+- [addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquidityinternalonly)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
+- [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
+- [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
 - [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
 - [getInfo(address forAccount)](#getinfo)
+- [getStablecoinBalanceOf()](#getstablecoinbalanceof)
 
 ### key
 
@@ -70,12 +75,12 @@ function lqt() external view returns (address);
 ```
 </details>
 
-### addLiquidityMemberOnly
+### addLiquidityInternalOnly
 
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable
+function addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable
 ```
 
 **Arguments**
@@ -91,7 +96,7 @@ function addLiquidityMemberOnly(bytes32 coverKey, address account, uint256 amoun
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidityMemberOnly(
+function addLiquidityInternalOnly(
     bytes32 coverKey,
     address account,
     uint256 amount,
@@ -184,6 +189,66 @@ function transferGovernance(
 ```
 </details>
 
+### transferToStrategy
+
+Transfers liquidity to strategy contract.
+
+```solidity
+function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| strategyName | bytes32 | Enter the strategy's name | 
+| amount | uint256 | Enter the amount of liquidity token to transfer. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferToStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external;
+```
+</details>
+
+### receiveFromStrategy
+
+Receives from strategy contract.
+
+```solidity
+function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| strategyName | bytes32 | Enter the strategy's name | 
+| amount | uint256 | Enter the amount of liquidity token to transfer. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function receiveFromStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external;
+```
+</details>
+
 ### setMinLiquidityPeriod
 
 ```solidity
@@ -267,6 +332,29 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 ```
 </details>
 
+### getStablecoinBalanceOf
+
+Returns the stablecoin balance of this vault
+ This also includes amounts lent out in lending strategies
+
+```solidity
+function getStablecoinBalanceOf() external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinBalanceOf() external view returns (uint256);
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -295,6 +383,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -362,7 +451,7 @@ function getInfo(address forAccount) external view returns (uint256[] memory res
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

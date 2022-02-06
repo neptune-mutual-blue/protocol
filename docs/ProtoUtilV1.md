@@ -31,6 +31,7 @@ bytes32 public constant CNS_BOND_POOL;
 bytes32 public constant CNS_STAKING_POOL;
 bytes32 public constant CNS_LIQUIDITY_ENGINE;
 bytes32 public constant CNS_STRATEGY_AAVE;
+bytes32 public constant CNS_STRATEGY_COMPOUND;
 bytes32 public constant CNS_GOVERNANCE;
 bytes32 public constant CNS_GOVERNANCE_RESOLUTION;
 bytes32 public constant CNS_CLAIM_PROCESSOR;
@@ -43,11 +44,13 @@ bytes32 public constant NS_COVER_CREATION_MIN_STAKE;
 bytes32 public constant NS_COVER_REASSURANCE;
 bytes32 public constant NS_COVER_REASSURANCE_TOKEN;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
-bytes32 public constant NS_COVER_CLAIMABLE;
 bytes32 public constant NS_COVER_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
+bytes32 public constant NS_VAULT_STRATEGY_OUT;
 bytes32 public constant NS_COVER_LIQUIDITY;
+bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD;
+bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_ADDED;
@@ -94,6 +97,9 @@ bytes32 public constant NS_LP_TOTAL_SUPPLY;
 bytes32 public constant NS_TOKEN_PRICE_LAST_UPDATE;
 bytes32 public constant NS_LENDING_STRATEGY_ACTIVE;
 bytes32 public constant NS_LENDING_STRATEGY_DISABLED;
+bytes32 public constant NS_LENDING_STRATEGY_DEPOSITS;
+bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_START;
+bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_END;
 bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
@@ -113,6 +119,8 @@ bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
 bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
+bytes32 public constant CNAME_STRATEGY_AAVE;
+bytes32 public constant CNAME_STRATEGY_COMPOUND;
 
 ```
 
@@ -133,7 +141,6 @@ bytes32 public constant CNAME_LIQUIDITY_VAULT;
 - [getReassuranceVault(IStore s)](#getreassurancevault)
 - [getStablecoin(IStore s)](#getstablecoin)
 - [getBurnAddress(IStore s)](#getburnaddress)
-- [toKeccak256(bytes value)](#tokeccak256)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
 - [_getContract(IStore s, bytes32 name)](#_getcontract)
 - [addContractInternal(IStore s, bytes32 namespace, address contractAddress)](#addcontractinternal)
@@ -506,29 +513,6 @@ function getBurnAddress(IStore s) external view returns (address) {
 ```
 </details>
 
-### toKeccak256
-
-```solidity
-function toKeccak256(bytes value) external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| value | bytes |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function toKeccak256(bytes memory value) external pure returns (bytes32) {
-    return keccak256(value);
-  }
-```
-</details>
-
 ### _isProtocolMember
 
 ```solidity
@@ -822,6 +806,7 @@ function _removeMember(IStore s, address member) private {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -889,7 +874,7 @@ function _removeMember(IStore s, address member) private {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

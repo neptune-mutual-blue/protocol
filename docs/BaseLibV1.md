@@ -6,8 +6,8 @@ View Source: [contracts/libraries/BaseLibV1.sol](../contracts/libraries/BaseLibV
 
 ## Functions
 
-- [recoverEtherInternal(IStore s, address sendTo)](#recoveretherinternal)
-- [recoverTokenInternal(IStore s, address token, address sendTo)](#recovertokeninternal)
+- [recoverEtherInternal(address sendTo)](#recoveretherinternal)
+- [recoverTokenInternal(address token, address sendTo)](#recovertokeninternal)
 
 ### recoverEtherInternal
 
@@ -16,24 +16,20 @@ Recover all Ether held by the contract.
  not have any significance in the SDK or the UI.
 
 ```solidity
-function recoverEtherInternal(IStore s, address sendTo) external nonpayable
+function recoverEtherInternal(address sendTo) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | sendTo | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverEtherInternal(IStore s, address sendTo) external {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeRecoveryAgent(s);
-
+function recoverEtherInternal(address sendTo) external {
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -47,14 +43,13 @@ Recover all IERC-20 compatible tokens sent to this address.
  not have any significance in the SDK or the UI.
 
 ```solidity
-function recoverTokenInternal(IStore s, address token, address sendTo) external nonpayable
+function recoverTokenInternal(address token, address sendTo) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | token | address | IERC-20 The address of the token contract | 
 | sendTo | address |  | 
 
@@ -62,15 +57,8 @@ function recoverTokenInternal(IStore s, address token, address sendTo) external 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function recoverTokenInternal(
-    IStore s,
-    address token,
-    address sendTo
-  ) external {
+function recoverTokenInternal(address token, address sendTo) external {
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeRecoveryAgent(s);
-
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
@@ -107,6 +95,7 @@ function recoverTokenInternal(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -174,7 +163,7 @@ function recoverTokenInternal(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

@@ -29,14 +29,26 @@ enum CoverStatus {
 - [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
 - [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
-- [getPolicyRates(IStore s, bytes32 key)](#getpolicyrates)
 - [getCoverPoolLiquidity(IStore s, bytes32 key)](#getcoverpoolliquidity)
+- [getCoverLiquidityKey(bytes32 coverKey)](#getcoverliquiditykey)
+- [getCoverLiquidityAddedKey(bytes32 coverKey, address account)](#getcoverliquidityaddedkey)
+- [getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account)](#getcoverliquidityreleasedatekey)
+- [getCoverLiquidityStakeKey(bytes32 coverKey)](#getcoverliquiditystakekey)
+- [getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account)](#getcoverliquiditystakeindividualkey)
+- [getCoverTotalLentKey(bytes32 coverKey)](#getcovertotallentkey)
+- [getCommitmentKey(bytes32 coverKey, uint256 expiryDate)](#getcommitmentkey)
 - [getCoverLiquidityCommitted(IStore s, bytes32 key)](#getcoverliquiditycommitted)
+- [getCoverLiquidityCommitmentInfo(IStore s, bytes32 key)](#getcoverliquiditycommitmentinfo)
+- [getCommitmentsUnderReporting(IStore s, bytes32 key)](#getcommitmentsunderreporting)
+- [getCurrentCommitments(IStore s, bytes32 key)](#getcurrentcommitments)
 - [getStake(IStore s, bytes32 key)](#getstake)
-- [getClaimable(IStore s, bytes32 key)](#getclaimable)
 - [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
 - [getReassuranceAmountInternal(IStore s, bytes32 key)](#getreassuranceamountinternal)
-- [_getClaimable(IStore s, bytes32 key)](#_getclaimable)
+- [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
+- [_getNextMonthEndDate(uint256 date, uint256 monthsToAdd)](#_getnextmonthenddate)
+- [_getMonthEndDate(uint256 date)](#_getmonthenddate)
+- [getActiveIncidentDateInternal(IStore s, bytes32 key)](#getactiveincidentdateinternal)
+- [getCxTokenByExpiryDateInternal(IStore s, bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydateinternal)
 
 ### getCoverOwner
 
@@ -316,37 +328,6 @@ function getStatus(IStore s, bytes32 key) public view returns (uint256) {
 ```
 </details>
 
-### getPolicyRates
-
-```solidity
-function getPolicyRates(IStore s, bytes32 key) external view
-returns(floor uint256, ceiling uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPolicyRates(IStore s, bytes32 key) external view returns (uint256 floor, uint256 ceiling) {
-    floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key);
-    ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key);
-
-    if (floor == 0) {
-      // Fallback to default values
-      floor = s.getUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR);
-      ceiling = s.getUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING);
-    }
-  }
-```
-</details>
-
 ### getCoverPoolLiquidity
 
 ```solidity
@@ -366,7 +347,172 @@ returns(uint256)
 
 ```javascript
 function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY, key);
+    return s.getUintByKey(getCoverLiquidityKey(key));
+  }
+```
+</details>
+
+### getCoverLiquidityKey
+
+```solidity
+function getCoverLiquidityKey(bytes32 coverKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey));
+  }
+```
+</details>
+
+### getCoverLiquidityAddedKey
+
+```solidity
+function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account));
+  }
+```
+</details>
+
+### getCoverLiquidityReleaseDateKey
+
+```solidity
+function getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account));
+  }
+```
+</details>
+
+### getCoverLiquidityStakeKey
+
+```solidity
+function getCoverLiquidityStakeKey(bytes32 coverKey) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey));
+  }
+```
+</details>
+
+### getCoverLiquidityStakeIndividualKey
+
+```solidity
+function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
+  }
+```
+</details>
+
+### getCoverTotalLentKey
+
+```solidity
+function getCoverTotalLentKey(bytes32 coverKey) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverTotalLentKey(bytes32 coverKey) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STABLECOIN_LENT_TOTAL, coverKey));
+  }
+```
+</details>
+
+### getCommitmentKey
+
+```solidity
+function getCommitmentKey(bytes32 coverKey, uint256 expiryDate) external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| expiryDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCommitmentKey(bytes32 coverKey, uint256 expiryDate) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, coverKey, expiryDate));
   }
 ```
 </details>
@@ -390,8 +536,105 @@ returns(uint256)
 
 ```javascript
 function getCoverLiquidityCommitted(IStore s, bytes32 key) public view returns (uint256) {
-    // @todo: liquidity commitment should expire as policies expire
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, key);
+    (uint256 reporting, uint256 active) = getCoverLiquidityCommitmentInfo(s, key);
+    return reporting + active;
+  }
+```
+</details>
+
+### getCoverLiquidityCommitmentInfo
+
+```solidity
+function getCoverLiquidityCommitmentInfo(IStore s, bytes32 key) public view
+returns(reporting uint256, active uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverLiquidityCommitmentInfo(IStore s, bytes32 key) public view returns (uint256 reporting, uint256 active) {
+    reporting = getCommitmentsUnderReporting(s, key);
+    active = getCurrentCommitments(s, key);
+  }
+```
+</details>
+
+### getCommitmentsUnderReporting
+
+```solidity
+function getCommitmentsUnderReporting(IStore s, bytes32 key) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCommitmentsUnderReporting(IStore s, bytes32 key) public view returns (uint256) {
+    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, key);
+
+    // There isn't any incident for this cover
+    // and therefore no need to pay
+    if (incidentDateIfAny == 0) {
+      return 0;
+    }
+
+    uint256 expiryDate = _getMonthEndDate(incidentDateIfAny);
+    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+
+    if (address(cxToken) != address(0)) {
+      return cxToken.totalSupply();
+    }
+
+    return 0;
+  }
+```
+</details>
+
+### getCurrentCommitments
+
+```solidity
+function getCurrentCommitments(IStore s, bytes32 key) public view
+returns(sum uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCurrentCommitments(IStore s, bytes32 key) public view returns (uint256 sum) {
+    uint256 maxMonthsToProtect = 3;
+
+    for (uint256 i = 0; i < maxMonthsToProtect; i++) {
+      uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
+      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+
+      if (address(cxToken) != address(0)) {
+        sum += cxToken.totalSupply();
+      }
+    }
   }
 ```
 </details>
@@ -416,30 +659,6 @@ returns(uint256)
 ```javascript
 function getStake(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-  }
-```
-</details>
-
-### getClaimable
-
-```solidity
-function getClaimable(IStore s, bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getClaimable(IStore s, bytes32 key) external view returns (uint256) {
-    return _getClaimable(s, key);
   }
 ```
 </details>
@@ -505,10 +724,103 @@ function getReassuranceAmountInternal(IStore s, bytes32 key) external view retur
 ```
 </details>
 
-### _getClaimable
+### getExpiryDateInternal
+
+Gets the expiry date based on cover duration
 
 ```solidity
-function _getClaimable(IStore s, bytes32 key) private view
+function getExpiryDateInternal(uint256 today, uint256 coverDuration) external pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| today | uint256 | Enter the current timestamp | 
+| coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getExpiryDateInternal(uint256 today, uint256 coverDuration) external pure returns (uint256) {
+    // Get the day of the month
+    (, , uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(today);
+
+    // Cover duration of 1 month means current month
+    // unless today is the 25th calendar day or later
+    uint256 monthToAdd = coverDuration - 1;
+
+    if (day >= 25) {
+      // Add one month
+      monthToAdd += 1;
+    }
+
+    return _getNextMonthEndDate(today, monthToAdd);
+  }
+```
+</details>
+
+### _getNextMonthEndDate
+
+```solidity
+function _getNextMonthEndDate(uint256 date, uint256 monthsToAdd) private pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| date | uint256 |  | 
+| monthsToAdd | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getNextMonthEndDate(uint256 date, uint256 monthsToAdd) private pure returns (uint256) {
+    uint256 futureDate = BokkyPooBahsDateTimeLibrary.addMonths(date, monthsToAdd);
+    return _getMonthEndDate(futureDate);
+  }
+```
+</details>
+
+### _getMonthEndDate
+
+```solidity
+function _getMonthEndDate(uint256 date) private pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| date | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getMonthEndDate(uint256 date) private pure returns (uint256) {
+    // Get the year and month from the date
+    (uint256 year, uint256 month, ) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
+
+    // Count the total number of days of that month and year
+    uint256 daysInMonth = BokkyPooBahsDateTimeLibrary._getDaysInMonth(year, month);
+
+    // Get the month end date
+    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
+  }
+```
+</details>
+
+### getActiveIncidentDateInternal
+
+```solidity
+function getActiveIncidentDateInternal(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -523,9 +835,38 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
-    // @important @todo: deduct the expired cover amounts
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CLAIMABLE, key);
+function getActiveIncidentDateInternal(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+  }
+```
+</details>
+
+### getCxTokenByExpiryDateInternal
+
+```solidity
+function getCxTokenByExpiryDateInternal(IStore s, bytes32 key, uint256 expiryDate) public view
+returns(cxToken address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| expiryDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCxTokenByExpiryDateInternal(
+    IStore s,
+    bytes32 key,
+    uint256 expiryDate
+  ) public view returns (address cxToken) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    cxToken = s.getAddress(k);
   }
 ```
 </details>
@@ -558,6 +899,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -625,7 +967,7 @@ function _getClaimable(IStore s, bytes32 key) private view returns (uint256) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md), [IRecoverable](IRecoverable.md)**
-**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PolicyManager](PolicyManager.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [Controller](Controller.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -65,9 +65,9 @@ function recoverEther(address sendTo) external nonpayable nonReentrant
 
 ```javascript
 function recoverEther(address sendTo) external override nonReentrant {
-    // @suppress-pausable Already implemented in BaseLibV1
-    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
-    BaseLibV1.recoverEtherInternal(s, sendTo);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+    BaseLibV1.recoverEtherInternal(sendTo);
   }
 ```
 </details>
@@ -94,10 +94,10 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 ```javascript
 function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-pausable Already implemented in BaseLibV1
-    // @suppress-acl Already implemented in BaseLibV1 --> mustBeRecoveryAgent
     // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
-    BaseLibV1.recoverTokenInternal(s, token, sendTo);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeRecoveryAgent(s);
+    BaseLibV1.recoverTokenInternal(token, sendTo);
   }
 ```
 </details>
@@ -130,6 +130,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -197,7 +198,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

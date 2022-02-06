@@ -16,7 +16,7 @@ event CoverPurchased(bytes32  key, address indexed account, address indexed cxTo
 ## Functions
 
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)
-- [getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfee)
+- [getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
 - [getCoverPoolSummary(bytes32 key)](#getcoverpoolsummary)
 - [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
@@ -57,12 +57,12 @@ function purchaseCover(
 ```
 </details>
 
-### getCoverFee
+### getCoverFeeInfo
 
 Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
-function getCoverFee(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
+function getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
 ```
 
@@ -78,7 +78,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverFee(
+function getCoverFeeInfo(
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover
@@ -258,6 +258,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -325,7 +326,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

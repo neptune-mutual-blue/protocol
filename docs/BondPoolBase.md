@@ -127,6 +127,9 @@ function setup(address[] addresses, uint256[] values) external nonpayable nonRee
 
 ```javascript
 function setup(address[] memory addresses, uint256[] memory values) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeAdmin(s);
+
     s.setupBondPoolInternal(addresses, values);
 
     emit BondPoolSetup(addresses, values);
@@ -210,6 +213,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -277,7 +281,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

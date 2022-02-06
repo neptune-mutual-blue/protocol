@@ -17,7 +17,7 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
 - [getResolutionInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getresolutioninfofor)
-- [getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [getUnstakeInfoForInternal(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfoforinternal)
 - [updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetails)
 - [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
@@ -324,10 +324,10 @@ function getResolutionInfoFor(
 ```
 </details>
 
-### getUnstakeInfoFor
+### getUnstakeInfoForInternal
 
 ```solidity
-function getUnstakeInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate) external view
+function getUnstakeInfoForInternal(IStore s, address account, bytes32 key, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
 ```
 
@@ -344,7 +344,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getUnstakeInfoFor(
+function getUnstakeInfoForInternal(
     IStore s,
     address account,
     bytes32 key,
@@ -750,6 +750,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -817,7 +818,7 @@ function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uin
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

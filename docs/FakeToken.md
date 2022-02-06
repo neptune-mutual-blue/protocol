@@ -2,7 +2,7 @@
 
 View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 
-**↗ Extends: [ERC20](ERC20.md), [Ownable](Ownable.md)**
+**↗ Extends: [ERC20](ERC20.md)**
 
 **FakeToken**
 
@@ -44,7 +44,7 @@ constructor(
 ### mint
 
 ```solidity
-function mint(address account, uint256 amount) external nonpayable onlyOwner 
+function mint(address account, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -58,7 +58,7 @@ function mint(address account, uint256 amount) external nonpayable onlyOwner
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mint(address account, uint256 amount) external onlyOwner {
+function mint(address account, uint256 amount) external {
     super._mint(account, amount);
   }
 ```
@@ -137,6 +137,7 @@ function burn(uint256 amount) external {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -204,7 +205,7 @@ function burn(uint256 amount) external {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

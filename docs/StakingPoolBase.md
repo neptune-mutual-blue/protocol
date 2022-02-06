@@ -66,7 +66,7 @@ function addOrEditPool(
     uint256[] memory values
   ) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeAdmin();
+    AccessControlLibV1.mustBeAdmin(s);
 
     s.addOrEditPoolInternal(key, name, addresses, values);
     emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[4], values[2]);
@@ -123,7 +123,7 @@ function closePool(bytes32 key) external nonpayable nonReentrant
 ```javascript
 function closePool(bytes32 key) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeAdmin();
+    AccessControlLibV1.mustBeAdmin(s);
 
     s.setBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key, false);
 
@@ -208,6 +208,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -275,7 +276,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

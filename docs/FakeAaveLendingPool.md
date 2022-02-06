@@ -2,7 +2,7 @@
 
 View Source: [contracts/fakes/FakeAaveLendingPool.sol](../contracts/fakes/FakeAaveLendingPool.sol)
 
-**↗ Extends: [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)**
+**↗ Extends: [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md), [ERC20](ERC20.md)**
 
 **FakeAaveLendingPool**
 
@@ -10,27 +10,50 @@ View Source: [contracts/fakes/FakeAaveLendingPool.sol](../contracts/fakes/FakeAa
 **Constants & Variables**
 
 ```js
-uint256 private _meaninglessStorage;
+contract FakeToken public aToken;
 
 ```
 
 ## Functions
 
-- [deposit(address , uint256 , address , uint16 )](#deposit)
-- [withdraw(address , uint256 amount, address )](#withdraw)
+- [constructor(FakeToken _aToken)](#)
+- [deposit(address asset, uint256 amount, address , uint16 )](#deposit)
+- [withdraw(address asset, uint256 amount, address to)](#withdraw)
 
-### deposit
+### 
 
 ```solidity
-function deposit(address , uint256 , address , uint16 ) external nonpayable
+function (FakeToken _aToken) public nonpayable ERC20 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-|  | uint256 |  | 
+| _aToken | FakeToken |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+constructor(FakeToken _aToken) ERC20("aDAI", "aDAI") {
+    aToken = _aToken;
+  }
+```
+</details>
+
+### deposit
+
+```solidity
+function deposit(address asset, uint256 amount, address , uint16 ) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| asset | address |  | 
+| amount | uint256 |  | 
 |  | address |  | 
 |  | uint16 |  | 
 
@@ -39,13 +62,13 @@ function deposit(address , uint256 , address , uint16 ) external nonpayable
 
 ```javascript
 function deposit(
-    address,
-    uint256,
+    address asset,
+    uint256 amount,
     address,
     uint16
   ) external override {
-    _meaninglessStorage = block.number;
-    // require(0 == 1, "We throw. So What?");
+    IERC20(asset).transferFrom(msg.sender, address(this), amount);
+    aToken.mint(msg.sender, amount);
   }
 ```
 </details>
@@ -53,7 +76,7 @@ function deposit(
 ### withdraw
 
 ```solidity
-function withdraw(address , uint256 amount, address ) external nonpayable
+function withdraw(address asset, uint256 amount, address to) external nonpayable
 returns(uint256)
 ```
 
@@ -61,20 +84,28 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
+| asset | address |  | 
 | amount | uint256 |  | 
-|  | address |  | 
+| to | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function withdraw(
-    address,
+    address asset,
     uint256 amount,
-    address
+    address to
   ) external override returns (uint256) {
-    _meaninglessStorage = block.number;
+    aToken.transferFrom(msg.sender, address(this), amount);
+
+    FakeToken dai = FakeToken(asset);
+
+    uint256 interest = (amount * 10) / 100;
+    dai.mint(address(this), interest);
+
+    dai.transfer(to, amount + interest);
+
     return amount;
   }
 ```
@@ -108,6 +139,7 @@ function withdraw(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -175,7 +207,7 @@ function withdraw(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

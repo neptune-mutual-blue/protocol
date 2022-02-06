@@ -45,8 +45,7 @@ The amount of `token` to be charged for the loan, on top of the returned princip
 
 ```javascript
 function flashFee(address token, uint256 amount) external view override returns (uint256) {
-    (uint256 fee, ) = s.getFlashFeeInternal(token, amount);
-    return fee;
+    return s.getFlashFeeInternal(token, amount);
   }
 ```
 </details>
@@ -108,33 +107,12 @@ function flashLoan(
     uint256 amount,
     bytes calldata data
   ) external override nonReentrant returns (bool) {
+    // @suppress-acl Marking this as publicly accessible
     // @suppress-address-trust-issue The instance of `token` can be trusted because we're ensuring it matches with the protocol stablecoin address.
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-    (uint256 fee, uint256 protocolFee) = s.getFlashFeeInternal(token, amount);
-    uint256 previousBalance = stablecoin.balanceOf(address(this));
-
     s.mustNotBePaused();
 
-    require(address(stablecoin) == token, "Unknown token");
-    require(amount > 0, "Loan too small");
-    require(fee > 0, "Fee too little");
-    require(previousBalance >= amount, "Balance insufficient");
-
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, true);
-
-    stablecoin.ensureTransfer(address(receiver), amount);
-    require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
-    stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
-    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
-
-    uint256 finalBalance = stablecoin.balanceOf(address(this));
-    require(finalBalance >= previousBalance + fee, "Access is denied");
-
+    uint256 fee = s.flashLoanInternal(receiver, key, token, amount, data);
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, key, false);
-
-    s.updateStateAndLiquidity(key);
-
     return true;
   }
 ```
@@ -168,6 +146,7 @@ function flashLoan(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -235,7 +214,7 @@ function flashLoan(
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

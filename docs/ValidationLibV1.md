@@ -17,6 +17,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [callerMustBeVaultContract(IStore s, bytes32 key)](#callermustbevaultcontract)
 - [callerMustBeGovernanceContract(IStore s)](#callermustbegovernancecontract)
 - [callerMustBeClaimsProcessorContract(IStore s)](#callermustbeclaimsprocessorcontract)
+- [callerMustBeStrategyContract(IStore s)](#callermustbestrategycontract)
+- [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
 - [callerMustBeProtocolMember(IStore s)](#callermustbeprotocolmember)
 - [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
 - [mustBeDisputed(IStore s, bytes32 key)](#mustbedisputed)
@@ -306,6 +308,52 @@ function callerMustBeClaimsProcessorContract(IStore s) external view
 ```javascript
 function callerMustBeClaimsProcessorContract(IStore s) external view {
     s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
+  }
+```
+</details>
+
+### callerMustBeStrategyContract
+
+```solidity
+function callerMustBeStrategyContract(IStore s) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeStrategyContract(IStore s) external view {
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+    require(callerIsStrategyContract == true, "Not a strategy contract");
+  }
+```
+</details>
+
+### _getIsActiveStrategyKey
+
+```solidity
+function _getIsActiveStrategyKey(address strategyAddress) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategyAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 ```
 </details>
@@ -809,6 +857,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -876,7 +925,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

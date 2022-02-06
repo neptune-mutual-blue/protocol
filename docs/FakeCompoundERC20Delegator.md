@@ -1,60 +1,114 @@
-# PolicyManager.sol
+# FakeCompoundERC20Delegator.sol
 
-View Source: [contracts/core/policy/PolicyManager.sol](../contracts/core/policy/PolicyManager.sol)
+View Source: [contracts/fakes/FakeCompoundERC20Delegator.sol](../contracts/fakes/FakeCompoundERC20Delegator.sol)
 
-**↗ Extends: [IMember](IMember.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md), [ERC20](ERC20.md)**
 
-**PolicyManager**
+**FakeCompoundERC20Delegator**
+
+## Contract Members
+**Constants & Variables**
+
+```js
+contract FakeToken public dai;
+contract FakeToken public cDai;
+
+```
 
 ## Functions
 
-- [version()](#version)
-- [getName()](#getname)
+- [constructor(FakeToken _dai, FakeToken _cDai)](#)
+- [mint(uint256 mintAmount)](#mint)
+- [redeem(uint256 redeemTokens)](#redeem)
 
-### version
-
-Version number of this contract
+### 
 
 ```solidity
-function version() external pure
-returns(bytes32)
+function (FakeToken _dai, FakeToken _cDai) public nonpayable ERC20 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| _dai | FakeToken |  | 
+| _cDai | FakeToken |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
+constructor(FakeToken _dai, FakeToken _cDai) ERC20("cDAI", "cDAI") {
+    dai = _dai;
+    cDai = _cDai;
   }
 ```
 </details>
 
-### getName
+### mint
 
-Name of this contract
+Sender supplies assets into the market and receives cTokens in exchange
 
 ```solidity
-function getName() external pure
-returns(bytes32)
+function mint(uint256 mintAmount) external nonpayable
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| mintAmount | uint256 | The amount of the underlying asset to supply | 
+
+**Returns**
+
+uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_POLICY_MANAGER;
+function mint(uint256 mintAmount) external override returns (uint256) {
+    dai.transferFrom(msg.sender, address(this), mintAmount);
+    cDai.mint(msg.sender, mintAmount);
+
+    return 0;
+  }
+```
+</details>
+
+### redeem
+
+Sender redeems cTokens in exchange for the underlying asset
+
+```solidity
+function redeem(uint256 redeemTokens) external nonpayable
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| redeemTokens | uint256 | The number of cTokens to redeem into underlying | 
+
+**Returns**
+
+uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function redeem(uint256 redeemTokens) external override returns (uint256) {
+    cDai.transferFrom(msg.sender, address(this), redeemTokens);
+
+    uint256 interest = (redeemTokens * 3) / 100;
+    dai.mint(address(this), interest);
+
+    dai.transfer(msg.sender, redeemTokens + interest);
+
+    return 0;
   }
 ```
 </details>
@@ -87,6 +141,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -154,7 +209,7 @@ function getName() external pure override returns (bytes32) {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)

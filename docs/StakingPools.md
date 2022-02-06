@@ -50,6 +50,7 @@ function deposit(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function deposit(bytes32 key, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -77,6 +78,7 @@ function withdraw(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -114,6 +116,7 @@ function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
+* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -181,7 +184,7 @@ function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
 * [Pausable](Pausable.md)
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
-* [PolicyManager](PolicyManager.md)
+* [PolicyHelperV1](PolicyHelperV1.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
