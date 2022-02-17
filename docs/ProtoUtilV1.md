@@ -89,6 +89,8 @@ bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION;
 bytes32 public constant NS_CLAIM_PERIOD;
 bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
+bytes32 public constant NS_RESOLUTION_DEADLINE;
+bytes32 public constant NS_RESOLUTION_COOL_DOWN_PERIOD;
 bytes32 public constant NS_CLAIM_PLATFORM_FEE;
 bytes32 public constant NS_CLAIM_REPORTER_COMMISSION;
 bytes32 public constant NS_LP_RESERVE0;

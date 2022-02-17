@@ -43,6 +43,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeAfterReportingPeriod(key);
+    s.mustBeBeforeResolutionDeadline(key);
 
     _resolve(key, incidentDate, decision, true);
   }
@@ -53,23 +54,78 @@ abstract contract Resolvable is Finalization, IResolvable {
     bool decision,
     bool emergency
   ) private {
+    // A grace period given to a governance admin(s) to defend
+    // against a concensus attack(s).
+    uint256 cooldownPeriod = s.getCoolDownPeriodInternal(key);
+
+    // The timestamp until when a governance admin is allowed
+    // to perform emergency resolution.
+    // After this timestamp, the cover has to be claimable
+    // or finalized
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+
+    // A cover, when being resolved, will either directly go to finalization or have a claim period.
+    //
+    // Decision: False Reporting
+    // 1. A governance admin can still overwrite, override, or reverse this decision before `deadline`.
+    // 2. After the deadline and before finalization, the NPM holders
+    //    who staked for `False Reporting` camp can withdraw the original stake + reward.
+    // 3. After finalization, the NPM holders who staked for this camp will only be able to receive
+    // back the original stake. No rewards.
+    //
+    // Decision: Claimable
+    //
+    // 1. A governance admin can still overwrite, override, or reverse this decision before `deadline`.
+    // 2. All policyholders must claim during the `Claim Period`. Otherwise, claims are not valid.
+    // 3. After the deadline and before finalization, the NPM holders
+    //    who staked for `Incident Happened` camp can withdraw the original stake + reward.
+    // 4. After finalization, the NPM holders who staked for this camp will only be able to receive
+    // back the original stake. No rewards.
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
-    uint256 claimBeginsFrom = 0; // solhint-disable-line
-    uint256 claimExpiresAt = 0;
+    // Claim begins from the cooldown period added to the first resolution attempt date
+    uint256 claimBeginsFrom = decision ? block.timestamp + cooldownPeriod : 0; // solhint-disable-line
 
-    if (decision) {
-      claimBeginsFrom = block.timestamp + 24 hours; // solhint-disable-line
-      claimExpiresAt = claimBeginsFrom + s.getClaimPeriod();
-    }
+    // Claim expires after the period specified by the cover creator.
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod() : 0;
 
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
+    // Status can change during `Emergency Resolution` attempt(s)
     s.setStatus(key, status);
+
+    if (deadline == 0) {
+      // Deadline can't be before claim begin date.
+      // In other words, once a cover becomes claimable, emergency resolution
+      // can not be performed any longer
+      deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key, deadline);
+    }
 
     s.updateStateAndLiquidity(key);
 
-    emit Resolved(key, incidentDate, decision, emergency, claimBeginsFrom, claimExpiresAt);
+    emit Resolved(key, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
+  }
+
+  function configureCoolDownPeriod(bytes32 key, uint256 period) external override nonReentrant {
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustHaveNormalCoverStatus(key);
+
+    if (key > 0) {
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, period);
+    } else {
+      s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, period);
+    }
+
+    emit CooldownPeriodConfigured(key, period);
+  }
+
+  function getCoolDownPeriod(bytes32 key) external view override returns (uint256) {
+    return s.getCoolDownPeriodInternal(key);
+  }
+
+  function getResolutionDeadline(bytes32 key) external view override returns (uint256) {
+    return s.getResolutionDeadlineInternal(key);
   }
 }

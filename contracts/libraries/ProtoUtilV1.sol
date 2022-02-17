@@ -163,6 +163,11 @@ library ProtoUtilV1 {
   /// @dev Claim expiry date = Claim begin date + claim duration
   bytes32 public constant NS_CLAIM_EXPIRY_TS = "ns:claim:expiry:ts";
 
+  bytes32 public constant NS_RESOLUTION_DEADLINE = "ns:resolution:deadline";
+
+  /// @dev Claim expiry date = Claim begin date + claim duration
+  bytes32 public constant NS_RESOLUTION_COOL_DOWN_PERIOD = "ns:resolution:cdp";
+
   /// @dev The percentage rate (x MULTIPLIER) of amount deducted by the platform
   /// for each successful claims payout
   bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";

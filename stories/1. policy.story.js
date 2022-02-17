@@ -34,12 +34,13 @@ describe('Policy Purchase Stories', () => {
     const added = helper.ether(2_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
+    const cooldownPeriod = 1 * DAYS
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity, cooldownPeriod])
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 

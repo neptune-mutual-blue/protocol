@@ -157,6 +157,19 @@ library ValidationLibV1 {
     require(incidentHappened || falseReporting, "Not reported nor disputed");
   }
 
+  function mustBeBeforeResolutionDeadline(IStore s, bytes32 key) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+
+    if (deadline > 0) {
+      require(block.timestamp < deadline, "Emergency resolution deadline over"); // solhint-disable-line
+    }
+  }
+
+  function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+    require(block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+  }
+
   function mustBeValidIncidentDate(
     IStore s,
     bytes32 key,
@@ -218,13 +231,21 @@ library ValidationLibV1 {
     require(withdrawal == 0, "Already unstaken");
   }
 
-  function validateUnstakeAfterClaimPeriod(
+  function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 key,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+
+    // Before the deadline, emergency resolution can still happen
+    // that may have an impact on the final decision. We, therefore, have to wait.
+    mustBeAfterResolutionDeadline(s, key);
+
+    // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
+    // The above code is not useful after finalization but it helps avoid
+    // people calling unstake before a decision is obtained
   }
 
   function validateUnstakeWithClaim(
@@ -234,8 +255,16 @@ library ValidationLibV1 {
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
-    // If a cover is finalized, this incident date will not be valid anymore
+
+    // If this reporting gets finalized, incident date will become invalid
+    // meaning this execution will revert thereby restricting late comers
+    // to access this feature. But they can still access `unstake` feature
+    // to withdraw their stake.
     mustBeValidIncidentDate(s, key, incidentDate);
+
+    // Before the deadline, emergency resolution can still happen
+    // that may have an impact on the final decision. We, therefore, have to wait.
+    mustBeAfterResolutionDeadline(s, key);
 
     bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
 

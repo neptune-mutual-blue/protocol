@@ -76,6 +76,7 @@ contract Cover is CoverBase {
    * @param values[3] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
    * @param values[4] initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
+   * @param values[5] cooldownperiod **Optional.** Enter the cooldown period for governance.
    */
   function addCover(
     bytes32 key,

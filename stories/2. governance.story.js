@@ -80,6 +80,7 @@ describe('Governance Stories', () => {
     const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
+    const cooldownPeriod = 1 * constants.DAYS
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
@@ -87,7 +88,7 @@ describe('Governance Stories', () => {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity, cooldownPeriod])
 
     // Add provision
     const provision = helper.ether(1_000_001)
@@ -141,7 +142,7 @@ describe('Governance Stories', () => {
   })
 
   it('alice submitted an incident with 250 stake', async () => {
-    const [_, alice] = await ethers.getSigners() // eslint-disable-line
+    const [, alice] = await ethers.getSigners() // eslint-disable-line
 
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)

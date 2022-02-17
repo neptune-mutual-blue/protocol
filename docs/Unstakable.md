@@ -38,8 +38,8 @@ function unstake(bytes32 key, uint256 incidentDate) external nonpayable nonReent
 ```javascript
 function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already checked inside `validateUnstakeAfterClaimPeriod`
-    s.validateUnstakeAfterClaimPeriod(key, incidentDate);
+    // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
+    s.validateUnstakeWithoutClaim(key, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoFor(msg.sender, key, incidentDate);
 

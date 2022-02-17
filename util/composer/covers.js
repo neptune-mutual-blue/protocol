@@ -12,7 +12,6 @@ const createCovers = async (payload) => {
 
   for (const i in covers) {
     const info = covers[i]
-    console.info('Creating', info.coverName)
     await create(payload, info)
   }
 }
@@ -22,14 +21,17 @@ const create = async (payload, info) => {
   const { dai, cover } = contracts
 
   const { key } = info
-  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, initialLiquidity } = info
+  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, initialLiquidity, cooldownPeriod } = info
   const hashBytes32 = await ipfs.write(info)
+  console.info('Cooldown period', cooldownPeriod)
 
   const values = [minReportingStake.toString(),
     reportingPeriod.toString(),
     stakeWithFees.toString(),
     reassurance.toString(),
-    initialLiquidity.toString()]
+    initialLiquidity.toString(),
+    cooldownPeriod.toString()
+  ]
 
   await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, values)
 }
