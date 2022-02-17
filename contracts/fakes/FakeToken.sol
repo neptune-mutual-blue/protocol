@@ -12,15 +12,8 @@ contract FakeToken is ERC20 {
     super._mint(msg.sender, supply);
   }
 
-  function mint(address account, uint256 amount) external {
-    super._mint(account, amount);
-  }
-
-  /**
-   * @dev Request 100000 tokens
-   */
-  function request() external {
-    super._mint(msg.sender, 100000 ether);
+  function mint(uint256 amount) external {
+    super._mint(msg.sender, amount);
   }
 
   function burn(uint256 amount) external {

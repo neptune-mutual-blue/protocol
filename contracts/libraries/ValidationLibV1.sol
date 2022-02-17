@@ -40,7 +40,7 @@ library ValidationLibV1 {
    * or if the cover is under governance.
    * @param key Enter the cover key to check
    */
-  function mustBeValidCover(IStore s, bytes32 key) external view {
+  function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
   }

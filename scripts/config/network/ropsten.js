@@ -7,6 +7,11 @@ const config = {
   3: {
     network: 'Ropsten Test Network',
     chainId: 3,
+    pool: {
+      bond: {
+        period: 10 * MINUTES
+      }
+    },
     cover: {
       minLiquidityPeriod: 5 * MINUTES,
       claimPeriod: 120 * MINUTES
@@ -38,20 +43,20 @@ const config = {
     ],
     deployedTokens: {
       DAI: '0xf80a32a835f79d7787e8a8ee5721d0feafd78108', // Aave Ropsten DAI
-      NPM: '0xa2F795CB8cdCa83f8D3d5F2D84BFC45c9b3A4197',
-      CPOOL: '0x9912B6Fc42675DC940313551b20c022219b98Adb',
-      HT: '0xe2e3cAA55dEdb93f802B16314B4579c9a57d3B0e',
-      OKB: '0x1DC3318aaAfE76BC825365DcF3518B83e2137894',
-      AXS: '0xaBccBfdfd5Ff2855236C371D70Dc7951a3F3ba5B',
+      NPM: '0x481B55f34Ef7839c408f35f6B57a68cd54B84eFC',
+      CPOOL: '0x28f61374cC7fF2b0181064D21F09993a6972e7D3',
+      HT: '0x131c05b860c89B59f5b5aa6901434F20F19D5C2f',
+      OKB: '0xcED1a80c495a27fF2310E59F75034c76faC6bacf',
+      AXS: '0xF1A75e2bfB5bd5DF9a6cC07ecadaD236258950EF',
       aToken: '0x86067C23557D97286027095b868DF6A765aaED5f',
       cDai: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
     },
     stablecoinPairs: {
-      NPM_DAI: '0x773992D8d8932e3153Eab3499a1b662E2e57E283',
-      CPOOL_DAI: '0xa3831BdDba111773dc9919007E322A36003ed7E8',
-      HT_DAI: '0x6CAcF6146FFa792AAd797451Df5fCD5F3ace0470',
-      OKB_DAI: '0x688C2D6183b4e8669cE6814aB63860d565701157',
-      AXS_DAI: '0x2519c7E52ccFA72f306a4907e5f727F189cb9F05'
+      NPM_DAI: '0xf45E1A6847b41832cc43644dc7F46CdFA18730A1',
+      CPOOL_DAI: '0x5F3b167C1C3127dBD48119c0Ee5aAa4A3d3E5520',
+      HT_DAI: '0x6e7E019E7195417A149077DfE64ACF6c7e5b7cCc',
+      OKB_DAI: '0x36685dfB4dC9e41C2a281B585bbc36cc929118D2',
+      AXS_DAI: '0xA51c26E99049c3d0b0BE4706BF54C88774b9cE94'
     },
     uniswapV2Like: {
       description: 'Sushiswap on Ropsten',

@@ -590,7 +590,7 @@ nction removeLiquidityInternal(
     uint256 npmStakeToRemove
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
-    s.mustBeValidCover(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
 
     // Unstake NPM tokens
     _unStakeNpm(s, coverKey, npmStakeToRemove);

@@ -343,7 +343,15 @@ describe('Governance Stories', () => {
       .should.be.rejectedWith('Not claimable')
   })
 
-  it('a governance agent resolves the cover', async () => {
+  it('henry performs an attack by submitting a large stake', async () => {
+    const [, , , , , , , , henry] = await ethers.getSigners() // eslint-disable-line
+
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await refute(incidentDate, henry, 200_000)
+  })
+
+  it('a corrupt governance agent resolves the cover', async () => {
     const [owner, alex] = await ethers.getSigners() // eslint-disable-line
 
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
@@ -354,6 +362,20 @@ describe('Governance Stories', () => {
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
     await contracts.resolution.connect(alex).resolve(coverKey, incidentDate)
+
+    const status = await contracts.governance.getStatus(coverKey)
+    status.toNumber().should.equal(helper.coverStatus.falseReporting)
+  })
+
+  it('governance admin stops the attack', async () => {
+    const [owner] = await ethers.getSigners() // eslint-disable-line
+    const decision = true
+
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
+
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await contracts.resolution.emergencyResolve(coverKey, incidentDate, decision)
 
     const status = await contracts.governance.getStatus(coverKey)
     status.toNumber().should.equal(helper.coverStatus.claimable)

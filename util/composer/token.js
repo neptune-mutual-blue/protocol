@@ -39,9 +39,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
 
       const token = await erc20.getInstance(tokenAt)
 
-      if (['DAI', 'cDai', 'aToken'].indexOf(symbol) === -1) {
-        await faucet.request(token)
-        await faucet.request(token)
+      if (['DAI', 'cDai', 'aToken', 'NPM'].indexOf(symbol) === -1) {
         await faucet.request(token)
       }
 
@@ -81,7 +79,16 @@ const compose = async (cache) => {
 
   const [npm, dai, cpool, ht, okb, axs, aToken, cDai] = await deployOrGetFromConfig(cache, list)
 
-  return { npm, dai, cpool, ht, okb, axs, aToken, cDai }
+  list.find(x => x.symbol === 'NPM').instance = npm
+  list.find(x => x.symbol === 'DAI').instance = dai
+  list.find(x => x.symbol === 'CPOOL').instance = cpool
+  list.find(x => x.symbol === 'HT').instance = ht
+  list.find(x => x.symbol === 'OKB').instance = okb
+  list.find(x => x.symbol === 'AXS').instance = axs
+  list.find(x => x.symbol === 'aToken').instance = aToken
+  list.find(x => x.symbol === 'cDai').instance = cDai
+
+  return { npm, dai, cpool, ht, okb, axs, aToken, cDai, tokenInfo: list }
 }
 
 module.exports = { deploySeveral: deployOrGetFromConfig, at, compose }

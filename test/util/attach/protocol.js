@@ -6,7 +6,7 @@ const { attach } = require('./attach')
  * @param {Libraries} libraries
  * @returns {ethers.Contract}
  */
-const doit = async (address, libraries) => {
+const attacher = async (address, libraries) => {
   return attach('MockProtocol', address, {
     AccessControlLibV1: libraries.accessControlLibV1.address,
     BaseLibV1: libraries.baseLibV1.address,
@@ -16,4 +16,4 @@ const doit = async (address, libraries) => {
   })
 }
 
-module.exports = { attach: doit }
+module.exports = { attach: attacher }

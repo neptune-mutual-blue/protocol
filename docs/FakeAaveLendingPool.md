@@ -68,7 +68,8 @@ function deposit(
     uint16
   ) external override {
     IERC20(asset).transferFrom(msg.sender, address(this), amount);
-    aToken.mint(msg.sender, amount);
+    aToken.mint(amount);
+    aToken.transfer(msg.sender, amount);
   }
 ```
 </details>
@@ -102,7 +103,7 @@ function withdraw(
     FakeToken dai = FakeToken(asset);
 
     uint256 interest = (amount * 10) / 100;
-    dai.mint(address(this), interest);
+    dai.mint(interest);
 
     dai.transfer(to, amount + interest);
 

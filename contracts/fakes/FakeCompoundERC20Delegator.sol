@@ -22,7 +22,9 @@ contract FakeCompoundERC20Delegator is ICompoundERC20DelegatorLike, ERC20 {
    */
   function mint(uint256 mintAmount) external override returns (uint256) {
     dai.transferFrom(msg.sender, address(this), mintAmount);
-    cDai.mint(msg.sender, mintAmount);
+
+    cDai.mint(mintAmount);
+    cDai.transfer(msg.sender, mintAmount);
 
     return 0;
   }
@@ -37,7 +39,7 @@ contract FakeCompoundERC20Delegator is ICompoundERC20DelegatorLike, ERC20 {
     cDai.transferFrom(msg.sender, address(this), redeemTokens);
 
     uint256 interest = (redeemTokens * 3) / 100;
-    dai.mint(address(this), interest);
+    dai.mint(interest);
 
     dai.transfer(msg.sender, redeemTokens + interest);
 

@@ -40,7 +40,7 @@ contract CoverProvision is ICoverProvision, Recoverable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.increaseProvisionInternal(key, amount);
     emit ProvisionIncreased(key, provision, provision + amount);
@@ -56,7 +56,7 @@ contract CoverProvision is ICoverProvision, Recoverable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.decreaseProvisionInternal(key, amount);
     emit ProvisionDecreased(key, provision, provision - amount);

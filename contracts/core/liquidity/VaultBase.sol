@@ -66,7 +66,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     // @suppress-acl Can only be accessed by the latest cover contract
     // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
     s.callerMustBeCoverContract();
 
     // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
@@ -93,7 +93,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
-  ) external override nonReentrant {
+  ) external override {
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
@@ -107,7 +107,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
-  ) external override nonReentrant {
+  ) external override {
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
@@ -137,7 +137,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
   }

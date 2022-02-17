@@ -55,7 +55,7 @@ function report(
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake >= s.getMinReportingStake(key), "Stake insufficient");

@@ -48,7 +48,7 @@ contract Policy is IPolicy, Recoverable {
   ) external override nonReentrant returns (address) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 

@@ -4,6 +4,11 @@ const config = {
   1: {
     network: 'Main Ethereum Network',
     chainId: 1,
+    pool: {
+      bond: {
+        period: 7 * DAYS
+      }
+    },
     cover: {
       minLiquidityPeriod: 7 * DAYS,
       claimPeriod: 7 * DAYS

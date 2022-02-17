@@ -12,6 +12,7 @@ import "./StakingPoolCoreLibV1.sol";
 library StakingPoolLibV1 {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using StakingPoolCoreLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
@@ -141,6 +142,13 @@ library StakingPoolLibV1 {
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account);
   }
 
+  function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
+    IERC20 rewardToken = IERC20(s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key));
+    address stakingPool = s.getStakingPoolAddress();
+
+    return rewardToken.balanceOf(stakingPool);
+  }
+
   function calculateRewardsInternal(
     IStore s,
     bytes32 key,
@@ -154,7 +162,11 @@ library StakingPoolLibV1 {
 
     uint256 rewardPerBlock = s.getRewardPerBlock(key);
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
-    return (myStake * rewardPerBlock * totalBlocks) / 1 ether;
+    uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
+
+    uint256 poolBalance = getStakingPoolRewardTokenBalance(s, key);
+
+    return rewards > poolBalance ? poolBalance : rewards;
   }
 
   function withdrawRewardsInternal(

@@ -9,8 +9,7 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 ## Functions
 
 - [constructor(string name, string symbol, uint256 supply)](#)
-- [mint(address account, uint256 amount)](#mint)
-- [request()](#request)
+- [mint(uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 
 ### 
@@ -44,45 +43,21 @@ constructor(
 ### mint
 
 ```solidity
-function mint(address account, uint256 amount) external nonpayable
+function mint(uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address |  | 
 | amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mint(address account, uint256 amount) external {
-    super._mint(account, amount);
-  }
-```
-</details>
-
-### request
-
-Request 100000 tokens
-
-```solidity
-function request() external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function request() external {
-    super._mint(msg.sender, 100000 ether);
+function mint(uint256 amount) external {
+    super._mint(msg.sender, amount);
   }
 ```
 </details>

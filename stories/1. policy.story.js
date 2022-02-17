@@ -30,7 +30,8 @@ describe('Policy Purchase Stories', () => {
 
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialLiquidity = helper.ether(2_000_000)
+    const added = helper.ether(2_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
 
@@ -39,6 +40,13 @@ describe('Policy Purchase Stories', () => {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity])
+
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await contracts.npm.approve(vault.address, minReportingStake)
+    await contracts.dai.approve(vault.address, added)
+
+    await vault.addLiquidity(coverKey, added, minReportingStake)
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {

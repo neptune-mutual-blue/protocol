@@ -65,6 +65,16 @@ library RegistryLibV1 {
     return vault;
   }
 
+  function getStakingPoolAddress(IStore s) public view returns (address) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_STAKING_POOL);
+    return vault;
+  }
+
+  function getBondPoolAddress(IStore s, bytes32 key) public view returns (address) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_BOND_POOL, key);
+    return vault;
+  }
+
   function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {
     address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY);
     return IVaultFactory(factory);

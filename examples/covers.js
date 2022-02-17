@@ -87,8 +87,8 @@ const covers = [
       name: 'Earn OKB',
       settings: {
         3: {
-          rewardToken: '0x1DC3318aaAfE76BC825365DcF3518B83e2137894',
-          uniRewardTokenDollarPair: '0x688C2D6183b4e8669cE6814aB63860d565701157',
+          rewardToken: { symbol: 'OKB' },
+          uniRewardTokenDollarPair: { token: 'OKB' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
@@ -96,8 +96,8 @@ const covers = [
           rewardTokenDeposit: ether(30_000)
         },
         31337: {
-          rewardToken: '0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00',
-          uniRewardTokenDollarPair: '0xF8e31cb472bc70500f08Cd84917E5A1912Ec8397',
+          rewardToken: { symbol: 'OKB' },
+          uniRewardTokenDollarPair: { token: 'OKB' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
@@ -105,8 +105,8 @@ const covers = [
           rewardTokenDeposit: ether(30_000)
         },
         42: {
-          rewardToken: '0x20B69b8a65B235d1FDA63B074Dc8e0E74bb35e19',
-          uniRewardTokenDollarPair: '0x6677357FeB48BD397EBf68146931631721b817f0',
+          rewardToken: { symbol: 'OKB' },
+          uniRewardTokenDollarPair: { token: 'OKB' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: ether(0.020),
@@ -154,8 +154,8 @@ const covers = [
       name: 'Earn HT',
       settings: {
         3: {
-          rewardToken: '0xe2e3cAA55dEdb93f802B16314B4579c9a57d3B0e',
-          uniRewardTokenDollarPair: '0x6CAcF6146FFa792AAd797451Df5fCD5F3ace0470',
+          rewardToken: { symbol: 'HT' },
+          uniRewardTokenDollarPair: { token: 'HT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
@@ -163,8 +163,8 @@ const covers = [
           rewardTokenDeposit: ether(25_000)
         },
         31337: {
-          rewardToken: '0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB',
-          uniRewardTokenDollarPair: '0xD5ac451B0c50B9476107823Af206eD814a2e2580',
+          rewardToken: { symbol: 'HT' },
+          uniRewardTokenDollarPair: { token: 'HT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
@@ -172,8 +172,8 @@ const covers = [
           rewardTokenDeposit: ether(25_000)
         },
         42: {
-          rewardToken: '0x921e65d8A0F071caa170efD316Cd1bc2bf6225e0',
-          uniRewardTokenDollarPair: '0x9166bE80b9C647d4370a73ae1f58E93904A9AfBb',
+          rewardToken: { symbol: 'HT' },
+          uniRewardTokenDollarPair: { token: 'HT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: ether(0.025),
@@ -221,8 +221,8 @@ const covers = [
       name: 'Earn AXIE',
       settings: {
         3: {
-          rewardToken: '0xaBccBfdfd5Ff2855236C371D70Dc7951a3F3ba5B',
-          uniRewardTokenDollarPair: '0x2519c7E52ccFA72f306a4907e5f727F189cb9F05',
+          rewardToken: { symbol: 'AXS' },
+          uniRewardTokenDollarPair: { token: 'AXS' },
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
@@ -230,8 +230,8 @@ const covers = [
           rewardTokenDeposit: ether(15_000)
         },
         31337: {
-          rewardToken: '',
-          uniRewardTokenDollarPair: '',
+          rewardToken: { symbol: 'AXS' },
+          uniRewardTokenDollarPair: { token: 'AXS' },
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
@@ -239,8 +239,8 @@ const covers = [
           rewardTokenDeposit: ether(15_000)
         },
         42: {
-          rewardToken: '0x6575efCb04306Af46414e0425162a54734B9e024',
-          uniRewardTokenDollarPair: '0x1fB7a7046D5e1b2DfA8b2169456bEb0Acc04F7ed',
+          rewardToken: { symbol: 'AXS' },
+          uniRewardTokenDollarPair: { token: 'AXS' },
           stakingTarget: ether(5_000_000),
           maxStake: ether(50_000),
           rewardPerBlock: ether(0.050),
@@ -288,8 +288,8 @@ const covers = [
       name: 'Earn CPOOL',
       settings: {
         3: {
-          rewardToken: '0x9912B6Fc42675DC940313551b20c022219b98Adb',
-          uniRewardTokenDollarPair: '0xa3831BdDba111773dc9919007E322A36003ed7E8',
+          rewardToken: { symbol: 'CPOOL' },
+          uniRewardTokenDollarPair: { token: 'CPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
@@ -297,8 +297,8 @@ const covers = [
           rewardTokenDeposit: ether(70_000)
         },
         31337: {
-          rewardToken: '',
-          uniRewardTokenDollarPair: '',
+          rewardToken: { symbol: 'CPOOL' },
+          uniRewardTokenDollarPair: { token: 'CPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
@@ -306,8 +306,8 @@ const covers = [
           rewardTokenDeposit: ether(200_000)
         },
         42: {
-          rewardToken: '0x0094C12E7acb84E999C5c69746C48F8D51d836ca',
-          uniRewardTokenDollarPair: '0x366e82434f1108Ec7ecD7C73408d9ba71F1d0589',
+          rewardToken: { symbol: 'CPOOL' },
+          uniRewardTokenDollarPair: { token: 'CPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: ether(0.080),
