@@ -23,6 +23,8 @@ contract LiquidityEngine is Recoverable {
   }
 
   function disableStrategy(IStore s, address strategy) external nonReentrant {
+    // @suppress-address-trust-issue The address strategy can be trusted
+    // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 

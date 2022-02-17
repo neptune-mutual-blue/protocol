@@ -7,7 +7,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 ## Functions
 
 - [mustNotBePaused(IStore s)](#mustnotbepaused)
-- [mustBeValidCover(IStore s, bytes32 key)](#mustbevalidcover)
+- [mustHaveNormalCoverStatus(IStore s, bytes32 key)](#musthavenormalcoverstatus)
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
 - [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
 - [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender)](#mustbecoverownerorcovercontract)
@@ -62,13 +62,13 @@ function mustNotBePaused(IStore s) public view {
 ```
 </details>
 
-### mustBeValidCover
+### mustHaveNormalCoverStatus
 
 Reverts if the key does not resolve in a valid cover contract
  or if the cover is under governance.
 
 ```solidity
-function mustBeValidCover(IStore s, bytes32 key) external view
+function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -82,7 +82,7 @@ function mustBeValidCover(IStore s, bytes32 key) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeValidCover(IStore s, bytes32 key) external view {
+function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
     require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
   }

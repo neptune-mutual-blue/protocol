@@ -33,10 +33,13 @@ const createPairs = async (routerAt, factoryAt, pairInfo) => {
     pair = await factory.getPair(token0, token1)
     console.info(name, 'pair:', pair)
 
-    pairs.push(await uniswap.getPair(pair))
+    const instance = await uniswap.getPair(pair)
+    pairInfo[i].pairInstance = instance
+
+    pairs.push(instance)
   }
 
-  return pairs
+  return [pairs, pairInfo]
 }
 
 const deploySeveral = async (cache, pairInfo) => {
@@ -54,10 +57,12 @@ const deploySeveral = async (cache, pairInfo) => {
     const { token0, token1 } = pairInfo[i]
 
     const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0, token1)
+    pairInfo[i].pairInstance = contract
+
     contracts.push(contract)
   }
 
-  return contracts
+  return [contracts, pairInfo]
 }
 
 const at = async (address) => {

@@ -61,7 +61,7 @@ returns(addr address)
 ```javascript
 function deploy(IStore s, bytes32 key) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
     s.callerMustBeCoverContract();
 
     (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getStablecoin());

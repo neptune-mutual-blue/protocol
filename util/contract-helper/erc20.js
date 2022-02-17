@@ -19,7 +19,7 @@ const approve = async (tokenAddress, spender, account, amount = ethers.constants
     }
   }
 
-  const tx = await erc20.approve(spender, amount)
+  const tx = await erc20.connect(account).approve(spender, amount)
   await tx.wait()
 }
 

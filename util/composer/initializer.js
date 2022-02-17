@@ -8,10 +8,6 @@ const { getNetworkInfo } = require('../network')
 const { grantRoles } = require('./grant-roles')
 const { minutesToBlocks } = require('../block-time')
 const { getExternalProtocols } = require('./external-protocols')
-const erc20 = require('../contract-helper/erc20')
-
-const DAYS = 86400
-const MINUTES = 60
 
 /**
  * Initializes all contracts
@@ -24,20 +20,22 @@ const initialize = async (suite, deploymentId) => {
   const network = await getNetworkInfo()
   const minLiquidityPeriod = network.cover.minLiquidityPeriod
   const claimPeriod = network.cover.claimPeriod
+  const bondPeriod = network.pool.bond.period.toString()
 
-  const store = await storeComposer.deploy(cache)
   const tokens = await fakeTokenComposer.compose(cache)
 
-  const { npm, dai, cpool, ht, okb, axs, aToken, cDai } = tokens
+  const { npm, dai, cpool, ht, okb, axs, aToken, cDai, tokenInfo } = tokens
 
   const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
 
-  const pairs = await fakeUniswapPairComposer.compose(cache, tokens)
+  const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
+
   const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, axsUsdPair] = pairs
 
   // The protocol only supports stablecoin as reassurance token for now
   const reassuranceToken = dai
 
+  const store = await storeComposer.deploy(cache)
   const libs = await libsComposer.deployAll(cache)
 
   const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
@@ -89,7 +87,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000))
   let addresses = [npmUsdPair.address, sample.fake.TREASURY]
-  let values = [helper.percentage(0.75), helper.ether(10_000), 7 * DAYS, helper.ether(2_000)]
+  let values = [helper.percentage(0.75), helper.ether(10_000), bondPeriod, helper.ether(2_000)]
 
   await intermediate(cache, bondPoolContract, 'setup', addresses, values)
 
@@ -363,7 +361,9 @@ const initialize = async (suite, deploymentId) => {
     claimsProcessor,
     bondPoolContract,
     stakingPoolContract,
-    libs
+    libs,
+    tokenInfo,
+    pairInfo
   }
 }
 

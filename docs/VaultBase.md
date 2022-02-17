@@ -103,7 +103,7 @@ function addLiquidityInternalOnly(
     // @suppress-acl Can only be accessed by the latest cover contract
     // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
     s.callerMustBeCoverContract();
 
     // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
@@ -150,7 +150,7 @@ function transferGovernance(
 ### transferToStrategy
 
 ```solidity
-function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
+function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -171,7 +171,7 @@ function transferToStrategy(
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
-  ) external override nonReentrant {
+  ) external override {
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
@@ -185,7 +185,7 @@ function transferToStrategy(
 ### receiveFromStrategy
 
 ```solidity
-function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
+function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -206,7 +206,7 @@ function receiveFromStrategy(
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
-  ) external override nonReentrant {
+  ) external override {
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
@@ -269,7 +269,7 @@ function addLiquidity(
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
   }

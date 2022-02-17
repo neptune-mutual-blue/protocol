@@ -17,6 +17,8 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getCoverContract(IStore s)](#getcovercontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultAddress(IStore s, bytes32 key)](#getvaultaddress)
+- [getStakingPoolAddress(IStore s)](#getstakingpooladdress)
+- [getBondPoolAddress(IStore s, bytes32 key)](#getbondpooladdress)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
 
 ### getPriceDiscoveryContract
@@ -271,6 +273,55 @@ returns(address)
 ```javascript
 function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
+    return vault;
+  }
+```
+</details>
+
+### getStakingPoolAddress
+
+```solidity
+function getStakingPoolAddress(IStore s) public view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakingPoolAddress(IStore s) public view returns (address) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_STAKING_POOL);
+    return vault;
+  }
+```
+</details>
+
+### getBondPoolAddress
+
+```solidity
+function getBondPoolAddress(IStore s, bytes32 key) public view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBondPoolAddress(IStore s, bytes32 key) public view returns (address) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_BOND_POOL, key);
     return vault;
   }
 ```

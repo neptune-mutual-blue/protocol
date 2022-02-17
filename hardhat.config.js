@@ -21,7 +21,7 @@ const config = {
       url: `${process.env.ROPSTEN_RPC_URL}`,
       chainId: 3,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 60000000000,
+      gasPrice: 40000000000,
       gas: 'auto'
     },
     kovan: {

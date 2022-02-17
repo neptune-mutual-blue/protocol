@@ -61,7 +61,7 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant
 ```javascript
 function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
 
     if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
       s.mustBeCoverOwner(key, msg.sender);
@@ -148,7 +148,7 @@ function stopCover(bytes32 key, string reason) external nonpayable nonReentrant
 ```javascript
 function stopCover(bytes32 key, string memory reason) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustBeValidCover(key);
+    s.mustHaveNormalCoverStatus(key);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     s.stopCoverInternal(key);

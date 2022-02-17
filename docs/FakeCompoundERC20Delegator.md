@@ -70,7 +70,9 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 ```javascript
 function mint(uint256 mintAmount) external override returns (uint256) {
     dai.transferFrom(msg.sender, address(this), mintAmount);
-    cDai.mint(msg.sender, mintAmount);
+
+    cDai.mint(mintAmount);
+    cDai.transfer(msg.sender, mintAmount);
 
     return 0;
   }
@@ -104,7 +106,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
     cDai.transferFrom(msg.sender, address(this), redeemTokens);
 
     uint256 interest = (redeemTokens * 3) / 100;
-    dai.mint(address(this), interest);
+    dai.mint(interest);
 
     dai.transfer(msg.sender, redeemTokens + interest);
 

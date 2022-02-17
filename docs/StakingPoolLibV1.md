@@ -14,6 +14,7 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 - [canWithdrawFromBlockHeightInternal(IStore s, bytes32 key, address account)](#canwithdrawfromblockheightinternal)
 - [getLastDepositHeight(IStore s, bytes32 key, address account)](#getlastdepositheight)
 - [getLastRewardHeight(IStore s, bytes32 key, address account)](#getlastrewardheight)
+- [getStakingPoolRewardTokenBalance(IStore s, bytes32 key)](#getstakingpoolrewardtokenbalance)
 - [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
 - [withdrawRewardsInternal(IStore s, bytes32 key, address account)](#withdrawrewardsinternal)
 - [depositInternal(IStore s, bytes32 key, uint256 amount)](#depositinternal)
@@ -286,6 +287,33 @@ function getLastRewardHeight(
 ```
 </details>
 
+### getStakingPoolRewardTokenBalance
+
+```solidity
+function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
+    IERC20 rewardToken = IERC20(s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key));
+    address stakingPool = s.getStakingPoolAddress();
+
+    return rewardToken.balanceOf(stakingPool);
+  }
+```
+</details>
+
 ### calculateRewardsInternal
 
 ```solidity
@@ -318,7 +346,11 @@ function calculateRewardsInternal(
 
     uint256 rewardPerBlock = s.getRewardPerBlock(key);
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
-    return (myStake * rewardPerBlock * totalBlocks) / 1 ether;
+    uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
+
+    uint256 poolBalance = getStakingPoolRewardTokenBalance(s, key);
+
+    return rewards > poolBalance ? poolBalance : rewards;
   }
 ```
 </details>

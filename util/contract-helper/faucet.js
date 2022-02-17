@@ -1,21 +1,19 @@
 const { ethers } = require('hardhat')
+const { ether } = require('../helper')
 
-const request = async (token) => {
+const request = async (token, amount) => {
   const [owner] = await ethers.getSigners()
 
   const balance = await token.balanceOf(owner.address)
 
-  if (balance.gt(0)) {
+  if (balance.gte(amount || '0')) {
     return
   }
 
-  const contract = await new ethers.Contract(token.address, ['function request() external'], owner)
+  const contract = await new ethers.Contract(token.address, ['function mint(uint256) external'], owner)
   console.info('Requesting tokens')
 
-  let tx = await contract.request()
-  await tx.wait()
-
-  tx = await contract.request()
+  const tx = await contract.mint(amount || ether(1_000_000))
   await tx.wait()
 }
 

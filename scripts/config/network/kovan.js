@@ -1,12 +1,17 @@
 require('dotenv').config()
 const wallet = require('../../../util/wallet')
-const MINUTES = 60
 const { ACCESS_CONTROL } = require('../../../util/key')
+const MINUTES = 60
 
 const config = {
   42: {
     network: 'Kovan Test Network',
     chainId: 3,
+    pool: {
+      bond: {
+        period: 10 * MINUTES
+      }
+    },
     cover: {
       minLiquidityPeriod: 5 * MINUTES,
       claimPeriod: 120 * MINUTES
@@ -38,20 +43,20 @@ const config = {
     ],
     deployedTokens: {
       DAI: '0xff795577d9ac8bd7d90ee22b6c1703490b6512fd', // Aave Kovan DAI
-      NPM: '0x0d21fF540b6040d9152F5c2E101081a0243Bf30A',
-      CPOOL: '0x0094C12E7acb84E999C5c69746C48F8D51d836ca',
-      HT: '0x921e65d8A0F071caa170efD316Cd1bc2bf6225e0',
-      OKB: '0x20B69b8a65B235d1FDA63B074Dc8e0E74bb35e19',
-      AXS: '0x6575efCb04306Af46414e0425162a54734B9e024',
+      NPM: '0x481B55f34Ef7839c408f35f6B57a68cd54B84eFC',
+      CPOOL: '0x28f61374cC7fF2b0181064D21F09993a6972e7D3',
+      HT: '0x131c05b860c89B59f5b5aa6901434F20F19D5C2f',
+      OKB: '0xcED1a80c495a27fF2310E59F75034c76faC6bacf',
+      AXS: '0xF1A75e2bfB5bd5DF9a6cC07ecadaD236258950EF',
       aToken: '0xdcf0af9e59c002fa3aa091a46196b37530fd48a8',
       cDai: '0xF49eBE5A0d62cc8f0318AD14620D17dcc2D53935'
     },
     stablecoinPairs: {
-      NPM_DAI: '0x68783fD3030035DE814B00Aa6051EA253A6E31e0',
-      CPOOL_DAI: '0x366e82434f1108Ec7ecD7C73408d9ba71F1d0589',
-      HT_DAI: '0x9166bE80b9C647d4370a73ae1f58E93904A9AfBb',
-      OKB_DAI: '0x6677357FeB48BD397EBf68146931631721b817f0',
-      AXS_DAI: '0x1fB7a7046D5e1b2DfA8b2169456bEb0Acc04F7ed'
+      NPM_DAI: '0x058A0445B488Cba8cab4963181eE7ec3da71e7A0',
+      CPOOL_DAI: '0x4d77b98b824949DC97c475B4f12Ec096fd6767aF',
+      HT_DAI: '0x90B3EE0EaF77261e11B3e434A55a8807cbE7b13A',
+      OKB_DAI: '0x35302e6C59047804af87F45B05759BB2e077B496',
+      AXS_DAI: '0x65A6F643867C550Dd95721b0fb37541f2749B54B'
     },
     uniswapV2Like: {
       description: 'Sushiswap on Kovan',

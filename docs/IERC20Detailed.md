@@ -10,6 +10,7 @@ View Source: [contracts/interfaces/IERC20Detailed.sol](../contracts/interfaces/I
 
 - [name()](#name)
 - [symbol()](#symbol)
+- [mint(uint256 amount)](#mint)
 
 ### name
 
@@ -48,6 +49,26 @@ returns(string)
 
 ```javascript
 function symbol() external view returns (string memory);
+```
+</details>
+
+### mint
+
+```solidity
+function mint(uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mint(uint256 amount) external;
 ```
 </details>
 
