@@ -31,6 +31,7 @@ abstract contract Finalization is Recoverable, IFinalization {
 
     s.mustBeClaimingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterResolutionDeadline(key);
     s.mustBeAfterClaimExpiry(key);
 
     _finalize(key, incidentDate);
