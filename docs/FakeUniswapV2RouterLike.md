@@ -17,8 +17,93 @@ address public tokenB;
 
 ## Functions
 
+- [factory()](#factory)
+- [getAmountOut(uint256 amountIn, uint256 , uint256 )](#getamountout)
+- [getAmountIn(uint256 amountOut, uint256 , uint256 )](#getamountin)
 - [getAmountsOut(uint256 multiplier, address[] )](#getamountsout)
+- [quote(uint256 amountA, uint256 , uint256 )](#quote)
+- [getAmountsIn(uint256 multiplier, address[] )](#getamountsin)
 - [addLiquidity(address _tokenA, address _tokenB, uint256 _amountADesired, uint256 _amountBDesired, uint256 , uint256 , address , uint256 )](#addliquidity)
+
+### factory
+
+```solidity
+function factory() external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function factory() external view override returns (address) {
+    return address(this);
+  }
+```
+</details>
+
+### getAmountOut
+
+```solidity
+function getAmountOut(uint256 amountIn, uint256 , uint256 ) external pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountIn | uint256 |  | 
+|  | uint256 |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountOut(
+    uint256 amountIn,
+    uint256,
+    uint256
+  ) external pure override returns (uint256) {
+    return amountIn * 2;
+  }
+```
+</details>
+
+### getAmountIn
+
+```solidity
+function getAmountIn(uint256 amountOut, uint256 , uint256 ) external pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountOut | uint256 |  | 
+|  | uint256 |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountIn(
+    uint256 amountOut,
+    uint256,
+    uint256
+  ) external pure override returns (uint256) {
+    return amountOut * 2;
+  }
+```
+</details>
 
 ### getAmountsOut
 
@@ -39,6 +124,64 @@ returns(uint256[])
 
 ```javascript
 function getAmountsOut(uint256 multiplier, address[] calldata) external pure override returns (uint256[] memory) {
+    uint256[] memory amounts = new uint256[](2);
+
+    amounts[0] = multiplier;
+    amounts[1] = multiplier;
+
+    return amounts;
+  }
+```
+</details>
+
+### quote
+
+```solidity
+function quote(uint256 amountA, uint256 , uint256 ) public pure
+returns(amountB uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountA | uint256 |  | 
+|  | uint256 |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function quote(
+    uint256 amountA,
+    uint256,
+    uint256
+  ) public pure virtual override returns (uint256 amountB) {
+    return amountA;
+  }
+```
+</details>
+
+### getAmountsIn
+
+```solidity
+function getAmountsIn(uint256 multiplier, address[] ) external pure
+returns(uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| multiplier | uint256 |  | 
+|  | address[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountsIn(uint256 multiplier, address[] calldata) external pure override returns (uint256[] memory) {
     uint256[] memory amounts = new uint256[](2);
 
     amounts[0] = multiplier;

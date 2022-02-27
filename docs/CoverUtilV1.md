@@ -24,8 +24,7 @@ enum CoverStatus {
 - [getCoverFee(IStore s)](#getcoverfee)
 - [getMinCoverCreationStake(IStore s)](#getmincovercreationstake)
 - [getMinStakeToAddLiquidity(IStore s)](#getminstaketoaddliquidity)
-- [getMinLiquidityPeriod(IStore s)](#getminliquidityperiod)
-- [getClaimPeriod(IStore s)](#getclaimperiod)
+- [getClaimPeriod(IStore s, bytes32 key)](#getclaimperiod)
 - [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
 - [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
@@ -191,33 +190,10 @@ function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
 ```
 </details>
 
-### getMinLiquidityPeriod
-
-```solidity
-function getMinLiquidityPeriod(IStore s) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-  }
-```
-</details>
-
 ### getClaimPeriod
 
 ```solidity
-function getClaimPeriod(IStore s) external view
+function getClaimPeriod(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -226,13 +202,17 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+    uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+
+    return fromKey > 0 ? fromKey : fallbackValue;
   }
 ```
 </details>

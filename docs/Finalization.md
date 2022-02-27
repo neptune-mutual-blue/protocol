@@ -41,6 +41,7 @@ function finalize(bytes32 key, uint256 incidentDate) external override nonReentr
 
     s.mustBeClaimingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterResolutionDeadline(key);
     s.mustBeAfterClaimExpiry(key);
 
     _finalize(key, incidentDate);
@@ -76,6 +77,12 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
+
+    // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
+    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
+    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate)));
 
     s.updateStateAndLiquidity(key);
     emit Finalized(key, msg.sender, incidentDate);

@@ -11,12 +11,10 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address you)](#getinfointernal)
 - [_getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityaddedinternal)
 - [_getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityremovedinternal)
-- [_getLiquidityReleaseDateInternal(IStore s, bytes32 coverKey, address you)](#_getliquidityreleasedateinternal)
 - [getLendingTotal(IStore s, bytes32 coverKey)](#getlendingtotal)
-- [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd, bool initialLiquidity)](#addliquidityinternal)
+- [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd)](#addliquidityinternal)
 - [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
 - [_updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatecoverliquidity)
-- [_updateReleaseDate(IStore s, bytes32 coverKey, address account)](#_updatereleasedate)
 - [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
 - [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
 - [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidityinternal)
@@ -27,7 +25,6 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
 - [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
 - [getMaxFlashLoanInternal(IStore s, address token)](#getmaxflashloaninternal)
-- [setMinLiquidityPeriodInternal(IStore s, bytes32 coverKey, uint256 value)](#setminliquidityperiodinternal)
 - [getPodTokenNameInternal(bytes32 coverKey)](#getpodtokennameinternal)
 - [transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategyinternal)
 - [_addToStrategyOut(IStore s, bytes32 coverKey, IERC20 token, uint256 amountToAdd)](#_addtostrategyout)
@@ -90,50 +87,12 @@ function calculatePodsInternal(
 ### calculateLiquidityInternal
 
 Calculates the amount of liquidity to transfer for the given amount of PODs to burn.
- todo Need to revisit this later and fix the following issue
- https://github.com/neptune-mutual/protocol/issues/23
- As it seems, the function `calculateLiquidityInternal` does not consider that
- the balance of the-then vault may not or most likely will not be accurate.
- Or that the protocol could have lent out some portion of the liquidity to one
- or several external protocols to maximize rewards given to the liquidity providers.
- # Proposal 1: By Tracking Liquidity Lent Out
- It’s easy to keep track of how much liquidity was lent elsewhere and
- add that amount to come up with the total liquidity of the vault at any time.
- This solution allows liquidity providers to view their final balance and redeem
- their PODs anytime and receive withdrawals.
- **The Problems of This Approach**
- Imagine an external lending protocol we sent liquidity to is attacked and exploited
- and became unable to pay back the amount with interest. This situation, if it arises,
- suggests a design flaw. As liquidity providers can receive their share of
- the liquidity and rewards without bearing any loss, many will jump in
- to withdraw immediately.
- If this happens and most likely will, the liquidity providers who kept their liquidity
- longer in the protocol will now collectively bear the loss. Then again, `tracking liquidity`
- becomes much more complex because we not only need to track the balance of
- the-then vault contract but several other things like `external lendings`
- and `lending defaults.`
- # Proposal 2: By Creating a `Withdrawal Window`
- The Vault contract can lend out liquidity to external lending protocols to maximize reward
- regularly. But it also MUST WITHDRAW PERIODICALLY to receive back the loaned amount
+ The Vault contract lends out liquidity to external protocols to maximize reward
+ regularly. But it also withdraws periodically to receive back the loaned amount
  with interest. In other words, the Vault contract continuously supplies
  available liquidity to lending protocols and withdraws during a fixed interval.
  For example, supply during `180-day lending period` and allow withdrawals
  during `7-day withdrawal period`.
- This proposal solves the issue of `Proposal 1` as the protocol treats every
- liquidity provider the same. The providers will be able to withdraw their
- proportional share of liquidity during the `withdrawal period` without
- getting any additional benefit or alone suffering financial loss
- based on how quick or late they were to withdraw.
- Another advantage of this proposal is that the issue reported
- is no longer a bug but a feature.
- **The Problems of This Approach**
- The problem with this approach is the fixed period when liquidity providers
- can withdraw. If LPs do not redeem their liquidity during the `withdrawal period,`
- they will have to wait for another cycle until the `lending period` is over.
- This solution would not be a problem for liquidity providers with a
- long-term mindset who understand the risks of `risk pooling.` A short-term-focused
- liquidity provider would want to see a `90-day` or shorter lending duration
- that enables them to pool liquidity in and out periodically based on their preference.
 
 ```solidity
 function calculateLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, uint256 podsToBurn) public view
@@ -154,23 +113,18 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction calculateLiquidityInternal(
+function calculateLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
     address stablecoin,
     uint256 podsToBurn
   ) public view returns (uint256) {
-    /***************************************************************************
-    @todo Need to revisit this later and fix the following issue
-    https://github.com/neptune-mutual/protocol/issues/23
-    ***************************************************************************/
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
 
     uint256 contractStablecoinBalance = IERC20(stablecoin).balanceOf(address(this));
     return (contractStablecoinBalance * podsToBurn) / IERC20(pod).totalSupply();
   }
-
 ```
 </details>
 
@@ -197,7 +151,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getInfoInternal(
+function getInfoInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
@@ -207,21 +161,16 @@ nction getInfoInternal(
     values = new uint256[](11);
 
     values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
-    values[1] = IERC20(stablecoin).balanceOf(address(this)); // Stablecoins in the pool
+    values[1] = getStablecoinBalanceOfInternal(s, coverKey);
     values[2] = getLendingTotal(s, coverKey); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
-    values[4] = s.getMinLiquidityPeriod(); // Lockup period
-    values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-
-    // @todo: The function calculateLiquidityInternal has issues.
-    // Check the function to learn more
-    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
-    values[10] = getStablecoinBalanceOfInternal(s, coverKey);
+    values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
+    values[5] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
+    values[6] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+    values[7] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
+    values[8] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
+    values[9] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
   }
-
 ```
 </details>
 
@@ -244,14 +193,13 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getCoverLiquidityAddedInternal(
+function _getCoverLiquidityAddedInternal(
     IStore s,
     bytes32 coverKey,
     address you
   ) private view returns (uint256) {
     return s.getUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, you));
   }
-
 ```
 </details>
 
@@ -274,44 +222,13 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getCoverLiquidityRemovedInternal(
+function _getCoverLiquidityRemovedInternal(
     IStore s,
     bytes32 coverKey,
     address you
   ) private view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
   }
-
-```
-</details>
-
-### _getLiquidityReleaseDateInternal
-
-```solidity
-function _getLiquidityReleaseDateInternal(IStore s, bytes32 coverKey, address you) private view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| you | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-nction _getLiquidityReleaseDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, you));
-  }
-
 ```
 </details>
 
@@ -333,10 +250,9 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
+function getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
     return s.getUintByKey(CoverUtilV1.getCoverTotalLentKey(coverKey));
   }
-
 ```
 </details>
 
@@ -345,7 +261,7 @@ nction getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256)
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd, bool initialLiquidity) external nonpayable
+function addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd) external nonpayable
 returns(uint256)
 ```
 
@@ -360,21 +276,19 @@ returns(uint256)
 | account | address | Specify the account on behalf of which the liquidity is being added. | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 | npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
-| initialLiquidity | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction addLiquidityInternal(
+function addLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
     address stablecoin,
     address account,
     uint256 amount,
-    uint256 npmStakeToAdd,
-    bool initialLiquidity
+    uint256 npmStakeToAdd
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
     // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
@@ -384,18 +298,14 @@ nction addLiquidityInternal(
     // Update values
     _updateNpmStake(s, coverKey, account, npmStakeToAdd);
     _updateCoverLiquidity(s, coverKey, account, amount);
-    _updateReleaseDate(s, coverKey, account);
 
     uint256 podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
 
-    if (initialLiquidity == false) {
-      // First deposit the tokens
-      IERC20(stablecoin).ensureTransferFrom(account, address(this), amount);
-    }
+    IERC20(stablecoin).ensureTransferFrom(account, address(this), amount);
+    IERC20(s.getNpmTokenAddress()).ensureTransferFrom(account, address(this), npmStakeToAdd);
 
     return podsToMint;
   }
-
 ```
 </details>
 
@@ -418,7 +328,7 @@ function _updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 am
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _updateNpmStake(
+function _updateNpmStake(
     IStore s,
     bytes32 coverKey,
     address account,
@@ -432,7 +342,6 @@ nction _updateNpmStake(
       s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
     }
   }
-
 ```
 </details>
 
@@ -455,7 +364,7 @@ function _updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _updateCoverLiquidity(
+function _updateCoverLiquidity(
     IStore s,
     bytes32 coverKey,
     address account,
@@ -464,37 +373,6 @@ nction _updateCoverLiquidity(
     s.addUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), amount); // Total liquidity
     s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
   }
-
-```
-</details>
-
-### _updateReleaseDate
-
-```solidity
-function _updateReleaseDate(IStore s, bytes32 coverKey, address account) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-nction _updateReleaseDate(
-    IStore s,
-    bytes32 coverKey,
-    address account
-  ) private {
-    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
-    s.setUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, account), block.timestamp + minLiquidityPeriod); // solhint-disable-line
-  }
-
 ```
 </details>
 
@@ -517,14 +395,13 @@ returns(myStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getMyNpmStake(
+function _getMyNpmStake(
     IStore s,
     bytes32 coverKey,
     address account
   ) private view returns (uint256 myStake) {
     (, myStake) = getCoverNpmStake(s, coverKey, account);
   }
-
 ```
 </details>
 
@@ -547,7 +424,7 @@ returns(totalStake uint256, myStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getCoverNpmStake(
+function getCoverNpmStake(
     IStore s,
     bytes32 coverKey,
     address account
@@ -555,7 +432,6 @@ nction getCoverNpmStake(
     totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey));
     myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account));
   }
-
 ```
 </details>
 
@@ -582,7 +458,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction removeLiquidityInternal(
+function removeLiquidityInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
@@ -591,18 +467,20 @@ nction removeLiquidityInternal(
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
     s.mustHaveNormalCoverStatus(coverKey);
-
-    // Unstake NPM tokens
-    _unStakeNpm(s, coverKey, npmStakeToRemove);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     // Redeem the PODs and receive DAI
     uint256 releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);
 
-    s.updateStateAndLiquidity(coverKey);
+    // Unstake NPM tokens
+    if (npmStakeToRemove > 0) {
+      _unStakeNpm(s, coverKey, npmStakeToRemove);
+      IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
+    }
 
+    s.updateStateAndLiquidity(coverKey);
     return releaseAmount;
   }
-
 ```
 </details>
 
@@ -624,18 +502,19 @@ function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount) private nonpaya
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _unStakeNpm(
+function _unStakeNpm(
     IStore s,
     bytes32 coverKey,
     uint256 amount
   ) private {
-    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, msg.sender);
-    require(myPreviousStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+    uint256 remainingStake = _getMyNpmStake(s, coverKey, msg.sender);
+
+    // @todo: create an exit feature to unstake everything
+    require(remainingStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
   }
-
 ```
 </details>
 
@@ -659,25 +538,24 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _redeemPods(
+function _redeemPods(
     IStore s,
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem
   ) private returns (uint256) {
+    if (podsToRedeem == 0) {
+      return 0;
+    }
+
     s.mustBeProtocolMember(pod);
     address stablecoin = s.getStablecoin();
 
-    uint256 available = s.getCoverableInternal(coverKey);
+    uint256 available = s.getStablecoinBalanceOfCoverPoolInternal(coverKey);
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, stablecoin, podsToRedeem);
-    uint256 releaseDate = _getLiquidityReleaseDateInternal(s, coverKey, msg.sender);
 
     // You may need to wait till active policies expire
     require(available >= releaseAmount, "Insufficient balance, wait till policy expiry."); // solhint-disable-line
-
-    // You never added any liquidity
-    require(releaseDate > 0, "Invalid request");
-    require(block.timestamp > releaseDate, "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), releaseAmount);
@@ -688,7 +566,6 @@ nction _redeemPods(
 
     return releaseAmount;
   }
-
 ```
 </details>
 
@@ -713,7 +590,7 @@ returns(fee uint256, protocolFee uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getFlashFeesInternal(
+function getFlashFeesInternal(
     IStore s,
     address token,
     uint256 amount
@@ -735,7 +612,6 @@ nction getFlashFeesInternal(
     fee = (amount * rate) / ProtoUtilV1.MULTIPLIER;
     protocolFee = (fee * protocolRate) / ProtoUtilV1.MULTIPLIER;
   }
-
 ```
 </details>
 
@@ -758,7 +634,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getFlashFeeInternal(
+function getFlashFeeInternal(
     IStore s,
     address token,
     uint256 amount
@@ -766,7 +642,6 @@ nction getFlashFeeInternal(
     (uint256 fee, ) = getFlashFeesInternal(s, token, amount);
     return fee;
   }
-
 ```
 </details>
 
@@ -787,10 +662,9 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
+function _getFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE);
   }
-
 ```
 </details>
 
@@ -811,10 +685,9 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getProtocolFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
+function _getProtocolFlashLoanFeeRateInternal(IStore s) private view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL);
   }
-
 ```
 </details>
 
@@ -842,7 +715,7 @@ The amount of `token` that can be borrowed.
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getMaxFlashLoanInternal(IStore s, address token) external view returns (uint256) {
+function getMaxFlashLoanInternal(IStore s, address token) external view returns (uint256) {
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
@@ -858,40 +731,6 @@ nction getMaxFlashLoanInternal(IStore s, address token) external view returns (u
     */
     return 0;
   }
-
-```
-</details>
-
-### setMinLiquidityPeriodInternal
-
-```solidity
-function setMinLiquidityPeriodInternal(IStore s, bytes32 coverKey, uint256 value) external nonpayable
-returns(previous uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| value | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-nction setMinLiquidityPeriodInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 value
-  ) external returns (uint256 previous) {
-    previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
-
-    s.updateStateAndLiquidity(coverKey);
-  }
-
 ```
 </details>
 
@@ -912,10 +751,9 @@ returns(string)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
+function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
     return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
   }
-
 ```
 </details>
 
@@ -939,7 +777,7 @@ function transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, by
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction transferToStrategyInternal(
+function transferToStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
@@ -951,7 +789,6 @@ nction transferToStrategyInternal(
     _addToStrategyOut(s, coverKey, token, amount);
     _addToSpecificStrategyOut(s, coverKey, strategyName, token, amount);
   }
-
 ```
 </details>
 
@@ -974,7 +811,7 @@ function _addToStrategyOut(IStore s, bytes32 coverKey, IERC20 token, uint256 amo
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _addToStrategyOut(
+function _addToStrategyOut(
     IStore s,
     bytes32 coverKey,
     IERC20 token,
@@ -983,7 +820,6 @@ nction _addToStrategyOut(
     bytes32 k = _getStrategyOutKey(coverKey, token);
     s.addUintByKey(k, amountToAdd);
   }
-
 ```
 </details>
 
@@ -1005,7 +841,7 @@ function _clearStrategyOut(IStore s, bytes32 coverKey, IERC20 token) private non
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _clearStrategyOut(
+function _clearStrategyOut(
     IStore s,
     bytes32 coverKey,
     IERC20 token
@@ -1013,7 +849,6 @@ nction _clearStrategyOut(
     bytes32 k = _getStrategyOutKey(coverKey, token);
     s.deleteUintByKey(k);
   }
-
 ```
 </details>
 
@@ -1037,7 +872,7 @@ function _addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyN
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _addToSpecificStrategyOut(
+function _addToSpecificStrategyOut(
     IStore s,
     bytes32 coverKey,
     bytes32 strategyName,
@@ -1047,7 +882,6 @@ nction _addToSpecificStrategyOut(
     bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
     s.addUintByKey(k, amountToAdd);
   }
-
 ```
 </details>
 
@@ -1070,7 +904,7 @@ function _clearSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyN
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _clearSpecificStrategyOut(
+function _clearSpecificStrategyOut(
     IStore s,
     bytes32 coverKey,
     bytes32 strategyName,
@@ -1079,7 +913,6 @@ nction _clearSpecificStrategyOut(
     bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
     s.deleteUintByKey(k);
   }
-
 ```
 </details>
 
@@ -1101,10 +934,9 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getStrategyOutKey(bytes32 coverKey, IERC20 token) private pure returns (bytes32) {
+function _getStrategyOutKey(bytes32 coverKey, IERC20 token) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
   }
-
 ```
 </details>
 
@@ -1127,14 +959,13 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction _getSpecificStrategyOutKey(
+function _getSpecificStrategyOutKey(
     bytes32 coverKey,
     bytes32 strategyName,
     IERC20 token
   ) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, strategyName, token));
   }
-
 ```
 </details>
 
@@ -1158,7 +989,7 @@ function receiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, b
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction receiveFromStrategyInternal(
+function receiveFromStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
@@ -1170,7 +1001,6 @@ nction receiveFromStrategyInternal(
     _clearStrategyOut(s, coverKey, token);
     _clearSpecificStrategyOut(s, coverKey, strategyName, token);
   }
-
 ```
 </details>
 
@@ -1193,7 +1023,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getAmountInStrategies(
+function getAmountInStrategies(
     IStore s,
     bytes32 coverKey,
     IERC20 token
@@ -1201,7 +1031,6 @@ nction getAmountInStrategies(
     bytes32 k = _getStrategyOutKey(coverKey, token);
     return s.getUintByKey(k);
   }
-
 ```
 </details>
 
@@ -1225,7 +1054,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getAmountInStrategy(
+function getAmountInStrategy(
     IStore s,
     bytes32 coverKey,
     bytes32 strategyName,
@@ -1234,7 +1063,6 @@ nction getAmountInStrategy(
     bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
     return s.getUintByKey(k);
   }
-
 ```
 </details>
 
@@ -1256,7 +1084,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
     uint256 balance = stablecoin.balanceOf(address(this));
@@ -1264,7 +1092,6 @@ nction getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view re
 
     return balance + inStrategies;
   }
-
 ```
 </details>
 
@@ -1292,7 +1119,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-nction flashLoanInternal(
+function flashLoanInternal(
     IStore s,
     IERC3156FlashBorrower receiver,
     bytes32 key,
@@ -1325,7 +1152,6 @@ nction flashLoanInternal(
 
     return fee;
   }
-}
 ```
 </details>
 

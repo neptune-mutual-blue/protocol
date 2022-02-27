@@ -21,7 +21,7 @@ event CoverPurchased(bytes32  key, address indexed account, address indexed cxTo
 - [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getCommitment(bytes32 key)](#getcommitment)
-- [getCoverable(bytes32 key)](#getcoverable)
+- [getAvailableLiquidity(bytes32 key)](#getavailableliquidity)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
 
 ### purchaseCover
@@ -185,10 +185,10 @@ function getCommitment(bytes32 key) external view returns (uint256);
 ```
 </details>
 
-### getCoverable
+### getAvailableLiquidity
 
 ```solidity
-function getCoverable(bytes32 key) external view
+function getAvailableLiquidity(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -202,7 +202,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverable(bytes32 key) external view returns (uint256);
+function getAvailableLiquidity(bytes32 key) external view returns (uint256);
 ```
 </details>
 

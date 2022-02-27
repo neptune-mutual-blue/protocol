@@ -8,7 +8,7 @@ View Source: [contracts/libraries/PolicyHelperV1.sol](../contracts/libraries/Pol
 
 - [getCoverFeeInfoInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfointernal)
 - [getCoverFeeInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinternal)
-- [_getCoverFeeRate(uint256 floor, uint256 ceiling, uint256 coverRatio)](#_getcoverfeerate)
+- [_getCoverFeeRate(uint256 floor, uint256 coverRatio, uint256 ceiling)](#_getcoverfeerate)
 - [getHarmonicMean(uint256 x, uint256 y, uint256 z)](#getharmonicmean)
 - [getPolicyRatesInternal(IStore s, bytes32 key)](#getpolicyratesinternal)
 - [getCxTokenInternal(IStore s, bytes32 key, uint256 coverDuration)](#getcxtokeninternal)
@@ -16,7 +16,7 @@ View Source: [contracts/libraries/PolicyHelperV1.sol](../contracts/libraries/Pol
 - [purchaseCoverInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecoverinternal)
 - [_setCommitments(IStore s, ICxToken cxToken, uint256 amountToCover)](#_setcommitments)
 - [getCommitmentInternal(IStore s, bytes32 key)](#getcommitmentinternal)
-- [getCoverableInternal(IStore , bytes32 )](#getcoverableinternal)
+- [getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key)](#getstablecoinbalanceofcoverpoolinternal)
 
 ### getCoverFeeInfoInternal
 
@@ -76,7 +76,12 @@ function getCoverFeeInfoInternal(
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
     coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
 
-    rate = _getCoverFeeRate(floor, ceiling, coverRatio);
+    if (coverRatio == 0) {
+      // If you propose to cover a relatively tiny amount vs the available liquidity, the ratio can be a zero value
+      coverRatio = ceiling;
+    }
+
+    rate = _getCoverFeeRate(floor, coverRatio, ceiling);
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 ```
@@ -118,7 +123,7 @@ function getCoverFeeInternal(
 Gets the harmonic mean rate of the given ratios. Stops/truncates at min/max values.
 
 ```solidity
-function _getCoverFeeRate(uint256 floor, uint256 ceiling, uint256 coverRatio) private pure
+function _getCoverFeeRate(uint256 floor, uint256 coverRatio, uint256 ceiling) private pure
 returns(uint256)
 ```
 
@@ -127,8 +132,8 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | floor | uint256 | The lowest cover fee rate | 
-| ceiling | uint256 | The highest cover fee rate | 
 | coverRatio | uint256 | Enter the ratio of the cover vs liquidity | 
+| ceiling | uint256 | The highest cover fee rate | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -136,8 +141,8 @@ returns(uint256)
 ```javascript
 function _getCoverFeeRate(
     uint256 floor,
-    uint256 ceiling,
-    uint256 coverRatio
+    uint256 coverRatio,
+    uint256 ceiling
   ) private pure returns (uint256) {
     // COVER FEE RATE = HARMEAN(FLOOR, COVER RATIO, CEILING)
     uint256 rate = getHarmonicMean(floor, coverRatio, ceiling);
@@ -398,10 +403,10 @@ function getCommitmentInternal(IStore s, bytes32 key) external view returns (uin
 ```
 </details>
 
-### getCoverableInternal
+### getStablecoinBalanceOfCoverPoolInternal
 
 ```solidity
-function getCoverableInternal(IStore , bytes32 ) external pure
+function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -409,18 +414,18 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | IStore |  | 
-|  | bytes32 |  | 
+| s | IStore |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverableInternal(
-    IStore,
-    bytes32 /*key*/
-  ) external pure returns (uint256) {
-    revert("Not implemented");
+function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view returns (uint256) {
+    address vault = s.getVaultAddress(key);
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+
+    return stablecoin.balanceOf(vault);
   }
 ```
 </details>

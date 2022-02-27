@@ -8,6 +8,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 
 - [mustNotBePaused(IStore s)](#mustnotbepaused)
 - [mustHaveNormalCoverStatus(IStore s, bytes32 key)](#musthavenormalcoverstatus)
+- [mustHaveStoppedCoverStatus(IStore s, bytes32 key)](#musthavestoppedcoverstatus)
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
 - [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
 - [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender)](#mustbecoverownerorcovercontract)
@@ -86,7 +87,34 @@ function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view
 ```javascript
 function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
-    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+  }
+```
+</details>
+
+### mustHaveStoppedCoverStatus
+
+Reverts if the key does not resolve in a valid cover contract
+ or if the cover is under governance.
+
+```solidity
+function mustHaveStoppedCoverStatus(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 | Enter the cover key to check | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustHaveStoppedCoverStatus(IStore s, bytes32 key) external view {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
   }
 ```
 </details>

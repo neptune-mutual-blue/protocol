@@ -92,15 +92,14 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, values[2]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, values[3]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[4]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[9]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[10]);
-    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[11]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
+    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
 
     emit Initialized(addresses, values);
   }

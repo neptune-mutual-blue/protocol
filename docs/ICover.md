@@ -13,6 +13,7 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 event CoverCreated(bytes32  key, bytes32  info);
 event CoverUpdated(bytes32  key, bytes32  info);
 event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  reason);
+event VaultDeployed(bytes32 indexed coverKey, address  vault);
 event WhitelistUpdated(address  account, bool  status);
 event CoverFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
@@ -24,6 +25,7 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
 - [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
+- [deployVault(bytes32 key)](#deployvault)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
 - [getCover(bytes32 key)](#getcover)
@@ -81,7 +83,7 @@ function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[]
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| values | uint256[] | [0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports | 
+| values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -93,6 +95,27 @@ function addCover(
     address reassuranceToken,
     uint256[] memory values
   ) external;
+```
+</details>
+
+### deployVault
+
+```solidity
+function deployVault(bytes32 key) external nonpayable
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deployVault(bytes32 key) external returns (address);
 ```
 </details>
 

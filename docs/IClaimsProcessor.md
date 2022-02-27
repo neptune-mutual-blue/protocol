@@ -11,14 +11,14 @@ View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces
 
 ```js
 event Claimed(address indexed cxToken, bytes32 indexed key, uint256  incidentDate, address indexed account, address  reporter, uint256  amount, uint256  reporterFee, uint256  platformFee, uint256  claimed);
-event ClaimPeriodSet(uint256  previous, uint256  current);
+event ClaimPeriodSet(bytes32 indexed key, uint256  previous, uint256  current);
 ```
 
 ## Functions
 
 - [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
 - [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
-- [setClaimPeriod(uint256 value)](#setclaimperiod)
+- [setClaimPeriod(bytes32 key, uint256 value)](#setclaimperiod)
 - [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
 
 ### claim
@@ -79,20 +79,21 @@ function validate(
 ### setClaimPeriod
 
 ```solidity
-function setClaimPeriod(uint256 value) external nonpayable
+function setClaimPeriod(bytes32 key, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| key | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimPeriod(uint256 value) external;
+function setClaimPeriod(bytes32 key, uint256 value) external;
 ```
 </details>
 

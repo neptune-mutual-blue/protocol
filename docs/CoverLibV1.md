@@ -10,7 +10,8 @@ View Source: [contracts/libraries/CoverLibV1.sol](../contracts/libraries/CoverLi
 - [initializeCoverInternal(IStore s, address liquidityToken, bytes32 liquidityName)](#initializecoverinternal)
 - [addCoverInternal(IStore s, bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcoverinternal)
 - [_addCover(IStore s, bytes32 key, bytes32 info, address reassuranceToken, uint256[] values, uint256 fee)](#_addcover)
-- [_validateAndGetFee(IStore s, bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 initialLiquidity)](#_validateandgetfee)
+- [deployVaultInternal(IStore s, bytes32 key)](#deployvaultinternal)
+- [_validateAndGetFee(IStore s, bytes32 key, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 - [updateCoverInternal(IStore s, bytes32 key, bytes32 info)](#updatecoverinternal)
 - [stopCoverInternal(IStore s, bytes32 key)](#stopcoverinternal)
 - [updateWhitelistInternal(IStore s, address account, bool status)](#updatewhitelistinternal)
@@ -119,7 +120,7 @@ function addCoverInternal(IStore s, bytes32 key, bytes32 info, address reassuran
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| values | uint256[] | [0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports | 
+| values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -133,32 +134,17 @@ function addCoverInternal(
     uint256[] memory values
   ) external {
     // First validate the information entered
-    (uint256 fee, , uint256 minStakeToAddLiquidity) = _validateAndGetFee(s, key, info, values[2], values[4]);
+    (uint256 fee, ) = _validateAndGetFee(s, key, info, values[0]);
 
     // Set the basic cover info
     _addCover(s, key, info, reassuranceToken, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
-    s.getStakingContract().increaseStake(key, msg.sender, values[2], fee);
+    s.getStakingContract().increaseStake(key, msg.sender, values[0], fee);
 
     // Add cover reassurance
-    if (values[3] > 0) {
-      s.getReassuranceContract().addReassurance(key, msg.sender, values[3]);
-    }
-
-    // Add initial liquidity
-    if (values[4] > 0) {
-      IVault vault = s.getVault(key);
-
-      s.getVault(key).addLiquidityInternalOnly(key, msg.sender, values[4], minStakeToAddLiquidity);
-
-      // Transfer liquidity only after minting the pods
-      // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
-      IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), values[4]);
-    }
-
-    if (values[5] > 0) {
-      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, values[5]);
+    if (values[1] > 0) {
+      s.getReassuranceContract().addReassurance(key, msg.sender, values[1]);
     }
   }
 ```
@@ -193,30 +179,59 @@ function _addCover(
     uint256[] memory values,
     uint256 fee
   ) private {
-    // Add a new cover
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
 
-    // Set cover owner
+    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, msg.sender);
-
-    // Set cover info
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, values[1]);
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key, values[0]);
-
-    // Set reassurance token
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
-
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
+
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, key, values[2]);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, key, values[3]);
+    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, values[4]);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key, values[5]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, values[6]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, values[7]);
+  }
+```
+</details>
+
+### deployVaultInternal
+
+```solidity
+function deployVaultInternal(IStore s, bytes32 key) external nonpayable
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deployVaultInternal(IStore s, bytes32 key) external returns (address) {
+    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
+    require(vault == address(0), "Vault already deployed");
+
+    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
 
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
 
     s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
+
+    return deployed;
   }
 ```
 </details>
@@ -226,8 +241,8 @@ function _addCover(
 Validation checks before adding a new cover
 
 ```solidity
-function _validateAndGetFee(IStore s, bytes32 key, bytes32 info, uint256 stakeWithFee, uint256 initialLiquidity) private view
-returns(fee uint256, minCoverCreationStake uint256, minStakeToAddLiquidity uint256)
+function _validateAndGetFee(IStore s, bytes32 key, bytes32 info, uint256 stakeWithFee) private view
+returns(fee uint256, minCoverCreationStake uint256)
 ```
 
 **Arguments**
@@ -238,7 +253,6 @@ returns(fee uint256, minCoverCreationStake uint256, minStakeToAddLiquidity uint2
 | key | bytes32 |  | 
 | info | bytes32 |  | 
 | stakeWithFee | uint256 |  | 
-| initialLiquidity | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -248,25 +262,12 @@ function _validateAndGetFee(
     IStore s,
     bytes32 key,
     bytes32 info,
-    uint256 stakeWithFee,
-    uint256 initialLiquidity
-  )
-    private
-    view
-    returns (
-      uint256 fee,
-      uint256 minCoverCreationStake,
-      uint256 minStakeToAddLiquidity
-    )
-  {
+    uint256 stakeWithFee
+  ) private view returns (uint256 fee, uint256 minCoverCreationStake) {
     require(info > 0, "Invalid info");
-    (fee, minCoverCreationStake, minStakeToAddLiquidity) = s.getCoverFee();
+    (fee, minCoverCreationStake, ) = s.getCoverFee();
 
     uint256 minStake = fee + minCoverCreationStake;
-
-    if (initialLiquidity > 0) {
-      minStake += minStakeToAddLiquidity;
-    }
 
     require(stakeWithFee > minStake, "NPM Insufficient");
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key) == false, "Already exists");

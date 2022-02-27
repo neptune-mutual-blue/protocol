@@ -77,7 +77,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonReentrant {
+function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
     s.validateUnstakeWithClaim(key, incidentDate);

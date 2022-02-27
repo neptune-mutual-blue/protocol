@@ -22,6 +22,7 @@ The cover contract facilitates you create and update covers
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
 - [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
+- [deployVault(bytes32 key)](#deployvault)
 - [stopCover(bytes32 key, string reason)](#stopcover)
 - [updateWhitelist(address account, bool status)](#updatewhitelist)
 - [checkIfWhitelisted(address account)](#checkifwhitelisted)
@@ -109,7 +110,7 @@ function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[]
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| values | uint256[] | [0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports | 
+| values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -127,11 +128,44 @@ function addCover(
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
-    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
+    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
     s.addCoverInternal(key, info, reassuranceToken, values);
     emit CoverCreated(key, info);
+  }
+```
+</details>
+
+### deployVault
+
+```solidity
+function deployVault(bytes32 key) external nonpayable nonReentrant 
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deployVault(bytes32 key) external override nonReentrant returns (address) {
+    s.mustNotBePaused();
+    s.mustHaveStoppedCoverStatus(key);
+
+    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+      s.mustBeCoverOwner(key, msg.sender);
+    }
+
+    address vault = s.deployVaultInternal(key);
+    emit VaultDeployed(key, vault);
+
+    return vault;
   }
 ```
 </details>
