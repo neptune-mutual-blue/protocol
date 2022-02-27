@@ -71,14 +71,16 @@ const at = async (address) => {
 }
 
 const compose = async (cache, tokens) => {
-  const { npm, dai, cpool, ht, okb, axs } = tokens
+  const { npm, dai, cpool, ht, okb, supra, bmc, xt } = tokens
 
   return deploySeveral(cache, [
     { token0: npm.address, token1: dai.address, name: 'NPM/DAI' },
     { token0: cpool.address, token1: dai.address, name: 'CPOOL/DAI' },
     { token0: ht.address, token1: dai.address, name: 'HT/DAI' },
     { token0: okb.address, token1: dai.address, name: 'OKB/DAI' },
-    { token0: axs.address, token1: dai.address, name: 'AXS/DAI' }
+    { token0: supra.address, token1: dai.address, name: 'SUPRA/DAI' },
+    { token0: bmc.address, token1: dai.address, name: 'BMC/DAI' },
+    { token0: xt.address, token1: dai.address, name: 'XT/DAI' }
   ])
 }
 

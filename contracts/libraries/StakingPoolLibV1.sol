@@ -121,6 +121,11 @@ library StakingPoolLibV1 {
     address account
   ) public view returns (uint256) {
     uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
+
+    if (lastDepositHeight == 0) {
+      return 0;
+    }
+
     uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
 
     return lastDepositHeight + lockupPeriod;
@@ -201,7 +206,7 @@ library StakingPoolLibV1 {
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
     IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
-    IERC20(rewardToken).ensureTransfer(s.getTreasury(), rewards);
+    IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
   }
 
   function depositInternal(

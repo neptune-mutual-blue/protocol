@@ -28,15 +28,14 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[0] coverCreationFees
    * @param values[1] minCoverCreationStake
    * @param values[2] firstReportingStake
-   * @param values[3] minLiquidityPeriod
-   * @param values[4] claimPeriod
-   * @param values[5] burnRate
-   * @param values[6] governanceReporterCommission
-   * @param values[7] claimPlatformFee
-   * @param values[8] claimReporterCommission
-   * @param values[9] flashLoanFee
-   * @param values[10] flashLoanFeeProtocol
-   * @param values[11] resolutionCoolDownPeriod
+   * @param values[3] claimPeriod
+   * @param values[4] burnRate
+   * @param values[5] governanceReporterCommission
+   * @param values[6] claimPlatformFee
+   * @param values[7] claimReporterCommission
+   * @param values[8] flashLoanFee
+   * @param values[9] flashLoanFeeProtocol
+   * @param values[10] resolutionCoolDownPeriod
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
     // @suppress-initialization Can only be initialized once by the deployer
@@ -66,15 +65,14 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, values[2]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, values[3]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[4]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[6]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[7]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[8]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[9]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[10]);
-    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[11]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
+    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
 
     emit Initialized(addresses, values);
   }

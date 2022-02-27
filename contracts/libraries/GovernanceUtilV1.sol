@@ -75,6 +75,19 @@ library GovernanceUtilV1 {
     no = s.getUintByKey(k);
   }
 
+  function getStakesOf(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+    yes = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
+    no = s.getUintByKey(k);
+  }
+
   function getResolutionInfoFor(
     IStore s,
     address account,
@@ -118,9 +131,17 @@ library GovernanceUtilV1 {
 
     require(myStakeInWinningCamp > 0, "Nothing to unstake");
 
-    uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
-    // slither-disable-next-line divide-before-multiply
-    uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
+    uint256 rewardRatio = (myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / totalStakeInWinningCamp;
+
+    uint256 reward = 0;
+
+    // Incident dates are reset when a reporting is finalized.
+    // This check ensures only the people who come to unstake
+    // before the finalization will receive rewards
+    if (_getLatestIncidentDate(s, key) == incidentDate) {
+      // slither-disable-next-line divide-before-multiply
+      reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
+    }
 
     toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.MULTIPLIER;
     toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.MULTIPLIER;
@@ -180,19 +201,6 @@ library GovernanceUtilV1 {
       k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_REPORTER_FEE, key, incidentDate));
       s.addUintByKey(k, reporterFee);
     }
-  }
-
-  function getStakesOf(
-    IStore s,
-    address account,
-    bytes32 key,
-    uint256 incidentDate
-  ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
-    no = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
-    yes = s.getUintByKey(k);
   }
 
   function updateCoverStatus(
@@ -299,11 +307,10 @@ library GovernanceUtilV1 {
   }
 
   function getCoolDownPeriodInternal(IStore s, bytes32 key) external view returns (uint256) {
-    if (key > 0) {
-      return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
-    }
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
+    uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
 
-    return s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
+    return fromKey > 0 ? fromKey : fallbackValue;
   }
 
   function getResolutionDeadlineInternal(IStore s, bytes32 key) public view returns (uint256) {

@@ -84,6 +84,7 @@ library PriceLibV1 {
     uint256 lpTokens
   ) external view returns (uint256) {
     uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
+
     uint256 reserve0 = values[0];
     uint256 reserve1 = values[1];
     uint256 supply = values[2];
@@ -112,7 +113,7 @@ library PriceLibV1 {
     address liquidityToken
   ) private {
     bytes32 key = _getLastUpdateKey(token, liquidityToken);
-    s.setUintByKey(key, block.timestamp);
+    s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
   function _getLastUpdateKey(address token0, address token1) private pure returns (bytes32) {
@@ -126,16 +127,17 @@ library PriceLibV1 {
     uint256 multiplier
   ) public view returns (uint256) {
     IUniswapV2PairLike pair = _getPair(s, token, stablecoin);
+    IUniswapV2RouterLike router = IUniswapV2RouterLike(s.getUniswapV2Router());
 
-    (uint256 reserve0, uint256 reserve1, ) = pair.getReserves();
+    uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
+    uint256 reserve0 = values[0];
+    uint256 reserve1 = values[1];
 
-    uint256 unitValue = (reserve0 * multiplier) / reserve1;
-
-    if (pair.token1() == stablecoin) {
-      unitValue = (reserve1 * multiplier) / reserve0;
+    if (pair.token0() == stablecoin) {
+      return router.getAmountIn(multiplier, reserve0, reserve1);
     }
 
-    return unitValue;
+    return router.getAmountIn(multiplier, reserve1, reserve0);
   }
 
   function getNpmPriceInternal(IStore s, uint256 multiplier) external view returns (uint256) {

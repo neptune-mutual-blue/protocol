@@ -87,7 +87,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     uint256 claimBeginsFrom = decision ? block.timestamp + cooldownPeriod : 0; // solhint-disable-line
 
     // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod() : 0;
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
 
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);

@@ -28,7 +28,7 @@ const config = {
       url: `${process.env.KOVAN_RPC_URL}`,
       chainId: 42,
       accounts: [process.env.PRIVATE_KEY],
-      // gasPrice: 60000000000,
+      // gasPrice: 7000000000,
       gas: 'auto'
     },
     bscTestnet: {

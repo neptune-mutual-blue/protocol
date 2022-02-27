@@ -81,6 +81,9 @@ describe('Governance Stories', () => {
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
     const cooldownPeriod = 1 * constants.DAYS
+    const claimPeriod = 7 * constants.DAYS
+    const floor = helper.percentage(7)
+    const ceiling = helper.percentage(45)
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
@@ -88,7 +91,16 @@ describe('Governance Stories', () => {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity, cooldownPeriod])
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.deployVault(coverKey)
+
+    // Add initial liquidity
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await contracts.dai.approve(vault.address, initialLiquidity)
+    await contracts.npm.approve(vault.address, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
 
     // Add provision
     const provision = helper.ether(1_000_001)
@@ -167,7 +179,7 @@ describe('Governance Stories', () => {
 
     await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
     await contracts.governance.connect(bob).report(coverKey, info, stake)
-      .should.be.rejectedWith('Actively Reporting')
+      .should.be.rejectedWith('Status not normal')
   })
 
   it('the cover is now reporting and has an incident date', async () => {

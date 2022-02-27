@@ -42,7 +42,17 @@ library ValidationLibV1 {
    */
   function mustHaveNormalCoverStatus(IStore s, bytes32 key) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
-    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Actively Reporting");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+  }
+
+  /**
+   * @dev Reverts if the key does not resolve in a valid cover contract
+   * or if the cover is under governance.
+   * @param key Enter the cover key to check
+   */
+  function mustHaveStoppedCoverStatus(IStore s, bytes32 key) external view {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, key), "Cover does not exist");
+    require(s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
   }
 
   /**

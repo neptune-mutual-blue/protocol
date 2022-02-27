@@ -13,7 +13,7 @@ const approve = async (tokenAddress, spender, account, amount = ethers.constants
     const allowance = await erc20.allowance(account.address, spender)
     const symbol = await erc20.symbol()
 
-    if (allowance.gt(0)) {
+    if (allowance.gte(amount)) {
       console.info('Spender %s already approved to spend %s from account %s', spender, symbol, account.address)
       return
     }

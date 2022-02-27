@@ -13,7 +13,8 @@ const config = {
       }
     },
     cover: {
-      minLiquidityPeriod: 5 * MINUTES,
+      lendingPeriod: 60 * MINUTES,
+      withdrawalWindow: 60 * MINUTES,
       claimPeriod: 120 * MINUTES,
       cooldownPeriod: 5 * MINUTES
     },
@@ -48,7 +49,9 @@ const config = {
       CPOOL: '0x28f61374cC7fF2b0181064D21F09993a6972e7D3',
       HT: '0x131c05b860c89B59f5b5aa6901434F20F19D5C2f',
       OKB: '0xcED1a80c495a27fF2310E59F75034c76faC6bacf',
-      AXS: '0xF1A75e2bfB5bd5DF9a6cC07ecadaD236258950EF',
+      SUPRA: '0xD4F8c7AA64aA09677064b930a168E0A3D5a4aBEc',
+      BMC: '0x96B34fa8AFCdaC57833bD8333F7A40b0719B9470',
+      XT: '0x986a5ee528B000B257B6A2453f0107839cc06Fbb',
       aToken: '0xdcf0af9e59c002fa3aa091a46196b37530fd48a8',
       cDai: '0xF49eBE5A0d62cc8f0318AD14620D17dcc2D53935'
     },
@@ -57,7 +60,9 @@ const config = {
       CPOOL_DAI: '0x4d77b98b824949DC97c475B4f12Ec096fd6767aF',
       HT_DAI: '0x90B3EE0EaF77261e11B3e434A55a8807cbE7b13A',
       OKB_DAI: '0x35302e6C59047804af87F45B05759BB2e077B496',
-      AXS_DAI: '0x65A6F643867C550Dd95721b0fb37541f2749B54B'
+      SUPRA_DAI: '0xFdFB47919061C167eBfD4df34FD7b9F86577f09C',
+      BMC_DAI: '0x75C6e43D7d4BC6E02445c61fc374B37CF8023C54',
+      XT_DAI: '0xad1ad02930E5015D073Aa6De960eB27BceAcc6c0'
     },
     uniswapV2Like: {
       description: 'Sushiswap on Kovan',

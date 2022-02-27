@@ -32,12 +32,16 @@
  * @property {Object} cpool - Clearpool token contract
  * @property {Object} ht - Huobi token contract
  * @property {Object} okb - OKB token contract
- * @property {Object} axs - AXS token contract
+ * @property {Object} supra - SUPRA token contract
+ * @property {Object} bmc - BMC token contract
+ * @property {Object} xt - XT token contract
  * @property {Object} npmUsdPair NPM/DAI Uniswap Pair,
  * @property {Object} cpoolUsdPair CPOOL/DAI Uniswap Pair,
  * @property {Object} htUsdPair HT/DAI Uniswap Pair
  * @property {Object} okbUsdPair OKB/DAI Uniswap Pair
- * @property {Object} axsUsdPair AXS/DAI Uniswap Pair
+ * @property {Object} supraUsdPair SUPRA/DAI Uniswap Pair
+ * @property {Object} bmcUsdPair BMC/DAI Uniswap Pair
+ * @property {Object} xtUsdPair DT/DAI Uniswap Pair
  * @property {Object} reassuranceToken - Reassurance token
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract

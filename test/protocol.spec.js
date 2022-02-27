@@ -112,7 +112,6 @@ describe('Constructor & Initializer', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.percentage(30), // Governance Burn Rate: 30%
         helper.percentage(10), // Governance Reporter Commission: 10%
@@ -153,7 +152,6 @@ describe('Constructor & Initializer', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -222,7 +220,6 @@ describe('Constructor & Initializer', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -260,7 +257,6 @@ describe('Constructor & Initializer', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -298,7 +294,6 @@ describe('Constructor & Initializer', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -352,7 +347,6 @@ describe('Adding a New Protocol Contract', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -420,7 +414,6 @@ describe('Upgrading Protocol Contract(s)', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -509,7 +502,6 @@ describe('Adding a New Protocol Member', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
@@ -582,7 +574,6 @@ describe('Removing Protocol Member(s)', () => {
       [helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Min liquidity period
         7 * DAYS, // Claim period
         helper.ether(0.3), // Governance Burn Rate: 30%
         helper.ether(0.1), // Governance Reporter Commission: 10%
