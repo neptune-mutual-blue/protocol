@@ -10,7 +10,8 @@ const supportedNetworks = [31337]
 const sendTransfers = async (contract) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
-  await contract.mint(owner.address, helper.ether(100_000_000_000_000_000_000_000_000))
+  await contract.connect(owner).mint(helper.ether(100_000_000_000_000_000_000_000_000))
+
   await contract.transfer(alice.address, helper.ether(10_000_000))
   await contract.transfer(bob.address, helper.ether(20_000_000))
   await contract.transfer(chris.address, helper.ether(30_000_000))

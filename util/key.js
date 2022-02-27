@@ -116,6 +116,8 @@ const PROTOCOL = {
     CLAIM_PERIOD: toBytes32('ns:claim:period'),
     CLAIM_BEGIN_TS: toBytes32('ns:claim:begin:ts'),
     CLAIM_EXPIRY_TS: toBytes32('ns:claim:expiry:ts'),
+    RESOLUTION_DEADLINE: toBytes32('ns:resolution:deadline'),
+    RESOLUTION_COOL_DOWN_PERIOD: toBytes32('ns:resolution:cdp'),
     CLAIM_PLATFORM_FEE: toBytes32('ns:claim:platform:fee'),
     CLAIM_REPORTER_COMMISSION: toBytes32('ns:claim:reporter:commission'),
     LP_RESERVE0: toBytes32('ns:uni:lp:reserve0'),

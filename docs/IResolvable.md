@@ -9,13 +9,17 @@ View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IRes
 **Events**
 
 ```js
-event Resolved(bytes32  key, uint256  incidentDate, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
+event Resolved(bytes32  key, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
+event CooldownPeriodConfigured(bytes32  key, uint256  period);
 ```
 
 ## Functions
 
 - [resolve(bytes32 key, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [configureCoolDownPeriod(bytes32 key, uint256 period)](#configurecooldownperiod)
+- [getCoolDownPeriod(bytes32 key)](#getcooldownperiod)
+- [getResolutionDeadline(bytes32 key)](#getresolutiondeadline)
 
 ### resolve
 
@@ -61,6 +65,69 @@ function emergencyResolve(
     uint256 incidentDate,
     bool decision
   ) external;
+```
+</details>
+
+### configureCoolDownPeriod
+
+```solidity
+function configureCoolDownPeriod(bytes32 key, uint256 period) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| period | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function configureCoolDownPeriod(bytes32 key, uint256 period) external;
+```
+</details>
+
+### getCoolDownPeriod
+
+```solidity
+function getCoolDownPeriod(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoolDownPeriod(bytes32 key) external view returns (uint256);
+```
+</details>
+
+### getResolutionDeadline
+
+```solidity
+function getResolutionDeadline(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getResolutionDeadline(bytes32 key) external view returns (uint256);
 ```
 </details>
 

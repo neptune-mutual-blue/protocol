@@ -14,7 +14,8 @@ const config = {
     },
     cover: {
       minLiquidityPeriod: 5 * MINUTES,
-      claimPeriod: 120 * MINUTES
+      claimPeriod: 120 * MINUTES,
+      cooldownPeriod: 5 * MINUTES
     },
     knownAccounts: [
       {

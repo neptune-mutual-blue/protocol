@@ -156,6 +156,10 @@ function addCoverInternal(
       // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
       IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), values[4]);
     }
+
+    if (values[5] > 0) {
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, values[5]);
+    }
   }
 ```
 </details>

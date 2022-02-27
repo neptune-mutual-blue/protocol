@@ -31,6 +31,7 @@ abstract contract Finalization is Recoverable, IFinalization {
 
     s.mustBeClaimingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
+    s.mustBeAfterResolutionDeadline(key);
     s.mustBeAfterClaimExpiry(key);
 
     _finalize(key, incidentDate);
@@ -46,6 +47,7 @@ abstract contract Finalization is Recoverable, IFinalization {
 
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
 
     s.updateStateAndLiquidity(key);
     emit Finalized(key, msg.sender, incidentDate);

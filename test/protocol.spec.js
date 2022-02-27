@@ -119,7 +119,8 @@ describe('Constructor & Initializer', () => {
         helper.percentage(6.5), // Claim: Platform Fee: 6.5%
         helper.percentage(5), // Claim: Reporter Commission: 5%
         helper.percentage(0.5), // Flash Loan Fee: 0.5%
-        helper.percentage(2.5) // Flash Loan Protocol Fee: 2.5%
+        helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
 
@@ -159,7 +160,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
 
@@ -227,7 +229,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     ).should.be.rejectedWith('Invalid NPM')
   })
@@ -264,7 +267,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     ).should.be.rejectedWith('Invalid Treasury')
   })
@@ -301,7 +305,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     ).should.be.rejectedWith('Invalid Vault')
   })
@@ -354,7 +359,8 @@ describe('Adding a New Protocol Contract', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
   })
@@ -421,7 +427,8 @@ describe('Upgrading Protocol Contract(s)', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
   })
@@ -509,7 +516,8 @@ describe('Adding a New Protocol Member', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
   })
@@ -581,7 +589,8 @@ describe('Removing Protocol Member(s)', () => {
         helper.ether(0.065), // Claim: Platform Fee: 6.5%
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025) // Flash Loan Protocol Fee: 2.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
       ]
     )
   })

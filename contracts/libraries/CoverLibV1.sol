@@ -86,6 +86,7 @@ library CoverLibV1 {
    * @param values[3] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
    * @param values[4] initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
+   * @param values[5] cooldownperiod **Optional.** Enter the cooldown period for governance.
    */
   function addCoverInternal(
     IStore s,
@@ -117,6 +118,10 @@ library CoverLibV1 {
       // Transfer liquidity only after minting the pods
       // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
       IERC20(s.getStablecoin()).ensureTransferFrom(msg.sender, address(vault), values[4]);
+    }
+
+    if (values[5] > 0) {
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, values[5]);
     }
   }
 

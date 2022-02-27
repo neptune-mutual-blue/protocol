@@ -75,6 +75,7 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
 
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
 
     s.updateStateAndLiquidity(key);
     emit Finalized(key, msg.sender, incidentDate);

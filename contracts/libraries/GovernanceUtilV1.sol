@@ -297,4 +297,20 @@ library GovernanceUtilV1 {
   function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
   }
+
+  function getCoolDownPeriodInternal(IStore s, bytes32 key) external view returns (uint256) {
+    if (key > 0) {
+      return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
+    }
+
+    return s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
+  }
+
+  function getResolutionDeadlineInternal(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
+  }
+
+  function isResolvedInternal(IStore s, bytes32 key) external view returns (bool) {
+    return getResolutionDeadlineInternal(s, key) > block.timestamp; // solhint-disable-line
+  }
 }

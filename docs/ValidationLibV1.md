@@ -25,6 +25,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeClaimable(IStore s, bytes32 key)](#mustbeclaimable)
 - [mustBeClaimingOrDisputed(IStore s, bytes32 key)](#mustbeclaimingordisputed)
 - [mustBeReportingOrDisputed(IStore s, bytes32 key)](#mustbereportingordisputed)
+- [mustBeBeforeResolutionDeadline(IStore s, bytes32 key)](#mustbebeforeresolutiondeadline)
+- [mustBeAfterResolutionDeadline(IStore s, bytes32 key)](#mustbeafterresolutiondeadline)
 - [mustBeValidIncidentDate(IStore s, bytes32 key, uint256 incidentDate)](#mustbevalidincidentdate)
 - [mustNotHaveDispute(IStore s, bytes32 key)](#mustnothavedispute)
 - [mustBeDuringReportingPeriod(IStore s, bytes32 key)](#mustbeduringreportingperiod)
@@ -32,7 +34,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidCxToken(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
 - [mustBeValidClaim(IStore s, bytes32 key, address cxToken, uint256 incidentDate)](#mustbevalidclaim)
 - [mustNotHaveUnstaken(IStore s, address account, bytes32 key, uint256 incidentDate)](#mustnothaveunstaken)
-- [validateUnstakeAfterClaimPeriod(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakeafterclaimperiod)
+- [validateUnstakeWithoutClaim(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakewithoutclaim)
 - [validateUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakewithclaim)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
 - [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
@@ -504,6 +506,57 @@ function mustBeReportingOrDisputed(IStore s, bytes32 key) external view {
 ```
 </details>
 
+### mustBeBeforeResolutionDeadline
+
+```solidity
+function mustBeBeforeResolutionDeadline(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeBeforeResolutionDeadline(IStore s, bytes32 key) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+
+    if (deadline > 0) {
+      require(block.timestamp < deadline, "Emergency resolution deadline over"); // solhint-disable-line
+    }
+  }
+```
+</details>
+
+### mustBeAfterResolutionDeadline
+
+```solidity
+function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+    require(block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+  }
+```
+</details>
+
 ### mustBeValidIncidentDate
 
 ```solidity
@@ -705,10 +758,10 @@ function mustNotHaveUnstaken(
 ```
 </details>
 
-### validateUnstakeAfterClaimPeriod
+### validateUnstakeWithoutClaim
 
 ```solidity
-function validateUnstakeAfterClaimPeriod(IStore s, bytes32 key, uint256 incidentDate) external view
+function validateUnstakeWithoutClaim(IStore s, bytes32 key, uint256 incidentDate) external view
 ```
 
 **Arguments**
@@ -723,13 +776,21 @@ function validateUnstakeAfterClaimPeriod(IStore s, bytes32 key, uint256 incident
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validateUnstakeAfterClaimPeriod(
+function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 key,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+
+    // Before the deadline, emergency resolution can still happen
+    // that may have an impact on the final decision. We, therefore, have to wait.
+    mustBeAfterResolutionDeadline(s, key);
+
+    // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
+    // The above code is not useful after finalization but it helps avoid
+    // people calling unstake before a decision is obtained
   }
 ```
 </details>
@@ -759,8 +820,16 @@ function validateUnstakeWithClaim(
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
-    // If a cover is finalized, this incident date will not be valid anymore
+
+    // If this reporting gets finalized, incident date will become invalid
+    // meaning this execution will revert thereby restricting late comers
+    // to access this feature. But they can still access `unstake` feature
+    // to withdraw their stake.
     mustBeValidIncidentDate(s, key, incidentDate);
+
+    // Before the deadline, emergency resolution can still happen
+    // that may have an impact on the final decision. We, therefore, have to wait.
+    mustBeAfterResolutionDeadline(s, key);
 
     bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
 

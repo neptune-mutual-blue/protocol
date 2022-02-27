@@ -26,6 +26,9 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
 - [getDispute(IStore s, bytes32 key, address who, uint256 incidentDate)](#getdispute)
 - [_getLatestIncidentDate(IStore s, bytes32 key)](#_getlatestincidentdate)
+- [getCoolDownPeriodInternal(IStore s, bytes32 key)](#getcooldownperiodinternal)
+- [getResolutionDeadlineInternal(IStore s, bytes32 key)](#getresolutiondeadlineinternal)
+- [isResolvedInternal(IStore s, bytes32 key)](#isresolvedinternal)
 
 ### getReportingPeriod
 
@@ -718,6 +721,82 @@ returns(uint256)
 ```javascript
 function _getLatestIncidentDate(IStore s, bytes32 key) private view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+  }
+```
+</details>
+
+### getCoolDownPeriodInternal
+
+```solidity
+function getCoolDownPeriodInternal(IStore s, bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoolDownPeriodInternal(IStore s, bytes32 key) external view returns (uint256) {
+    if (key > 0) {
+      return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
+    }
+
+    return s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
+  }
+```
+</details>
+
+### getResolutionDeadlineInternal
+
+```solidity
+function getResolutionDeadlineInternal(IStore s, bytes32 key) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getResolutionDeadlineInternal(IStore s, bytes32 key) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
+  }
+```
+</details>
+
+### isResolvedInternal
+
+```solidity
+function isResolvedInternal(IStore s, bytes32 key) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isResolvedInternal(IStore s, bytes32 key) external view returns (bool) {
+    return getResolutionDeadlineInternal(s, key) > block.timestamp; // solhint-disable-line
   }
 ```
 </details>

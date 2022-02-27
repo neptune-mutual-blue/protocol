@@ -20,10 +20,10 @@ const initialize = async (suite, deploymentId) => {
   const network = await getNetworkInfo()
   const minLiquidityPeriod = network.cover.minLiquidityPeriod
   const claimPeriod = network.cover.claimPeriod
+  const cooldownPeriod = network.cover.cooldownPeriod
   const bondPeriod = network.pool.bond.period.toString()
 
   const tokens = await fakeTokenComposer.compose(cache)
-
   const { npm, dai, cpool, ht, okb, axs, aToken, cDai, tokenInfo } = tokens
 
   const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
@@ -71,7 +71,8 @@ const initialize = async (suite, deploymentId) => {
       helper.percentage(6.5), // Claim: Platform Fee: 6.5%
       helper.percentage(5), // Claim: Reporter Commission: 5%
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
-      helper.percentage(2.5) // Flash Loan Protocol Fee: 2.5%
+      helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
+      cooldownPeriod
     ]
   )
 

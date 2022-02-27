@@ -18,6 +18,7 @@ const covers = [
     stakeWithFees: ether(50_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about:
       'Coinbase is a secure online platform for buying, selling, transferring, and storing cryptocurrency.',
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
@@ -52,6 +53,7 @@ const covers = [
     stakeWithFees: ether(50_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about:
       'Hex Trust is fully licensed, insured, and the leading provider of bank-grade custody for digital assets. ',
     tags: ['Smart Contract', 'DeFi', 'Custody'],
@@ -119,6 +121,7 @@ const covers = [
     stakeWithFees: ether(50_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about:
       'OKEx is a Seychelles-based cryptocurrency exchange that provides a platform for trading various cryptocurrencies.',
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
@@ -186,6 +189,7 @@ const covers = [
     stakeWithFees: ether(20_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about: 'Huobi is a Seychelles-based cryptocurrency exchange.',
     tags: ['Exchange', 'DeFi', 'Exchange'],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
@@ -253,6 +257,7 @@ const covers = [
     stakeWithFees: ether(50_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about:
       'Axie Infinity is an NFT-based online video game developed by Vietnamese studio Sky Mavis, which uses Ethereum-based cryptocurrencies, Axie Infinity Shards and Smooth Love Potion.',
     tags: ['Smart Contract', 'NFT', 'Gaming'],
@@ -320,6 +325,7 @@ const covers = [
     stakeWithFees: ether(50_000),
     initialLiquidity: ether(50_000),
     minReportingStake: ether(500),
+    cooldownPeriod: 5 * MINUTES,
     about:
       'Clearpool takes core concepts from traditional credit markets, and applies the principles of decentralization to create a decentralized capital markets ecosystem.',
     tags: ['Smart Contract', 'Borrowing', 'Lending'],
