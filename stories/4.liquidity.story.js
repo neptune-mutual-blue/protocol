@@ -1,0 +1,71 @@
+/* eslint-disable no-unused-expressions */
+
+const { ethers, network } = require('hardhat')
+const BigNumber = require('bignumber.js')
+const { helper, key, ipfs, sample } = require('../util')
+const composer = require('../util/composer')
+const { approve } = require('../util/contract-helper/erc20')
+
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should()
+
+const DAYS = 86400
+
+const coverKey = key.toBytes32('Compound Finance Cover')
+
+/**
+ * @type {Contracts}
+ */
+let contracts = {}
+
+describe('Liquidity Stories', () => {
+  before(async () => {
+    contracts = await composer.initializer.initialize(true)
+  })
+
+  it('a new cover `Bitmart Exchange Cover` was created', async () => {
+    const info = await ipfs.write(sample.info)
+
+    // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
+
+    const stakeWithFee = helper.ether(10_000)
+    const initialReassuranceAmount = helper.ether(1_000_000)
+    const minReportingStake = helper.ether(250)
+    const reportingPeriod = 7 * DAYS
+    const cooldownPeriod = 1 * DAYS
+    const claimPeriod = 7 * DAYS
+    const floor = helper.percentage(7)
+    const ceiling = helper.percentage(45)
+
+    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
+
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.deployVault(coverKey)
+  })
+
+  it('deployer added $4M to Bitmart cover pool', async () => {
+    const initialLiquidity = helper.ether(4_000_000)
+    const minReportingStake = helper.ether(250)
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await contracts.dai.approve(vault.address, initialLiquidity)
+    await contracts.npm.approve(vault.address, minReportingStake)
+
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+  })
+
+  it('deployer removed $3M from Bitmart cover pool', async () => {
+    const [owner] = await ethers.getSigners()
+    const toRedeem = helper.ether(3_000_000)
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await network.provider.send('evm_increaseTime', [181 * DAYS])
+
+    await approve(vault.address, vault.address, owner)
+    await vault.removeLiquidity(coverKey, toRedeem, '0')
+  })
+})

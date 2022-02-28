@@ -79,14 +79,15 @@ describe('Protocol Initialization Stories', () => {
 
     const stakeWithFee = helper.ether(10000)
     const initialReassuranceAmount = helper.ether(1000000)
-    const initialLiquidity = helper.ether(4000000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
+    const claimPeriod = 7 * DAYS
+    const floor = helper.percentage(7)
+    const ceiling = helper.percentage(45)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
-    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     const reassuranceVault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
@@ -95,14 +96,25 @@ describe('Protocol Initialization Stories', () => {
       reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
     }
 
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity, cooldownPeriod])
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.deployVault(coverKey)
   })
 
-  it('corretness rule: xDai should\'ve been correctly added to the vault', async () => {
+  it('corretness rule: DAI should be correctly added to the vault', async () => {
+    const npmToStake = helper.ether(300)
+    const initialLiquidity = helper.ether(4000000)
+
     const vault = await composer.vault.getVault(contracts, coverKey)
+    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
+
+    await contracts.dai.approve(vault.address, initialLiquidity)
+    await contracts.npm.approve(vault.address, npmToStake)
+
+    await vault.addLiquidity(coverKey, initialLiquidity, npmToStake)
     const balance = await vault.getStablecoinBalanceOf()
 
-    const expected = helper.add(previous.daiBalance, helper.ether(4000000))
+    const expected = helper.add(previous.daiBalance, initialLiquidity)
     balance.toString().should.equal(expected.toString())
 
     previous.daiBalance = expected
@@ -119,7 +131,7 @@ describe('Protocol Initialization Stories', () => {
     previous.reassuranceTokenBalance = expected
   })
 
-  it('xDai liquidity was added again', async () => {
+  it('DAI liquidity was added again', async () => {
     const liquidity = helper.ether(50000)
     const npmToStake = helper.ether(250)
 
@@ -168,7 +180,7 @@ describe('Protocol Initialization Stories', () => {
     const liquidity = helper.ether(1)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    // Directly transferring xDai to simulate an income earned from external source(s)
+    // Directly transferring DAI to simulate an income earned from external source(s)
     await contracts.dai.transfer(vault.address, liquidity)
     // await vault.addLiquidity(coverKey, liquidity)
 
@@ -182,7 +194,7 @@ describe('Protocol Initialization Stories', () => {
     previous.daiBalance = expected
   })
 
-  it('xDai liquidity was added once again', async () => {
+  it('DAI liquidity was added once again', async () => {
     const liquidity = helper.ether(1000)
     const npmToStake = helper.ether(250)
 

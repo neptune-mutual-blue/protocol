@@ -10,26 +10,11 @@ interface IVault is IMember, IERC20 {
   event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
   event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
   event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
-  event MinLiquidityPeriodSet(uint256 previous, uint256 current);
   event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256 amount, uint256 fee);
 
   function key() external view returns (bytes32);
 
   function lqt() external view returns (address);
-
-  /**
-   * @dev Adds liquidity to the specified cover contract
-   * @param coverKey Enter the cover key
-   * @param account Specify the account on behalf of which the liquidity is being added.
-   * @param amount Enter the amount of liquidity token to supply.
-   * @param npmStake Enter the amount of NPM token to stake.
-   */
-  function addLiquidityInternalOnly(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake
-  ) external;
 
   /**
    * @dev Adds liquidity to the specified cover contract
@@ -92,8 +77,6 @@ interface IVault is IMember, IERC20 {
     bytes32 strategyName,
     uint256 amount
   ) external;
-
-  function setMinLiquidityPeriod(uint256 value) external;
 
   function calculatePods(uint256 forStablecoinUnits) external view returns (uint256);
 

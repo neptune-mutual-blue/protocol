@@ -70,13 +70,15 @@ contract Cover is CoverBase {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
-   * @param values[0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[1] reportingPeriod The period during when reporting happens.
-   * @param values[2] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[3] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+   * @param values[3] reportingPeriod The period during when reporting happens.
    * reassurance tokens you'd like to add to this pool.
-   * @param values[4] initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
-   * @param values[5] cooldownperiod **Optional.** Enter the cooldown period for governance.
+   * @param values[4] cooldownperiod Enter the cooldown period for governance.
+   * @param values[5] claimPeriod Enter the claim period.
+   * @param values[6] floor Enter the policy floor rate.
+   * @param values[7] ceiling Enter the policy ceiling rate.
    */
   function addCover(
     bytes32 key,
@@ -90,11 +92,25 @@ contract Cover is CoverBase {
     s.mustNotBePaused();
     s.senderMustBeWhitelisted();
 
-    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE), "Min NPM stake too low");
+    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
     s.addCoverInternal(key, info, reassuranceToken, values);
     emit CoverCreated(key, info);
+  }
+
+  function deployVault(bytes32 key) external override nonReentrant returns (address) {
+    s.mustNotBePaused();
+    s.mustHaveStoppedCoverStatus(key);
+
+    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+      s.mustBeCoverOwner(key, msg.sender);
+    }
+
+    address vault = s.deployVaultInternal(key);
+    emit VaultDeployed(key, vault);
+
+    return vault;
   }
 
   /**

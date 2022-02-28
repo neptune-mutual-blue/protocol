@@ -12,18 +12,18 @@ const sendTransfers = async (contract) => {
 
   await contract.connect(owner).mint(helper.ether(100_000_000_000_000_000_000_000_000))
 
-  await contract.transfer(alice.address, helper.ether(10_000_000))
-  await contract.transfer(bob.address, helper.ether(20_000_000))
-  await contract.transfer(chris.address, helper.ether(30_000_000))
-  await contract.transfer(david.address, helper.ether(1_000_000))
-  await contract.transfer(emily.address, helper.ether(1_000_000))
-  await contract.transfer(franklin.address, helper.ether(1_000_000))
-  await contract.transfer(george.address, helper.ether(100_000_000))
-  await contract.transfer(harry.address, helper.ether(1_000_000))
-  await contract.transfer(isabel.address, helper.ether(1_000_000))
-  await contract.transfer(john.address, helper.ether(100_000_000))
-  await contract.transfer(kimberly.address, helper.ether(1_000_000))
-  await contract.transfer(lewis.address, helper.ether(1_000_000))
+  await contract.transfer(alice.address, helper.ether(1_000_000_000))
+  await contract.transfer(bob.address, helper.ether(2_000_000_000))
+  await contract.transfer(chris.address, helper.ether(3_000_000_000))
+  await contract.transfer(david.address, helper.ether(2_000_000_000))
+  await contract.transfer(emily.address, helper.ether(2_000_000_000))
+  await contract.transfer(franklin.address, helper.ether(2_000_000_000))
+  await contract.transfer(george.address, helper.ether(2_000_000_000))
+  await contract.transfer(harry.address, helper.ether(2_000_000_000))
+  await contract.transfer(isabel.address, helper.ether(2_000_000_000))
+  await contract.transfer(john.address, helper.ether(2_000_000_000))
+  await contract.transfer(kimberly.address, helper.ether(2_000_000_000))
+  await contract.transfer(lewis.address, helper.ether(2_000_000_000))
 }
 
 const deployOrGetFromConfig = async (cache, tokens) => {
@@ -48,9 +48,9 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       continue
     }
 
-    if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
-      throw new Error(`Can't deploy ${symbol} on this network.`)
-    }
+    // if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
+    //   throw new Error(`Can't deploy ${symbol} on this network.`)
+    // }
 
     const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(1_000_000))
     hre.network.name === 'hardhat' && sendTransfers(contract)
@@ -73,23 +73,27 @@ const compose = async (cache) => {
     { name: 'Clearpool Token', symbol: 'CPOOL' },
     { name: 'Huobi Token', symbol: 'HT' },
     { name: 'OKB Token', symbol: 'OKB' },
-    { name: 'AXS Token', symbol: 'AXS' },
+    { name: 'SUPRA Token', symbol: 'SUPRA' },
+    { name: 'BMC Token', symbol: 'BMC' },
+    { name: 'XT Token', symbol: 'XT' },
     { name: 'aToken', symbol: 'aToken' },
     { name: 'cDai', symbol: 'cDai' }
   ]
 
-  const [npm, dai, cpool, ht, okb, axs, aToken, cDai] = await deployOrGetFromConfig(cache, list)
+  const [npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai] = await deployOrGetFromConfig(cache, list)
 
   list.find(x => x.symbol === 'NPM').instance = npm
   list.find(x => x.symbol === 'DAI').instance = dai
   list.find(x => x.symbol === 'CPOOL').instance = cpool
   list.find(x => x.symbol === 'HT').instance = ht
   list.find(x => x.symbol === 'OKB').instance = okb
-  list.find(x => x.symbol === 'AXS').instance = axs
+  list.find(x => x.symbol === 'SUPRA').instance = supra
+  list.find(x => x.symbol === 'BMC').instance = bmc
+  list.find(x => x.symbol === 'XT').instance = xt
   list.find(x => x.symbol === 'aToken').instance = aToken
   list.find(x => x.symbol === 'cDai').instance = cDai
 
-  return { npm, dai, cpool, ht, okb, axs, aToken, cDai, tokenInfo: list }
+  return { npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai, tokenInfo: list }
 }
 
 module.exports = { deploySeveral: deployOrGetFromConfig, at, compose }

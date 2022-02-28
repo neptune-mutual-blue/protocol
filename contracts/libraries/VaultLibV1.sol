@@ -50,61 +50,13 @@ library VaultLibV1 {
 
   /**
    * @dev Calculates the amount of liquidity to transfer for the given amount of PODs to burn.
-   * todo Need to revisit this later and fix the following issue
-   * https://github.com/neptune-mutual/protocol/issues/23
    *
-   * As it seems, the function `calculateLiquidityInternal` does not consider that
-   * the balance of the-then vault may not or most likely will not be accurate.
-   * Or that the protocol could have lent out some portion of the liquidity to one
-   * or several external protocols to maximize rewards given to the liquidity providers.
-   *
-   * # Proposal 1: By Tracking Liquidity Lent Out
-   *
-   * It’s easy to keep track of how much liquidity was lent elsewhere and
-   * add that amount to come up with the total liquidity of the vault at any time.
-   * This solution allows liquidity providers to view their final balance and redeem
-   * their PODs anytime and receive withdrawals.
-   *
-   * **The Problems of This Approach**
-   * Imagine an external lending protocol we sent liquidity to is attacked and exploited
-   * and became unable to pay back the amount with interest. This situation, if it arises,
-   * suggests a design flaw. As liquidity providers can receive their share of
-   * the liquidity and rewards without bearing any loss, many will jump in
-   * to withdraw immediately.
-   *
-   * If this happens and most likely will, the liquidity providers who kept their liquidity
-   * longer in the protocol will now collectively bear the loss. Then again, `tracking liquidity`
-   * becomes much more complex because we not only need to track the balance of
-   * the-then vault contract but several other things like `external lendings`
-   * and `lending defaults.`
-   *
-   * # Proposal 2: By Creating a `Withdrawal Window`
-   *
-   * The Vault contract can lend out liquidity to external lending protocols to maximize reward
-   * regularly. But it also MUST WITHDRAW PERIODICALLY to receive back the loaned amount
+   * The Vault contract lends out liquidity to external protocols to maximize reward
+   * regularly. But it also withdraws periodically to receive back the loaned amount
    * with interest. In other words, the Vault contract continuously supplies
    * available liquidity to lending protocols and withdraws during a fixed interval.
    * For example, supply during `180-day lending period` and allow withdrawals
    * during `7-day withdrawal period`.
-   *
-   * This proposal solves the issue of `Proposal 1` as the protocol treats every
-   * liquidity provider the same. The providers will be able to withdraw their
-   * proportional share of liquidity during the `withdrawal period` without
-   * getting any additional benefit or alone suffering financial loss
-   * based on how quick or late they were to withdraw.
-   *
-   * Another advantage of this proposal is that the issue reported
-   * is no longer a bug but a feature.
-   *
-   * **The Problems of This Approach**
-   * The problem with this approach is the fixed period when liquidity providers
-   * can withdraw. If LPs do not redeem their liquidity during the `withdrawal period,`
-   * they will have to wait for another cycle until the `lending period` is over.
-   *
-   * This solution would not be a problem for liquidity providers with a
-   * long-term mindset who understand the risks of `risk pooling.` A short-term-focused
-   * liquidity provider would want to see a `90-day` or shorter lending duration
-   * that enables them to pool liquidity in and out periodically based on their preference.
    */
   function calculateLiquidityInternal(
     IStore s,
@@ -113,10 +65,6 @@ library VaultLibV1 {
     address stablecoin,
     uint256 podsToBurn
   ) public view returns (uint256) {
-    /***************************************************************************
-    @todo Need to revisit this later and fix the following issue
-    https://github.com/neptune-mutual/protocol/issues/23
-    ***************************************************************************/
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
 
     uint256 contractStablecoinBalance = IERC20(stablecoin).balanceOf(address(this));
@@ -134,13 +82,12 @@ library VaultLibV1 {
    * @param values[1] balance --> Stablecoins held in the vault
    * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
    * @param values[3] totalReassurance -- > Total reassurance for this cover
-   * @param values[4] lockup --> Deposit lockup period
-   * @param values[5] myPodBalance --> Your POD Balance
-   * @param values[6] myDeposits --> Sum of your deposits (in stablecoin)
-   * @param values[7] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
-   * @param values[8] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[9] releaseDate --> My liquidity release date
-   * @param values[10] fullBalance --> Gets the full stablecoin balance of this vault (including amounts lent out)
+   * @param values[4] myPodBalance --> Your POD Balance
+   * @param values[5] myDeposits --> Sum of your deposits (in stablecoin)
+   * @param values[6] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
+   * @param values[7] myShare --> My share of the liquidity pool (in stablecoin)
+   * @param values[8] withdrawalOpen --> The timestamp when withdrawals are opened
+   * @param values[9] withdrawalClose --> The timestamp when withdrawals are closed again
    */
   function getInfoInternal(
     IStore s,
@@ -152,19 +99,15 @@ library VaultLibV1 {
     values = new uint256[](11);
 
     values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
-    values[1] = IERC20(stablecoin).balanceOf(address(this)); // Stablecoins in the pool
+    values[1] = getStablecoinBalanceOfInternal(s, coverKey);
     values[2] = getLendingTotal(s, coverKey); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
-    values[4] = s.getMinLiquidityPeriod(); // Lockup period
-    values[5] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[6] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[7] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-
-    // @todo: The function calculateLiquidityInternal has issues.
-    // Check the function to learn more
-    values[8] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[9] = _getLiquidityReleaseDateInternal(s, coverKey, you); // My liquidity release date
-    values[10] = getStablecoinBalanceOfInternal(s, coverKey);
+    values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
+    values[5] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
+    values[6] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
+    values[7] = calculateLiquidityInternal(s, coverKey, pod, stablecoin, values[5]); //  My share of the liquidity pool (in stablecoin)
+    values[8] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
+    values[9] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
   }
 
   function _getCoverLiquidityAddedInternal(
@@ -181,14 +124,6 @@ library VaultLibV1 {
     address you
   ) private view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
-  }
-
-  function _getLiquidityReleaseDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, you));
   }
 
   function getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
@@ -209,8 +144,7 @@ library VaultLibV1 {
     address stablecoin,
     address account,
     uint256 amount,
-    uint256 npmStakeToAdd,
-    bool initialLiquidity
+    uint256 npmStakeToAdd
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
     // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
@@ -220,14 +154,11 @@ library VaultLibV1 {
     // Update values
     _updateNpmStake(s, coverKey, account, npmStakeToAdd);
     _updateCoverLiquidity(s, coverKey, account, amount);
-    _updateReleaseDate(s, coverKey, account);
 
     uint256 podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
 
-    if (initialLiquidity == false) {
-      // First deposit the tokens
-      IERC20(stablecoin).ensureTransferFrom(account, address(this), amount);
-    }
+    IERC20(stablecoin).ensureTransferFrom(account, address(this), amount);
+    IERC20(s.getNpmTokenAddress()).ensureTransferFrom(account, address(this), npmStakeToAdd);
 
     return podsToMint;
   }
@@ -255,15 +186,6 @@ library VaultLibV1 {
   ) private {
     s.addUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), amount); // Total liquidity
     s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
-  }
-
-  function _updateReleaseDate(
-    IStore s,
-    bytes32 coverKey,
-    address account
-  ) private {
-    uint256 minLiquidityPeriod = s.getMinLiquidityPeriod();
-    s.setUintByKey(CoverUtilV1.getCoverLiquidityReleaseDateKey(coverKey, account), block.timestamp + minLiquidityPeriod); // solhint-disable-line
   }
 
   function _getMyNpmStake(
@@ -297,15 +219,18 @@ library VaultLibV1 {
   ) external returns (uint256) {
     // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
     s.mustHaveNormalCoverStatus(coverKey);
-
-    // Unstake NPM tokens
-    _unStakeNpm(s, coverKey, npmStakeToRemove);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     // Redeem the PODs and receive DAI
     uint256 releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);
 
-    s.updateStateAndLiquidity(coverKey);
+    // Unstake NPM tokens
+    if (npmStakeToRemove > 0) {
+      _unStakeNpm(s, coverKey, npmStakeToRemove);
+      IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
+    }
 
+    s.updateStateAndLiquidity(coverKey);
     return releaseAmount;
   }
 
@@ -314,8 +239,10 @@ library VaultLibV1 {
     bytes32 coverKey,
     uint256 amount
   ) private {
-    uint256 myPreviousStake = _getMyNpmStake(s, coverKey, msg.sender);
-    require(myPreviousStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+    uint256 remainingStake = _getMyNpmStake(s, coverKey, msg.sender);
+
+    // @todo: create an exit feature to unstake everything
+    require(remainingStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
@@ -327,19 +254,18 @@ library VaultLibV1 {
     address pod,
     uint256 podsToRedeem
   ) private returns (uint256) {
+    if (podsToRedeem == 0) {
+      return 0;
+    }
+
     s.mustBeProtocolMember(pod);
     address stablecoin = s.getStablecoin();
 
-    uint256 available = s.getCoverableInternal(coverKey);
+    uint256 available = s.getStablecoinBalanceOfCoverPoolInternal(coverKey);
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, stablecoin, podsToRedeem);
-    uint256 releaseDate = _getLiquidityReleaseDateInternal(s, coverKey, msg.sender);
 
     // You may need to wait till active policies expire
     require(available >= releaseAmount, "Insufficient balance, wait till policy expiry."); // solhint-disable-line
-
-    // You never added any liquidity
-    require(releaseDate > 0, "Invalid request");
-    require(block.timestamp > releaseDate, "Withdrawal too early"); // solhint-disable-line
 
     // Update values
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), releaseAmount);
@@ -419,17 +345,6 @@ library VaultLibV1 {
     If a token is not currently supported maxFlashLoan MUST return 0, instead of reverting.    
     */
     return 0;
-  }
-
-  function setMinLiquidityPeriodInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 value
-  ) external returns (uint256 previous) {
-    previous = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD, value);
-
-    s.updateStateAndLiquidity(coverKey);
   }
 
   function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {

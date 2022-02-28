@@ -58,8 +58,8 @@ library RoutineInvokerLibV1 {
     }
 
     // Get the withdrawal period of this cover liquidity
-    uint256 start = s.getUintByKey(_getNextWithdrawalStartKey(coverKey));
-    uint256 end = s.getUintByKey(_getNextWithdrawalEndKey(coverKey));
+    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     // solhint-disable-next-line
     if (block.timestamp >= start && block.timestamp <= end) {
@@ -79,19 +79,28 @@ library RoutineInvokerLibV1 {
       // Withdrawals can be performed until the end of the next withdrawal cycle
       end = start + withdrawalWindow;
 
-      s.setUintByKey(_getNextWithdrawalStartKey(coverKey), start);
-      s.setUintByKey(_getNextWithdrawalEndKey(coverKey), end);
+      s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
+      s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
     }
 
     return false;
   }
 
-  function _getNextWithdrawalStartKey(bytes32 coverKey) private pure returns (bytes32) {
+  function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_START, coverKey));
   }
 
-  function _getNextWithdrawalEndKey(bytes32 coverKey) private pure returns (bytes32) {
+  function getNextWithdrawalEndKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_END, coverKey));
+  }
+
+  function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view {
+    // Get the withdrawal period of this cover liquidity
+    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+
+    require(block.timestamp >= start, "Withdrawal period has not started");
+    require(block.timestamp < end, "Withdrawal period has already ended");
   }
 
   function _executeAndGetAction(
@@ -104,8 +113,8 @@ library RoutineInvokerLibV1 {
 
     if (status != CoverUtilV1.CoverStatus.Normal) {
       // Reset the withdrawal window
-      s.setUintByKey(_getNextWithdrawalStartKey(coverKey), 0);
-      s.setUintByKey(_getNextWithdrawalEndKey(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalStartKey(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalEndKey(coverKey), 0);
 
       return Action.Withdraw;
     }

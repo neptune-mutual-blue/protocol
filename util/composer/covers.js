@@ -6,7 +6,7 @@ const createCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
   const { dai, npm, reassuranceContract, stakingContract, cover } = contracts
 
-  await intermediate(cache, dai, 'approve', cover.address, ethers.constants.MaxUint256)
+  await intermediate(cache, npm, 'approve', cover.address, ethers.constants.MaxUint256)
   await intermediate(cache, dai, 'approve', reassuranceContract.address, ethers.constants.MaxUint256)
   await intermediate(cache, npm, 'approve', stakingContract.address, ethers.constants.MaxUint256)
 
@@ -21,19 +21,22 @@ const create = async (payload, info) => {
   const { dai, cover } = contracts
 
   const { key } = info
-  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, initialLiquidity, cooldownPeriod } = info
+  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling } = info
   const hashBytes32 = await ipfs.write(info)
-  console.info('Cooldown period', cooldownPeriod)
 
-  const values = [minReportingStake.toString(),
-    reportingPeriod.toString(),
+  const values = [
     stakeWithFees.toString(),
     reassurance.toString(),
-    initialLiquidity.toString(),
-    cooldownPeriod.toString()
+    minReportingStake.toString(),
+    reportingPeriod.toString(),
+    cooldownPeriod.toString(),
+    claimPeriod.toString(),
+    pricingFloor.toString(),
+    pricingCeiling.toString()
   ]
 
   await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, values)
+  await intermediate(cache, cover, 'deployVault', key)
 }
 
 module.exports = { createCovers }

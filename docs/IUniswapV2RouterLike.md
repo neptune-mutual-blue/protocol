@@ -8,8 +8,87 @@ View Source: [contracts/interfaces/external/IUniswapV2RouterLike.sol](../contrac
 
 ## Functions
 
+- [factory()](#factory)
+- [getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)](#getamountout)
+- [getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut)](#getamountin)
 - [getAmountsOut(uint256 amountIn, address[] path)](#getamountsout)
+- [getAmountsIn(uint256 amountOut, address[] path)](#getamountsin)
+- [quote(uint256 amountA, uint256 reserveA, uint256 reserveB)](#quote)
 - [addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline)](#addliquidity)
+
+### factory
+
+```solidity
+function factory() external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function factory() external view returns (address);
+```
+</details>
+
+### getAmountOut
+
+```solidity
+function getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) external pure
+returns(amountOut uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountIn | uint256 |  | 
+| reserveIn | uint256 |  | 
+| reserveOut | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountOut(
+    uint256 amountIn,
+    uint256 reserveIn,
+    uint256 reserveOut
+  ) external pure returns (uint256 amountOut);
+```
+</details>
+
+### getAmountIn
+
+```solidity
+function getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut) external pure
+returns(amountIn uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountOut | uint256 |  | 
+| reserveIn | uint256 |  | 
+| reserveOut | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountIn(
+    uint256 amountOut,
+    uint256 reserveIn,
+    uint256 reserveOut
+  ) external pure returns (uint256 amountIn);
+```
+</details>
 
 ### getAmountsOut
 
@@ -30,6 +109,55 @@ returns(amounts uint256[])
 
 ```javascript
 function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
+```
+</details>
+
+### getAmountsIn
+
+```solidity
+function getAmountsIn(uint256 amountOut, address[] path) external view
+returns(amounts uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountOut | uint256 |  | 
+| path | address[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAmountsIn(uint256 amountOut, address[] memory path) external view returns (uint256[] memory amounts);
+```
+</details>
+
+### quote
+
+```solidity
+function quote(uint256 amountA, uint256 reserveA, uint256 reserveB) external pure
+returns(amountB uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amountA | uint256 |  | 
+| reserveA | uint256 |  | 
+| reserveB | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function quote(
+    uint256 amountA,
+    uint256 reserveA,
+    uint256 reserveB
+  ) external pure returns (uint256 amountB);
 ```
 </details>
 

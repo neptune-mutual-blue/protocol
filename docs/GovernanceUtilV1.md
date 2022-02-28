@@ -16,10 +16,10 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
+- [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [getResolutionInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getresolutioninfofor)
 - [getUnstakeInfoForInternal(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfoforinternal)
 - [updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetails)
-- [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
 - [addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#addattestation)
 - [getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate)](#getattestation)
@@ -283,6 +283,41 @@ function getStakes(
 ```
 </details>
 
+### getStakesOf
+
+```solidity
+function getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(yes uint256, no uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStakesOf(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256 yes, uint256 no) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+    yes = s.getUintByKey(k);
+
+    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
+    no = s.getUintByKey(k);
+  }
+```
+</details>
+
 ### getResolutionInfoFor
 
 ```solidity
@@ -368,9 +403,17 @@ function getUnstakeInfoForInternal(
 
     require(myStakeInWinningCamp > 0, "Nothing to unstake");
 
-    uint256 rewardRatio = (myStakeInWinningCamp * 1 ether) / totalStakeInWinningCamp;
-    // slither-disable-next-line divide-before-multiply
-    uint256 reward = (totalStakeInLosingCamp * rewardRatio) / 1 ether;
+    uint256 rewardRatio = (myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / totalStakeInWinningCamp;
+
+    uint256 reward = 0;
+
+    // Incident dates are reset when a reporting is finalized.
+    // This check ensures only the people who come to unstake
+    // before the finalization will receive rewards
+    if (_getLatestIncidentDate(s, key) == incidentDate) {
+      // slither-disable-next-line divide-before-multiply
+      reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
+    }
 
     toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.MULTIPLIER;
     toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.MULTIPLIER;
@@ -455,41 +498,6 @@ function updateUnstakeDetails(
       k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_REPORTER_FEE, key, incidentDate));
       s.addUintByKey(k, reporterFee);
     }
-  }
-```
-</details>
-
-### getStakesOf
-
-```solidity
-function getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate) public view
-returns(yes uint256, no uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStakesOf(
-    IStore s,
-    address account,
-    bytes32 key,
-    uint256 incidentDate
-  ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
-    no = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
-    yes = s.getUintByKey(k);
   }
 ```
 </details>
@@ -744,11 +752,10 @@ returns(uint256)
 
 ```javascript
 function getCoolDownPeriodInternal(IStore s, bytes32 key) external view returns (uint256) {
-    if (key > 0) {
-      return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
-    }
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key);
+    uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
 
-    return s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
+    return fromKey > 0 ? fromKey : fallbackValue;
   }
 ```
 </details>

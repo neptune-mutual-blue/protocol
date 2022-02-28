@@ -60,7 +60,12 @@ library PolicyHelperV1 {
     // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
     coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
 
-    rate = _getCoverFeeRate(floor, ceiling, coverRatio);
+    if (coverRatio == 0) {
+      // If you propose to cover a relatively tiny amount vs the available liquidity, the ratio can be a zero value
+      coverRatio = ceiling;
+    }
+
+    rate = _getCoverFeeRate(floor, coverRatio, ceiling);
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 
@@ -76,13 +81,13 @@ library PolicyHelperV1 {
   /**
    * @dev Gets the harmonic mean rate of the given ratios. Stops/truncates at min/max values.
    * @param floor The lowest cover fee rate
-   * @param ceiling The highest cover fee rate
    * @param coverRatio Enter the ratio of the cover vs liquidity
+   * @param ceiling The highest cover fee rate
    */
   function _getCoverFeeRate(
     uint256 floor,
-    uint256 ceiling,
-    uint256 coverRatio
+    uint256 coverRatio,
+    uint256 ceiling
   ) private pure returns (uint256) {
     // COVER FEE RATE = HARMEAN(FLOOR, COVER RATIO, CEILING)
     uint256 rate = getHarmonicMean(floor, coverRatio, ceiling);
@@ -210,10 +215,10 @@ library PolicyHelperV1 {
   /**
    * Gets the available liquidity in the pool.
    */
-  function getCoverableInternal(
-    IStore,
-    bytes32 /*key*/
-  ) external pure returns (uint256) {
-    revert("Not implemented");
+  function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view returns (uint256) {
+    address vault = s.getVaultAddress(key);
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+
+    return stablecoin.balanceOf(vault);
   }
 }

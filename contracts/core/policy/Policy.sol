@@ -85,8 +85,8 @@ contract Policy is IPolicy, Recoverable {
   /**
    * Gets the available liquidity in the pool.
    */
-  function getCoverable(bytes32 key) external view override returns (uint256) {
-    return s.getCoverableInternal(key);
+  function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
+    return s.getStablecoinBalanceOfCoverPoolInternal(key);
   }
 
   /**

@@ -10,7 +10,8 @@ const config = {
       }
     },
     cover: {
-      minLiquidityPeriod: 7 * DAYS,
+      lendingPeriod: 180 * DAYS,
+      withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
       cooldownPeriod: 1 * DAYS
     },

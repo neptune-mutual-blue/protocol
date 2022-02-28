@@ -16,7 +16,7 @@ Enables the policyholders to submit a claim and receive immediate payouts during
 - [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
 - [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
 - [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
-- [setClaimPeriod(uint256 value)](#setclaimperiod)
+- [setClaimPeriod(bytes32 key, uint256 value)](#setclaimperiod)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -166,27 +166,34 @@ function getClaimExpiryDate(bytes32 key) external view override returns (uint256
 ### setClaimPeriod
 
 ```solidity
-function setClaimPeriod(uint256 value) external nonpayable nonReentrant 
+function setClaimPeriod(bytes32 key, uint256 value) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| key | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimPeriod(uint256 value) external override nonReentrant {
+function setClaimPeriod(bytes32 key, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+    uint256 previous;
 
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
+    if (key > 0) {
+      previous = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+      s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key, value);
+    } else {
+      previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+      s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
+    }
 
-    emit ClaimPeriodSet(previous, value);
+    emit ClaimPeriodSet(key, previous, value);
   }
 ```
 </details>

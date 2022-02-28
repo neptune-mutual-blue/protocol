@@ -7,6 +7,7 @@ interface ICover is IMember {
   event CoverCreated(bytes32 key, bytes32 info);
   event CoverUpdated(bytes32 key, bytes32 info);
   event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
+  event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event WhitelistUpdated(address account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
@@ -47,12 +48,15 @@ interface ICover is IMember {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
-   * @param values[0] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[1] reportingPeriod The period during when reporting happens.
-   * @param values[2] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[3] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+   * @param values[3] reportingPeriod The period during when reporting happens.
    * reassurance tokens you'd like to add to this pool.
-   * @param values[4] initialLiquidity **Optional.** Enter the initial stablecoin liquidity for this cover.
+   * @param values[4] cooldownperiod Enter the cooldown period for governance.
+   * @param values[5] claimPeriod Enter the claim period.
+   * @param values[6] floor Enter the policy floor rate.
+   * @param values[7] ceiling Enter the policy ceiling rate.
    */
   function addCover(
     bytes32 key,
@@ -60,6 +64,8 @@ interface ICover is IMember {
     address reassuranceToken,
     uint256[] memory values
   ) external;
+
+  function deployVault(bytes32 key) external returns (address);
 
   /**
    * @dev Updates the cover contract.

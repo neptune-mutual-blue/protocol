@@ -55,7 +55,6 @@ bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_ADDED;
 bytes32 public constant NS_COVER_LIQUIDITY_REMOVED;
-bytes32 public constant NS_COVER_LIQUIDITY_MIN_PERIOD;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
 bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;

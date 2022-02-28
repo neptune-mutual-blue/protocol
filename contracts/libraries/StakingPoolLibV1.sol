@@ -121,6 +121,11 @@ library StakingPoolLibV1 {
     address account
   ) public view returns (uint256) {
     uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
+
+    if (lastDepositHeight == 0) {
+      return 0;
+    }
+
     uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
 
     return lastDepositHeight + lockupPeriod;
@@ -201,14 +206,22 @@ library StakingPoolLibV1 {
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
     IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
-    IERC20(rewardToken).ensureTransfer(s.getTreasury(), rewards);
+    IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
   }
 
   function depositInternal(
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
@@ -217,7 +230,7 @@ library StakingPoolLibV1 {
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
@@ -234,7 +247,15 @@ library StakingPoolLibV1 {
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
 
@@ -244,7 +265,7 @@ library StakingPoolLibV1 {
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);

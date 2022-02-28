@@ -17,6 +17,7 @@ event GovernanceBurned(address indexed caller, address indexed burner, uint256  
 ## Functions
 
 - [unstake(bytes32 key, uint256 incidentDate)](#unstake)
+- [unstakeWithClaim(bytes32 key, uint256 incidentDate)](#unstakewithclaim)
 - [getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
@@ -37,6 +38,27 @@ function unstake(bytes32 key, uint256 incidentDate) external nonpayable
 
 ```javascript
 function unstake(bytes32 key, uint256 incidentDate) external;
+```
+</details>
+
+### unstakeWithClaim
+
+```solidity
+function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function unstakeWithClaim(bytes32 key, uint256 incidentDate) external;
 ```
 </details>
 

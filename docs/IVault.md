@@ -15,7 +15,6 @@ event StrategyTransfer(address indexed token, address indexed strategy, bytes32 
 event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
-event MinLiquidityPeriodSet(uint256  previous, uint256  current);
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
 ```
 
@@ -23,13 +22,11 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 
 - [key()](#key)
 - [lqt()](#lqt)
-- [addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquidityinternalonly)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
 - [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
-- [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
 - [getInfo(address forAccount)](#getinfo)
@@ -72,36 +69,6 @@ returns(address)
 
 ```javascript
 function lqt() external view returns (address);
-```
-</details>
-
-### addLiquidityInternalOnly
-
-Adds liquidity to the specified cover contract
-
-```solidity
-function addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account on behalf of which the liquidity is being added. | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStake | uint256 | Enter the amount of NPM token to stake. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addLiquidityInternalOnly(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake
-  ) external;
 ```
 </details>
 
@@ -246,26 +213,6 @@ function receiveFromStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external;
-```
-</details>
-
-### setMinLiquidityPeriod
-
-```solidity
-function setMinLiquidityPeriod(uint256 value) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| value | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setMinLiquidityPeriod(uint256 value) external;
 ```
 </details>
 

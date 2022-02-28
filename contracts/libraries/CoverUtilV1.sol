@@ -70,12 +70,11 @@ library CoverUtilV1 {
     return value;
   }
 
-  function getMinLiquidityPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_PERIOD);
-  }
+  function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+    uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
 
-  function getClaimPeriod(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+    return fromKey > 0 ? fromKey : fallbackValue;
   }
 
   /**

@@ -69,7 +69,7 @@ interface IPolicy is IMember {
   /**
    * Gets the available liquidity in the pool.
    */
-  function getCoverable(bytes32 key) external view returns (uint256);
+  function getAvailableLiquidity(bytes32 key) external view returns (uint256);
 
   /**
    * @dev Gets the expiry date based on cover duration

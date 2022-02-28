@@ -18,19 +18,18 @@ const initialize = async (suite, deploymentId) => {
   const [owner] = await ethers.getSigners()
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
-  const minLiquidityPeriod = network.cover.minLiquidityPeriod
   const claimPeriod = network.cover.claimPeriod
   const cooldownPeriod = network.cover.cooldownPeriod
   const bondPeriod = network.pool.bond.period.toString()
 
   const tokens = await fakeTokenComposer.compose(cache)
-  const { npm, dai, cpool, ht, okb, axs, aToken, cDai, tokenInfo } = tokens
+  const { npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai, tokenInfo } = tokens
 
   const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
-  const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, axsUsdPair] = pairs
+  const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, supraUsdPair, bmcUsdPair, xtUsdPair] = pairs
 
   // The protocol only supports stablecoin as reassurance token for now
   const reassuranceToken = dai
@@ -64,7 +63,6 @@ const initialize = async (suite, deploymentId) => {
     [helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
-      minLiquidityPeriod,
       claimPeriod,
       helper.percentage(30), // Governance Burn Rate: 30%
       helper.percentage(10), // Governance Reporter Commission: 10%
@@ -104,25 +102,35 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STAKING_POOL, stakingPoolContract.address)
 
   // @todo: only applicable to testnet
-  await intermediate(cache, cpool, 'approve', stakingPoolContract.address, helper.ether(10_000))
+  await intermediate(cache, cpool, 'approve', stakingPoolContract.address, helper.ether(13_400_300))
   addresses = [npm.address, npmUsdPair.address, cpool.address, cpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 149953, minutesToBlocks(chaindId, 5), helper.ether(13_400_300)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Cpool'), 'Clearpool Staking', 0, addresses, values)
 
-  await intermediate(cache, ht, 'approve', stakingPoolContract.address, helper.ether(10_000))
+  await intermediate(cache, ht, 'approve', stakingPoolContract.address, helper.ether(33_303_000))
   addresses = [npm.address, npmUsdPair.address, ht.address, htUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 123480, minutesToBlocks(chaindId, 5), helper.ether(33_303_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
 
-  await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(10_000))
+  await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(12_30_330))
   addresses = [npm.address, npmUsdPair.address, okb.address, okbUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
+  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 154505290, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 0, addresses, values)
 
-  await intermediate(cache, axs, 'approve', stakingPoolContract.address, helper.ether(10_000))
-  addresses = [npm.address, npmUsdPair.address, axs.address, axsUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 342, minutesToBlocks(chaindId, 5), helper.ether(10_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('AXS'), 'AXS Staking', 0, addresses, values)
+  await intermediate(cache, supra, 'approve', stakingPoolContract.address, helper.ether(62_000_000))
+  addresses = [npm.address, npmUsdPair.address, supra.address, supraUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SUPRA'), 'SUPRA Staking', 0, addresses, values)
+
+  await intermediate(cache, bmc, 'approve', stakingPoolContract.address, helper.ether(52_000_000))
+  addresses = [npm.address, npmUsdPair.address, bmc.address, bmcUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BMC'), 'BMC Staking', 0, addresses, values)
+
+  await intermediate(cache, xt, 'approve', stakingPoolContract.address, helper.ether(49_000_000))
+  addresses = [npm.address, npmUsdPair.address, xt.address, xtUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 194033004, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('XT'), 'XT Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -285,8 +293,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
-  // @todo: remove from production, only for testnet: 5 minutes deposit period, 1 minute withdrawal period
-  await intermediate(cache, liquidityEngine, 'setLendingPeriods', key.toBytes32(''), '300', '60')
+  await intermediate(cache, liquidityEngine, 'setLendingPeriods', key.toBytes32(''), network.cover.lendingPeriod, network.cover.withdrawalWindow)
 
   if (aaveLendingPool) {
     const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
@@ -339,12 +346,16 @@ const initialize = async (suite, deploymentId) => {
     cpool,
     ht,
     okb,
-    axs,
+    supra,
+    bmc,
+    xt,
     npmUsdPair,
     cpoolUsdPair,
     htUsdPair,
     okbUsdPair,
-    axsUsdPair,
+    supraUsdPair,
+    bmcUsdPair,
+    xtUsdPair,
     reassuranceToken,
     protocol,
     stakingContract,

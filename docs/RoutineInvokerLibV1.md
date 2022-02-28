@@ -20,8 +20,9 @@ enum Action {
 - [updateStateAndLiquidity(IStore s, bytes32 key, address token)](#updatestateandliquidity)
 - [_invoke(IStore s, bytes32 key, address token)](#_invoke)
 - [_executeIsWithdrawalPeriod(IStore s, bytes32 coverKey)](#_executeiswithdrawalperiod)
-- [_getNextWithdrawalStartKey(bytes32 coverKey)](#_getnextwithdrawalstartkey)
-- [_getNextWithdrawalEndKey(bytes32 coverKey)](#_getnextwithdrawalendkey)
+- [getNextWithdrawalStartKey(bytes32 coverKey)](#getnextwithdrawalstartkey)
+- [getNextWithdrawalEndKey(bytes32 coverKey)](#getnextwithdrawalendkey)
+- [mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey)](#mustbeduringwithdrawalperiod)
 - [_executeAndGetAction(IStore s, ILendingStrategy , bytes32 coverKey)](#_executeandgetaction)
 - [_canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 key)](#_candeposit)
 - [_getTotalInDeposits(IStore s, ILendingStrategy strategy, bytes32 key)](#_gettotalindeposits)
@@ -145,8 +146,8 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
     }
 
     // Get the withdrawal period of this cover liquidity
-    uint256 start = s.getUintByKey(_getNextWithdrawalStartKey(coverKey));
-    uint256 end = s.getUintByKey(_getNextWithdrawalEndKey(coverKey));
+    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     // solhint-disable-next-line
     if (block.timestamp >= start && block.timestamp <= end) {
@@ -166,8 +167,8 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
       // Withdrawals can be performed until the end of the next withdrawal cycle
       end = start + withdrawalWindow;
 
-      s.setUintByKey(_getNextWithdrawalStartKey(coverKey), start);
-      s.setUintByKey(_getNextWithdrawalEndKey(coverKey), end);
+      s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
+      s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
     }
 
     return false;
@@ -175,10 +176,10 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
 ```
 </details>
 
-### _getNextWithdrawalStartKey
+### getNextWithdrawalStartKey
 
 ```solidity
-function _getNextWithdrawalStartKey(bytes32 coverKey) private pure
+function getNextWithdrawalStartKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -192,16 +193,16 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getNextWithdrawalStartKey(bytes32 coverKey) private pure returns (bytes32) {
+function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_START, coverKey));
   }
 ```
 </details>
 
-### _getNextWithdrawalEndKey
+### getNextWithdrawalEndKey
 
 ```solidity
-function _getNextWithdrawalEndKey(bytes32 coverKey) private pure
+function getNextWithdrawalEndKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -215,8 +216,36 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getNextWithdrawalEndKey(bytes32 coverKey) private pure returns (bytes32) {
+function getNextWithdrawalEndKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_END, coverKey));
+  }
+```
+</details>
+
+### mustBeDuringWithdrawalPeriod
+
+```solidity
+function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view {
+    // Get the withdrawal period of this cover liquidity
+    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+
+    require(block.timestamp >= start, "Withdrawal period has not started");
+    require(block.timestamp < end, "Withdrawal period has already ended");
   }
 ```
 </details>
@@ -250,8 +279,8 @@ function _executeAndGetAction(
 
     if (status != CoverUtilV1.CoverStatus.Normal) {
       // Reset the withdrawal window
-      s.setUintByKey(_getNextWithdrawalStartKey(coverKey), 0);
-      s.setUintByKey(_getNextWithdrawalEndKey(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalStartKey(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalEndKey(coverKey), 0);
 
       return Action.Withdraw;
     }

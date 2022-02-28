@@ -10,6 +10,8 @@ interface IUnstakable {
 
   function unstake(bytes32 key, uint256 incidentDate) external;
 
+  function unstakeWithClaim(bytes32 key, uint256 incidentDate) external;
+
   function getUnstakeInfoFor(
     address account,
     bytes32 key,

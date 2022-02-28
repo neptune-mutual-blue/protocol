@@ -27,15 +27,12 @@ address public lqt;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake)](#addliquidityinternalonly)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
 - [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
 - [getStablecoinBalanceOf()](#getstablecoinbalanceof)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidity)
-- [_addLiquidity(bytes32 coverKey, address account, uint256 amount, uint256 npmStake, bool initialLiquidity)](#_addliquidity)
-- [setMinLiquidityPeriod(uint256 value)](#setminliquidityperiod)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
 - [getInfo(address you)](#getinfo)
@@ -69,47 +66,6 @@ constructor(
   ) ERC20(VaultLibV1.getPodTokenNameInternal(coverKey), "POD") Recoverable(store) {
     key = coverKey;
     lqt = address(liquidityToken);
-  }
-```
-</details>
-
-### addLiquidityInternalOnly
-
-Adds liquidity to the specified cover contract
-
-```solidity
-function addLiquidityInternalOnly(bytes32 coverKey, address account, uint256 amount, uint256 npmStake) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account on behalf of which the liquidity is being added. | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStake | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addLiquidityInternalOnly(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake
-  ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
-    // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
-    s.callerMustBeCoverContract();
-
-    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
-    require(coverKey == key, "Forbidden");
-
-    _addLiquidity(coverKey, account, amount, npmStake, true);
   }
 ```
 </details>
@@ -271,7 +227,12 @@ function addLiquidity(
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
 
-    _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
+    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, msg.sender, amount, npmStakeToAdd);
+    super._mint(msg.sender, podsToMint);
+
+    s.updateStateAndLiquidity(key);
+
+    emit PodsIssued(msg.sender, podsToMint, amount);
   }
 ```
 </details>
@@ -308,72 +269,6 @@ function removeLiquidity(
     uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
-  }
-```
-</details>
-
-### _addLiquidity
-
-Adds liquidity to the specified cover contract
-
-```solidity
-function _addLiquidity(bytes32 coverKey, address account, uint256 amount, uint256 npmStake, bool initialLiquidity) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account on behalf of which the liquidity is being added. | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStake | uint256 | Enter the amount of NPM token to stake. | 
-| initialLiquidity | bool |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addLiquidity(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake,
-    bool initialLiquidity
-  ) private {
-    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
-    super._mint(account, podsToMint);
-
-    s.updateStateAndLiquidity(key);
-
-    emit PodsIssued(account, podsToMint, amount);
-  }
-```
-</details>
-
-### setMinLiquidityPeriod
-
-```solidity
-function setMinLiquidityPeriod(uint256 value) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| value | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    uint256 previous = s.setMinLiquidityPeriodInternal(key, value);
-
-    emit MinLiquidityPeriodSet(previous, value);
   }
 ```
 </details>

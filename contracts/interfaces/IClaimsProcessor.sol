@@ -15,7 +15,7 @@ interface IClaimsProcessor is IMember {
     uint256 platformFee,
     uint256 claimed
   );
-  event ClaimPeriodSet(uint256 previous, uint256 current);
+  event ClaimPeriodSet(bytes32 indexed key, uint256 previous, uint256 current);
 
   function claim(
     address cxToken,
@@ -30,7 +30,7 @@ interface IClaimsProcessor is IMember {
     uint256 incidentDate
   ) external view returns (bool);
 
-  function setClaimPeriod(uint256 value) external;
+  function setClaimPeriod(bytes32 key, uint256 value) external;
 
   function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 }

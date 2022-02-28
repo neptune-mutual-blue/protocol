@@ -16,7 +16,7 @@ The policy contract enables you to a purchase cover
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
 - [getCommitment(bytes32 key)](#getcommitment)
-- [getCoverable(bytes32 key)](#getcoverable)
+- [getAvailableLiquidity(bytes32 key)](#getavailableliquidity)
 - [getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
 - [getCoverPoolSummary(bytes32 key)](#getcoverpoolsummary)
 - [version()](#version)
@@ -183,10 +183,10 @@ function getCommitment(bytes32 key) external view override returns (uint256) {
 ```
 </details>
 
-### getCoverable
+### getAvailableLiquidity
 
 ```solidity
-function getCoverable(bytes32 key) external view
+function getAvailableLiquidity(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -200,8 +200,8 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverable(bytes32 key) external view override returns (uint256) {
-    return s.getCoverableInternal(key);
+function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
+    return s.getStablecoinBalanceOfCoverPoolInternal(key);
   }
 ```
 </details>

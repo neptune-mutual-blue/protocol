@@ -6,7 +6,7 @@ const generate = async (all) => {
     .thenBy(x => x.key)
     .each(c => {
       const comment = c.comment ? ` // ${c.comment}` : ''
-      const value = c.value === '0x00' ? '"0x0000000000000000000000000000000000000010"' : `toBytes32("${c.value}")`
+      const value = c.value === '0x00' ? 'toBytes32("")' : `toBytes32("${c.value}")`
       console.info(`export const ${c.prefix}${c.key} = ${value};${comment}`)
     })
 }

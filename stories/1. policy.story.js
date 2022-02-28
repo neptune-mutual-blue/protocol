@@ -30,24 +30,26 @@ describe('Policy Purchase Stories', () => {
 
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(2_000_000)
-    const added = helper.ether(2_000_000)
+    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
+    const claimPeriod = 7 * DAYS
+    const floor = helper.percentage(7)
+    const ceiling = helper.percentage(45)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
-    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, [minReportingStake, reportingPeriod, stakeWithFee, initialReassuranceAmount, initialLiquidity, cooldownPeriod])
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.deployVault(coverKey)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 
+    await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minReportingStake)
-    await contracts.dai.approve(vault.address, added)
-
-    await vault.addLiquidity(coverKey, added, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
@@ -78,7 +80,7 @@ describe('Policy Purchase Stories', () => {
     reassuranceWeight.toString().should.equal(helper.percentage(100))
   })
 
-  it('fee should be ~$58.33 xDai when purchasing 10K xDai cover for 1 month', async () => {
+  it('fee should be ~$58.33 DAI when purchasing 10K DAI cover for 1 month', async () => {
     const result = await contracts.policy.getCoverFeeInfo(coverKey, 1, helper.ether(10_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
@@ -93,7 +95,7 @@ describe('Policy Purchase Stories', () => {
     helper.weiToEther(fee).toFixed(2).should.equal('58.33')
   })
 
-  it('fee should be ~$7,255.84 when purchasing 250K xDai cover for 3 months', async () => {
+  it('fee should be ~$7,255.84 when purchasing 250K DAI cover for 3 months', async () => {
     const result = await contracts.policy.getCoverFeeInfo(coverKey, 3, helper.ether(250_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, floor, ceiling, rate, fee } = result
 
@@ -108,7 +110,7 @@ describe('Policy Purchase Stories', () => {
     helper.weiToEther(fee).toFixed(2).should.equal('7250.00')
   })
 
-  it('fee should be ~4095.83 when purchasing 500K xDai cover for 1 month', async () => {
+  it('fee should be ~4095.83 when purchasing 500K DAI cover for 1 month', async () => {
     const result = await contracts.policy.getCoverFeeInfo(coverKey, 1, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 
@@ -121,7 +123,7 @@ describe('Policy Purchase Stories', () => {
     helper.weiToEther(fee).toFixed(2).should.equal('4095.83')
   })
 
-  it('fee should be ~$10633.33 when purchasing 500K xDai cover for 2 months', async () => {
+  it('fee should be ~$10633.33 when purchasing 500K DAI cover for 2 months', async () => {
     const result = await contracts.policy.getCoverFeeInfo(coverKey, 2, helper.ether(500_000))
     const { utilizationRatio, totalAvailableLiquidity, coverRatio, rate, fee } = result
 

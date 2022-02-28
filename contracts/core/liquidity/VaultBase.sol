@@ -51,30 +51,6 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     lqt = address(liquidityToken);
   }
 
-  /**
-   * @dev Adds liquidity to the specified cover contract
-   * @param coverKey Enter the cover key
-   * @param account Specify the account on behalf of which the liquidity is being added.
-   * @param amount Enter the amount of liquidity token to supply.
-   */
-  function addLiquidityInternalOnly(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake
-  ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
-    // @suppress-address-trust-issue For more info, check the function `_addLiquidity`
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
-    s.callerMustBeCoverContract();
-
-    // @suppress-address-trust-issue For more info, check the function `VaultLibV1.addLiquidityInternal`
-    require(coverKey == key, "Forbidden");
-
-    _addLiquidity(coverKey, account, amount, npmStake, true);
-  }
-
   function transferGovernance(
     bytes32 coverKey,
     address to,
@@ -139,7 +115,12 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
 
-    _addLiquidity(coverKey, msg.sender, amount, npmStakeToAdd, false);
+    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, msg.sender, amount, npmStakeToAdd);
+    super._mint(msg.sender, podsToMint);
+
+    s.updateStateAndLiquidity(key);
+
+    emit PodsIssued(msg.sender, podsToMint, amount);
   }
 
   /**
@@ -160,37 +141,6 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
-  }
-
-  /**
-   * @dev Adds liquidity to the specified cover contract
-   * @param coverKey Enter the cover key
-   * @param account Specify the account on behalf of which the liquidity is being added.
-   * @param amount Enter the amount of liquidity token to supply.
-   * @param npmStake Enter the amount of NPM token to stake.
-   */
-  function _addLiquidity(
-    bytes32 coverKey,
-    address account,
-    uint256 amount,
-    uint256 npmStake,
-    bool initialLiquidity
-  ) private {
-    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, account, amount, npmStake, initialLiquidity);
-    super._mint(account, podsToMint);
-
-    s.updateStateAndLiquidity(key);
-
-    emit PodsIssued(account, podsToMint, amount);
-  }
-
-  function setMinLiquidityPeriod(uint256 value) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    uint256 previous = s.setMinLiquidityPeriodInternal(key, value);
-
-    emit MinLiquidityPeriodSet(previous, value);
   }
 
   /**
@@ -218,12 +168,12 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
    * @param values[1] balance --> Stablecoins held in the vault
    * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
    * @param values[3] totalReassurance -- > Total reassurance for this cover
-   * @param values[4] lockup --> Deposit lockup period
-   * @param values[5] myPodBalance --> Your POD Balance
-   * @param values[6] myDeposits --> Sum of your deposits (in stablecoin)
-   * @param values[7] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
-   * @param values[8] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[9] releaseDate --> My liquidity release date
+   * @param values[4] myPodBalance --> Your POD Balance
+   * @param values[5] myDeposits --> Sum of your deposits (in stablecoin)
+   * @param values[6] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
+   * @param values[7] myShare --> My share of the liquidity pool (in stablecoin)
+   * @param values[8] withdrawalOpen --> The timestamp when withdrawals are opened
+   * @param values[9] withdrawalClose --> The timestamp when withdrawals are closed again
    */
   function getInfo(address you) external view override returns (uint256[] memory values) {
     return s.getInfoInternal(key, address(this), lqt, you);

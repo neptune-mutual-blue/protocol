@@ -13,7 +13,8 @@ const config = {
       }
     },
     cover: {
-      minLiquidityPeriod: 5 * MINUTES,
+      lendingPeriod: 60 * MINUTES,
+      withdrawalWindow: 60 * MINUTES,
       claimPeriod: 120 * MINUTES,
       cooldownPeriod: 5 * MINUTES
     },
@@ -48,7 +49,9 @@ const config = {
       CPOOL: '0x28f61374cC7fF2b0181064D21F09993a6972e7D3',
       HT: '0x131c05b860c89B59f5b5aa6901434F20F19D5C2f',
       OKB: '0xcED1a80c495a27fF2310E59F75034c76faC6bacf',
-      AXS: '0xF1A75e2bfB5bd5DF9a6cC07ecadaD236258950EF',
+      SUPRA: '0xD4F8c7AA64aA09677064b930a168E0A3D5a4aBEc',
+      BMC: '0x96B34fa8AFCdaC57833bD8333F7A40b0719B9470',
+      XT: '0x986a5ee528B000B257B6A2453f0107839cc06Fbb',
       aToken: '0x86067C23557D97286027095b868DF6A765aaED5f',
       cDai: '0xe712D7e2D2547E3A4C37Ec16AdFa22fA079F346d'
     },
@@ -57,7 +60,9 @@ const config = {
       CPOOL_DAI: '0x5F3b167C1C3127dBD48119c0Ee5aAa4A3d3E5520',
       HT_DAI: '0x6e7E019E7195417A149077DfE64ACF6c7e5b7cCc',
       OKB_DAI: '0x36685dfB4dC9e41C2a281B585bbc36cc929118D2',
-      AXS_DAI: '0xA51c26E99049c3d0b0BE4706BF54C88774b9cE94'
+      SUPRA_DAI: '0xDE58BFf7058BD776Cf68C286317328dbca297265',
+      BMC_DAI: '0x034aE1d43887E319e7e8C1122C106A0d046CFaC2',
+      XT_DAI: '0xFEF43C0c4d363118401EF17441b85A742df32B1E'
     },
     uniswapV2Like: {
       description: 'Sushiswap on Ropsten',
