@@ -114,22 +114,22 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(12_30_330))
   addresses = [npm.address, npmUsdPair.address, okb.address, okbUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 154505, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
+  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 154505290, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 0, addresses, values)
 
   await intermediate(cache, supra, 'approve', stakingPoolContract.address, helper.ether(62_000_000))
   addresses = [npm.address, npmUsdPair.address, supra.address, supraUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 194033, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SUPRA'), 'SUPRA Staking', 0, addresses, values)
 
   await intermediate(cache, bmc, 'approve', stakingPoolContract.address, helper.ether(52_000_000))
   addresses = [npm.address, npmUsdPair.address, bmc.address, bmcUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 194033, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BMC'), 'BMC Staking', 0, addresses, values)
 
   await intermediate(cache, xt, 'approve', stakingPoolContract.address, helper.ether(49_000_000))
   addresses = [npm.address, npmUsdPair.address, xt.address, xtUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 194033, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 194033004, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('XT'), 'XT Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {

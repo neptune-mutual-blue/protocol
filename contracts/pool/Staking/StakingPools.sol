@@ -15,8 +15,12 @@ contract StakingPools is StakingPoolInfo {
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
-    address stakingToken = s.depositInternal(key, amount);
+    (address stakingToken, address rewardToken, uint256 rewards, uint256 rewardsPlatformFee) = s.depositInternal(key, amount);
     emit Deposited(key, msg.sender, stakingToken, amount);
+
+    if (rewards > 0) {
+      emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, rewardsPlatformFee);
+    }
   }
 
   function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
@@ -24,7 +28,11 @@ contract StakingPools is StakingPoolInfo {
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
-    address stakingToken = s.withdrawInternal(key, amount);
+    (address stakingToken, address rewardToken, uint256 rewards, uint256 rewardsPlatformFee) = s.withdrawInternal(key, amount);
     emit Withdrawn(key, msg.sender, stakingToken, amount);
+
+    if (rewards > 0) {
+      emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, rewardsPlatformFee);
+    }
   }
 }

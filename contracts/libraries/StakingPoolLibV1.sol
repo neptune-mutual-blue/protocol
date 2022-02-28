@@ -213,7 +213,15 @@ library StakingPoolLibV1 {
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
@@ -222,7 +230,7 @@ library StakingPoolLibV1 {
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
@@ -239,7 +247,15 @@ library StakingPoolLibV1 {
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
 
@@ -249,7 +265,7 @@ library StakingPoolLibV1 {
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
