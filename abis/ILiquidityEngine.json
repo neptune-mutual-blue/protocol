@@ -1,0 +1,147 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      }
+    ],
+    "name": "StrategyAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      }
+    ],
+    "name": "StrategyDisabled",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "strategies",
+        "type": "address[]"
+      }
+    ],
+    "name": "addStrategies",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "strategy",
+        "type": "address"
+      }
+    ],
+    "name": "disableStrategy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveStrategies",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "strategies",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDisabledStrategies",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "strategies",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getName",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lendingPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawalWindow",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLendingPeriods",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "lendingPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawalWindow",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLendingPeriodsDefault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

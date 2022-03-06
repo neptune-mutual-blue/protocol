@@ -12,6 +12,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
 - [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
 - [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender)](#mustbecoverownerorcovercontract)
+- [callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key)](#callermustbecoverowneroradmin)
 - [callerMustBePolicyContract(IStore s)](#callermustbepolicycontract)
 - [callerMustBePolicyManagerContract(IStore s)](#callermustbepolicymanagercontract)
 - [callerMustBeCoverContract(IStore s)](#callermustbecovercontract)
@@ -27,8 +28,10 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeClaimingOrDisputed(IStore s, bytes32 key)](#mustbeclaimingordisputed)
 - [mustBeReportingOrDisputed(IStore s, bytes32 key)](#mustbereportingordisputed)
 - [mustBeBeforeResolutionDeadline(IStore s, bytes32 key)](#mustbebeforeresolutiondeadline)
+- [mustNotHaveResolutionDeadline(IStore s, bytes32 key)](#mustnothaveresolutiondeadline)
 - [mustBeAfterResolutionDeadline(IStore s, bytes32 key)](#mustbeafterresolutiondeadline)
 - [mustBeValidIncidentDate(IStore s, bytes32 key, uint256 incidentDate)](#mustbevalidincidentdate)
+- [mustHaveDispute(IStore s, bytes32 key)](#musthavedispute)
 - [mustNotHaveDispute(IStore s, bytes32 key)](#mustnothavedispute)
 - [mustBeDuringReportingPeriod(IStore s, bytes32 key)](#mustbeduringreportingperiod)
 - [mustBeAfterReportingPeriod(IStore s, bytes32 key)](#mustbeafterreportingperiod)
@@ -39,6 +42,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [validateUnstakeWithClaim(IStore s, bytes32 key, uint256 incidentDate)](#validateunstakewithclaim)
 - [mustBeDuringClaimPeriod(IStore s, bytes32 key)](#mustbeduringclaimperiod)
 - [mustBeAfterClaimExpiry(IStore s, bytes32 key)](#mustbeafterclaimexpiry)
+- [senderMustBeWhitelistedCoverCreator(IStore s)](#sendermustbewhitelistedcovercreator)
+- [senderMustBeWhitelistedIfRequired(IStore s, bytes32 key)](#sendermustbewhitelistedifrequired)
 
 ### mustNotBePaused
 
@@ -149,7 +154,7 @@ function mustBeValidCoverKey(IStore s, bytes32 key) external view {
 Reverts if the sender is not the cover owner
 
 ```solidity
-function mustBeCoverOwner(IStore s, bytes32 key, address sender) external view
+function mustBeCoverOwner(IStore s, bytes32 key, address sender) public view
 ```
 
 **Arguments**
@@ -168,7 +173,7 @@ function mustBeCoverOwner(
     IStore s,
     bytes32 key,
     address sender
-  ) external view {
+  ) public view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
     require(isCoverOwner, "Forbidden");
   }
@@ -204,6 +209,31 @@ function mustBeCoverOwnerOrCoverContract(
     bool isCoverContract = address(s.getCoverContract()) == sender;
 
     require(isCoverOwner || isCoverContract, "Forbidden");
+  }
+```
+</details>
+
+### callerMustBeCoverOwnerOrAdmin
+
+```solidity
+function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
+    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+      mustBeCoverOwner(s, key, msg.sender);
+    }
   }
 ```
 </details>
@@ -561,6 +591,30 @@ function mustBeBeforeResolutionDeadline(IStore s, bytes32 key) external view {
 ```
 </details>
 
+### mustNotHaveResolutionDeadline
+
+```solidity
+function mustNotHaveResolutionDeadline(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotHaveResolutionDeadline(IStore s, bytes32 key) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+    require(deadline == 0, "Resolution already has deadline");
+  }
+```
+</details>
+
 ### mustBeAfterResolutionDeadline
 
 ```solidity
@@ -613,6 +667,30 @@ function mustBeValidIncidentDate(
 ```
 </details>
 
+### mustHaveDispute
+
+```solidity
+function mustHaveDispute(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustHaveDispute(IStore s, bytes32 key) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    require(hasDispute == true, "Not disputed");
+  }
+```
+</details>
+
 ### mustNotHaveDispute
 
 ```solidity
@@ -631,8 +709,8 @@ function mustNotHaveDispute(IStore s, bytes32 key) external view
 
 ```javascript
 function mustNotHaveDispute(IStore s, bytes32 key) external view {
-    address reporter = s.getAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
-    require(reporter == address(0), "Already disputed");
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    require(hasDispute == false, "Already disputed");
   }
 ```
 </details>
@@ -778,9 +856,7 @@ function mustNotHaveUnstaken(
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
-    uint256 withdrawal = s.getUintByKey(k);
-
+    uint256 withdrawal = s.getReportingUnstakenAmount(account, key, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 ```
@@ -926,6 +1002,59 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 ```
 </details>
 
+### senderMustBeWhitelistedCoverCreator
+
+Reverts if the sender is not whitelisted cover creator.
+
+```solidity
+function senderMustBeWhitelistedCoverCreator(IStore s) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function senderMustBeWhitelistedCoverCreator(IStore s) external view {
+    require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender), "Not whitelisted");
+  }
+```
+</details>
+
+### senderMustBeWhitelistedIfRequired
+
+```solidity
+function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view {
+    bool required = s.checkIfRequiresWhitelist(key);
+
+    if (required == false) {
+      return;
+    }
+
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, key, msg.sender), "You are not whitelisted");
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -986,6 +1115,7 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

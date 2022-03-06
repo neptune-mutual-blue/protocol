@@ -16,14 +16,22 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getResolutionTimestamp(IStore s, bytes32 key)](#getresolutiontimestamp)
 - [getReporter(IStore s, bytes32 key, uint256 incidentDate)](#getreporter)
 - [getStakes(IStore s, bytes32 key, uint256 incidentDate)](#getstakes)
+- [getReporterKey(bytes32 key)](#getreporterkey)
+- [getIncidentOccurredStakesKey(bytes32 key, uint256 incidentDate)](#getincidentoccurredstakeskey)
+- [getIndividualIncidentOccurredStakeKey(bytes32 key, uint256 incidentDate, address account)](#getindividualincidentoccurredstakekey)
+- [getDisputerKey(bytes32 key)](#getdisputerkey)
+- [getFalseReportingStakesKey(bytes32 key, uint256 incidentDate)](#getfalsereportingstakeskey)
+- [getIndividualFalseReportingStakeKey(bytes32 key, uint256 incidentDate, address account)](#getindividualfalsereportingstakekey)
 - [getStakesOf(IStore s, address account, bytes32 key, uint256 incidentDate)](#getstakesof)
 - [getResolutionInfoFor(IStore s, address account, bytes32 key, uint256 incidentDate)](#getresolutioninfofor)
 - [getUnstakeInfoForInternal(IStore s, address account, bytes32 key, uint256 incidentDate)](#getunstakeinfoforinternal)
+- [getReportingUnstakenAmount(IStore s, address account, bytes32 key, uint256 incidentDate)](#getreportingunstakenamount)
 - [updateUnstakeDetails(IStore s, address account, bytes32 key, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetails)
 - [updateCoverStatus(IStore s, bytes32 key, uint256 incidentDate)](#updatecoverstatus)
 - [addAttestation(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#addattestation)
 - [getAttestation(IStore s, bytes32 key, address who, uint256 incidentDate)](#getattestation)
 - [addDispute(IStore s, bytes32 key, address who, uint256 incidentDate, uint256 stake)](#adddispute)
+- [getHasDisputeKey(bytes32 key)](#gethasdisputekey)
 - [getDispute(IStore s, bytes32 key, address who, uint256 incidentDate)](#getdispute)
 - [_getLatestIncidentDate(IStore s, bytes32 key)](#_getlatestincidentdate)
 - [getCoolDownPeriodInternal(IStore s, bytes32 key)](#getcooldownperiodinternal)
@@ -274,11 +282,160 @@ function getStakes(
     bytes32 key,
     uint256 incidentDate
   ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
-    yes = s.getUintByKey(k);
+    yes = s.getUintByKey(getIncidentOccurredStakesKey(key, incidentDate));
+    no = s.getUintByKey(getFalseReportingStakesKey(key, incidentDate));
+  }
+```
+</details>
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
-    no = s.getUintByKey(k);
+### getReporterKey
+
+```solidity
+function getReporterKey(bytes32 key) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReporterKey(bytes32 key) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key));
+  }
+```
+</details>
+
+### getIncidentOccurredStakesKey
+
+```solidity
+function getIncidentOccurredStakesKey(bytes32 key, uint256 incidentDate) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getIncidentOccurredStakesKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
+  }
+```
+</details>
+
+### getIndividualIncidentOccurredStakeKey
+
+```solidity
+function getIndividualIncidentOccurredStakeKey(bytes32 key, uint256 incidentDate, address account) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getIndividualIncidentOccurredStakeKey(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
+  }
+```
+</details>
+
+### getDisputerKey
+
+```solidity
+function getDisputerKey(bytes32 key) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDisputerKey(bytes32 key) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key));
+  }
+```
+</details>
+
+### getFalseReportingStakesKey
+
+```solidity
+function getFalseReportingStakesKey(bytes32 key, uint256 incidentDate) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getFalseReportingStakesKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
+  }
+```
+</details>
+
+### getIndividualFalseReportingStakeKey
+
+```solidity
+function getIndividualFalseReportingStakeKey(bytes32 key, uint256 incidentDate, address account) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getIndividualFalseReportingStakeKey(
+    bytes32 key,
+    uint256 incidentDate,
+    address account
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
   }
 ```
 </details>
@@ -309,11 +466,8 @@ function getStakesOf(
     bytes32 key,
     uint256 incidentDate
   ) public view returns (uint256 yes, uint256 no) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, account));
-    yes = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, account));
-    no = s.getUintByKey(k);
+    yes = s.getUintByKey(getIndividualIncidentOccurredStakeKey(key, incidentDate, account));
+    no = s.getUintByKey(getIndividualFalseReportingStakeKey(key, incidentDate, account));
   }
 ```
 </details>
@@ -366,7 +520,7 @@ function getResolutionInfoFor(
 
 ```solidity
 function getUnstakeInfoForInternal(IStore s, address account, bytes32 key, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
 **Arguments**
@@ -396,11 +550,13 @@ function getUnstakeInfoForInternal(
       uint256 myStakeInWinningCamp,
       uint256 toBurn,
       uint256 toReporter,
-      uint256 myReward
+      uint256 myReward,
+      uint256 unstaken
     )
   {
     (totalStakeInWinningCamp, totalStakeInLosingCamp, myStakeInWinningCamp) = getResolutionInfoFor(s, account, key, incidentDate);
 
+    unstaken = getReportingUnstakenAmount(s, account, key, incidentDate);
     require(myStakeInWinningCamp > 0, "Nothing to unstake");
 
     uint256 rewardRatio = (myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / totalStakeInWinningCamp;
@@ -418,6 +574,38 @@ function getUnstakeInfoForInternal(
     toBurn = (reward * getReportingBurnRate(s)) / ProtoUtilV1.MULTIPLIER;
     toReporter = (reward * getGovernanceReporterCommission(s)) / ProtoUtilV1.MULTIPLIER;
     myReward = reward - toBurn - toReporter;
+  }
+```
+</details>
+
+### getReportingUnstakenAmount
+
+```solidity
+function getReportingUnstakenAmount(IStore s, address account, bytes32 key, uint256 incidentDate) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| account | address |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReportingUnstakenAmount(
+    IStore s,
+    address account,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256) {
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
+    return s.getUintByKey(k);
   }
 ```
 </details>
@@ -525,11 +713,8 @@ function updateCoverStatus(
     bytes32 key,
     uint256 incidentDate
   ) public {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
-    uint256 yes = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
-    uint256 no = s.getUintByKey(k);
+    uint256 yes = s.getUintByKey(getIncidentOccurredStakesKey(key, incidentDate));
+    uint256 no = s.getUintByKey(getFalseReportingStakesKey(key, incidentDate));
 
     if (no > yes) {
       s.setStatus(key, CoverUtilV1.CoverStatus.FalseReporting);
@@ -570,19 +755,17 @@ function addAttestation(
   ) external {
     // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
     // Add individual stake of the reporter
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
-    s.addUintByKey(k, stake);
+    s.addUintByKey(getIndividualIncidentOccurredStakeKey(key, incidentDate, who), stake);
 
     // All "incident happened" camp witnesses combined
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
-    uint256 currentStake = s.getUintByKey(k);
+    uint256 currentStake = s.getUintByKey(getIncidentOccurredStakesKey(key, incidentDate));
 
     // No has reported yet, this is the first report
     if (currentStake == 0) {
-      s.setAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, msg.sender);
+      s.setAddressByKey(getReporterKey(key), msg.sender);
     }
 
-    s.addUintByKey(k, stake);
+    s.addUintByKey(getIncidentOccurredStakesKey(key, incidentDate), stake);
     updateCoverStatus(s, key, incidentDate);
 
     s.updateStateAndLiquidity(key);
@@ -616,11 +799,8 @@ function getAttestation(
     address who,
     uint256 incidentDate
   ) external view returns (uint256 myStake, uint256 totalStake) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, key, incidentDate, who));
-    myStake = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate));
-    totalStake = s.getUintByKey(k);
+    myStake = s.getUintByKey(getIndividualIncidentOccurredStakeKey(key, incidentDate, who));
+    totalStake = s.getUintByKey(getIncidentOccurredStakesKey(key, incidentDate));
   }
 ```
 </details>
@@ -654,22 +834,43 @@ function addDispute(
   ) external {
     // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
 
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
-    s.addUintByKey(k, stake);
+    s.addUintByKey(getIndividualFalseReportingStakeKey(key, incidentDate, who), stake);
 
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
-    uint256 currentStake = s.getUintByKey(k);
+    uint256 currentStake = s.getUintByKey(getFalseReportingStakesKey(key, incidentDate));
 
     if (currentStake == 0) {
       // The first reporter who disputed
-      s.setAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, msg.sender);
+      s.setAddressByKey(getDisputerKey(key), msg.sender);
+      s.setBoolByKey(getHasDisputeKey(key), true);
     }
 
-    s.addUintByKey(k, stake);
-
+    s.addUintByKey(getFalseReportingStakesKey(key, incidentDate), stake);
     updateCoverStatus(s, key, incidentDate);
 
     s.updateStateAndLiquidity(key);
+  }
+```
+</details>
+
+### getHasDisputeKey
+
+```solidity
+function getHasDisputeKey(bytes32 key) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getHasDisputeKey(bytes32 key) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE, key));
   }
 ```
 </details>
@@ -700,11 +901,8 @@ function getDispute(
     address who,
     uint256 incidentDate
   ) external view returns (uint256 myStake, uint256 totalStake) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, key, incidentDate, who));
-    myStake = s.getUintByKey(k);
-
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate));
-    totalStake = s.getUintByKey(k);
+    myStake = s.getUintByKey(getIndividualFalseReportingStakeKey(key, incidentDate, who));
+    totalStake = s.getUintByKey(getFalseReportingStakesKey(key, incidentDate));
   }
 ```
 </details>
@@ -868,6 +1066,7 @@ function isResolvedInternal(IStore s, bytes32 key) external view returns (bool) 
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

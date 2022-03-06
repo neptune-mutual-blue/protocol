@@ -55,6 +55,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
     validate(cxToken, key, incidentDate);
+    require(amount > 0, "Enter an amount");
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
     ICxToken(cxToken).burn(amount);
@@ -62,14 +63,29 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(key);
     address finalReporter = s.getReporter(key, incidentDate);
 
+    // @suppress-division Checked side effects. If the claim platform fee is zero
+    // or a very small number, platform fee becomes zero due to data loss.
     uint256 platformFee = (amount * s.getClaimPlatformFee()) / ProtoUtilV1.MULTIPLIER;
+
+    // @suppress-division Checked side effects. If the claim reporter commission is zero
+    // or a very small number, reporterFee fee becomes zero due to data loss.
+
     // slither-disable-next-line divide-before-multiply
     uint256 reporterFee = (platformFee * s.getClaimReporterCommission()) / ProtoUtilV1.MULTIPLIER;
     uint256 claimed = amount - platformFee;
 
     vault.transferGovernance(key, msg.sender, claimed);
-    vault.transferGovernance(key, finalReporter, reporterFee);
-    vault.transferGovernance(key, s.getTreasury(), platformFee - reporterFee);
+
+    if (reporterFee > 0) {
+      vault.transferGovernance(key, finalReporter, reporterFee);
+    }
+
+    if (platformFee - reporterFee > 0) {
+      // @suppress-subtraction The following (or above) subtraction can cause
+      // an underflow if `getClaimReporterCommission` is greater than 100%.
+      // @check:  getClaimReporterCommission < ProtoUtilV1.MULTIPLIER
+      vault.transferGovernance(key, s.getTreasury(), platformFee - reporterFee);
+    }
 
     s.updateStateAndLiquidity(key);
 

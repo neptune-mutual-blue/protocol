@@ -111,7 +111,7 @@ function recoverToken(address token, address sendTo) external nonpayable onlyOwn
 function recoverToken(address token, address sendTo) external onlyOwner {
     // @suppress-pausable Can only be called by the owner
     // @suppress-reentrancy Can only be called by the owner
-    // @suppress-address-trust-issue Although the token can't be trusted, the owner has to check the token code manually.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
@@ -289,6 +289,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

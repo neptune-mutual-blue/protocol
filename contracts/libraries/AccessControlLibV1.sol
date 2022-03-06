@@ -8,7 +8,6 @@ import "./ProtoUtilV1.sol";
 
 library AccessControlLibV1 {
   using ProtoUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
 
   bytes32 public constant NS_ROLES_ADMIN = 0x00; // SAME AS "DEFAULT_ADMIN_ROLE"
   bytes32 public constant NS_ROLES_COVER_MANAGER = "role:cover:manager";
@@ -32,13 +31,6 @@ library AccessControlLibV1 {
    */
   function mustBeCoverManager(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
-  }
-
-  /**
-   * @dev Reverts if the sender is not the cover manager.
-   */
-  function senderMustBeWhitelisted(IStore s) external view {
-    require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, msg.sender), "Not whitelisted");
   }
 
   /**

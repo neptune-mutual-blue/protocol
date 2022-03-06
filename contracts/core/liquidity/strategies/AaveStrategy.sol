@@ -83,6 +83,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
+    // @suppress-malicious-erc20 The variables `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
@@ -123,6 +124,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     s.callerMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
+    // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 

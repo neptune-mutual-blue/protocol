@@ -49,6 +49,7 @@ contract Policy is IPolicy, Recoverable {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
+    s.senderMustBeWhitelistedIfRequired(key);
 
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 

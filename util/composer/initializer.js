@@ -23,13 +23,12 @@ const initialize = async (suite, deploymentId) => {
   const bondPeriod = network.pool.bond.period.toString()
 
   const tokens = await fakeTokenComposer.compose(cache)
-  const { npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai, tokenInfo } = tokens
-
+  const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
   const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
-  const [npmUsdPair, cpoolUsdPair, htUsdPair, okbUsdPair, supraUsdPair, bmcUsdPair, xtUsdPair] = pairs
+  const [npmUsdPair, crpoolUsdPair, hwtUsdPair, obkUsdPair, sabreUsdPair, becUsdPair, xdUsdPair] = pairs
 
   // The protocol only supports stablecoin as reassurance token for now
   const reassuranceToken = dai
@@ -102,34 +101,34 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STAKING_POOL, stakingPoolContract.address)
 
   // @todo: only applicable to testnet
-  await intermediate(cache, cpool, 'approve', stakingPoolContract.address, helper.ether(13_400_300))
-  addresses = [npm.address, npmUsdPair.address, cpool.address, cpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 149953, minutesToBlocks(chaindId, 5), helper.ether(13_400_300)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Cpool'), 'Clearpool Staking', 0, addresses, values)
+  await intermediate(cache, crpool, 'approve', stakingPoolContract.address, helper.ether(13_400_300))
+  addresses = [npm.address, npmUsdPair.address, crpool.address, crpoolUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 149953000, minutesToBlocks(chaindId, 5), helper.ether(13_400_300)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Crpool'), 'Crystalpool Staking', 0, addresses, values)
 
-  await intermediate(cache, ht, 'approve', stakingPoolContract.address, helper.ether(33_303_000))
-  addresses = [npm.address, npmUsdPair.address, ht.address, htUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 123480, minutesToBlocks(chaindId, 5), helper.ether(33_303_000)]
+  await intermediate(cache, hwt, 'approve', stakingPoolContract.address, helper.ether(33_303_000))
+  addresses = [npm.address, npmUsdPair.address, hwt.address, hwtUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 123480000, minutesToBlocks(chaindId, 5), helper.ether(33_303_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
 
-  await intermediate(cache, okb, 'approve', stakingPoolContract.address, helper.ether(12_30_330))
-  addresses = [npm.address, npmUsdPair.address, okb.address, okbUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 154505290, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OKB'), 'OKB Staking', 0, addresses, values)
+  await intermediate(cache, obk, 'approve', stakingPoolContract.address, helper.ether(12_30_330))
+  addresses = [npm.address, npmUsdPair.address, obk.address, obkUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 154505290000, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OBK'), 'OBK Staking', 0, addresses, values)
 
-  await intermediate(cache, supra, 'approve', stakingPoolContract.address, helper.ether(62_000_000))
-  addresses = [npm.address, npmUsdPair.address, supra.address, supraUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SUPRA'), 'SUPRA Staking', 0, addresses, values)
+  await intermediate(cache, sabre, 'approve', stakingPoolContract.address, helper.ether(62_000_000))
+  addresses = [npm.address, npmUsdPair.address, sabre.address, sabreUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 194033000001, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SABRE'), 'SABRE Staking', 0, addresses, values)
 
-  await intermediate(cache, bmc, 'approve', stakingPoolContract.address, helper.ether(52_000_000))
-  addresses = [npm.address, npmUsdPair.address, bmc.address, bmcUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 194033001, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BMC'), 'BMC Staking', 0, addresses, values)
+  await intermediate(cache, bec, 'approve', stakingPoolContract.address, helper.ether(52_000_000))
+  addresses = [npm.address, npmUsdPair.address, bec.address, becUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 194033000001, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BEC'), 'BEC Staking', 0, addresses, values)
 
-  await intermediate(cache, xt, 'approve', stakingPoolContract.address, helper.ether(49_000_000))
-  addresses = [npm.address, npmUsdPair.address, xt.address, xtUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 194033004, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
+  await intermediate(cache, xd, 'approve', stakingPoolContract.address, helper.ether(49_000_000))
+  addresses = [npm.address, npmUsdPair.address, xd.address, xdUsdPair.address]
+  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 194033000004, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('XT'), 'XT Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
@@ -255,7 +254,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY_ADMIN, policyAdminContract.address)
 
   await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
-  await intermediate(cache, cover, 'updateWhitelist', owner.address, true)
+  await intermediate(cache, cover, 'updateCoverCreatorWhitelist', owner.address, true)
 
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -307,7 +306,7 @@ const initialize = async (suite, deploymentId) => {
     }, store.address, aaveLendingPool, aToken.address)
 
     await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)
-    await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [aaveStrategy.address])
+    await intermediate(cache, liquidityEngine, 'addStrategies', [aaveStrategy.address])
   }
 
   const compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
@@ -321,7 +320,7 @@ const initialize = async (suite, deploymentId) => {
   }, store.address, compoundDaiDelegator, cDai.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
-  await intermediate(cache, liquidityEngine, 'addStrategies', store.address, [compoundStrategy.address])
+  await intermediate(cache, liquidityEngine, 'addStrategies', [compoundStrategy.address])
 
   const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -343,19 +342,19 @@ const initialize = async (suite, deploymentId) => {
     store,
     npm,
     dai,
-    cpool,
-    ht,
-    okb,
-    supra,
-    bmc,
-    xt,
+    crpool,
+    hwt,
+    obk,
+    sabre,
+    bec,
+    xd,
     npmUsdPair,
-    cpoolUsdPair,
-    htUsdPair,
-    okbUsdPair,
-    supraUsdPair,
-    bmcUsdPair,
-    xtUsdPair,
+    crpoolUsdPair,
+    hwtUsdPair,
+    obkUsdPair,
+    sabreUsdPair,
+    becUsdPair,
+    xdUsdPair,
     reassuranceToken,
     protocol,
     stakingContract,

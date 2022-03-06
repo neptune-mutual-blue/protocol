@@ -4,12 +4,13 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 key, bytes32 info);
+  event CoverCreated(bytes32 key, bytes32 info, bool requiresWhitelist);
   event CoverUpdated(bytes32 key, bytes32 info);
   event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
-  event WhitelistUpdated(address account, bool status);
+  event CoverCreatorWhitelistUpdated(address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 key, address account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
@@ -62,6 +63,7 @@ interface ICover is IMember {
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external;
 
@@ -76,7 +78,13 @@ interface ICover is IMember {
    */
   function updateCover(bytes32 key, bytes32 info) external;
 
-  function updateWhitelist(address account, bool whitelisted) external;
+  function updateCoverCreatorWhitelist(address account, bool whitelisted) external;
+
+  function updateCoverUsersWhitelist(
+    bytes32 key,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external;
 
   /**
    * @dev Get info of a cover contract by key
@@ -96,7 +104,9 @@ interface ICover is IMember {
 
   function stopCover(bytes32 key, string memory reason) external;
 
-  function checkIfWhitelisted(address account) external view returns (bool);
+  function checkIfWhitelistedCoverCreator(address account) external view returns (bool);
+
+  function checkIfWhitelistedUser(bytes32 key, address account) external view returns (bool);
 
   function setCoverFees(uint256 value) external;
 

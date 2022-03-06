@@ -24,7 +24,6 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 
 - [mustBeAdmin(IStore s)](#mustbeadmin)
 - [mustBeCoverManager(IStore s)](#mustbecovermanager)
-- [senderMustBeWhitelisted(IStore s)](#sendermustbewhitelisted)
 - [mustBeLiquidityManager(IStore s)](#mustbeliquiditymanager)
 - [mustBeGovernanceAgent(IStore s)](#mustbegovernanceagent)
 - [mustBeGovernanceAdmin(IStore s)](#mustbegovernanceadmin)
@@ -79,30 +78,6 @@ function mustBeCoverManager(IStore s) external view
 ```javascript
 function mustBeCoverManager(IStore s) external view {
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
-  }
-```
-</details>
-
-### senderMustBeWhitelisted
-
-Reverts if the sender is not the cover manager.
-
-```solidity
-function senderMustBeWhitelisted(IStore s) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function senderMustBeWhitelisted(IStore s) external view {
-    require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, msg.sender), "Not whitelisted");
   }
 ```
 </details>
@@ -403,6 +378,7 @@ function hasAccess(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

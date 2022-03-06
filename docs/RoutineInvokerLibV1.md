@@ -17,7 +17,6 @@ enum Action {
 ## Functions
 
 - [updateStateAndLiquidity(IStore s, bytes32 key)](#updatestateandliquidity)
-- [updateStateAndLiquidity(IStore s, bytes32 key, address token)](#updatestateandliquidity)
 - [_invoke(IStore s, bytes32 key, address token)](#_invoke)
 - [_executeIsWithdrawalPeriod(IStore s, bytes32 coverKey)](#_executeiswithdrawalperiod)
 - [getNextWithdrawalStartKey(bytes32 coverKey)](#getnextwithdrawalstartkey)
@@ -55,34 +54,6 @@ function updateStateAndLiquidity(IStore s, bytes32 key) external nonpayable
 ```javascript
 function updateStateAndLiquidity(IStore s, bytes32 key) external {
     _invoke(s, key, address(0));
-  }
-```
-</details>
-
-### updateStateAndLiquidity
-
-```solidity
-function updateStateAndLiquidity(IStore s, bytes32 key, address token) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| token | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function updateStateAndLiquidity(
-    IStore s,
-    bytes32 key,
-    address token
-  ) external {
-    _invoke(s, key, token);
   }
 ```
 </details>
@@ -323,7 +294,7 @@ function _canDeposit(
     address vault = s.getVaultAddress(key);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * StrategyLibV1.MAX_LENDING_RATIO) / ProtoUtilV1.MULTIPLIER;
+    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * ProtoUtilV1.MAX_LENDING_RATIO) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
@@ -737,6 +708,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -63,7 +63,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
@@ -107,7 +107,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
       uint256 myStakeInWinningCamp,
       uint256 toBurn,
       uint256 toReporter,
-      uint256 myReward
+      uint256 myReward,
+      uint256 unstaken
     )
   {
     return s.getUnstakeInfoForInternal(account, key, incidentDate);

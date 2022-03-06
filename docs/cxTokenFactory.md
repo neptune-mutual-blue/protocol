@@ -141,7 +141,6 @@ function deploy(
     // salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
-    // @todo: drop this if not used elsewhere
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, key, deployed);
 
     emit CxTokenDeployed(key, deployed, expiryDate);
@@ -257,6 +256,7 @@ function getName() external pure override returns (bytes32) {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

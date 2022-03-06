@@ -94,7 +94,7 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 ```javascript
 function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
     BaseLibV1.recoverTokenInternal(token, sendTo);
@@ -162,6 +162,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -135,6 +135,11 @@
         "internalType": "uint256",
         "name": "myReward",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "unstaken",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

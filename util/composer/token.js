@@ -48,9 +48,9 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       continue
     }
 
-    // if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
-    //   throw new Error(`Can't deploy ${symbol} on this network.`)
-    // }
+    if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
+      throw new Error(`Can't deploy ${symbol} on this network.`)
+    }
 
     const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(1_000_000))
     hre.network.name === 'hardhat' && sendTransfers(contract)
@@ -70,30 +70,30 @@ const compose = async (cache) => {
   const list = [
     { name: 'Neptune Mutual Token', symbol: 'NPM' },
     { name: 'Dai', symbol: 'DAI' },
-    { name: 'Clearpool Token', symbol: 'CPOOL' },
-    { name: 'Huobi Token', symbol: 'HT' },
-    { name: 'OKB Token', symbol: 'OKB' },
-    { name: 'SUPRA Token', symbol: 'SUPRA' },
-    { name: 'BMC Token', symbol: 'BMC' },
-    { name: 'XT Token', symbol: 'XT' },
+    { name: 'Crystalpool Token', symbol: 'CRPOOL' },
+    { name: 'Huobi-Wan Token', symbol: 'HWT' },
+    { name: 'Ob1-Ex', symbol: 'OBK' },
+    { name: 'Sabre Oracles', symbol: 'SABRE' },
+    { name: 'Bb8 Exchange', symbol: 'BEC' },
+    { name: 'XD Token', symbol: 'XD' },
     { name: 'aToken', symbol: 'aToken' },
     { name: 'cDai', symbol: 'cDai' }
   ]
 
-  const [npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai] = await deployOrGetFromConfig(cache, list)
+  const [npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai] = await deployOrGetFromConfig(cache, list)
 
   list.find(x => x.symbol === 'NPM').instance = npm
   list.find(x => x.symbol === 'DAI').instance = dai
-  list.find(x => x.symbol === 'CPOOL').instance = cpool
-  list.find(x => x.symbol === 'HT').instance = ht
-  list.find(x => x.symbol === 'OKB').instance = okb
-  list.find(x => x.symbol === 'SUPRA').instance = supra
-  list.find(x => x.symbol === 'BMC').instance = bmc
-  list.find(x => x.symbol === 'XT').instance = xt
+  list.find(x => x.symbol === 'CRPOOL').instance = crpool
+  list.find(x => x.symbol === 'HWT').instance = hwt
+  list.find(x => x.symbol === 'OBK').instance = obk
+  list.find(x => x.symbol === 'SABRE').instance = sabre
+  list.find(x => x.symbol === 'BEC').instance = bec
+  list.find(x => x.symbol === 'XD').instance = xd
   list.find(x => x.symbol === 'aToken').instance = aToken
   list.find(x => x.symbol === 'cDai').instance = cDai
 
-  return { npm, dai, cpool, ht, okb, supra, bmc, xt, aToken, cDai, tokenInfo: list }
+  return { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo: list }
 }
 
 module.exports = { deploySeveral: deployOrGetFromConfig, at, compose }

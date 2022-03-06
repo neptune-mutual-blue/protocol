@@ -62,7 +62,6 @@ function initialize(address liquidityToken, bytes32 liquidityName) external nonp
 function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
     // @suppress-initialization Can only be initialized once by a cover manager
     // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
-
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -294,6 +293,7 @@ function getName() external pure override returns (bytes32) {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

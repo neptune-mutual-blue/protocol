@@ -41,8 +41,9 @@ describe('Policy Purchase Stories', () => {
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
 
+    const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 
     const vault = await composer.vault.getVault(contracts, coverKey)

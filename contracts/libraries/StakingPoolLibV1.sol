@@ -203,10 +203,20 @@ library StakingPoolLibV1 {
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
+    // @suppress-division Checked side effects. If the reward platform fee is zero
+    // or a very small number, platform fee becomes zero because of data loss
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
-    IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
-    IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+    // @suppress-subtraction The following subtraction can cause
+    // an underflow if `getRewardPlatformFee` is greater than 100%.
+    if (rewards - platformFee > 0) {
+      // @suppress-malicious-erc20 `rewardToken` can't be manipulated via user input.
+      IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
+    }
+
+    if (platformFee > 0) {
+      IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+    }
   }
 
   function depositInternal(
@@ -240,6 +250,7 @@ library StakingPoolLibV1 {
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key, amount);
 
+    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransferFrom(msg.sender, address(this), amount);
   }
 
@@ -267,12 +278,14 @@ library StakingPoolLibV1 {
     // First withdraw your rewards
     (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
+    // @suppress-subtraction, @todo: check if the following subtraction could result in an underflow
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
 
     // Global state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
 
+    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransfer(msg.sender, amount);
   }
 }

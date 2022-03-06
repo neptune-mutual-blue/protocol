@@ -29,19 +29,19 @@
  * @property {Object} store - Store contract
  * @property {Object} npm - NPM Token contract
  * @property {Object} dai - dai token contract
- * @property {Object} cpool - Clearpool token contract
- * @property {Object} ht - Huobi token contract
- * @property {Object} okb - OKB token contract
- * @property {Object} supra - SUPRA token contract
- * @property {Object} bmc - BMC token contract
- * @property {Object} xt - XT token contract
+ * @property {Object} crpool - Crystalpool token contract
+ * @property {Object} hwt - Huobi-Wan token contract
+ * @property {Object} obk - OBK token contract
+ * @property {Object} sabre - SABRE token contract
+ * @property {Object} bec - BEC token contract
+ * @property {Object} xd - XD token contract
  * @property {Object} npmUsdPair NPM/DAI Uniswap Pair,
- * @property {Object} cpoolUsdPair CPOOL/DAI Uniswap Pair,
- * @property {Object} htUsdPair HT/DAI Uniswap Pair
- * @property {Object} okbUsdPair OKB/DAI Uniswap Pair
- * @property {Object} supraUsdPair SUPRA/DAI Uniswap Pair
- * @property {Object} bmcUsdPair BMC/DAI Uniswap Pair
- * @property {Object} xtUsdPair DT/DAI Uniswap Pair
+ * @property {Object} crpoolUsdPair CRPOOL/DAI Uniswap Pair,
+ * @property {Object} hwtUsdPair HWT/DAI Uniswap Pair
+ * @property {Object} obkUsdPair OBK/DAI Uniswap Pair
+ * @property {Object} sabreUsdPair SABRE/DAI Uniswap Pair
+ * @property {Object} becUsdPair BEC/DAI Uniswap Pair
+ * @property {Object} xdUsdPair XD/DAI Uniswap Pair
  * @property {Object} reassuranceToken - Reassurance token
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract

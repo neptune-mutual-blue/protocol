@@ -42,8 +42,9 @@ describe('Liquidity Stories', () => {
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
 
+    const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
   })
 
@@ -66,6 +67,6 @@ describe('Liquidity Stories', () => {
     await network.provider.send('evm_increaseTime', [181 * DAYS])
 
     await approve(vault.address, vault.address, owner)
-    await vault.removeLiquidity(coverKey, toRedeem, '0')
+    await vault.removeLiquidity(coverKey, toRedeem, '0', false)
   })
 })

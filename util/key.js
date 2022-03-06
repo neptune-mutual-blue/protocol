@@ -85,6 +85,7 @@ const PROTOCOL = {
     COVER_LIQUIDITY_COMMITTED: toBytes32('ns:cover:liquidity:committed'),
     COVER_LIQUIDITY_NAME: toBytes32('ns:cover:liquidityName'),
     COVER_LIQUIDITY_RELEASE_DATE: toBytes32('ns:cover:liquidity:release'),
+    COVER_REQUIRES_WHITELIST: toBytes32('ns:cover:requires:whitelist'),
     COVER_STABLECOIN_LENT_TOTAL: toBytes32('ns:cover:sc:total:lent'),
     COVER_HAS_FLASH_LOAN: toBytes32('ns:cover:has:fl'),
     COVER_LIQUIDITY_FLASH_LOAN_FEE: toBytes32('ns:cover:liquidity:fl:fee'),
@@ -96,7 +97,8 @@ const PROTOCOL = {
     COVER_STAKE_OWNED: toBytes32('ns:cover:stake:owned'),
     COVER_STATUS: toBytes32('ns:cover:status'),
     COVER_CXTOKEN: toBytes32('ns:cover:cxtoken'),
-    COVER_WHITELIST: toBytes32('ns:cover:whitelist'),
+    COVER_CREATOR_WHITELIST: toBytes32('ns:cover:creator:whitelist'),
+    COVER_USER_WHITELIST: toBytes32('ns:cover:user:whitelist'),
     GOVERNANCE_RESOLUTION_TS: toBytes32('ns:gov:resolution:ts'),
     GOVERNANCE_UNSTAKEN: toBytes32('ns:gov:unstaken'),
     GOVERNANCE_UNSTAKE_TS: toBytes32('ns:gov:unstake:ts'),
@@ -107,6 +109,7 @@ const PROTOCOL = {
     GOVERNANCE_REPORTING_INCIDENT_DATE: toBytes32('ns:gov:rep:incident:date'),
     GOVERNANCE_REPORTING_PERIOD: toBytes32('ns:gov:rep:period'),
     GOVERNANCE_REPORTING_WITNESS_YES: toBytes32('ns:gov:rep:witness:yes'),
+    GOVERNANCE_REPORTING_HAS_A_DISPUTE: toBytes32('ns:gov:rep:has:dispute'),
     GOVERNANCE_REPORTING_WITNESS_NO: toBytes32('ns:gov:rep:witness:no'),
     GOVERNANCE_REPORTING_STAKE_OWNED_YES: toBytes32('ns:gov:rep:stake:owned:yes'),
     GOVERNANCE_REPORTING_STAKE_OWNED_NO: toBytes32('ns:gov:rep:stake:owned:no'),
@@ -149,6 +152,7 @@ const PROTOCOL = {
     COVER_STAKE: toBytes32('CoverStake'),
     COVER_REASSURANCE: toBytes32('CoverReassurance'),
     LIQUIDITY_VAULT: toBytes32('Vault'),
+    LIQUIDITY_ENGINE: toBytes32('LiquidityEngine'),
     STRATEGY_AAVE: toBytes32('AaveStrategy'),
     STRATEGY_COMPOUND: toBytes32('CompoundStrategy')
   }

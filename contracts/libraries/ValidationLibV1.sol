@@ -72,7 +72,7 @@ library ValidationLibV1 {
     IStore s,
     bytes32 key,
     address sender
-  ) external view {
+  ) public view {
     bool isCoverOwner = s.getCoverOwner(key) == sender;
     require(isCoverOwner, "Forbidden");
   }
@@ -91,6 +91,12 @@ library ValidationLibV1 {
     bool isCoverContract = address(s.getCoverContract()) == sender;
 
     require(isCoverOwner || isCoverContract, "Forbidden");
+  }
+
+  function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
+    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+      mustBeCoverOwner(s, key, msg.sender);
+    }
   }
 
   function callerMustBePolicyContract(IStore s) external view {
@@ -175,6 +181,11 @@ library ValidationLibV1 {
     }
   }
 
+  function mustNotHaveResolutionDeadline(IStore s, bytes32 key) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(key);
+    require(deadline == 0, "Resolution already has deadline");
+  }
+
   function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view {
     uint256 deadline = s.getResolutionDeadlineInternal(key);
     require(block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
@@ -188,9 +199,14 @@ library ValidationLibV1 {
     require(s.getLatestIncidentDate(key) == incidentDate, "Invalid incident date");
   }
 
+  function mustHaveDispute(IStore s, bytes32 key) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    require(hasDispute == true, "Not disputed");
+  }
+
   function mustNotHaveDispute(IStore s, bytes32 key) external view {
-    address reporter = s.getAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
-    require(reporter == address(0), "Already disputed");
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    require(hasDispute == false, "Already disputed");
   }
 
   function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view {
@@ -235,9 +251,7 @@ library ValidationLibV1 {
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, key, incidentDate, account));
-    uint256 withdrawal = s.getUintByKey(k);
-
+    uint256 withdrawal = s.getReportingUnstakenAmount(account, key, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 
@@ -301,5 +315,22 @@ library ValidationLibV1 {
 
   function mustBeAfterClaimExpiry(IStore s, bytes32 key) external view {
     require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key), "Claim still active"); // solhint-disable-line
+  }
+
+  /**
+   * @dev Reverts if the sender is not whitelisted cover creator.
+   */
+  function senderMustBeWhitelistedCoverCreator(IStore s) external view {
+    require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender), "Not whitelisted");
+  }
+
+  function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view {
+    bool required = s.checkIfRequiresWhitelist(key);
+
+    if (required == false) {
+      return;
+    }
+
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, key, msg.sender), "You are not whitelisted");
   }
 }

@@ -10,11 +10,7 @@ import "./ProtoUtilV1.sol";
 
 library StrategyLibV1 {
   using StoreKeyUtil for IStore;
-
-  // @todo
-  // 1. Configure this magic number.
-  // 2. Decrease the value of % divisor to avoid overflow.
-  uint256 public constant MAX_LENDING_RATIO = 500; // 5% (divided by 10,000)
+  event StrategyAdded(address indexed strategy);
 
   function _deleteStrategy(IStore s, address toFind) private {
     bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
@@ -31,6 +27,7 @@ library StrategyLibV1 {
   }
 
   function disableStrategyInternal(IStore s, address toFind) external {
+    // @suppress-address-trust-issue Check caller.
     _deleteStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
@@ -93,6 +90,7 @@ library StrategyLibV1 {
 
     s.setBoolByKey(_getIsActiveStrategyKey(deployedOn), true);
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, deployedOn);
+    emit StrategyAdded(deployedOn);
   }
 
   function getDisabledStrategiesInternal(IStore s) external view returns (address[] memory strategies) {

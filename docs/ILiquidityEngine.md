@@ -1,148 +1,120 @@
-# Policy Admin Contract (PolicyAdmin.sol)
+# ILiquidityEngine.sol
 
-View Source: [contracts/core/policy/PolicyAdmin.sol](../contracts/core/policy/PolicyAdmin.sol)
+View Source: [contracts/interfaces/ILiquidityEngine.sol](../contracts/interfaces/ILiquidityEngine.sol)
 
-**↗ Extends: [IPolicyAdmin](IPolicyAdmin.md), [Recoverable](Recoverable.md)**
+**↗ Extends: [IMember](IMember.md)**
+**↘ Derived Contracts: [LiquidityEngine](LiquidityEngine.md)**
 
-**PolicyAdmin**
+**ILiquidityEngine**
 
-The policy admin contract enables the owner (governance)
- to set the policy rate and fee info.
+**Events**
+
+```js
+event StrategyAdded(address indexed strategy);
+event StrategyDisabled(address indexed strategy);
+```
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
-- [setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
-- [getPolicyRates(bytes32 key)](#getpolicyrates)
-- [version()](#version)
-- [getName()](#getname)
+- [addStrategies(address[] strategies)](#addstrategies)
+- [disableStrategy(address strategy)](#disablestrategy)
+- [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
+- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
+- [getDisabledStrategies()](#getdisabledstrategies)
+- [getActiveStrategies()](#getactivestrategies)
 
-### 
-
-Constructs this contract
+### addStrategies
 
 ```solidity
-function (IStore store) public nonpayable Recoverable 
+function addStrategies(address[] strategies) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
+| strategies | address[] |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {}
+function addStrategies(address[] memory strategies) external;
 ```
 </details>
 
-### setPolicyRates
-
-Sets policy rates. This feature is only accessible by cover manager.
+### disableStrategy
 
 ```solidity
-function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
+function disableStrategy(address strategy) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate fallback | 
-| ceiling | uint256 | The highest cover fee rate fallback | 
+| strategy | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
-
-    s.updateStateAndLiquidity(0);
-
-    emit PolicyRateSet(floor, ceiling);
-  }
+function disableStrategy(address strategy) external;
 ```
 </details>
 
-### setPolicyRatesByKey
-
-Sets policy rates for the given cover key. This feature is only accessible by cover manager.
+### setLendingPeriods
 
 ```solidity
-function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
+function setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
-| floor | uint256 | The lowest cover fee rate for this cover | 
-| ceiling | uint256 | The highest cover fee rate for this cover | 
+| coverKey | bytes32 |  | 
+| lendingPeriod | uint256 |  | 
+| withdrawalWindow | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setPolicyRatesByKey(
-    bytes32 key,
-    uint256 floor,
-    uint256 ceiling
-  ) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);
-
-    s.updateStateAndLiquidity(key);
-
-    emit CoverPolicyRateSet(key, floor, ceiling);
-  }
+function setLendingPeriods(
+    bytes32 coverKey,
+    uint256 lendingPeriod,
+    uint256 withdrawalWindow
+  ) external;
 ```
 </details>
 
-### getPolicyRates
-
-Gets the cover policy rates for the given cover key
+### setLendingPeriodsDefault
 
 ```solidity
-function getPolicyRates(bytes32 key) external view
-returns(floor uint256, ceiling uint256)
+function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| lendingPeriod | uint256 |  | 
+| withdrawalWindow | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRatesInternal(key);
-  }
+function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
 ```
 </details>
 
-### version
-
-Version number of this contract
+### getDisabledStrategies
 
 ```solidity
-function version() external pure
-returns(bytes32)
+function getDisabledStrategies() external view
+returns(strategies address[])
 ```
 
 **Arguments**
@@ -154,19 +126,15 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
+function getDisabledStrategies() external view returns (address[] memory strategies);
 ```
 </details>
 
-### getName
-
-Name of this contract
+### getActiveStrategies
 
 ```solidity
-function getName() external pure
-returns(bytes32)
+function getActiveStrategies() external view
+returns(strategies address[])
 ```
 
 **Arguments**
@@ -178,9 +146,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_POLICY_ADMIN;
-  }
+function getActiveStrategies() external view returns (address[] memory strategies);
 ```
 </details>
 

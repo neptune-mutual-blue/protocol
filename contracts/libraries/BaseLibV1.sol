@@ -28,7 +28,7 @@ library BaseLibV1 {
    * @param token IERC-20 The address of the token contract
    */
   function recoverTokenInternal(address token, address sendTo) external {
-    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));

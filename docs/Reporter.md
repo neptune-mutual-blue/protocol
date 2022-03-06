@@ -58,6 +58,7 @@ function report(
     s.mustHaveNormalCoverStatus(key);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
+    require(stake >= 0, "Stake insufficient");
     require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
@@ -111,6 +112,7 @@ function dispute(
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
+    require(stake >= 0, "Stake insufficient");
     require(stake >= s.getMinReportingStake(key), "Stake insufficient");
 
     s.addDispute(key, msg.sender, incidentDate, stake);
@@ -383,6 +385,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -10,11 +10,12 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 **Events**
 
 ```js
-event CoverCreated(bytes32  key, bytes32  info);
+event CoverCreated(bytes32  key, bytes32  info, bool  requiresWhitelist);
 event CoverUpdated(bytes32  key, bytes32  info);
 event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  reason);
 event VaultDeployed(bytes32 indexed coverKey, address  vault);
-event WhitelistUpdated(address  account, bool  status);
+event CoverCreatorWhitelistUpdated(address  account, bool  status);
+event CoverUserWhitelistUpdated(bytes32  key, address  account, bool  status);
 event CoverFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
 event MinStakeToAddLiquiditySet(uint256  previous, uint256  current);
@@ -24,13 +25,15 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ## Functions
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
+- [addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcover)
 - [deployVault(bytes32 key)](#deployvault)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [updateWhitelist(address account, bool whitelisted)](#updatewhitelist)
+- [updateCoverCreatorWhitelist(address account, bool whitelisted)](#updatecovercreatorwhitelist)
+- [updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
 - [getCover(bytes32 key)](#getcover)
 - [stopCover(bytes32 key, string reason)](#stopcover)
-- [checkIfWhitelisted(address account)](#checkifwhitelisted)
+- [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
+- [checkIfWhitelistedUser(bytes32 key, address account)](#checkifwhitelisteduser)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 - [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
@@ -73,7 +76,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values) external nonpayable
+function addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable
 ```
 
 **Arguments**
@@ -83,6 +86,7 @@ function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[]
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| requiresWhitelist | bool |  | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
@@ -93,6 +97,7 @@ function addCover(
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external;
 ```
@@ -143,10 +148,10 @@ function updateCover(bytes32 key, bytes32 info) external;
 ```
 </details>
 
-### updateWhitelist
+### updateCoverCreatorWhitelist
 
 ```solidity
-function updateWhitelist(address account, bool whitelisted) external nonpayable
+function updateCoverCreatorWhitelist(address account, bool whitelisted) external nonpayable
 ```
 
 **Arguments**
@@ -160,7 +165,33 @@ function updateWhitelist(address account, bool whitelisted) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateWhitelist(address account, bool whitelisted) external;
+function updateCoverCreatorWhitelist(address account, bool whitelisted) external;
+```
+</details>
+
+### updateCoverUsersWhitelist
+
+```solidity
+function updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateCoverUsersWhitelist(
+    bytes32 key,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external;
 ```
 </details>
 
@@ -215,10 +246,10 @@ function stopCover(bytes32 key, string memory reason) external;
 ```
 </details>
 
-### checkIfWhitelisted
+### checkIfWhitelistedCoverCreator
 
 ```solidity
-function checkIfWhitelisted(address account) external view
+function checkIfWhitelistedCoverCreator(address account) external view
 returns(bool)
 ```
 
@@ -232,7 +263,29 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfWhitelisted(address account) external view returns (bool);
+function checkIfWhitelistedCoverCreator(address account) external view returns (bool);
+```
+</details>
+
+### checkIfWhitelistedUser
+
+```solidity
+function checkIfWhitelistedUser(bytes32 key, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function checkIfWhitelistedUser(bytes32 key, address account) external view returns (bool);
 ```
 </details>
 
@@ -356,6 +409,7 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -354,6 +354,7 @@ function createBondInternal(
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
 
+    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
@@ -411,6 +412,7 @@ function claimBondInternal(IStore s) external returns (uint256[] memory values) 
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
+    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 ```
@@ -462,6 +464,7 @@ function setupBondPoolInternal(
     }
 
     if (values[3] > 0) {
+      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }
@@ -529,6 +532,7 @@ function setupBondPoolInternal(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

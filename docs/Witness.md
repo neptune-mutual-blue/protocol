@@ -73,7 +73,7 @@ function attest(
 
     s.addAttestation(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Attested(key, msg.sender, incidentDate, stake);
   }
@@ -119,7 +119,7 @@ function refute(
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustBeReportingOrDisputed(key);
+    s.mustHaveDispute(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
@@ -127,7 +127,7 @@ function refute(
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Refuted(key, msg.sender, incidentDate, stake);
   }
@@ -289,6 +289,7 @@ function getStakesOf(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -281,7 +281,7 @@ function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
 ### getStakingPoolAddress
 
 ```solidity
-function getStakingPoolAddress(IStore s) public view
+function getStakingPoolAddress(IStore s) external view
 returns(address)
 ```
 
@@ -295,7 +295,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStakingPoolAddress(IStore s) public view returns (address) {
+function getStakingPoolAddress(IStore s) external view returns (address) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_STAKING_POOL);
     return vault;
   }
@@ -305,7 +305,7 @@ function getStakingPoolAddress(IStore s) public view returns (address) {
 ### getBondPoolAddress
 
 ```solidity
-function getBondPoolAddress(IStore s, bytes32 key) public view
+function getBondPoolAddress(IStore s, bytes32 key) external view
 returns(address)
 ```
 
@@ -320,7 +320,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getBondPoolAddress(IStore s, bytes32 key) public view returns (address) {
+function getBondPoolAddress(IStore s, bytes32 key) external view returns (address) {
     address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_BOND_POOL, key);
     return vault;
   }
@@ -411,6 +411,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

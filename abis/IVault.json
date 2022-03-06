@@ -460,6 +460,11 @@
         "internalType": "uint256",
         "name": "npmStake",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "exit",
+        "type": "bool"
       }
     ],
     "name": "removeLiquidity",
