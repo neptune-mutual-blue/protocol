@@ -45,7 +45,7 @@ library PolicyHelperV1 {
     (floor, ceiling) = getPolicyRatesInternal(s, key);
     uint256[] memory values = s.getCoverPoolSummaryInternal(key);
 
-    require(coverDuration <= 3, "Invalid duration");
+    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
     // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER

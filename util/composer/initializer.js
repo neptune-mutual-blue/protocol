@@ -85,7 +85,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000))
   let addresses = [npmUsdPair.address, sample.fake.TREASURY]
-  let values = [helper.percentage(0.75), helper.ether(10_000), bondPeriod, helper.ether(2_000)]
+  let values = [helper.percentage(0.75), helper.ether(10_000), bondPeriod, helper.ether(2_000_000)]
 
   await intermediate(cache, bondPoolContract, 'setup', addresses, values)
 
