@@ -104,7 +104,7 @@ const covers = [
     projectName: 'Crystalpool',
     requiresWhitelist: false,
     tags: ['Smart Contract', 'Borrowing', 'Lending'],
-    about: 'The BSC ecosystem will be home to Crystalpool, the first decentralized marketplace for unsecured liquidity on the blockchain. Fettpool Finance will integrate the full-stack scaling solution to give its customers more access and functionality, as well as its single-borrower liquidity pools, thematic pools, and tokenized credit solution, offering retail lenders more access to high-yielding loan options.',
+    about: 'The BSC ecosystem will be home to Crystalpool, the first decentralized marketplace for unsecured liquidity on the blockchain. Crystalpool Finance will integrate the full-stack scaling solution to give its customers more access and functionality, as well as its single-borrower liquidity pools, thematic pools, and tokenized credit solution, offering retail lenders more access to high-yielding loan options.',
     blockchains: [{
       chainId: 1,
       name: 'Main Ethereum Network'

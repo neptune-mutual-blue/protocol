@@ -52,7 +52,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
-    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(1_000_000))
+    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000))
     hre.network.name === 'hardhat' && sendTransfers(contract)
 
     contracts.push(contract)
