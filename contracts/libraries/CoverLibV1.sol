@@ -21,6 +21,8 @@ library CoverLibV1 {
   using ValidationLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
+  event CoverUserWhitelistUpdated(bytes32 key, address account, bool status);
+
   function getCoverInfo(IStore s, bytes32 key)
     external
     view
@@ -48,6 +50,8 @@ library CoverLibV1 {
     address liquidityToken,
     bytes32 liquidityName
   ) external {
+    // @suppress-initialization Can only be initialized once by a cover manager. Check caller.
+    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement. Check caller.
     s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
     s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
 
@@ -95,13 +99,16 @@ library CoverLibV1 {
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external {
+    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version. Check caller.
+
     // First validate the information entered
     (uint256 fee, ) = _validateAndGetFee(s, key, info, values[0]);
 
     // Set the basic cover info
-    _addCover(s, key, info, reassuranceToken, values, fee);
+    _addCover(s, key, info, reassuranceToken, requiresWhitelist, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(key, msg.sender, values[0], fee);
@@ -117,6 +124,7 @@ library CoverLibV1 {
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values,
     uint256 fee
   ) private {
@@ -128,6 +136,7 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key, reassuranceToken);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, key, requiresWhitelist);
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key, fee);
@@ -185,12 +194,35 @@ library CoverLibV1 {
     s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
   }
 
-  function updateWhitelistInternal(
+  function updateCoverCreatorWhitelistInternal(
     IStore s,
     address account,
     bool status
   ) external {
-    s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account, status);
+    s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account, status);
+  }
+
+  function _updateCoverUserWhitelistInternal(
+    IStore s,
+    bytes32 key,
+    address account,
+    bool status
+  ) private {
+    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, key, account, status);
+    emit CoverUserWhitelistUpdated(key, account, status);
+  }
+
+  function updateCoverUsersWhitelistInternal(
+    IStore s,
+    bytes32 key,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external {
+    require(accounts.length == statuses.length, "Inconsistent array sizes");
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+      _updateCoverUserWhitelistInternal(s, key, accounts[i], statuses[i]);
+    }
   }
 
   function setCoverFeesInternal(IStore s, uint256 value) external returns (uint256 previous) {
@@ -241,7 +273,9 @@ library CoverLibV1 {
   ) external returns (uint256 provision) {
     provision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
-    require(provision >= amount, "Exceeds Balance"); // Exceeds balance
+    require(provision >= amount, "Exceeds Balance");
+
+    // @suppress-subtraction Checked usage. Amount is always less than current provision.
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key, amount);
 
     s.npmToken().ensureTransfer(msg.sender, amount);

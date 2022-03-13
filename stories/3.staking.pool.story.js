@@ -5,7 +5,7 @@ const { ethers, network } = require('hardhat')
 const composer = require('../util/composer')
 const { helper, key } = require('../util')
 const { minutesToBlocks } = require('../util/block-time')
-const poolKey = key.toBytes32('Cpool')
+const poolKey = key.toBytes32('Crpool')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -47,15 +47,15 @@ describe('Staking Pool Stories', () => {
       name: key.toBytes32('Clearpool Staking')
     }
 
-    arg.addresses = [contracts.npm.address, contracts.npmUsdPair.address, contracts.cpool.address, contracts.cpoolUsdPair.address]
-    arg.addresses2 = [contracts.npm.address, contracts.npmUsdPair.address, contracts.ht.address, contracts.htUsdPair.address]
+    arg.addresses = [contracts.npm.address, contracts.npmUsdPair.address, contracts.crpool.address, contracts.crpoolUsdPair.address]
+    arg.addresses2 = [contracts.npm.address, contracts.npmUsdPair.address, contracts.hwt.address, contracts.hwtUsdPair.address]
     arg.values = [arg.stakingTarget, arg.maxStake, arg.platformFee, arg.rewardPerBlock, arg.lockupPeriodInBlocks, arg.rewardTokenDeposit]
 
-    await contracts.cpool.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
-    await contracts.ht.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
+    await contracts.crpool.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
+    await contracts.hwt.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
 
     await contracts.stakingPoolContract.addOrEditPool(arg.poolKey, arg.name, 0, arg.addresses, arg.values)
-    await contracts.stakingPoolContract.addOrEditPool(key.toBytes32('HT'), key.toBytes32('HT Staking'), 0, arg.addresses2, arg.values)
+    await contracts.stakingPoolContract.addOrEditPool(key.toBytes32('HWT'), key.toBytes32('HWT Staking'), 0, arg.addresses2, arg.values)
 
     const info = await contracts.stakingPoolContract.getInfo(arg.poolKey, owner.address)
     const [name, addresses, values] = info

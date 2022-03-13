@@ -63,6 +63,8 @@ contract CoverStake is ICoverStake, Recoverable {
       emit FeeBurned(key, fee);
     }
 
+    // @suppress-subtraction Checked usage. Fee is always less than amount
+    // if we reach this far.
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount - fee);
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount - fee);
 
@@ -89,12 +91,12 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 drawingPower = _getDrawingPower(key, account);
     require(drawingPower >= amount, "Exceeds your drawing power");
 
+    // @suppress-subtraction
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount);
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount);
 
     s.npmToken().ensureTransfer(account, amount);
 
-    // Remove if the strategy is being invoked on the cover contract during this transaction
     s.updateStateAndLiquidity(key);
 
     emit StakeRemoved(key, amount);

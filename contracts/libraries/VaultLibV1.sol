@@ -146,7 +146,7 @@ library VaultLibV1 {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256) {
-    // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
     // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
     require(stablecoin == s.getStablecoin(), "Vault migration required");
@@ -215,9 +215,12 @@ library VaultLibV1 {
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem,
-    uint256 npmStakeToRemove
+    uint256 npmStakeToRemove,
+    bool exit
   ) external returns (uint256) {
-    // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
+    // come from VaultBase, we still need to ensure if it is a protocol member.
+    // Check `_redeemPods` for more info.
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
@@ -226,7 +229,7 @@ library VaultLibV1 {
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
-      _unStakeNpm(s, coverKey, npmStakeToRemove);
+      _unStakeNpm(s, coverKey, npmStakeToRemove, exit);
       IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
     }
 
@@ -237,12 +240,13 @@ library VaultLibV1 {
   function _unStakeNpm(
     IStore s,
     bytes32 coverKey,
-    uint256 amount
+    uint256 amount,
+    bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, msg.sender);
+    uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
 
-    // @todo: create an exit feature to unstake everything
-    require(remainingStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+    require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
@@ -358,6 +362,7 @@ library VaultLibV1 {
     bytes32 strategyName,
     uint256 amount
   ) external {
+    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
     token.ensureTransfer(msg.sender, amount);
 
     _addToStrategyOut(s, coverKey, token, amount);
@@ -423,6 +428,7 @@ library VaultLibV1 {
     bytes32 strategyName,
     uint256 amount
   ) external {
+    // @suppress-malicious-erc20 token should be checked on the calling contract
     token.ensureTransferFrom(msg.sender, address(this), amount);
 
     _clearStrategyOut(s, coverKey, token);
@@ -472,6 +478,7 @@ library VaultLibV1 {
     uint256 amount,
     bytes calldata data
   ) external returns (uint256) {
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20 stablecoin = IERC20(s.getStablecoin());
     (uint256 fee, uint256 protocolFee) = getFlashFeesInternal(s, token, amount);
     uint256 previousBalance = stablecoin.balanceOf(address(this));

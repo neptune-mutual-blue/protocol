@@ -34,10 +34,7 @@ contract Cover is CoverBase {
   function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
-
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
-      s.mustBeCoverOwner(key, msg.sender);
-    }
+    s.callerMustBeCoverOwnerOrAdmin(key);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
@@ -70,11 +67,12 @@ contract Cover is CoverBase {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
+   * @param requiresWhitelist If set to true, this cover will only support whitelisted addresses.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * reassurance tokens you'd like to add to this pool.
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
    * @param values[3] reportingPeriod The period during when reporting happens.
-   * reassurance tokens you'd like to add to this pool.
    * @param values[4] cooldownperiod Enter the cooldown period for governance.
    * @param values[5] claimPeriod Enter the claim period.
    * @param values[6] floor Enter the policy floor rate.
@@ -84,28 +82,27 @@ contract Cover is CoverBase {
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
     // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
-    s.senderMustBeWhitelisted();
+    s.senderMustBeWhitelistedCoverCreator();
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(key, info, reassuranceToken, values);
-    emit CoverCreated(key, info);
+    s.addCoverInternal(key, info, reassuranceToken, requiresWhitelist, values);
+    emit CoverCreated(key, info, requiresWhitelist);
   }
 
   function deployVault(bytes32 key) external override nonReentrant returns (address) {
     s.mustNotBePaused();
     s.mustHaveStoppedCoverStatus(key);
 
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
-      s.mustBeCoverOwner(key, msg.sender);
-    }
+    s.callerMustBeCoverOwnerOrAdmin(key);
 
     address vault = s.deployVaultInternal(key);
     emit VaultDeployed(key, vault);
@@ -128,24 +125,49 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Adds or removes an account to the whitelist.
+   * @dev Adds or removes an account to the cover creator whitelist.
    * For the first version of the protocol, a cover creator has to be whitelisted
    * before they can call the `addCover` function.
    * @param account Enter the address of the cover creator
    * @param status Set this to true if you want to add to or false to remove from the whitelist
    */
-  function updateWhitelist(address account, bool status) external override nonReentrant {
+  function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    s.updateWhitelistInternal(account, status);
-    emit WhitelistUpdated(account, status);
+    s.updateCoverCreatorWhitelistInternal(account, status);
+    emit CoverCreatorWhitelistUpdated(account, status);
+  }
+
+  /*
+   * @dev Adds or removes an account to the cover user whitelist.
+   * Whitelisting is an optional feature cover creators can enable.
+   * @param accounts Enter a list of accounts you would like to update the whitelist statuses of.
+   * @param statuses Enter respective statuses of the specified whitelisted accounts.
+   */
+  function updateCoverUsersWhitelist(
+    bytes32 key,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.callerMustBeCoverOwnerOrAdmin(key);
+
+    s.updateCoverUsersWhitelistInternal(key, accounts, statuses);
   }
 
   /**
-   * @dev Signifies if a given account is whitelisted
+   * @dev Signifies if a given account is a whitelisted cover creator
    */
-  function checkIfWhitelisted(address account) external view override returns (bool) {
-    return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account);
+  function checkIfWhitelistedCoverCreator(address account) external view override returns (bool) {
+    return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account);
+  }
+
+  /**
+   * @dev Signifies if a given account is a whitelisted user
+   */
+  function checkIfWhitelistedUser(bytes32 key, address account) external view override returns (bool) {
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, key, account);
   }
 }

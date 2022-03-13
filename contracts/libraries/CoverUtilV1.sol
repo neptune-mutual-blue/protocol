@@ -277,4 +277,8 @@ library CoverUtilV1 {
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
     cxToken = s.getAddress(k);
   }
+
+  function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, key);
+  }
 }

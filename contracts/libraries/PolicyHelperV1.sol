@@ -45,7 +45,7 @@ library PolicyHelperV1 {
     (floor, ceiling) = getPolicyRatesInternal(s, key);
     uint256[] memory values = s.getCoverPoolSummaryInternal(key);
 
-    require(coverDuration <= 3, "Invalid duration");
+    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
     // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
@@ -184,7 +184,7 @@ library PolicyHelperV1 {
 
     _setCommitments(s, cxToken, amountToCover);
 
-    // Transfer the fee to the vault
+    // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
     cxToken.mint(key, msg.sender, amountToCover);
 
@@ -207,8 +207,6 @@ library PolicyHelperV1 {
    * Gets the sum total of cover commitment that is still active
    */
   function getCommitmentInternal(IStore s, bytes32 key) external view returns (uint256) {
-    // revert("Not implemented");
-    // @todo: implementation needed
     return s.getCoverLiquidityCommitted(key);
   }
 

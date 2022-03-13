@@ -4,12 +4,10 @@ View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/Stra
 
 **StrategyLibV1**
 
-## Contract Members
-**Constants & Variables**
+**Events**
 
 ```js
-uint256 public constant MAX_LENDING_RATIO;
-
+event StrategyAdded(address indexed strategy);
 ```
 
 ## Functions
@@ -96,6 +94,7 @@ function disableStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function disableStrategyInternal(IStore s, address toFind) external {
+    // @suppress-address-trust-issue Check caller.
     _deleteStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
@@ -277,6 +276,7 @@ function _addStrategy(IStore s, address deployedOn) private {
 
     s.setBoolByKey(_getIsActiveStrategyKey(deployedOn), true);
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, deployedOn);
+    emit StrategyAdded(deployedOn);
   }
 ```
 </details>
@@ -387,6 +387,7 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

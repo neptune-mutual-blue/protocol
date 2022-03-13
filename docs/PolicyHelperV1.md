@@ -336,7 +336,7 @@ function purchaseCoverInternal(
 
     _setCommitments(s, cxToken, amountToCover);
 
-    // Transfer the fee to the vault
+    // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
     cxToken.mint(key, msg.sender, amountToCover);
 
@@ -396,8 +396,6 @@ returns(uint256)
 
 ```javascript
 function getCommitmentInternal(IStore s, bytes32 key) external view returns (uint256) {
-    // revert("Not implemented");
-    // @todo: implementation needed
     return s.getCoverLiquidityCommitted(key);
   }
 ```
@@ -490,6 +488,7 @@ function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

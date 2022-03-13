@@ -21,11 +21,13 @@ The cover contract facilitates you create and update covers
 
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 key, bytes32 info)](#updatecover)
-- [addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values)](#addcover)
+- [addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcover)
 - [deployVault(bytes32 key)](#deployvault)
 - [stopCover(bytes32 key, string reason)](#stopcover)
-- [updateWhitelist(address account, bool status)](#updatewhitelist)
-- [checkIfWhitelisted(address account)](#checkifwhitelisted)
+- [updateCoverCreatorWhitelist(address account, bool status)](#updatecovercreatorwhitelist)
+- [updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
+- [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
+- [checkIfWhitelistedUser(bytes32 key, address account)](#checkifwhitelisteduser)
 
 ### 
 
@@ -72,10 +74,7 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant
 function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
-
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
-      s.mustBeCoverOwner(key, msg.sender);
-    }
+    s.callerMustBeCoverOwnerOrAdmin(key);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
@@ -100,7 +99,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[] values) external nonpayable nonReentrant 
+function addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -110,6 +109,7 @@ function addCover(bytes32 key, bytes32 info, address reassuranceToken, uint256[]
 | key | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
+| requiresWhitelist | bool | If set to true, this cover will only support whitelisted addresses. | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
@@ -120,19 +120,20 @@ function addCover(
     bytes32 key,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
     // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
-    s.senderMustBeWhitelisted();
+    s.senderMustBeWhitelistedCoverCreator();
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(key, info, reassuranceToken, values);
-    emit CoverCreated(key, info);
+    s.addCoverInternal(key, info, reassuranceToken, requiresWhitelist, values);
+    emit CoverCreated(key, info, requiresWhitelist);
   }
 ```
 </details>
@@ -158,9 +159,7 @@ function deployVault(bytes32 key) external override nonReentrant returns (addres
     s.mustNotBePaused();
     s.mustHaveStoppedCoverStatus(key);
 
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
-      s.mustBeCoverOwner(key, msg.sender);
-    }
+    s.callerMustBeCoverOwnerOrAdmin(key);
 
     address vault = s.deployVaultInternal(key);
     emit VaultDeployed(key, vault);
@@ -200,14 +199,14 @@ function stopCover(bytes32 key, string memory reason) external override nonReent
 ```
 </details>
 
-### updateWhitelist
+### updateCoverCreatorWhitelist
 
-Adds or removes an account to the whitelist.
+Adds or removes an account to the cover creator whitelist.
  For the first version of the protocol, a cover creator has to be whitelisted
  before they can call the `addCover` function.
 
 ```solidity
-function updateWhitelist(address account, bool status) external nonpayable nonReentrant 
+function updateCoverCreatorWhitelist(address account, bool status) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -221,22 +220,54 @@ function updateWhitelist(address account, bool status) external nonpayable nonRe
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateWhitelist(address account, bool status) external override nonReentrant {
+function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    s.updateWhitelistInternal(account, status);
-    emit WhitelistUpdated(account, status);
+    s.updateCoverCreatorWhitelistInternal(account, status);
+    emit CoverCreatorWhitelistUpdated(account, status);
   }
 ```
 </details>
 
-### checkIfWhitelisted
-
-Signifies if a given account is whitelisted
+### updateCoverUsersWhitelist
 
 ```solidity
-function checkIfWhitelisted(address account) external view
+function updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateCoverUsersWhitelist(
+    bytes32 key,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.callerMustBeCoverOwnerOrAdmin(key);
+
+    s.updateCoverUsersWhitelistInternal(key, accounts, statuses);
+  }
+```
+</details>
+
+### checkIfWhitelistedCoverCreator
+
+Signifies if a given account is a whitelisted cover creator
+
+```solidity
+function checkIfWhitelistedCoverCreator(address account) external view
 returns(bool)
 ```
 
@@ -250,8 +281,34 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfWhitelisted(address account) external view override returns (bool) {
-    return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_WHITELIST, account);
+function checkIfWhitelistedCoverCreator(address account) external view override returns (bool) {
+    return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account);
+  }
+```
+</details>
+
+### checkIfWhitelistedUser
+
+Signifies if a given account is a whitelisted user
+
+```solidity
+function checkIfWhitelistedUser(bytes32 key, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function checkIfWhitelistedUser(bytes32 key, address account) external view override returns (bool) {
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, key, account);
   }
 ```
 </details>
@@ -316,6 +373,7 @@ function checkIfWhitelisted(address account) external view override returns (boo
 * [IFinalization](docs/IFinalization.md)
 * [IGovernance](docs/IGovernance.md)
 * [ILendingStrategy](docs/ILendingStrategy.md)
+* [ILiquidityEngine](docs/ILiquidityEngine.md)
 * [IMember](docs/IMember.md)
 * [IPausable](docs/IPausable.md)
 * [IPolicy](docs/IPolicy.md)

@@ -408,10 +408,20 @@ function withdrawRewardsInternal(
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
+    // @suppress-division Checked side effects. If the reward platform fee is zero
+    // or a very small number, platform fee becomes zero because of data loss
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
-    IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
-    IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+    // @suppress-subtraction The following subtraction can cause
+    // an underflow if `getRewardPlatformFee` is greater than 100%.
+    if (rewards - platformFee > 0) {
+      // @suppress-malicious-erc20 `rewardToken` can't be manipulated via user input.
+      IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
+    }
+
+    if (platformFee > 0) {
+      IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+    }
   }
 ```
 </details>
@@ -420,7 +430,7 @@ function withdrawRewardsInternal(
 
 ```solidity
 function depositInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
-returns(stakingToken address)
+returns(stakingToken address, rewardToken address, rewards uint256, rewardsPlatformFee uint256)
 ```
 
 **Arguments**
@@ -439,7 +449,15 @@ function depositInternal(
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
@@ -448,7 +466,7 @@ function depositInternal(
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
@@ -458,6 +476,7 @@ function depositInternal(
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key, amount);
 
+    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransferFrom(msg.sender, address(this), amount);
   }
 ```
@@ -467,7 +486,7 @@ function depositInternal(
 
 ```solidity
 function withdrawInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
-returns(stakingToken address)
+returns(stakingToken address, rewardToken address, rewards uint256, rewardsPlatformFee uint256)
 ```
 
 **Arguments**
@@ -486,7 +505,15 @@ function withdrawInternal(
     IStore s,
     bytes32 key,
     uint256 amount
-  ) external returns (address stakingToken) {
+  )
+    external
+    returns (
+      address stakingToken,
+      address rewardToken,
+      uint256 rewards,
+      uint256 rewardsPlatformFee
+    )
+  {
     require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
 
@@ -496,14 +523,16 @@ function withdrawInternal(
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
-    withdrawRewardsInternal(s, key, msg.sender);
+    (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
+    // @suppress-subtraction, @todo: check if the following subtraction could result in an underflow
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
 
     // Global state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
 
+    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransfer(msg.sender, amount);
   }
 ```
@@ -569,6 +598,7 @@ function withdrawInternal(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

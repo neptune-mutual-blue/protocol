@@ -91,8 +91,9 @@ describe('Governance Stories', () => {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
+    const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, values)
+    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 
     // Add initial liquidity

@@ -22,8 +22,7 @@ const deployDependencies = async () => {
   })
 
   const accessControlLibV1 = await deployer.deployWithLibraries(cache, 'AccessControlLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
+    ProtoUtilV1: protoUtilV1.address
   })
 
   const registryLibV1 = await deployer.deployWithLibraries(cache, 'RegistryLibV1', {
@@ -56,11 +55,12 @@ const deployDependencies = async () => {
   })
 
   const validationLibV1 = await deployer.deployWithLibraries(cache, 'ValidationLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address,
+    AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
     GovernanceUtilV1: governanceUtilV1.address,
-    RegistryLibV1: registryLibV1.address
+    ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {

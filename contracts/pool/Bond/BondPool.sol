@@ -10,7 +10,6 @@ contract BondPool is BondPoolBase {
 
   function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-
     s.mustNotBePaused();
 
     uint256[] memory values = s.createBondInternal(lpTokens, minNpmDesired);

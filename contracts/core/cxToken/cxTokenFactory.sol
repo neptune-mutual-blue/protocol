@@ -75,7 +75,6 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     // salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
-    // @todo: drop this if not used elsewhere
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, key, deployed);
 
     emit CxTokenDeployed(key, deployed, expiryDate);

@@ -221,6 +221,7 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
       return 0;
     }
 
+    // @suppress-malicious-erc20 The variables `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
@@ -279,6 +280,7 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     s.callerMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
+    // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
@@ -512,6 +514,7 @@ function getName() public pure override returns (bytes32) {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

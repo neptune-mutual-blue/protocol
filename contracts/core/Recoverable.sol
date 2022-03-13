@@ -33,7 +33,7 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
     BaseLibV1.recoverTokenInternal(token, sendTo);

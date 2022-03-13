@@ -17,8 +17,8 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [_updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatecoverliquidity)
 - [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
 - [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
-- [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidityinternal)
-- [_unStakeNpm(IStore s, bytes32 coverKey, uint256 amount)](#_unstakenpm)
+- [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidityinternal)
+- [_unStakeNpm(IStore s, bytes32 coverKey, uint256 amount, bool exit)](#_unstakenpm)
 - [_redeemPods(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempods)
 - [getFlashFeesInternal(IStore s, address token, uint256 amount)](#getflashfeesinternal)
 - [getFlashFeeInternal(IStore s, address token, uint256 amount)](#getflashfeeinternal)
@@ -290,7 +290,7 @@ function addLiquidityInternal(
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256) {
-    // @suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
     // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
     require(stablecoin == s.getStablecoin(), "Vault migration required");
@@ -440,7 +440,7 @@ function getCoverNpmStake(
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove) external nonpayable
+function removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable
 returns(uint256)
 ```
 
@@ -453,6 +453,7 @@ returns(uint256)
 | pod | address | sToRedeem Enter the amount of liquidity token to remove. | 
 | podsToRedeem | uint256 | Enter the amount of liquidity token to remove. | 
 | npmStakeToRemove | uint256 |  | 
+| exit | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -463,9 +464,12 @@ function removeLiquidityInternal(
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem,
-    uint256 npmStakeToRemove
+    uint256 npmStakeToRemove,
+    bool exit
   ) external returns (uint256) {
-    // @suppress-address-trust-issue The address `pod` although can only come from VaultBase, we still need to ensure if it is a protocol member.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
+    // come from VaultBase, we still need to ensure if it is a protocol member.
+    // Check `_redeemPods` for more info.
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
@@ -474,7 +478,7 @@ function removeLiquidityInternal(
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
-      _unStakeNpm(s, coverKey, npmStakeToRemove);
+      _unStakeNpm(s, coverKey, npmStakeToRemove, exit);
       IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
     }
 
@@ -487,7 +491,7 @@ function removeLiquidityInternal(
 ### _unStakeNpm
 
 ```solidity
-function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount) private nonpayable
+function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount, bool exit) private nonpayable
 ```
 
 **Arguments**
@@ -497,6 +501,7 @@ function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount) private nonpaya
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
 | amount | uint256 |  | 
+| exit | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -505,12 +510,13 @@ function _unStakeNpm(IStore s, bytes32 coverKey, uint256 amount) private nonpaya
 function _unStakeNpm(
     IStore s,
     bytes32 coverKey,
-    uint256 amount
+    uint256 amount,
+    bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, msg.sender);
+    uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
 
-    // @todo: create an exit feature to unstake everything
-    require(remainingStake - amount >= s.getMinStakeToAddLiquidity(), "Can't go below min stake");
+    require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
@@ -784,6 +790,7 @@ function transferToStrategyInternal(
     bytes32 strategyName,
     uint256 amount
   ) external {
+    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
     token.ensureTransfer(msg.sender, amount);
 
     _addToStrategyOut(s, coverKey, token, amount);
@@ -996,6 +1003,7 @@ function receiveFromStrategyInternal(
     bytes32 strategyName,
     uint256 amount
   ) external {
+    // @suppress-malicious-erc20 token should be checked on the calling contract
     token.ensureTransferFrom(msg.sender, address(this), amount);
 
     _clearStrategyOut(s, coverKey, token);
@@ -1127,6 +1135,7 @@ function flashLoanInternal(
     uint256 amount,
     bytes calldata data
   ) external returns (uint256) {
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20 stablecoin = IERC20(s.getStablecoin());
     (uint256 fee, uint256 protocolFee) = getFlashFeesInternal(s, token, amount);
     uint256 previousBalance = stablecoin.balanceOf(address(this));
@@ -1215,6 +1224,7 @@ function flashLoanInternal(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

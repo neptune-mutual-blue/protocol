@@ -30,6 +30,7 @@ import "../../interfaces/IVault.sol";
 abstract contract Witness is Recoverable, IWitness {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using GovernanceUtilV1 for IStore;
   using ValidationLibV1 for IStore;
@@ -72,7 +73,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     s.addAttestation(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Attested(key, msg.sender, incidentDate, stake);
   }
@@ -106,7 +107,7 @@ abstract contract Witness is Recoverable, IWitness {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustBeReportingOrDisputed(key);
+    s.mustHaveDispute(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeDuringReportingPeriod(key);
 
@@ -114,7 +115,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     s.addDispute(key, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), stake);
+    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Refuted(key, msg.sender, incidentDate, stake);
   }

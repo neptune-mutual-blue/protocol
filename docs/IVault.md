@@ -23,7 +23,7 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 - [key()](#key)
 - [lqt()](#lqt)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
-- [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#removeliquidity)
+- [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
 - [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
@@ -86,7 +86,7 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) extern
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStake | uint256 | Enter the amount of NPM token to stake. | 
+| npmStake | uint256 | Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -105,7 +105,7 @@ function addLiquidity(
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) external nonpayable
+function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit) external nonpayable
 ```
 
 **Arguments**
@@ -115,6 +115,7 @@ function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) ext
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to remove. | 
 | npmStake | uint256 | Enter the amount of NPM stake to remove. | 
+| exit | bool | Indicates NPM stake exit. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -123,7 +124,8 @@ function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) ext
 function removeLiquidity(
     bytes32 coverKey,
     uint256 amount,
-    uint256 npmStake
+    uint256 npmStake,
+    bool exit
   ) external;
 ```
 </details>
@@ -362,6 +364,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

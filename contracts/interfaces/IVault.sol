@@ -20,7 +20,7 @@ interface IVault is IMember, IERC20 {
    * @dev Adds liquidity to the specified cover contract
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
-   * @param npmStake Enter the amount of NPM token to stake.
+   * @param npmStake Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period.
    */
   function addLiquidity(
     bytes32 coverKey,
@@ -33,11 +33,13 @@ interface IVault is IMember, IERC20 {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to remove.
    * @param npmStake Enter the amount of NPM stake to remove.
+   * @param exit Indicates NPM stake exit.
    */
   function removeLiquidity(
     bytes32 coverKey,
     uint256 amount,
-    uint256 npmStake
+    uint256 npmStake,
+    bool exit
   ) external;
 
   /**

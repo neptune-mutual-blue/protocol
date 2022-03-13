@@ -11,6 +11,9 @@ library ProtoUtilV1 {
 
   uint256 public constant MULTIPLIER = 10_000;
 
+  // @todo Configure this magic number.
+  uint256 public constant MAX_LENDING_RATIO = 500; // 5% (divided by 10,000)
+
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
 
@@ -87,6 +90,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
   bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "ns:cover:liquidity:release";
+  bytes32 public constant NS_COVER_REQUIRES_WHITELIST = "ns:cover:requires:whitelist";
   bytes32 public constant NS_COVER_STABLECOIN_LENT_TOTAL = "ns:cover:sc:total:lent";
 
   bytes32 public constant NS_COVER_HAS_FLASH_LOAN = "ns:cover:has:fl";
@@ -101,7 +105,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
   bytes32 public constant NS_COVER_STATUS = "ns:cover:status";
   bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
-  bytes32 public constant NS_COVER_WHITELIST = "ns:cover:whitelist";
+  bytes32 public constant NS_COVER_CREATOR_WHITELIST = "ns:cover:creator:whitelist";
+  bytes32 public constant NS_COVER_USER_WHITELIST = "ns:cover:user:whitelist";
 
   /// @dev Resolution timestamp = timestamp of first reporting + reporting period
   bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS = "ns:gov:resolution:ts";
@@ -134,6 +139,9 @@ library ProtoUtilV1 {
   /// 1. For uint256 --> Sum total of NPM witnesses who saw incident to have happened
   /// 2. For address --> The address of the first reporter
   bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES = "ns:gov:rep:witness:yes";
+
+  /// @dev Used as key to flag if a cover was disputed. Cleared when a cover is finalized.
+  bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE = "ns:gov:rep:has:dispute";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting
@@ -206,6 +214,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
+  bytes32 public constant CNAME_LIQUIDITY_ENGINE = "LiquidityEngine";
   bytes32 public constant CNAME_STRATEGY_AAVE = "AaveStrategy";
   bytes32 public constant CNAME_STRATEGY_COMPOUND = "CompoundStrategy";
 

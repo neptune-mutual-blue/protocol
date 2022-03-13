@@ -25,6 +25,7 @@ interface IUnstakable {
       uint256 myStakeInWinningCamp,
       uint256 toBurn,
       uint256 toReporter,
-      uint256 myReward
+      uint256 myReward,
+      uint256 unstaken
     );
 }

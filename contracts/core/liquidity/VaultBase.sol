@@ -35,6 +35,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
 
   bytes32 public override key;
   address public override lqt;
+  uint256 private _transferToStrategyEntry = 0;
+  uint256 private _receiveFromStrategyEntry = 0;
 
   /**
    * @dev Constructs this contract
@@ -60,6 +62,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     s.callerMustBeClaimsProcessorContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `lqt` can't be manipulated via user input.
     IERC20(lqt).ensureTransfer(to, amount);
     emit GovernanceTransfer(to, amount);
   }
@@ -70,12 +73,18 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(_transferToStrategyEntry == 0, "Access is denied");
+    _transferToStrategyEntry = 1;
+
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
     s.transferToStrategyInternal(token, coverKey, strategyName, amount);
     emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
+    _transferToStrategyEntry = 0;
   }
 
   function receiveFromStrategy(
@@ -84,12 +93,18 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(_receiveFromStrategyEntry == 0, "Access is denied");
+    _receiveFromStrategyEntry = 1;
+
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
     s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
     emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+    _receiveFromStrategyEntry = 0;
   }
 
   /**
@@ -132,13 +147,14 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   function removeLiquidity(
     bytes32 coverKey,
     uint256 podsToRedeem,
-    uint256 npmStakeToRemove
+    uint256 npmStakeToRemove,
+    bool exit
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
+    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove, exit);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -151,13 +167,9 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   }
 
   /**
-   * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+   * @dev Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
    */
   function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
-    /***************************************************************************
-    @todo Need to revisit this later and fix the following issue
-    https://github.com/neptune-mutual/protocol/issues/23
-    ***************************************************************************/
     return s.calculateLiquidityInternal(key, address(this), lqt, podsToBurn);
   }
 

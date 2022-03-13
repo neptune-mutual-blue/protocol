@@ -464,6 +464,9 @@ function addOrEditPoolInternal(
     // If `values[5] --> rewardTokenDeposit` is specified, the contract
     // pulls the reward tokens to this contract address
     if (values[5] > 0) {
+      // @suppress-malicious-erc20 `addresses[2]` can be trusted
+      // because `StakingPoolBase.addOrEditPool` can only be called
+      // by an admin
       IERC20(addresses[2]).ensureTransferFrom(msg.sender, address(this), values[5]);
     }
   }
@@ -619,6 +622,7 @@ function _initializeNewPool(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

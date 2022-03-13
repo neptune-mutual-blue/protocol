@@ -77,6 +77,7 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
     // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
@@ -150,6 +151,7 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

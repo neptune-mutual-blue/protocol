@@ -102,6 +102,9 @@ function decreaseProvision(bytes32 key, uint256 amount) external override nonRee
     s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.decreaseProvisionInternal(key, amount);
+
+    // @suppress-subtraction Checked usage. The amount is
+    // always less than provision if we reach this line.
     emit ProvisionDecreased(key, provision, provision - amount);
   }
 ```
@@ -240,6 +243,7 @@ function getName() external pure override returns (bytes32) {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

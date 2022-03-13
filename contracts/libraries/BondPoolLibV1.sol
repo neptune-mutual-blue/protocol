@@ -124,11 +124,16 @@ library BondPoolLibV1 {
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
+    require(_getNpmBalance(s) >= values[0] + _getCommitment(s), "NPM balance insufficient to bond");
 
+    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
-    // To claim later
+    // Commitment: Total NPM to reserve for bond claims
+    s.addUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+
+    // Your bond to claim later
     bytes32 k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender));
     s.addUintByKey(k, values[0]);
 
@@ -144,6 +149,14 @@ library BondPoolLibV1 {
     s.setUintByKey(k, values[1]);
   }
 
+  function _getNpmBalance(IStore s) private view returns (uint256) {
+    return IERC20(s.npmToken()).balanceOf(address(this));
+  }
+
+  function _getCommitment(IStore s) private view returns (uint256) {
+    return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
+  }
+
   function claimBondInternal(IStore s) external returns (uint256[] memory values) {
     s.mustNotBePaused();
 
@@ -151,18 +164,22 @@ library BondPoolLibV1 {
 
     values[0] = _getYourBondClaimable(s, msg.sender); // npmToTransfer
 
+    // Commitment: Reduce NPM reserved for claims
+    s.subtractUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+
     // Clear the claim amount
-    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)), 0);
+    s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)));
 
     uint256 unlocksOn = _getYourBondUnlockDate(s, msg.sender);
 
     // Clear the unlock date
-    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)), 0);
+    s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)));
 
     require(block.timestamp >= unlocksOn, "Still vesting"); // solhint-disable-line
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
+    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 
@@ -202,6 +219,7 @@ library BondPoolLibV1 {
     }
 
     if (values[3] > 0) {
+      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }

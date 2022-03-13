@@ -2,19 +2,21 @@
 
 View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/liquidity/LiquidityEngine.sol)
 
-**↗ Extends: [Recoverable](Recoverable.md)**
+**↗ Extends: [ILiquidityEngine](ILiquidityEngine.md), [Recoverable](Recoverable.md)**
 
 **LiquidityEngine**
 
 ## Functions
 
 - [constructor(IStore s)](#)
-- [addStrategies(IStore s, address[] strategies)](#addstrategies)
-- [disableStrategy(IStore s, address strategy)](#disablestrategy)
+- [addStrategies(address[] strategies)](#addstrategies)
+- [disableStrategy(address strategy)](#disablestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
-- [setMeta(uint256 lendingPeriod, uint256 withdrawalWindow)](#setmeta)
-- [getDisabledStrategies(IStore s)](#getdisabledstrategies)
-- [getActiveStrategies(IStore s)](#getactivestrategies)
+- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
+- [getDisabledStrategies()](#getdisabledstrategies)
+- [getActiveStrategies()](#getactivestrategies)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -39,21 +41,20 @@ constructor(IStore s) Recoverable(s) {}
 ### addStrategies
 
 ```solidity
-function addStrategies(IStore s, address[] strategies) external nonpayable nonReentrant 
+function addStrategies(address[] strategies) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | strategies | address[] |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addStrategies(IStore s, address[] memory strategies) external nonReentrant {
+function addStrategies(address[] memory strategies) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -65,27 +66,27 @@ function addStrategies(IStore s, address[] memory strategies) external nonReentr
 ### disableStrategy
 
 ```solidity
-function disableStrategy(IStore s, address strategy) external nonpayable nonReentrant 
+function disableStrategy(address strategy) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 | strategy | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function disableStrategy(IStore s, address strategy) external nonReentrant {
+function disableStrategy(address strategy) external override nonReentrant {
     // @suppress-address-trust-issue The address strategy can be trusted
     // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.disableStrategyInternal(strategy);
+    emit StrategyDisabled(strategy);
   }
 ```
 </details>
@@ -112,7 +113,7 @@ function setLendingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,
     uint256 withdrawalWindow
-  ) external nonReentrant {
+  ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -121,10 +122,10 @@ function setLendingPeriods(
 ```
 </details>
 
-### setMeta
+### setLendingPeriodsDefault
 
 ```solidity
-function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
+function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -138,7 +139,7 @@ function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpa
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonReentrant {
+function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -150,7 +151,7 @@ function setMeta(uint256 lendingPeriod, uint256 withdrawalWindow) external nonRe
 ### getDisabledStrategies
 
 ```solidity
-function getDisabledStrategies(IStore s) external view
+function getDisabledStrategies() external view
 returns(strategies address[])
 ```
 
@@ -158,13 +159,12 @@ returns(strategies address[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getDisabledStrategies(IStore s) external view returns (address[] memory strategies) {
+function getDisabledStrategies() external view override returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }
 ```
@@ -173,7 +173,7 @@ function getDisabledStrategies(IStore s) external view returns (address[] memory
 ### getActiveStrategies
 
 ```solidity
-function getActiveStrategies(IStore s) external view
+function getActiveStrategies() external view
 returns(strategies address[])
 ```
 
@@ -181,14 +181,61 @@ returns(strategies address[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveStrategies(IStore s) external view returns (address[] memory strategies) {
+function getActiveStrategies() external view override returns (address[] memory strategies) {
     return s.getActiveStrategiesInternal();
+  }
+```
+</details>
+
+### version
+
+Version number of this contract
+
+```solidity
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+Name of this contract
+
+```solidity
+function getName() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_LIQUIDITY_ENGINE;
   }
 ```
 </details>
@@ -253,6 +300,7 @@ function getActiveStrategies(IStore s) external view returns (address[] memory s
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

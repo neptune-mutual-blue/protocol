@@ -19,8 +19,13 @@ The VaultPod has `_mintPods` and `_redeemPods` features which enables
 **Constants & Variables**
 
 ```js
+//public members
 bytes32 public key;
 address public lqt;
+
+//private members
+uint256 private _transferToStrategyEntry;
+uint256 private _receiveFromStrategyEntry;
 
 ```
 
@@ -32,7 +37,7 @@ address public lqt;
 - [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
 - [getStablecoinBalanceOf()](#getstablecoinbalanceof)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
-- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove)](#removeliquidity)
+- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidity)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
 - [getInfo(address you)](#getinfo)
@@ -97,6 +102,7 @@ function transferGovernance(
     s.callerMustBeClaimsProcessorContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `lqt` can't be manipulated via user input.
     IERC20(lqt).ensureTransfer(to, amount);
     emit GovernanceTransfer(to, amount);
   }
@@ -128,12 +134,18 @@ function transferToStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(_transferToStrategyEntry == 0, "Access is denied");
+    _transferToStrategyEntry = 1;
+
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
     s.transferToStrategyInternal(token, coverKey, strategyName, amount);
     emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
+    _transferToStrategyEntry = 0;
   }
 ```
 </details>
@@ -163,12 +175,18 @@ function receiveFromStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(_receiveFromStrategyEntry == 0, "Access is denied");
+    _receiveFromStrategyEntry = 1;
+
     s.mustNotBePaused();
     s.callerMustBeStrategyContract();
     require(coverKey == key, "Forbidden");
 
+    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
     s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
     emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+    _receiveFromStrategyEntry = 0;
   }
 ```
 </details>
@@ -242,7 +260,7 @@ function addLiquidity(
 Removes liquidity from the specified cover contract
 
 ```solidity
-function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove) external nonpayable nonReentrant 
+function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -252,6 +270,7 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStak
 | coverKey | bytes32 | Enter the cover key | 
 | podsToRedeem | uint256 | Enter the amount of pods to redeem | 
 | npmStakeToRemove | uint256 | Enter the amount of NPM stake to remove. | 
+| exit | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -260,13 +279,14 @@ function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStak
 function removeLiquidity(
     bytes32 coverKey,
     uint256 podsToRedeem,
-    uint256 npmStakeToRemove
+    uint256 npmStakeToRemove,
+    bool exit
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(coverKey == key, "Forbidden");
-    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove);
+    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove, exit);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, released);
   }
@@ -300,7 +320,7 @@ function calculatePods(uint256 forStablecoinUnits) external view override return
 
 ### calculateLiquidity
 
-Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
 
 ```solidity
 function calculateLiquidity(uint256 podsToBurn) external view
@@ -318,10 +338,6 @@ returns(uint256)
 
 ```javascript
 function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
-    /***************************************************************************
-    @todo Need to revisit this later and fix the following issue
-    https://github.com/neptune-mutual/protocol/issues/23
-    ***************************************************************************/
     return s.calculateLiquidityInternal(key, address(this), lqt, podsToBurn);
   }
 ```
@@ -460,6 +476,7 @@ function getName() external pure override returns (bytes32) {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

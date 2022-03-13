@@ -83,6 +83,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
+    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
 
@@ -125,6 +126,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     s.callerMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
+    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 cDai = getDepositCertificate();
 

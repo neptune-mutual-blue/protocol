@@ -28,6 +28,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeAfterReportingPeriod(key);
+    s.mustNotHaveResolutionDeadline(key);
 
     bool decision = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
 
@@ -109,6 +110,7 @@ abstract contract Resolvable is Finalization, IResolvable {
   }
 
   function configureCoolDownPeriod(bytes32 key, uint256 period) external override nonReentrant {
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustHaveNormalCoverStatus(key);
 

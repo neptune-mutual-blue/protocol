@@ -59,6 +59,9 @@ contract CoverProvision is ICoverProvision, Recoverable {
     s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.decreaseProvisionInternal(key, amount);
+
+    // @suppress-subtraction Checked usage. The amount is
+    // always less than provision if we reach this line.
     emit ProvisionDecreased(key, provision, provision - amount);
   }
 

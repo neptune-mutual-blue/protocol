@@ -85,7 +85,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override n
     address finalReporter = s.getReporter(key, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
     s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
@@ -111,7 +111,7 @@ s Gets the unstake information for the supplied account
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
 **Arguments**
@@ -140,7 +140,8 @@ function getUnstakeInfoFor(
       uint256 myStakeInWinningCamp,
       uint256 toBurn,
       uint256 toReporter,
-      uint256 myReward
+      uint256 myReward,
+      uint256 unstaken
     )
   {
     return s.getUnstakeInfoForInternal(account, key, incidentDate);
@@ -208,6 +209,7 @@ function getUnstakeInfoFor(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

@@ -43,6 +43,7 @@ function resolve(bytes32 key, uint256 incidentDate) external override nonReentra
     s.mustBeReportingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
     s.mustBeAfterReportingPeriod(key);
+    s.mustNotHaveResolutionDeadline(key);
 
     bool decision = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
 
@@ -184,6 +185,7 @@ function configureCoolDownPeriod(bytes32 key, uint256 period) external nonpayabl
 
 ```javascript
 function configureCoolDownPeriod(bytes32 key, uint256 period) external override nonReentrant {
+    s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustHaveNormalCoverStatus(key);
 
@@ -304,6 +306,7 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

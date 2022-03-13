@@ -9,6 +9,7 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 
 ```js
 uint256 public constant MULTIPLIER;
+uint256 public constant MAX_LENDING_RATIO;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -58,6 +59,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_REMOVED;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
 bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
+bytes32 public constant NS_COVER_REQUIRES_WHITELIST;
 bytes32 public constant NS_COVER_STABLECOIN_LENT_TOTAL;
 bytes32 public constant NS_COVER_HAS_FLASH_LOAN;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
@@ -69,7 +71,8 @@ bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
 bytes32 public constant NS_COVER_CXTOKEN;
-bytes32 public constant NS_COVER_WHITELIST;
+bytes32 public constant NS_COVER_CREATOR_WHITELIST;
+bytes32 public constant NS_COVER_USER_WHITELIST;
 bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS;
 bytes32 public constant NS_GOVERNANCE_UNSTAKEN;
 bytes32 public constant NS_GOVERNANCE_UNSTAKE_TS;
@@ -80,6 +83,7 @@ bytes32 public constant NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE;
 bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE;
 bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES;
+bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO;
@@ -120,6 +124,7 @@ bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
 bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
+bytes32 public constant CNAME_LIQUIDITY_ENGINE;
 bytes32 public constant CNAME_STRATEGY_AAVE;
 bytes32 public constant CNAME_STRATEGY_COMPOUND;
 
@@ -839,6 +844,7 @@ function _removeMember(IStore s, address member) private {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

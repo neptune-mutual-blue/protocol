@@ -48,6 +48,7 @@ enum CoverStatus {
 - [_getMonthEndDate(uint256 date)](#_getmonthenddate)
 - [getActiveIncidentDateInternal(IStore s, bytes32 key)](#getactiveincidentdateinternal)
 - [getCxTokenByExpiryDateInternal(IStore s, bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydateinternal)
+- [checkIfRequiresWhitelist(IStore s, bytes32 key)](#checkifrequireswhitelist)
 
 ### getCoverOwner
 
@@ -851,6 +852,30 @@ function getCxTokenByExpiryDateInternal(
 ```
 </details>
 
+### checkIfRequiresWhitelist
+
+```solidity
+function checkIfRequiresWhitelist(IStore s, bytes32 key) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, key);
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -911,6 +936,7 @@ function getCxTokenByExpiryDateInternal(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

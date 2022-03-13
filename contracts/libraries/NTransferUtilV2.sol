@@ -14,7 +14,7 @@ library NTransferUtilV2 {
     address spender,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
     require(address(malicious) != address(0), "Invalid address");
     require(spender != address(0), "Invalid spender");
@@ -28,19 +28,20 @@ library NTransferUtilV2 {
     address recipient,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
     require(address(malicious) != address(0), "Invalid address");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
-    uint256 pre = malicious.balanceOf(recipient);
+    uint256 balanceBeforeTransfer = malicious.balanceOf(recipient);
     malicious.safeTransfer(recipient, amount);
+    uint256 balanceAfterTransfer = malicious.balanceOf(recipient);
 
-    uint256 post = malicious.balanceOf(recipient);
+    // @suppress-subtraction
+    uint256 actualTransferAmount = balanceAfterTransfer - balanceBeforeTransfer;
 
-    // slither-disable-next-line incorrect-equality
-    require(post - pre == amount, "Invalid transfer");
+    require(actualTransferAmount == amount, "Invalid transfer");
   }
 
   function ensureTransferFrom(
@@ -49,17 +50,19 @@ library NTransferUtilV2 {
     address recipient,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
     require(address(malicious) != address(0), "Invalid address");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
-    uint256 pre = malicious.balanceOf(recipient);
+    uint256 balanceBeforeTransfer = malicious.balanceOf(recipient);
     malicious.safeTransferFrom(sender, recipient, amount);
-    uint256 post = malicious.balanceOf(recipient);
+    uint256 balanceAfterTransfer = malicious.balanceOf(recipient);
 
-    // slither-disable-next-line incorrect-equality
-    require(post - pre == amount, "Invalid transfer");
+    // @suppress-subtraction
+    uint256 actualTransferAmount = balanceAfterTransfer - balanceBeforeTransfer;
+
+    require(actualTransferAmount == amount, "Invalid transfer");
   }
 }

@@ -1,7 +1,7 @@
 const bs58 = require('bs58')
 const { IPFSClient } = require('./net/ipfs-client')
 
-const fallbackNodes = ['https://ipfs.infura.io:5001', 'https://api.thegraph.com/ipfs']
+const fallbackNodes = ['https://api.thegraph.com/ipfs']
 
 const toBytes32 = (ipfsListing) => `0x${bs58.decode(ipfsListing).slice(2).toString('hex')}`
 const toIPFShash = (bytes32Hex) => bs58.encode(Buffer.from(`1220${bytes32Hex.slice(2)}`, 'hex'))

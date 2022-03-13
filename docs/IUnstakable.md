@@ -66,7 +66,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external;
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256)
+returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
 **Arguments**
@@ -94,7 +94,8 @@ function getUnstakeInfoFor(
       uint256 myStakeInWinningCamp,
       uint256 toBurn,
       uint256 toReporter,
-      uint256 myReward
+      uint256 myReward,
+      uint256 unstaken
     );
 ```
 </details>
@@ -159,6 +160,7 @@ function getUnstakeInfoFor(
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)

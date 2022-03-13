@@ -58,7 +58,7 @@ function recoverTokenInternal(address token, address sendTo) external nonpayable
 
 ```javascript
 function recoverTokenInternal(address token, address sendTo) external {
-    // @suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
@@ -127,6 +127,7 @@ function recoverTokenInternal(address token, address sendTo) external {
 * [IFinalization](IFinalization.md)
 * [IGovernance](IGovernance.md)
 * [ILendingStrategy](ILendingStrategy.md)
+* [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
