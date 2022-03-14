@@ -131,22 +131,13 @@ library RoutineInvokerLibV1 {
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
-    uint256 alreadyDeposited = _getTotalInDeposits(s, strategy, key);
+    uint256 alreadyDeposited = s.getAmountInStrategy(key, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
       return 0;
     }
 
     return canDeposit - alreadyDeposited;
-  }
-
-  function _getTotalInDeposits(
-    IStore s,
-    ILendingStrategy strategy,
-    bytes32 key
-  ) private view returns (uint256) {
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    return s.getUintByKey(k);
   }
 
   function _invokeAssetManagement(IStore s, bytes32 key) private {
@@ -182,50 +173,10 @@ library RoutineInvokerLibV1 {
     }
 
     if (action == Action.Withdraw) {
-      uint256 stablecoinWithdrawn = _withdrawAllFromStrategy(strategy, vault, key);
-      _clearDeposits(s, key, strategy, stablecoinWithdrawn);
+      _withdrawAllFromStrategy(strategy, vault, key);
     } else {
       _depositToStrategy(strategy, key, canDeposit);
-      _setDeposit(s, key, strategy, canDeposit);
     }
-  }
-
-  function _setDeposit(
-    IStore s,
-    bytes32 key,
-    ILendingStrategy strategy,
-    uint256 amount
-  ) private {
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    s.addUintByKey(k, amount);
-    s.addUintByKey(CoverUtilV1.getCoverTotalLentKey(key), amount);
-  }
-
-  function _clearDeposits(
-    IStore s,
-    bytes32 key,
-    ILendingStrategy strategy,
-    uint256 withdrawn
-  ) private {
-    uint256 deposited = _getTotalInDeposits(s, strategy, key);
-    uint256 difference = 0;
-
-    if (deposited >= withdrawn) {
-      difference = deposited - withdrawn;
-      s.subtractUint(CoverUtilV1.getCoverLiquidityKey(key), difference);
-    } else {
-      difference = withdrawn - deposited;
-      s.addUint(CoverUtilV1.getCoverLiquidityKey(key), difference);
-    }
-
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    s.deleteUintByKey(k);
-
-    s.subtractUintByKey(CoverUtilV1.getCoverTotalLentKey(key), deposited);
-  }
-
-  function _getStrategyDepositKey(bytes32 key, ILendingStrategy strategy) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DEPOSITS, key, strategy.getKey()));
   }
 
   function _depositToStrategy(

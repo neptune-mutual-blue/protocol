@@ -80,6 +80,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
 
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
+  bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
+  bytes32 public constant NS_VAULT_LENDING_LOSSES = "ns:vault:lending:losses";
   bytes32 public constant NS_COVER_LIQUIDITY = "ns:cover:liquidity";
   bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD = "ns:cover:liquidity:len:p";
   bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW = "ns:cover:liquidity:ww";
@@ -191,7 +193,6 @@ library ProtoUtilV1 {
   bytes32 public constant NS_TOKEN_PRICE_LAST_UPDATE = "ns:token:price:last:update";
   bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
   bytes32 public constant NS_LENDING_STRATEGY_DISABLED = "ns:lending:strategy:disabled";
-  bytes32 public constant NS_LENDING_STRATEGY_DEPOSITS = "ns:lending:strategy:deposits";
   bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_START = "ns:lending:strategy:w:start";
   bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_END = "ns:lending:strategy:w:end";
 

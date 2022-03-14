@@ -9,7 +9,7 @@ import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/VaultLibV1.sol";
 import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
+import "../../libraries/StrategyLibV1.sol";
 
 /**
  * @title Vault POD (Proof of Deposit)
@@ -29,6 +29,7 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   using VaultLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
+  using StrategyLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using NTransferUtilV2 for IERC20;
   using RoutineInvokerLibV1 for IStore;
@@ -102,8 +103,9 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     require(coverKey == key, "Forbidden");
 
     // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
-    s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
-    emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+    (uint256 income, uint256 loss) = s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
+
+    emit StrategyReceipt(address(token), msg.sender, strategyName, amount, income, loss);
     _receiveFromStrategyEntry = 0;
   }
 

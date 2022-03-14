@@ -31,6 +31,8 @@ const deployAll = async (cache) => {
   })
 
   const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
+    NTransferUtilV2: transferLib.address,
+    ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
@@ -89,6 +91,7 @@ const deployAll = async (cache) => {
     ProtoUtilV1: protoUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLib.address
   })
 
@@ -99,6 +102,7 @@ const deployAll = async (cache) => {
     BaseLibV1: baseLibV1.address,
     NTransferUtilV2: transferLib.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
+    StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLib.address,
     VaultLibV1: vaultLib.address
   })
