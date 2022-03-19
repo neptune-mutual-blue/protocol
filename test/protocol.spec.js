@@ -76,7 +76,7 @@ const deployDependencies = async () => {
 describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
   const reassuranceVault = helper.randomAddress()
-  let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1
+  let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1
 
   beforeEach(async () => {
     const deployed = await deployDependencies()
@@ -89,16 +89,18 @@ describe('Constructor & Initializer', () => {
     accessControlLibV1 = deployed.accessControlLibV1
     validationLibV1 = deployed.validationLibV1
     baseLibV1 = deployed.baseLibV1
+    registryLibV1 = deployed.registryLibV1
   })
 
   it('should deploy correctly', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -134,11 +136,12 @@ describe('Constructor & Initializer', () => {
   it('should correctly set storage values', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -189,11 +192,12 @@ describe('Constructor & Initializer', () => {
   it('should fail when zero address is provided as store', async () => {
     await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       helper.zerox
     ).should.be.rejectedWith('Invalid Store')
@@ -202,11 +206,12 @@ describe('Constructor & Initializer', () => {
   it('should fail when zero address is provided as NPM', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -239,11 +244,12 @@ describe('Constructor & Initializer', () => {
   it('should fail when zero address is provided as treasury', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -276,11 +282,12 @@ describe('Constructor & Initializer', () => {
   it('should fail when zero address is provided as reassurance vault', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -307,7 +314,7 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
         1 * DAYS // cooldown period
       ]
-    ).should.be.rejectedWith('Invalid Vault')
+    ).should.be.rejectedWith('Invalid Reassurance Vault')
   })
 })
 
@@ -320,18 +327,19 @@ describe('Adding a New Protocol Contract', () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1 } = deployed
+    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
     npm = deployed.npm
     store = deployed.store
     router = deployed.router
 
     protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -387,18 +395,19 @@ describe('Upgrading Protocol Contract(s)', () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1 } = deployed
+    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
     npm = deployed.npm
     store = deployed.store
     router = deployed.router
 
     protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -474,18 +483,19 @@ describe('Adding a New Protocol Member', () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1 } = deployed
+    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
     npm = deployed.npm
     store = deployed.store
     router = deployed.router
 
     protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )
@@ -547,18 +557,19 @@ describe('Removing Protocol Member(s)', () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1 } = deployed
+    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
     npm = deployed.npm
     store = deployed.store
     router = deployed.router
 
     protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        StoreKeyUtil: storeKeyUtil.address,
-        ProtoUtilV1: protoUtilV1.address,
         AccessControlLibV1: accessControlLibV1.address,
-        ValidationLibV1: validationLibV1.address,
-        BaseLibV1: baseLibV1.address
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
       },
       store.address
     )

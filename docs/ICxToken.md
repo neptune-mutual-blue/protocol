@@ -7,12 +7,6 @@ View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToke
 
 **ICxToken**
 
-**Events**
-
-```js
-event Finalized(uint256  amount);
-```
-
 ## Functions
 
 - [mint(bytes32 key, address to, uint256 amount)](#mint)

@@ -37,6 +37,7 @@ uint256 private _receiveFromStrategyEntry;
 - [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
 - [getStablecoinBalanceOf()](#getstablecoinbalanceof)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
+- [accrueInterest()](#accrueinterest)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidity)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
@@ -100,7 +101,9 @@ function transferGovernance(
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.callerMustBeClaimsProcessorContract();
+
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     // @suppress-malicious-erc20 `lqt` can't be manipulated via user input.
     IERC20(lqt).ensureTransfer(to, amount);
@@ -136,6 +139,8 @@ function transferToStrategy(
   ) external override {
     // @suppress-reentrancy Custom reentrancy guard implemented
     require(_transferToStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
     _transferToStrategyEntry = 1;
 
     s.mustNotBePaused();
@@ -177,6 +182,8 @@ function receiveFromStrategy(
   ) external override {
     // @suppress-reentrancy Custom reentrancy guard implemented
     require(_receiveFromStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
     _receiveFromStrategyEntry = 1;
 
     s.mustNotBePaused();
@@ -184,8 +191,9 @@ function receiveFromStrategy(
     require(coverKey == key, "Forbidden");
 
     // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
-    s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
-    emit StrategyReceipt(address(token), msg.sender, strategyName, amount);
+    (uint256 income, uint256 loss) = s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
+
+    emit StrategyReceipt(address(token), msg.sender, strategyName, amount, income, loss);
     _receiveFromStrategyEntry = 0;
   }
 ```
@@ -245,12 +253,40 @@ function addLiquidity(
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
 
+    require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
+
     uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, msg.sender, amount, npmStakeToAdd);
     super._mint(msg.sender, podsToMint);
 
     s.updateStateAndLiquidity(key);
 
     emit PodsIssued(msg.sender, podsToMint, amount);
+  }
+```
+</details>
+
+### accrueInterest
+
+```solidity
+function accrueInterest() external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function accrueInterest() external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+    s.accrueInterestInternal(key);
+
+    emit InterestAccrued(key);
   }
 ```
 </details>
@@ -284,6 +320,9 @@ function removeLiquidity(
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
+    s.mustBeAccrued(coverKey);
+
+    require(podsToRedeem > 0, "Please specify amount");
 
     require(coverKey == key, "Forbidden");
     uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove, exit);

@@ -51,8 +51,20 @@ library RegistryLibV1 {
     return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
   }
 
+  function getProtocolContract(IStore s, bytes32 cns) public view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns);
+  }
+
+  function getProtocolContract(
+    IStore s,
+    bytes32 cns,
+    bytes32 key
+  ) public view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns, key);
+  }
+
   function getCoverContract(IStore s) external view returns (ICover) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER);
     return ICover(vault);
   }
 
@@ -61,17 +73,17 @@ library RegistryLibV1 {
   }
 
   function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, key);
     return vault;
   }
 
   function getStakingPoolAddress(IStore s) external view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_STAKING_POOL);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
     return vault;
   }
 
   function getBondPoolAddress(IStore s, bytes32 key) external view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_BOND_POOL, key);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL, key);
     return vault;
   }
 

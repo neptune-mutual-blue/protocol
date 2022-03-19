@@ -7,12 +7,6 @@ View Source: [contracts/interfaces/IPriceDiscovery.sol](../contracts/interfaces/
 
 **IPriceDiscovery**
 
-**Events**
-
-```js
-event PriceUpdated(address  token, address  stablecoin, uint256  price);
-```
-
 ## Functions
 
 - [getTokenPriceInStableCoin(address token, uint256 multiplier)](#gettokenpriceinstablecoin)

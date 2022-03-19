@@ -122,6 +122,9 @@ contract Processor is IClaimsProcessor, Recoverable {
   function setClaimPeriod(bytes32 key, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+
+    require(value > 0, "Please specify value");
+
     uint256 previous;
 
     if (key > 0) {

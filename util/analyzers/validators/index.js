@@ -9,5 +9,6 @@ const pausable = require('./pausable')
 const revert = require('./revert')
 const subtraction = require('./subtraction')
 const todo = require('./todo')
+const zero = require('./zero-value')
 
-module.exports = [acl, address, erc20, fraction, initialization, nonReentrancy, notImplemented, pausable, revert, subtraction, todo]
+module.exports = [acl, address, erc20, fraction, initialization, nonReentrancy, notImplemented, pausable, revert, subtraction, todo, zero]

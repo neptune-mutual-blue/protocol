@@ -62,7 +62,10 @@ function recoverTokenInternal(address token, address sendTo) external {
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
-    require(erc20.transfer(sendTo, balance), "Transfer failed");
+
+    if (balance > 0) {
+      require(erc20.transfer(sendTo, balance), "Transfer failed");
+    }
   }
 ```
 </details>

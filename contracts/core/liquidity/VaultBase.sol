@@ -61,7 +61,9 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.callerMustBeClaimsProcessorContract();
+
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     // @suppress-malicious-erc20 `lqt` can't be manipulated via user input.
     IERC20(lqt).ensureTransfer(to, amount);
@@ -76,6 +78,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   ) external override {
     // @suppress-reentrancy Custom reentrancy guard implemented
     require(_transferToStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
     _transferToStrategyEntry = 1;
 
     s.mustNotBePaused();
@@ -96,6 +100,8 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   ) external override {
     // @suppress-reentrancy Custom reentrancy guard implemented
     require(_receiveFromStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
     _receiveFromStrategyEntry = 1;
 
     s.mustNotBePaused();
@@ -132,12 +138,23 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
 
+    require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
+
     uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, msg.sender, amount, npmStakeToAdd);
     super._mint(msg.sender, podsToMint);
 
     s.updateStateAndLiquidity(key);
 
     emit PodsIssued(msg.sender, podsToMint, amount);
+  }
+
+  function accrueInterest() external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+    s.accrueInterestInternal(key);
+
+    emit InterestAccrued(key);
   }
 
   /**
@@ -154,6 +171,9 @@ abstract contract VaultBase is IVault, Recoverable, ERC20 {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
+    s.mustBeAccrued(coverKey);
+
+    require(podsToRedeem > 0, "Please specify amount");
 
     require(coverKey == key, "Forbidden");
     uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove, exit);

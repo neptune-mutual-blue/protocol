@@ -57,9 +57,10 @@ library GovernanceUtilV1 {
     bytes32 key,
     uint256 incidentDate
   ) external view returns (address) {
-    (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
+    CoverUtilV1.CoverStatus status = CoverUtilV1.getCoverStatusOf(s, key, incidentDate);
+    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened || status == CoverUtilV1.CoverStatus.Claimable;
+    bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
-    bytes32 prefix = yes >= no ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
     return s.getAddressByKeys(prefix, key);
   }
 
@@ -131,9 +132,12 @@ library GovernanceUtilV1 {
     (uint256 yes, uint256 no) = getStakes(s, key, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOf(s, account, key, incidentDate);
 
-    totalStakeInWinningCamp = yes > no ? yes : no;
-    totalStakeInLosingCamp = yes > no ? no : yes;
-    myStakeInWinningCamp = yes > no ? myYes : myNo;
+    CoverUtilV1.CoverStatus decision = CoverUtilV1.getCoverStatusOf(s, key, incidentDate);
+    bool incidentHappened = decision == CoverUtilV1.CoverStatus.IncidentHappened || decision == CoverUtilV1.CoverStatus.Claimable;
+
+    totalStakeInWinningCamp = incidentHappened ? yes : no;
+    totalStakeInLosingCamp = incidentHappened ? no : yes;
+    myStakeInWinningCamp = incidentHappened ? myYes : myNo;
   }
 
   function getUnstakeInfoForInternal(
@@ -242,20 +246,22 @@ library GovernanceUtilV1 {
     }
   }
 
-  function updateCoverStatus(
+  function updateCoverStatusBeforeResolution(
     IStore s,
     bytes32 key,
     uint256 incidentDate
   ) public {
+    require(incidentDate > 0, "Invalid incident date");
+
     uint256 yes = s.getUintByKey(getIncidentOccurredStakesKey(key, incidentDate));
     uint256 no = s.getUintByKey(getFalseReportingStakesKey(key, incidentDate));
 
     if (no > yes) {
-      s.setStatus(key, CoverUtilV1.CoverStatus.FalseReporting);
+      s.setStatusInternal(key, incidentDate, CoverUtilV1.CoverStatus.FalseReporting);
       return;
     }
 
-    s.setStatus(key, CoverUtilV1.CoverStatus.IncidentHappened);
+    s.setStatusInternal(key, incidentDate, CoverUtilV1.CoverStatus.IncidentHappened);
   }
 
   function addAttestation(
@@ -278,7 +284,7 @@ library GovernanceUtilV1 {
     }
 
     s.addUintByKey(getIncidentOccurredStakesKey(key, incidentDate), stake);
-    updateCoverStatus(s, key, incidentDate);
+    updateCoverStatusBeforeResolution(s, key, incidentDate);
 
     s.updateStateAndLiquidity(key);
   }
@@ -313,7 +319,7 @@ library GovernanceUtilV1 {
     }
 
     s.addUintByKey(getFalseReportingStakesKey(key, incidentDate), stake);
-    updateCoverStatus(s, key, incidentDate);
+    updateCoverStatusBeforeResolution(s, key, incidentDate);
 
     s.updateStateAndLiquidity(key);
   }

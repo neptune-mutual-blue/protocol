@@ -9,6 +9,12 @@ const deployAll = async (cache, tokens) => {
   const lendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
   const daiDelegator = await deployer.deploy(cache, 'FakeCompoundERC20Delegator', dai.address, cDai.address)
 
+  await dai.addMinter(lendingPool.address, true)
+  await aToken.addMinter(lendingPool.address, true)
+
+  await dai.addMinter(daiDelegator.address, true)
+  await cDai.addMinter(daiDelegator.address, true)
+
   return { router, pair, factory, aave: { lendingPool }, compound: { daiDelegator } }
 }
 

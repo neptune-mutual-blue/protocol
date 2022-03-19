@@ -23,6 +23,8 @@ abstract contract Resolvable is Finalization, IResolvable {
   using NTransferUtilV2 for IERC20;
 
   function resolve(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
     s.mustBeReportingOrDisputed(key);
@@ -40,6 +42,8 @@ abstract contract Resolvable is Finalization, IResolvable {
     uint256 incidentDate,
     bool decision
   ) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -94,7 +98,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
     // Status can change during `Emergency Resolution` attempt(s)
-    s.setStatus(key, status);
+    s.setStatusInternal(key, incidentDate, status);
 
     if (deadline == 0) {
       // Deadline can't be before claim begin date.
@@ -113,6 +117,8 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustHaveNormalCoverStatus(key);
+
+    require(period > 0, "Please specify period");
 
     if (key > 0) {
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, period);

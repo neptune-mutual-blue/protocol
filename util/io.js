@@ -18,6 +18,10 @@ const ensureFile = async (file, content = '{}') => {
   }
 }
 
+const writeFile = async (filePath, contents) => {
+  await fs.writeFile(filePath, contents)
+}
+
 const saveToDisk = async (filePath, contents) => {
   await fs.writeFile(filePath, JSON.stringify(contents, null, 2))
 }
@@ -98,4 +102,4 @@ const exists = async (filePath) => {
   return false
 }
 
-module.exports = { saveToDisk, ensureDirectory, ensureFile, cacheValue, fetchValue, findFiles, readFile, exists }
+module.exports = { saveToDisk, writeFile, ensureDirectory, ensureFile, cacheValue, fetchValue, findFiles, readFile, exists }

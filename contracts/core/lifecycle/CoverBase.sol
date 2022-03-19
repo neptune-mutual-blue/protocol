@@ -42,6 +42,8 @@ abstract contract CoverBase is ICover, Recoverable {
   }
 
   function setCoverFees(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -50,6 +52,8 @@ abstract contract CoverBase is ICover, Recoverable {
   }
 
   function setMinCoverCreationStake(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -58,6 +62,8 @@ abstract contract CoverBase is ICover, Recoverable {
   }
 
   function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 

@@ -85,6 +85,7 @@ abstract contract Reporter is IReporter, Witness {
   function setFirstReportingStake(uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+    require(value > 0, "Please specify value");
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
@@ -101,6 +102,8 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function setReportingBurnRate(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -113,6 +116,7 @@ abstract contract Reporter is IReporter, Witness {
   function setReporterCommission(uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+    require(value > 0, "Please specify value");
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);

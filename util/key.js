@@ -75,6 +75,8 @@ const PROTOCOL = {
     COVER_INFO: toBytes32('ns:cover:info'),
     COVER_OWNER: toBytes32('ns:cover:owner'),
     VAULT_STRATEGY_OUT: toBytes32('ns:vault:strategy:out'),
+    VAULT_LENDING_INCOMES: toBytes32('ns:vault:lending:incomes'),
+    VAULT_LENDING_LOSSES: toBytes32('ns:vault:lending:losses'),
     COVER_LIQUIDITY: toBytes32('ns:cover:liquidity'),
     COVER_LIQUIDITY_LENDING_PERIOD: toBytes32('ns:cover:liquidity:len:p'),
     COVER_LIQUIDITY_WITHDRAWAL_WINDOW: toBytes32('ns:cover:liquidity:ww'),
@@ -128,8 +130,8 @@ const PROTOCOL = {
     TOKEN_PRICE_LAST_UPDATE: toBytes32('ns:token:price:last:update'),
     LENDING_STRATEGY_ACTIVE: toBytes32('ns:lending:strategy:active'),
     LENDING_STRATEGY_DISABLED: toBytes32('ns:lending:strategy:disabled'),
-    LENDING_STRATEGY_DEPOSITS: toBytes32('ns:lending:strategy:deposits'),
     LENDING_STRATEGY_WITHDRAWAL_START: toBytes32('ns:lending:strategy:w:start'),
+    ACCRUAL_INVOCATION: toBytes32('ns:accrual:invocation'),
     LENDING_STRATEGY_WITHDRAWAL_END: toBytes32('ns:lending:strategy:w:end')
   },
   CNAME: {

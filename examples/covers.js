@@ -84,7 +84,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'BEC' },
           uniRewardTokenDollarPair: { token: 'BEC' },
           stakingTarget: ether(400_000),
@@ -152,7 +152,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(200_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'CRPOOL' },
           uniRewardTokenDollarPair: { token: 'CRPOOL' },
           stakingTarget: ether(10_000_000),
@@ -251,7 +251,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(25_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'HWT' },
           uniRewardTokenDollarPair: { token: 'HWT' },
           stakingTarget: ether(1_000_000),
@@ -320,7 +320,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'OBK' },
           uniRewardTokenDollarPair: { token: 'OBK' },
           stakingTarget: ether(800_000),
@@ -411,7 +411,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'SABRE' },
           uniRewardTokenDollarPair: { token: 'SABRE' },
           stakingTarget: ether(800_000),
@@ -475,7 +475,7 @@ const covers = [
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
-        42: {
+        80001: {
           rewardToken: { symbol: 'XD' },
           uniRewardTokenDollarPair: { token: 'XD' },
           stakingTarget: ether(800_000),

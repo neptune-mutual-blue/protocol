@@ -13,7 +13,7 @@ const request = async (token, amount) => {
   const contract = await new ethers.Contract(token.address, ['function mint(uint256) external'], owner)
   console.info('Requesting tokens')
 
-  const tx = await contract.mint(amount || ether(1_000_000))
+  const tx = await contract.connect(owner).mint(amount || ether(1_000_000))
   await tx.wait()
 }
 

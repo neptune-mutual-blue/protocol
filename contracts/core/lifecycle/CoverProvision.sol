@@ -37,6 +37,8 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param amount Specify the amount of NPM tokens you would like to add
    */
   function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    require(amount > 0, "Please specify amount");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -53,9 +55,10 @@ contract CoverProvision is ICoverProvision, Recoverable {
    * @param amount Specify the amount of NPM tokens you would like to decrease
    */
   function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    require(amount > 0, "Please specify amount");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
     s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.decreaseProvisionInternal(key, amount);

@@ -9,6 +9,7 @@ import "./ProtoBase.sol";
 
 contract Protocol is IProtocol, ProtoBase {
   using ProtoUtilV1 for bytes;
+  using RegistryLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -38,27 +39,32 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[10] resolutionCoolDownPeriod
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
-    // @suppress-initialization Can only be initialized once by the deployer
-    // @suppress-acl Can only be called once by the deployer
+    // @suppress-initialization Can only be initialized by the deployer or an admin
+    // @suppress-acl Can only be called by the deployer or an admin
     s.mustBeProtocolMember(msg.sender);
 
-    require(initialized == 0, "Already initialized");
-    initialized = 1;
+    if (initialized == 1) {
+      AccessControlLibV1.mustBeAdmin(s);
+      require(addresses[3] == address(0), "Can't change NPM");
+    } else {
+      require(addresses[3] != address(0), "Invalid NPM");
+
+      s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
+      s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
+
+      s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
+    }
 
     require(addresses[0] != address(0), "Invalid Burner");
     require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
     require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    require(addresses[3] != address(0), "Invalid NPM");
     require(addresses[4] != address(0), "Invalid Treasury");
-    require(addresses[5] != address(0), "Invalid Vault");
+    require(addresses[5] != address(0), "Invalid Reassurance Vault");
 
-    s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
-    s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
-    s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
     s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
     s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[5]);
 
@@ -74,6 +80,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
     s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
 
+    initialized = 1;
     emit Initialized(addresses, values);
   }
 
@@ -95,6 +102,9 @@ contract Protocol is IProtocol, ProtoBase {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
+    address current = s.getProtocolContract(namespace);
+
+    require(current == address(0), "Please upgrade contract");
 
     s.addContractInternal(namespace, contractAddress);
     emit ContractAdded(namespace, contractAddress);

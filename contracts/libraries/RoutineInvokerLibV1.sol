@@ -41,20 +41,51 @@ library RoutineInvokerLibV1 {
     }
   }
 
+  function mustBeAccrued(IStore s, bytes32 coverKey) external view {
+    require(isAccrualComplete(s, coverKey) == true, "Wait for accrual");
+  }
+
+  function accrueInterestInternal(IStore s, bytes32 coverKey) external {
+    (bool isWithdrawalPeriod, , , , ) = _getWithdrawalInfo(s, coverKey);
+    require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
+
+    _invokeAssetManagement(s, coverKey);
+
+    setAccrualComplete(s, coverKey, true);
+  }
+
+  function _getWithdrawalInfo(IStore s, bytes32 coverKey)
+    private
+    view
+    returns (
+      bool isWithdrawalPeriod,
+      uint256 lendingPeriod,
+      uint256 withdrawalWindow,
+      uint256 start,
+      uint256 end
+    )
+  {
+    (lendingPeriod, withdrawalWindow) = s.getLendingPeriodsInternal(coverKey);
+
+    // Get the withdrawal period of this cover liquidity
+    start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+
+    // solhint-disable-next-line
+    if (block.timestamp >= start && block.timestamp <= end) {
+      isWithdrawalPeriod = true;
+    }
+  }
+
   function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (uint256 lendingPeriod, uint256 withdrawalWindow) = s.getLendingPeriodsInternal(coverKey);
+    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = _getWithdrawalInfo(s, coverKey);
 
     // Without a lending period and withdrawal window, deposit is not possible
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
       return true;
     }
 
-    // Get the withdrawal period of this cover liquidity
-    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
-    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
-
-    // solhint-disable-next-line
-    if (block.timestamp >= start && block.timestamp <= end) {
+    if (isWithdrawalPeriod) {
       return true;
     }
 
@@ -73,9 +104,26 @@ library RoutineInvokerLibV1 {
 
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
+      setAccrualComplete(s, coverKey, false);
     }
 
     return false;
+  }
+
+  function isAccrualComplete(IStore s, bytes32 coverKey) public view returns (bool) {
+    return s.getBoolByKey(getAccrualInvocationKey(coverKey));
+  }
+
+  function setAccrualComplete(
+    IStore s,
+    bytes32 coverKey,
+    bool flag
+  ) public {
+    s.setBoolByKey(getAccrualInvocationKey(coverKey), flag);
+  }
+
+  function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_ACCRUAL_INVOCATION, coverKey));
   }
 
   function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
@@ -111,7 +159,7 @@ library RoutineInvokerLibV1 {
       return Action.Withdraw;
     }
 
-    if (_executeIsWithdrawalPeriod(s, coverKey)) {
+    if (_executeIsWithdrawalPeriod(s, coverKey) == true) {
       return Action.Withdraw;
     }
 

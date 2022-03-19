@@ -24,6 +24,7 @@ const initialize = async (suite, deploymentId) => {
 
   const tokens = await fakeTokenComposer.compose(cache)
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
+
   const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
@@ -41,6 +42,7 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLib.address
     },

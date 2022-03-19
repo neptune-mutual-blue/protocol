@@ -5,8 +5,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 pragma solidity 0.8.0;
 
 interface ICxToken is IERC20 {
-  event Finalized(uint256 amount);
-
   function mint(
     bytes32 key,
     address to,

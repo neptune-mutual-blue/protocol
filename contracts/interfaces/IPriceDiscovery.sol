@@ -4,8 +4,6 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPriceDiscovery is IMember {
-  event PriceUpdated(address token, address stablecoin, uint256 price);
-
   function getTokenPriceInStableCoin(address token, uint256 multiplier) external view returns (uint256);
 
   function getTokenPriceInLiquidityToken(

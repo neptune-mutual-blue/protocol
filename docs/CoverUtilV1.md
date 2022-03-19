@@ -27,7 +27,11 @@ enum CoverStatus {
 - [getClaimPeriod(IStore s, bytes32 key)](#getclaimperiod)
 - [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
 - [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
+- [getCoverStatusOf(IStore s, bytes32 key, uint256 incidentDate)](#getcoverstatusof)
 - [getStatus(IStore s, bytes32 key)](#getstatus)
+- [getStatusOf(IStore s, bytes32 key, uint256 incidentDate)](#getstatusof)
+- [getCoverStatusKey(bytes32 key)](#getcoverstatuskey)
+- [getCoverStatusOfKey(bytes32 key, uint256 incidentDate)](#getcoverstatusofkey)
 - [getCoverPoolLiquidity(IStore s, bytes32 key)](#getcoverpoolliquidity)
 - [getCoverLiquidityKey(bytes32 coverKey)](#getcoverliquiditykey)
 - [getCoverLiquidityAddedKey(bytes32 coverKey, address account)](#getcoverliquidityaddedkey)
@@ -41,7 +45,7 @@ enum CoverStatus {
 - [getCommitmentsUnderReporting(IStore s, bytes32 key)](#getcommitmentsunderreporting)
 - [getCurrentCommitments(IStore s, bytes32 key)](#getcurrentcommitments)
 - [getStake(IStore s, bytes32 key)](#getstake)
-- [setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status)](#setstatus)
+- [setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum CoverUtilV1.CoverStatus status)](#setstatusinternal)
 - [getReassuranceAmountInternal(IStore s, bytes32 key)](#getreassuranceamountinternal)
 - [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
 - [_getNextMonthEndDate(uint256 date, uint256 monthsToAdd)](#_getnextmonthenddate)
@@ -285,6 +289,35 @@ function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatu
 ```
 </details>
 
+### getCoverStatusOf
+
+```solidity
+function getCoverStatusOf(IStore s, bytes32 key, uint256 incidentDate) external view
+returns(enum CoverUtilV1.CoverStatus)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverStatusOf(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view returns (CoverStatus) {
+    return CoverStatus(getStatusOf(s, key, incidentDate));
+  }
+```
+</details>
+
 ### getStatus
 
 ```solidity
@@ -304,7 +337,83 @@ returns(uint256)
 
 ```javascript
 function getStatus(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
+    return s.getUintByKey(getCoverStatusKey(key));
+  }
+```
+</details>
+
+### getStatusOf
+
+```solidity
+function getStatusOf(IStore s, bytes32 key, uint256 incidentDate) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStatusOf(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256) {
+    return s.getUintByKey(getCoverStatusOfKey(key, incidentDate));
+  }
+```
+</details>
+
+### getCoverStatusKey
+
+```solidity
+function getCoverStatusKey(bytes32 key) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverStatusKey(bytes32 key) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key));
+  }
+```
+</details>
+
+### getCoverStatusOfKey
+
+```solidity
+function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
   }
 ```
 </details>
@@ -644,7 +753,7 @@ function getStake(IStore s, bytes32 key) external view returns (uint256) {
 ```
 </details>
 
-### setStatus
+### setStatusInternal
 
 Sets the current status of a given cover
  0 - normal
@@ -654,7 +763,7 @@ Sets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) external nonpayable
+function setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum CoverUtilV1.CoverStatus status) external nonpayable
 ```
 
 **Arguments**
@@ -663,18 +772,24 @@ function setStatus(IStore s, bytes32 key, enum CoverUtilV1.CoverStatus status) e
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | key | bytes32 |  | 
+| incidentDate | uint256 |  | 
 | status | enum CoverUtilV1.CoverStatus |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setStatus(
+function setStatusInternal(
     IStore s,
     bytes32 key,
+    uint256 incidentDate,
     CoverStatus status
   ) external {
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
+    s.setUintByKey(getCoverStatusKey(key), uint256(status));
+
+    if (incidentDate > 0) {
+      s.setUintByKey(getCoverStatusOfKey(key, incidentDate), uint256(status));
+    }
   }
 ```
 </details>

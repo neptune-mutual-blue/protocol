@@ -38,6 +38,8 @@ function resolve(bytes32 key, uint256 incidentDate) external nonpayable nonReent
 
 ```javascript
 function resolve(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
     s.mustBeReportingOrDisputed(key);
@@ -75,6 +77,8 @@ function emergencyResolve(
     uint256 incidentDate,
     bool decision
   ) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -150,7 +154,7 @@ function _resolve(
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
     // Status can change during `Emergency Resolution` attempt(s)
-    s.setStatus(key, status);
+    s.setStatusInternal(key, incidentDate, status);
 
     if (deadline == 0) {
       // Deadline can't be before claim begin date.
@@ -188,6 +192,8 @@ function configureCoolDownPeriod(bytes32 key, uint256 period) external override 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustHaveNormalCoverStatus(key);
+
+    require(period > 0, "Please specify period");
 
     if (key > 0) {
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, period);
