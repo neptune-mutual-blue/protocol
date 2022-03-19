@@ -36,7 +36,11 @@ const deployDependencies = async () => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
+  const transferLib = await deployer.deploy(cache, 'NTransferUtilV2')
+
   const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
+    NTransferUtilV2: transferLib.address,
+    ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 

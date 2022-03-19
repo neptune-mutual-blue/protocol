@@ -7,7 +7,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 interface IVault is IMember, IERC20 {
   event GovernanceTransfer(address indexed to, uint256 amount);
   event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
-  event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
+  event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount, uint256 income, uint256 loss);
   event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
   event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
   event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256 amount, uint256 fee);

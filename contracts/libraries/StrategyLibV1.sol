@@ -7,9 +7,13 @@ import "../interfaces/IStore.sol";
 import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
+import "./NTransferUtilV2.sol";
 
 library StrategyLibV1 {
+  using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using NTransferUtilV2 for IERC20;
+
   event StrategyAdded(address indexed strategy);
 
   function _deleteStrategy(IStore s, address toFind) private {
@@ -99,5 +103,148 @@ library StrategyLibV1 {
 
   function getActiveStrategiesInternal(IStore s) external view returns (address[] memory strategies) {
     return s.getAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE);
+  }
+
+  function getStrategyOutKey(bytes32 coverKey, address token) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
+  }
+
+  function getSpecificStrategyOutKey(
+    bytes32 coverKey,
+    bytes32 strategyName,
+    address token
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, strategyName, token));
+  }
+
+  function getAmountInStrategies(
+    IStore s,
+    bytes32 coverKey,
+    address token
+  ) public view returns (uint256) {
+    bytes32 k = getStrategyOutKey(coverKey, token);
+    return s.getUintByKey(k);
+  }
+
+  function getAmountInStrategy(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    address token
+  ) public view returns (uint256) {
+    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    return s.getUintByKey(k);
+  }
+
+  function transferToStrategyInternal(
+    IStore s,
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external {
+    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
+    token.ensureTransfer(msg.sender, amount);
+    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
+
+    if (isStablecoin == false) {
+      return;
+    }
+
+    _addToStrategyOut(s, coverKey, address(token), amount);
+    _addToSpecificStrategyOut(s, coverKey, strategyName, address(token), amount);
+  }
+
+  function receiveFromStrategyInternal(
+    IStore s,
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 toReceive
+  ) external returns (uint256 income, uint256 loss) {
+    // @suppress-malicious-erc20 token should be checked on the calling contract
+    token.ensureTransferFrom(msg.sender, address(this), toReceive);
+    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
+
+    if (isStablecoin == false) {
+      return (income, loss);
+    }
+
+    uint256 amountInThisStrategy = getAmountInStrategy(s, coverKey, strategyName, address(token));
+
+    income = toReceive > amountInThisStrategy ? toReceive - amountInThisStrategy : 0;
+    loss = toReceive < amountInThisStrategy ? amountInThisStrategy - toReceive : 0;
+
+    _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
+    _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
+
+    _logIncomes(s, coverKey, strategyName, income, loss);
+  }
+
+  function _addToStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    address token,
+    uint256 amountToAdd
+  ) private {
+    bytes32 k = getStrategyOutKey(coverKey, token);
+    s.addUintByKey(k, amountToAdd);
+  }
+
+  function _reduceStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    address token,
+    uint256 amount
+  ) private {
+    bytes32 k = getStrategyOutKey(coverKey, token);
+    s.subtractUintByKey(k, amount);
+  }
+
+  function _addToSpecificStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    address token,
+    uint256 amountToAdd
+  ) private {
+    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    s.addUintByKey(k, amountToAdd);
+  }
+
+  function _clearSpecificStrategyOut(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    address token
+  ) private {
+    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    s.deleteUintByKey(k);
+  }
+
+  function _logIncomes(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 income,
+    uint256 loss
+  ) private {
+    // Overall Income
+    s.addUintByKey(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, income);
+
+    // By Cover
+    s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, coverKey)), income);
+
+    // By Cover on This Strategy
+    s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, coverKey, strategyName)), income);
+
+    // Overall Loss
+    s.addUintByKey(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, loss);
+
+    // By Cover
+    s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, coverKey)), loss);
+
+    // By Cover on This Strategy
+    s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, coverKey, strategyName)), loss);
   }
 }

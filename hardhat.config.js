@@ -55,7 +55,7 @@ const config = {
   settings: {
     optimizer: {
       enabled: true,
-      runs: 200
+      runs: 100_000
     }
   },
   paths: {
