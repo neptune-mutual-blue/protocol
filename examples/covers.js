@@ -71,7 +71,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'BEC' },
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.00093),
+          rewardPerBlock: ether(0.000000093),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(15_000_000)
         },
@@ -80,7 +80,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'BEC' },
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0003),
+          rewardPerBlock: ether(0.00000003),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
@@ -89,7 +89,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'BEC' },
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0034),
+          rewardPerBlock: ether(0.00000034),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(18_000_000)
         }
@@ -139,7 +139,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'CRPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
-          rewardPerBlock: ether(0.080),
+          rewardPerBlock: ether(0.0000080),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(27_500_000)
         },
@@ -148,7 +148,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'CRPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
-          rewardPerBlock: ether(0.080),
+          rewardPerBlock: ether(0.0000080),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(200_000)
         },
@@ -157,7 +157,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'CRPOOL' },
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
-          rewardPerBlock: ether(0.080),
+          rewardPerBlock: ether(0.0000080),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(27_500_000)
         }
@@ -238,7 +238,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'HWT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
-          rewardPerBlock: ether(0.025),
+          rewardPerBlock: ether(0.0000025),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(15_000_000)
         },
@@ -247,7 +247,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'HWT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
-          rewardPerBlock: ether(0.025),
+          rewardPerBlock: ether(0.0000025),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(25_000)
         },
@@ -256,7 +256,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'HWT' },
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
-          rewardPerBlock: ether(0.025),
+          rewardPerBlock: ether(0.0000025),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(15_000_000)
         }
@@ -307,7 +307,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'OBK' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.00093),
+          rewardPerBlock: ether(0.000000093),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(35_000_000)
         },
@@ -316,7 +316,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'OBK' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0003),
+          rewardPerBlock: ether(0.00000003),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
@@ -325,7 +325,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'OBK' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0034),
+          rewardPerBlock: ether(0.00000034),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(35_000_000)
         }
@@ -398,7 +398,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'SABRE' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.00093),
+          rewardPerBlock: ether(0.000000093),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(35_000_000)
         },
@@ -407,7 +407,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'SABRE' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0003),
+          rewardPerBlock: ether(0.00000003),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
@@ -416,7 +416,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'SABRE' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0034),
+          rewardPerBlock: ether(0.00000034),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(35_000_000)
         }
@@ -462,7 +462,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'XD' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.00093),
+          rewardPerBlock: ether(0.000000093),
           lockupPeriodInBlocks: minutesToBlocks(3, 5),
           rewardTokenDeposit: ether(35_000_000)
         },
@@ -471,7 +471,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'XD' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0003),
+          rewardPerBlock: ether(0.00000003),
           lockupPeriodInBlocks: minutesToBlocks(31337, 5),
           rewardTokenDeposit: ether(30_000)
         },
@@ -480,7 +480,7 @@ const covers = [
           uniRewardTokenDollarPair: { token: 'XD' },
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
-          rewardPerBlock: ether(0.0034),
+          rewardPerBlock: ether(0.00000034),
           lockupPeriodInBlocks: minutesToBlocks(42, 5),
           rewardTokenDeposit: ether(35_000_000)
         }
