@@ -49,7 +49,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
     }
 
     if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
-      throw new Error(`Can't deploy ${symbol} on this network.`)
+      // throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
     const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000))

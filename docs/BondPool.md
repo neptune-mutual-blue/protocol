@@ -51,8 +51,9 @@ function createBond(uint256 lpTokens, uint256 minNpmDesired) external nonpayable
 ```javascript
 function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-
     s.mustNotBePaused();
+
+    require(minNpmDesired > 0, "Please enter `minNpmDesired`");
 
     uint256[] memory values = s.createBondInternal(lpTokens, minNpmDesired);
     emit BondCreated(msg.sender, lpTokens, values[0], values[1]);

@@ -11,6 +11,7 @@ interface IVault is IMember, IERC20 {
   event PodsIssued(address indexed account, uint256 issued, uint256 liquidityAdded);
   event PodsRedeemed(address indexed account, uint256 redeemed, uint256 liquidityReleased);
   event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256 amount, uint256 fee);
+  event InterestAccrued(bytes32 indexed key);
 
   function key() external view returns (bytes32);
 
@@ -27,6 +28,8 @@ interface IVault is IMember, IERC20 {
     uint256 amount,
     uint256 npmStake
   ) external;
+
+  function accrueInterest() external;
 
   /**
    * @dev Removes liquidity from the specified cover contract

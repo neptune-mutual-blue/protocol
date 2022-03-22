@@ -63,6 +63,9 @@ function setPolicyRates(uint256 floor, uint256 ceiling) external override nonRee
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
+    require(floor > 0, "Please specify floor");
+    require(ceiling > floor, "Invalid ceiling");
+
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
     s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
 
@@ -100,6 +103,9 @@ function setPolicyRatesByKey(
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+
+    require(floor > 0, "Please specify floor");
+    require(ceiling > 0, "Please specify ceiling");
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);

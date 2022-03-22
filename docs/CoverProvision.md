@@ -64,6 +64,8 @@ function increaseProvision(bytes32 key, uint256 amount) external nonpayable nonR
 
 ```javascript
 function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    require(amount > 0, "Please specify amount");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -96,9 +98,10 @@ function decreaseProvision(bytes32 key, uint256 amount) external nonpayable nonR
 
 ```javascript
 function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+    require(amount > 0, "Please specify amount");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
     s.mustHaveNormalCoverStatus(key);
 
     uint256 provision = s.decreaseProvisionInternal(key, amount);

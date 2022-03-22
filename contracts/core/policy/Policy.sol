@@ -51,6 +51,7 @@ contract Policy is IPolicy, Recoverable {
     s.mustHaveNormalCoverStatus(key);
     s.senderMustBeWhitelistedIfRequired(key);
 
+    require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
     (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);

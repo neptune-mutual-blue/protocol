@@ -194,6 +194,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
   bytes32 public constant NS_LENDING_STRATEGY_DISABLED = "ns:lending:strategy:disabled";
   bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_START = "ns:lending:strategy:w:start";
+  bytes32 public constant NS_ACCRUAL_INVOCATION = "ns:accrual:invocation";
   bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_END = "ns:lending:strategy:w:end";
 
   bytes32 public constant CNAME_PROTOCOL = "Neptune Mutual Protocol";
@@ -323,15 +324,6 @@ library ProtoUtilV1 {
     s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
     _addMember(s, contractAddress);
   }
-
-  // function deleteContractInternal(
-  //   IStore s,
-  //   bytes32 namespace,
-  //   address contractAddress
-  // ) external {
-  //   // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-  //   _deleteContract(s, namespace, contractAddress);
-  // }
 
   function _deleteContract(
     IStore s,

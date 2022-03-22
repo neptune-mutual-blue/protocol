@@ -59,6 +59,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   ) external override nonReentrant {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
+
+    require(amount > 0, "Please specify amount");
     require(key == coverKey, "Invalid cover");
     s.callerMustBePolicyContract();
 
@@ -71,6 +73,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    */
   function burn(uint256 amount) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
+    require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
     super._burn(msg.sender, amount);

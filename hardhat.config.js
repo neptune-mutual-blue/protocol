@@ -38,7 +38,7 @@ const config = {
       // gasPrice: 30000000000,
       gas: 'auto'
     },
-    polygonMumbai: {
+    mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
@@ -51,11 +51,13 @@ const config = {
       accounts: [process.env.PRIVATE_KEY]
     }
   },
-  solidity: '0.8.0',
-  settings: {
-    optimizer: {
-      enabled: true,
-      runs: 100_000
+  solidity: {
+    version: '0.8.0',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 999_999
+      }
     }
   },
   paths: {
@@ -82,7 +84,6 @@ const config = {
       mainnet: process.env.ETHERSCAN_API_KEY,
       ropsten: process.env.ETHERSCAN_API_KEY,
       polygonMumbai: process.env.POLYGONSCAN_API_KEY,
-      mumbai: process.env.POLYGONSCAN_API_KEY,
       bsc: process.env.BSCSCAN_API_KEY,
       bscTestnet: process.env.BSCSCAN_API_KEY
     }

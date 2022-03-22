@@ -12,10 +12,11 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 ```js
 event GovernanceTransfer(address indexed to, uint256  amount);
 event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
-event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
+event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount, uint256  income, uint256  loss);
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
+event InterestAccrued(bytes32 indexed key);
 ```
 
 ## Functions
@@ -23,6 +24,7 @@ event FlashLoanBorrowed(address indexed lender, address indexed borrower, addres
 - [key()](#key)
 - [lqt()](#lqt)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
+- [accrueInterest()](#accrueinterest)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
 - [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
@@ -97,6 +99,25 @@ function addLiquidity(
     uint256 amount,
     uint256 npmStake
   ) external;
+```
+</details>
+
+### accrueInterest
+
+```solidity
+function accrueInterest() external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function accrueInterest() external;
 ```
 </details>
 

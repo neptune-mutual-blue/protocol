@@ -92,6 +92,8 @@ function mint(
   ) external override nonReentrant {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
+
+    require(amount > 0, "Please specify amount");
     require(key == coverKey, "Invalid cover");
     s.callerMustBePolicyContract();
 
@@ -120,6 +122,7 @@ function burn(uint256 amount) external nonpayable nonReentrant
 ```javascript
 function burn(uint256 amount) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
+    require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
     super._burn(msg.sender, amount);

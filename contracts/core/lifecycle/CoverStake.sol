@@ -89,6 +89,7 @@ contract CoverStake is ICoverStake, Recoverable {
     s.callerMustBeCoverContract();
 
     uint256 drawingPower = _getDrawingPower(key, account);
+    require(amount > 0, "Please specify amount");
     require(drawingPower >= amount, "Exceeds your drawing power");
 
     // @suppress-subtraction

@@ -268,7 +268,7 @@ library StakingPoolLibV1 {
     )
   {
     require(key > 0, "Invalid key");
-    require(amount > 0, "Enter an amount");
+    require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
     require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");

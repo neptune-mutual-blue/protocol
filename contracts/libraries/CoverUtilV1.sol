@@ -115,8 +115,32 @@ library CoverUtilV1 {
     return CoverStatus(getStatus(s, key));
   }
 
+  function getCoverStatusOf(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) external view returns (CoverStatus) {
+    return CoverStatus(getStatusOf(s, key, incidentDate));
+  }
+
   function getStatus(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key);
+    return s.getUintByKey(getCoverStatusKey(key));
+  }
+
+  function getStatusOf(
+    IStore s,
+    bytes32 key,
+    uint256 incidentDate
+  ) public view returns (uint256) {
+    return s.getUintByKey(getCoverStatusOfKey(key, incidentDate));
+  }
+
+  function getCoverStatusKey(bytes32 key) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key));
+  }
+
+  function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
   }
 
   function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
@@ -207,12 +231,17 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function setStatus(
+  function setStatusInternal(
     IStore s,
     bytes32 key,
+    uint256 incidentDate,
     CoverStatus status
   ) external {
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_STATUS, key, uint256(status));
+    s.setUintByKey(getCoverStatusKey(key), uint256(status));
+
+    if (incidentDate > 0) {
+      s.setUintByKey(getCoverStatusOfKey(key, incidentDate), uint256(status));
+    }
   }
 
   /**

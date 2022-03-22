@@ -197,7 +197,7 @@ function _addCover(
   ) private {
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, key, true);
 
-    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+    s.setStatusInternal(key, 0, CoverUtilV1.CoverStatus.Stopped);
 
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key, msg.sender);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key, info);
@@ -237,10 +237,10 @@ returns(address)
 
 ```javascript
 function deployVaultInternal(IStore s, bytes32 key) external returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
+    address vault = s.getProtocolContract(ProtoUtilV1.CNS_COVER_VAULT, key);
     require(vault == address(0), "Vault already deployed");
 
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
+    s.setStatusInternal(key, 0, CoverUtilV1.CoverStatus.Normal);
 
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
@@ -338,7 +338,7 @@ function stopCoverInternal(IStore s, bytes32 key) external nonpayable
 
 ```javascript
 function stopCoverInternal(IStore s, bytes32 key) external {
-    s.setStatus(key, CoverUtilV1.CoverStatus.Stopped);
+    s.setStatusInternal(key, 0, CoverUtilV1.CoverStatus.Stopped);
   }
 ```
 </details>

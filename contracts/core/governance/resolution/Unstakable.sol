@@ -30,6 +30,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param incidentDate Enter the incident date
    */
   function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
     s.validateUnstakeWithoutClaim(key, incidentDate);
@@ -71,8 +73,14 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
-    s.npmToken().ensureTransfer(finalReporter, toReporter);
-    s.npmToken().ensureTransfer(burner, toBurn);
+
+    if (toReporter > 0) {
+      s.npmToken().ensureTransfer(finalReporter, toReporter);
+    }
+
+    if (toBurn > 0) {
+      s.npmToken().ensureTransfer(burner, toBurn);
+    }
 
     s.updateStateAndLiquidity(key);
 

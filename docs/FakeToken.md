@@ -6,11 +6,59 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 
 **FakeToken**
 
+## Contract Members
+**Constants & Variables**
+
+```js
+address public deployer;
+mapping(address => bool) public minters;
+
+```
+
+## Modifiers
+
+- [onlyDeployer](#onlydeployer)
+
+### onlyDeployer
+
+```js
+modifier onlyDeployer() internal
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
 ## Functions
 
+- [addMinter(address account, bool flag)](#addminter)
 - [constructor(string name, string symbol, uint256 supply)](#)
 - [mint(uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
+
+### addMinter
+
+```solidity
+function addMinter(address account, bool flag) public nonpayable onlyDeployer 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
+| flag | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMinter(address account, bool flag) public onlyDeployer {
+    minters[account] = flag;
+  }
+```
+</details>
 
 ### 
 
@@ -36,6 +84,8 @@ constructor(
     uint256 supply
   ) ERC20(name, symbol) {
     super._mint(msg.sender, supply);
+    deployer = msg.sender;
+    minters[msg.sender] = true;
   }
 ```
 </details>
@@ -57,6 +107,10 @@ function mint(uint256 amount) external nonpayable
 
 ```javascript
 function mint(uint256 amount) external {
+    if (amount > 2000 ether) {
+      require(minters[msg.sender], "Please specify a smaller value");
+    }
+
     super._mint(msg.sender, amount);
   }
 ```

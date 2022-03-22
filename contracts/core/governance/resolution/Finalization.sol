@@ -28,6 +28,7 @@ abstract contract Finalization is Recoverable, IFinalization {
   function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
+    require(incidentDate > 0, "Please specify incident date");
 
     s.mustBeClaimingOrDisputed(key);
     s.mustBeValidIncidentDate(key, incidentDate);
@@ -39,7 +40,9 @@ abstract contract Finalization is Recoverable, IFinalization {
 
   function _finalize(bytes32 key, uint256 incidentDate) internal {
     // Reset to normal
-    s.setStatus(key, CoverUtilV1.CoverStatus.Normal);
+    // @note: do not pass incident date as we need status by key and incident date for historical significance
+    s.setStatusInternal(key, 0, CoverUtilV1.CoverStatus.Normal);
+
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);

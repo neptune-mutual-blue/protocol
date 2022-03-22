@@ -14,6 +14,8 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getPolicyContract(IStore s)](#getpolicycontract)
 - [getReassuranceContract(IStore s)](#getreassurancecontract)
 - [getBondPoolContract(IStore s)](#getbondpoolcontract)
+- [getProtocolContract(IStore s, bytes32 cns)](#getprotocolcontract)
+- [getProtocolContract(IStore s, bytes32 cns, bytes32 key)](#getprotocolcontract)
 - [getCoverContract(IStore s)](#getcovercontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultAddress(IStore s, bytes32 key)](#getvaultaddress)
@@ -205,6 +207,59 @@ function getBondPoolContract(IStore s) external view returns (IBondPool) {
 ```
 </details>
 
+### getProtocolContract
+
+```solidity
+function getProtocolContract(IStore s, bytes32 cns) public view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| cns | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProtocolContract(IStore s, bytes32 cns) public view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns);
+  }
+```
+</details>
+
+### getProtocolContract
+
+```solidity
+function getProtocolContract(IStore s, bytes32 cns, bytes32 key) public view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| cns | bytes32 |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getProtocolContract(
+    IStore s,
+    bytes32 cns,
+    bytes32 key
+  ) public view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns, key);
+  }
+```
+</details>
+
 ### getCoverContract
 
 ```solidity
@@ -223,7 +278,7 @@ returns(contract ICover)
 
 ```javascript
 function getCoverContract(IStore s) external view returns (ICover) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER);
     return ICover(vault);
   }
 ```
@@ -272,7 +327,7 @@ returns(address)
 
 ```javascript
 function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, key);
     return vault;
   }
 ```
@@ -296,7 +351,7 @@ returns(address)
 
 ```javascript
 function getStakingPoolAddress(IStore s) external view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_STAKING_POOL);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
     return vault;
   }
 ```
@@ -321,7 +376,7 @@ returns(address)
 
 ```javascript
 function getBondPoolAddress(IStore s, bytes32 key) external view returns (address) {
-    address vault = s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_BOND_POOL, key);
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL, key);
     return vault;
   }
 ```

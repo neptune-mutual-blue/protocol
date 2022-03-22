@@ -4,15 +4,15 @@ const { ether, getRandomNumber, weiAsToken } = require('../helper')
 const { approve } = require('../contract-helper/erc20')
 
 const add = async (coverKey, payload) => {
-  const [,,,,,,,,,,,,lp] = await ethers.getSigners() // eslint-disable-line
+  const [lp] = await ethers.getSigners() // eslint-disable-line
   const amount = ether(getRandomNumber(250_000, 5_000_000))
   const stake = ether(getRandomNumber(1000, 125_000))
 
   const { dai, npm } = payload
   const vault = await composer.vault.getVault(payload, coverKey)
 
-  await dai.mint(lp.address, amount)
-  await npm.mint(lp.address, stake)
+  await dai.mint(amount)
+  await npm.mint(stake)
 
   await approve(dai.address, vault.address, lp, amount)
   await approve(npm.address, vault.address, lp, stake)

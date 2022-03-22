@@ -121,7 +121,7 @@ library StrategyLibV1 {
     IStore s,
     bytes32 coverKey,
     address token
-  ) public view returns (uint256) {
+  ) external view returns (uint256) {
     bytes32 k = getStrategyOutKey(coverKey, token);
     return s.getUintByKey(k);
   }

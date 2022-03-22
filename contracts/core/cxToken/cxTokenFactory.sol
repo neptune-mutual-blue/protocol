@@ -52,6 +52,8 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     s.mustBeValidCoverKey(key);
     s.callerMustBePolicyContract();
 
+    require(expiryDate > 0, "Please specify expiry date");
+
     (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, _getTokenName(key), _getTokenSymbol());
 
     require(s.getAddress(salt) == address(0), "Already deployed");

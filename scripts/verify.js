@@ -1,83 +1,77 @@
 const hre = require('hardhat')
+const deployment = require('../.deployments/mumbai.json')
+const io = require('../util/io')
 const path = require('path')
-const { io, fileCache } = require('../util')
+const network = 'mumbai'
+const deploymentId = 6
 
-const DEPLOYMENT_ID = 6
-
-const updateCache = async (name) => {
-  const cache = await fileCache.from(DEPLOYMENT_ID)
-  const { file, id } = cache
-  const contents = await io.readFile(file)
-  const parsed = JSON.parse(contents)
-
-  parsed[id].deployments[name].verified = true
-
-  await io.saveToDisk(file, parsed)
+const ensureDirectory = async () => {
+  await io.ensureDirectory(path.join(process.cwd(), '.verify'))
+  await io.ensureDirectory(path.join(process.cwd(), '.verify', network))
+  await io.ensureDirectory(path.join(process.cwd(), '.verify', network, deploymentId.toString()))
 }
 
-const verifyUsingContractParam = async (name, deployment) => {
-  try {
-    const files = await io.findFiles('sol', path.join(process.cwd(), 'contracts'))
-    const contract = files.find(x => x.indexOf(name) > -1).replace(process.cwd(), '').substr(1)
+const getLibs = async (contract) => {
+  const { data, contractName } = contract
 
-    deployment.contract = `${contract}:${deployment.contractName}`
+  if (data && data.libraries) {
+    const file = path.join(process.cwd(), '.verify', network, deploymentId.toString(), `${contractName}.libs.json`)
+    await io.writeFile(file, JSON.stringify(data.libraries))
 
-    console.log(deployment)
-
-    await hre.run('verify:verify', deployment)
-    await updateCache(name)
-  } catch (error) {
-    if (error.message.indexOf('Already Verified') > -1) {
-      await updateCache(name)
-    }
-
-    console.info(error.message)
+    return `--libraries ${file}`
   }
 }
 
-const verify = async (name, deployment) => {
-  try {
-    await hre.run('verify:verify', deployment)
-    await updateCache(name)
-  } catch (error) {
-    if (error.message.indexOf('Already Verified') > -1) {
-      await updateCache(name)
-      return
-    }
+const getContractName = async (contract) => {
+  const { contractName } = contract
+  const { sourceName } = await hre.artifacts.readArtifact(contractName)
 
-    if (error.message.indexOf('More than one contract') > -1) {
-      await verifyUsingContractParam(name, deployment)
-      return
-    }
+  return `--contract ${sourceName}:${contractName}`
+}
 
-    console.info(error.message)
+const getArguments = async (contract) => {
+  const { contractName, constructorArguments } = contract
+
+  if (constructorArguments) {
+    const file = path.join(process.cwd(), '.verify', network, deploymentId.toString(), `${contractName}.json`)
+    await io.writeFile(file, JSON.stringify(constructorArguments))
+
+    return `--constructor-args ${file}`
   }
 }
 
-const run = async () => {
-  global.log = true
-
-  const cache = await fileCache.from(DEPLOYMENT_ID)
-  const deployments = await io.fetchValue(cache, 'deployments')
+const start = async () => {
+  await ensureDirectory()
+  const deployments = deployment[deploymentId].deployments
+  const all = ['#!/usr/bin/env bash\nset -e\n']
 
   for (const name in deployments) {
-    const deployment = deployments[name]
+    const contract = deployments[name]
+    const { contractName, address, verified } = contract
 
-    if (deployment.verified) {
-      console.log('%s already verified', deployment.contractName)
+    if (verified) {
       continue
     }
 
-    await verify(name, deployment)
+    const parts = [`echo Verifying ${contractName} at ${address}\nnpx hardhat verify --network ${network}`]
 
-    // Be nice
-    await new Promise(resolve => setTimeout(resolve, 10000))
+    parts.push(await getLibs(contract))
+
+    parts.push(address)
+
+    parts.push(await getContractName(contract))
+
+    parts.push(await getArguments(contract))
+
+    const processed = `${parts.map(x => x && x).join(' ')}\n\nsleep 10\nclear\n`
+
+    all.push(processed)
   }
+
+  const file = path.join(process.cwd(), '.verify', network, `${deploymentId}.sh`)
+  await io.writeFile(file, all.join('\n'))
+
+  console.info('Run the following commands:\nchmod +x %s\n%s', file, file)
 }
 
-run()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+start()

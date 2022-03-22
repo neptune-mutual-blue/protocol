@@ -90,6 +90,8 @@ function setCoverFees(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setCoverFees(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -116,6 +118,8 @@ function setMinCoverCreationStake(uint256 value) external nonpayable nonReentran
 
 ```javascript
 function setMinCoverCreationStake(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -142,6 +146,8 @@ function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentra
 
 ```javascript
 function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 

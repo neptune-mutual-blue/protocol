@@ -18,18 +18,20 @@ enum Action {
 
 - [updateStateAndLiquidity(IStore s, bytes32 key)](#updatestateandliquidity)
 - [_invoke(IStore s, bytes32 key, address token)](#_invoke)
+- [mustBeAccrued(IStore s, bytes32 coverKey)](#mustbeaccrued)
+- [accrueInterestInternal(IStore s, bytes32 coverKey)](#accrueinterestinternal)
+- [_getWithdrawalInfo(IStore s, bytes32 coverKey)](#_getwithdrawalinfo)
 - [_executeIsWithdrawalPeriod(IStore s, bytes32 coverKey)](#_executeiswithdrawalperiod)
+- [isAccrualComplete(IStore s, bytes32 coverKey)](#isaccrualcomplete)
+- [setAccrualComplete(IStore s, bytes32 coverKey, bool flag)](#setaccrualcomplete)
+- [getAccrualInvocationKey(bytes32 coverKey)](#getaccrualinvocationkey)
 - [getNextWithdrawalStartKey(bytes32 coverKey)](#getnextwithdrawalstartkey)
 - [getNextWithdrawalEndKey(bytes32 coverKey)](#getnextwithdrawalendkey)
 - [mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey)](#mustbeduringwithdrawalperiod)
 - [_executeAndGetAction(IStore s, ILendingStrategy , bytes32 coverKey)](#_executeandgetaction)
 - [_canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 key)](#_candeposit)
-- [_getTotalInDeposits(IStore s, ILendingStrategy strategy, bytes32 key)](#_gettotalindeposits)
 - [_invokeAssetManagement(IStore s, bytes32 key)](#_invokeassetmanagement)
 - [_executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStrategies, address vault, bytes32 key)](#_executestrategy)
-- [_setDeposit(IStore s, bytes32 key, ILendingStrategy strategy, uint256 amount)](#_setdeposit)
-- [_clearDeposits(IStore s, bytes32 key, ILendingStrategy strategy, uint256 withdrawn)](#_cleardeposits)
-- [_getStrategyDepositKey(bytes32 key, ILendingStrategy strategy)](#_getstrategydepositkey)
 - [_depositToStrategy(ILendingStrategy strategy, bytes32 key, uint256 amount)](#_deposittostrategy)
 - [_withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 key)](#_withdrawallfromstrategy)
 - [_withdrawFromDisabled(IStore s, bytes32 key, address onBehalfOf)](#_withdrawfromdisabled)
@@ -90,6 +92,100 @@ function _invoke(
 ```
 </details>
 
+### mustBeAccrued
+
+```solidity
+function mustBeAccrued(IStore s, bytes32 coverKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeAccrued(IStore s, bytes32 coverKey) external view {
+    require(isAccrualComplete(s, coverKey) == true, "Wait for accrual");
+  }
+```
+</details>
+
+### accrueInterestInternal
+
+```solidity
+function accrueInterestInternal(IStore s, bytes32 coverKey) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function accrueInterestInternal(IStore s, bytes32 coverKey) external {
+    (bool isWithdrawalPeriod, , , , ) = _getWithdrawalInfo(s, coverKey);
+    require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
+
+    _invokeAssetManagement(s, coverKey);
+
+    setAccrualComplete(s, coverKey, true);
+  }
+```
+</details>
+
+### _getWithdrawalInfo
+
+```solidity
+function _getWithdrawalInfo(IStore s, bytes32 coverKey) private view
+returns(isWithdrawalPeriod bool, lendingPeriod uint256, withdrawalWindow uint256, start uint256, end uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getWithdrawalInfo(IStore s, bytes32 coverKey)
+    private
+    view
+    returns (
+      bool isWithdrawalPeriod,
+      uint256 lendingPeriod,
+      uint256 withdrawalWindow,
+      uint256 start,
+      uint256 end
+    )
+  {
+    (lendingPeriod, withdrawalWindow) = s.getLendingPeriodsInternal(coverKey);
+
+    // Get the withdrawal period of this cover liquidity
+    start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+    end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+
+    // solhint-disable-next-line
+    if (block.timestamp >= start && block.timestamp <= end) {
+      isWithdrawalPeriod = true;
+    }
+  }
+```
+</details>
+
 ### _executeIsWithdrawalPeriod
 
 ```solidity
@@ -109,19 +205,14 @@ returns(bool)
 
 ```javascript
 function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (uint256 lendingPeriod, uint256 withdrawalWindow) = s.getLendingPeriodsInternal(coverKey);
+    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = _getWithdrawalInfo(s, coverKey);
 
     // Without a lending period and withdrawal window, deposit is not possible
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
       return true;
     }
 
-    // Get the withdrawal period of this cover liquidity
-    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
-    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
-
-    // solhint-disable-next-line
-    if (block.timestamp >= start && block.timestamp <= end) {
+    if (isWithdrawalPeriod) {
       return true;
     }
 
@@ -140,9 +231,85 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
 
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
+      setAccrualComplete(s, coverKey, false);
     }
 
     return false;
+  }
+```
+</details>
+
+### isAccrualComplete
+
+```solidity
+function isAccrualComplete(IStore s, bytes32 coverKey) public view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isAccrualComplete(IStore s, bytes32 coverKey) public view returns (bool) {
+    return s.getBoolByKey(getAccrualInvocationKey(coverKey));
+  }
+```
+</details>
+
+### setAccrualComplete
+
+```solidity
+function setAccrualComplete(IStore s, bytes32 coverKey, bool flag) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| flag | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setAccrualComplete(
+    IStore s,
+    bytes32 coverKey,
+    bool flag
+  ) public {
+    s.setBoolByKey(getAccrualInvocationKey(coverKey), flag);
+  }
+```
+</details>
+
+### getAccrualInvocationKey
+
+```solidity
+function getAccrualInvocationKey(bytes32 coverKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_ACCRUAL_INVOCATION, coverKey));
   }
 ```
 </details>
@@ -256,7 +423,7 @@ function _executeAndGetAction(
       return Action.Withdraw;
     }
 
-    if (_executeIsWithdrawalPeriod(s, coverKey)) {
+    if (_executeIsWithdrawalPeriod(s, coverKey) == true) {
       return Action.Withdraw;
     }
 
@@ -298,43 +465,13 @@ function _canDeposit(
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
-    uint256 alreadyDeposited = _getTotalInDeposits(s, strategy, key);
+    uint256 alreadyDeposited = s.getAmountInStrategy(key, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
       return 0;
     }
 
     return canDeposit - alreadyDeposited;
-  }
-```
-</details>
-
-### _getTotalInDeposits
-
-```solidity
-function _getTotalInDeposits(IStore s, ILendingStrategy strategy, bytes32 key) private view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| strategy | ILendingStrategy |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getTotalInDeposits(
-    IStore s,
-    ILendingStrategy strategy,
-    bytes32 key
-  ) private view returns (uint256) {
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    return s.getUintByKey(k);
   }
 ```
 </details>
@@ -411,112 +548,10 @@ function _executeStrategy(
     }
 
     if (action == Action.Withdraw) {
-      uint256 stablecoinWithdrawn = _withdrawAllFromStrategy(strategy, vault, key);
-      _clearDeposits(s, key, strategy, stablecoinWithdrawn);
+      _withdrawAllFromStrategy(strategy, vault, key);
     } else {
       _depositToStrategy(strategy, key, canDeposit);
-      _setDeposit(s, key, strategy, canDeposit);
     }
-  }
-```
-</details>
-
-### _setDeposit
-
-```solidity
-function _setDeposit(IStore s, bytes32 key, ILendingStrategy strategy, uint256 amount) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| strategy | ILendingStrategy |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _setDeposit(
-    IStore s,
-    bytes32 key,
-    ILendingStrategy strategy,
-    uint256 amount
-  ) private {
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    s.addUintByKey(k, amount);
-    s.addUintByKey(CoverUtilV1.getCoverTotalLentKey(key), amount);
-  }
-```
-</details>
-
-### _clearDeposits
-
-```solidity
-function _clearDeposits(IStore s, bytes32 key, ILendingStrategy strategy, uint256 withdrawn) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-| strategy | ILendingStrategy |  | 
-| withdrawn | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _clearDeposits(
-    IStore s,
-    bytes32 key,
-    ILendingStrategy strategy,
-    uint256 withdrawn
-  ) private {
-    uint256 deposited = _getTotalInDeposits(s, strategy, key);
-    uint256 difference = 0;
-
-    if (deposited >= withdrawn) {
-      difference = deposited - withdrawn;
-      s.subtractUint(CoverUtilV1.getCoverLiquidityKey(key), difference);
-    } else {
-      difference = withdrawn - deposited;
-      s.addUint(CoverUtilV1.getCoverLiquidityKey(key), difference);
-    }
-
-    bytes32 k = _getStrategyDepositKey(key, strategy);
-    s.deleteUintByKey(k);
-
-    s.subtractUintByKey(CoverUtilV1.getCoverTotalLentKey(key), deposited);
-  }
-```
-</details>
-
-### _getStrategyDepositKey
-
-```solidity
-function _getStrategyDepositKey(bytes32 key, ILendingStrategy strategy) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| strategy | ILendingStrategy |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getStrategyDepositKey(bytes32 key, ILendingStrategy strategy) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DEPOSITS, key, strategy.getKey()));
   }
 ```
 </details>

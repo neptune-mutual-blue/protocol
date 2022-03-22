@@ -11,7 +11,6 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address you)](#getinfointernal)
 - [_getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityaddedinternal)
 - [_getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityremovedinternal)
-- [getLendingTotal(IStore s, bytes32 coverKey)](#getlendingtotal)
 - [addLiquidityInternal(IStore s, bytes32 coverKey, address pod, address stablecoin, address account, uint256 amount, uint256 npmStakeToAdd)](#addliquidityinternal)
 - [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
 - [_updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatecoverliquidity)
@@ -20,23 +19,13 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [removeLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidityinternal)
 - [_unStakeNpm(IStore s, bytes32 coverKey, uint256 amount, bool exit)](#_unstakenpm)
 - [_redeemPods(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempods)
+- [getPodTokenNameInternal(bytes32 coverKey)](#getpodtokennameinternal)
+- [getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey)](#getstablecoinbalanceofinternal)
 - [getFlashFeesInternal(IStore s, address token, uint256 amount)](#getflashfeesinternal)
 - [getFlashFeeInternal(IStore s, address token, uint256 amount)](#getflashfeeinternal)
 - [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
 - [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
 - [getMaxFlashLoanInternal(IStore s, address token)](#getmaxflashloaninternal)
-- [getPodTokenNameInternal(bytes32 coverKey)](#getpodtokennameinternal)
-- [transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategyinternal)
-- [_addToStrategyOut(IStore s, bytes32 coverKey, IERC20 token, uint256 amountToAdd)](#_addtostrategyout)
-- [_clearStrategyOut(IStore s, bytes32 coverKey, IERC20 token)](#_clearstrategyout)
-- [_addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token, uint256 amountToAdd)](#_addtospecificstrategyout)
-- [_clearSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token)](#_clearspecificstrategyout)
-- [_getStrategyOutKey(bytes32 coverKey, IERC20 token)](#_getstrategyoutkey)
-- [_getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, IERC20 token)](#_getspecificstrategyoutkey)
-- [receiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategyinternal)
-- [getAmountInStrategies(IStore s, bytes32 coverKey, IERC20 token)](#getamountinstrategies)
-- [getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token)](#getamountinstrategy)
-- [getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey)](#getstablecoinbalanceofinternal)
 - [flashLoanInternal(IStore s, IERC3156FlashBorrower receiver, bytes32 key, address token, uint256 amount, bytes data)](#flashloaninternal)
 
 ### calculatePodsInternal
@@ -76,7 +65,7 @@ function calculatePodsInternal(
     }
 
     if (balance > 0) {
-      return (IERC20(pod).totalSupply() * liquidityToAdd) / balance;
+      return (podSupply * liquidityToAdd) / balance;
     }
 
     return liquidityToAdd;
@@ -162,7 +151,7 @@ function getInfoInternal(
 
     values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
     values[1] = getStablecoinBalanceOfInternal(s, coverKey);
-    values[2] = getLendingTotal(s, coverKey); //  Stablecoins lent outside of the protocol
+    values[2] = s.getAmountInStrategies(coverKey, stablecoin); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
     values[5] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
@@ -228,30 +217,6 @@ function _getCoverLiquidityRemovedInternal(
     address you
   ) private view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
-  }
-```
-</details>
-
-### getLendingTotal
-
-```solidity
-function getLendingTotal(IStore s, bytes32 coverKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getLendingTotal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    return s.getUintByKey(CoverUtilV1.getCoverTotalLentKey(coverKey));
   }
 ```
 </details>
@@ -575,6 +540,58 @@ function _redeemPods(
 ```
 </details>
 
+### getPodTokenNameInternal
+
+```solidity
+function getPodTokenNameInternal(bytes32 coverKey) external pure
+returns(string)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
+  }
+```
+</details>
+
+### getStablecoinBalanceOfInternal
+
+```solidity
+function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    address stablecoin = s.getStablecoin();
+
+    uint256 balance = IERC20(stablecoin).balanceOf(address(this));
+    uint256 inStrategies = s.getAmountInStrategies(coverKey, stablecoin);
+
+    return balance + inStrategies;
+  }
+```
+</details>
+
 ### getFlashFeesInternal
 
 The fee to be charged for a given loan.
@@ -736,369 +753,6 @@ function getMaxFlashLoanInternal(IStore s, address token) external view returns 
     If a token is not currently supported maxFlashLoan MUST return 0, instead of reverting.    
     */
     return 0;
-  }
-```
-</details>
-
-### getPodTokenNameInternal
-
-```solidity
-function getPodTokenNameInternal(bytes32 coverKey) external pure
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
-  }
-```
-</details>
-
-### transferToStrategyInternal
-
-```solidity
-function transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transferToStrategyInternal(
-    IStore s,
-    IERC20 token,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    uint256 amount
-  ) external {
-    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
-    token.ensureTransfer(msg.sender, amount);
-
-    _addToStrategyOut(s, coverKey, token, amount);
-    _addToSpecificStrategyOut(s, coverKey, strategyName, token, amount);
-  }
-```
-</details>
-
-### _addToStrategyOut
-
-```solidity
-function _addToStrategyOut(IStore s, bytes32 coverKey, IERC20 token, uint256 amountToAdd) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| token | IERC20 |  | 
-| amountToAdd | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addToStrategyOut(
-    IStore s,
-    bytes32 coverKey,
-    IERC20 token,
-    uint256 amountToAdd
-  ) private {
-    bytes32 k = _getStrategyOutKey(coverKey, token);
-    s.addUintByKey(k, amountToAdd);
-  }
-```
-</details>
-
-### _clearStrategyOut
-
-```solidity
-function _clearStrategyOut(IStore s, bytes32 coverKey, IERC20 token) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _clearStrategyOut(
-    IStore s,
-    bytes32 coverKey,
-    IERC20 token
-  ) private {
-    bytes32 k = _getStrategyOutKey(coverKey, token);
-    s.deleteUintByKey(k);
-  }
-```
-</details>
-
-### _addToSpecificStrategyOut
-
-```solidity
-function _addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token, uint256 amountToAdd) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| token | IERC20 |  | 
-| amountToAdd | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addToSpecificStrategyOut(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    IERC20 token,
-    uint256 amountToAdd
-  ) private {
-    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
-    s.addUintByKey(k, amountToAdd);
-  }
-```
-</details>
-
-### _clearSpecificStrategyOut
-
-```solidity
-function _clearSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _clearSpecificStrategyOut(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    IERC20 token
-  ) private {
-    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
-    s.deleteUintByKey(k);
-  }
-```
-</details>
-
-### _getStrategyOutKey
-
-```solidity
-function _getStrategyOutKey(bytes32 coverKey, IERC20 token) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getStrategyOutKey(bytes32 coverKey, IERC20 token) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
-  }
-```
-</details>
-
-### _getSpecificStrategyOutKey
-
-```solidity
-function _getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, IERC20 token) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getSpecificStrategyOutKey(
-    bytes32 coverKey,
-    bytes32 strategyName,
-    IERC20 token
-  ) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, strategyName, token));
-  }
-```
-</details>
-
-### receiveFromStrategyInternal
-
-```solidity
-function receiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function receiveFromStrategyInternal(
-    IStore s,
-    IERC20 token,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    uint256 amount
-  ) external {
-    // @suppress-malicious-erc20 token should be checked on the calling contract
-    token.ensureTransferFrom(msg.sender, address(this), amount);
-
-    _clearStrategyOut(s, coverKey, token);
-    _clearSpecificStrategyOut(s, coverKey, strategyName, token);
-  }
-```
-</details>
-
-### getAmountInStrategies
-
-```solidity
-function getAmountInStrategies(IStore s, bytes32 coverKey, IERC20 token) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAmountInStrategies(
-    IStore s,
-    bytes32 coverKey,
-    IERC20 token
-  ) public view returns (uint256) {
-    bytes32 k = _getStrategyOutKey(coverKey, token);
-    return s.getUintByKey(k);
-  }
-```
-</details>
-
-### getAmountInStrategy
-
-```solidity
-function getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, IERC20 token) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| token | IERC20 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAmountInStrategy(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    IERC20 token
-  ) external view returns (uint256) {
-    bytes32 k = _getSpecificStrategyOutKey(coverKey, strategyName, token);
-    return s.getUintByKey(k);
-  }
-```
-</details>
-
-### getStablecoinBalanceOfInternal
-
-```solidity
-function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-
-    uint256 balance = stablecoin.balanceOf(address(this));
-    uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
-
-    return balance + inStrategies;
   }
 ```
 </details>

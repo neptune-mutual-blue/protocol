@@ -66,6 +66,8 @@ describe('Liquidity Stories', () => {
 
     await network.provider.send('evm_increaseTime', [181 * DAYS])
 
+    await vault.accrueInterest()
+
     await approve(vault.address, vault.address, owner)
     await vault.removeLiquidity(coverKey, toRedeem, '0', false)
   })

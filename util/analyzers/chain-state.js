@@ -4,7 +4,7 @@ const io = require('../io')
 const validators = require('./validators')
 
 const getFileList = async () => io.findFiles('json', path.join(process.cwd(), 'artifacts', 'build-info'))
-const getArtifact = async () => (await Promise.all((await getFileList()).map(async (x) => ({ name: x, stat: await fs.stat(x) })))).sort((a, b) => b.stat.ctime - a.stat.ctime)[0].name
+const getArtifact = async () => (await Promise.all((await getFileList()).map(async (x) => ({ name: x, stat: await fs.stat(x) })))).sort((a, b) => b.stat.size - a.stat.size)[0].name
 
 const parse = async (file) => {
   return JSON.parse(await io.readFile(file))

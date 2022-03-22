@@ -35,6 +35,8 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 - [_getTotalNpmAllocated(IStore s)](#_gettotalnpmallocated)
 - [_getTotalNpmDistributed(IStore s)](#_gettotalnpmdistributed)
 - [createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired)](#createbondinternal)
+- [_getNpmBalance(IStore s)](#_getnpmbalance)
+- [_getCommitment(IStore s)](#_getcommitment)
 - [claimBondInternal(IStore s)](#claimbondinternal)
 - [setupBondPoolInternal(IStore s, address[] addresses, uint256[] values)](#setupbondpoolinternal)
 
@@ -353,12 +355,16 @@ function createBondInternal(
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
+    require(_getNpmBalance(s) >= values[0] + _getCommitment(s), "NPM balance insufficient to bond");
 
     // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
-    // To claim later
+    // Commitment: Total NPM to reserve for bond claims
+    s.addUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+
+    // Your bond to claim later
     bytes32 k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender));
     s.addUintByKey(k, values[0]);
 
@@ -372,6 +378,52 @@ function createBondInternal(
     // Unlock date
     k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
     s.setUintByKey(k, values[1]);
+  }
+```
+</details>
+
+### _getNpmBalance
+
+```solidity
+function _getNpmBalance(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getNpmBalance(IStore s) private view returns (uint256) {
+    return IERC20(s.npmToken()).balanceOf(address(this));
+  }
+```
+</details>
+
+### _getCommitment
+
+```solidity
+function _getCommitment(IStore s) private view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getCommitment(IStore s) private view returns (uint256) {
+    return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }
 ```
 </details>
@@ -400,13 +452,16 @@ function claimBondInternal(IStore s) external returns (uint256[] memory values) 
 
     values[0] = _getYourBondClaimable(s, msg.sender); // npmToTransfer
 
+    // Commitment: Reduce NPM reserved for claims
+    s.subtractUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+
     // Clear the claim amount
-    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)), 0);
+    s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)));
 
     uint256 unlocksOn = _getYourBondUnlockDate(s, msg.sender);
 
     // Clear the unlock date
-    s.setUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)), 0);
+    s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)));
 
     require(block.timestamp >= unlocksOn, "Still vesting"); // solhint-disable-line
     require(values[0] > 0, "Nothing to claim");

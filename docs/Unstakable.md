@@ -37,6 +37,8 @@ function unstake(bytes32 key, uint256 incidentDate) external nonpayable nonReent
 
 ```javascript
 function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
     s.validateUnstakeWithoutClaim(key, incidentDate);
@@ -93,8 +95,14 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override n
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
-    s.npmToken().ensureTransfer(finalReporter, toReporter);
-    s.npmToken().ensureTransfer(burner, toBurn);
+
+    if (toReporter > 0) {
+      s.npmToken().ensureTransfer(finalReporter, toReporter);
+    }
+
+    if (toBurn > 0) {
+      s.npmToken().ensureTransfer(burner, toBurn);
+    }
 
     s.updateStateAndLiquidity(key);
 

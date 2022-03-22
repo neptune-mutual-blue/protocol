@@ -114,6 +114,9 @@ function setLendingPeriods(
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external override nonReentrant {
+    require(lendingPeriod > 0, "Please specify lending period");
+    require(withdrawalWindow > 0, "Please specify withdrawal window");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -142,6 +145,8 @@ function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindo
 function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
+
+    require(withdrawalWindow > 0, "Please specify withdrawal window");
 
     s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }

@@ -18,6 +18,7 @@ const getDeploymentInfo = (contractName, deployed, libraries, ...args) => {
 }
 
 const prepare = async (cache, contractName, libraries, ...args) => {
+  const [owner] = await ethers.getSigners()
   const contract = libraries ? await ethers.getContractFactory(contractName, libraries) : await ethers.getContractFactory(contractName)
 
   const key = [contractName, ...args].join('.')
@@ -29,7 +30,7 @@ const prepare = async (cache, contractName, libraries, ...args) => {
     return contract.attach(address)
   }
 
-  const instance = await contract.deploy(...args)
+  const instance = await contract.connect(owner).deploy(...args)
   const deployed = await instance.deployed()
 
   await io.cacheValue(cache, key, deployed.address, getDeploymentInfo(contractName, deployed, libraries, ...args))

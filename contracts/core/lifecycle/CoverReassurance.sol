@@ -67,8 +67,9 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
   function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
     s.mustBeValidCoverKey(key);
+
+    require(weight > 0, "Please specify weight");
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
 

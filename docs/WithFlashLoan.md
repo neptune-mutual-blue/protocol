@@ -111,6 +111,8 @@ function flashLoan(
     // @suppress-address-trust-issue The instance of `token` can be trusted because we're ensuring it matches with the protocol stablecoin address.
     s.mustNotBePaused();
 
+    require(amount > 0, "Please specify amount");
+
     uint256 fee = s.flashLoanInternal(receiver, key, token, amount, data);
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
     return true;
