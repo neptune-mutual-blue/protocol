@@ -88,15 +88,6 @@ abstract contract Resolvable is Finalization, IResolvable {
     // back the original stake. No rewards.
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
-    // Claim begins from the cooldown period added to the first resolution attempt date
-    uint256 claimBeginsFrom = decision ? block.timestamp + cooldownPeriod : 0; // solhint-disable-line
-
-    // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
-
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
-
     // Status can change during `Emergency Resolution` attempt(s)
     s.setStatusInternal(key, incidentDate, status);
 
@@ -107,6 +98,15 @@ abstract contract Resolvable is Finalization, IResolvable {
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key, deadline);
     }
+
+    // Claim begins when deadline timestamp is passed
+    uint256 claimBeginsFrom = decision ? deadline : 0;
+
+    // Claim expires after the period specified by the cover creator.
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
+
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
     s.updateStateAndLiquidity(key);
 
