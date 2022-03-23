@@ -121,6 +121,14 @@ describe('Protocol Initialization Stories', () => {
     previous.daiBalance = expected
   })
 
+  it('correctness rule: pods should match the number of tokens deposited', async () => {
+    const pod = await composer.vault.getVault(contracts, coverKey)
+    const [owner] = await ethers.getSigners()
+
+    const pods = await pod.balanceOf(owner.address)
+    pods.toString().should.equal(previous.daiBalance.toString())
+  })
+
   it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
     const vault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
@@ -152,12 +160,12 @@ describe('Protocol Initialization Stories', () => {
     previous.daiBalance = expected
   })
 
-  it('correctness rule: pods should match the number of tokens deposited', async () => {
+  it('correctness rule: pods should be less than the number of tokens deposited', async () => {
     const pod = await composer.vault.getVault(contracts, coverKey)
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.toString().should.equal(previous.daiBalance.toString())
+    pods.should.be.lt(previous.daiBalance.toString())
   })
 
   it('reassurance token allocation was increased', async () => {

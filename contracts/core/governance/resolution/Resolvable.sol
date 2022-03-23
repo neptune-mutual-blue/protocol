@@ -100,7 +100,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     }
 
     // Claim begins when deadline timestamp is passed
-    uint256 claimBeginsFrom = decision ? deadline : 0;
+    uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
 
     // Claim expires after the period specified by the cover creator.
     uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;

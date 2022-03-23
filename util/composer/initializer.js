@@ -14,7 +14,7 @@ const { getExternalProtocols } = require('./external-protocols')
  * @return {Promise<Contracts>}
  */
 const initialize = async (suite, deploymentId) => {
-  const chaindId = hre.network.config.chainId
+  const chainId = hre.network.config.chainId
   const [owner] = await ethers.getSigners()
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
@@ -105,32 +105,32 @@ const initialize = async (suite, deploymentId) => {
   // @todo: only applicable to testnet
   await intermediate(cache, crpool, 'approve', stakingPoolContract.address, helper.ether(13_400_300))
   addresses = [npm.address, npmUsdPair.address, crpool.address, crpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 10949953000, minutesToBlocks(chaindId, 5), helper.ether(13_400_300)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 10949953000, minutesToBlocks(chainId, 5), helper.ether(13_400_300)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Crpool'), 'Crystalpool Staking', 0, addresses, values)
 
   await intermediate(cache, hwt, 'approve', stakingPoolContract.address, helper.ether(33_303_000))
   addresses = [npm.address, npmUsdPair.address, hwt.address, hwtUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 10123480000, minutesToBlocks(chaindId, 5), helper.ether(33_303_000)]
+  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 10123480000, minutesToBlocks(chainId, 5), helper.ether(33_303_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
 
   await intermediate(cache, obk, 'approve', stakingPoolContract.address, helper.ether(12_30_330))
   addresses = [npm.address, npmUsdPair.address, obk.address, obkUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 35450529000, minutesToBlocks(chaindId, 5), helper.ether(12_30_330)]
+  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 35450529000, minutesToBlocks(chainId, 5), helper.ether(12_30_330)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OBK'), 'OBK Staking', 0, addresses, values)
 
   await intermediate(cache, sabre, 'approve', stakingPoolContract.address, helper.ether(62_000_000))
   addresses = [npm.address, npmUsdPair.address, sabre.address, sabreUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 9033000001, minutesToBlocks(chaindId, 5), helper.ether(62_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 9033000001, minutesToBlocks(chainId, 5), helper.ether(62_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SABRE'), 'SABRE Staking', 0, addresses, values)
 
   await intermediate(cache, bec, 'approve', stakingPoolContract.address, helper.ether(52_000_000))
   addresses = [npm.address, npmUsdPair.address, bec.address, becUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 19403300000, minutesToBlocks(chaindId, 5), helper.ether(52_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 19403300000, minutesToBlocks(chainId, 5), helper.ether(52_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BEC'), 'BEC Staking', 0, addresses, values)
 
   await intermediate(cache, xd, 'approve', stakingPoolContract.address, helper.ether(49_000_000))
   addresses = [npm.address, npmUsdPair.address, xd.address, xdUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 21559222222, minutesToBlocks(chaindId, 5), helper.ether(49_000_000)]
+  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 21559222222, minutesToBlocks(chainId, 5), helper.ether(49_000_000)]
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('XT'), 'XT Staking', 0, addresses, values)
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
