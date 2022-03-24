@@ -36,20 +36,17 @@ library VaultLibV1 {
     uint256 liquidityToAdd
   ) public view returns (uint256) {
     uint256 balance = getStablecoinBalanceOfInternal(s, coverKey);
-    uint256 inStrategies = s.getAmountInStrategies(coverKey, s.getStablecoin());
-    uint256 unrealizedBalance = balance + inStrategies;
-
     uint256 podSupply = IERC20(pod).totalSupply();
 
     // This smart contract contains stablecoins without liquidity provider contribution.
     // This can happen if someone wants to create a nuisance by sending stablecoin
     // to this contract immediately after deployment.
-    if (podSupply == 0 && unrealizedBalance > 0) {
+    if (podSupply == 0 && balance > 0) {
       revert("Liquidity/POD mismatch");
     }
 
-    if (unrealizedBalance > 0) {
-      return (podSupply * liquidityToAdd) / unrealizedBalance;
+    if (balance > 0) {
+      return (podSupply * liquidityToAdd) / balance;
     }
 
     return liquidityToAdd;
