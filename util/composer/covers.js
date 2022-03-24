@@ -1,6 +1,7 @@
 const { ethers } = require('ethers')
 const { covers } = require('../../examples/covers')
 const ipfs = require('../ipfs')
+const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
 const createCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
@@ -13,6 +14,7 @@ const createCovers = async (payload) => {
   for (const i in covers) {
     const info = covers[i]
     await create(payload, info)
+    await rest(200)
   }
 }
 
@@ -36,6 +38,7 @@ const create = async (payload, info) => {
   ]
 
   await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, requiresWhitelist, values)
+  await rest(100)
   await intermediate(cache, cover, 'deployVault', key)
 }
 

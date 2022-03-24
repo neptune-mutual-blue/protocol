@@ -9,7 +9,7 @@ const addPodStaking = async (intermediate, cache, info, contracts, provider) => 
   await approve(rewardToken, stakingPoolContract.address, provider)
 
   const addresses = [stakingToken, uniStakingTokenDollarPair, rewardToken, uniRewardTokenDollarPair]
-  const values = [stakingTarget, maxStake, platformFee, rewardPerBlock, lockupPeriodInBlocks, rewardTokenDeposit]
+  const values = [stakingTarget, maxStake, platformFee, rewardPerBlock.toString(), lockupPeriodInBlocks, rewardTokenDeposit]
 
   await intermediate(cache, stakingPoolContract, 'addOrEditPool', key, name, poolType, addresses, values)
 }
