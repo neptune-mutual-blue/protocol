@@ -59,12 +59,27 @@ describe('Liquidity Stories', () => {
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('deployer removed $3M from Bitmart cover pool', async () => {
+  it('interest could not be accrued before withdrawal period', async () => {
+    const vault = await composer.vault.getVault(contracts, coverKey)
+
+    await vault.accrueInterest().should.be.rejectedWith('Withdrawal hasn\'t yet begun')
+  })
+
+  it('deployer can not remove liquidity without interest accrual', async () => {
     const [owner] = await ethers.getSigners()
     const toRedeem = helper.ether(3_000_000)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await network.provider.send('evm_increaseTime', [181 * DAYS])
+
+    await approve(vault.address, vault.address, owner)
+    await vault.removeLiquidity(coverKey, toRedeem, '0', false).should.be.rejectedWith('Wait for accrual')
+  })
+
+  it('deployer removed $3M from Bitmart cover pool', async () => {
+    const [owner] = await ethers.getSigners()
+    const toRedeem = helper.ether(3_000_000)
+    const vault = await composer.vault.getVault(contracts, coverKey)
 
     await vault.accrueInterest()
 

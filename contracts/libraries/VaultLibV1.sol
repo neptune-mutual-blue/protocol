@@ -205,6 +205,14 @@ library VaultLibV1 {
     myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account));
   }
 
+  function mustHaveNoBalanceInStrategies(
+    IStore s,
+    bytes32 coverKey,
+    address stablecoin
+  ) public view {
+    require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
+  }
+
   /**
    * @dev Removes liquidity from the specified cover contract
    * @param coverKey Enter the cover key
@@ -223,6 +231,7 @@ library VaultLibV1 {
     // Check `_redeemPods` for more info.
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
+    mustHaveNoBalanceInStrategies(s, coverKey, s.getStablecoin());
 
     // Redeem the PODs and receive DAI
     uint256 releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);

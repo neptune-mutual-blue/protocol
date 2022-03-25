@@ -165,7 +165,7 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.should.be.lt(previous.daiBalance.toString())
+    pods.should.be.lte(previous.daiBalance.toString())
   })
 
   it('reassurance token allocation was increased', async () => {

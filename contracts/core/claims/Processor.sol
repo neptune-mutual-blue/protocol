@@ -130,10 +130,12 @@ contract Processor is IClaimsProcessor, Recoverable {
     if (key > 0) {
       previous = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
       s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key, value);
-    } else {
-      previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
-      s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
+      emit ClaimPeriodSet(key, previous, value);
+      return;
     }
+
+    previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
 
     emit ClaimPeriodSet(key, previous, value);
   }
