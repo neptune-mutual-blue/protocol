@@ -52,7 +52,7 @@ contract CoverStake is ICoverStake, Recoverable {
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
-    s.callerMustBeCoverContract();
+    s.senderMustBeCoverContract();
 
     require(amount >= fee, "Invalid fee");
 
@@ -86,7 +86,7 @@ contract CoverStake is ICoverStake, Recoverable {
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
-    s.callerMustBeCoverContract();
+    s.senderMustBeCoverContract();
 
     uint256 drawingPower = _getDrawingPower(key, account);
     require(amount > 0, "Please specify amount");

@@ -34,7 +34,7 @@ contract Cover is CoverBase {
   function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
@@ -102,7 +102,7 @@ contract Cover is CoverBase {
     s.mustNotBePaused();
     s.mustHaveStoppedCoverStatus(key);
 
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     address vault = s.deployVaultInternal(key);
     emit VaultDeployed(key, vault);
@@ -152,7 +152,7 @@ contract Cover is CoverBase {
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     s.updateCoverUsersWhitelistInternal(key, accounts, statuses);
   }

@@ -137,7 +137,7 @@ const initialize = async (suite, deploymentId) => {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
-    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+    RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
@@ -150,7 +150,7 @@ const initialize = async (suite, deploymentId) => {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
-    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+    RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
@@ -171,6 +171,22 @@ const initialize = async (suite, deploymentId) => {
   )
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_VAULT_FACTORY, vaultFactory.address)
+
+  const vaultDelegate = await deployer.deployWithLibraries(cache, 'VaultDelegate',
+    {
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      BaseLibV1: libs.baseLibV1.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      StrategyLibV1: libs.strategyLibV1.address,
+      ValidationLibV1: libs.validationLib.address,
+      VaultLibV1: libs.vaultLib.address
+    }
+    , store.address
+  )
+
+  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_VAULT_DELEGATE, vaultDelegate.address)
 
   const cxTokenFactory = await deployer.deployWithLibraries(cache, 'cxTokenFactory',
     {
@@ -207,7 +223,7 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
-      RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+      RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       CoverUtilV1: libs.coverUtilV1.address,
@@ -248,7 +264,7 @@ const initialize = async (suite, deploymentId) => {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     PolicyHelperV1: libs.policyHelperV1.address,
-    RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+    RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
@@ -273,7 +289,7 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       GovernanceUtilV1: libs.governanceLib.address,
-      RoutineInvokerLibV1: libs.RoutineInvokerLibV1.address,
+      RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       NTransferUtilV2: libs.transferLib.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       RegistryLibV1: libs.registryLibV1.address,

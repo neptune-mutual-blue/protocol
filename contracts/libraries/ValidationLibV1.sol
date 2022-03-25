@@ -93,39 +93,58 @@ library ValidationLibV1 {
     require(isCoverOwner || isCoverContract, "Forbidden");
   }
 
-  function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
+  function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
     if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
       mustBeCoverOwner(s, key, msg.sender);
     }
   }
 
-  function callerMustBePolicyContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY);
+  function senderMustBePolicyContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY);
   }
 
-  function callerMustBePolicyManagerContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY_MANAGER);
+  function senderMustBePolicyManagerContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY_MANAGER);
   }
 
-  function callerMustBeCoverContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER);
+  function senderMustBeCoverContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER);
   }
 
-  function callerMustBeVaultContract(IStore s, bytes32 key) external view {
+  function senderMustBeVaultContract(IStore s, bytes32 key) external view {
     address vault = s.getVaultAddress(key);
     require(msg.sender == vault, "Forbidden");
   }
 
-  function callerMustBeGovernanceContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
+  function senderMustBeGovernanceContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
   }
 
-  function callerMustBeClaimsProcessorContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
+  function senderMustBeClaimsProcessorContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
   }
 
-  function callerMustBeStrategyContract(IStore s) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+  function callerMustBeClaimsProcessorContract(IStore s, address caller) external view {
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, caller);
+  }
+
+  function senderMustBeStrategyContract(IStore s) external view {
+    bool senderIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+    require(senderIsStrategyContract == true, "Not a strategy contract");
+  }
+
+  function callerMustBeStrategyContract(IStore s, address caller) external view {
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
+    require(callerIsStrategyContract == true, "Not a strategy contract");
+  }
+
+  function callerMustBeSpecificStrategyContract(
+    IStore s,
+    address caller,
+    bytes32 /*strategyName*/
+  ) external view {
+    // @todo
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
     require(callerIsStrategyContract == true, "Not a strategy contract");
   }
 
@@ -133,7 +152,7 @@ library ValidationLibV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
-  function callerMustBeProtocolMember(IStore s) external view {
+  function senderMustBeProtocolMember(IStore s) external view {
     require(s.isProtocolMember(msg.sender), "Forbidden");
   }
 

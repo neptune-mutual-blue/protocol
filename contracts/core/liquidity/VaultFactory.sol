@@ -34,7 +34,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
   function deploy(IStore s, bytes32 key) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
-    s.callerMustBeCoverContract();
+    s.senderMustBeCoverContract();
 
     (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getStablecoin());
 

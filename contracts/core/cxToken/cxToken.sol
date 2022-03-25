@@ -62,7 +62,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
     require(amount > 0, "Please specify amount");
     require(key == coverKey, "Invalid cover");
-    s.callerMustBePolicyContract();
+    s.senderMustBePolicyContract();
 
     super._mint(to, amount);
   }

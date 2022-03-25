@@ -50,7 +50,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
-    s.callerMustBePolicyContract();
+    s.senderMustBePolicyContract();
 
     require(expiryDate > 0, "Please specify expiry date");
 

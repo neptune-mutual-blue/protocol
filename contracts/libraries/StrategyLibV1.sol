@@ -10,9 +10,9 @@ import "./ProtoUtilV1.sol";
 import "./NTransferUtilV2.sol";
 
 library StrategyLibV1 {
+  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
 
   event StrategyAdded(address indexed strategy);
 
@@ -136,15 +136,13 @@ library StrategyLibV1 {
     return s.getUintByKey(k);
   }
 
-  function transferToStrategyInternal(
+  function preTransferToStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
   ) external {
-    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
-    token.ensureTransfer(msg.sender, amount);
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
     if (isStablecoin == false) {
@@ -155,15 +153,13 @@ library StrategyLibV1 {
     _addToSpecificStrategyOut(s, coverKey, strategyName, address(token), amount);
   }
 
-  function receiveFromStrategyInternal(
+  function postReceiveFromStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 toReceive
   ) external returns (uint256 income, uint256 loss) {
-    // @suppress-malicious-erc20 token should be checked on the calling contract
-    token.ensureTransferFrom(msg.sender, address(this), toReceive);
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
     if (isStablecoin == false) {

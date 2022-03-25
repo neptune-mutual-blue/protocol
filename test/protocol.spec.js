@@ -36,15 +36,12 @@ const deployDependencies = async () => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const transferLib = await deployer.deploy(cache, 'NTransferUtilV2')
-
   const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
-    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const RoutineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
+  const routineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
     CoverUtilV1: coverUtilV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
@@ -54,7 +51,7 @@ const deployDependencies = async () => {
 
   const governanceUtilV1 = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
     CoverUtilV1: coverUtilV1.address,
-    RoutineInvokerLibV1: RoutineInvokerLibV1.address,
+    RoutineInvokerLibV1: routineInvokerLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
