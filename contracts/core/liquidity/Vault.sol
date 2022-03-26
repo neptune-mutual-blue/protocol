@@ -18,7 +18,7 @@ contract Vault is WithFlashLoan {
   ) VaultBase(store, coverKey, liquidityToken) {}
 
   /**
-   * @dev For further details, check implementation contract's documentation.
+   * @dev For further details, check delegate contract's documentation.
    */
   function getInfo(address you) external view override returns (uint256[] memory values) {
     return delgate().getInfoImplementation(key, you);

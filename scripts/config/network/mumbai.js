@@ -73,7 +73,7 @@ const config = {
       }
     },
     aave: {
-      description: 'Aave V2 on Kovan',
+      description: 'Aave V2 on Mumbai',
       addresses: {
         lendingPool: null
       }

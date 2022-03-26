@@ -54,7 +54,10 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, _getTokenName(key), _getTokenSymbol());
+    string memory name = _getTokenName(key);
+    string memory symbol = _getTokenSymbol();
+
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, name, symbol);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -79,7 +82,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, key, deployed);
 
-    emit CxTokenDeployed(key, deployed, expiryDate);
+    emit CxTokenDeployed(key, deployed, expiryDate, name, symbol);
   }
 
   /**

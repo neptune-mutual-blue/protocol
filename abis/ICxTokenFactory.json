@@ -19,6 +19,18 @@
         "internalType": "uint256",
         "name": "expiryDate",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
       }
     ],
     "name": "CxTokenDeployed",

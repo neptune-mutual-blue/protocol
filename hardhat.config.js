@@ -24,13 +24,6 @@ const config = {
       gasPrice: 15000000000,
       gas: 'auto'
     },
-    kovan: {
-      url: `${process.env.KOVAN_RPC_URL}`,
-      chainId: 42,
-      accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 7000000000,
-      gas: 'auto'
-    },
     bscTestnet: {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
       chainId: 97,
