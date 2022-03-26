@@ -49,6 +49,7 @@ const PROTOCOL = {
     COVER_POLICY_ADMIN: toBytes32('cns:cover:policy:admin'),
     COVER_STAKE: toBytes32('cns:cover:stake'),
     COVER_VAULT: toBytes32('cns:cover:vault'),
+    COVER_VAULT_DELEGATE: toBytes32('cns:cover:vault:delegate'),
     COVER_STABLECOIN: toBytes32('cns:cover:sc'),
     COVER_CXTOKEN_FACTORY: toBytes32('cns:cover:cxtoken:factory'),
     COVER_VAULT_FACTORY: toBytes32('cns:cover:vault:factory'),
@@ -154,6 +155,7 @@ const PROTOCOL = {
     COVER_STAKE: toBytes32('CoverStake'),
     COVER_REASSURANCE: toBytes32('CoverReassurance'),
     LIQUIDITY_VAULT: toBytes32('Vault'),
+    VAULT_DELEGATE: toBytes32('VaultDelegate'),
     LIQUIDITY_ENGINE: toBytes32('LiquidityEngine'),
     STRATEGY_AAVE: toBytes32('AaveStrategy'),
     STRATEGY_COMPOUND: toBytes32('CompoundStrategy')

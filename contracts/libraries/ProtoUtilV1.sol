@@ -35,6 +35,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_COVER_POLICY_ADMIN = "cns:cover:policy:admin";
   bytes32 public constant CNS_COVER_STAKE = "cns:cover:stake";
   bytes32 public constant CNS_COVER_VAULT = "cns:cover:vault";
+  bytes32 public constant CNS_COVER_VAULT_DELEGATE = "cns:cover:vault:delegate";
   bytes32 public constant CNS_COVER_STABLECOIN = "cns:cover:sc";
   bytes32 public constant CNS_COVER_CXTOKEN_FACTORY = "cns:cover:cxtoken:factory";
   bytes32 public constant CNS_COVER_VAULT_FACTORY = "cns:cover:vault:factory";
@@ -216,6 +217,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
+  bytes32 public constant CNAME_VAULT_DELEGATE = "VaultDelegate";
   bytes32 public constant CNAME_LIQUIDITY_ENGINE = "LiquidityEngine";
   bytes32 public constant CNAME_STRATEGY_AAVE = "AaveStrategy";
   bytes32 public constant CNAME_STRATEGY_COMPOUND = "CompoundStrategy";
@@ -262,8 +264,20 @@ library ProtoUtilV1 {
    * @dev Ensures that the sender matches with the exact contract having the specified name.
    * @param name Enter the name of the contract
    */
-  function callerMustBeExactContract(IStore s, bytes32 name) external view {
-    return mustBeExactContract(s, name, msg.sender);
+  function senderMustBeExactContract(IStore s, bytes32 name) external view {
+    return callerMustBeExactContract(s, name, msg.sender);
+  }
+
+  /**
+   * @dev Ensures that the sender matches with the exact contract having the specified name.
+   * @param name Enter the name of the contract
+   */
+  function callerMustBeExactContract(
+    IStore s,
+    bytes32 name,
+    address caller
+  ) public view {
+    return mustBeExactContract(s, name, caller);
   }
 
   function npmToken(IStore s) external view returns (IERC20) {

@@ -19,7 +19,7 @@
  * @property {Object} stakingPoolCoreLibV1 - Staking pool core library
  * @property {Object} stakingPoolLibV1 - Staking pool library
  * @property {Object} priceLibV1 - Price library
- * @property {Object} RoutineInvokerLibV1 - Housekeeping library
+ * @property {Object} routineInvokerLibV1 - Housekeeping library
  * @property {Object} strategyLibV1 - Price library
  * @property {Object} policyHelperV1 - Price library
  */

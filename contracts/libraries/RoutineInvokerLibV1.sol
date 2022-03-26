@@ -19,6 +19,7 @@ library RoutineInvokerLibV1 {
   using StrategyLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   enum Action {
     Deposit,
@@ -41,21 +42,8 @@ library RoutineInvokerLibV1 {
     }
   }
 
-  function mustBeAccrued(IStore s, bytes32 coverKey) external view {
-    require(isAccrualComplete(s, coverKey) == true, "Wait for accrual");
-  }
-
-  function accrueInterestInternal(IStore s, bytes32 coverKey) external {
-    (bool isWithdrawalPeriod, , , , ) = _getWithdrawalInfo(s, coverKey);
-    require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
-
-    _invokeAssetManagement(s, coverKey);
-
-    setAccrualComplete(s, coverKey, true);
-  }
-
-  function _getWithdrawalInfo(IStore s, bytes32 coverKey)
-    private
+  function getWithdrawalInfoInternal(IStore s, bytes32 coverKey)
+    public
     view
     returns (
       bool isWithdrawalPeriod,
@@ -78,7 +66,7 @@ library RoutineInvokerLibV1 {
   }
 
   function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = _getWithdrawalInfo(s, coverKey);
+    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
 
     // Without a lending period and withdrawal window, deposit is not possible
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
@@ -104,17 +92,17 @@ library RoutineInvokerLibV1 {
 
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
-      setAccrualComplete(s, coverKey, false);
+      setAccrualCompleteInternal(s, coverKey, false);
     }
 
     return false;
   }
 
-  function isAccrualComplete(IStore s, bytes32 coverKey) public view returns (bool) {
+  function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view returns (bool) {
     return s.getBoolByKey(getAccrualInvocationKey(coverKey));
   }
 
-  function setAccrualComplete(
+  function setAccrualCompleteInternal(
     IStore s,
     bytes32 coverKey,
     bool flag

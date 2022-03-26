@@ -23,70 +23,137 @@ library AccessControlLibV1 {
    * @dev Reverts if the sender is not the protocol admin.
    */
   function mustBeAdmin(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_ADMIN);
+    _mustHaveAccess(s, NS_ROLES_ADMIN, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not the cover manager.
    */
   function mustBeCoverManager(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
+    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not the liquidity manager.
    */
   function mustBeLiquidityManager(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER);
+    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not a governance agent.
    */
   function mustBeGovernanceAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not a governance admin.
    */
   function mustBeGovernanceAdmin(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN);
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not an upgrade agent.
    */
   function mustBeUpgradeAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not a recovery agent.
    */
   function mustBeRecoveryAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT);
+    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not the pause agent.
    */
   function mustBePauseAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, msg.sender);
   }
 
   /**
    * @dev Reverts if the sender is not the unpause agent.
    */
   function mustBeUnpauseAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, msg.sender);
+  }
+
+  /**
+   * @dev Reverts if the sender is not the protocol admin.
+   */
+  function callerMustBeAdmin(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_ADMIN, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not the cover manager.
+   */
+  function callerMustBeCoverManager(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not the liquidity manager.
+   */
+  function callerMustBeLiquidityManager(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not a governance agent.
+   */
+  function callerMustBeGovernanceAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not a governance admin.
+   */
+  function callerMustBeGovernanceAdmin(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not an upgrade agent.
+   */
+  function callerMustBeUpgradeAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not a recovery agent.
+   */
+  function callerMustBeRecoveryAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not the pause agent.
+   */
+  function callerMustBePauseAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, caller);
+  }
+
+  /**
+   * @dev Reverts if the sender is not the unpause agent.
+   */
+  function callerMustBeUnpauseAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, caller);
   }
 
   /**
    * @dev Reverts if the sender does not have access to the given role.
    */
-  function _mustHaveAccess(IStore s, bytes32 role) private view {
-    require(hasAccess(s, role, msg.sender), "Forbidden");
+  function _mustHaveAccess(
+    IStore s,
+    bytes32 role,
+    address caller
+  ) private view {
+    require(hasAccess(s, role, caller), "Forbidden");
   }
 
   /**

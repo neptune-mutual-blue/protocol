@@ -75,7 +75,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
 
     IVault vault = s.getVault(coverKey);
 
@@ -121,7 +121,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
     // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.

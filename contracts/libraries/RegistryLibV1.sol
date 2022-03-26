@@ -77,6 +77,11 @@ library RegistryLibV1 {
     return vault;
   }
 
+  function getVaultDelegate(IStore s) external view returns (address) {
+    address vaultImplementation = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT_DELEGATE);
+    return vaultImplementation;
+  }
+
   function getStakingPoolAddress(IStore s) external view returns (address) {
     address vault = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
     return vault;

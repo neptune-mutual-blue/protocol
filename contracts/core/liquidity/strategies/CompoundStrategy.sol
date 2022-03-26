@@ -75,7 +75,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 cDaiMinted) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
 
     IVault vault = s.getVault(coverKey);
 
@@ -123,7 +123,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
     // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
