@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key } = require('../../util')
+const { helper, deployer, key } = require('../../../util')
+const { deployDependencies } = require('./deps')
 const DAYS = 86400
 const cache = null
 
@@ -8,70 +9,6 @@ require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
-
-const deployDependencies = async () => {
-  const store = await deployer.deploy(cache, 'Store')
-  const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
-
-  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
-
-  const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
-
-  const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const accessControlLibV1 = await deployer.deployWithLibraries(cache, 'AccessControlLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const registryLibV1 = await deployer.deployWithLibraries(cache, 'RegistryLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    RegistryLibV1: registryLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const routineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
-    CoverUtilV1: coverUtilV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const governanceUtilV1 = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
-    CoverUtilV1: coverUtilV1.address,
-    RoutineInvokerLibV1: routineInvokerLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const validationLibV1 = await deployer.deployWithLibraries(cache, 'ValidationLibV1', {
-    AccessControlLibV1: accessControlLibV1.address,
-    CoverUtilV1: coverUtilV1.address,
-    GovernanceUtilV1: governanceUtilV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    RegistryLibV1: registryLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
-  })
-
-  return { npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, registryLibV1, coverUtilV1, governanceUtilV1, validationLibV1, baseLibV1 }
-}
 
 describe('Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
@@ -131,6 +68,8 @@ describe('Constructor & Initializer', () => {
 
     protocol.address.should.not.be.empty
     protocol.address.should.not.equal(helper.zerox)
+    ; (await protocol.version()).should.equal(key.toBytes32('v0.1'))
+    ; (await protocol.getName()).should.equal(key.PROTOCOL.CNAME.PROTOCOL)
   })
 
   it('should correctly set storage values', async () => {
@@ -150,7 +89,8 @@ describe('Constructor & Initializer', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
@@ -187,6 +127,67 @@ describe('Constructor & Initializer', () => {
 
     const sReassuranceVault = await store.getAddress(key.PROTOCOL.CNS.REASSURANCE_VAULT)
     sReassuranceVault.should.equal(reassuranceVault)
+  })
+
+  it('should allow initializing more than once', async () => {
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+      {
+        AccessControlLibV1: accessControlLibV1.address,
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
+      },
+      store.address
+    )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(
+      [
+        helper.zero1,
+        router.address,
+        helper.randomAddress(), // factory
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
+      ]
+    )
+
+    await protocol.initialize(
+      [
+        helper.zero1,
+        router.address,
+        helper.randomAddress(), // factory
+        helper.zerox, // Can't change NPM address
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
+      ]
+    )
   })
 
   it('should fail when zero address is provided as store', async () => {
@@ -316,23 +317,11 @@ describe('Constructor & Initializer', () => {
       ]
     ).should.be.rejectedWith('Invalid Reassurance Vault')
   })
-})
 
-describe('Adding a New Protocol Contract', () => {
-  const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
-  let npm, store, router, protocol
-
-  beforeEach(async () => {
+  it('should fail if a non-admin tries to re-initialize the protocol', async () => {
     const [owner] = await ethers.getSigners()
 
-    const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
-    npm = deployed.npm
-    store = deployed.store
-    router = deployed.router
-
-    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         AccessControlLibV1: accessControlLibV1.address,
         BaseLibV1: baseLibV1.address,
@@ -344,14 +333,12 @@ describe('Adding a New Protocol Contract', () => {
       store.address
     )
 
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
-
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
@@ -370,38 +357,34 @@ describe('Adding a New Protocol Contract', () => {
         1 * DAYS // cooldown period
       ]
     )
+
+    await protocol.revokeRole(key.ACCESS_CONTROL.ADMIN, owner.address)
+
+    await protocol.initialize(
+      [
+        helper.zero1,
+        router.address,
+        helper.randomAddress(), // factory
+        npm.address,
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
+      ]
+    ).should.be.rejectedWith('Forbidden')
   })
 
-  it('should correctly add a new contract', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
-  })
-
-  it('should correctly set storage values', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
-
-    const storedAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
-
-    storedAddress.should.equal(fakeCover)
-  })
-})
-
-describe('Upgrading Protocol Contract(s)', () => {
-  const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
-  let npm, store, router, protocol
-
-  beforeEach(async () => {
-    const [owner] = await ethers.getSigners()
-
-    const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
-    npm = deployed.npm
-    store = deployed.store
-    router = deployed.router
-
-    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+  it('should not allow NPM address to be changed', async () => {
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         AccessControlLibV1: accessControlLibV1.address,
         BaseLibV1: baseLibV1.address,
@@ -416,11 +399,9 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
-
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
@@ -439,77 +420,10 @@ describe('Upgrading Protocol Contract(s)', () => {
         1 * DAYS // cooldown period
       ]
     )
-  })
-
-  it('should correctly upgrade a contract', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
-
-    const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, fakeCover, fakeCover2)
-  })
-
-  it('should fail when the previous address is incorrect', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
-
-    const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, helper.randomAddress(), fakeCover2)
-      .should.be.rejectedWith('Not a protocol member')
-  })
-
-  it('should correctly set storage values', async () => {
-    const cover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, cover)
-
-    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
-
-    storedContractAddress.should.equal(cover)
-
-    // ------- UPGRADE CONTRACT -------
-
-    const cover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, cover, cover2)
-
-    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
-    storedContractAddress.should.equal(cover2)
-  })
-})
-
-describe('Adding a New Protocol Member', () => {
-  const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
-  let npm, store, router, protocol
-
-  beforeEach(async () => {
-    const [owner] = await ethers.getSigners()
-
-    const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
-    npm = deployed.npm
-    store = deployed.store
-    router = deployed.router
-
-    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
-      {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
-      },
-      store.address
-    )
-
-    await store.setBool(key.qualify(protocol.address), true)
-    await store.setBool(key.qualifyMember(protocol.address), true)
-
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
@@ -527,44 +441,11 @@ describe('Adding a New Protocol Member', () => {
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
         1 * DAYS // cooldown period
       ]
-    )
+    ).should.be.rejectedWith('Can\'t change NPM')
   })
 
-  it('should correctly add a new member', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
-  })
-
-  it('should reject adding the same member twice', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
-    await protocol.addMember(fakeMember).should.be.rejectedWith('Already exists')
-  })
-
-  it('should correctly set storage values', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
-
-    const isMember = await store.getBool(key.qualifyMember(fakeMember))
-    isMember.should.be.true
-  })
-})
-
-describe('Removing Protocol Member(s)', () => {
-  const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
-  let npm, store, router, protocol
-
-  beforeEach(async () => {
-    const [owner] = await ethers.getSigners()
-
-    const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
-    npm = deployed.npm
-    store = deployed.store
-    router = deployed.router
-
-    protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+  it('should fail if zero address is provided as burner', async () => {
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
         AccessControlLibV1: accessControlLibV1.address,
         BaseLibV1: baseLibV1.address,
@@ -579,14 +460,11 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
-
     await protocol.initialize(
-      [helper.zero1,
+      [helper.zerox,
         router.address,
         helper.randomAddress(), // factory
-        npm.address,
+        helper.randomAddress(),
         treasury,
         reassuranceVault],
       [helper.ether(0), // Cover Fee
@@ -601,25 +479,84 @@ describe('Removing Protocol Member(s)', () => {
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
         1 * DAYS // cooldown period
       ]
+    ).should.be.rejectedWith('Invalid Burner')
+  })
+
+  it('should fail if zero address is provided as uniswap router', async () => {
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+      {
+        AccessControlLibV1: accessControlLibV1.address,
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
+      },
+      store.address
     )
+
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
+
+    await protocol.initialize(
+      [
+        helper.randomAddress(),
+        helper.zerox,
+        helper.randomAddress(), // factory
+        helper.randomAddress(),
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
+      ]
+    ).should.be.rejectedWith('Invalid Uniswap V2 Router')
   })
 
-  it('should correctly remove a member', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
-    await protocol.removeMember(fakeMember)
-  })
+  it('should fail if zero address is provided as uniswap factory', async () => {
+    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
+      {
+        AccessControlLibV1: accessControlLibV1.address,
+        BaseLibV1: baseLibV1.address,
+        ProtoUtilV1: protoUtilV1.address,
+        RegistryLibV1: registryLibV1.address,
+        StoreKeyUtil: storeKeyUtil.address,
+        ValidationLibV1: validationLibV1.address
+      },
+      store.address
+    )
 
-  it('should correctly set storage values', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
+    await store.setBool(key.qualify(protocol.address), true)
+    await store.setBool(key.qualifyMember(protocol.address), true)
 
-    let isMember = await store.getBool(key.qualifyMember(fakeMember))
-    isMember.should.be.true
-
-    await protocol.removeMember(fakeMember)
-
-    isMember = await store.getBool(key.qualifyMember(fakeMember))
-    isMember.should.be.false
+    await protocol.initialize(
+      [
+        helper.randomAddress(),
+        router.address,
+        helper.zerox, // factory
+        helper.randomAddress(),
+        treasury,
+        reassuranceVault],
+      [helper.ether(0), // Cover Fee
+        helper.ether(0), // Min Cover Stake
+        helper.ether(250), // Min Reporting Stake
+        7 * DAYS, // Claim period
+        helper.ether(0.3), // Governance Burn Rate: 30%
+        helper.ether(0.1), // Governance Reporter Commission: 10%
+        helper.ether(0.065), // Claim: Platform Fee: 6.5%
+        helper.ether(0.005), // Claim: Reporter Commission: 5%
+        helper.ether(0.0005), // Flash Loan Fee: 0.5%
+        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
+        1 * DAYS // cooldown period
+      ]
+    ).should.be.rejectedWith('Invalid Uniswap V2 Factory')
   })
 })
