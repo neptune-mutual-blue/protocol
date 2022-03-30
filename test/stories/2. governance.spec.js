@@ -138,7 +138,7 @@ describe('Governance Stories', () => {
     const [, , , , , , , , , , , , lewis] = await ethers.getSigners() // eslint-disable-line
 
     const balance = await constants.cxTokens.lewis.balanceOf(lewis.address)
-    constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
+    await constants.cxTokens.lewis.connect(lewis).approve(contracts.claimsProcessor.address, balance)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
 

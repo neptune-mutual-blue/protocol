@@ -69,6 +69,12 @@ describe('Adding a New Protocol Contract', () => {
     await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
   })
 
+  it('should reject if a contract already exists', async () => {
+    const fakeCover = helper.randomAddress()
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
+    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover).should.be.rejectedWith('Please upgrade ')
+  })
+
   it('should correctly set storage values', async () => {
     const fakeCover = helper.randomAddress()
     await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
