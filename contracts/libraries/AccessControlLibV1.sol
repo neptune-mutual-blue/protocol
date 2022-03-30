@@ -8,6 +8,7 @@ import "./ProtoUtilV1.sol";
 
 library AccessControlLibV1 {
   using ProtoUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
 
   bytes32 public constant NS_ROLES_ADMIN = 0x00; // SAME AS "DEFAULT_ADMIN_ROLE"
   bytes32 public constant NS_ROLES_COVER_MANAGER = "role:cover:manager";
@@ -120,7 +121,7 @@ library AccessControlLibV1 {
   /**
    * @dev Reverts if the sender is not an upgrade agent.
    */
-  function callerMustBeUpgradeAgent(IStore s, address caller) external view {
+  function callerMustBeUpgradeAgent(IStore s, address caller) public view {
     _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, caller);
   }
 
@@ -176,5 +177,97 @@ library AccessControlLibV1 {
 
     // You must have the same role in the protocol contract if you're don't have this role here
     return IAccessControl(protocol).hasRole(role, user);
+  }
+
+  function addContractInternal(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _addContract(s, namespace, key, contractAddress);
+  }
+
+  function _addContract(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) private {
+    if (key > 0) {
+      s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key, contractAddress);
+    } else {
+      s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
+    }
+    _addMember(s, contractAddress);
+  }
+
+  function _deleteContract(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) private {
+    if (key > 0) {
+      s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key);
+    } else {
+      s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
+    }
+    _removeMember(s, contractAddress);
+  }
+
+  function upgradeContractInternal(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    bool isMember = s.isProtocolMember(previous);
+    require(isMember, "Not a protocol member");
+
+    _deleteContract(s, namespace, key, previous);
+    _addContract(s, namespace, key, current);
+  }
+
+  function addMemberInternal(IStore s, address member) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _addMember(s, member);
+  }
+
+  function removeMemberInternal(IStore s, address member) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _removeMember(s, member);
+  }
+
+  function _addMember(IStore s, address member) private {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
+    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
+  }
+
+  function _removeMember(IStore s, address member) private {
+    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
   }
 }

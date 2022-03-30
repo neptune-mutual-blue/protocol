@@ -15,7 +15,7 @@ contract Vault is WithFlashLoan {
     IStore store,
     bytes32 coverKey,
     IERC20 liquidityToken
-  ) VaultBase(store, coverKey, liquidityToken) {}
+  ) VaultBase(store, coverKey, liquidityToken) {} // solhint-disable-line
 
   /**
    * @dev For further details, check delegate contract's documentation.

@@ -1,8 +1,8 @@
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
-const attacher = require('../util/attach')
-const blockHelper = require('../util/block')
+const attacher = require('../../../util/attach')
+const blockHelper = require('../../../util/block')
 
 const cache = null
 
@@ -22,7 +22,7 @@ describe('cxToken: `mint` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate, 'cxToken', 'cxToken')
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 

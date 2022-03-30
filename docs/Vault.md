@@ -1,4 +1,4 @@
-# Cover Vault for Liquidity (Vault.sol)
+# Vault.sol
 
 View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Vault.sol)
 
@@ -6,19 +6,12 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 
 **Vault**
 
-Liquidity providers can earn fees by adding stablecoin liquidity
- to any cover contract. The cover pool is collectively owned by liquidity providers
- where fees automatically get accumulated and compounded. <br /> <br />
- **Fees** <br />
- - Cover fees paid in stablecoin get added to the liquidity pool.
- - The protocol supplies a small portion of idle assets to lending protocols (v2).
- - Flash loan interest also gets added back to the pool.
- - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through NPM provision.
- - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through `reassurance token` allocation.
-
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
+- [getInfo(address you)](#getinfo)
+- [version()](#version)
+- [getName()](#getname)
 
 ### 
 
@@ -43,6 +36,75 @@ constructor(
     bytes32 coverKey,
     IERC20 liquidityToken
   ) VaultBase(store, coverKey, liquidityToken) {}
+```
+</details>
+
+### getInfo
+
+For further details, check delegate contract's documentation.
+
+```solidity
+function getInfo(address you) external view
+returns(values uint256[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| you | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getInfo(address you) external view override returns (uint256[] memory values) {
+    return delgate().getInfoImplementation(key, you);
+  }
+```
+</details>
+
+### version
+
+```solidity
+function version() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function version() external pure override returns (bytes32) {
+    return "v0.1";
+  }
+```
+</details>
+
+### getName
+
+```solidity
+function getName() external pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getName() external pure override returns (bytes32) {
+    return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
+  }
 ```
 </details>
 
@@ -89,7 +151,6 @@ constructor(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -124,6 +185,7 @@ constructor(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -173,8 +235,13 @@ constructor(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

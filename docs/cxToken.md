@@ -22,17 +22,41 @@ uint256 public expiresOn;
 
 ## Functions
 
-- [constructor(IStore store, bytes32 key, uint256 expiry, string name, string symbol)](#)
+- [_getTokenName(bytes32 key)](#_gettokenname)
+- [constructor(IStore store, bytes32 key, uint256 expiry)](#)
 - [mint(bytes32 key, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address , address to, uint256 )](#_beforetokentransfer)
+
+### _getTokenName
+
+```solidity
+function _getTokenName(bytes32 key) private pure
+returns(string)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getTokenName(bytes32 key) private pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
+  }
+```
+</details>
 
 ### 
 
 Constructs this contract
 
 ```solidity
-function (IStore store, bytes32 key, uint256 expiry, string name, string symbol) public nonpayable ERC20 Recoverable 
+function (IStore store, bytes32 key, uint256 expiry) public nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
@@ -42,8 +66,6 @@ function (IStore store, bytes32 key, uint256 expiry, string name, string symbol)
 | store | IStore | Provide the store contract instance | 
 | key | bytes32 | Enter the cover key or cover this cxToken instance points to | 
 | expiry | uint256 | Provide the cover expiry timestamp of this cxToken instance | 
-| name | string |  | 
-| symbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -52,13 +74,9 @@ function (IStore store, bytes32 key, uint256 expiry, string name, string symbol)
 constructor(
     IStore store,
     bytes32 key,
-    uint256 expiry,
-    string memory name,
-    string memory symbol
-  ) ERC20(name, symbol) Recoverable(store) {
+    uint256 expiry
+  ) ERC20(_getTokenName(key), "cxUSD") Recoverable(store) {
     coverKey = key;
-
-    createdOn = block.timestamp; // solhint-disable-line
     expiresOn = expiry;
   }
 ```
@@ -95,7 +113,7 @@ function mint(
 
     require(amount > 0, "Please specify amount");
     require(key == coverKey, "Invalid cover");
-    s.callerMustBePolicyContract();
+    s.senderMustBePolicyContract();
 
     super._mint(to, amount);
   }
@@ -204,7 +222,6 @@ function _beforeTokenTransfer(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -239,6 +256,7 @@ function _beforeTokenTransfer(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -288,8 +306,13 @@ function _beforeTokenTransfer(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

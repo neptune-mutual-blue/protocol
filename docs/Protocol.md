@@ -19,9 +19,12 @@ uint256 public initialized;
 - [constructor(IStore store)](#)
 - [initialize(address[] addresses, uint256[] values)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
+- [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
+- [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
 - [removeMember(address member)](#removemember)
 - [addMember(address member)](#addmember)
+- [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -115,7 +118,7 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
 ### upgradeContract
 
 ```solidity
-function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable nonReentrant 
+function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable
 ```
 
 **Arguments**
@@ -134,14 +137,44 @@ function upgradeContract(
     bytes32 namespace,
     address previous,
     address current
-  ) external override nonReentrant {
+  ) external override {
+    upgradeContractWithKey(namespace, 0, previous, current);
+  }
+```
+</details>
+
+### upgradeContractWithKey
+
+```solidity
+function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| previous | address |  | 
+| current | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) public override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
-    s.upgradeContractInternal(namespace, previous, current);
-    emit ContractUpgraded(namespace, previous, current);
+    AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
+    emit ContractUpgraded(namespace, key, previous, current);
   }
 ```
 </details>
@@ -149,7 +182,7 @@ function upgradeContract(
 ### addContract
 
 ```solidity
-function addContract(bytes32 namespace, address contractAddress) external nonpayable nonReentrant 
+function addContract(bytes32 namespace, address contractAddress) external nonpayable
 ```
 
 **Arguments**
@@ -163,7 +196,35 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
+function addContract(bytes32 namespace, address contractAddress) external override {
+    addContractWithKey(namespace, 0, contractAddress);
+  }
+```
+</details>
+
+### addContractWithKey
+
+```solidity
+function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress) public nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) public override nonReentrant {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -171,8 +232,8 @@ function addContract(bytes32 namespace, address contractAddress) external overri
 
     require(current == address(0), "Please upgrade contract");
 
-    s.addContractInternal(namespace, contractAddress);
-    emit ContractAdded(namespace, contractAddress);
+    AccessControlLibV1.addContractInternal(s, namespace, key, contractAddress);
+    emit ContractAdded(namespace, key, contractAddress);
   }
 ```
 </details>
@@ -199,7 +260,7 @@ function removeMember(address member) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.removeMemberInternal(member);
+    AccessControlLibV1.removeMemberInternal(s, member);
     emit MemberRemoved(member);
   }
 ```
@@ -226,8 +287,36 @@ function addMember(address member) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addMemberInternal(member);
+    AccessControlLibV1.addMemberInternal(s, member);
     emit MemberAdded(member);
+  }
+```
+</details>
+
+### grantRoles
+
+```solidity
+function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| detail | struct IProtocol.AccountWithRoles[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRoles(AccountWithRoles[] memory detail) external override nonReentrant {
+    AccessControlLibV1.mustBeAdmin(s);
+
+    for (uint256 i = 0; i < detail.length; i++) {
+      for (uint256 j = 0; j < detail[i].roles.length; j++) {
+        _grantRole(detail[i].roles[j], detail[i].account);
+      }
+    }
   }
 ```
 </details>
@@ -323,7 +412,6 @@ function getName() external pure override returns (bytes32) {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -358,6 +446,7 @@ function getName() external pure override returns (bytes32) {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -407,8 +496,13 @@ function getName() external pure override returns (bytes32) {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

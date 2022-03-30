@@ -5,7 +5,7 @@ import "./IStore.sol";
 import "./IMember.sol";
 
 interface ICxTokenFactory is IMember {
-  event CxTokenDeployed(bytes32 indexed key, address cxToken, uint256 expiryDate, string name, string symbol);
+  event CxTokenDeployed(bytes32 indexed key, address cxToken, uint256 expiryDate);
 
   function deploy(
     IStore s,

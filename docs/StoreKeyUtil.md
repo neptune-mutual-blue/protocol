@@ -40,6 +40,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [deleteBoolByKeys(IStore s, bytes32 key, address account)](#deleteboolbykeys)
 - [deleteAddressByKey(IStore s, bytes32 key)](#deleteaddressbykey)
 - [deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2)](#deleteaddressbykeys)
+- [deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)](#deleteaddressbykeys)
 - [deleteAddressArrayByKey(IStore s, bytes32 key, address value)](#deleteaddressarraybykey)
 - [deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address value)](#deleteaddressarraybykeys)
 - [deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, address value)](#deleteaddressarraybykeys)
@@ -1070,6 +1071,36 @@ function deleteAddressByKeys(
     bytes32 key2
   ) external {
     return s.deleteAddress(_getKey(key1, key2));
+  }
+```
+</details>
+
+### deleteAddressByKeys
+
+```solidity
+function deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteAddressByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external {
+    return s.deleteAddress(_getKey(key1, key2, key3));
   }
 ```
 </details>
@@ -2222,7 +2253,6 @@ function _getKey(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -2257,6 +2287,7 @@ function _getKey(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -2306,8 +2337,13 @@ function _getKey(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

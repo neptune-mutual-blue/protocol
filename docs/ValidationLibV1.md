@@ -12,16 +12,19 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeValidCoverKey(IStore s, bytes32 key)](#mustbevalidcoverkey)
 - [mustBeCoverOwner(IStore s, bytes32 key, address sender)](#mustbecoverowner)
 - [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 key, address sender)](#mustbecoverownerorcovercontract)
-- [callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key)](#callermustbecoverowneroradmin)
-- [callerMustBePolicyContract(IStore s)](#callermustbepolicycontract)
-- [callerMustBePolicyManagerContract(IStore s)](#callermustbepolicymanagercontract)
-- [callerMustBeCoverContract(IStore s)](#callermustbecovercontract)
-- [callerMustBeVaultContract(IStore s, bytes32 key)](#callermustbevaultcontract)
-- [callerMustBeGovernanceContract(IStore s)](#callermustbegovernancecontract)
-- [callerMustBeClaimsProcessorContract(IStore s)](#callermustbeclaimsprocessorcontract)
-- [callerMustBeStrategyContract(IStore s)](#callermustbestrategycontract)
+- [senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 key)](#sendermustbecoverowneroradmin)
+- [senderMustBePolicyContract(IStore s)](#sendermustbepolicycontract)
+- [senderMustBePolicyManagerContract(IStore s)](#sendermustbepolicymanagercontract)
+- [senderMustBeCoverContract(IStore s)](#sendermustbecovercontract)
+- [senderMustBeVaultContract(IStore s, bytes32 key)](#sendermustbevaultcontract)
+- [senderMustBeGovernanceContract(IStore s)](#sendermustbegovernancecontract)
+- [senderMustBeClaimsProcessorContract(IStore s)](#sendermustbeclaimsprocessorcontract)
+- [callerMustBeClaimsProcessorContract(IStore s, address caller)](#callermustbeclaimsprocessorcontract)
+- [senderMustBeStrategyContract(IStore s)](#sendermustbestrategycontract)
+- [callerMustBeStrategyContract(IStore s, address caller)](#callermustbestrategycontract)
+- [callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 )](#callermustbespecificstrategycontract)
 - [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
-- [callerMustBeProtocolMember(IStore s)](#callermustbeprotocolmember)
+- [senderMustBeProtocolMember(IStore s)](#sendermustbeprotocolmember)
 - [mustBeReporting(IStore s, bytes32 key)](#mustbereporting)
 - [mustBeDisputed(IStore s, bytes32 key)](#mustbedisputed)
 - [mustBeClaimable(IStore s, bytes32 key)](#mustbeclaimable)
@@ -213,10 +216,10 @@ function mustBeCoverOwnerOrCoverContract(
 ```
 </details>
 
-### callerMustBeCoverOwnerOrAdmin
+### senderMustBeCoverOwnerOrAdmin
 
 ```solidity
-function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view
+function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -230,7 +233,7 @@ function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
+function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
     if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
       mustBeCoverOwner(s, key, msg.sender);
     }
@@ -238,10 +241,10 @@ function callerMustBeCoverOwnerOrAdmin(IStore s, bytes32 key) external view {
 ```
 </details>
 
-### callerMustBePolicyContract
+### senderMustBePolicyContract
 
 ```solidity
-function callerMustBePolicyContract(IStore s) external view
+function senderMustBePolicyContract(IStore s) external view
 ```
 
 **Arguments**
@@ -254,16 +257,16 @@ function callerMustBePolicyContract(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBePolicyContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY);
+function senderMustBePolicyContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY);
   }
 ```
 </details>
 
-### callerMustBePolicyManagerContract
+### senderMustBePolicyManagerContract
 
 ```solidity
-function callerMustBePolicyManagerContract(IStore s) external view
+function senderMustBePolicyManagerContract(IStore s) external view
 ```
 
 **Arguments**
@@ -276,16 +279,16 @@ function callerMustBePolicyManagerContract(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBePolicyManagerContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY_MANAGER);
+function senderMustBePolicyManagerContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER_POLICY_MANAGER);
   }
 ```
 </details>
 
-### callerMustBeCoverContract
+### senderMustBeCoverContract
 
 ```solidity
-function callerMustBeCoverContract(IStore s) external view
+function senderMustBeCoverContract(IStore s) external view
 ```
 
 **Arguments**
@@ -298,16 +301,16 @@ function callerMustBeCoverContract(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeCoverContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_COVER);
+function senderMustBeCoverContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_COVER);
   }
 ```
 </details>
 
-### callerMustBeVaultContract
+### senderMustBeVaultContract
 
 ```solidity
-function callerMustBeVaultContract(IStore s, bytes32 key) external view
+function senderMustBeVaultContract(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -321,17 +324,17 @@ function callerMustBeVaultContract(IStore s, bytes32 key) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeVaultContract(IStore s, bytes32 key) external view {
+function senderMustBeVaultContract(IStore s, bytes32 key) external view {
     address vault = s.getVaultAddress(key);
     require(msg.sender == vault, "Forbidden");
   }
 ```
 </details>
 
-### callerMustBeGovernanceContract
+### senderMustBeGovernanceContract
 
 ```solidity
-function callerMustBeGovernanceContract(IStore s) external view
+function senderMustBeGovernanceContract(IStore s) external view
 ```
 
 **Arguments**
@@ -344,8 +347,30 @@ function callerMustBeGovernanceContract(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeGovernanceContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
+function senderMustBeGovernanceContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_GOVERNANCE);
+  }
+```
+</details>
+
+### senderMustBeClaimsProcessorContract
+
+```solidity
+function senderMustBeClaimsProcessorContract(IStore s) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function senderMustBeClaimsProcessorContract(IStore s) external view {
+    s.senderMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
   }
 ```
 </details>
@@ -353,7 +378,30 @@ function callerMustBeGovernanceContract(IStore s) external view {
 ### callerMustBeClaimsProcessorContract
 
 ```solidity
-function callerMustBeClaimsProcessorContract(IStore s) external view
+function callerMustBeClaimsProcessorContract(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeClaimsProcessorContract(IStore s, address caller) external view {
+    s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, caller);
+  }
+```
+</details>
+
+### senderMustBeStrategyContract
+
+```solidity
+function senderMustBeStrategyContract(IStore s) external view
 ```
 
 **Arguments**
@@ -366,8 +414,9 @@ function callerMustBeClaimsProcessorContract(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeClaimsProcessorContract(IStore s) external view {
-    s.callerMustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR);
+function senderMustBeStrategyContract(IStore s) external view {
+    bool senderIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+    require(senderIsStrategyContract == true, "Not a strategy contract");
   }
 ```
 </details>
@@ -375,7 +424,7 @@ function callerMustBeClaimsProcessorContract(IStore s) external view {
 ### callerMustBeStrategyContract
 
 ```solidity
-function callerMustBeStrategyContract(IStore s) external view
+function callerMustBeStrategyContract(IStore s, address caller) external view
 ```
 
 **Arguments**
@@ -383,13 +432,44 @@ function callerMustBeStrategyContract(IStore s) external view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| caller | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeStrategyContract(IStore s) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(msg.sender));
+function callerMustBeStrategyContract(IStore s, address caller) external view {
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
+    require(callerIsStrategyContract == true, "Not a strategy contract");
+  }
+```
+</details>
+
+### callerMustBeSpecificStrategyContract
+
+```solidity
+function callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 ) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+|  | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeSpecificStrategyContract(
+    IStore s,
+    address caller,
+    bytes32 /*strategyName*/
+  ) external view {
+    // @todo
+    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
     require(callerIsStrategyContract == true, "Not a strategy contract");
   }
 ```
@@ -418,10 +498,10 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 ```
 </details>
 
-### callerMustBeProtocolMember
+### senderMustBeProtocolMember
 
 ```solidity
-function callerMustBeProtocolMember(IStore s) external view
+function senderMustBeProtocolMember(IStore s) external view
 ```
 
 **Arguments**
@@ -434,7 +514,7 @@ function callerMustBeProtocolMember(IStore s) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeProtocolMember(IStore s) external view {
+function senderMustBeProtocolMember(IStore s) external view {
     require(s.isProtocolMember(msg.sender), "Forbidden");
   }
 ```
@@ -822,7 +902,9 @@ function mustBeValidClaim(
     address cxToken,
     uint256 incidentDate
   ) external view {
-    s.mustBeProtocolMember(cxToken);
+    // @note: cxTokens are no longer protocol members
+    // as we will end up with way too many contracts
+    // s.mustBeProtocolMember(cxToken);
     mustBeValidCxToken(s, key, cxToken, incidentDate);
     mustBeClaimable(s, key);
     mustBeValidIncidentDate(s, key, incidentDate);
@@ -1098,7 +1180,6 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -1133,6 +1214,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -1182,8 +1264,13 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

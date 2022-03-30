@@ -6,4 +6,7 @@ import "./IResolvable.sol";
 import "./IUnstakable.sol";
 import "./IMember.sol";
 
-interface IResolution is IFinalization, IResolvable, IUnstakable, IMember {}
+//solhint-disable-next-line
+interface IResolution is IFinalization, IResolvable, IUnstakable, IMember {
+
+}

@@ -1,7 +1,7 @@
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
-const attacher = require('../util/attach')
+const attacher = require('../../../util/attach')
 const DAYS = 86400
 
 const cache = null

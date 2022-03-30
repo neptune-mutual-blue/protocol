@@ -180,7 +180,7 @@ returns(uint256)
 
 ```javascript
 function getCommitment(bytes32 key) external view override returns (uint256) {
-    return s.getCommitmentInternal(key);
+    return s.getActiveLiquidityUnderProtection(key);
   }
 ```
 </details>
@@ -203,7 +203,7 @@ returns(uint256)
 
 ```javascript
 function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
-    return s.getStablecoinBalanceOfCoverPoolInternal(key);
+    return s.getStablecoinOwnedByVaultInternal(key);
   }
 ```
 </details>
@@ -368,7 +368,6 @@ function getName() external pure override returns (bytes32) {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -403,6 +402,7 @@ function getName() external pure override returns (bytes32) {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -452,8 +452,13 @@ function getName() external pure override returns (bytes32) {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

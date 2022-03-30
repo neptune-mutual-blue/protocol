@@ -28,6 +28,7 @@ contract Policy is IPolicy, Recoverable {
   using NTransferUtilV2 for IERC20;
   using ValidationLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StrategyLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
@@ -81,14 +82,14 @@ contract Policy is IPolicy, Recoverable {
    * Gets the sum total of cover commitment that has not expired yet.
    */
   function getCommitment(bytes32 key) external view override returns (uint256) {
-    return s.getCommitmentInternal(key);
+    return s.getActiveLiquidityUnderProtection(key);
   }
 
   /**
    * Gets the available liquidity in the pool.
    */
   function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
-    return s.getStablecoinBalanceOfCoverPoolInternal(key);
+    return s.getStablecoinOwnedByVaultInternal(key);
   }
 
   /**

@@ -1,65 +1,40 @@
-# Vault POD (Proof of Deposit) (VaultBase.sol)
+# VaultBase.sol
 
 View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidity/VaultBase.sol)
 
-**↗ Extends: [IVault](IVault.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
-**↘ Derived Contracts: [WithFlashLoan](WithFlashLoan.md)**
+**↗ Extends: [ERC20](ERC20.md), [Recoverable](Recoverable.md), [IVault](IVault.md)**
+**↘ Derived Contracts: [VaultLiquidity](VaultLiquidity.md)**
 
 **VaultBase**
-
-The VaultPod has `_mintPods` and `_redeemPods` features which enables
- POD minting and burning on demand. <br /> <br />
- **How Does This Work?**
- When you add liquidity to the Vault,
- PODs are minted representing your proportional share of the pool.
- Similarly, when you redeem your PODs, you get your proportional
- share of the Vault liquidity back, burning the PODs.
 
 ## Contract Members
 **Constants & Variables**
 
 ```js
-//public members
 bytes32 public key;
-address public lqt;
-
-//private members
-uint256 private _transferToStrategyEntry;
-uint256 private _receiveFromStrategyEntry;
+address public sc;
 
 ```
 
 ## Functions
 
-- [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
-- [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
-- [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
-- [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
-- [getStablecoinBalanceOf()](#getstablecoinbalanceof)
-- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
-- [accrueInterest()](#accrueinterest)
-- [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidity)
-- [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
-- [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
-- [getInfo(address you)](#getinfo)
-- [version()](#version)
-- [getName()](#getname)
+- [constructor(IStore store, bytes32 coverKey, IERC20 stablecoin)](#)
+- [_getTokenName(bytes32 coverKey)](#_gettokenname)
+- [delgate()](#delgate)
 
 ### 
 
-Constructs this contract
-
 ```solidity
-function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpayable ERC20 Recoverable 
+function (IStore store, bytes32 coverKey, IERC20 stablecoin) internal nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
-| coverKey | bytes32 | Enter the cover key or cover this contract is related to | 
-| liquidityToken | IERC20 | Provide the liquidity token instance for this Vault | 
+| store | IStore |  | 
+| coverKey | bytes32 |  | 
+| stablecoin | IERC20 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -68,18 +43,19 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) internal nonpay
 constructor(
     IStore store,
     bytes32 coverKey,
-    IERC20 liquidityToken
-  ) ERC20(VaultLibV1.getPodTokenNameInternal(coverKey), "POD") Recoverable(store) {
+    IERC20 stablecoin
+  ) ERC20(_getTokenName(coverKey), "POD") Recoverable(store) {
     key = coverKey;
-    lqt = address(liquidityToken);
+    sc = address(stablecoin);
   }
 ```
 </details>
 
-### transferGovernance
+### _getTokenName
 
 ```solidity
-function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
+function _getTokenName(bytes32 coverKey) private pure
+returns(string)
 ```
 
 **Arguments**
@@ -87,126 +63,22 @@ function transferGovernance(bytes32 coverKey, address to, uint256 amount) extern
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| to | address |  | 
-| amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function transferGovernance(
-    bytes32 coverKey,
-    address to,
-    uint256 amount
-  ) external override nonReentrant {
-    s.mustNotBePaused();
-    s.callerMustBeClaimsProcessorContract();
-
-    require(coverKey == key, "Forbidden");
-    require(amount > 0, "Please specify amount");
-
-    // @suppress-malicious-erc20 `lqt` can't be manipulated via user input.
-    IERC20(lqt).ensureTransfer(to, amount);
-    emit GovernanceTransfer(to, amount);
+function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
   }
 ```
 </details>
 
-### transferToStrategy
+### delgate
 
 ```solidity
-function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function transferToStrategy(
-    IERC20 token,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    uint256 amount
-  ) external override {
-    // @suppress-reentrancy Custom reentrancy guard implemented
-    require(_transferToStrategyEntry == 0, "Access is denied");
-    require(amount > 0, "Please specify amount");
-
-    _transferToStrategyEntry = 1;
-
-    s.mustNotBePaused();
-    s.callerMustBeStrategyContract();
-    require(coverKey == key, "Forbidden");
-
-    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
-    s.transferToStrategyInternal(token, coverKey, strategyName, amount);
-    emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
-    _transferToStrategyEntry = 0;
-  }
-```
-</details>
-
-### receiveFromStrategy
-
-```solidity
-function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function receiveFromStrategy(
-    IERC20 token,
-    bytes32 coverKey,
-    bytes32 strategyName,
-    uint256 amount
-  ) external override {
-    // @suppress-reentrancy Custom reentrancy guard implemented
-    require(_receiveFromStrategyEntry == 0, "Access is denied");
-    require(amount > 0, "Please specify amount");
-
-    _receiveFromStrategyEntry = 1;
-
-    s.mustNotBePaused();
-    s.callerMustBeStrategyContract();
-    require(coverKey == key, "Forbidden");
-
-    // @suppress-malicious-erc20 `token` can only be specified by strategy contract.
-    (uint256 income, uint256 loss) = s.receiveFromStrategyInternal(token, coverKey, strategyName, amount);
-
-    emit StrategyReceipt(address(token), msg.sender, strategyName, amount, income, loss);
-    _receiveFromStrategyEntry = 0;
-  }
-```
-</details>
-
-### getStablecoinBalanceOf
-
-Returns the stablecoin balance of this vault
- This also includes amounts lent out in lending strategies
-
-```solidity
-function getStablecoinBalanceOf() external view
-returns(uint256)
+function delgate() public view
+returns(contract IVaultDelegate)
 ```
 
 **Arguments**
@@ -218,239 +90,9 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoinBalanceOf() external view override returns (uint256) {
-    return s.getStablecoinBalanceOfInternal(key);
-  }
-```
-</details>
-
-### addLiquidity
-
-Adds liquidity to the specified cover contract
-
-```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStakeToAdd
-  ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
-
-    require(coverKey == key, "Forbidden");
-    require(amount > 0, "Please specify amount");
-
-    uint256 podsToMint = s.addLiquidityInternal(coverKey, address(this), lqt, msg.sender, amount, npmStakeToAdd);
-    super._mint(msg.sender, podsToMint);
-
-    s.updateStateAndLiquidity(key);
-
-    emit PodsIssued(msg.sender, podsToMint, amount);
-  }
-```
-</details>
-
-### accrueInterest
-
-```solidity
-function accrueInterest() external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function accrueInterest() external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-    s.accrueInterestInternal(key);
-
-    emit InterestAccrued(key);
-  }
-```
-</details>
-
-### removeLiquidity
-
-Removes liquidity from the specified cover contract
-
-```solidity
-function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| podsToRedeem | uint256 | Enter the amount of pods to redeem | 
-| npmStakeToRemove | uint256 | Enter the amount of NPM stake to remove. | 
-| exit | bool |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeLiquidity(
-    bytes32 coverKey,
-    uint256 podsToRedeem,
-    uint256 npmStakeToRemove,
-    bool exit
-  ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustBeAccrued(coverKey);
-
-    require(podsToRedeem > 0, "Please specify amount");
-
-    require(coverKey == key, "Forbidden");
-    uint256 released = s.removeLiquidityInternal(coverKey, address(this), podsToRedeem, npmStakeToRemove, exit);
-
-    emit PodsRedeemed(msg.sender, podsToRedeem, released);
-  }
-```
-</details>
-
-### calculatePods
-
-Calculates the amount of PODS to mint for the given amount of liquidity to transfer
-
-```solidity
-function calculatePods(uint256 forStablecoinUnits) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| forStablecoinUnits | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
-    return s.calculatePodsInternal(key, address(this), forStablecoinUnits);
-  }
-```
-</details>
-
-### calculateLiquidity
-
-Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
-
-```solidity
-function calculateLiquidity(uint256 podsToBurn) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| podsToBurn | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
-    return s.calculateLiquidityInternal(key, address(this), lqt, podsToBurn);
-  }
-```
-</details>
-
-### getInfo
-
-Gets information of a given vault by the cover key
-
-```solidity
-function getInfo(address you) external view
-returns(values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| you | address | The address for which the info will be customized | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getInfo(address you) external view override returns (uint256[] memory values) {
-    return s.getInfoInternal(key, address(this), lqt, you);
-  }
-```
-</details>
-
-### version
-
-Version number of this contract
-
-```solidity
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
-### getName
-
-Name of this contract
-
-```solidity
-function getName() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
+function delgate() public view returns (IVaultDelegate) {
+    address delegate = s.getVaultDelegate();
+    return IVaultDelegate(delegate);
   }
 ```
 </details>
@@ -498,7 +140,6 @@ function getName() external pure override returns (bytes32) {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -533,6 +174,7 @@ function getName() external pure override returns (bytes32) {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -582,8 +224,13 @@ function getName() external pure override returns (bytes32) {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

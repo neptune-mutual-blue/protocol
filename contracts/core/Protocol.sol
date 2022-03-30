@@ -88,17 +88,34 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 namespace,
     address previous,
     address current
-  ) external override nonReentrant {
+  ) external override {
+    upgradeContractWithKey(namespace, 0, previous, current);
+  }
+
+  function upgradeContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) public override nonReentrant {
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
-    s.upgradeContractInternal(namespace, previous, current);
-    emit ContractUpgraded(namespace, previous, current);
+    AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
+    emit ContractUpgraded(namespace, key, previous, current);
   }
 
-  function addContract(bytes32 namespace, address contractAddress) external override nonReentrant {
+  function addContract(bytes32 namespace, address contractAddress) external override {
+    addContractWithKey(namespace, 0, contractAddress);
+  }
+
+  function addContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) public override nonReentrant {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -106,8 +123,8 @@ contract Protocol is IProtocol, ProtoBase {
 
     require(current == address(0), "Please upgrade contract");
 
-    s.addContractInternal(namespace, contractAddress);
-    emit ContractAdded(namespace, contractAddress);
+    AccessControlLibV1.addContractInternal(s, namespace, key, contractAddress);
+    emit ContractAdded(namespace, key, contractAddress);
   }
 
   function removeMember(address member) external override nonReentrant {
@@ -116,7 +133,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.removeMemberInternal(member);
+    AccessControlLibV1.removeMemberInternal(s, member);
     emit MemberRemoved(member);
   }
 
@@ -125,8 +142,18 @@ contract Protocol is IProtocol, ProtoBase {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    s.addMemberInternal(member);
+    AccessControlLibV1.addMemberInternal(s, member);
     emit MemberAdded(member);
+  }
+
+  function grantRoles(AccountWithRoles[] memory detail) external override nonReentrant {
+    AccessControlLibV1.mustBeAdmin(s);
+
+    for (uint256 i = 0; i < detail.length; i++) {
+      for (uint256 j = 0; j < detail[i].roles.length; j++) {
+        _grantRole(detail[i].roles[j], detail[i].account);
+      }
+    }
   }
 
   /**

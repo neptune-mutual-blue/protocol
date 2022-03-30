@@ -13,18 +13,9 @@ library StrategyLibV1 {
   using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+  using RegistryLibV1 for IStore;
 
   event StrategyAdded(address indexed strategy);
-
-  function _deleteStrategy(IStore s, address toFind) private {
-    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
-
-    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
-    require(pos > 1, "Invalid strategy");
-
-    s.deleteAddressArrayItem(key, toFind);
-    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
-  }
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
@@ -97,6 +88,16 @@ library StrategyLibV1 {
     emit StrategyAdded(deployedOn);
   }
 
+  function _deleteStrategy(IStore s, address toFind) private {
+    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
+
+    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+    require(pos > 0, "Invalid strategy");
+
+    s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+  }
+
   function getDisabledStrategiesInternal(IStore s) external view returns (address[] memory strategies) {
     return s.getAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED);
   }
@@ -121,7 +122,7 @@ library StrategyLibV1 {
     IStore s,
     bytes32 coverKey,
     address token
-  ) external view returns (uint256) {
+  ) public view returns (uint256) {
     bytes32 k = getStrategyOutKey(coverKey, token);
     return s.getUintByKey(k);
   }
@@ -242,5 +243,14 @@ library StrategyLibV1 {
 
     // By Cover on This Strategy
     s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, coverKey, strategyName)), loss);
+  }
+
+  function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    address stablecoin = s.getStablecoin();
+
+    uint256 balance = IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey));
+    uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
+
+    return balance + inStrategies;
   }
 }

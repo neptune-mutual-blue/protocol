@@ -124,7 +124,7 @@ library BondPoolLibV1 {
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
-    require(_getNpmBalance(s) >= values[0] + _getCommitment(s), "NPM balance insufficient to bond");
+    require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
     // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
@@ -153,7 +153,7 @@ library BondPoolLibV1 {
     return IERC20(s.npmToken()).balanceOf(address(this));
   }
 
-  function _getCommitment(IStore s) private view returns (uint256) {
+  function _getBondCommitment(IStore s) private view returns (uint256) {
     return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }
 

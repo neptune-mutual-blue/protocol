@@ -1,6 +1,6 @@
 const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 
 const cache = null
@@ -20,7 +20,7 @@ describe('cxToken: Constructor', () => {
     libraries = await deployDependencies()
     store = { address: helper.randomAddress() }
 
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate, 'cxToken', 'cxToken')
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
   })
 
   it('must correctly construct', async () => {

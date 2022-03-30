@@ -83,7 +83,6 @@ library ProtoUtilV1 {
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
   bytes32 public constant NS_VAULT_LENDING_LOSSES = "ns:vault:lending:losses";
-  bytes32 public constant NS_COVER_LIQUIDITY = "ns:cover:liquidity";
   bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD = "ns:cover:liquidity:len:p";
   bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW = "ns:cover:liquidity:ww";
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE = "ns:cover:liquidity:min:stake";
@@ -319,65 +318,5 @@ library ProtoUtilV1 {
 
   function _getContract(IStore s, bytes32 name) private view returns (address) {
     return s.getAddressByKeys(NS_CONTRACTS, name);
-  }
-
-  function addContractInternal(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _addContract(s, namespace, contractAddress);
-  }
-
-  function _addContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) private {
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
-    _addMember(s, contractAddress);
-  }
-
-  function _deleteContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) private {
-    s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
-    _removeMember(s, contractAddress);
-  }
-
-  function upgradeContractInternal(
-    IStore s,
-    bytes32 namespace,
-    address previous,
-    address current
-  ) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    bool isMember = _isProtocolMember(s, previous);
-    require(isMember, "Not a protocol member");
-
-    _deleteContract(s, namespace, previous);
-    _addContract(s, namespace, current);
-  }
-
-  function addMemberInternal(IStore s, address member) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _addMember(s, member);
-  }
-
-  function removeMemberInternal(IStore s, address member) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _removeMember(s, member);
-  }
-
-  function _addMember(IStore s, address member) private {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
-  }
-
-  function _removeMember(IStore s, address member) private {
-    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
   }
 }

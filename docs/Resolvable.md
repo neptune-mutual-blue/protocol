@@ -144,15 +144,6 @@ function _resolve(
     // back the original stake. No rewards.
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
-    // Claim begins from the cooldown period added to the first resolution attempt date
-    uint256 claimBeginsFrom = decision ? block.timestamp + cooldownPeriod : 0; // solhint-disable-line
-
-    // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
-
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
-
     // Status can change during `Emergency Resolution` attempt(s)
     s.setStatusInternal(key, incidentDate, status);
 
@@ -163,6 +154,15 @@ function _resolve(
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key, deadline);
     }
+
+    // Claim begins when deadline timestamp is passed
+    uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
+
+    // Claim expires after the period specified by the cover creator.
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
+
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
 
     s.updateStateAndLiquidity(key);
 
@@ -295,7 +295,6 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -330,6 +329,7 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -379,8 +379,13 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

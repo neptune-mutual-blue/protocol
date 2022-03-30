@@ -12,58 +12,10 @@ As and when required by the protocol,
 
 ## Functions
 
-- [_getTokenName(bytes32 key)](#_gettokenname)
-- [_getTokenSymbol()](#_gettokensymbol)
 - [constructor(IStore store)](#)
 - [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
 - [version()](#version)
 - [getName()](#getname)
-
-### _getTokenName
-
-```solidity
-function _getTokenName(bytes32 key) private pure
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getTokenName(bytes32 key) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
-  }
-```
-</details>
-
-### _getTokenSymbol
-
-```solidity
-function _getTokenSymbol() private view
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getTokenSymbol() private view returns (string memory) {
-    string memory suffix = ERC20(s.getStablecoin()).symbol();
-    return string(abi.encodePacked("cx", suffix));
-  }
-```
-</details>
 
 ### 
 
@@ -116,11 +68,11 @@ function deploy(
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
-    s.callerMustBePolicyContract();
+    s.senderMustBePolicyContract();
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, _getTokenName(key), _getTokenSymbol());
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -140,7 +92,6 @@ function deploy(
       }
     }
 
-    // salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, key, deployed);
@@ -241,7 +192,6 @@ function getName() external pure override returns (bytes32) {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -276,6 +226,7 @@ function getName() external pure override returns (bytes32) {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -325,8 +276,13 @@ function getName() external pure override returns (bytes32) {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

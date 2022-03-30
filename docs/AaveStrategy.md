@@ -213,7 +213,7 @@ returns(aTokenReceived uint256)
 ```javascript
 function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
 
     IVault vault = s.getVault(coverKey);
 
@@ -248,8 +248,6 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    // console.log("Aave deposit: [%s] --> %s", uint256(coverKey), amount);
-
     emit Deposited(coverKey, address(vault), amount);
   }
 ```
@@ -277,7 +275,7 @@ returns(stablecoinWithdrawn uint256)
 ```javascript
 function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
-    s.callerMustBeProtocolMember();
+    s.senderMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
     // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
@@ -308,8 +306,6 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-
-    // console.log("Aave withdrawal: [%s] --> %s", uint256(coverKey), stablecoinWithdrawn);
 
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
   }
@@ -497,7 +493,6 @@ function getName() public pure override returns (bytes32) {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -532,6 +527,7 @@ function getName() public pure override returns (bytes32) {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -581,8 +577,13 @@ function getName() public pure override returns (bytes32) {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

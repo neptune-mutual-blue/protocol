@@ -6,14 +6,14 @@ View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/librarie
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 key, uint256 expiryDate, string name, string symbol)](#getbytecode)
+- [getByteCode(IStore s, bytes32 key, uint256 expiryDate)](#getbytecode)
 
 ### getByteCode
 
 Gets the bytecode of the `cxToken` contract
 
 ```solidity
-function getByteCode(IStore s, bytes32 key, uint256 expiryDate, string name, string symbol) external pure
+function getByteCode(IStore s, bytes32 key, uint256 expiryDate) external pure
 returns(bytecode bytes, salt bytes32)
 ```
 
@@ -24,8 +24,6 @@ returns(bytecode bytes, salt bytes32)
 | s | IStore | Provide the store instance | 
 | key | bytes32 | Provide the cover key | 
 | expiryDate | uint256 | Specify the expiry date of this cxToken instance | 
-| name | string |  | 
-| symbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -34,14 +32,12 @@ returns(bytecode bytes, salt bytes32)
 function getByteCode(
     IStore s,
     bytes32 key,
-    uint256 expiryDate,
-    string memory name,
-    string memory symbol
+    uint256 expiryDate
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
 
     //slither-disable-next-line too-many-digits
-    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate, name, symbol));
+    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
   }
 ```
 </details>
@@ -89,7 +85,6 @@ function getByteCode(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -124,6 +119,7 @@ function getByteCode(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -173,8 +169,13 @@ function getByteCode(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

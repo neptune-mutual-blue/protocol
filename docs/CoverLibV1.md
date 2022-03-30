@@ -63,10 +63,10 @@ function getCoverInfo(IStore s, bytes32 key)
 
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
     values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-    values[2] = s.getCoverPoolLiquidity(key);
+    values[2] = s.getStablecoinOwnedByVaultInternal(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
-    values[4] = s.getCoverLiquidityCommitted(key);
+    values[4] = s.getActiveLiquidityUnderProtection(key);
   }
 ```
 </details>
@@ -245,9 +245,7 @@ function deployVaultInternal(IStore s, bytes32 key) external returns (address) {
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
 
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key, deployed);
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
-
+    s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, key, address(deployed));
     return deployed;
   }
 ```
@@ -639,7 +637,6 @@ function decreaseProvisionInternal(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -674,6 +671,7 @@ function decreaseProvisionInternal(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -723,8 +721,13 @@ function decreaseProvisionInternal(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

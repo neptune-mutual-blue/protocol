@@ -21,15 +21,6 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  function _getTokenName(bytes32 key) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
-  }
-
-  function _getTokenSymbol() private view returns (string memory) {
-    string memory suffix = ERC20(s.getStablecoin()).symbol();
-    return string(abi.encodePacked("cx", suffix));
-  }
-
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
@@ -54,10 +45,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    string memory name = _getTokenName(key);
-    string memory symbol = _getTokenSymbol();
-
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate, name, symbol);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, key, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -77,12 +65,11 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
       }
     }
 
-    // salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, key, deployed);
 
-    emit CxTokenDeployed(key, deployed, expiryDate, name, symbol);
+    emit CxTokenDeployed(key, deployed, expiryDate);
   }
 
   /**

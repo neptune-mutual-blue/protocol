@@ -12,7 +12,6 @@ event StrategyAdded(address indexed strategy);
 
 ## Functions
 
-- [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
 - [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
 - [disableStrategyInternal(IStore s, address toFind)](#disablestrategyinternal)
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
@@ -21,48 +20,21 @@ event StrategyAdded(address indexed strategy);
 - [getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey)](#getlendingperiodkey)
 - [getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey)](#getwithdrawalwindowkey)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
+- [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
 - [getDisabledStrategiesInternal(IStore s)](#getdisabledstrategiesinternal)
 - [getActiveStrategiesInternal(IStore s)](#getactivestrategiesinternal)
 - [getStrategyOutKey(bytes32 coverKey, address token)](#getstrategyoutkey)
 - [getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, address token)](#getspecificstrategyoutkey)
 - [getAmountInStrategies(IStore s, bytes32 coverKey, address token)](#getamountinstrategies)
 - [getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, address token)](#getamountinstrategy)
-- [transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategyinternal)
-- [receiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive)](#receivefromstrategyinternal)
+- [preTransferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#pretransfertostrategyinternal)
+- [postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive)](#postreceivefromstrategyinternal)
 - [_addToStrategyOut(IStore s, bytes32 coverKey, address token, uint256 amountToAdd)](#_addtostrategyout)
 - [_reduceStrategyOut(IStore s, bytes32 coverKey, address token, uint256 amount)](#_reducestrategyout)
 - [_addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, address token, uint256 amountToAdd)](#_addtospecificstrategyout)
 - [_clearSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, address token)](#_clearspecificstrategyout)
 - [_logIncomes(IStore s, bytes32 coverKey, bytes32 strategyName, uint256 income, uint256 loss)](#_logincomes)
-
-### _deleteStrategy
-
-```solidity
-function _deleteStrategy(IStore s, address toFind) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| toFind | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _deleteStrategy(IStore s, address toFind) private {
-    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
-
-    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
-    require(pos > 1, "Invalid strategy");
-
-    s.deleteAddressArrayItem(key, toFind);
-    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
-  }
-```
-</details>
+- [getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey)](#getstablecoinownedbyvaultinternal)
 
 ### _getIsActiveStrategyKey
 
@@ -292,6 +264,35 @@ function _addStrategy(IStore s, address deployedOn) private {
 ```
 </details>
 
+### _deleteStrategy
+
+```solidity
+function _deleteStrategy(IStore s, address toFind) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| toFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _deleteStrategy(IStore s, address toFind) private {
+    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
+
+    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+    require(pos > 0, "Invalid strategy");
+
+    s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+  }
+```
+</details>
+
 ### getDisabledStrategiesInternal
 
 ```solidity
@@ -394,7 +395,7 @@ function getSpecificStrategyOutKey(
 ### getAmountInStrategies
 
 ```solidity
-function getAmountInStrategies(IStore s, bytes32 coverKey, address token) external view
+function getAmountInStrategies(IStore s, bytes32 coverKey, address token) public view
 returns(uint256)
 ```
 
@@ -414,7 +415,7 @@ function getAmountInStrategies(
     IStore s,
     bytes32 coverKey,
     address token
-  ) external view returns (uint256) {
+  ) public view returns (uint256) {
     bytes32 k = getStrategyOutKey(coverKey, token);
     return s.getUintByKey(k);
   }
@@ -453,10 +454,10 @@ function getAmountInStrategy(
 ```
 </details>
 
-### transferToStrategyInternal
+### preTransferToStrategyInternal
 
 ```solidity
-function transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
+function preTransferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -473,15 +474,13 @@ function transferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, by
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function transferToStrategyInternal(
+function preTransferToStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
   ) external {
-    // @suppress-malicious-erc20 @note: token should be checked on the calling contract
-    token.ensureTransfer(msg.sender, amount);
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
     if (isStablecoin == false) {
@@ -494,10 +493,10 @@ function transferToStrategyInternal(
 ```
 </details>
 
-### receiveFromStrategyInternal
+### postReceiveFromStrategyInternal
 
 ```solidity
-function receiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive) external nonpayable
+function postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive) external nonpayable
 returns(income uint256, loss uint256)
 ```
 
@@ -515,15 +514,13 @@ returns(income uint256, loss uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function receiveFromStrategyInternal(
+function postReceiveFromStrategyInternal(
     IStore s,
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 toReceive
   ) external returns (uint256 income, uint256 loss) {
-    // @suppress-malicious-erc20 token should be checked on the calling contract
-    token.ensureTransferFrom(msg.sender, address(this), toReceive);
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
     if (isStablecoin == false) {
@@ -717,6 +714,35 @@ function _logIncomes(
 ```
 </details>
 
+### getStablecoinOwnedByVaultInternal
+
+```solidity
+function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    address stablecoin = s.getStablecoin();
+
+    uint256 balance = IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey));
+    uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
+
+    return balance + inStrategies;
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -760,7 +786,6 @@ function _logIncomes(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -795,6 +820,7 @@ function _logIncomes(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -844,8 +870,13 @@ function _logIncomes(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

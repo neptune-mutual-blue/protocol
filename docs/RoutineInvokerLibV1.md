@@ -18,12 +18,10 @@ enum Action {
 
 - [updateStateAndLiquidity(IStore s, bytes32 key)](#updatestateandliquidity)
 - [_invoke(IStore s, bytes32 key, address token)](#_invoke)
-- [mustBeAccrued(IStore s, bytes32 coverKey)](#mustbeaccrued)
-- [accrueInterestInternal(IStore s, bytes32 coverKey)](#accrueinterestinternal)
-- [_getWithdrawalInfo(IStore s, bytes32 coverKey)](#_getwithdrawalinfo)
+- [getWithdrawalInfoInternal(IStore s, bytes32 coverKey)](#getwithdrawalinfointernal)
 - [_executeIsWithdrawalPeriod(IStore s, bytes32 coverKey)](#_executeiswithdrawalperiod)
-- [isAccrualComplete(IStore s, bytes32 coverKey)](#isaccrualcomplete)
-- [setAccrualComplete(IStore s, bytes32 coverKey, bool flag)](#setaccrualcomplete)
+- [isAccrualCompleteInternal(IStore s, bytes32 coverKey)](#isaccrualcompleteinternal)
+- [setAccrualCompleteInternal(IStore s, bytes32 coverKey, bool flag)](#setaccrualcompleteinternal)
 - [getAccrualInvocationKey(bytes32 coverKey)](#getaccrualinvocationkey)
 - [getNextWithdrawalStartKey(bytes32 coverKey)](#getnextwithdrawalstartkey)
 - [getNextWithdrawalEndKey(bytes32 coverKey)](#getnextwithdrawalendkey)
@@ -92,61 +90,10 @@ function _invoke(
 ```
 </details>
 
-### mustBeAccrued
+### getWithdrawalInfoInternal
 
 ```solidity
-function mustBeAccrued(IStore s, bytes32 coverKey) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustBeAccrued(IStore s, bytes32 coverKey) external view {
-    require(isAccrualComplete(s, coverKey) == true, "Wait for accrual");
-  }
-```
-</details>
-
-### accrueInterestInternal
-
-```solidity
-function accrueInterestInternal(IStore s, bytes32 coverKey) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function accrueInterestInternal(IStore s, bytes32 coverKey) external {
-    (bool isWithdrawalPeriod, , , , ) = _getWithdrawalInfo(s, coverKey);
-    require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
-
-    _invokeAssetManagement(s, coverKey);
-
-    setAccrualComplete(s, coverKey, true);
-  }
-```
-</details>
-
-### _getWithdrawalInfo
-
-```solidity
-function _getWithdrawalInfo(IStore s, bytes32 coverKey) private view
+function getWithdrawalInfoInternal(IStore s, bytes32 coverKey) public view
 returns(isWithdrawalPeriod bool, lendingPeriod uint256, withdrawalWindow uint256, start uint256, end uint256)
 ```
 
@@ -161,8 +108,8 @@ returns(isWithdrawalPeriod bool, lendingPeriod uint256, withdrawalWindow uint256
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getWithdrawalInfo(IStore s, bytes32 coverKey)
-    private
+function getWithdrawalInfoInternal(IStore s, bytes32 coverKey)
+    public
     view
     returns (
       bool isWithdrawalPeriod,
@@ -205,7 +152,7 @@ returns(bool)
 
 ```javascript
 function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = _getWithdrawalInfo(s, coverKey);
+    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
 
     // Without a lending period and withdrawal window, deposit is not possible
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
@@ -231,7 +178,7 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
 
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
-      setAccrualComplete(s, coverKey, false);
+      setAccrualCompleteInternal(s, coverKey, false);
     }
 
     return false;
@@ -239,10 +186,10 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
 ```
 </details>
 
-### isAccrualComplete
+### isAccrualCompleteInternal
 
 ```solidity
-function isAccrualComplete(IStore s, bytes32 coverKey) public view
+function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view
 returns(bool)
 ```
 
@@ -257,16 +204,16 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isAccrualComplete(IStore s, bytes32 coverKey) public view returns (bool) {
+function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view returns (bool) {
     return s.getBoolByKey(getAccrualInvocationKey(coverKey));
   }
 ```
 </details>
 
-### setAccrualComplete
+### setAccrualCompleteInternal
 
 ```solidity
-function setAccrualComplete(IStore s, bytes32 coverKey, bool flag) public nonpayable
+function setAccrualCompleteInternal(IStore s, bytes32 coverKey, bool flag) public nonpayable
 ```
 
 **Arguments**
@@ -281,7 +228,7 @@ function setAccrualComplete(IStore s, bytes32 coverKey, bool flag) public nonpay
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setAccrualComplete(
+function setAccrualCompleteInternal(
     IStore s,
     bytes32 coverKey,
     bool flag
@@ -726,7 +673,6 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -761,6 +707,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -810,8 +757,13 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

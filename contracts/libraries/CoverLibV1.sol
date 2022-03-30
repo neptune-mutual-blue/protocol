@@ -10,6 +10,7 @@ import "./RegistryLibV1.sol";
 import "./StoreKeyUtil.sol";
 import "./NTransferUtilV2.sol";
 import "./RoutineInvokerLibV1.sol";
+import "./StrategyLibV1.sol";
 
 library CoverLibV1 {
   using CoverUtilV1 for IStore;
@@ -19,6 +20,7 @@ library CoverLibV1 {
   using RoutineInvokerLibV1 for IStore;
   using AccessControlLibV1 for IStore;
   using ValidationLibV1 for IStore;
+  using StrategyLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
   event CoverUserWhitelistUpdated(bytes32 key, address account, bool status);
@@ -39,10 +41,10 @@ library CoverLibV1 {
 
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
     values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
-    values[2] = s.getCoverPoolLiquidity(key);
+    values[2] = s.getStablecoinOwnedByVaultInternal(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
-    values[4] = s.getCoverLiquidityCommitted(key);
+    values[4] = s.getActiveLiquidityUnderProtection(key);
   }
 
   function initializeCoverInternal(
@@ -158,9 +160,7 @@ library CoverLibV1 {
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(s, key);
 
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, key, deployed);
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, deployed, true);
-
+    s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, key, address(deployed));
     return deployed;
   }
 

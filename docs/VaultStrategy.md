@@ -1,12 +1,133 @@
-# ICommission.sol
+# VaultStrategy.sol
 
-View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICommission.sol)
+View Source: [contracts/core/liquidity/VaultStrategy.sol](../contracts/core/liquidity/VaultStrategy.sol)
 
-**↗ Extends: [IMember](IMember.md)**
+**↗ Extends: [VaultLiquidity](VaultLiquidity.md)**
+**↘ Derived Contracts: [WithFlashLoan](WithFlashLoan.md)**
 
-**ICommission**
+**VaultStrategy**
+
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 private _transferToStrategyEntry;
+uint256 private _receiveFromStrategyEntry;
+
+```
 
 ## Functions
+
+- [transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#transfertostrategy)
+- [receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#receivefromstrategy)
+
+### transferToStrategy
+
+```solidity
+function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 |  | 
+| strategyName | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferToStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(coverKey == key, "Forbidden");
+    require(_transferToStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
+    _transferToStrategyEntry = 1;
+
+    /******************************************************************************************
+      PRE
+     ******************************************************************************************/
+    delgate().preTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
+
+    /******************************************************************************************
+      BODY
+     ******************************************************************************************/
+
+    token.ensureTransfer(msg.sender, amount);
+
+    /******************************************************************************************
+      POST
+     ******************************************************************************************/
+    delgate().postTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
+
+    emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
+    _transferToStrategyEntry = 0;
+  }
+```
+</details>
+
+### receiveFromStrategy
+
+```solidity
+function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | IERC20 |  | 
+| coverKey | bytes32 |  | 
+| strategyName | bytes32 |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function receiveFromStrategy(
+    IERC20 token,
+    bytes32 coverKey,
+    bytes32 strategyName,
+    uint256 amount
+  ) external override {
+    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(coverKey == key, "Forbidden");
+    require(_receiveFromStrategyEntry == 0, "Access is denied");
+    require(amount > 0, "Please specify amount");
+
+    _receiveFromStrategyEntry = 1;
+
+    /******************************************************************************************
+      PRE
+     ******************************************************************************************/
+    delgate().preReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
+
+    /******************************************************************************************
+      BODY
+     ******************************************************************************************/
+
+    token.ensureTransferFrom(msg.sender, address(this), amount);
+
+    /******************************************************************************************
+      POST
+     ******************************************************************************************/
+    (uint256 income, uint256 loss) = delgate().postReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
+
+    emit StrategyReceipt(address(token), msg.sender, strategyName, amount, income, loss);
+    _receiveFromStrategyEntry = 0;
+  }
+```
+</details>
 
 ## Contracts
 
@@ -51,7 +172,6 @@ View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICom
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -86,6 +206,7 @@ View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICom
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -135,8 +256,13 @@ View Source: [contracts/interfaces/ICommission.sol](../contracts/interfaces/ICom
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)
