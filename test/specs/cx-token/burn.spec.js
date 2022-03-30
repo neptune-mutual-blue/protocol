@@ -41,6 +41,18 @@ describe('cxToken: `burn` function', () => {
     balance.should.equal('15')
   })
 
+  it('must reject when invalid amount is supplied', async () => {
+    const [owner] = await ethers.getSigners()
+    const amount = '100'
+
+    await store.initialize()
+    await store.registerPolicyContract(policy.address)
+
+    await policy.callMint(coverKey, owner.address, amount)
+
+    await cxToken.burn('0').should.be.rejectedWith('Please specify amount')
+  })
+
   it('must reject when the protocol is paused', async () => {
     const [owner] = await ethers.getSigners()
     const amount = '100'

@@ -50,6 +50,16 @@ describe('cxToken: `mint` function', () => {
     await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Protocol is paused')
   })
 
+  it('must reject when invalid amount is supplied', async () => {
+    const to = helper.randomAddress()
+    const amount = '0'
+
+    await store.initialize()
+    await store.registerPolicyContract(policy.address)
+
+    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Please specify amount')
+  })
+
   it('must reject when invalid cover key is supplied', async () => {
     const to = helper.randomAddress()
     const amount = '1'
