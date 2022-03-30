@@ -2,9 +2,9 @@
 
 const BigNumber = require('bignumber.js')
 const { ethers, network } = require('hardhat')
-const composer = require('../util/composer')
-const { helper, key } = require('../util')
-const { minutesToBlocks } = require('../util/block-time')
+const composer = require('../../util/composer')
+const { helper, key } = require('../../util')
+const { minutesToBlocks } = require('../../util/block-time')
 const poolKey = key.toBytes32('Crpool')
 
 require('chai')

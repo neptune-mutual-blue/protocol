@@ -20,11 +20,16 @@ import "../Recoverable.sol";
 // slither-disable-next-line naming-convention
 contract cxToken is ICxToken, Recoverable, ERC20 {
   // solhint-disable-previous-line
+  using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
   bytes32 public immutable override coverKey;
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
+
+  function _getTokenName(bytes32 key) private pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
+  }
 
   /**
    * @dev Constructs this contract
@@ -35,10 +40,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   constructor(
     IStore store,
     bytes32 key,
-    uint256 expiry,
-    string memory name,
-    string memory symbol
-  ) ERC20(name, symbol) Recoverable(store) {
+    uint256 expiry
+  ) ERC20(_getTokenName(key), "cxUSD") Recoverable(store) {
     coverKey = key;
     expiresOn = expiry;
   }

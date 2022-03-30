@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key } = require('../util')
+const { helper, deployer, key } = require('../../util')
 const DAYS = 86400
 const cache = null
 
@@ -22,7 +22,8 @@ const deployDependencies = async () => {
   })
 
   const accessControlLibV1 = await deployer.deployWithLibraries(cache, 'AccessControlLibV1', {
-    ProtoUtilV1: protoUtilV1.address
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address
   })
 
   const registryLibV1 = await deployer.deployWithLibraries(cache, 'RegistryLibV1', {
@@ -30,13 +31,15 @@ const deployDependencies = async () => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    RegistryLibV1: registryLibV1.address,
+  const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
     ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
+  const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
+    RegistryLibV1: registryLibV1.address,
+    StrategyLibV1: strategyLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
@@ -342,6 +345,7 @@ describe('Adding a New Protocol Contract', () => {
     )
 
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
@@ -413,6 +417,7 @@ describe('Upgrading Protocol Contract(s)', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
     await protocol.initialize(
       [helper.zero1,
@@ -501,7 +506,7 @@ describe('Adding a New Protocol Member', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
-    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
     await protocol.initialize(
       [helper.zero1,
@@ -575,6 +580,7 @@ describe('Removing Protocol Member(s)', () => {
     await store.setBool(key.qualifyMember(protocol.address), true)
 
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
     await protocol.initialize(
       [helper.zero1,

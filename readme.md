@@ -74,7 +74,7 @@ function updateCover(bytes32 key, bytes32 info) external nonpayable nonReentrant
 function updateCover(bytes32 key, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, key) != info, "Duplicate content");
 
@@ -159,7 +159,7 @@ function deployVault(bytes32 key) external override nonReentrant returns (addres
     s.mustNotBePaused();
     s.mustHaveStoppedCoverStatus(key);
 
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     address vault = s.deployVaultInternal(key);
     emit VaultDeployed(key, vault);
@@ -255,7 +255,7 @@ function updateCoverUsersWhitelist(
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.callerMustBeCoverOwnerOrAdmin(key);
+    s.senderMustBeCoverOwnerOrAdmin(key);
 
     s.updateCoverUsersWhitelistInternal(key, accounts, statuses);
   }
@@ -356,7 +356,6 @@ function checkIfWhitelistedUser(bytes32 key, address account) external view over
 * [IAccessControl](docs/IAccessControl.md)
 * [IBondPool](docs/IBondPool.md)
 * [IClaimsProcessor](docs/IClaimsProcessor.md)
-* [ICommission](docs/ICommission.md)
 * [ICompoundERC20DelegatorLike](docs/ICompoundERC20DelegatorLike.md)
 * [ICover](docs/ICover.md)
 * [ICoverProvision](docs/ICoverProvision.md)
@@ -391,6 +390,7 @@ function checkIfWhitelistedUser(bytes32 key, address account) external view over
 * [IUniswapV2RouterLike](docs/IUniswapV2RouterLike.md)
 * [IUnstakable](docs/IUnstakable.md)
 * [IVault](docs/IVault.md)
+* [IVaultDelegate](docs/IVaultDelegate.md)
 * [IVaultFactory](docs/IVaultFactory.md)
 * [IWitness](docs/IWitness.md)
 * [LiquidityEngine](docs/LiquidityEngine.md)
@@ -440,9 +440,14 @@ function checkIfWhitelistedUser(bytes32 key, address account) external view over
 * [ValidationLibV1](docs/ValidationLibV1.md)
 * [Vault](docs/Vault.md)
 * [VaultBase](docs/VaultBase.md)
+* [VaultDelegate](docs/VaultDelegate.md)
+* [VaultDelegateBase](docs/VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](docs/VaultDelegateWithFlashLoan.md)
 * [VaultFactory](docs/VaultFactory.md)
 * [VaultFactoryLibV1](docs/VaultFactoryLibV1.md)
 * [VaultLibV1](docs/VaultLibV1.md)
+* [VaultLiquidity](docs/VaultLiquidity.md)
+* [VaultStrategy](docs/VaultStrategy.md)
 * [WithFlashLoan](docs/WithFlashLoan.md)
 * [Witness](docs/Witness.md)
 

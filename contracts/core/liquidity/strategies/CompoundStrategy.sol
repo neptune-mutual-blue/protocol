@@ -8,8 +8,6 @@ import "../../../interfaces/external/ICompoundERC20DelegatorLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
 
-// import "hardhat/console.sol";
-
 contract CompoundStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -112,8 +110,6 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    // console.log("Compound deposit: [%s] --> %s", uint256(coverKey), amount);
-
     emit Deposited(coverKey, address(vault), amount);
   }
 
@@ -155,9 +151,6 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-
-    // console.log("Compound withdrawal: [%s] --> %s", uint256(coverKey), stablecoinWithdrawn);
-
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
   }
 

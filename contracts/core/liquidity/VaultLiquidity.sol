@@ -1,7 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 import "./VaultBase.sol";
-import "hardhat/console.sol";
 
 pragma solidity 0.8.0;
 
@@ -126,7 +125,9 @@ abstract contract VaultLiquidity is VaultBase {
       emit Exited(coverKey, msg.sender);
     }
 
-    emit NPMUnstaken(msg.sender, npmStakeToRemove);
+    if (npmStakeToRemove > 0) {
+      emit NPMUnstaken(msg.sender, npmStakeToRemove);
+    }
   }
 
   /**

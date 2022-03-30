@@ -6,12 +6,23 @@ import "openzeppelin-solidity/contracts/access/IAccessControl.sol";
 import "./IMember.sol";
 
 interface IProtocol is IMember, IAccessControl {
-  event ContractAdded(bytes32 namespace, address contractAddress);
-  event ContractUpgraded(bytes32 namespace, address indexed previous, address indexed current);
+  struct AccountWithRoles {
+    address account;
+    bytes32[] roles;
+  }
+
+  event ContractAdded(bytes32 namespace, bytes32 key, address contractAddress);
+  event ContractUpgraded(bytes32 namespace, bytes32 key, address indexed previous, address indexed current);
   event MemberAdded(address member);
   event MemberRemoved(address member);
 
   function addContract(bytes32 namespace, address contractAddress) external;
+
+  function addContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) external;
 
   function initialize(address[] memory addresses, uint256[] memory values) external;
 
@@ -21,9 +32,18 @@ interface IProtocol is IMember, IAccessControl {
     address current
   ) external;
 
+  function upgradeContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) external;
+
   function addMember(address member) external;
 
   function removeMember(address member) external;
+
+  function grantRoles(AccountWithRoles[] memory detail) external;
 
   event Initialized(address[] addresses, uint256[] values);
 }

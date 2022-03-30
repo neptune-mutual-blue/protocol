@@ -14,9 +14,6 @@ View Source: [contracts/libraries/PolicyHelperV1.sol](../contracts/libraries/Pol
 - [getCxTokenInternal(IStore s, bytes32 key, uint256 coverDuration)](#getcxtokeninternal)
 - [getCxTokenOrDeployInternal(IStore s, bytes32 key, uint256 coverDuration)](#getcxtokenordeployinternal)
 - [purchaseCoverInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecoverinternal)
-- [_setCommitments(IStore s, ICxToken cxToken, uint256 amountToCover)](#_setcommitments)
-- [getCommitmentInternal(IStore s, bytes32 key)](#getcommitmentinternal)
-- [getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key)](#getstablecoinbalanceofcoverpoolinternal)
 
 ### getCoverFeeInfoInternal
 
@@ -289,8 +286,10 @@ function getCxTokenOrDeployInternal(
 
     ICxTokenFactory factory = s.getCxTokenFactory();
     cxToken = factory.deploy(s, key, expiryDate);
-    s.addMemberInternal(cxToken);
 
+    // @note: cxTokens are no longer protocol members
+    // as we will end up with way too many contracts
+    // s.getProtocol().addMember(cxToken);
     return ICxToken(cxToken);
   }
 ```
@@ -334,96 +333,11 @@ function purchaseCoverInternal(
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
-    _setCommitments(s, cxToken, amountToCover);
-
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
     cxToken.mint(key, msg.sender, amountToCover);
 
     s.updateStateAndLiquidity(key);
-  }
-```
-</details>
-
-### _setCommitments
-
-```solidity
-function _setCommitments(IStore s, ICxToken cxToken, uint256 amountToCover) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| cxToken | ICxToken |  | 
-| amountToCover | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _setCommitments(
-    IStore s,
-    ICxToken cxToken,
-    uint256 amountToCover
-  ) private {
-    uint256 expiryDate = cxToken.expiresOn();
-    bytes32 coverKey = cxToken.coverKey();
-
-    bytes32 k = CoverUtilV1.getCommitmentKey(coverKey, expiryDate);
-    s.addUint(k, amountToCover);
-  }
-```
-</details>
-
-### getCommitmentInternal
-
-```solidity
-function getCommitmentInternal(IStore s, bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCommitmentInternal(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getCoverLiquidityCommitted(key);
-  }
-```
-</details>
-
-### getStablecoinBalanceOfCoverPoolInternal
-
-```solidity
-function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view returns (uint256) {
-    address vault = s.getVaultAddress(key);
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-
-    return stablecoin.balanceOf(vault);
   }
 ```
 </details>
@@ -471,7 +385,6 @@ function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -506,6 +419,7 @@ function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -555,8 +469,13 @@ function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 
 const cache = null

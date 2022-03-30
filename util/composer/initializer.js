@@ -52,8 +52,6 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualify(protocol.address), true)
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
-  await grantRoles(intermediate, cache, protocol)
-
   await intermediate(cache, protocol, 'initialize',
     [helper.zero1,
       router,
@@ -74,6 +72,9 @@ const initialize = async (suite, deploymentId) => {
       cooldownPeriod
     ]
   )
+
+  await grantRoles(intermediate, cache, protocol)
+  await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const bondPoolContract = await deployer.deployWithLibraries(cache, 'BondPool', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -193,7 +194,6 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
-      ProtoUtilV1: libs.protoUtilV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLib.address
     }
@@ -271,14 +271,12 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY_ADMIN, policyAdminContract.address)
 
-  await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
-  await intermediate(cache, cover, 'updateCoverCreatorWhitelist', owner.address, true)
-
   const policy = await deployer.deployWithLibraries(cache, 'Policy', {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
     PolicyHelperV1: libs.policyHelperV1.address,
+    StrategyLibV1: libs.strategyLibV1.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
 
@@ -350,6 +348,22 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.PRICE_DISCOVERY, priceDiscovery.address)
 
+  const payload = [{
+    account: cover.address,
+    roles: [key.ACCESS_CONTROL.UPGRADE_AGENT]
+  },
+  {
+    account: policy.address,
+    roles: [key.ACCESS_CONTROL.UPGRADE_AGENT]
+  },
+  {
+    account: owner.address,
+    roles: [key.ACCESS_CONTROL.COVER_MANAGER]
+  }]
+
+  await intermediate(cache, protocol, 'grantRoles', payload)
+
+  await intermediate(cache, cover, 'updateCoverCreatorWhitelist', owner.address, true)
   await intermediate(cache, cover, 'initialize', dai.address, key.toBytes32('DAI'))
 
   await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))

@@ -7,11 +7,21 @@ View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProto
 
 **IProtocol**
 
+## Structs
+### AccountWithRoles
+
+```js
+struct AccountWithRoles {
+ address account,
+ bytes32[] roles
+}
+```
+
 **Events**
 
 ```js
-event ContractAdded(bytes32  namespace, address  contractAddress);
-event ContractUpgraded(bytes32  namespace, address indexed previous, address indexed current);
+event ContractAdded(bytes32  namespace, bytes32  key, address  contractAddress);
+event ContractUpgraded(bytes32  namespace, bytes32  key, address indexed previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
 event Initialized(address[]  addresses, uint256[]  values);
@@ -20,10 +30,13 @@ event Initialized(address[]  addresses, uint256[]  values);
 ## Functions
 
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
+- [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
 - [initialize(address[] addresses, uint256[] values)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
+- [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
 - [addMember(address member)](#addmember)
 - [removeMember(address member)](#removemember)
+- [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
 
 ### addContract
 
@@ -43,6 +56,32 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external;
+```
+</details>
+
+### addContractWithKey
+
+```solidity
+function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) external;
 ```
 </details>
 
@@ -93,6 +132,34 @@ function upgradeContract(
 ```
 </details>
 
+### upgradeContractWithKey
+
+```solidity
+function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| previous | address |  | 
+| current | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) external;
+```
+</details>
+
 ### addMember
 
 ```solidity
@@ -130,6 +197,26 @@ function removeMember(address member) external nonpayable
 
 ```javascript
 function removeMember(address member) external;
+```
+</details>
+
+### grantRoles
+
+```solidity
+function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| detail | struct IProtocol.AccountWithRoles[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRoles(AccountWithRoles[] memory detail) external;
 ```
 </details>
 
@@ -176,7 +263,6 @@ function removeMember(address member) external;
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -211,6 +297,7 @@ function removeMember(address member) external;
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -260,8 +347,13 @@ function removeMember(address member) external;
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

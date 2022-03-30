@@ -16,13 +16,17 @@ event StrategyReceipt(address indexed token, address indexed strategy, bytes32 i
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
+event NPMStaken(address indexed account, uint256  amount);
+event NPMUnstaken(address indexed account, uint256  amount);
 event InterestAccrued(bytes32 indexed key);
+event Entered(bytes32 indexed key, address indexed account);
+event Exited(bytes32 indexed key, address indexed account);
 ```
 
 ## Functions
 
 - [key()](#key)
-- [lqt()](#lqt)
+- [sc()](#sc)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
 - [accrueInterest()](#accrueinterest)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
@@ -54,10 +58,10 @@ function key() external view returns (bytes32);
 ```
 </details>
 
-### lqt
+### sc
 
 ```solidity
-function lqt() external view
+function sc() external view
 returns(address)
 ```
 
@@ -70,7 +74,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function lqt() external view returns (address);
+function sc() external view returns (address);
 ```
 </details>
 
@@ -368,7 +372,6 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -403,6 +406,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -452,8 +456,13 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

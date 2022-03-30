@@ -9,6 +9,7 @@ import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./GovernanceUtilV1.sol";
+import "./AccessControlLibV1.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IPausable.sol";
 import "../interfaces/ICxToken.sol";
@@ -257,7 +258,9 @@ library ValidationLibV1 {
     address cxToken,
     uint256 incidentDate
   ) external view {
-    s.mustBeProtocolMember(cxToken);
+    // @note: cxTokens are no longer protocol members
+    // as we will end up with way too many contracts
+    // s.mustBeProtocolMember(cxToken);
     mustBeValidCxToken(s, key, cxToken, incidentDate);
     mustBeClaimable(s, key);
     mustBeValidIncidentDate(s, key, incidentDate);

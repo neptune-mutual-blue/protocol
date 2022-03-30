@@ -1,4 +1,4 @@
-/* solhint-disable private-vars-leading-underscore, reason-string */
+/* solhint-disable var-name-mixedcase, private-vars-leading-underscore, reason-string */
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 

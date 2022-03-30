@@ -155,8 +155,10 @@ library PolicyHelperV1 {
 
     ICxTokenFactory factory = s.getCxTokenFactory();
     cxToken = factory.deploy(s, key, expiryDate);
-    s.addMemberInternal(cxToken);
 
+    // @note: cxTokens are no longer protocol members
+    // as we will end up with way too many contracts
+    // s.getProtocol().addMember(cxToken);
     return ICxToken(cxToken);
   }
 
@@ -182,41 +184,10 @@ library PolicyHelperV1 {
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
-    _setCommitments(s, cxToken, amountToCover);
-
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
     cxToken.mint(key, msg.sender, amountToCover);
 
     s.updateStateAndLiquidity(key);
-  }
-
-  function _setCommitments(
-    IStore s,
-    ICxToken cxToken,
-    uint256 amountToCover
-  ) private {
-    uint256 expiryDate = cxToken.expiresOn();
-    bytes32 coverKey = cxToken.coverKey();
-
-    bytes32 k = CoverUtilV1.getCommitmentKey(coverKey, expiryDate);
-    s.addUint(k, amountToCover);
-  }
-
-  /**
-   * Gets the sum total of cover commitment that is still active
-   */
-  function getCommitmentInternal(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getCoverLiquidityCommitted(key);
-  }
-
-  /**
-   * Gets the available liquidity in the pool.
-   */
-  function getStablecoinBalanceOfCoverPoolInternal(IStore s, bytes32 key) external view returns (uint256) {
-    address vault = s.getVaultAddress(key);
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-
-    return stablecoin.balanceOf(vault);
   }
 }

@@ -5,9 +5,7 @@ pragma solidity 0.8.0;
 import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ProtoUtilV1.sol";
-import "./PolicyHelperV1.sol";
 import "./StoreKeyUtil.sol";
-import "./ValidationLibV1.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
@@ -16,9 +14,7 @@ import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 
 library VaultLibV1 {
   using ProtoUtilV1 for IStore;
-  using PolicyHelperV1 for IStore;
   using StoreKeyUtil for IStore;
-  using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
@@ -33,7 +29,9 @@ library VaultLibV1 {
     address pod,
     uint256 liquidityToAdd
   ) public view returns (uint256) {
-    uint256 balance = getStablecoinBalanceOfInternal(s, coverKey);
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
+    uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
 
     // This smart contract contains stablecoins without liquidity provider contribution.
@@ -68,8 +66,10 @@ library VaultLibV1 {
   ) public view returns (uint256) {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
 
-    uint256 contractStablecoinBalance = IERC20(s.getStablecoin()).balanceOf(s.getVaultAddress(coverKey));
-    return (contractStablecoinBalance * podsToBurn) / IERC20(pod).totalSupply();
+    uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 podSupply = IERC20(pod).totalSupply();
+
+    return (balance * podsToBurn) / podSupply;
   }
 
   /**
@@ -98,7 +98,7 @@ library VaultLibV1 {
     values = new uint256[](11);
 
     values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
-    values[1] = getStablecoinBalanceOfInternal(s, coverKey);
+    values[1] = s.getStablecoinOwnedByVaultInternal(coverKey);
     values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
@@ -140,9 +140,6 @@ library VaultLibV1 {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
     // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
@@ -175,7 +172,6 @@ library VaultLibV1 {
     address account,
     uint256 amount
   ) private {
-    s.addUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), amount); // Total liquidity
     s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
   }
 
@@ -200,7 +196,7 @@ library VaultLibV1 {
     IStore s,
     bytes32 coverKey,
     address stablecoin
-  ) public view {
+  ) external view {
     require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
   }
 
@@ -213,50 +209,44 @@ library VaultLibV1 {
     IStore s,
     bytes32 coverKey,
     address pod,
+    address account,
     uint256 podsToRedeem,
     uint256 npmStakeToRemove,
     bool exit
   ) external returns (address stablecoin, uint256 releaseAmount) {
-    s.mustNotBePaused();
-    mustBeAccrued(s, coverKey);
-
-    require(podsToRedeem > 0, "Please specify amount");
-
     stablecoin = s.getStablecoin();
 
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
     // come from VaultBase, we still need to ensure if it is a protocol member.
     // Check `_redeemPods` for more info.
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.mustBeDuringWithdrawalPeriod(coverKey);
-    mustHaveNoBalanceInStrategies(s, coverKey, stablecoin);
-
     // Redeem the PODs and receive DAI
-    releaseAmount = _redeemPods(s, coverKey, pod, podsToRedeem);
+    releaseAmount = _redeemPods(s, account, coverKey, pod, podsToRedeem);
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
-      _unStakeNpm(s, coverKey, npmStakeToRemove, exit);
+      _unStakeNpm(s, account, coverKey, npmStakeToRemove, exit);
     }
   }
 
   function _unStakeNpm(
     IStore s,
+    address account,
     bytes32 coverKey,
     uint256 amount,
     bool exit
   ) private {
-    uint256 remainingStake = _getMyNpmStake(s, coverKey, msg.sender);
+    uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
     uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
 
     require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, msg.sender), amount); // Your stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
   }
 
   function _redeemPods(
     IStore s,
+    address account,
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem
@@ -267,15 +257,17 @@ library VaultLibV1 {
 
     s.mustBeProtocolMember(pod);
 
-    uint256 available = s.getStablecoinBalanceOfCoverPoolInternal(coverKey);
+    uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 commitment = s.getActiveLiquidityUnderProtection(coverKey);
+    uint256 available = balance - commitment;
+
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);
 
     // You may need to wait till active policies expire
-    require(available >= releaseAmount, "Insufficient balance, wait till policy expiry."); // solhint-disable-line
+    require(available >= releaseAmount, "Insufficient balance. Lower the amount or wait till policy expiry."); // solhint-disable-line
 
     // Update values
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityKey(coverKey), releaseAmount);
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, msg.sender, releaseAmount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, account, releaseAmount);
 
     return releaseAmount;
   }
@@ -285,8 +277,6 @@ library VaultLibV1 {
   }
 
   function accrueInterestInternal(IStore s, bytes32 coverKey) external {
-    s.mustNotBePaused();
-
     (bool isWithdrawalPeriod, , , , ) = s.getWithdrawalInfoInternal(coverKey);
     require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
 
@@ -295,17 +285,8 @@ library VaultLibV1 {
     s.setAccrualCompleteInternal(coverKey, true);
   }
 
-  function mustBeAccrued(IStore s, bytes32 coverKey) public view {
+  function mustBeAccrued(IStore s, bytes32 coverKey) external view {
     require(s.isAccrualCompleteInternal(coverKey) == true, "Wait for accrual");
-  }
-
-  function getStablecoinBalanceOfInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    address stablecoin = s.getStablecoin();
-
-    uint256 balance = IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey));
-    uint256 inStrategies = s.getAmountInStrategies(coverKey, stablecoin);
-
-    return balance + inStrategies;
   }
 
   /**
@@ -384,20 +365,4 @@ library VaultLibV1 {
     */
     return 0;
   }
-
-  /**
-   * @dev Initiate a flash loan.
-   * @param receiver The receiver of the tokens in the loan, and the receiver of the callback.
-   * @param token The loan currency.
-   * @param amount The amount of tokens lent.
-   * @param data Arbitrary data structure, intended to contain user-defined parameters.
-   */
-  function flashLoanInternal(
-    IStore s,
-    IERC3156FlashBorrower receiver,
-    bytes32 key,
-    address token,
-    uint256 amount,
-    bytes calldata data
-  ) external returns (uint256) {}
 }

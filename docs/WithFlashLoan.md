@@ -1,87 +1,19 @@
-# With Flash Loan Contract (WithFlashLoan.sol)
+# WithFlashLoan.sol
 
 View Source: [contracts/core/liquidity/WithFlashLoan.sol](../contracts/core/liquidity/WithFlashLoan.sol)
 
-**↗ Extends: [VaultBase](VaultBase.md), [IERC3156FlashLender](IERC3156FlashLender.md)**
+**↗ Extends: [VaultStrategy](VaultStrategy.md), [IERC3156FlashLender](IERC3156FlashLender.md)**
 **↘ Derived Contracts: [Vault](Vault.md)**
 
 **WithFlashLoan**
 
-WithFlashLoan contract implements `EIP-3156 Flash Loan`.
- Using flash loans, you can borrow up to the total available amount of
- the stablecoin liquidity available in this cover liquidity pool.
- You need to return back the borrowed amount + fee in the same transaction.
- The function `flashFee` enables you to check, in advance, fee that
- you need to pay to take out the loan.
-
 ## Functions
 
+- [flashLoan(IERC3156FlashBorrower receiver, address token, uint256 amount, bytes data)](#flashloan)
 - [flashFee(address token, uint256 amount)](#flashfee)
 - [maxFlashLoan(address token)](#maxflashloan)
-- [flashLoan(IERC3156FlashBorrower receiver, address token, uint256 amount, bytes data)](#flashloan)
-
-### flashFee
-
-The fee to be charged for a given loan.
-
-```solidity
-function flashFee(address token, uint256 amount) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | address | The loan currency. | 
-| amount | uint256 | The amount of tokens lent. | 
-
-**Returns**
-
-The amount of `token` to be charged for the loan, on top of the returned principal.
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function flashFee(address token, uint256 amount) external view override returns (uint256) {
-    return s.getFlashFeeInternal(token, amount);
-  }
-```
-</details>
-
-### maxFlashLoan
-
-The amount of currency available to be lent.
-
-```solidity
-function maxFlashLoan(address token) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | address | The loan currency. | 
-
-**Returns**
-
-The amount of `token` that can be borrowed.
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function maxFlashLoan(address token) external view override returns (uint256) {
-    return s.getMaxFlashLoanInternal(token);
-  }
-```
-</details>
 
 ### flashLoan
-
-Initiate a flash loan.
 
 ```solidity
 function flashLoan(IERC3156FlashBorrower receiver, address token, uint256 amount, bytes data) external nonpayable nonReentrant 
@@ -92,10 +24,10 @@ returns(bool)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| receiver | IERC3156FlashBorrower | The receiver of the tokens in the loan, and the receiver of the callback. | 
-| token | address | The loan currency. | 
-| amount | uint256 | The amount of tokens lent. | 
-| data | bytes | Arbitrary data structure, intended to contain user-defined parameters. | 
+| receiver | IERC3156FlashBorrower |  | 
+| token | address |  | 
+| amount | uint256 |  | 
+| data | bytes |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -107,15 +39,84 @@ function flashLoan(
     uint256 amount,
     bytes calldata data
   ) external override nonReentrant returns (bool) {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-address-trust-issue The instance of `token` can be trusted because we're ensuring it matches with the protocol stablecoin address.
-    s.mustNotBePaused();
-
     require(amount > 0, "Please specify amount");
 
-    uint256 fee = s.flashLoanInternal(receiver, key, token, amount, data);
+    /******************************************************************************************
+      PRE
+     ******************************************************************************************/
+    (IERC20 stablecoin, uint256 fee, uint256 protocolFee) = delgate().preFlashLoan(msg.sender, key, receiver, token, amount, data);
+
+    /******************************************************************************************
+      BODY
+     ******************************************************************************************/
+    // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
+    uint256 previousBalance = stablecoin.balanceOf(address(this));
+    require(previousBalance >= amount, "Balance insufficient");
+
+    stablecoin.ensureTransfer(address(receiver), amount);
+    require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
+    stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
+    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
+
+    uint256 finalBalance = stablecoin.balanceOf(address(this));
+    require(finalBalance >= previousBalance + fee, "Access is denied");
+
+    /******************************************************************************************
+      POST
+     ******************************************************************************************/
+
+    delgate().postFlashLoan(msg.sender, key, receiver, token, amount, data);
+
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
+
     return true;
+  }
+```
+</details>
+
+### flashFee
+
+```solidity
+function flashFee(address token, uint256 amount) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function flashFee(address token, uint256 amount) external view override returns (uint256) {
+    return delgate().getFlashFee(msg.sender, key, token, amount);
+  }
+```
+</details>
+
+### maxFlashLoan
+
+```solidity
+function maxFlashLoan(address token) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function maxFlashLoan(address token) external view override returns (uint256) {
+    return delgate().getMaxFlashLoan(msg.sender, key, token);
   }
 ```
 </details>
@@ -163,7 +164,6 @@ function flashLoan(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -198,6 +198,7 @@ function flashLoan(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -247,8 +248,13 @@ function flashLoan(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

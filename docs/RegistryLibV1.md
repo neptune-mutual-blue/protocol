@@ -19,6 +19,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getCoverContract(IStore s)](#getcovercontract)
 - [getVault(IStore s, bytes32 key)](#getvault)
 - [getVaultAddress(IStore s, bytes32 key)](#getvaultaddress)
+- [getVaultDelegate(IStore s)](#getvaultdelegate)
 - [getStakingPoolAddress(IStore s)](#getstakingpooladdress)
 - [getBondPoolAddress(IStore s, bytes32 key)](#getbondpooladdress)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
@@ -333,6 +334,30 @@ function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
 ```
 </details>
 
+### getVaultDelegate
+
+```solidity
+function getVaultDelegate(IStore s) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getVaultDelegate(IStore s) external view returns (address) {
+    address vaultImplementation = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT_DELEGATE);
+    return vaultImplementation;
+  }
+```
+</details>
+
 ### getStakingPoolAddress
 
 ```solidity
@@ -449,7 +474,6 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -484,6 +508,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -533,8 +558,13 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

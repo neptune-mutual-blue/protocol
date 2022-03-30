@@ -139,8 +139,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     require(amount > 0, "Please specify amount");
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
 
-    (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, msg.sender, caller, amount, npmStakeToAdd);
+    address pod = msg.sender;
+    (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
   }
 
   function postAddLiquidity(
@@ -156,6 +158,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   }
 
   function accrueInterestImplementation(address caller, bytes32 coverKey) external override {
+    s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     AccessControlLibV1.callerMustBeLiquidityManager(s, caller);
 
@@ -169,7 +172,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @param npmStakeToRemove Enter the amount of NPM stake to remove.
    */
   function preRemoveLiquidity(
-    address, /*caller*/
+    address caller,
     bytes32 coverKey,
     uint256 podsToRedeem,
     uint256 npmStakeToRemove,
@@ -179,8 +182,13 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
 
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
+    s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
+    s.mustBeAccrued(coverKey);
 
-    return s.preRemoveLiquidityInternal(coverKey, msg.sender, podsToRedeem, npmStakeToRemove, exit);
+    address pod = msg.sender; // The sender is vault contract
+    return s.preRemoveLiquidityInternal(coverKey, pod, caller, podsToRedeem, npmStakeToRemove, exit);
   }
 
   function postRemoveLiquidity(
@@ -201,7 +209,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    */
   function calculatePodsImplementation(bytes32 coverKey, uint256 forStablecoinUnits) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
-    return s.calculatePodsInternal(coverKey, msg.sender, forStablecoinUnits);
+
+    address pod = msg.sender;
+
+    return s.calculatePodsInternal(coverKey, pod, forStablecoinUnits);
   }
 
   /**
@@ -209,7 +220,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    */
   function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
-    return s.calculateLiquidityInternal(coverKey, msg.sender, podsToBurn);
+    address pod = msg.sender;
+    return s.calculateLiquidityInternal(coverKey, pod, podsToBurn);
   }
 
   /**
@@ -218,7 +230,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    */
   function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
-    return s.getStablecoinBalanceOfInternal(coverKey);
+    return s.getStablecoinOwnedByVaultInternal(coverKey);
   }
 
   /**
@@ -237,7 +249,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    */
   function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
     s.senderMustBeVaultContract(coverKey);
-    return s.getInfoInternal(coverKey, msg.sender, you);
+    address pod = msg.sender;
+    return s.getInfoInternal(coverKey, pod, you);
   }
 
   /**

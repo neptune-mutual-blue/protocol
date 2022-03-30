@@ -1,8 +1,8 @@
 const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper } = require('../../util')
+const { deployer, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
-const attacher = require('../util/attach')
+const attacher = require('../../../util/attach')
 
 const cache = null
 
@@ -47,16 +47,6 @@ describe('Claims Processor: `validate` function', () => {
     await cxToken.approve(processor.address, '1')
     await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Protocol is paused')
     await protocol.setPaused(false)
-  })
-
-  it('must reject if the cxToken is not a protocol member', async () => {
-    const coverKey = key.toBytes32('test')
-    const incidentDate = '1234'
-
-    await store.initialize(coverKey, helper.zerox)
-
-    await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate).should.be.rejectedWith('Not a protocol member')
   })
 
   it('must reject if the cxToken is not associated with the given cover key', async () => {

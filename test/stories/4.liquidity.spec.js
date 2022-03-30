@@ -2,9 +2,9 @@
 
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, key, ipfs, sample } = require('../util')
-const composer = require('../util/composer')
-const { approve } = require('../util/contract-helper/erc20')
+const { helper, key, ipfs, sample } = require('../../util')
+const composer = require('../../util/composer')
+const { approve } = require('../../util/contract-helper/erc20')
 
 require('chai')
   .use(require('chai-as-promised'))

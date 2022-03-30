@@ -1,5 +1,5 @@
 const { getContract } = require('./contract')
-const attacher = require('../../test/util/attach/attach')
+const attacher = require('../../util/attach/attach')
 
 const getProtocol = async (at, current) => {
   return attacher.attach('Protocol', at, {
@@ -63,6 +63,7 @@ const getContracts = async (file, id) => {
   const vaultFactory = await getContract(file, id, 'VaultFactory')
   const vaultFactoryLibV1 = await getContract(file, id, 'VaultFactoryLibV1')
   const vaultLibV1 = await getContract(file, id, 'VaultLibV1')
+  const vaultDelegate = await getContract(file, id, 'VaultDelegate')
 
   const current = {
     accessControlLibV1,
@@ -103,7 +104,8 @@ const getContracts = async (file, id) => {
     validationLibV1,
     vaultFactory,
     vaultFactoryLibV1,
-    vaultLibV1
+    vaultLibV1,
+    vaultDelegate
   }
 
   current.protocolInstance = await getProtocol(protocol, current)

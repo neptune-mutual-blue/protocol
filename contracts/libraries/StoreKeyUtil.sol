@@ -299,6 +299,15 @@ library StoreKeyUtil {
     return s.deleteAddress(_getKey(key1, key2));
   }
 
+  function deleteAddressByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external {
+    return s.deleteAddress(_getKey(key1, key2, key3));
+  }
+
   function deleteAddressArrayByKey(
     IStore s,
     bytes32 key,

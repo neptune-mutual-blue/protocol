@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICommission](ICommission.md), [ICover](ICover.md), [ICoverProvision](ICoverProvision.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [ILiquidityEngine](ILiquidityEngine.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultFactory](IVaultFactory.md)**
+**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICover](ICover.md), [ICoverProvision](ICoverProvision.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [ILiquidityEngine](ILiquidityEngine.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultDelegate](IVaultDelegate.md), [IVaultFactory](IVaultFactory.md)**
 
 **IMember**
 
@@ -98,7 +98,6 @@ function getName() external pure returns (bytes32);
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -133,6 +132,7 @@ function getName() external pure returns (bytes32);
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -182,8 +182,13 @@ function getName() external pure returns (bytes32);
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

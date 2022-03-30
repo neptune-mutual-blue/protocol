@@ -10,6 +10,12 @@
       },
       {
         "indexed": false,
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "contractAddress",
         "type": "address"
@@ -25,6 +31,12 @@
         "indexed": false,
         "internalType": "bytes32",
         "name": "namespace",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "key",
         "type": "bytes32"
       },
       {
@@ -184,6 +196,29 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "namespace",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "addContractWithKey",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "member",
         "type": "address"
@@ -240,6 +275,31 @@
       }
     ],
     "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "roles",
+            "type": "bytes32[]"
+          }
+        ],
+        "internalType": "struct IProtocol.AccountWithRoles[]",
+        "name": "detail",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "grantRoles",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -354,6 +414,34 @@
       }
     ],
     "name": "upgradeContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "namespace",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "previous",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "current",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeContractWithKey",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -9,6 +9,7 @@ import "./BokkyPooBahsDateTimeLibrary.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./NTransferUtilV2.sol";
+import "./StrategyLibV1.sol";
 import "../interfaces/ICxToken.sol";
 
 library CoverUtilV1 {
@@ -17,6 +18,7 @@ library CoverUtilV1 {
   using StoreKeyUtil for IStore;
   using AccessControlLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using StrategyLibV1 for IStore;
 
   enum CoverStatus {
     Normal,
@@ -92,8 +94,8 @@ library CoverUtilV1 {
 
     _values = new uint256[](7);
 
-    _values[0] = getCoverPoolLiquidity(s, key);
-    _values[1] = getCoverLiquidityCommitted(s, key);
+    _values[0] = s.getStablecoinOwnedByVaultInternal(key);
+    _values[1] = getActiveLiquidityUnderProtection(s, key);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
     _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
@@ -143,14 +145,6 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
   }
 
-  function getCoverPoolLiquidity(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKey(getCoverLiquidityKey(key));
-  }
-
-  function getCoverLiquidityKey(bytes32 coverKey) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY, coverKey));
-  }
-
   function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account));
   }
@@ -171,44 +165,50 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STABLECOIN_LENT_TOTAL, coverKey));
   }
 
-  function getCommitmentKey(bytes32 coverKey, uint256 expiryDate) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_COMMITTED, coverKey, expiryDate));
+  function getActiveLiquidityUnderProtection(IStore s, bytes32 key) public view returns (uint256) {
+    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, key);
+    return current + future;
   }
 
-  function getCoverLiquidityCommitted(IStore s, bytes32 key) public view returns (uint256) {
-    (uint256 reporting, uint256 active) = getCoverLiquidityCommitmentInfo(s, key);
-    return reporting + active;
+  function _getLiquidityUnderProtectionInfo(IStore s, bytes32 key) private view returns (uint256 current, uint256 future) {
+    uint256 expiryDate = 0;
+
+    (current, expiryDate) = _getCurrentCommitment(s, key);
+    future = _getFutureCommitments(s, key, expiryDate);
   }
 
-  function getCoverLiquidityCommitmentInfo(IStore s, bytes32 key) public view returns (uint256 reporting, uint256 active) {
-    reporting = getCommitmentsUnderReporting(s, key);
-    active = getCurrentCommitments(s, key);
-  }
-
-  function getCommitmentsUnderReporting(IStore s, bytes32 key) public view returns (uint256) {
+  function _getCurrentCommitment(IStore s, bytes32 key) private view returns (uint256 amount, uint256 expiryDate) {
     uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, key);
 
     // There isn't any incident for this cover
     // and therefore no need to pay
     if (incidentDateIfAny == 0) {
-      return 0;
+      return (0, 0);
     }
 
-    uint256 expiryDate = _getMonthEndDate(incidentDateIfAny);
+    expiryDate = _getMonthEndDate(incidentDateIfAny);
     ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
 
     if (address(cxToken) != address(0)) {
-      return cxToken.totalSupply();
+      amount = cxToken.totalSupply();
     }
-
-    return 0;
   }
 
-  function getCurrentCommitments(IStore s, bytes32 key) public view returns (uint256 sum) {
+  function _getFutureCommitments(
+    IStore s,
+    bytes32 key,
+    uint256 ignoredExpiryDate
+  ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
 
     for (uint256 i = 0; i < maxMonthsToProtect; i++) {
       uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
+
+      if (expiryDate == ignoredExpiryDate || expiryDate <= block.timestamp) {
+        // solhint-disable-previous-line
+        continue;
+      }
+
       ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
 
       if (address(cxToken) != address(0)) {

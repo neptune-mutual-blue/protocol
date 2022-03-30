@@ -16,7 +16,8 @@ const deployAll = async (cache) => {
   })
 
   const accessControlLibV1 = await deployer.deployWithLibraries(cache, 'AccessControlLibV1', {
-    ProtoUtilV1: protoUtilV1.address
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address
   })
 
   const registryLibV1 = await deployer.deployWithLibraries(cache, 'RegistryLibV1', {
@@ -24,14 +25,16 @@ const deployAll = async (cache) => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
+  const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const strategyLibV1 = await deployer.deployWithLibraries(cache, 'StrategyLibV1', {
+  const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
     ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
+    StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
@@ -74,6 +77,7 @@ const deployAll = async (cache) => {
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
+    StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLib.address
   })
@@ -87,11 +91,9 @@ const deployAll = async (cache) => {
     CoverUtilV1: coverUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
-    PolicyHelperV1: policyHelperV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
-    StrategyLibV1: strategyLibV1.address,
-    ValidationLibV1: validationLib.address
+    StrategyLibV1: strategyLibV1.address
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1')

@@ -1,6 +1,6 @@
 const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key } = require('../../util')
+const { deployer, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 
 const cache = null
@@ -47,7 +47,8 @@ describe('Claims Processor: `getClaimExpiryDate` function', () => {
   })
 
   it('must correctly return the claim expiry date', async () => {
-    const startedOn = moment(new Date())
+    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+    const startedOn = moment.unix(block.timestamp)
 
     const coverKey = key.toBytes32('test')
 

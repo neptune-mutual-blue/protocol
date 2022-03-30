@@ -36,7 +36,7 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 - [_getTotalNpmDistributed(IStore s)](#_gettotalnpmdistributed)
 - [createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired)](#createbondinternal)
 - [_getNpmBalance(IStore s)](#_getnpmbalance)
-- [_getCommitment(IStore s)](#_getcommitment)
+- [_getBondCommitment(IStore s)](#_getbondcommitment)
 - [claimBondInternal(IStore s)](#claimbondinternal)
 - [setupBondPoolInternal(IStore s, address[] addresses, uint256[] values)](#setupbondpoolinternal)
 
@@ -355,7 +355,7 @@ function createBondInternal(
 
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
-    require(_getNpmBalance(s) >= values[0] + _getCommitment(s), "NPM balance insufficient to bond");
+    require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
     // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
@@ -405,10 +405,10 @@ function _getNpmBalance(IStore s) private view returns (uint256) {
 ```
 </details>
 
-### _getCommitment
+### _getBondCommitment
 
 ```solidity
-function _getCommitment(IStore s) private view
+function _getBondCommitment(IStore s) private view
 returns(uint256)
 ```
 
@@ -422,7 +422,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getCommitment(IStore s) private view returns (uint256) {
+function _getBondCommitment(IStore s) private view returns (uint256) {
     return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }
 ```
@@ -570,7 +570,6 @@ function setupBondPoolInternal(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -605,6 +604,7 @@ function setupBondPoolInternal(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -654,8 +654,13 @@ function setupBondPoolInternal(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

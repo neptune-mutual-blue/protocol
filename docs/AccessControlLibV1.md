@@ -31,8 +31,25 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 - [mustBeRecoveryAgent(IStore s)](#mustberecoveryagent)
 - [mustBePauseAgent(IStore s)](#mustbepauseagent)
 - [mustBeUnpauseAgent(IStore s)](#mustbeunpauseagent)
-- [_mustHaveAccess(IStore s, bytes32 role)](#_musthaveaccess)
+- [callerMustBeAdmin(IStore s, address caller)](#callermustbeadmin)
+- [callerMustBeCoverManager(IStore s, address caller)](#callermustbecovermanager)
+- [callerMustBeLiquidityManager(IStore s, address caller)](#callermustbeliquiditymanager)
+- [callerMustBeGovernanceAgent(IStore s, address caller)](#callermustbegovernanceagent)
+- [callerMustBeGovernanceAdmin(IStore s, address caller)](#callermustbegovernanceadmin)
+- [callerMustBeUpgradeAgent(IStore s, address caller)](#callermustbeupgradeagent)
+- [callerMustBeRecoveryAgent(IStore s, address caller)](#callermustberecoveryagent)
+- [callerMustBePauseAgent(IStore s, address caller)](#callermustbepauseagent)
+- [callerMustBeUnpauseAgent(IStore s, address caller)](#callermustbeunpauseagent)
+- [_mustHaveAccess(IStore s, bytes32 role, address caller)](#_musthaveaccess)
 - [hasAccess(IStore s, bytes32 role, address user)](#hasaccess)
+- [addContractInternal(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#addcontractinternal)
+- [_addContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#_addcontract)
+- [_deleteContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#_deletecontract)
+- [upgradeContractInternal(IStore s, bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractinternal)
+- [addMemberInternal(IStore s, address member)](#addmemberinternal)
+- [removeMemberInternal(IStore s, address member)](#removememberinternal)
+- [_addMember(IStore s, address member)](#_addmember)
+- [_removeMember(IStore s, address member)](#_removemember)
 
 ### mustBeAdmin
 
@@ -53,7 +70,7 @@ function mustBeAdmin(IStore s) external view
 
 ```javascript
 function mustBeAdmin(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_ADMIN);
+    _mustHaveAccess(s, NS_ROLES_ADMIN, msg.sender);
   }
 ```
 </details>
@@ -77,7 +94,7 @@ function mustBeCoverManager(IStore s) external view
 
 ```javascript
 function mustBeCoverManager(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER);
+    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, msg.sender);
   }
 ```
 </details>
@@ -101,7 +118,7 @@ function mustBeLiquidityManager(IStore s) external view
 
 ```javascript
 function mustBeLiquidityManager(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER);
+    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, msg.sender);
   }
 ```
 </details>
@@ -125,7 +142,7 @@ function mustBeGovernanceAgent(IStore s) external view
 
 ```javascript
 function mustBeGovernanceAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, msg.sender);
   }
 ```
 </details>
@@ -149,7 +166,7 @@ function mustBeGovernanceAdmin(IStore s) external view
 
 ```javascript
 function mustBeGovernanceAdmin(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN);
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, msg.sender);
   }
 ```
 </details>
@@ -173,7 +190,7 @@ function mustBeUpgradeAgent(IStore s) external view
 
 ```javascript
 function mustBeUpgradeAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, msg.sender);
   }
 ```
 </details>
@@ -197,7 +214,7 @@ function mustBeRecoveryAgent(IStore s) external view
 
 ```javascript
 function mustBeRecoveryAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT);
+    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, msg.sender);
   }
 ```
 </details>
@@ -221,7 +238,7 @@ function mustBePauseAgent(IStore s) external view
 
 ```javascript
 function mustBePauseAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, msg.sender);
   }
 ```
 </details>
@@ -245,7 +262,232 @@ function mustBeUnpauseAgent(IStore s) external view
 
 ```javascript
 function mustBeUnpauseAgent(IStore s) external view {
-    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT);
+    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, msg.sender);
+  }
+```
+</details>
+
+### callerMustBeAdmin
+
+Reverts if the sender is not the protocol admin.
+
+```solidity
+function callerMustBeAdmin(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeAdmin(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_ADMIN, caller);
+  }
+```
+</details>
+
+### callerMustBeCoverManager
+
+Reverts if the sender is not the cover manager.
+
+```solidity
+function callerMustBeCoverManager(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeCoverManager(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, caller);
+  }
+```
+</details>
+
+### callerMustBeLiquidityManager
+
+Reverts if the sender is not the liquidity manager.
+
+```solidity
+function callerMustBeLiquidityManager(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeLiquidityManager(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, caller);
+  }
+```
+</details>
+
+### callerMustBeGovernanceAgent
+
+Reverts if the sender is not a governance agent.
+
+```solidity
+function callerMustBeGovernanceAgent(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeGovernanceAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, caller);
+  }
+```
+</details>
+
+### callerMustBeGovernanceAdmin
+
+Reverts if the sender is not a governance admin.
+
+```solidity
+function callerMustBeGovernanceAdmin(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeGovernanceAdmin(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, caller);
+  }
+```
+</details>
+
+### callerMustBeUpgradeAgent
+
+Reverts if the sender is not an upgrade agent.
+
+```solidity
+function callerMustBeUpgradeAgent(IStore s, address caller) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeUpgradeAgent(IStore s, address caller) public view {
+    _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, caller);
+  }
+```
+</details>
+
+### callerMustBeRecoveryAgent
+
+Reverts if the sender is not a recovery agent.
+
+```solidity
+function callerMustBeRecoveryAgent(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeRecoveryAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, caller);
+  }
+```
+</details>
+
+### callerMustBePauseAgent
+
+Reverts if the sender is not the pause agent.
+
+```solidity
+function callerMustBePauseAgent(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBePauseAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, caller);
+  }
+```
+</details>
+
+### callerMustBeUnpauseAgent
+
+Reverts if the sender is not the unpause agent.
+
+```solidity
+function callerMustBeUnpauseAgent(IStore s, address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeUnpauseAgent(IStore s, address caller) external view {
+    _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, caller);
   }
 ```
 </details>
@@ -255,7 +497,7 @@ function mustBeUnpauseAgent(IStore s) external view {
 Reverts if the sender does not have access to the given role.
 
 ```solidity
-function _mustHaveAccess(IStore s, bytes32 role) private view
+function _mustHaveAccess(IStore s, bytes32 role, address caller) private view
 ```
 
 **Arguments**
@@ -264,13 +506,18 @@ function _mustHaveAccess(IStore s, bytes32 role) private view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | role | bytes32 |  | 
+| caller | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _mustHaveAccess(IStore s, bytes32 role) private view {
-    require(hasAccess(s, role, msg.sender), "Forbidden");
+function _mustHaveAccess(
+    IStore s,
+    bytes32 role,
+    address caller
+  ) private view {
+    require(hasAccess(s, role, caller), "Forbidden");
   }
 ```
 </details>
@@ -318,6 +565,259 @@ function hasAccess(
 ```
 </details>
 
+### addContractInternal
+
+```solidity
+function addContractInternal(IStore s, bytes32 namespace, bytes32 key, address contractAddress) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContractInternal(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _addContract(s, namespace, key, contractAddress);
+  }
+```
+</details>
+
+### _addContract
+
+```solidity
+function _addContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _addContract(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) private {
+    if (key > 0) {
+      s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key, contractAddress);
+    } else {
+      s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
+    }
+    _addMember(s, contractAddress);
+  }
+```
+</details>
+
+### _deleteContract
+
+```solidity
+function _deleteContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _deleteContract(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) private {
+    if (key > 0) {
+      s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key);
+    } else {
+      s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
+    }
+    _removeMember(s, contractAddress);
+  }
+```
+</details>
+
+### upgradeContractInternal
+
+```solidity
+function upgradeContractInternal(IStore s, bytes32 namespace, bytes32 key, address previous, address current) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| namespace | bytes32 |  | 
+| key | bytes32 |  | 
+| previous | address |  | 
+| current | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function upgradeContractInternal(
+    IStore s,
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    bool isMember = s.isProtocolMember(previous);
+    require(isMember, "Not a protocol member");
+
+    _deleteContract(s, namespace, key, previous);
+    _addContract(s, namespace, key, current);
+  }
+```
+</details>
+
+### addMemberInternal
+
+```solidity
+function addMemberInternal(IStore s, address member) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMemberInternal(IStore s, address member) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _addMember(s, member);
+  }
+```
+</details>
+
+### removeMemberInternal
+
+```solidity
+function removeMemberInternal(IStore s, address member) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeMemberInternal(IStore s, address member) external {
+    // Not only the msg.sender needs to be an upgrade agent
+    // but the contract using this library (and this function)
+    // must also be an upgrade agent
+    callerMustBeUpgradeAgent(s, address(this));
+
+    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+    _removeMember(s, member);
+  }
+```
+</details>
+
+### _addMember
+
+```solidity
+function _addMember(IStore s, address member) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _addMember(IStore s, address member) private {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
+    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
+  }
+```
+</details>
+
+### _removeMember
+
+```solidity
+function _removeMember(IStore s, address member) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| member | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _removeMember(IStore s, address member) private {
+    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -361,7 +861,6 @@ function hasAccess(
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -396,6 +895,7 @@ function hasAccess(
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -445,8 +945,13 @@ function hasAccess(
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)

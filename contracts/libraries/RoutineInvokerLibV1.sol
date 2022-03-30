@@ -8,10 +8,10 @@ import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
 import "./CoverUtilV1.sol";
+import "./RegistryLibV1.sol";
 import "./StrategyLibV1.sol";
+import "./ValidationLibV1.sol";
 
-// @todo: before launch, refactor this to be invoked manually
-// A misconfiguration or issue on an external protocol may take the whole system down
 library RoutineInvokerLibV1 {
   using PriceLibV1 for IStore;
   using ProtoUtilV1 for IStore;

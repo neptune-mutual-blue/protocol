@@ -25,6 +25,7 @@ bytes32 public constant CNS_COVER_POLICY_MANAGER;
 bytes32 public constant CNS_COVER_POLICY_ADMIN;
 bytes32 public constant CNS_COVER_STAKE;
 bytes32 public constant CNS_COVER_VAULT;
+bytes32 public constant CNS_COVER_VAULT_DELEGATE;
 bytes32 public constant CNS_COVER_STABLECOIN;
 bytes32 public constant CNS_COVER_CXTOKEN_FACTORY;
 bytes32 public constant CNS_COVER_VAULT_FACTORY;
@@ -51,7 +52,6 @@ bytes32 public constant NS_COVER_OWNER;
 bytes32 public constant NS_VAULT_STRATEGY_OUT;
 bytes32 public constant NS_VAULT_LENDING_INCOMES;
 bytes32 public constant NS_VAULT_LENDING_LOSSES;
-bytes32 public constant NS_COVER_LIQUIDITY;
 bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD;
 bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
@@ -126,6 +126,7 @@ bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
 bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
+bytes32 public constant CNAME_VAULT_DELEGATE;
 bytes32 public constant CNAME_LIQUIDITY_ENGINE;
 bytes32 public constant CNAME_STRATEGY_AAVE;
 bytes32 public constant CNAME_STRATEGY_COMPOUND;
@@ -140,7 +141,8 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
 - [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
-- [callerMustBeExactContract(IStore s, bytes32 name)](#callermustbeexactcontract)
+- [senderMustBeExactContract(IStore s, bytes32 name)](#sendermustbeexactcontract)
+- [callerMustBeExactContract(IStore s, bytes32 name, address caller)](#callermustbeexactcontract)
 - [npmToken(IStore s)](#npmtoken)
 - [getNpmTokenAddress(IStore s)](#getnpmtokenaddress)
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
@@ -151,14 +153,6 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
 - [_getContract(IStore s, bytes32 name)](#_getcontract)
-- [addContractInternal(IStore s, bytes32 namespace, address contractAddress)](#addcontractinternal)
-- [_addContract(IStore s, bytes32 namespace, address contractAddress)](#_addcontract)
-- [_deleteContract(IStore s, bytes32 namespace, address contractAddress)](#_deletecontract)
-- [upgradeContractInternal(IStore s, bytes32 namespace, address previous, address current)](#upgradecontractinternal)
-- [addMemberInternal(IStore s, address member)](#addmemberinternal)
-- [removeMemberInternal(IStore s, address member)](#removememberinternal)
-- [_addMember(IStore s, address member)](#_addmember)
-- [_removeMember(IStore s, address member)](#_removemember)
 
 ### getProtocol
 
@@ -311,12 +305,12 @@ function mustBeExactContract(
 ```
 </details>
 
-### callerMustBeExactContract
+### senderMustBeExactContract
 
 Ensures that the sender matches with the exact contract having the specified name.
 
 ```solidity
-function callerMustBeExactContract(IStore s, bytes32 name) external view
+function senderMustBeExactContract(IStore s, bytes32 name) external view
 ```
 
 **Arguments**
@@ -330,8 +324,38 @@ function callerMustBeExactContract(IStore s, bytes32 name) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeExactContract(IStore s, bytes32 name) external view {
-    return mustBeExactContract(s, name, msg.sender);
+function senderMustBeExactContract(IStore s, bytes32 name) external view {
+    return callerMustBeExactContract(s, name, msg.sender);
+  }
+```
+</details>
+
+### callerMustBeExactContract
+
+Ensures that the sender matches with the exact contract having the specified name.
+
+```solidity
+function callerMustBeExactContract(IStore s, bytes32 name, address caller) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| name | bytes32 | Enter the name of the contract | 
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeExactContract(
+    IStore s,
+    bytes32 name,
+    address caller
+  ) public view {
+    return mustBeExactContract(s, name, caller);
   }
 ```
 </details>
@@ -569,223 +593,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 ```
 </details>
 
-### addContractInternal
-
-```solidity
-function addContractInternal(IStore s, bytes32 namespace, address contractAddress) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addContractInternal(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _addContract(s, namespace, contractAddress);
-  }
-```
-</details>
-
-### _addContract
-
-```solidity
-function _addContract(IStore s, bytes32 namespace, address contractAddress) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) private {
-    s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
-    _addMember(s, contractAddress);
-  }
-```
-</details>
-
-### _deleteContract
-
-```solidity
-function _deleteContract(IStore s, bytes32 namespace, address contractAddress) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _deleteContract(
-    IStore s,
-    bytes32 namespace,
-    address contractAddress
-  ) private {
-    s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
-    _removeMember(s, contractAddress);
-  }
-```
-</details>
-
-### upgradeContractInternal
-
-```solidity
-function upgradeContractInternal(IStore s, bytes32 namespace, address previous, address current) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| previous | address |  | 
-| current | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function upgradeContractInternal(
-    IStore s,
-    bytes32 namespace,
-    address previous,
-    address current
-  ) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    bool isMember = _isProtocolMember(s, previous);
-    require(isMember, "Not a protocol member");
-
-    _deleteContract(s, namespace, previous);
-    _addContract(s, namespace, current);
-  }
-```
-</details>
-
-### addMemberInternal
-
-```solidity
-function addMemberInternal(IStore s, address member) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addMemberInternal(IStore s, address member) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _addMember(s, member);
-  }
-```
-</details>
-
-### removeMemberInternal
-
-```solidity
-function removeMemberInternal(IStore s, address member) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeMemberInternal(IStore s, address member) external {
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
-    _removeMember(s, member);
-  }
-```
-</details>
-
-### _addMember
-
-```solidity
-function _addMember(IStore s, address member) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _addMember(IStore s, address member) private {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
-    s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
-  }
-```
-</details>
-
-### _removeMember
-
-```solidity
-function _removeMember(IStore s, address member) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _removeMember(IStore s, address member) private {
-    s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
-  }
-```
-</details>
-
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -829,7 +636,6 @@ function _removeMember(IStore s, address member) private {
 * [IAccessControl](IAccessControl.md)
 * [IBondPool](IBondPool.md)
 * [IClaimsProcessor](IClaimsProcessor.md)
-* [ICommission](ICommission.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
 * [ICoverProvision](ICoverProvision.md)
@@ -864,6 +670,7 @@ function _removeMember(IStore s, address member) private {
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
 * [IUnstakable](IUnstakable.md)
 * [IVault](IVault.md)
+* [IVaultDelegate](IVaultDelegate.md)
 * [IVaultFactory](IVaultFactory.md)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
@@ -913,8 +720,13 @@ function _removeMember(IStore s, address member) private {
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
 * [VaultBase](VaultBase.md)
+* [VaultDelegate](VaultDelegate.md)
+* [VaultDelegateBase](VaultDelegateBase.md)
+* [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)
 * [VaultFactory](VaultFactory.md)
 * [VaultFactoryLibV1](VaultFactoryLibV1.md)
 * [VaultLibV1](VaultLibV1.md)
+* [VaultLiquidity](VaultLiquidity.md)
+* [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
 * [Witness](Witness.md)
