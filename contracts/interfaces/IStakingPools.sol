@@ -55,13 +55,6 @@ interface IStakingPools is IMember {
 
   function closePool(bytes32 key) external;
 
-  function validateAddOrEditPool(
-    bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
-  ) external view returns (bool);
-
   function deposit(bytes32 key, uint256 amount) external;
 
   function withdraw(bytes32 key, uint256 amount) external;

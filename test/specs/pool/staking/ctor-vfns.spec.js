@@ -24,7 +24,7 @@ describe('Staking Pool Constructor and Views', () => {
     validationLibV1 = deployed.validationLibV1
   })
 
-  it('deploys', async () => {
+  it('correctly deploys', async () => {
     const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,

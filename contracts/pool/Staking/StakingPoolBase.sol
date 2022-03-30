@@ -47,21 +47,12 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
     emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[4], values[2]);
   }
 
-  function validateAddOrEditPool(
-    bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
-  ) external view override returns (bool) {
-    return s.validateAddOrEditPoolInternal(key, name, addresses, values);
-  }
-
   function closePool(bytes32 key) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
+    require(s.getBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key), "Unknown Pool");
 
-    s.setBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key, false);
-
+    s.deleteBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key);
     emit PoolClosed(key, s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key));
   }
 

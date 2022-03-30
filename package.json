@@ -18,6 +18,7 @@
     "genabi": "rm -rf ./abis && mkdir abis && node ./util/extract/abis",
     "replace:abis": "npm run genabi && cp ./abis/*.json ../sdk/src/config/abis && cp ./abis/*.json ../subgraph/abis",
     "events:all": "node util/events/all.js 2>&1 | tee ./.todo/events.md",
+    "fix": "standard --fix",
     "events:table": "node util/events/table.js 2>&1 | tee ./.todo/events-table.md",
     "genkey": "node ./util/extract/keys/index.js > ./util/key.js  && standard --fix ./util/key.js",
     "genkey:ts": "touch ./.ignored/key-util.ts && node ./util/extract/keys --ts > ../sdk/src/utils/key-util.ts",

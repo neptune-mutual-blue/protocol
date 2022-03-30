@@ -2,12 +2,17 @@
 const { helper, deployer, key } = require('../../../../util')
 const DAYS = 86400
 const cache = null
+const PoolTypes = {
+  Token: 0,
+  POD: 1
+}
 
 const deployDependencies = async () => {
+  const [owner] = await ethers.getSigners()
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
-  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
+  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
   const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
@@ -115,6 +120,9 @@ const deployDependencies = async () => {
     ]
   )
 
+  await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
+  await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
+
   return {
     npm,
     store,
@@ -129,8 +137,9 @@ const deployDependencies = async () => {
     baseLibV1,
     stakingPoolCoreLibV1,
     stakingPoolLibV1,
-    transferLib
+    transferLib,
+    protocol
   }
 }
 
-module.exports = { deployDependencies }
+module.exports = { deployDependencies, PoolTypes }

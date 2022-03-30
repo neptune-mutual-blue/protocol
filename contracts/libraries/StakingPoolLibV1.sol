@@ -59,28 +59,32 @@ library StakingPoolLibV1 {
     addresses = new address[](4);
     values = new uint256[](15);
 
-    name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
+    bool valid = s.checkIfStakingPoolExists(key);
 
-    addresses[0] = s.getStakingTokenAddressInternal(key);
-    addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
-    addresses[2] = s.getRewardTokenAddressInternal(key);
-    addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+    if (valid) {
+      name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-    values[0] = s.getTotalStaked(key);
-    values[1] = s.getTarget(key);
-    values[2] = s.getMaximumStakeInternal(key);
-    values[3] = getPoolStakeBalanceInternal(s, key);
-    values[4] = getPoolCumulativeDeposits(s, key);
-    values[5] = s.getRewardPerBlock(key);
-    values[6] = s.getRewardPlatformFee(key);
-    values[7] = s.getLockupPeriodInBlocks(key);
-    values[8] = s.getRewardTokenBalance(key);
-    values[9] = getAccountStakingBalanceInternal(s, key, you);
-    values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
-    values[11] = calculateRewardsInternal(s, key, you);
-    values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
-    values[13] = getLastDepositHeight(s, key, you);
-    values[14] = getLastRewardHeight(s, key, you);
+      addresses[0] = s.getStakingTokenAddressInternal(key);
+      addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
+      addresses[2] = s.getRewardTokenAddressInternal(key);
+      addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+
+      values[0] = s.getTotalStaked(key);
+      values[1] = s.getTarget(key);
+      values[2] = s.getMaximumStakeInternal(key);
+      values[3] = getPoolStakeBalanceInternal(s, key);
+      values[4] = getPoolCumulativeDeposits(s, key);
+      values[5] = s.getRewardPerBlock(key);
+      values[6] = s.getRewardPlatformFee(key);
+      values[7] = s.getLockupPeriodInBlocks(key);
+      values[8] = s.getRewardTokenBalance(key);
+      values[9] = getAccountStakingBalanceInternal(s, key, you);
+      values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
+      values[11] = calculateRewardsInternal(s, key, you);
+      values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
+      values[13] = getLastDepositHeight(s, key, you);
+      values[14] = getLastRewardHeight(s, key, you);
+    }
   }
 
   function getPoolStakeBalanceInternal(IStore s, bytes32 key) public view returns (uint256) {
