@@ -167,6 +167,6 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Name of this contract
    */
   function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_POLICY_MANAGER;
+    return ProtoUtilV1.CNAME_PROTOCOL;
   }
 }

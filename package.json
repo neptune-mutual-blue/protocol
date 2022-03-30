@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "build": "hardhat compile",
+    "clean": "hardhat clean",
     "compile:clean": "hardhat clean && hardhat compile",
     "build:clean": "npm run compile:clean",
     "deploy": "hardhat run scripts/deploy.js --network hardhat",
