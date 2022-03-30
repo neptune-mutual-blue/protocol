@@ -10,7 +10,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Unpausing Protocol', () => {
+describe('Setup roles in protocol', () => {
   const treasury = helper.randomAddress()
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
@@ -65,18 +65,42 @@ describe('Unpausing Protocol', () => {
   })
 
   it('should correctly setup a role admin only', async () => {
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, helper.zerox)
+    const admin = await protocol.getRoleAdmin(key.ACCESS_CONTROL.COVER_MANAGER)
+    const hasRole = await protocol.hasRole(key.ACCESS_CONTROL.COVER_MANAGER, helper.zerox)
 
+    admin.should.equal(key.ACCESS_CONTROL.ADMIN)
+    hasRole.should.be.false
   })
 
   it('should correctly setup both role and admin', async () => {
+    const [owner] = await ethers.getSigners()
 
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
+    const admin = await protocol.getRoleAdmin(key.ACCESS_CONTROL.COVER_MANAGER)
+    const hasRole = await protocol.hasRole(key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
+
+    admin.should.equal(key.ACCESS_CONTROL.ADMIN)
+    hasRole.should.be.true
   })
 
   it('should fail if the protocol is paused', async () => {
+    const [owner, pauser] = await ethers.getSigners()
+    await protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, pauser.address)
+    await protocol.connect(pauser).pause()
 
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address).should.be.rejectedWith('Protocol is paused')
   })
 
   it('should fail if the a non-admin tries to setup a role', async () => {
+    const [owner] = await ethers.getSigners()
 
+    await protocol.revokeRole(key.ACCESS_CONTROL.ADMIN, owner.address)
+
+    await protocol.setupRole(
+      key.ACCESS_CONTROL.COVER_MANAGER,
+      key.ACCESS_CONTROL.ADMIN,
+      owner.address
+    ).should.be.rejectedWith('Forbidden')
   })
 })
