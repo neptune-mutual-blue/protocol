@@ -20,6 +20,8 @@ abstract contract StakingPoolReward is StakingPoolBase {
 
     (address rewardToken, uint256 rewards, uint256 platformFee) = s.withdrawRewardsInternal(key, msg.sender);
 
-    emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, platformFee);
+    if (rewards > 0) {
+      emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, platformFee);
+    }
   }
 }

@@ -92,7 +92,11 @@ library StakingPoolCoreLibV1 {
   }
 
   function ensureValidStakingPool(IStore s, bytes32 key) external view {
-    require(s.getBoolByKeys(NS_POOL, key), "Pool invalid or closed");
+    require(checkIfStakingPoolExists(s, key), "Pool invalid or closed");
+  }
+
+  function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bool) {
+    return s.getBoolByKeys(NS_POOL, key);
   }
 
   function validateAddOrEditPoolInternal(
@@ -104,7 +108,7 @@ library StakingPoolCoreLibV1 {
   ) public view returns (bool) {
     require(key > 0, "Invalid key");
 
-    bool exists = s.getBoolByKeys(NS_POOL, key);
+    bool exists = checkIfStakingPoolExists(s, key);
 
     if (exists == false) {
       require(bytes(name).length > 0, "Invalid name");

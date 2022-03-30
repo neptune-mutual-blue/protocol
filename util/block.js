@@ -6,4 +6,14 @@ const getTimestamp = async () => {
   return moment.unix(timestamp)
 }
 
-module.exports = { getTimestamp }
+const mineBlocks = async (totalBlocks) => {
+  while (totalBlocks > 0) {
+    totalBlocks--
+    await hre.network.provider.request({
+      method: 'evm_mine',
+      params: []
+    })
+  }
+}
+
+module.exports = { getTimestamp, mineBlocks }
