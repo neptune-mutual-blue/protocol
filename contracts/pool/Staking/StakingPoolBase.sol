@@ -76,6 +76,6 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
    * @dev Name of this contract
    */
   function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_BOND_POOL;
+    return ProtoUtilV1.CNAME_STAKING_POOL;
   }
 }
