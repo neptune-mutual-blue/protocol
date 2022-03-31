@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const pair = require('../../../../util/composer/uniswap-pair')
 const { ethers } = require('hardhat')
 const MINUTES = 60
 const cache = null
@@ -11,8 +12,8 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Setup Bond', () => {
-  let deployed, store, npmDai, bondPoolLibV1, accessControlLibV1, baseLibV1, priceLibV1, validationLibV1, pool, payload, routineInvokerLibV1
+describe('Bond Pool: Get Info', () => {
+  let deployed, store, dai, npmDai, bondPoolLibV1, accessControlLibV1, baseLibV1, priceLibV1, validationLibV1, pool, payload
 
   before(async () => {
     deployed = await deployDependencies()
@@ -23,8 +24,9 @@ describe('Setup Bond', () => {
     validationLibV1 = deployed.validationLibV1
     bondPoolLibV1 = deployed.bondPoolLibV1
     priceLibV1 = deployed.priceLibV1
-    priceLibV1 = deployed.priceLibV1
-    npmDai = deployed.npmDai
+
+    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
+    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
 
     pool = await deployer.deployWithLibraries(cache, 'BondPool', {
       AccessControlLibV1: accessControlLibV1.address,
@@ -50,7 +52,8 @@ describe('Setup Bond', () => {
     }
   })
 
-  it('must correctly set up the bond pool', async () => {
+  it('must correctly return result', async () => {
+    const [owner] = await ethers.getSigners()
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
     const tx = await pool.setup(payload.addresses, payload.values)
@@ -65,9 +68,30 @@ describe('Setup Bond', () => {
     for (const i in event.args.values) {
       event.args.values[i].toString().should.equal(payload.values[i])
     }
+
+    const info = await pool.getInfo(owner.address)
+    const [
+      [lpToken],
+      [marketPrice, discountRate, vestingTerm, maxBond,
+        totalNpmAllocated, totalNpmDistributed, npmAvailable, bondContribution,
+        claimable, unlockDate]
+    ] = info
+
+    lpToken.should.equal(payload.addresses[0])
+    marketPrice.should.be.gt('0')
+    discountRate.should.equal(payload.values[0])
+    maxBond.should.equal(payload.values[1])
+    vestingTerm.should.equal(payload.values[2])
+    totalNpmAllocated.should.equal(payload.values[3])
+    totalNpmDistributed.should.equal('0')
+    npmAvailable.should.equal(payload.values[3])
+    bondContribution.should.equal('0')
+    claimable.should.equal('0')
+    unlockDate.should.equal('0')
   })
 
   it('must allow updating the bond pool values without top up', async () => {
+    const [owner] = await ethers.getSigners()
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
     const cloned = JSON.parse(JSON.stringify(payload))
@@ -90,32 +114,25 @@ describe('Setup Bond', () => {
     for (const i in event.args.values) {
       event.args.values[i].toString().should.equal(cloned.values[i])
     }
-  })
 
-  it('must reject if invoked by non admin', async () => {
-    const [owner, bob] = await ethers.getSigners()
+    const info = await pool.getInfo(owner.address)
+    const [
+      [lpToken],
+      [marketPrice, discountRate, vestingTerm, maxBond,
+        totalNpmAllocated, totalNpmDistributed, npmAvailable, bondContribution,
+        claimable, unlockDate]
+    ] = info
 
-    const amount = payload.values[payload.values.length - 1]
-
-    await deployed.npm.transfer(bob.address, amount)
-    await deployed.npm.connect(bob).approve(pool.address, amount)
-
-    await pool.connect(bob).setup(payload.addresses, payload.values)
-      .should.be.rejectedWith('Forbidden')
-
-    await deployed.npm.connect(bob).transfer(owner.address, amount)
-  })
-
-  it('must reject if the protocol is paused', async () => {
-    const [owner] = await ethers.getSigners()
-
-    await deployed.protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
-    await deployed.protocol.pause()
-
-    await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.setup(payload.addresses, payload.values)
-      .should.be.rejectedWith('Protocol is paused')
-
-    await deployed.protocol.unpause()
+    lpToken.should.equal(cloned.addresses[0])
+    marketPrice.should.be.gt('0')
+    discountRate.should.equal(cloned.values[0])
+    maxBond.should.equal(cloned.values[1])
+    vestingTerm.should.equal(cloned.values[2])
+    totalNpmAllocated.should.equal(payload.values[3]) // because nothing was added in this transaction
+    totalNpmDistributed.should.equal('0')
+    npmAvailable.should.equal(payload.values[3])
+    bondContribution.should.equal('0')
+    claimable.should.equal('0')
+    unlockDate.should.equal('0')
   })
 })

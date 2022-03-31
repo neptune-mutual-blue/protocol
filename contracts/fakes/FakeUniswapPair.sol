@@ -2,18 +2,21 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "../interfaces/external/IUniswapV2PairLike.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
-contract FakeUniswapPair is IUniswapV2PairLike {
+contract FakeUniswapPair is IUniswapV2PairLike, ERC20 {
   address public override token0;
   address public override token1;
 
-  constructor(address _token0, address _token1) {
+  constructor(address _token0, address _token1) ERC20("PAIR", "PAIR") {
     token0 = _token0;
     token1 = _token1;
+
+    super._mint(msg.sender, 100000 ether);
   }
 
-  function totalSupply() external pure override returns (uint256) {
-    return 100000 ether;
+  function totalSupply() public view override(ERC20, IUniswapV2PairLike) returns (uint256) {
+    return super.totalSupply();
   }
 
   function getReserves()

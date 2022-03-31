@@ -12,6 +12,7 @@ contract BondPool is BondPoolBase {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
+    require(lpTokens > 0, "Please specify `lpTokens`");
     require(minNpmDesired > 0, "Please enter `minNpmDesired`");
 
     uint256[] memory values = s.createBondInternal(lpTokens, minNpmDesired);
