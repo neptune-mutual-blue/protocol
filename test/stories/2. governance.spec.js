@@ -66,7 +66,9 @@ const refute = async (id, user, stake) => {
   await contracts.governance.connect(user).refute(coverKey, id, helper.ether(stake))
 }
 
-describe('Governance Stories', () => {
+describe('Governance Stories', function () {
+  this.timeout(30000)
+
   before(async () => {
     contracts = await composer.initializer.initialize(true)
     const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
