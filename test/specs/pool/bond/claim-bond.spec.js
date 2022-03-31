@@ -12,7 +12,7 @@ require('chai')
   .should()
 
 describe('Claim Bond', () => {
-  let deployed, store, npmDai, bondPoolLibV1, accessControlLibV1, baseLibV1, priceLibV1, validationLibV1, pool, payload, routineInvokerLibV1
+  let deployed, store, npmDai, bondPoolLibV1, accessControlLibV1, baseLibV1, priceLibV1, validationLibV1, pool, payload
 
   before(async () => {
     deployed = await deployDependencies()
