@@ -122,6 +122,7 @@ library BondPoolLibV1 {
     values = new uint256[](2);
     values[0] = calculateTokensForLpInternal(s, lpTokens); // npmToVest
 
+    require(values[0] <= _getMaxBondInUnit(s), "Bond too big");
     require(minNpmDesired > 0, "Invalid value: `minNpmDesired`");
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
     require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");

@@ -12,7 +12,7 @@ require('chai')
 describe('Staking Pool Constructor and Views', () => {
   let store, storeKeyUtil, accessControlLibV1, baseLibV1, stakingPoolCoreLibV1, stakingPoolLibV1, validationLibV1
 
-  beforeEach(async () => {
+  before(async () => {
     const deployed = await deployDependencies()
 
     store = deployed.store
