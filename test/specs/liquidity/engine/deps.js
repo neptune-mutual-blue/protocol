@@ -133,6 +133,7 @@ const deployDependencies = async () => {
       roles: [
         key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
         key.ACCESS_CONTROL.PAUSE_AGENT,
+        key.ACCESS_CONTROL.UNPAUSE_AGENT,
         key.ACCESS_CONTROL.UPGRADE_AGENT
       ]
     }
