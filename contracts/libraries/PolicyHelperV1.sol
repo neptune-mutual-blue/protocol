@@ -9,6 +9,8 @@ import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
 
+// import "hardhat/console.sol";
+
 library PolicyHelperV1 {
   using ProtoUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
@@ -67,6 +69,81 @@ library PolicyHelperV1 {
 
     rate = _getCoverFeeRate(floor, coverRatio, ceiling);
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
+  }
+
+  function calculatePolicyFeeInternal(
+    IStore s,
+    bytes32 key,
+    uint256 coverDuration,
+    uint256 amountToCover
+  )
+    public
+    view
+    returns (
+      uint256 fee,
+      uint256 utilizationRatio,
+      uint256 totalAvailableLiquidity,
+      uint256 floor,
+      uint256 ceiling,
+      uint256 rate
+    )
+  {
+    (floor, ceiling) = getPolicyRatesInternal(s, key);
+    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, key);
+
+    require(amountToCover > 0, "Please enter an amount");
+    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
+    require(floor > 0 && ceiling > floor, "Policy rate config error");
+
+    require(stablecoinOwnedByVault - commitment > amountToCover, "Insufficient fund");
+
+    totalAvailableLiquidity = stablecoinOwnedByVault + supportPool;
+    utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
+
+    // console.log("s: %s. p: %s. u: %s", stablecoinOwnedByVault, supportPool, utilizationRatio);
+    // console.log("c: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
+
+    rate = utilizationRatio > floor ? utilizationRatio : floor;
+
+    // console.log("rs1 -->", rate);
+
+    rate = rate + (coverDuration * 100);
+
+    // console.log("rs2 -->", rate);
+
+    if (rate > ceiling) {
+      rate = ceiling;
+    }
+
+    // console.log("rs3 -->", rate);
+
+    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
+  }
+
+  function _getCoverPoolAmounts(IStore s, bytes32 key)
+    private
+    view
+    returns (
+      uint256 stablecoinOwnedByVault,
+      uint256 commitment,
+      uint256 supportPool
+    )
+  {
+    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
+
+    stablecoinOwnedByVault = values[0];
+    commitment = values[1];
+
+    uint256 npmProvisionTokens = values[2];
+    uint256 npmPrice = values[3];
+    uint256 reassuranceTokens = values[4];
+    uint256 reassuranceTokenPrice = values[5];
+    uint256 incidentPoolCapRatio = values[6];
+
+    uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
+    uint256 provision = (npmProvisionTokens * npmPrice) / 1 ether;
+
+    supportPool = (((reassurance + provision) * incidentPoolCapRatio) / ProtoUtilV1.MULTIPLIER);
   }
 
   function getCoverFeeInternal(

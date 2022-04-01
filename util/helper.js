@@ -18,8 +18,26 @@ const zerox = '0x0000000000000000000000000000000000000000'
 const zero1 = '0x0000000000000000000000000000000000000001'
 const sum = (x) => x.reduce((y, z) => y + z)
 const getRandomNumber = (min, max) => Math.ceil(Math.floor(Math.random() * (max - min + 1)) + min)
-const formatToken = (x, symbol) => Number(x).toLocaleString(undefined, { minimumFractionDigits: 2 }) + (` ${symbol}` || '')
+const formatToken = (x, symbol) => Number(x).toLocaleString('en-US', { minimumFractionDigits: 4 }) + (` ${symbol}` || '')
 const weiAsToken = (x, symbol) => formatToken(weiToEther(x), symbol)
+const formatCurrency = (x, precision = 4) => Number(x).toLocaleString(undefined, { currency: 'USD', style: 'currency', minimumFractionDigits: precision })
+
+const formatPercent = (x) => {
+  if (!x || isNaN(x)) {
+    return ''
+  }
+
+  const percent = parseFloat(x) * 100
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    maximumFractionDigits: percent < 1 ? 6 : 2
+  }).format(x)
+}
+
+const formatPercentBn = (x) => {
+  return formatPercent(x.toNumber() / MULTIPLIER) + ' (BN)'
+}
 
 const coverStatus = {
   normal: 0,
@@ -43,5 +61,8 @@ module.exports = {
   coverStatus,
   sum,
   getRandomNumber,
-  weiAsToken
+  weiAsToken,
+  formatCurrency,
+  formatPercent,
+  formatPercentBn
 }
