@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const moment = require('moment')
-const { helper, deployer, key } = require('../../../util')
-const composer = require('../../../util/composer')
+const { helper, deployer, key } = require('../../../../util')
+const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -13,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Policy: getCxTokenByExpiryDate', function () {
+describe('Cover Constructor', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -72,18 +71,23 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('must return successfully', async () => {
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
+  it('correctly deploys', async () => {
+    const cover = await deployer.deployWithLibraries(cache, 'Cover',
+      {
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        CoverLibV1: deployed.coverLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
+      },
+      deployed.store.address
+    )
 
-    const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
-    cxToken.should.not.equal(helper.zerox)
-  })
+    const version = await cover.version()
+    const name = await cover.getName()
 
-  it('must return zero address if invalid cover was specified', async () => {
-    const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(key.toBytes32('fizz-buzz'), expiryDate)
-    await cxToken.should.equal(helper.zerox)
+    version.should.equal(key.toBytes32('v0.1'))
+    name.should.equal(key.PROTOCOL.CNAME.COVER)
   })
 })

@@ -13,12 +13,13 @@ const deployDependencies = async () => {
   const [owner] = await ethers.getSigners()
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
-
   const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
   const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
+
   const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm.address, token1: dai.address }])
 
   const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
+
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
   const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
@@ -72,19 +73,6 @@ const deployDependencies = async () => {
   })
 
   const transferLib = await deployer.deploy(cache, 'NTransferUtilV2')
-
-  const stakingPoolCoreLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolCoreLibV1', {
-    NTransferUtilV2: transferLib.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
-
-  const stakingPoolLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolLibV1', {
-    NTransferUtilV2: transferLib.address,
-    ProtoUtilV1: protoUtilV1.address,
-    StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
-    RegistryLibV1: registryLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
-  })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
   })
@@ -328,7 +316,6 @@ const deployDependencies = async () => {
     cover,
     coverLibV1,
     policyHelperV1,
-    stakingPoolLibV1,
     strategyLibV1,
     stakingContract,
     reassuranceContract,

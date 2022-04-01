@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-expressions */
-const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const moment = require('moment')
-const { helper, deployer, key } = require('../../../util')
-const composer = require('../../../util/composer')
+const { key, helper, deployer } = require('../../../../util')
+const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -13,8 +11,8 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Policy: getCxTokenByExpiryDate', function () {
-  let deployed, coverKey
+describe('Vault Flashloan', () => {
+  let deployed, coverKey, initialLiquidity
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -34,7 +32,7 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -72,18 +70,17 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('must return successfully', async () => {
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
+  it('must get max flashloan amount', async () => {
+    const result = await deployed.vault.connect(deployed.vault.address).maxFlashLoan(deployed.dai.address)
 
-    const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
-    cxToken.should.not.equal(helper.zerox)
+    result.should.equal(initialLiquidity)
   })
 
-  it('must return zero address if invalid cover was specified', async () => {
-    const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(key.toBytes32('fizz-buzz'), expiryDate)
-    await cxToken.should.equal(helper.zerox)
+  it('must get max flashloan fee', async () => {
+    const amount = 200
+    const fee = 1 // Flash Loan Fee: 0.5%
+
+    const result = await deployed.vault.connect(deployed.vault.address).flashFee(deployed.dai.address, amount)
+    result.should.equal(fee)
   })
 })

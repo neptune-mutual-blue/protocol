@@ -16,6 +16,7 @@ library StrategyLibV1 {
   using RegistryLibV1 for IStore;
 
   event StrategyAdded(address indexed strategy);
+  event LendingPeriodSet(uint256 lendingPeriod, uint256 withdrawalWindow);
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
@@ -53,6 +54,8 @@ library StrategyLibV1 {
   ) external {
     s.setUintByKey(getLendingPeriodKey(coverKey, true), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey, true), withdrawalWindow);
+
+    emit LendingPeriodSet(lendingPeriod, withdrawalWindow);
   }
 
   function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
