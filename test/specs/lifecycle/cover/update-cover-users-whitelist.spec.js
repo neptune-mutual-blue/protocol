@@ -10,7 +10,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Cover: stopCover', () => {
+describe('Cover: updateCoverUsersWhitelist', () => {
   let deployed
 
   const coverKey = key.toBytes32('foo-bar')
@@ -31,7 +31,7 @@ describe('Cover: stopCover', () => {
     deployed = await deployDependencies()
   })
 
-  it('correctly stops cover', async () => {
+  it('correctly whitelist the user', async () => {
     const [owner] = await ethers.getSigners()
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
@@ -42,10 +42,15 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.stopCover(coverKey, 'reason: testing')
+    const statusBefore = await deployed.cover.checkIfWhitelistedUser(coverKey, owner.address)
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+    const statusAfter = await deployed.cover.checkIfWhitelistedUser(coverKey, owner.address)
+
+    statusBefore.should.equal(false)
+    statusAfter.should.equal(true)
   })
 
-  it('reverts when not accessed by GovernanceAdmin', async () => {
+  it('reverts when not accessed by CoverOwnerOrAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
@@ -56,7 +61,24 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.connect(bob).stopCover(coverKey, 'reason: testing')
+    await deployed.cover.connect(bob).updateCoverUsersWhitelist(coverKey, [owner.address], [true])
       .should.be.rejectedWith('Forbidden')
+  })
+
+  it('reverts when protocol is paused', async () => {
+    const [owner] = await ethers.getSigners()
+
+    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+
+    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+
+    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.deployVault(coverKey)
+
+    await deployed.protocol.pause()
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+      .should.be.rejectedWith('Protocol is paused')
+    await deployed.protocol.unpause()
   })
 })

@@ -10,7 +10,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Cover: stopCover', () => {
+describe('Cover: updateCover', () => {
   let deployed
 
   const coverKey = key.toBytes32('foo-bar')
@@ -31,7 +31,7 @@ describe('Cover: stopCover', () => {
     deployed = await deployDependencies()
   })
 
-  it('correctly stops cover', async () => {
+  it('correctly updates cover', async () => {
     const [owner] = await ethers.getSigners()
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
@@ -42,7 +42,8 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.stopCover(coverKey, 'reason: testing')
+    const updatedInfo = key.toBytes32('updated-info')
+    await deployed.cover.updateCover(coverKey, updatedInfo)
   })
 
   it('reverts when not accessed by GovernanceAdmin', async () => {
@@ -56,7 +57,8 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.connect(bob).stopCover(coverKey, 'reason: testing')
+    const updatedInfo = key.toBytes32('updated-info')
+    await deployed.cover.connect(bob).updateCover(coverKey, updatedInfo)
       .should.be.rejectedWith('Forbidden')
   })
 })
