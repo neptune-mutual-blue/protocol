@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { deployer, key, helper, ipfs } = require('../../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -69,7 +69,7 @@ describe('Governance: `setFirstReportingStake` function', () => {
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
 
-    const info = await ipfs.write([coverKey, ...values])
+    const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { key, helper, deployer, ipfs } = require('../../../../util')
+const { key, helper, deployer } = require('../../../../util')
 const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
@@ -43,7 +43,7 @@ describe('Vault Flashloan', () => {
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
 
-    const info = await ipfs.write([coverKey, ...values])
+    const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
 const { ethers } = require('hardhat')
-const { helper, deployer, key, ipfs } = require('../../../util')
+const { helper, deployer, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -32,7 +32,7 @@ describe('Policy Admin: setPolicyRatesByKey', () => {
 
     coverKey = key.toBytes32('foo-bar')
     const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100)]
-    const info = await ipfs.write([coverKey, ...values])
+    const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 

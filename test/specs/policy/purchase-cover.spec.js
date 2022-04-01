@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key, ipfs } = require('../../../util')
+const { helper, deployer, key } = require('../../../util')
 const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
@@ -44,7 +44,7 @@ describe('Policy: purchaseCover', () => {
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
 
-    const info = await ipfs.write([coverKey, ...values])
+    const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -111,7 +111,7 @@ describe('Policy: purchaseCover', () => {
   })
 
   it('must revert if cover is not normal', async () => {
-    const info = await ipfs.write('foobar')
+    const info = key.toBytes32('info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
     await deployed.governance.report(coverKey, info, helper.ether(1000))
 
