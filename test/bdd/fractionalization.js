@@ -53,12 +53,16 @@ describe('Fractionalization of Reserves', () => {
   it('does not allow fractional reserves', async () => {
     let totalPurchased = 0
     const amount = 2_000_000
+    const args = [coverKey, 2, helper.ether(amount)]
+
+    let feeIncome = ethers.BigNumber.from(0)
 
     for (let i = 0; i < 2; i++) {
-      const args = [coverKey, 2, helper.ether(amount)]
       const info = (await contracts.policy.getCoverFeeInfo(...args))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
+
+      feeIncome = feeIncome.add(fee)
 
       console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee), totalPurchased.toLocaleString(), formatEther(available))
 
@@ -68,7 +72,8 @@ describe('Fractionalization of Reserves', () => {
       totalPurchased += amount
     }
 
-    await contracts.policy.getCoverFeeInfo(coverKey, 2, helper.ether(200_000)).should.be.rejectedWith('Insufficient fund')
+    await contracts.policy.getCoverFeeInfo(coverKey, 2, feeIncome.sub(1)).should.not.be.rejected
+    await contracts.policy.getCoverFeeInfo(coverKey, 2, feeIncome).should.be.rejectedWith('Insufficient fund')
   })
 
   it('allows reuse of liquidity as policies expire', async () => {
