@@ -27,7 +27,7 @@ describe('Cover: addCover', () => {
   const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
   const info = key.toBytes32('info')
 
-  beforeEach(async () => {
+  before(async () => {
     deployed = await deployDependencies()
   })
 

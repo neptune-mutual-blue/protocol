@@ -27,14 +27,14 @@ describe('Cover: updateCover', () => {
   const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
   const info = key.toBytes32('info')
 
-  beforeEach(async () => {
+  before(async () => {
     deployed = await deployDependencies()
   })
 
   it('correctly updates cover', async () => {
     const [owner] = await ethers.getSigners()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
@@ -49,13 +49,7 @@ describe('Cover: updateCover', () => {
   it('reverts when not accessed by GovernanceAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
-
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     const updatedInfo = key.toBytes32('updated-info')
     await deployed.cover.connect(bob).updateCover(coverKey, updatedInfo)

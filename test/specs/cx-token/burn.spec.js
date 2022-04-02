@@ -16,7 +16,7 @@ describe('cxToken: `burn` function', () => {
 
   const coverKey = key.toBytes32('test')
 
-  beforeEach(async () => {
+  before(async () => {
     const blockTimestamp = await blockHelper.getTimestamp()
     const expiryDate = blockTimestamp.add(2, 'd').unix()
 

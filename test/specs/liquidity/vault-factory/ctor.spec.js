@@ -17,7 +17,7 @@ describe('VaultFactory Constructor and Views', () => {
     validationLibV1,
     vaultFactoryLibV1
 
-  beforeEach(async () => {
+  before(async () => {
     const deployed = await deployDependencies()
 
     store = deployed.store

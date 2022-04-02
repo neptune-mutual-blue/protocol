@@ -27,14 +27,14 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
   const info = key.toBytes32('info')
 
-  beforeEach(async () => {
+  before(async () => {
     deployed = await deployDependencies()
   })
 
   it('correctly whitelist the user', async () => {
     const [owner] = await ethers.getSigners()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
@@ -53,13 +53,7 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   it('reverts when not accessed by CoverOwnerOrAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
-
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.cover.connect(bob).updateCoverUsersWhitelist(coverKey, [owner.address], [true])
       .should.be.rejectedWith('Forbidden')
@@ -68,17 +62,13 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   it('reverts when protocol is paused', async () => {
     const [owner] = await ethers.getSigners()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
-
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.protocol.pause()
+
     await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
       .should.be.rejectedWith('Protocol is paused')
+
     await deployed.protocol.unpause()
   })
 })

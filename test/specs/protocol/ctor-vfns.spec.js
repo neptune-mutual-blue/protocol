@@ -15,7 +15,7 @@ describe('Constructor & Initializer', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1
 
-  beforeEach(async () => {
+  before(async () => {
     const deployed = await deployDependencies()
 
     npm = deployed.npm

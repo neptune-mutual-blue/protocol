@@ -10,7 +10,7 @@ describe('Governance: `setReportingBurnRate` function', () => {
   const burnRate = '1'
   let deployed
 
-  beforeEach(async () => {
+  before(async () => {
     deployed = await deployDependencies()
   })
 

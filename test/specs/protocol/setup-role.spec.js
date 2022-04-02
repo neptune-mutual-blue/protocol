@@ -15,7 +15,7 @@ describe('Setup roles in protocol', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
@@ -86,10 +86,11 @@ describe('Setup roles in protocol', () => {
 
   it('should fail if the protocol is paused', async () => {
     const [owner, pauser] = await ethers.getSigners()
-    await protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, pauser.address)
-    await protocol.connect(pauser).pause()
+    await protocol.grantRoles([{ account: pauser.address, roles: [key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
 
+    await protocol.connect(pauser).pause()
     await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address).should.be.rejectedWith('Protocol is paused')
+    await protocol.connect(pauser).unpause()
   })
 
   it('should fail if the a non-admin tries to setup a role', async () => {

@@ -15,7 +15,7 @@ describe('Upgrading Protocol Contract(s)', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
@@ -73,28 +73,28 @@ describe('Upgrading Protocol Contract(s)', () => {
   })
 
   it('should fail when the previous address is incorrect', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
+    const fakePolicy2 = helper.randomAddress()
+    await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, fakePolicy2)
 
-    const fakeCover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, helper.randomAddress(), fakeCover2)
+    const fakePolicy22 = helper.randomAddress()
+    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER_POLICY, helper.randomAddress(), fakePolicy22)
       .should.be.rejectedWith('Not a protocol member')
   })
 
   it('should correctly set storage values', async () => {
-    const cover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, cover)
+    const governance = helper.randomAddress()
+    await protocol.addContract(key.PROTOCOL.CNS.GOVERNANCE, governance)
 
-    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
+    let storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.GOVERNANCE))
 
-    storedContractAddress.should.equal(cover)
+    storedContractAddress.should.equal(governance)
 
     // ------- UPGRADE CONTRACT -------
 
-    const cover2 = helper.randomAddress()
-    await protocol.upgradeContract(key.PROTOCOL.CNS.COVER, cover, cover2)
+    const governance2 = helper.randomAddress()
+    await protocol.upgradeContract(key.PROTOCOL.CNS.GOVERNANCE, governance, governance2)
 
-    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
-    storedContractAddress.should.equal(cover2)
+    storedContractAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.GOVERNANCE))
+    storedContractAddress.should.equal(governance2)
   })
 })

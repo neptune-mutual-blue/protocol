@@ -13,7 +13,7 @@ require('chai')
 describe('Claims Processor: Constructor & Initializer', () => {
   let libraries, store, processor
 
-  beforeEach(async () => {
+  before(async () => {
     libraries = await deployDependencies()
     const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')
 
@@ -37,7 +37,7 @@ describe('Claims Processor: Constructor & Initializer', () => {
 describe('Claims Processor: `getClaimExpiryDate` function', () => {
   let libraries, cxToken, store, processor
 
-  beforeEach(async () => {
+  before(async () => {
     libraries = await deployDependencies()
     cxToken = await deployer.deploy(cache, 'MockCxToken')
     const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')
