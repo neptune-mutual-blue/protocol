@@ -15,7 +15,7 @@ describe('Unpausing Protocol', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
@@ -85,15 +85,18 @@ describe('Unpausing Protocol', () => {
     const [, pauser, unpauser] = await ethers.getSigners()
 
     await protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, pauser.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, unpauser.address)
 
     await protocol.connect(pauser).pause()
     let isPaused = await protocol.paused()
 
     isPaused.should.be.true
 
-    await protocol.connect(unpauser).unpause().should.be.rejectedWith('Forbidden')
+    await protocol.connect(pauser).unpause().should.be.rejectedWith('Forbidden')
     isPaused = await protocol.paused()
 
     isPaused.should.be.true
+
+    await protocol.connect(unpauser).unpause().should.not.be.rejected
   })
 })

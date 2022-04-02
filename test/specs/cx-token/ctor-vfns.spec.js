@@ -16,7 +16,7 @@ describe('cxToken: Constructor', () => {
   const coverKey = key.toBytes32('test')
   const expiryDate = moment(new Date()).unix()
 
-  beforeEach(async () => {
+  before(async () => {
     libraries = await deployDependencies()
     store = { address: helper.randomAddress() }
 

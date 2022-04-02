@@ -14,7 +14,7 @@ require('chai')
 describe('Claims Processor: `setClaimPeriod` function', () => {
   let libraries, store, cxToken, processor
 
-  beforeEach(async () => {
+  before(async () => {
     libraries = await deployDependencies()
 
     const storeLib = await deployer.deploy(cache, 'MockProcessorStoreLib')

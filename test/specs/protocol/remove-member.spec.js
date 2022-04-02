@@ -15,7 +15,7 @@ describe('Removing Protocol Member(s)', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()

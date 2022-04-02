@@ -15,7 +15,7 @@ describe('Adding a New Protocol Contract', () => {
   const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
@@ -71,16 +71,15 @@ describe('Adding a New Protocol Contract', () => {
 
   it('should reject if a contract already exists', async () => {
     const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
     await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover).should.be.rejectedWith('Please upgrade ')
   })
 
   it('should correctly set storage values', async () => {
-    const fakeCover = helper.randomAddress()
-    await protocol.addContract(key.PROTOCOL.CNS.COVER, fakeCover)
+    const fakePolicy = helper.randomAddress()
+    await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, fakePolicy)
 
-    const storedAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER))
+    const storedAddress = await store.getAddress(key.qualifyBytes32(key.PROTOCOL.CNS.COVER_POLICY))
 
-    storedAddress.should.equal(fakeCover)
+    storedAddress.should.equal(fakePolicy)
   })
 })
