@@ -110,13 +110,12 @@ contract Policy is IPolicy, Recoverable {
       uint256 fee,
       uint256 utilizationRatio,
       uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
       uint256 floor,
       uint256 ceiling,
       uint256 rate
     )
   {
-    return s.getCoverFeeInfoInternal(key, coverDuration, amountToCover);
+    return s.calculatePolicyFeeInternal(key, coverDuration, amountToCover);
   }
 
   /**

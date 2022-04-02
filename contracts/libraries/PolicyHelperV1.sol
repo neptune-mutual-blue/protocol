@@ -9,6 +9,8 @@ import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
 
+// import "hardhat/console.sol";
+
 library PolicyHelperV1 {
   using ProtoUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
@@ -18,13 +20,7 @@ library PolicyHelperV1 {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  /**
-   * @dev Gets the cover fee info for the given cover key, duration, and amount
-   * @param key Enter the cover key
-   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
-   */
-  function getCoverFeeInfoInternal(
+  function calculatePolicyFeeInternal(
     IStore s,
     bytes32 key,
     uint256 coverDuration,
@@ -36,83 +32,76 @@ library PolicyHelperV1 {
       uint256 fee,
       uint256 utilizationRatio,
       uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
       uint256 floor,
       uint256 ceiling,
       uint256 rate
     )
   {
     (floor, ceiling) = getPolicyRatesInternal(s, key);
-    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
+    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, key);
 
+    require(amountToCover > 0, "Please enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
-    // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
-    require(values[0] - values[1] > amountToCover, "Insufficient fund");
+    require(stablecoinOwnedByVault - commitment > amountToCover, "Insufficient fund");
 
-    // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (ProtoUtilV1.MULTIPLIER * values[1]) / values[0];
+    totalAvailableLiquidity = stablecoinOwnedByVault + supportPool;
+    utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (ProtoUtilV1.MULTIPLIER * 1 ether));
+    // console.log("s: %s. p: %s. u: %s", stablecoinOwnedByVault, supportPool, utilizationRatio);
+    // console.log("c: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
 
-    // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
+    rate = utilizationRatio > floor ? utilizationRatio : floor;
 
-    if (coverRatio == 0) {
-      // If you propose to cover a relatively tiny amount vs the available liquidity, the ratio can be a zero value
-      coverRatio = ceiling;
+    // console.log("rs1 -->", rate);
+
+    rate = rate + (coverDuration * 100);
+
+    // console.log("rs2 -->", rate);
+
+    if (rate > ceiling) {
+      rate = ceiling;
     }
 
-    rate = _getCoverFeeRate(floor, coverRatio, ceiling);
+    // console.log("rs3 -->", rate);
+
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 
-  function getCoverFeeInternal(
+  function _getCoverPoolAmounts(IStore s, bytes32 key)
+    private
+    view
+    returns (
+      uint256 stablecoinOwnedByVault,
+      uint256 commitment,
+      uint256 supportPool
+    )
+  {
+    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
+
+    stablecoinOwnedByVault = values[0];
+    commitment = values[1];
+
+    uint256 npmProvisionTokens = values[2];
+    uint256 npmPrice = values[3];
+    uint256 reassuranceTokens = values[4];
+    uint256 reassuranceTokenPrice = values[5];
+    uint256 incidentPoolCapRatio = values[6];
+
+    uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
+    uint256 provision = (npmProvisionTokens * npmPrice) / 1 ether;
+
+    supportPool = (((reassurance + provision) * incidentPoolCapRatio) / ProtoUtilV1.MULTIPLIER);
+  }
+
+  function getPolicyFeeInternal(
     IStore s,
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover
   ) public view returns (uint256 fee) {
-    (fee, , , , , , ) = getCoverFeeInfoInternal(s, key, coverDuration, amountToCover);
-  }
-
-  /**
-   * @dev Gets the harmonic mean rate of the given ratios. Stops/truncates at min/max values.
-   * @param floor The lowest cover fee rate
-   * @param coverRatio Enter the ratio of the cover vs liquidity
-   * @param ceiling The highest cover fee rate
-   */
-  function _getCoverFeeRate(
-    uint256 floor,
-    uint256 coverRatio,
-    uint256 ceiling
-  ) private pure returns (uint256) {
-    // COVER FEE RATE = HARMEAN(FLOOR, COVER RATIO, CEILING)
-    uint256 rate = getHarmonicMean(floor, coverRatio, ceiling);
-
-    if (rate < floor) {
-      return floor;
-    }
-
-    if (rate > ceiling) {
-      return ceiling;
-    }
-
-    return rate;
-  }
-
-  /**
-   * @dev Returns the harmonic mean of the supplied values.
-   */
-  function getHarmonicMean(
-    uint256 x,
-    uint256 y,
-    uint256 z
-  ) public pure returns (uint256) {
-    require(x > 0 && y > 0 && z > 0, "Invalid arg");
-    return 3e36 / ((1e36 / (x)) + (1e36 / (y)) + (1e36 / (z)));
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, key, coverDuration, amountToCover);
   }
 
   function getPolicyRatesInternal(IStore s, bytes32 key) public view returns (uint256 floor, uint256 ceiling) {
@@ -180,7 +169,7 @@ library PolicyHelperV1 {
     uint256 coverDuration,
     uint256 amountToCover
   ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getCoverFeeInternal(s, key, coverDuration, amountToCover);
+    fee = getPolicyFeeInternal(s, key, coverDuration, amountToCover);
     cxToken = getCxTokenOrDeployInternal(s, key, coverDuration);
 
     address stablecoin = s.getStablecoin();

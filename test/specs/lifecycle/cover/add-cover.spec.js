@@ -31,7 +31,7 @@ describe('Cover: addCover', () => {
     deployed = await deployDependencies()
   })
 
-  it('correctly adds cover when accessed by Whitelisted Cover Creator', async () => {
+  it('correctly adds cover when accessed by whitelisted cover creator', async () => {
     const [owner] = await ethers.getSigners()
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
@@ -43,7 +43,7 @@ describe('Cover: addCover', () => {
     await deployed.cover.deployVault(coverKey)
   })
 
-  it('reverts when not accessed by Whitelisted Cover Creator', async () => {
+  it('reverts when not accessed by whitelisted cover creator', async () => {
     const [owner, bob] = await ethers.getSigners()
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)

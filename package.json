@@ -32,7 +32,7 @@
     "slither:x:save": "slither . --print human-summary,vars-and-auth  > ./.todo/slither.x.log 2>&1",
     "test": "hardhat test ./test/specs/**/**.js",
     "test:all": "hardhat test",
-    "coverage": "hardhat coverage --testfiles \"test/**/*.spec.js\"",
+    "coverage": "npx hardhat clean && hardhat coverage --testfiles \"test/**/*.spec.js\"",
     "stories": "hardhat test ./test/stories/*.js",
     "bdd": "hardhat test ./test/bdd/*.js",
     "story": "npm run stories",
