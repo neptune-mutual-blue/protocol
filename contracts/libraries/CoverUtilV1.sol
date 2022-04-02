@@ -36,7 +36,7 @@ library CoverUtilV1 {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
   }
 
-  function getCoverFee(IStore s)
+  function getCoverCreationFeeInfo(IStore s)
     external
     view
     returns (

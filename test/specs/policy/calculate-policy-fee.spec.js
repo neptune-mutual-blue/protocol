@@ -42,7 +42,7 @@ const payload = {
 
 const getFee = (amount, duration) => getCoverFee(data, amount, duration, false)
 
-describe('Policy: calculatePolicyFee', () => {
+describe('Policy: getCoverFeeInfo', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -102,7 +102,7 @@ describe('Policy: calculatePolicyFee', () => {
       const expected = helper.formatCurrency(getFee(amount, duration), 4).trim()
 
       it(`must return fee: ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s)`, async () => {
-        const fees = await deployed.policy.calculatePolicyFee(coverKey, duration.toString(), helper.ether(amount))
+        const fees = await deployed.policy.getCoverFeeInfo(coverKey, duration.toString(), helper.ether(amount))
 
         expected.should.equal(helper.formatCurrency(helper.weiToEther(fees), 4))
       })
@@ -110,12 +110,12 @@ describe('Policy: calculatePolicyFee', () => {
   }
 
   it('must revert if zero is specified as the amount to cover', async () => {
-    await deployed.policy.calculatePolicyFee(coverKey, '1', helper.ether(0))
+    await deployed.policy.getCoverFeeInfo(coverKey, '1', helper.ether(0))
       .should.be.rejectedWith('Please enter an amount')
   })
 
   it('must revert if invalid value is specified as the cover duration', async () => {
-    await deployed.policy.calculatePolicyFee(coverKey, '0', helper.ether(10000))
+    await deployed.policy.getCoverFeeInfo(coverKey, '0', helper.ether(10000))
       .should.be.rejectedWith('Invalid duration')
   })
 })

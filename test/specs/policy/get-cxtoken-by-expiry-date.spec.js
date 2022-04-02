@@ -76,7 +76,9 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
     await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
 
-    const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
+    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+
+    const expiryDate = await deployed.policy.getExpiryDate(block.timestamp, '1')
     const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
     cxToken.should.not.equal(helper.zerox)
   })

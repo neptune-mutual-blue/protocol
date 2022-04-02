@@ -39,7 +39,6 @@ interface IPolicy is IMember {
       uint256 fee,
       uint256 utilizationRatio,
       uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
       uint256 floor,
       uint256 ceiling,
       uint256 rate

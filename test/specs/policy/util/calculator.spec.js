@@ -35,12 +35,8 @@ const payload = {
 const getFee = (amount, duration) => getCoverFee(data, amount, duration, false)
 const getFeeBn = (amount, duration) => getCoverFeeBn(payload, amount, duration, false)
 
-const check = (cases) => {
-
-}
-
-describe('Calculator test', () => {
-  const amounts = [1, 5, 10, 15, 20, 50, 100, 150, 200, 500, 1000, 1500, 2000, 5000, 10_000, 15_000, 20_000, 50_000, 100_000, 150_000, 200_000, 500_000, 1_000_000, 1_250_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 2_750_000, 3_000_000, 3_500_000, 4_000_000, 5_000_000, 10_000_000]
+describe('Policy Fee Calculation tests', () => {
+  const amounts = [1, 5, 10, 15, 20, 50, 100, 150, 200, 500, 1000, 1500, 2000, 5000, 10_000, 15_000, 20_000, 50_000, 100_000, 150_000, 200_000, 250_000, 500_000, 1_000_000, 1_250_000, 1_500_000, 1_750_000, 2_000_000, 2_250_000, 2_500_000, 2_750_000, 3_000_000, 3_500_000, 4_000_000, 5_000_000, 10_000_000]
   const durations = [1, 2, 3]
   const cases = []
 
@@ -59,6 +55,10 @@ describe('Calculator test', () => {
       const ab = ethers.BigNumber.from(helper.ether(amount))
       const db = ethers.BigNumber.from(duration)
       const fb = helper.weiToEther(getFeeBn(ab, db))
+
+      if (duration === 2 && amount === 500_000) {
+        console.info('Duration %s. Amount: %s. Fee: %s', duration, amount, fee)
+      }
 
       helper.formatCurrency(fee).should.eq(helper.formatCurrency(fb))
     })

@@ -20,57 +20,6 @@ library PolicyHelperV1 {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  /**
-   * @dev Gets the cover fee info for the given cover key, duration, and amount
-   * @param key Enter the cover key
-   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
-   */
-  function getCoverFeeInfoInternal(
-    IStore s,
-    bytes32 key,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
-    public
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    (floor, ceiling) = getPolicyRatesInternal(s, key);
-    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
-
-    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
-    require(floor > 0 && ceiling > floor, "Policy rate config error");
-
-    // AMOUNT_IN_COVER_POOL - COVER_COMMITMENT > AMOUNT_TO_COVER
-    require(values[0] - values[1] > amountToCover, "Insufficient fund");
-
-    // UTILIZATION RATIO = COVER_COMMITMENT / AMOUNT_IN_COVER_POOL
-    utilizationRatio = (ProtoUtilV1.MULTIPLIER * values[1]) / values[0];
-
-    // TOTAL AVAILABLE LIQUIDITY = AMOUNT_IN_COVER_POOL - COVER_COMMITMENT + (NEP_REWARD_POOL_SUPPORT * NEP_PRICE) + (REASSURANCE_POOL_SUPPORT * REASSURANCE_TOKEN_PRICE * REASSURANCE_POOL_WEIGHT)
-    totalAvailableLiquidity = values[0] - values[1] + ((values[2] * values[3]) / 1 ether) + ((values[4] * values[5] * values[6]) / (ProtoUtilV1.MULTIPLIER * 1 ether));
-
-    // COVER RATIO = UTILIZATION_RATIO + COVER_DURATION * AMOUNT_TO_COVER / AVAILABLE_LIQUIDITY
-    coverRatio = utilizationRatio + ((ProtoUtilV1.MULTIPLIER * coverDuration * amountToCover) / totalAvailableLiquidity);
-
-    if (coverRatio == 0) {
-      // If you propose to cover a relatively tiny amount vs the available liquidity, the ratio can be a zero value
-      coverRatio = ceiling;
-    }
-
-    rate = _getCoverFeeRate(floor, coverRatio, ceiling);
-    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
-  }
-
   function calculatePolicyFeeInternal(
     IStore s,
     bytes32 key,
@@ -146,50 +95,13 @@ library PolicyHelperV1 {
     supportPool = (((reassurance + provision) * incidentPoolCapRatio) / ProtoUtilV1.MULTIPLIER);
   }
 
-  function getCoverFeeInternal(
+  function getPolicyFeeInternal(
     IStore s,
     bytes32 key,
     uint256 coverDuration,
     uint256 amountToCover
   ) public view returns (uint256 fee) {
-    (fee, , , , , , ) = getCoverFeeInfoInternal(s, key, coverDuration, amountToCover);
-  }
-
-  /**
-   * @dev Gets the harmonic mean rate of the given ratios. Stops/truncates at min/max values.
-   * @param floor The lowest cover fee rate
-   * @param coverRatio Enter the ratio of the cover vs liquidity
-   * @param ceiling The highest cover fee rate
-   */
-  function _getCoverFeeRate(
-    uint256 floor,
-    uint256 coverRatio,
-    uint256 ceiling
-  ) private pure returns (uint256) {
-    // COVER FEE RATE = HARMEAN(FLOOR, COVER RATIO, CEILING)
-    uint256 rate = getHarmonicMean(floor, coverRatio, ceiling);
-
-    if (rate < floor) {
-      return floor;
-    }
-
-    if (rate > ceiling) {
-      return ceiling;
-    }
-
-    return rate;
-  }
-
-  /**
-   * @dev Returns the harmonic mean of the supplied values.
-   */
-  function getHarmonicMean(
-    uint256 x,
-    uint256 y,
-    uint256 z
-  ) public pure returns (uint256) {
-    require(x > 0 && y > 0 && z > 0, "Invalid arg");
-    return 3e36 / ((1e36 / (x)) + (1e36 / (y)) + (1e36 / (z)));
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, key, coverDuration, amountToCover);
   }
 
   function getPolicyRatesInternal(IStore s, bytes32 key) public view returns (uint256 floor, uint256 ceiling) {
@@ -257,7 +169,7 @@ library PolicyHelperV1 {
     uint256 coverDuration,
     uint256 amountToCover
   ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getCoverFeeInternal(s, key, coverDuration, amountToCover);
+    fee = getPolicyFeeInternal(s, key, coverDuration, amountToCover);
     cxToken = getCxTokenOrDeployInternal(s, key, coverDuration);
 
     address stablecoin = s.getStablecoin();

@@ -174,7 +174,7 @@ library CoverLibV1 {
     uint256 stakeWithFee
   ) private view returns (uint256 fee, uint256 minCoverCreationStake) {
     require(info > 0, "Invalid info");
-    (fee, minCoverCreationStake, ) = s.getCoverFee();
+    (fee, minCoverCreationStake, ) = s.getCoverCreationFeeInfo();
 
     uint256 minStake = fee + minCoverCreationStake;
 

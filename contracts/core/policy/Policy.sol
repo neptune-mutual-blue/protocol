@@ -110,32 +110,6 @@ contract Policy is IPolicy, Recoverable {
       uint256 fee,
       uint256 utilizationRatio,
       uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    return s.getCoverFeeInfoInternal(key, coverDuration, amountToCover);
-  }
-
-  /**
-   * @dev Gets the cover fee info for the given cover key, duration, and amount
-   * @param key Enter the cover key
-   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
-   */
-  function calculatePolicyFee(
-    bytes32 key,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
-    external
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
       uint256 floor,
       uint256 ceiling,
       uint256 rate
