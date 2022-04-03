@@ -109,6 +109,42 @@ describe('Add or Edit Pool', () => {
     accountStakeBalance.should.equal('0')
   })
 
+  it('must correct edit an existing pool', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.transfer(bob.address, payload.values[5])
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const values = ['0', '0', '0', '0', '0', '0']
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(payload.key, '', payload.poolType, payload.addresses, values)
+
+    const info = await pool.getInfo(payload.key, bob.address)
+
+    const [
+      name,
+      [stakingToken, stakingTokenStablecoinPair, rewardToken, rewardTokenStablecoinPair],
+      [totalStaked, target, maximumStake, stakeBalance, cumulativeDeposits, rewardPerBlock, platformFee, lockupPeriod, rewardTokenBalance, accountStakeBalance]
+    ] = info
+
+    name.should.equal(payload.name)
+    stakingToken.should.equal(deployed.npm.address)
+    stakingTokenStablecoinPair.should.equal(npmDai.address)
+    rewardToken.should.equal(sabre.address)
+    rewardTokenStablecoinPair.should.equal(sabreDai.address)
+    totalStaked.should.equal('0')
+    target.should.equal(payload.values[0])
+    maximumStake.should.equal(payload.values[1])
+    stakeBalance.should.equal('0')
+    cumulativeDeposits.should.equal('0')
+    rewardPerBlock.should.equal(payload.values[3])
+    platformFee.should.equal(payload.values[2])
+    lockupPeriod.should.equal(payload.values[4])
+    rewardTokenBalance.should.equal(payload.values[5])
+    accountStakeBalance.should.equal('0')
+  })
+
   it('must fail if the protocol is paused', async () => {
     const [, bob] = await ethers.getSigners()
 
@@ -138,5 +174,120 @@ describe('Add or Edit Pool', () => {
 
     await pool.connect(bob).addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
       .should.be.rejectedWith('Forbidden')
+  })
+
+  it('must fail if an invalid key is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.transfer(bob.address, payload.values[5])
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32(''), payload.name, payload.poolType, payload.addresses, payload.values)
+      .should.be.rejectedWith('Invalid key')
+  })
+
+  it('must fail if an invalid name is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test'), '', payload.poolType, payload.addresses, payload.values)
+      .should.be.rejectedWith('Invalid name')
+  })
+
+  it('must fail if an invalid staking token is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const addresses = [...payload.addresses]
+    addresses[0] = helper.zerox
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test2'), payload.name, payload.poolType, addresses, payload.values)
+      .should.be.rejectedWith('Invalid staking token')
+  })
+
+  it('must fail if an invalid reward token is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const addresses = [...payload.addresses]
+    addresses[2] = helper.zerox
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test3'), payload.name, payload.poolType, addresses, payload.values)
+      .should.be.rejectedWith('Invalid reward token')
+  })
+
+  it('must fail if an invalid reward token stablecoin pair is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const addresses = [...payload.addresses]
+    addresses[3] = helper.zerox
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test4'), payload.name, payload.poolType, addresses, payload.values)
+      .should.be.rejectedWith('Invalid reward token pair')
+  })
+
+  it('must fail if an invalid reward per block is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const values = [...payload.values]
+    values[3] = 0
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test5'), payload.name, payload.poolType, payload.addresses, values)
+      .should.be.rejectedWith('Provide reward per block')
+  })
+
+  it('must fail if an invalid staking target is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.transfer(bob.address, payload.values[5])
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const values = [...payload.values]
+    values[0] = 0
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test6'), payload.name, payload.poolType, payload.addresses, values)
+      .should.be.rejectedWith('Please provide staking target')
+  })
+
+  it('must fail if an invalid lockup period is specified', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.transfer(bob.address, payload.values[5])
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const values = [...payload.values]
+    values[4] = 0
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test6'), payload.name, payload.poolType, payload.addresses, values)
+      .should.be.rejectedWith('Provide lockup period in blocks')
+  })
+
+  it('must fail if there is no allocation of the reward token', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await sabre.transfer(bob.address, payload.values[5])
+    await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
+
+    const values = [...payload.values]
+    values[5] = 0
+
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
+    await pool.connect(bob).addOrEditPool(key.toBytes32('test7'), payload.name, payload.poolType, payload.addresses, values)
+      .should.be.rejectedWith('Provide reward token allocation')
   })
 })

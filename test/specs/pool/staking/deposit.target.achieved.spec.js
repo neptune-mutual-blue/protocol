@@ -13,13 +13,13 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Withdraw Rewards', () => {
+describe('Deposit to Staking Pool', () => {
   let pool, payload, deployed, dai, npmDai, sabre, sabreDai
 
   before(async () => {
     deployed = await deployDependencies()
 
-    const [owner, bob] = await ethers.getSigners()
+    const [owner] = await ethers.getSigners()
     dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
     ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
     sabre = await deployer.deploy(cache, 'FakeToken', 'Sabre Oracles', 'SABRE', helper.ether(100_000_000))
@@ -50,58 +50,34 @@ describe('Withdraw Rewards', () => {
       ],
       values: [
         helper.ether(4_000_000), // 4M NPM target
-        helper.ether(10_000), // Max 10_000 per transaction
+        helper.ether(400_000_000), // Max 400_000_000 per transaction
         helper.percentage(0.5), // Platform fee
-        (1e18).toString(), // Reward per block
-        minutesToBlocks(31337, 1), // 5 minutes lockup period
-        helper.ether(1) // Deposit 10M sabre tokens
+        (12_345_678).toString(), // Reward per block
+        minutesToBlocks(31337, 5), // 5 minutes lockup period
+        helper.ether(10_000_000) // Deposit 10M sabre tokens
       ]
     }
 
     await sabre.approve(pool.address, ethers.constants.MaxUint256)
     await pool.addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
+  })
 
-    await deployed.npm.transfer(bob.address, helper.ether(1_000_000))
-    const amount = helper.ether(10_000)
+  it('must allow depositing up to the target', async () => {
+    const [, bob] = await ethers.getSigners()
+    await deployed.npm.transfer(bob.address, helper.ether(50_000_000))
+    const amount = payload.values[0]
 
     await deployed.npm.connect(bob).approve(pool.address, amount)
     await pool.connect(bob).deposit(payload.key, amount)
   })
 
-  it('must succeed without errors', async () => {
-    await mineBlocks(12)
+  it('must revert if cap is exceeded', async () => {
     const [, bob] = await ethers.getSigners()
+    await deployed.npm.transfer(bob.address, helper.ether(50_000_000))
+    const amount = helper.ether(1)
 
-    const tx = await pool.connect(bob).withdrawRewards(payload.key)
-    const { events } = await tx.wait()
-    const event = events.find(x => x.event === 'RewardsWithdrawn')
-
-    event.args.rewards.should.be.gt('0')
-    event.args.platformFee.should.be.gt('0')
-  })
-
-  it('must allow calling the function multiple times', async () => {
-    await mineBlocks(12)
-    const [, bob] = await ethers.getSigners()
-
-    await pool.connect(bob).withdrawRewards(payload.key)
-    await pool.connect(bob).withdrawRewards(payload.key)
-  })
-
-  it('must revert if invalid pool key is specified', async () => {
-    const [, bob] = await ethers.getSigners()
-
-    await pool.connect(bob).withdrawRewards(key.toBytes32('Foobar'))
-      .should.be.rejectedWith('Pool invalid or closed')
-  })
-
-  it('must revert if the protocol is paused', async () => {
-    const [owner, bob] = await ethers.getSigners()
-
-    await deployed.protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
-    await deployed.protocol.pause()
-
-    await pool.connect(bob).withdrawRewards(key.toBytes32('Foobar'))
-      .should.be.rejectedWith('Protocol is paused')
+    await deployed.npm.connect(bob).approve(pool.address, amount)
+    await pool.connect(bob).deposit(payload.key, amount)
+      .should.be.rejectedWith('Target achieved or cap exceeded')
   })
 })

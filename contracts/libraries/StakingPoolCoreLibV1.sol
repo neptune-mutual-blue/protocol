@@ -117,7 +117,7 @@ library StakingPoolCoreLibV1 {
       require(addresses[2] != address(0), "Invalid reward token");
       require(addresses[3] != address(0), "Invalid reward token pair");
       require(values[4] > 0, "Provide lockup period in blocks");
-      require(values[5] > 0, "Provide reward token balance");
+      require(values[5] > 0, "Provide reward token allocation");
       require(values[3] > 0, "Provide reward per block");
       require(values[0] > 0, "Please provide staking target");
     }
