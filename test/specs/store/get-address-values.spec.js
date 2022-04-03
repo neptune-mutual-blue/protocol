@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { ethers } = require('hardhat')
 const { helper, deployer, key } = require('../../../util')
 const cache = null
 
