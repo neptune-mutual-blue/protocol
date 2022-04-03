@@ -211,7 +211,7 @@ library StakingPoolLibV1 {
     // or a very small number, platform fee becomes zero because of data loss
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-subtraction The following subtraction can cause
+    // @suppress-subtraction @note The following subtraction can cause
     // an underflow if `getRewardPlatformFee` is greater than 100%.
     if (rewards - platformFee > 0) {
       // @suppress-malicious-erc20 `rewardToken` can't be manipulated via user input.
@@ -236,7 +236,6 @@ library StakingPoolLibV1 {
       uint256 rewardsPlatformFee
     )
   {
-    require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
     require(amount <= s.getAvailableToStakeInternal(key), "Target achieved or cap exceeded");
@@ -271,7 +270,6 @@ library StakingPoolLibV1 {
       uint256 rewardsPlatformFee
     )
   {
-    require(key > 0, "Invalid key");
     require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");

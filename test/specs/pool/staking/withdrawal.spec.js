@@ -52,9 +52,9 @@ describe('Withdraw Staked Tokens', () => {
         helper.ether(4_000_000), // 4M NPM target
         helper.ether(10_000), // Max 10_000 per transaction
         helper.percentage(0.5), // Platform fee
-        (12_345_678).toString(), // Reward per block
+        (1e18).toString(), // Reward per block
         minutesToBlocks(31337, 1), // 5 minutes lockup period
-        helper.ether(10_000_000) // Deposit 10M sabre tokens
+        helper.ether(1) // Deposit 1 sabre tokens
       ]
     }
 
@@ -99,6 +99,12 @@ describe('Withdraw Staked Tokens', () => {
     const [, bob] = await ethers.getSigners()
     await pool.connect(bob).withdraw(payload.key, helper.ether(0))
       .should.be.rejectedWith('Please specify amount')
+  })
+
+  it('must revert if withdrawal amount is greater than staken', async () => {
+    const [, bob] = await ethers.getSigners()
+    await pool.connect(bob).withdraw(payload.key, helper.ether(10_001))
+      .should.be.rejectedWith('Insufficient balance')
   })
 
   it('must revert if the protocol is paused', async () => {
