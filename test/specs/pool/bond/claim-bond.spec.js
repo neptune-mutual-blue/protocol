@@ -86,5 +86,19 @@ describe('Claim Bond', () => {
 
     await deployed.protocol.pause()
     await pool.claimBond().should.be.rejectedWith('Protocol is paused')
+    await deployed.protocol.unpause()
+  })
+
+  it('must revert claims when bond is still vesting', async () => {
+    const [, bob] = await ethers.getSigners()
+    const amount = helper.ether(200)
+    const tokensDesired = await pool.calculateTokensForLp(amount)
+
+    await npmDai.transfer(bob.address, amount)
+
+    await npmDai.connect(bob).approve(pool.address, amount)
+    await pool.connect(bob).createBond(amount, tokensDesired)
+    await pool.connect(bob).claimBond()
+      .should.be.rejectedWith('Still vesting')
   })
 })

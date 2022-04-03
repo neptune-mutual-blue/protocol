@@ -70,26 +70,16 @@ describe('Setup Bond', () => {
   it('must allow updating the bond pool values without top up', async () => {
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    const cloned = JSON.parse(JSON.stringify(payload))
+    const addresses = [helper.zerox, helper.zerox]
 
-    cloned.values = [helper.percentage(2), // 1% bond discount
-      helper.ether(500_000), // Maximum bond amount
-      (1 * MINUTES).toString(), // Bond period / vesting term
+    const values = [
+      '0', // 1% bond discount
+      '0', // Maximum bond amount
+      '0', // Bond period / vesting term
       '0' // NPM to top up
     ]
 
-    const tx = await pool.setup(cloned.addresses, cloned.values)
-    const { events } = await tx.wait()
-
-    const event = events.find(x => x.event === 'BondPoolSetup')
-
-    for (const i in event.args.addresses) {
-      event.args.addresses[i].should.equal(cloned.addresses[i])
-    }
-
-    for (const i in event.args.values) {
-      event.args.values[i].toString().should.equal(cloned.values[i])
-    }
+    await pool.setup(addresses, values)
   })
 
   it('must reject if invoked by non admin', async () => {

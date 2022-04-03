@@ -45,7 +45,7 @@ describe('Create Bond', () => {
         helper.percentage(1), // 1% bond discount
         helper.ether(100_000), // Maximum bond amount
         (5 * MINUTES).toString(), // Bond period / vesting term
-        helper.ether(10_000_000) // NPM to top up
+        helper.ether(2000) // NPM to top up
       ]
     }
 
@@ -56,10 +56,10 @@ describe('Create Bond', () => {
 
   it('must correctly create a bond', async () => {
     const [owner] = await ethers.getSigners()
-    const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
+    const tokensDesired = await pool.calculateTokensForLp(helper.ether(1800))
 
-    await npmDai.approve(pool.address, helper.ether(200))
-    const tx = await pool.createBond(helper.ether(200), tokensDesired)
+    await npmDai.approve(pool.address, helper.ether(1800))
+    const tx = await pool.createBond(helper.ether(1800), tokensDesired)
     const { events } = await tx.wait()
 
     const { timestamp } = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
@@ -67,7 +67,7 @@ describe('Create Bond', () => {
 
     const event = events.find(x => x.event === 'BondCreated')
     event.args.account.should.equal(owner.address)
-    event.args.lpTokens.should.equal(helper.ether(200))
+    event.args.lpTokens.should.equal(helper.ether(1800))
     event.args.npmToVest.should.equal(tokensDesired)
     event.args.unlockDate.should.eq(mustUnlockAt.toString())
   })
@@ -76,12 +76,14 @@ describe('Create Bond', () => {
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
     await npmDai.approve(pool.address, helper.ether(200))
-    await pool.createBond('0', tokensDesired).should.be.rejectedWith('Please specify `lpTokens`')
+    await pool.createBond('0', tokensDesired)
+      .should.be.rejectedWith('Please specify `lpTokens`')
   })
 
   it('must revert if zero value is specified for `minNpmDesired`', async () => {
     await npmDai.approve(pool.address, helper.ether(200))
-    await pool.createBond(helper.ether(200), '0').should.be.rejectedWith('Please enter `minNpmDesired`')
+    await pool.createBond(helper.ether(200), '0')
+      .should.be.rejectedWith('Please enter `minNpmDesired`')
   })
 
   it('must revert if the protocol is paused', async () => {
@@ -89,6 +91,34 @@ describe('Create Bond', () => {
 
     await deployed.protocol.pause()
     await npmDai.approve(pool.address, helper.ether(200))
-    await pool.createBond(helper.ether(200), tokensDesired).should.be.rejectedWith('Protocol is paused')
+    await pool.createBond(helper.ether(200), tokensDesired)
+      .should.be.rejectedWith('Protocol is paused')
+
+    await deployed.protocol.unpause()
+  })
+
+  it('must revert if the bond amount is too large', async () => {
+    const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
+
+    await npmDai.approve(pool.address, helper.ether(200))
+    await pool.createBond(helper.ether(2000000), tokensDesired)
+      .should.be.rejectedWith('Bond too big')
+  })
+
+  it('must revert if the minimum NPM desired is too big', async () => {
+    const tokensDesired = helper.ether(100_000)
+
+    await npmDai.approve(pool.address, helper.ether(200))
+    await pool.createBond(helper.ether(200), tokensDesired)
+      .should.be.rejectedWith('Min bond `minNpmDesired` failed')
+  })
+
+  it('must revert if the contract no more NPM left to bond', async () => {
+    const amount = helper.ether(90_000)
+    const tokensDesired = await pool.calculateTokensForLp(amount)
+
+    await npmDai.approve(pool.address, amount)
+    await pool.createBond(amount, tokensDesired)
+      .should.be.rejectedWith('NPM balance insufficient to bond')
   })
 })
