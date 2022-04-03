@@ -124,7 +124,7 @@ contract FakeStore is IStore {
   }
 
   function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
-    require(i < addressArrayStorage[k].length, "Invalid key");
+    require(i < addressArrayStorage[k].length, "Invalid index");
 
     address v = addressArrayStorage[k][i];
     deleteAddressArrayItem(k, v);
