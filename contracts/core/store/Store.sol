@@ -177,14 +177,14 @@ contract Store is StoreBase {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
-    require(i < addressArrayStorage[k].length, "Invalid key");
+    require(i < addressArrayStorage[k].length, "Invalid index");
 
     address v = addressArrayStorage[k][i];
     deleteAddressArrayItem(k, v);
   }
 
   function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
-    values = new address[](keys.length + 1);
+    values = new address[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
       values[i] = addressStorage[keys[i]];
@@ -200,7 +200,7 @@ contract Store is StoreBase {
   }
 
   function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
-    values = new uint256[](keys.length + 1);
+    values = new uint256[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
       values[i] = uintStorage[keys[i]];

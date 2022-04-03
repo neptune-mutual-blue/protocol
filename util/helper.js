@@ -16,11 +16,13 @@ const toPercentageString = (x) => (100 * parseInt(x.toString()) / MULTIPLIER).to
 const add = (x, y) => BigNumber(x.toString()).plus(y.toString()).toString()
 const zerox = '0x0000000000000000000000000000000000000000'
 const zero1 = '0x0000000000000000000000000000000000000001'
+const emptyBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
 const sum = (x) => x.reduce((y, z) => y + z)
 const getRandomNumber = (min, max) => Math.ceil(Math.floor(Math.random() * (max - min + 1)) + min)
 const formatToken = (x, symbol) => Number(x).toLocaleString('en-US', { minimumFractionDigits: 4 }) + (` ${symbol}` || '')
 const weiAsToken = (x, symbol) => formatToken(weiToEther(x), symbol)
 const formatCurrency = (x, precision = 4) => Number(x).toLocaleString(undefined, { currency: 'USD', style: 'currency', minimumFractionDigits: precision })
+const stringToHex = (x) => '0x' + Array.from(x).map(c => c.charCodeAt(0) < 128 ? c.charCodeAt(0).toString(16) : encodeURIComponent(c).replace(/%/g, '').toLowerCase()).join('')
 
 const formatPercent = (x) => {
   if (!x || isNaN(x)) {
@@ -58,11 +60,13 @@ module.exports = {
   add,
   zerox,
   zero1,
+  emptyBytes32,
   coverStatus,
   sum,
   getRandomNumber,
   weiAsToken,
   formatCurrency,
   formatPercent,
-  formatPercentBn
+  formatPercentBn,
+  stringToHex
 }
