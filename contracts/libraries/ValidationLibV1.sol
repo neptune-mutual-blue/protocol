@@ -182,7 +182,7 @@ library ValidationLibV1 {
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
-    require(claiming || falseReporting, "Not reported nor disputed");
+    require(claiming || falseReporting, "Not claimable nor disputed");
   }
 
   function mustBeReportingOrDisputed(IStore s, bytes32 key) external view {
@@ -208,7 +208,7 @@ library ValidationLibV1 {
 
   function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view {
     uint256 deadline = s.getResolutionDeadlineInternal(key);
-    require(block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+    require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
   }
 
   function mustBeValidIncidentDate(
@@ -284,6 +284,7 @@ library ValidationLibV1 {
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    mustBeAfterReportingPeriod(s, key);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
@@ -301,6 +302,7 @@ library ValidationLibV1 {
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    mustBeAfterReportingPeriod(s, key);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
@@ -318,10 +320,7 @@ library ValidationLibV1 {
       // Incident occurred. Must unstake with claim during the claim period.
       mustBeDuringClaimPeriod(s, key);
       return;
-    }
-
-    // Incident did not occur.
-    mustBeAfterReportingPeriod(s, key);
+    }    
   }
 
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {
