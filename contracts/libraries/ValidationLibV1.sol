@@ -314,7 +314,7 @@ library ValidationLibV1 {
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, key);
 
-    bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
