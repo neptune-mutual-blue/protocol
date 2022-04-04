@@ -72,6 +72,55 @@ describe('Resolution: unstakeWithClaim', () => {
   })
 
   it('must unstake and claim rewards correctly', async () => {
+    const [owner, bob] = await ethers.getSigners()
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+
+    const disputeInfo = key.toBytes32('dispute-info')
+    await deployed.npm.transfer(bob.address, helper.ether(1000))
+    await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(1000))
+    await deployed.governance.connect(bob).dispute(coverKey, incidentDate, disputeInfo, helper.ether(1000))
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, incidentDate)
+
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    const tx = await deployed.resolution.unstakeWithClaim(coverKey, incidentDate)
+    const { events } = await tx.wait()
+
+    const unstakenEvent = events.find(x => x.event === 'Unstaken')
+    unstakenEvent.args.caller.should.equal(owner.address)
+    unstakenEvent.args.originalStake.should.equal(helper.ether(1000))
+    unstakenEvent.args.reward.should.equal(helper.ether(600))
+
+    const reporterRewardDistributedEvent = events.find(x => x.event === 'ReporterRewardDistributed')
+    reporterRewardDistributedEvent.args.caller.should.equal(owner.address)
+    reporterRewardDistributedEvent.args.reporter.should.equal(owner.address)
+    reporterRewardDistributedEvent.args.originalReward.should.equal(helper.ether(600))
+    reporterRewardDistributedEvent.args.reporterReward.should.equal(helper.ether(100))
+
+    const governanceBurnedEvent = events.find(x => x.event === 'GovernanceBurned')
+    governanceBurnedEvent.args.caller.should.equal(owner.address)
+    governanceBurnedEvent.args.burner.should.equal(helper.zero1)
+    governanceBurnedEvent.args.originalReward.should.equal(helper.ether(600))
+    governanceBurnedEvent.args.burnedAmount.should.equal(helper.ether(300))
+
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.finalize(coverKey, incidentDate)
+  })
+
+  it('must unstake and claim rewards correctly when no dispute exists', async () => {
     const [owner] = await ethers.getSigners()
 
     const reportingInfo = key.toBytes32('reporting-info')
