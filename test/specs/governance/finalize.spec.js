@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key } = require('../../../../util')
-const composer = require('../../../../util/composer')
+const { helper, deployer, key } = require('../../../util')
+const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Resolution: configureCoolDownPeriod', () => {
+describe('Governance: finalize', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -71,49 +71,39 @@ describe('Resolution: configureCoolDownPeriod', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('must configure cooldown period correctly when accessed without key', async () => {
-    const tx = await deployed.resolution.configureCoolDownPeriod(key.toBytes32(''), 2.5 * DAYS)
+  it('must finalize correctly', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    const tx = await deployed.resolution.finalize(coverKey, incidentDate)
     const { events } = await tx.wait()
 
-    const event = events.find(x => x.event === 'CooldownPeriodConfigured')
-    event.args.key.should.equal(key.toBytes32(''))
-    event.args.period.should.equal(2.5 * DAYS)
-
-    // Reset
-    await deployed.resolution.configureCoolDownPeriod(key.toBytes32(''), 1 * DAYS)
-  })
-
-  it('must configure cooldown period correctly', async () => {
-    const tx = await deployed.resolution.configureCoolDownPeriod(coverKey, 2.5 * DAYS)
-    const { events } = await tx.wait()
-
-    const event = events.find(x => x.event === 'CooldownPeriodConfigured')
+    const event = events.find(x => x.event === 'Finalized')
     event.args.key.should.equal(coverKey)
-    event.args.period.should.equal(2.5 * DAYS)
-
-    const result = await deployed.resolution.getCoolDownPeriod(coverKey)
-    result.should.equal(2.5 * DAYS)
-
-    // Reset
-    await deployed.resolution.configureCoolDownPeriod(coverKey, 1 * DAYS)
+    event.args.incidentDate.should.equal(incidentDate)
   })
 
-  it('reverts when invalid value is passed as cooldown period', async () => {
-    await deployed.resolution.configureCoolDownPeriod(coverKey, 0)
-      .should.be.rejectedWith('Please specify period')
-  })
-
-  it('reverts when protocol is paused', async () => {
-    await deployed.protocol.pause()
-    await deployed.resolution.configureCoolDownPeriod(coverKey, 0)
-      .should.be.rejectedWith('Protocol is paused')
-    await deployed.protocol.unpause()
-  })
-
-  it('reverts when not accessed by `GOVERNANCE_ADMIN`', async () => {
-    const [, bob] = await ethers.getSigners()
-
-    await deployed.resolution.connect(bob).configureCoolDownPeriod(coverKey, 2.5 * DAYS)
-      .should.be.rejectedWith('Forbidden')
+  it('reverts when invalid incident date is specified', async () => {
+    await deployed.resolution.finalize(coverKey, 0)
+      .should.be.rejectedWith('Please specify incident date')
   })
 })
