@@ -117,7 +117,6 @@ abstract contract Resolvable is Finalization, IResolvable {
   function configureCoolDownPeriod(bytes32 key, uint256 period) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
-    s.mustHaveNormalCoverStatus(key);
 
     require(period > 0, "Please specify period");
 

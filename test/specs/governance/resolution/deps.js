@@ -140,7 +140,16 @@ const deployDependencies = async () => {
     ]
   )
 
-  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
+  await protocol.grantRoles([{
+    account: owner.address,
+    roles: [key.ACCESS_CONTROL.UPGRADE_AGENT,
+      key.ACCESS_CONTROL.COVER_MANAGER,
+      key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
+      key.ACCESS_CONTROL.PAUSE_AGENT,
+      key.ACCESS_CONTROL.GOVERNANCE_AGENT,
+      key.ACCESS_CONTROL.GOVERNANCE_ADMIN,
+      key.ACCESS_CONTROL.UNPAUSE_AGENT]
+  }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',

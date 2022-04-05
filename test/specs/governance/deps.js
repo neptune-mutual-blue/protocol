@@ -106,6 +106,15 @@ const deployDependencies = async () => {
     ValidationLibV1: validationLibV1.address
   })
 
+  const policyHelperV1 = await deployer.deployWithLibraries(cache, 'PolicyHelperV1', {
+    CoverUtilV1: coverUtilV1.address,
+    NTransferUtilV2: transferLib.address,
+    ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
+    RoutineInvokerLibV1: routineInvokerLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address
+  })
+
   const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
     {
       AccessControlLibV1: accessControlLibV1.address,
@@ -143,7 +152,16 @@ const deployDependencies = async () => {
     ]
   )
 
-  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
+  await protocol.grantRoles([{
+    account: owner.address,
+    roles: [key.ACCESS_CONTROL.UPGRADE_AGENT,
+      key.ACCESS_CONTROL.COVER_MANAGER,
+      key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
+      key.ACCESS_CONTROL.GOVERNANCE_AGENT,
+      key.ACCESS_CONTROL.GOVERNANCE_ADMIN,
+      key.ACCESS_CONTROL.PAUSE_AGENT,
+      key.ACCESS_CONTROL.UNPAUSE_AGENT]
+  }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
@@ -318,7 +336,7 @@ const deployDependencies = async () => {
     routineInvokerLibV1,
     cover,
     coverLibV1,
-    // policyHelperV1,
+    policyHelperV1,
     stakingPoolLibV1,
     strategyLibV1,
     stakingContract,

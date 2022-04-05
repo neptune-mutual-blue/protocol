@@ -58,6 +58,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param incidentDate Enter the incident date
    */
   function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
     s.validateUnstakeWithClaim(key, incidentDate);
