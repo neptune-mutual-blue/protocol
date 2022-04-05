@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key } = require('../../../../util')
-const composer = require('../../../../util/composer')
+const { helper, deployer, key } = require('../../../util')
+const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Resolution: getResolutionDeadline', () => {
+describe('Governance: getResolutionDate', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -71,22 +71,26 @@ describe('Resolution: getResolutionDeadline', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('must get resolution deadline correctly', async () => {
+  it('must get resolution date correctly', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+
     await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+
+    const result = await deployed.governance.getResolutionDate(coverKey)
+    result.should.equal(parseInt(incidentDate, 10) + 7 * DAYS)
+
+    // Cleanup - resolve, finalize
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     await deployed.resolution.resolve(coverKey, incidentDate)
-
-    // Reporting period + 1 second + Cooldown period
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
-    result.should.be.gt(parseInt(incidentDate, 10) + (7 * DAYS) + (1 * DAYS))
-
-    // Clean up - finalize
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
@@ -96,8 +100,8 @@ describe('Resolution: getResolutionDeadline', () => {
     await deployed.resolution.finalize(coverKey, incidentDate)
   })
 
-  it('must return zero if there is no active reporting', async () => {
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
+  it('must get resolution date correctly when there is no active reporting', async () => {
+    const result = await deployed.governance.getResolutionDate(coverKey)
     result.should.equal(0)
   })
 })

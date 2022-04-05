@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, deployer, key } = require('../../../../util')
-const composer = require('../../../../util/composer')
+const { helper, deployer, key } = require('../../../util')
+const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Resolution: getResolutionDeadline', () => {
+describe('Governance: report', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -71,22 +71,36 @@ describe('Resolution: getResolutionDeadline', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('must get resolution deadline correctly', async () => {
+  it('must report correctly', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+
+    const tx = await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    const { events } = await tx.wait()
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const attestedEvent = events.find(x => x.event === 'Attested')
+    attestedEvent.args.key.should.equal(coverKey)
+    attestedEvent.args.incidentDate.should.equal(incidentDate)
+    attestedEvent.args.witness.should.equal(bob.address)
+    attestedEvent.args.stake.should.equal(helper.ether(1000))
+
+    const reportedEvent = events.find(x => x.event === 'Reported')
+    reportedEvent.args.key.should.equal(coverKey)
+    reportedEvent.args.reporter.should.equal(bob.address)
+    reportedEvent.args.incidentDate.should.equal(incidentDate)
+    reportedEvent.args.info.should.equal(reportingInfo)
+    reportedEvent.args.initialStake.should.equal(helper.ether(1000))
+
+    // Cleanup - resolve, finalize
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     await deployed.resolution.resolve(coverKey, incidentDate)
-
-    // Reporting period + 1 second + Cooldown period
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
-    result.should.be.gt(parseInt(incidentDate, 10) + (7 * DAYS) + (1 * DAYS))
-
-    // Clean up - finalize
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
@@ -96,8 +110,52 @@ describe('Resolution: getResolutionDeadline', () => {
     await deployed.resolution.finalize(coverKey, incidentDate)
   })
 
-  it('must return zero if there is no active reporting', async () => {
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
-    result.should.equal(0)
+  it('reverts when tried to report twice', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+      .should.be.rejectedWith('Status not normal')
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+
+    // Cleanup - resolve, finalize
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.finalize(coverKey, incidentDate)
+  })
+
+  it('reverts when invalid value is passed as stake', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(0))
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(0))
+      .should.be.rejectedWith('Stake insufficient')
+  })
+
+  it('reverts when the value passed as stake is less than the minimum reporting stake', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(25))
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(25))
+      .should.be.rejectedWith('Stake insufficient')
   })
 })
