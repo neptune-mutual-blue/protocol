@@ -74,6 +74,8 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
 
     s.updateStateAndLiquidity(key);
+
+    emit WeightSet(key, weight);
   }
 
   /**

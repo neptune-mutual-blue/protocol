@@ -46,6 +46,23 @@ describe('Cover: updateCover', () => {
     await deployed.cover.updateCover(coverKey, updatedInfo)
   })
 
+  it('reverts when the info is not changed', async () => {
+    const coverKey = key.toBytes32('foo-bar-2')
+    const [owner] = await ethers.getSigners()
+
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+
+    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+
+    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.deployVault(coverKey)
+
+    const updatedInfo = key.toBytes32('info')
+    await deployed.cover.updateCover(coverKey, updatedInfo)
+      .should.be.rejectedWith('Duplicate content')
+  })
+
   it('reverts when not accessed by GovernanceAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
