@@ -13,12 +13,9 @@ import "./StoreKeyUtil.sol";
 import "./ValidationLibV1.sol";
 import "./RegistryLibV1.sol";
 
-// @todo: use an oracle service
 library PriceLibV1 {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-
-  uint256 public constant UPDATE_INTERVAL = 15 minutes;
 
   function setTokenPriceInStablecoinInternal(IStore s, address token) internal {
     if (token == address(0)) {
@@ -64,18 +61,11 @@ library PriceLibV1 {
       return;
     }
 
-    // solhint-disable-next-line
-    if (getLastUpdateOnInternal(s, token, stablecoin) + UPDATE_INTERVAL > block.timestamp) {
-      return;
-    }
-
     (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
 
     s.setUintByKey(_getReserve0Key(pair), reserve0);
     s.setUintByKey(_getReserve1Key(pair), reserve1);
     s.setUintByKey(_getPairTotalSupplyKey(pair), pair.totalSupply());
-
-    _setLastUpdateOn(s, token, stablecoin);
   }
 
   function getPairLiquidityInStablecoin(
@@ -100,26 +90,18 @@ library PriceLibV1 {
     return (2 * reserve1 * lpTokens) / supply;
   }
 
-  function getLastUpdateOnInternal(
-    IStore s,
-    address token,
-    address liquidityToken
-  ) public view returns (uint256) {
-    bytes32 key = _getLastUpdateKey(token, liquidityToken);
+  function getLastUpdateOnInternal(IStore s) public view returns (uint256) {
+    bytes32 key = getLastUpdateKey();
     return s.getUintByKey(key);
   }
 
-  function _setLastUpdateOn(
-    IStore s,
-    address token,
-    address liquidityToken
-  ) private {
-    bytes32 key = _getLastUpdateKey(token, liquidityToken);
+  function setLastUpdateOn(IStore s) public {
+    bytes32 key = getLastUpdateKey();
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
-  function _getLastUpdateKey(address token0, address token1) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_TOKEN_PRICE_LAST_UPDATE, token0, token1));
+  function getLastUpdateKey() public pure returns (bytes32) {
+    return ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE;
   }
 
   function getPriceInternal(

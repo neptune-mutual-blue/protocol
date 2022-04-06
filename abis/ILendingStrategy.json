@@ -19,6 +19,12 @@
         "internalType": "uint256",
         "name": "stablecoinDeposited",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "certificateTokenIssued",
+        "type": "uint256"
       }
     ],
     "name": "Deposited",
@@ -62,6 +68,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "stablecoinWithdrawn",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "certificateTokenRedeemed",
         "type": "uint256"
       }
     ],

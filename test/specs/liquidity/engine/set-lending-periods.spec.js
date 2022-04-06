@@ -17,6 +17,7 @@ describe('Liquidity Engine: `setLendingPeriods` function', () => {
     baseLibV1,
     validationLibV1,
     strategyLibV1,
+    storeKeyUtil,
     deployed
 
   before(async () => {
@@ -27,10 +28,12 @@ describe('Liquidity Engine: `setLendingPeriods` function', () => {
     baseLibV1 = deployed.baseLibV1
     validationLibV1 = deployed.validationLibV1
     strategyLibV1 = deployed.strategyLibV1
+    storeKeyUtil = deployed.storeKeyUtil
 
     liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
+      StoreKeyUtil: storeKeyUtil.address,
       StrategyLibV1: strategyLibV1.address,
       ValidationLibV1: validationLibV1.address
     }, store.address)

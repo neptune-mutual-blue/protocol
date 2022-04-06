@@ -14,7 +14,8 @@ describe('Liquidity Engine Constructor and Views', () => {
     accessControlLibV1,
     baseLibV1,
     validationLibV1,
-    strategyLibV1
+    strategyLibV1,
+    storeKeyUtil
 
   beforeEach(async () => {
     const deployed = await deployDependencies()
@@ -24,12 +25,14 @@ describe('Liquidity Engine Constructor and Views', () => {
     baseLibV1 = deployed.baseLibV1
     validationLibV1 = deployed.validationLibV1
     strategyLibV1 = deployed.strategyLibV1
+    storeKeyUtil = deployed.storeKeyUtil
   })
 
   it('correctly deploys', async () => {
     const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
+      StoreKeyUtil: storeKeyUtil.address,
       StrategyLibV1: strategyLibV1.address,
       ValidationLibV1: validationLibV1.address
     }, store.address)

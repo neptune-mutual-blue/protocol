@@ -8,8 +8,7 @@ import "./ValidationLibV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
-
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 library PolicyHelperV1 {
   using ProtoUtilV1 for IStore;
@@ -49,22 +48,16 @@ library PolicyHelperV1 {
     totalAvailableLiquidity = stablecoinOwnedByVault + supportPool;
     utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    // console.log("s: %s. p: %s. u: %s", stablecoinOwnedByVault, supportPool, utilizationRatio);
-    // console.log("c: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
+    console.log("[cp] s: %s. p: %s. u: %s", stablecoinOwnedByVault, supportPool, utilizationRatio);
+    console.log("[cp]: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
 
     rate = utilizationRatio > floor ? utilizationRatio : floor;
 
-    // console.log("rs1 -->", rate);
-
     rate = rate + (coverDuration * 100);
-
-    // console.log("rs2 -->", rate);
 
     if (rate > ceiling) {
       rate = ceiling;
     }
-
-    // console.log("rs3 -->", rate);
 
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }

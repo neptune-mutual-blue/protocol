@@ -48,8 +48,14 @@ const deployDependencies = async () => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
+  const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address
+  })
+
   const routineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
     CoverUtilV1: coverUtilV1.address,
+    PriceLibV1: priceLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StrategyLibV1: strategyLibV1.address,
@@ -87,11 +93,6 @@ const deployDependencies = async () => {
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
-  })
-
-  const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
   })
 
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
@@ -148,7 +149,8 @@ const deployDependencies = async () => {
       helper.percentage(5), // Claim: Reporter Commission: 5%
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-      1 * DAYS // cooldown period
+      1 * DAYS, // cooldown period,
+      1 * DAYS // state and liquidity update interval
     ]
   )
 

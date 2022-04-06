@@ -8,6 +8,7 @@ import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
 import "./NTransferUtilV2.sol";
+import "hardhat/console.sol";
 
 library StrategyLibV1 {
   using NTransferUtilV2 for IERC20;
@@ -162,7 +163,7 @@ library StrategyLibV1 {
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
-    uint256 toReceive
+    uint256 received
   ) external returns (uint256 income, uint256 loss) {
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
@@ -172,12 +173,13 @@ library StrategyLibV1 {
 
     uint256 amountInThisStrategy = getAmountInStrategy(s, coverKey, strategyName, address(token));
 
-    income = toReceive > amountInThisStrategy ? toReceive - amountInThisStrategy : 0;
-    loss = toReceive < amountInThisStrategy ? amountInThisStrategy - toReceive : 0;
+    income = received > amountInThisStrategy ? received - amountInThisStrategy : 0;
+    loss = received < amountInThisStrategy ? amountInThisStrategy - received : 0;
 
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
+    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 

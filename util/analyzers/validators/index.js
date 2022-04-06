@@ -10,5 +10,6 @@ const revert = require('./revert')
 const subtraction = require('./subtraction')
 const todo = require('./todo')
 const zero = require('./zero-value')
+const accidentalZero = require('./accidental-zero')
 
-module.exports = [acl, address, erc20, fraction, initialization, nonReentrancy, notImplemented, pausable, revert, subtraction, todo, zero]
+module.exports = [acl, address, erc20, fraction, initialization, nonReentrancy, notImplemented, pausable, revert, subtraction, todo, zero, accidentalZero]

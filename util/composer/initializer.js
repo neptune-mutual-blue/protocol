@@ -20,6 +20,7 @@ const initialize = async (suite, deploymentId) => {
   const network = await getNetworkInfo()
   const claimPeriod = network.cover.claimPeriod
   const cooldownPeriod = network.cover.cooldownPeriod
+  const stateUpdateInterval = network.cover.stateUpdateInterval
   const bondPeriod = network.pool.bond.period.toString()
 
   const tokens = await fakeTokenComposer.compose(cache)
@@ -69,7 +70,8 @@ const initialize = async (suite, deploymentId) => {
       helper.percentage(5), // Claim: Reporter Commission: 5%
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-      cooldownPeriod
+      cooldownPeriod,
+      stateUpdateInterval
     ]
   )
 
@@ -302,6 +304,7 @@ const initialize = async (suite, deploymentId) => {
   const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
+    StoreKeyUtil: libs.storeKeyUtil.address,
     StrategyLibV1: libs.strategyLibV1.address,
     ValidationLibV1: libs.validationLib.address
   }, store.address)
