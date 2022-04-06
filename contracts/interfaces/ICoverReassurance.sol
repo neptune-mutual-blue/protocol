@@ -5,6 +5,7 @@ import "./IMember.sol";
 
 interface ICoverReassurance is IMember {
   event ReassuranceAdded(bytes32 key, uint256 amount);
+  event WeightSet(bytes32 key, uint256 weight);
 
   /**
    * @dev Adds reassurance to the specified cover contract
