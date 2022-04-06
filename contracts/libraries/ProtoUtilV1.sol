@@ -190,7 +190,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_LP_RESERVE1 = "ns:uni:lp:reserve1";
   bytes32 public constant NS_LP_TOTAL_SUPPLY = "ns:uni:lp:totalSupply";
 
-  bytes32 public constant NS_TOKEN_PRICE_LAST_UPDATE = "ns:token:price:last:update";
+  bytes32 public constant NS_LAST_LIQUIDITY_STATE_UPDATE = "ns:last:snl:update";
+  bytes32 public constant NS_LIQUIDITY_STATE_UPDATE_INTERVAL = "ns:snl:update:interval";
   bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
   bytes32 public constant NS_LENDING_STRATEGY_DISABLED = "ns:lending:strategy:disabled";
   bytes32 public constant NS_LENDING_STRATEGY_WITHDRAWAL_START = "ns:lending:strategy:w:start";

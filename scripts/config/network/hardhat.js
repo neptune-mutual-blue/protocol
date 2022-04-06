@@ -5,6 +5,7 @@ const { ACCESS_CONTROL } = require('../../../util/key')
 const wallet = require('../../../util/wallet')
 
 const DAYS = 86400
+const HOURS = 3600
 
 const config = {
   31337: {
@@ -19,7 +20,8 @@ const config = {
       lendingPeriod: 180 * DAYS,
       withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
-      cooldownPeriod: 1 * DAYS
+      cooldownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * HOURS
     },
     // knownAccounts,
     // uniswapV2Like,

@@ -7,6 +7,7 @@ import "../../../interfaces/ILendingStrategy.sol";
 import "../../../interfaces/external/ICompoundERC20DelegatorLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
+import "hardhat/console.sol";
 
 contract CompoundStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -14,6 +15,10 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+
+  mapping(bytes32 => uint256) private _counters;
+  mapping(bytes32 => uint256) private _depositTotal;
+  mapping(bytes32 => uint256) private _withdrawalTotal;
 
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "compound", "v2"));
   bytes32 public constant NS_DEPOSITS = "deposits";
@@ -110,7 +115,12 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    emit Deposited(coverKey, address(vault), amount);
+    _counters[coverKey] += 1;
+    _depositTotal[coverKey] += amount;
+
+    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], amount, cDaiMinted);
+    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Deposited(coverKey, address(vault), amount, cDaiMinted);
   }
 
   /**
@@ -130,16 +140,16 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _drain(cDai);
     _drain(stablecoin);
 
-    uint256 cDaiBalance = cDai.balanceOf(address(vault));
+    uint256 cDaiRedeemed = cDai.balanceOf(address(vault));
 
-    if (cDaiBalance == 0) {
+    if (cDaiRedeemed == 0) {
       return 0;
     }
 
     // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    vault.transferToStrategy(cDai, coverKey, getName(), cDaiBalance);
-    cDai.ensureApproval(address(delegator), cDaiBalance);
-    uint256 result = delegator.redeem(cDaiBalance);
+    vault.transferToStrategy(cDai, coverKey, getName(), cDaiRedeemed);
+    cDai.ensureApproval(address(delegator), cDaiRedeemed);
+    uint256 result = delegator.redeem(cDaiRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
@@ -151,7 +161,13 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
+
+    _counters[coverKey] += 1;
+    _withdrawalTotal[coverKey] += stablecoinWithdrawn;
+
+    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed);
+    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, cDaiRedeemed);
   }
 
   function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {

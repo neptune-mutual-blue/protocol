@@ -6,8 +6,8 @@ import "./IMember.sol";
 pragma solidity 0.8.0;
 
 interface ILendingStrategy is IMember {
-  event Deposited(bytes32 indexed key, address indexed onBehalfOf, uint256 stablecoinDeposited);
-  event Withdrawn(bytes32 indexed key, address indexed sendTo, uint256 stablecoinWithdrawn);
+  event Deposited(bytes32 indexed key, address indexed onBehalfOf, uint256 stablecoinDeposited, uint256 certificateTokenIssued);
+  event Withdrawn(bytes32 indexed key, address indexed sendTo, uint256 stablecoinWithdrawn, uint256 certificateTokenRedeemed);
   event Drained(IERC20 indexed asset, uint256 amount);
 
   function getKey() external pure returns (bytes32);

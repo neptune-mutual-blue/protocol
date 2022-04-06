@@ -62,7 +62,8 @@ describe('Constructor & Initializer', () => {
         helper.percentage(5), // Claim: Reporter Commission: 5%
         helper.percentage(0.5), // Flash Loan Fee: 0.5%
         helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
 
@@ -106,7 +107,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
 
@@ -163,7 +165,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
 
@@ -185,7 +188,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
   })
@@ -237,7 +241,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid NPM')
   })
@@ -275,7 +280,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid Treasury')
   })
@@ -313,7 +319,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid Reassurance Vault')
   })
@@ -354,7 +361,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
 
@@ -378,7 +386,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Forbidden')
   })
@@ -417,7 +426,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     )
 
@@ -439,7 +449,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Can\'t change NPM')
   })
@@ -477,7 +488,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid Burner')
   })
@@ -516,7 +528,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid Uniswap V2 Router')
   })
@@ -555,7 +568,8 @@ describe('Constructor & Initializer', () => {
         helper.ether(0.005), // Claim: Reporter Commission: 5%
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS // cooldown period
+        1 * DAYS, // cooldown period,
+        1 * DAYS // state and liquidity update interval
       ]
     ).should.be.rejectedWith('Invalid Uniswap V2 Factory')
   })

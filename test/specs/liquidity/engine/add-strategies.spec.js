@@ -39,6 +39,7 @@ describe('Liquidity Engine: addStrategies', () => {
     liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
+      StoreKeyUtil: storeKeyUtil.address,
       StrategyLibV1: strategyLibV1.address,
       ValidationLibV1: validationLibV1.address
     }, store.address)

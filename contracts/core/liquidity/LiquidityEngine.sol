@@ -23,6 +23,14 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     s.addStrategiesInternal(strategies);
   }
 
+  function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, value);
+    emit LiquidityStateUpdateIntervalSet(value);
+  }
+
   function disableStrategy(address strategy) external override nonReentrant {
     // @suppress-address-trust-issue The address strategy can be trusted
     // because this function can only be invoked by a liquidity manager.

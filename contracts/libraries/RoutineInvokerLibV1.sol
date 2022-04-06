@@ -35,11 +35,22 @@ library RoutineInvokerLibV1 {
     bytes32 key,
     address token
   ) private {
+    // solhint-disable-next-line
+    if (s.getLastUpdateOnInternal() + _getUpdateInterval(s) > block.timestamp) {
+      return;
+    }
+
     _updateKnownTokenPrices(s, token);
 
     if (key > 0) {
       _invokeAssetManagement(s, key);
     }
+
+    s.setLastUpdateOn();
+  }
+
+  function _getUpdateInterval(IStore s) private view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL);
   }
 
   function getWithdrawalInfoInternal(IStore s, bytes32 coverKey)

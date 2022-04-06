@@ -1,3 +1,4 @@
+const HOURS = 3600
 const DAYS = 86400
 
 const config = {
@@ -13,7 +14,8 @@ const config = {
       lendingPeriod: 180 * DAYS,
       withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
-      cooldownPeriod: 1 * DAYS
+      cooldownPeriod: 1 * DAYS,
+      stateUpdateInterval: 12 * HOURS
     },
     knownAccounts: {
       admins: null

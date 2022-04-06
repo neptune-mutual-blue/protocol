@@ -9,6 +9,7 @@ interface ILiquidityEngine is IMember {
   event StrategyAdded(address indexed strategy);
   event StrategyDisabled(address indexed strategy);
   event LendingPeriodSet(uint256 lendingPeriod, uint256 withdrawalWindow);
+  event LiquidityStateUpdateIntervalSet(uint256 duration);
 
   function addStrategies(address[] memory strategies) external;
 
@@ -21,6 +22,8 @@ interface ILiquidityEngine is IMember {
   ) external;
 
   function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
+
+  function setLiquidityStateUpdateInterval(uint256 value) external;
 
   function getDisabledStrategies() external view returns (address[] memory strategies);
 

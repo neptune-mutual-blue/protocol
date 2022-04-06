@@ -2,6 +2,7 @@ require('dotenv').config()
 const wallet = require('../../../util/wallet')
 const { ACCESS_CONTROL } = require('../../../util/key')
 const MINUTES = 60
+const HOURS = 60 * MINUTES
 
 const config = {
   80001: {
@@ -16,7 +17,8 @@ const config = {
       lendingPeriod: 60 * MINUTES,
       withdrawalWindow: 60 * MINUTES,
       claimPeriod: 120 * MINUTES,
-      cooldownPeriod: 5 * MINUTES
+      cooldownPeriod: 5 * MINUTES,
+      stateUpdateInterval: 1 * HOURS
     },
     knownAccounts: [
       {

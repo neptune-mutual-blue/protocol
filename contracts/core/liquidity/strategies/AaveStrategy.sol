@@ -7,6 +7,7 @@ import "../../../interfaces/ILendingStrategy.sol";
 import "../../../interfaces/external/IAaveV2LendingPoolLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
+import "hardhat/console.sol";
 
 contract AaveStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -22,6 +23,10 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   address public depositCertificate;
   IAaveV2LendingPoolLike public lendingPool;
   mapping(uint256 => bool) public supportedChains;
+
+  mapping(bytes32 => uint256) private _counters;
+  mapping(bytes32 => uint256) private _depositTotal;
+  mapping(bytes32 => uint256) private _withdrawalTotal;
 
   constructor(
     IStore _s,
@@ -108,7 +113,13 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    emit Deposited(coverKey, address(vault), amount);
+    _counters[coverKey] += 1;
+    _depositTotal[coverKey] += amount;
+
+    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], amount, aTokenReceived);
+    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
+    emit Deposited(coverKey, address(vault), amount, aTokenReceived);
   }
 
   /**
@@ -128,17 +139,17 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     _drain(aToken);
     _drain(stablecoin);
 
-    uint256 aTokenAmount = aToken.balanceOf(address(vault));
+    uint256 aTokenRedeemed = aToken.balanceOf(address(vault));
 
-    if (aTokenAmount == 0) {
+    if (aTokenRedeemed == 0) {
       return 0;
     }
 
     // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back DAI + rewards
-    vault.transferToStrategy(aToken, coverKey, getName(), aTokenAmount);
+    vault.transferToStrategy(aToken, coverKey, getName(), aTokenRedeemed);
 
-    aToken.ensureApproval(address(lendingPool), aTokenAmount);
-    lendingPool.withdraw(address(stablecoin), aTokenAmount, address(this));
+    aToken.ensureApproval(address(lendingPool), aTokenRedeemed);
+    lendingPool.withdraw(address(stablecoin), aTokenRedeemed, address(this));
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
@@ -149,7 +160,13 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
 
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
+    _counters[coverKey] += 1;
+    _withdrawalTotal[coverKey] += stablecoinWithdrawn;
+
+    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed);
+    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, aTokenRedeemed);
   }
 
   function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {

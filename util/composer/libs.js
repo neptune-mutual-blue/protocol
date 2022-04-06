@@ -38,8 +38,14 @@ const deployAll = async (cache) => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
+  const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
+    ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address
+  })
+
   const routineInvokerLibV1 = await deployer.deployWithLibraries(cache, 'RoutineInvokerLibV1', {
     CoverUtilV1: coverUtilV1.address,
+    PriceLibV1: priceLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StrategyLibV1: strategyLibV1.address,
@@ -80,11 +86,6 @@ const deployAll = async (cache) => {
     StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLib.address
-  })
-
-  const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
   })
 
   const vaultLib = await deployer.deployWithLibraries(cache, 'VaultLibV1', {

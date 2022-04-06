@@ -117,11 +117,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "coverRatio",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "floor",
         "type": "uint256"
       },
