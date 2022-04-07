@@ -29,7 +29,7 @@ describe('cxTokenFactory: Constructor and Views', () => {
   })
 
   it('correctly deploys', async () => {
-    const vault = await deployer.deployWithLibraries(cache, 'cxTokenFactory', {
+    const factory = await deployer.deployWithLibraries(cache, 'cxTokenFactory', {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       StoreKeyUtil: storeKeyUtil.address,
@@ -37,13 +37,13 @@ describe('cxTokenFactory: Constructor and Views', () => {
       cxTokenFactoryLibV1: cxTokenFactoryLib.address
     }, store.address)
 
-    const _store = await vault.s()
+    const _store = await factory.s()
     _store.should.equal(store.address)
 
-    const version = await vault.version()
+    const version = await factory.version()
     version.should.equal(key.toBytes32('v0.1'))
 
-    const name = await vault.getName()
+    const name = await factory.getName()
     name.should.equal(key.PROTOCOL.CNAME.CXTOKEN_FACTORY)
   })
 })

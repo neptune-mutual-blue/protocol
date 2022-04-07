@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-const { ethers, network } = require('hardhat')
+const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../../../../util')
 const composer = require('../../../../util/composer')

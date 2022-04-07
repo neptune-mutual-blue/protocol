@@ -24,7 +24,7 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     processor = await deployer.deployWithLibraries(cache, 'Processor', libraries.dependencies, store.address)
   })
 
-  it('must succeed if all conditions are met', async () => {
+  it('must successfully set claim period for one cover', async () => {
     const [owner] = await ethers.getSigners()
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
@@ -37,7 +37,7 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     await protocol.setupRole(key.ACCESS_CONTROL.ADMIN, key.ACCESS_CONTROL.ADMIN, owner.address)
     await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
 
-    const tx = await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod)
+    const tx = await processor.setClaimPeriod(key.toBytes32('test'), newClaimPeriod)
     const { events } = await tx.wait()
     const [event] = events
 
@@ -46,6 +46,22 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     event.event.should.equal('ClaimPeriodSet')
     event.args.previous.toNumber().should.equal(0)
     event.args.current.toNumber().should.equal(newClaimPeriod)
+  })
+
+  it('must successfully set claim period for all covers', async () => {
+    const [owner] = await ethers.getSigners()
+    const newClaimPeriod = 7 * DAYS
+    const coverKey = key.toBytes32('')
+
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, cxToken.address)
+
+    const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
+
+    await protocol.setupRole(key.ACCESS_CONTROL.ADMIN, key.ACCESS_CONTROL.ADMIN, owner.address)
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
+
+    await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod)
   })
 
   it('must reject if the protocol is paused', async () => {
@@ -68,5 +84,22 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
 
     await store.initialize(coverKey, cxToken.address)
     await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod).should.be.rejectedWith('Forbidden')
+  })
+
+  it('must reject if invalid value is entered', async () => {
+    const [owner] = await ethers.getSigners()
+    const newClaimPeriod = 0 * DAYS
+    const coverKey = key.toBytes32('test')
+
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, cxToken.address)
+
+    const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
+
+    await protocol.setupRole(key.ACCESS_CONTROL.ADMIN, key.ACCESS_CONTROL.ADMIN, owner.address)
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
+
+    await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod)
+      .should.be.rejectedWith('Please specify value')
   })
 })

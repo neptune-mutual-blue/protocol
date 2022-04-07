@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-const { helper, deployer, key } = require('../../../../util')
+const { helper, deployer, key } = require('../../../util')
 const DAYS = 86400
 const cache = null
 
@@ -134,10 +134,9 @@ const deployDependencies = async () => {
     {
       account: owner.address,
       roles: [
-        key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
+        key.ACCESS_CONTROL.RECOVERY_AGENT,
         key.ACCESS_CONTROL.PAUSE_AGENT,
-        key.ACCESS_CONTROL.UNPAUSE_AGENT,
-        key.ACCESS_CONTROL.UPGRADE_AGENT
+        key.ACCESS_CONTROL.UNPAUSE_AGENT
       ]
     }
   ])

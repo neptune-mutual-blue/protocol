@@ -3,7 +3,6 @@ const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../../../../util')
 const { minutesToBlocks } = require('../../../../util/block-time')
-const { mineBlocks } = require('../../../../util/block')
 const pair = require('../../../../util/composer/uniswap-pair')
 const { deployDependencies, PoolTypes } = require('./deps')
 const cache = null
