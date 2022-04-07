@@ -44,10 +44,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address caller,
     bytes32 coverKey,
     address, /*to*/
-    uint256 amount
+    uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
@@ -73,8 +71,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
@@ -101,8 +97,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
@@ -136,7 +130,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
-    require(amount > 0, "Please specify amount");
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
@@ -178,8 +171,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
-    require(podsToRedeem > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);

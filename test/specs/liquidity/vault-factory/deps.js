@@ -2,10 +2,6 @@
 const { helper, deployer, key } = require('../../../../util')
 const DAYS = 86400
 const cache = null
-const PoolTypes = {
-  Token: 0,
-  POD: 1
-}
 
 const deployDependencies = async () => {
   const [owner] = await ethers.getSigners()
@@ -175,4 +171,4 @@ const deployDependencies = async () => {
   }
 }
 
-module.exports = { deployDependencies, PoolTypes }
+module.exports = { deployDependencies }

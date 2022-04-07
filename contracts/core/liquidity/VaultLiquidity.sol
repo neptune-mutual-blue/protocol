@@ -15,6 +15,7 @@ abstract contract VaultLiquidity is VaultBase {
     uint256 amount
   ) external override nonReentrant {
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -47,6 +48,7 @@ abstract contract VaultLiquidity is VaultBase {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -97,6 +99,7 @@ abstract contract VaultLiquidity is VaultBase {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
+    require(podsToRedeem > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE

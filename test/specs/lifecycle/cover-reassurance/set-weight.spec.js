@@ -75,8 +75,7 @@ describe('CoverReassurance: setWeight', () => {
 
   it('correctly sets weight', async () => {
     const weight = helper.ether(1)
-    const tx = await coverReassurance.setWeight(coverKey, weight)
-    const { events } = tx.wait()
+    await coverReassurance.setWeight(coverKey, weight)
   })
 
   it('reverts when protocol is paused', async () => {
