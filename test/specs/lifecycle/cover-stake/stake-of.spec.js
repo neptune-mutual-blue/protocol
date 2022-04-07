@@ -12,8 +12,9 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('CoverStake: Constructor', () => {
+describe('CoverStake: stakeOf', () => {
   let deployed, coverKey
+  const stakeWithFee = helper.ether(10_000)
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -31,7 +32,6 @@ describe('CoverStake: Constructor', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
     coverKey = key.toBytes32('foo-bar')
-    const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
     const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
@@ -71,25 +71,10 @@ describe('CoverStake: Constructor', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
   })
 
-  it('correctly deploys', async () => {
-    const coverStake = await deployer.deployWithLibraries(cache, 'CoverStake',
-      {
-        AccessControlLibV1: deployed.accessControlLibV1.address,
-        BaseLibV1: deployed.baseLibV1.address,
-        CoverUtilV1: deployed.coverUtilV1.address,
-        NTransferUtilV2: deployed.transferLib.address,
-        ProtoUtilV1: deployed.protoUtilV1.address,
-        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
-        StoreKeyUtil: deployed.storeKeyUtil.address,
-        ValidationLibV1: deployed.validationLibV1.address
-      },
-      deployed.store.address
-    )
+  it('correctly get the stake', async () => {
+    const [owner] = await ethers.getSigners()
 
-    const version = await coverStake.version()
-    const name = await coverStake.getName()
-
-    version.should.equal(key.toBytes32('v0.1'))
-    name.should.equal(key.PROTOCOL.CNAME.COVER_STAKE)
+    const result = await deployed.stakingContract.stakeOf(coverKey, owner.address)
+    result.should.equal(stakeWithFee)
   })
 })
