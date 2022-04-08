@@ -29,15 +29,17 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
      ******************************************************************************************/
     // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     uint256 previousBalance = stablecoin.balanceOf(address(this));
-    require(previousBalance >= amount, "Balance insufficient");
+    // require(previousBalance >= amount, "Balance insufficient"); <-- already checked in `preFlashLoan` --> `getFlashFeesInternal`
 
     stablecoin.ensureTransfer(address(receiver), amount);
     require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
     stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
-    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
 
     uint256 finalBalance = stablecoin.balanceOf(address(this));
     require(finalBalance >= previousBalance + fee, "Access is denied");
+
+    // Transfer protocol fee to the treasury
+    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
 
     /******************************************************************************************
       POST

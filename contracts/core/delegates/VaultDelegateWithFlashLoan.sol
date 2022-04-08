@@ -73,13 +73,15 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
 
     stablecoin = IERC20(s.getStablecoin());
 
-    require(address(stablecoin) == token, "Unknown token");
-    require(amount > 0, "Loan too small");
-    require(fee > 0, "Fee too little");
+    // require(address(stablecoin) == token, "Unknown token"); <-- already checked in `getFlashFeesInternal`
+    // require(amount > 0, "Loan too small"); <-- already checked in `getFlashFeesInternal`
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, true);
 
     (fee, protocolFee) = s.getFlashFeesInternal(coverKey, token, amount);
+
+    require(fee > 0, "Loan too small");
+    require(protocolFee > 0, "Loan too small");
   }
 
   function postFlashLoan(
