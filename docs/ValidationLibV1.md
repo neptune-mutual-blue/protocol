@@ -612,7 +612,7 @@ function mustBeClaimingOrDisputed(IStore s, bytes32 key) external view {
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
-    require(claiming || falseReporting, "Not reported nor disputed");
+    require(claiming || falseReporting, "Not claimable nor disputed");
   }
 ```
 </details>
@@ -714,7 +714,7 @@ function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view
 ```javascript
 function mustBeAfterResolutionDeadline(IStore s, bytes32 key) public view {
     uint256 deadline = s.getResolutionDeadlineInternal(key);
-    require(block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+    require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
   }
 ```
 </details>
@@ -969,6 +969,7 @@ function validateUnstakeWithoutClaim(
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    mustBeAfterReportingPeriod(s, key);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
@@ -1006,6 +1007,7 @@ function validateUnstakeWithClaim(
   ) external view {
     mustNotBePaused(s);
     mustNotHaveUnstaken(s, msg.sender, key, incidentDate);
+    mustBeAfterReportingPeriod(s, key);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
@@ -1017,16 +1019,13 @@ function validateUnstakeWithClaim(
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, key);
 
-    bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool incidentHappened = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
       mustBeDuringClaimPeriod(s, key);
       return;
-    }
-
-    // Incident did not occur.
-    mustBeAfterReportingPeriod(s, key);
+    }    
   }
 ```
 </details>
@@ -1149,8 +1148,8 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -1161,11 +1160,12 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -1173,7 +1173,10 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -1198,6 +1201,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -1219,15 +1223,16 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -1235,6 +1240,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -1260,6 +1266,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -1273,4 +1280,6 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

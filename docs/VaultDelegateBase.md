@@ -18,11 +18,11 @@ The VaultPod has `_mintPods` and `_redeemPods` features which enables
 ## Functions
 
 - [constructor(IStore store)](#)
-- [preTransferGovernance(address caller, bytes32 coverKey, address , uint256 amount)](#pretransfergovernance)
+- [preTransferGovernance(address caller, bytes32 coverKey, address , uint256 )](#pretransfergovernance)
 - [postTransferGovernance(address , bytes32 coverKey, address , uint256 )](#posttransfergovernance)
 - [preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#pretransfertostrategy)
 - [postTransferToStrategy(address , IERC20 , bytes32 coverKey, bytes32 , uint256 )](#posttransfertostrategy)
-- [preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 amount)](#prereceivefromstrategy)
+- [preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 )](#prereceivefromstrategy)
 - [postReceiveFromStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#postreceivefromstrategy)
 - [preAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#preaddliquidity)
 - [postAddLiquidity(address , bytes32 coverKey, uint256 , uint256 )](#postaddliquidity)
@@ -61,7 +61,7 @@ constructor(IStore store) Recoverable(store) {}
 ### preTransferGovernance
 
 ```solidity
-function preTransferGovernance(address caller, bytes32 coverKey, address , uint256 amount) external nonpayable nonReentrant 
+function preTransferGovernance(address caller, bytes32 coverKey, address , uint256 ) external nonpayable nonReentrant 
 returns(stablecoin address)
 ```
 
@@ -72,7 +72,7 @@ returns(stablecoin address)
 | caller | address |  | 
 | coverKey | bytes32 |  | 
 |  | address |  | 
-| amount | uint256 |  | 
+|  | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -82,10 +82,8 @@ function preTransferGovernance(
     address caller,
     bytes32 coverKey,
     address, /*to*/
-    uint256 amount
+    uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
@@ -154,8 +152,6 @@ function preTransferToStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
@@ -202,7 +198,7 @@ function postTransferToStrategy(
 ### preReceiveFromStrategy
 
 ```solidity
-function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
+function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 ) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -213,7 +209,7 @@ function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes
 |  | IERC20 |  | 
 | coverKey | bytes32 |  | 
 | strategyName | bytes32 |  | 
-| amount | uint256 |  | 
+|  | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -224,10 +220,8 @@ function preReceiveFromStrategy(
     IERC20, /*token*/
     bytes32 coverKey,
     bytes32 strategyName,
-    uint256 amount
+    uint256 /*amount*/
   ) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
@@ -302,7 +296,6 @@ function preAddLiquidity(
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
-    require(amount > 0, "Please specify amount");
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
@@ -403,8 +396,6 @@ function preRemoveLiquidity(
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
-    require(podsToRedeem > 0, "Please specify amount");
-
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
@@ -626,8 +617,8 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -638,11 +629,12 @@ function getName() external pure override returns (bytes32) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -650,7 +642,10 @@ function getName() external pure override returns (bytes32) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -675,6 +670,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -696,15 +692,16 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -712,6 +709,7 @@ function getName() external pure override returns (bytes32) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -737,6 +735,7 @@ function getName() external pure override returns (bytes32) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -750,4 +749,6 @@ function getName() external pure override returns (bytes32) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

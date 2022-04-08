@@ -4,14 +4,6 @@ View Source: [contracts/libraries/PriceLibV1.sol](../contracts/libraries/PriceLi
 
 **PriceLibV1**
 
-## Contract Members
-**Constants & Variables**
-
-```js
-uint256 public constant UPDATE_INTERVAL;
-
-```
-
 ## Functions
 
 - [setTokenPriceInStablecoinInternal(IStore s, address token)](#settokenpriceinstablecoininternal)
@@ -19,9 +11,9 @@ uint256 public constant UPDATE_INTERVAL;
 - [getLastKnownPairInfoInternal(IStore s, IUniswapV2PairLike pair)](#getlastknownpairinfointernal)
 - [_setTokenPrice(IStore s, address token, address stablecoin, IUniswapV2PairLike pair)](#_settokenprice)
 - [getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens)](#getpairliquidityinstablecoin)
-- [getLastUpdateOnInternal(IStore s, address token, address liquidityToken)](#getlastupdateoninternal)
-- [_setLastUpdateOn(IStore s, address token, address liquidityToken)](#_setlastupdateon)
-- [_getLastUpdateKey(address token0, address token1)](#_getlastupdatekey)
+- [getLastUpdateOnInternal(IStore s)](#getlastupdateoninternal)
+- [setLastUpdateOn(IStore s)](#setlastupdateon)
+- [getLastUpdateKey()](#getlastupdatekey)
 - [getPriceInternal(IStore s, address token, address stablecoin, uint256 multiplier)](#getpriceinternal)
 - [getNpmPriceInternal(IStore s, uint256 multiplier)](#getnpmpriceinternal)
 - [_getReserve0Key(IUniswapV2PairLike pair)](#_getreserve0key)
@@ -145,18 +137,11 @@ function _setTokenPrice(
       return;
     }
 
-    // solhint-disable-next-line
-    if (getLastUpdateOnInternal(s, token, stablecoin) + UPDATE_INTERVAL > block.timestamp) {
-      return;
-    }
-
     (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
 
     s.setUintByKey(_getReserve0Key(pair), reserve0);
     s.setUintByKey(_getReserve1Key(pair), reserve1);
     s.setUintByKey(_getPairTotalSupplyKey(pair), pair.totalSupply());
-
-    _setLastUpdateOn(s, token, stablecoin);
   }
 ```
 </details>
@@ -191,6 +176,8 @@ function getPairLiquidityInStablecoin(
     uint256 reserve1 = values[1];
     uint256 supply = values[2];
 
+    require(supply > 0, "Invalid pair or price not updated");
+
     address stablecoin = s.getStablecoin();
 
     if (pair.token0() == stablecoin) {
@@ -205,7 +192,7 @@ function getPairLiquidityInStablecoin(
 ### getLastUpdateOnInternal
 
 ```solidity
-function getLastUpdateOnInternal(IStore s, address token, address liquidityToken) public view
+function getLastUpdateOnInternal(IStore s) external view
 returns(uint256)
 ```
 
@@ -214,28 +201,22 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| token | address |  | 
-| liquidityToken | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLastUpdateOnInternal(
-    IStore s,
-    address token,
-    address liquidityToken
-  ) public view returns (uint256) {
-    bytes32 key = _getLastUpdateKey(token, liquidityToken);
+function getLastUpdateOnInternal(IStore s) external view returns (uint256) {
+    bytes32 key = getLastUpdateKey();
     return s.getUintByKey(key);
   }
 ```
 </details>
 
-### _setLastUpdateOn
+### setLastUpdateOn
 
 ```solidity
-function _setLastUpdateOn(IStore s, address token, address liquidityToken) private nonpayable
+function setLastUpdateOn(IStore s) external nonpayable
 ```
 
 **Arguments**
@@ -243,28 +224,22 @@ function _setLastUpdateOn(IStore s, address token, address liquidityToken) priva
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| token | address |  | 
-| liquidityToken | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _setLastUpdateOn(
-    IStore s,
-    address token,
-    address liquidityToken
-  ) private {
-    bytes32 key = _getLastUpdateKey(token, liquidityToken);
+function setLastUpdateOn(IStore s) external {
+    bytes32 key = getLastUpdateKey();
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 ```
 </details>
 
-### _getLastUpdateKey
+### getLastUpdateKey
 
 ```solidity
-function _getLastUpdateKey(address token0, address token1) private pure
+function getLastUpdateKey() public pure
 returns(bytes32)
 ```
 
@@ -272,15 +247,13 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token0 | address |  | 
-| token1 | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getLastUpdateKey(address token0, address token1) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_TOKEN_PRICE_LAST_UPDATE, token0, token1));
+function getLastUpdateKey() public pure returns (bytes32) {
+    return ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE;
   }
 ```
 </details>
@@ -464,8 +437,8 @@ function _getPair(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -476,11 +449,12 @@ function _getPair(
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -488,7 +462,10 @@ function _getPair(
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -513,6 +490,7 @@ function _getPair(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -534,15 +512,16 @@ function _getPair(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -550,6 +529,7 @@ function _getPair(
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -575,6 +555,7 @@ function _getPair(
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -588,4 +569,6 @@ function _getPair(
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

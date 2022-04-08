@@ -8,10 +8,18 @@ View Source: [contracts/core/policy/Policy.sol](../contracts/core/policy/Policy.
 
 The policy contract enables you to a purchase cover
 
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 public lastPolicyId;
+
+```
+
 ## Functions
 
 - [constructor(IStore store)](#)
-- [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecover)
+- [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
 - [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
@@ -38,7 +46,9 @@ function (IStore store) public nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {}
+constructor(IStore store) Recoverable(store) {
+    lastPolicyId = 100000;
+  }
 ```
 </details>
 
@@ -51,8 +61,8 @@ Purchase cover for the specified amount. <br /> <br />
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
 ```solidity
-function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover) external nonpayable nonReentrant 
-returns(address)
+function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable nonReentrant 
+returns(address, uint256)
 ```
 
 **Arguments**
@@ -62,6 +72,7 @@ returns(address)
 | key | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+| referralCode | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -70,8 +81,9 @@ returns(address)
 function purchaseCover(
     bytes32 key,
     uint256 coverDuration,
-    uint256 amountToCover
-  ) external override nonReentrant returns (address) {
+    uint256 amountToCover,
+    bytes32 referralCode
+  ) external override nonReentrant returns (address, uint256) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
@@ -82,8 +94,10 @@ function purchaseCover(
 
     (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
-    return address(cxToken);
+    lastPolicyId += 1;
+
+    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    return (address(cxToken), lastPolicyId);
   }
 ```
 </details>
@@ -214,7 +228,7 @@ Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
 function getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
-returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, coverRatio uint256, floor uint256, ceiling uint256, rate uint256)
+returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, floor uint256, ceiling uint256, rate uint256)
 ```
 
 **Arguments**
@@ -241,13 +255,12 @@ function getCoverFeeInfo(
       uint256 fee,
       uint256 utilizationRatio,
       uint256 totalAvailableLiquidity,
-      uint256 coverRatio,
       uint256 floor,
       uint256 ceiling,
       uint256 rate
     )
   {
-    return s.getCoverFeeInfoInternal(key, coverDuration, amountToCover);
+    return s.calculatePolicyFeeInternal(key, coverDuration, amountToCover);
   }
 ```
 </details>
@@ -337,8 +350,8 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -349,11 +362,12 @@ function getName() external pure override returns (bytes32) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -361,7 +375,10 @@ function getName() external pure override returns (bytes32) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -386,6 +403,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -407,15 +425,16 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -423,6 +442,7 @@ function getName() external pure override returns (bytes32) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -448,6 +468,7 @@ function getName() external pure override returns (bytes32) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -461,4 +482,6 @@ function getName() external pure override returns (bytes32) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

@@ -3,6 +3,7 @@
 View Source: [contracts/core/liquidity/strategies/AaveStrategy.sol](../contracts/core/liquidity/strategies/AaveStrategy.sol)
 
 **↗ Extends: [ILendingStrategy](ILendingStrategy.md), [Recoverable](Recoverable.md)**
+**↘ Derived Contracts: [InvalidStrategy](InvalidStrategy.md)**
 
 **AaveStrategy**
 
@@ -12,6 +13,9 @@ View Source: [contracts/core/liquidity/strategies/AaveStrategy.sol](../contracts
 ```js
 //private members
 bytes32 private constant _KEY;
+mapping(bytes32 => uint256) private _counters;
+mapping(bytes32 => uint256) private _depositTotal;
+mapping(bytes32 => uint256) private _withdrawalTotal;
 
 //public members
 bytes32 public constant NS_DEPOSITS;
@@ -248,7 +252,13 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    emit Deposited(coverKey, address(vault), amount);
+    _counters[coverKey] += 1;
+    _depositTotal[coverKey] += amount;
+
+    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], amount, aTokenReceived);
+    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
+    emit Deposited(coverKey, address(vault), amount, aTokenReceived);
   }
 ```
 </details>
@@ -286,20 +296,22 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     _drain(aToken);
     _drain(stablecoin);
 
-    uint256 aTokenAmount = aToken.balanceOf(address(vault));
+    uint256 aTokenRedeemed = aToken.balanceOf(address(vault));
 
-    if (aTokenAmount == 0) {
+    if (aTokenRedeemed == 0) {
       return 0;
     }
 
     // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back DAI + rewards
-    vault.transferToStrategy(aToken, coverKey, getName(), aTokenAmount);
+    vault.transferToStrategy(aToken, coverKey, getName(), aTokenRedeemed);
 
-    aToken.ensureApproval(address(lendingPool), aTokenAmount);
-    lendingPool.withdraw(address(stablecoin), aTokenAmount, address(this));
+    aToken.ensureApproval(address(lendingPool), aTokenRedeemed);
+    lendingPool.withdraw(address(stablecoin), aTokenRedeemed, address(this));
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
+
+    require(stablecoinWithdrawn > 0, "Redeeming aToken failed");
 
     // Immediately send DAI to the vault aToken came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
@@ -307,7 +319,13 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
 
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
+    _counters[coverKey] += 1;
+    _withdrawalTotal[coverKey] += stablecoinWithdrawn;
+
+    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed);
+    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, aTokenRedeemed);
   }
 ```
 </details>
@@ -374,7 +392,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getWeight() external pure override returns (uint256) {
+function getWeight() external pure virtual override returns (uint256) {
     return 10_000; // 100%
   }
 ```
@@ -462,8 +480,8 @@ function getName() public pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -474,11 +492,12 @@ function getName() public pure override returns (bytes32) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -486,7 +505,10 @@ function getName() public pure override returns (bytes32) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -511,6 +533,7 @@ function getName() public pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -532,15 +555,16 @@ function getName() public pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -548,6 +572,7 @@ function getName() public pure override returns (bytes32) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -573,6 +598,7 @@ function getName() public pure override returns (bytes32) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -586,4 +612,6 @@ function getName() public pure override returns (bytes32) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

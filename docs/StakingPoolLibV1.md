@@ -57,28 +57,32 @@ function getInfoInternal(
     addresses = new address[](4);
     values = new uint256[](15);
 
-    name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
+    bool valid = s.checkIfStakingPoolExists(key);
 
-    addresses[0] = s.getStakingTokenAddressInternal(key);
-    addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
-    addresses[2] = s.getRewardTokenAddressInternal(key);
-    addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+    if (valid) {
+      name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-    values[0] = s.getTotalStaked(key);
-    values[1] = s.getTarget(key);
-    values[2] = s.getMaximumStakeInternal(key);
-    values[3] = getPoolStakeBalanceInternal(s, key);
-    values[4] = getPoolCumulativeDeposits(s, key);
-    values[5] = s.getRewardPerBlock(key);
-    values[6] = s.getRewardPlatformFee(key);
-    values[7] = s.getLockupPeriodInBlocks(key);
-    values[8] = s.getRewardTokenBalance(key);
-    values[9] = getAccountStakingBalanceInternal(s, key, you);
-    values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
-    values[11] = calculateRewardsInternal(s, key, you);
-    values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
-    values[13] = getLastDepositHeight(s, key, you);
-    values[14] = getLastRewardHeight(s, key, you);
+      addresses[0] = s.getStakingTokenAddressInternal(key);
+      addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
+      addresses[2] = s.getRewardTokenAddressInternal(key);
+      addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+
+      values[0] = s.getTotalStaked(key);
+      values[1] = s.getTarget(key);
+      values[2] = s.getMaximumStakeInternal(key);
+      values[3] = getPoolStakeBalanceInternal(s, key);
+      values[4] = getPoolCumulativeDeposits(s, key);
+      values[5] = s.getRewardPerBlock(key);
+      values[6] = s.getRewardPlatformFee(key);
+      values[7] = s.getLockupPeriodInBlocks(key);
+      values[8] = s.getRewardTokenBalance(key);
+      values[9] = getAccountStakingBalanceInternal(s, key, you);
+      values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
+      values[11] = calculateRewardsInternal(s, key, you);
+      values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
+      values[13] = getLastDepositHeight(s, key, you);
+      values[14] = getLastRewardHeight(s, key, you);
+    }
   }
 ```
 </details>
@@ -412,7 +416,7 @@ function withdrawRewardsInternal(
     // or a very small number, platform fee becomes zero because of data loss
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-subtraction The following subtraction can cause
+    // @suppress-subtraction @note The following subtraction can cause
     // an underflow if `getRewardPlatformFee` is greater than 100%.
     if (rewards - platformFee > 0) {
       // @suppress-malicious-erc20 `rewardToken` can't be manipulated via user input.
@@ -458,7 +462,6 @@ function depositInternal(
       uint256 rewardsPlatformFee
     )
   {
-    require(key > 0, "Invalid key");
     require(amount > 0, "Enter an amount");
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
     require(amount <= s.getAvailableToStakeInternal(key), "Target achieved or cap exceeded");
@@ -514,7 +517,6 @@ function withdrawInternal(
       uint256 rewardsPlatformFee
     )
   {
-    require(key > 0, "Invalid key");
     require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
@@ -550,8 +552,8 @@ function withdrawInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -562,11 +564,12 @@ function withdrawInternal(
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -574,7 +577,10 @@ function withdrawInternal(
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -599,6 +605,7 @@ function withdrawInternal(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -620,15 +627,16 @@ function withdrawInternal(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -636,6 +644,7 @@ function withdrawInternal(
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -661,6 +670,7 @@ function withdrawInternal(
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -674,4 +684,6 @@ function withdrawInternal(
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

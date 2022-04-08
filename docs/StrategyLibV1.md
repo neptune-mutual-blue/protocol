@@ -8,6 +8,7 @@ View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/Stra
 
 ```js
 event StrategyAdded(address indexed strategy);
+event LendingPeriodSet(uint256  lendingPeriod, uint256  withdrawalWindow);
 ```
 
 ## Functions
@@ -17,8 +18,8 @@ event StrategyAdded(address indexed strategy);
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
 - [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
 - [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
-- [getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey)](#getlendingperiodkey)
-- [getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey)](#getwithdrawalwindowkey)
+- [getLendingPeriodKey(bytes32 coverKey)](#getlendingperiodkey)
+- [getWithdrawalWindowKey(bytes32 coverKey)](#getwithdrawalwindowkey)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
 - [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
 - [getDisabledStrategiesInternal(IStore s)](#getdisabledstrategiesinternal)
@@ -28,7 +29,7 @@ event StrategyAdded(address indexed strategy);
 - [getAmountInStrategies(IStore s, bytes32 coverKey, address token)](#getamountinstrategies)
 - [getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, address token)](#getamountinstrategy)
 - [preTransferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#pretransfertostrategyinternal)
-- [postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive)](#postreceivefromstrategyinternal)
+- [postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 received)](#postreceivefromstrategyinternal)
 - [_addToStrategyOut(IStore s, bytes32 coverKey, address token, uint256 amountToAdd)](#_addtostrategyout)
 - [_reduceStrategyOut(IStore s, bytes32 coverKey, address token, uint256 amount)](#_reducestrategyout)
 - [_addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyName, address token, uint256 amountToAdd)](#_addtospecificstrategyout)
@@ -130,12 +131,12 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 
 ```javascript
 function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
-    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey, true));
-    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey, true));
+    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
+    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
     if (lendingPeriod == 0) {
-      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0, true));
-      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0, true));
+      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
+      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
   }
 ```
@@ -166,8 +167,10 @@ function setLendingPeriodsInternal(
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external {
-    s.setUintByKey(getLendingPeriodKey(coverKey, true), lendingPeriod);
-    s.setUintByKey(getWithdrawalWindowKey(coverKey, true), withdrawalWindow);
+    s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
+    s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
+
+    emit LendingPeriodSet(lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
@@ -175,7 +178,7 @@ function setLendingPeriodsInternal(
 ### getLendingPeriodKey
 
 ```solidity
-function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure
+function getLendingPeriodKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -184,17 +187,12 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| ignoreMissingKey | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
-    if (ignoreMissingKey == false) {
-      require(coverKey > 0, "Invalid Cover Key");
-    }
-
+function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
     }
@@ -207,7 +205,7 @@ function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pur
 ### getWithdrawalWindowKey
 
 ```solidity
-function getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey) public pure
+function getWithdrawalWindowKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -216,17 +214,12 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| ignoreMissingKey | bool |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
-    if (ignoreMissingKey == false) {
-      require(coverKey > 0, "Invalid Cover Key");
-    }
-
+function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
     }
@@ -496,7 +489,7 @@ function preTransferToStrategyInternal(
 ### postReceiveFromStrategyInternal
 
 ```solidity
-function postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 toReceive) external nonpayable
+function postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 received) external nonpayable
 returns(income uint256, loss uint256)
 ```
 
@@ -508,7 +501,7 @@ returns(income uint256, loss uint256)
 | token | IERC20 |  | 
 | coverKey | bytes32 |  | 
 | strategyName | bytes32 |  | 
-| toReceive | uint256 |  | 
+| received | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -519,7 +512,7 @@ function postReceiveFromStrategyInternal(
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
-    uint256 toReceive
+    uint256 received
   ) external returns (uint256 income, uint256 loss) {
     bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
 
@@ -529,12 +522,13 @@ function postReceiveFromStrategyInternal(
 
     uint256 amountInThisStrategy = getAmountInStrategy(s, coverKey, strategyName, address(token));
 
-    income = toReceive > amountInThisStrategy ? toReceive - amountInThisStrategy : 0;
-    loss = toReceive < amountInThisStrategy ? amountInThisStrategy - toReceive : 0;
+    income = received > amountInThisStrategy ? received - amountInThisStrategy : 0;
+    loss = received < amountInThisStrategy ? amountInThisStrategy - received : 0;
 
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
+    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 ```
@@ -755,8 +749,8 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -767,11 +761,12 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -779,7 +774,10 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -804,6 +802,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -825,15 +824,16 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -841,6 +841,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -866,6 +867,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -879,4 +881,6 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

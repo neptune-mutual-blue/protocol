@@ -13,7 +13,7 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 event GovernanceTransfer(address indexed to, uint256  amount);
 event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount);
 event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256  amount, uint256  income, uint256  loss);
-event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded);
+event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded, bytes32 indexed referralCode);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
 event NPMStaken(address indexed account, uint256  amount);
@@ -27,7 +27,7 @@ event Exited(bytes32 indexed key, address indexed account);
 
 - [key()](#key)
 - [sc()](#sc)
-- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake)](#addliquidity)
+- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode)](#addliquidity)
 - [accrueInterest()](#accrueinterest)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
@@ -83,7 +83,7 @@ function sc() external view returns (address);
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) external nonpayable
+function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode) external nonpayable
 ```
 
 **Arguments**
@@ -93,6 +93,7 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) extern
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 | npmStake | uint256 | Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period. | 
+| referralCode | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -101,7 +102,8 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake) extern
 function addLiquidity(
     bytes32 coverKey,
     uint256 amount,
-    uint256 npmStake
+    uint256 npmStake,
+    bytes32 referralCode
   ) external;
 ```
 </details>
@@ -341,8 +343,8 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -353,11 +355,12 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -365,7 +368,10 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -390,6 +396,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -411,15 +418,16 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -427,6 +435,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -452,6 +461,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -465,4 +475,6 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

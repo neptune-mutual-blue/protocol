@@ -2,7 +2,7 @@
 
 View Source: [contracts/fakes/FakeUniswapPair.sol](../contracts/fakes/FakeUniswapPair.sol)
 
-**↗ Extends: [IUniswapV2PairLike](IUniswapV2PairLike.md)**
+**↗ Extends: [IUniswapV2PairLike](IUniswapV2PairLike.md), [ERC20](ERC20.md)**
 
 **FakeUniswapPair**
 
@@ -24,7 +24,7 @@ address public token1;
 ### 
 
 ```solidity
-function (address _token0, address _token1) public nonpayable
+function (address _token0, address _token1) public nonpayable ERC20 
 ```
 
 **Arguments**
@@ -38,9 +38,11 @@ function (address _token0, address _token1) public nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(address _token0, address _token1) {
+constructor(address _token0, address _token1) ERC20("PAIR", "PAIR") {
     token0 = _token0;
     token1 = _token1;
+
+    super._mint(msg.sender, 100000 ether);
   }
 ```
 </details>
@@ -48,7 +50,7 @@ constructor(address _token0, address _token1) {
 ### totalSupply
 
 ```solidity
-function totalSupply() external pure
+function totalSupply() public view
 returns(uint256)
 ```
 
@@ -61,8 +63,8 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function totalSupply() external pure override returns (uint256) {
-    return 100000 ether;
+function totalSupply() public view override(ERC20, IUniswapV2PairLike) returns (uint256) {
+    return super.totalSupply();
   }
 ```
 </details>
@@ -112,8 +114,8 @@ function getReserves()
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -124,11 +126,12 @@ function getReserves()
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -136,7 +139,10 @@ function getReserves()
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -161,6 +167,7 @@ function getReserves()
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -182,15 +189,16 @@ function getReserves()
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -198,6 +206,7 @@ function getReserves()
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -223,6 +232,7 @@ function getReserves()
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -236,4 +246,6 @@ function getReserves()
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)
