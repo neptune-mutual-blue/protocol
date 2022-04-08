@@ -311,6 +311,7 @@ const deployDependencies = async () => {
     npmDai,
     store,
     router,
+    factory,
     storeKeyUtil,
     protoUtilV1,
     accessControlLibV1,
