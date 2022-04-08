@@ -64,7 +64,7 @@ contract Policy is IPolicy, Recoverable {
 
     lastPolicyId += 1;
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, _lastPolicyId);
+    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
