@@ -30,7 +30,11 @@ contract Policy is IPolicy, Recoverable {
   using RoutineInvokerLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
-  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
+  uint256 public lastPolicyId;
+
+  constructor(IStore store) Recoverable(store) {
+    lastPolicyId = 100000;
+  }
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -47,7 +51,7 @@ contract Policy is IPolicy, Recoverable {
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
-  ) external override nonReentrant returns (address) {
+  ) external override nonReentrant returns (address, uint256) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(key);
@@ -58,8 +62,10 @@ contract Policy is IPolicy, Recoverable {
 
     (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode);
-    return address(cxToken);
+    lastPolicyId += 1;
+
+    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, _lastPolicyId);
+    return (address(cxToken), lastPolicyId);
   }
 
   function getCxToken(bytes32 key, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
