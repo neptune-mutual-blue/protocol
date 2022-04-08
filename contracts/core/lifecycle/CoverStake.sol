@@ -59,7 +59,7 @@ contract CoverStake is ICoverStake, Recoverable {
     s.npmToken().ensureTransferFrom(account, address(this), amount);
 
     if (fee > 0) {
-      s.npmToken().ensureTransferFrom(address(this), s.getBurnAddress(), fee);
+      s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
       emit FeeBurned(key, fee);
     }
 
