@@ -352,7 +352,7 @@ const deployDependencies = async () => {
 
   await dai.approve(vault.address, initialLiquidity)
   await npm.approve(vault.address, minReportingStake)
-  await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+  await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
   return {
     npm,

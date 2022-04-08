@@ -1,6 +1,7 @@
 const { covers } = require('../../examples/covers')
 const composer = require('../composer')
 const { ether, getRandomNumber, weiAsToken } = require('../helper')
+const { toBytes32 } = require('../key')
 const { approve } = require('../contract-helper/erc20')
 
 const add = async (coverKey, payload) => {
@@ -17,7 +18,7 @@ const add = async (coverKey, payload) => {
   await approve(dai.address, vault.address, lp, amount)
   await approve(npm.address, vault.address, lp, stake)
 
-  await vault.connect(lp).addLiquidity(coverKey, amount, stake)
+  await vault.connect(lp).addLiquidity(coverKey, amount, stake, toBytes32(''))
 
   console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'DAI'), weiAsToken(stake, 'NPM'))
 }
