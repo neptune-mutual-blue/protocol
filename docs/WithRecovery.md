@@ -1,32 +1,63 @@
-# Controller.sol
+# WithRecovery.sol
 
-View Source: [contracts/core/Controller.sol](../contracts/core/Controller.sol)
+View Source: [contracts/core/token/WithRecovery.sol](../contracts/core/token/WithRecovery.sol)
 
-**↗ Extends: [Recoverable](Recoverable.md)**
+**↗ Extends: [Ownable](Ownable.md)**
+**↘ Derived Contracts: [Delayable](Delayable.md), [NPM](NPM.md)**
 
-**Controller**
+**WithRecovery**
 
 ## Functions
 
-- [constructor(IStore store)](#)
+- [recoverEther(address sendTo)](#recoverether)
+- [recoverToken(IERC20 malicious, address sendTo)](#recovertoken)
 
-### 
+### recoverEther
+
+Recover all Ether held by the contract.
 
 ```solidity
-function (IStore store) public nonpayable Recoverable 
+function recoverEther(address sendTo) external nonpayable onlyOwner 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
+| sendTo | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {}
+function recoverEther(address sendTo) external onlyOwner {
+    payable(sendTo).transfer(address(this).balance);
+  }
+```
+</details>
+
+### recoverToken
+
+Recover all IERC-20 compatible tokens sent to this address.
+
+```solidity
+function recoverToken(IERC20 malicious, address sendTo) external nonpayable onlyOwner 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| malicious | IERC20 | IERC-20 The address of the token contract | 
+| sendTo | address | The address that receives the recovered tokens | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
+    malicious.safeTransfer(sendTo, malicious.balanceOf(address(this)));
+  }
 ```
 </details>
 
@@ -42,8 +73,8 @@ constructor(IStore store) Recoverable(store) {}
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -54,11 +85,12 @@ constructor(IStore store) Recoverable(store) {}
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -66,7 +98,10 @@ constructor(IStore store) Recoverable(store) {}
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -91,6 +126,7 @@ constructor(IStore store) Recoverable(store) {}
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -112,15 +148,16 @@ constructor(IStore store) Recoverable(store) {}
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -128,6 +165,7 @@ constructor(IStore store) Recoverable(store) {}
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -153,6 +191,7 @@ constructor(IStore store) Recoverable(store) {}
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -166,4 +205,6 @@ constructor(IStore store) Recoverable(store) {}
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

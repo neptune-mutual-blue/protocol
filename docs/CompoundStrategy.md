@@ -11,6 +11,9 @@ View Source: [contracts/core/liquidity/strategies/CompoundStrategy.sol](../contr
 
 ```js
 //private members
+mapping(bytes32 => uint256) private _counters;
+mapping(bytes32 => uint256) private _depositTotal;
+mapping(bytes32 => uint256) private _withdrawalTotal;
 bytes32 private constant _KEY;
 
 //public members
@@ -250,7 +253,12 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
-    emit Deposited(coverKey, address(vault), amount);
+    _counters[coverKey] += 1;
+    _depositTotal[coverKey] += amount;
+
+    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], amount, cDaiMinted);
+    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Deposited(coverKey, address(vault), amount, cDaiMinted);
   }
 ```
 </details>
@@ -288,28 +296,36 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     _drain(cDai);
     _drain(stablecoin);
 
-    uint256 cDaiBalance = cDai.balanceOf(address(vault));
+    uint256 cDaiRedeemed = cDai.balanceOf(address(vault));
 
-    if (cDaiBalance == 0) {
+    if (cDaiRedeemed == 0) {
       return 0;
     }
 
     // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    vault.transferToStrategy(cDai, coverKey, getName(), cDaiBalance);
-    cDai.ensureApproval(address(delegator), cDaiBalance);
-    uint256 result = delegator.redeem(cDaiBalance);
+    vault.transferToStrategy(cDai, coverKey, getName(), cDaiRedeemed);
+    cDai.ensureApproval(address(delegator), cDaiRedeemed);
+    uint256 result = delegator.redeem(cDaiRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
+    require(stablecoinWithdrawn > 0, "Redeeming cDai failed");
+
     // Immediately send DAI to the vault cDAI came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn);
+
+    _counters[coverKey] += 1;
+    _withdrawalTotal[coverKey] += stablecoinWithdrawn;
+
+    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed);
+    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, cDaiRedeemed);
   }
 ```
 </details>
@@ -464,8 +480,8 @@ function getName() public pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -476,11 +492,12 @@ function getName() public pure override returns (bytes32) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -488,7 +505,10 @@ function getName() public pure override returns (bytes32) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -513,6 +533,7 @@ function getName() public pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -534,15 +555,16 @@ function getName() public pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -550,6 +572,7 @@ function getName() public pure override returns (bytes32) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -575,6 +598,7 @@ function getName() public pure override returns (bytes32) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -588,4 +612,6 @@ function getName() public pure override returns (bytes32) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

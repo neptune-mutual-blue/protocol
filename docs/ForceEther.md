@@ -1,116 +1,59 @@
-# FakeCompoundERC20Delegator.sol
+# ForceEther.sol
 
-View Source: [contracts/fakes/FakeCompoundERC20Delegator.sol](../contracts/fakes/FakeCompoundERC20Delegator.sol)
+View Source: [contracts/fakes/ForceEther.sol](../contracts/fakes/ForceEther.sol)
 
-**↗ Extends: [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md), [ERC20](ERC20.md)**
+**ForceEther**
 
-**FakeCompoundERC20Delegator**
-
-## Contract Members
-**Constants & Variables**
+**Events**
 
 ```js
-contract FakeToken public dai;
-contract FakeToken public cDai;
-
+event Received(address indexed account, uint256  amount);
 ```
 
 ## Functions
 
-- [constructor(FakeToken _dai, FakeToken _cDai)](#)
-- [mint(uint256 mintAmount)](#mint)
-- [redeem(uint256 redeemTokens)](#redeem)
+- [constructor()](#)
+- [destruct(address payable to)](#destruct)
 
 ### 
 
 ```solidity
-function (FakeToken _dai, FakeToken _cDai) public nonpayable ERC20 
+function () external payable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _dai | FakeToken |  | 
-| _cDai | FakeToken |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(FakeToken _dai, FakeToken _cDai) ERC20("cDAI", "cDAI") {
-    dai = _dai;
-    cDai = _cDai;
+receive() external payable {
+    emit Received(msg.sender, msg.value);
   }
 ```
 </details>
 
-### mint
-
-Sender supplies assets into the market and receives cTokens in exchange
+### destruct
 
 ```solidity
-function mint(uint256 mintAmount) external nonpayable
-returns(uint256)
+function destruct(address payable to) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| mintAmount | uint256 | The amount of the underlying asset to supply | 
-
-**Returns**
-
-uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+| to | address payable |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mint(uint256 mintAmount) external override returns (uint256) {
-    dai.transferFrom(msg.sender, address(this), mintAmount);
-
-    cDai.mint(mintAmount);
-    cDai.transfer(msg.sender, mintAmount);
-
-    return 0;
-  }
-```
-</details>
-
-### redeem
-
-Sender redeems cTokens in exchange for the underlying asset
-
-```solidity
-function redeem(uint256 redeemTokens) external nonpayable
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| redeemTokens | uint256 | The number of cTokens to redeem into underlying | 
-
-**Returns**
-
-uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function redeem(uint256 redeemTokens) external override returns (uint256) {
-    cDai.transferFrom(msg.sender, address(this), redeemTokens);
-
-    uint256 interest = (redeemTokens * 3) / 100;
-    dai.mint(interest);
-
-    dai.transfer(msg.sender, redeemTokens + interest);
-
-    return 0;
+function destruct(address payable to) external {
+    selfdestruct(to);
   }
 ```
 </details>
@@ -127,8 +70,8 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -139,11 +82,12 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -151,7 +95,10 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -176,6 +123,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -197,15 +145,16 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -213,6 +162,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -238,6 +188,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -251,4 +202,6 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

@@ -1,55 +1,183 @@
-# Migrations.sol
+# MockFlashBorrower.sol
 
-View Source: [contracts/Migrations.sol](../contracts/Migrations.sol)
+View Source: [contracts/mock/MockFlashBorrower.sol](../contracts/mock/MockFlashBorrower.sol)
 
-**Migrations**
+**↗ Extends: [IERC3156FlashBorrower](IERC3156FlashBorrower.md)**
+
+**MockFlashBorrower**
 
 ## Contract Members
 **Constants & Variables**
 
 ```js
-address public owner;
-uint256 public last_completed_migration;
+contract IERC20 private _stablecoin;
+contract IERC3156FlashLender private _provider;
+bytes32 private _returnValue;
+bool private _createsApproval;
 
 ```
-
-## Modifiers
-
-- [restricted](#restricted)
-
-### restricted
-
-```js
-modifier restricted() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
 
 ## Functions
 
-- [setCompleted(uint256 completed)](#setcompleted)
+- [constructor(IERC20 stablecoin, IERC3156FlashLender provider)](#)
+- [setStablecoin(IERC20 value)](#setstablecoin)
+- [setReturnValue(bytes32 value)](#setreturnvalue)
+- [setCreateApproval(bool value)](#setcreateapproval)
+- [borrow(uint256 amount, bytes data)](#borrow)
+- [onFlashLoan(address initiator, address , uint256 , uint256 , bytes )](#onflashloan)
 
-### setCompleted
+### 
 
 ```solidity
-function setCompleted(uint256 completed) public nonpayable restricted 
+function (IERC20 stablecoin, IERC3156FlashLender provider) public nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| completed | uint256 |  | 
+| stablecoin | IERC20 |  | 
+| provider | IERC3156FlashLender |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCompleted(uint256 completed) public restricted {
-    last_completed_migration = completed;
+constructor(IERC20 stablecoin, IERC3156FlashLender provider) {
+    _stablecoin = stablecoin;
+    _provider = provider;
+  }
+```
+</details>
+
+### setStablecoin
+
+```solidity
+function setStablecoin(IERC20 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | IERC20 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setStablecoin(IERC20 value) external {
+    _stablecoin = value;
+  }
+```
+</details>
+
+### setReturnValue
+
+```solidity
+function setReturnValue(bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setReturnValue(bytes32 value) external {
+    _returnValue = value;
+  }
+```
+</details>
+
+### setCreateApproval
+
+```solidity
+function setCreateApproval(bool value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| value | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCreateApproval(bool value) external {
+    _createsApproval = value;
+  }
+```
+</details>
+
+### borrow
+
+```solidity
+function borrow(uint256 amount, bytes data) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amount | uint256 |  | 
+| data | bytes |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function borrow(uint256 amount, bytes memory data) external {
+    uint256 allowance = _stablecoin.allowance(address(this), address(_provider));
+    uint256 fee = _provider.flashFee(address(_stablecoin), amount);
+    uint256 repayment = amount + fee;
+
+    if (_createsApproval) {
+      _stablecoin.approve(address(_provider), allowance + repayment);
+    }
+
+    _provider.flashLoan(this, address(_stablecoin), amount, data);
+  }
+```
+</details>
+
+### onFlashLoan
+
+```solidity
+function onFlashLoan(address initiator, address , uint256 , uint256 , bytes ) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| initiator | address |  | 
+|  | address |  | 
+|  | uint256 |  | 
+|  | uint256 |  | 
+|  | bytes |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function onFlashLoan(
+    address initiator,
+    address, /*token*/
+    uint256, /*amount*/
+    uint256, /*fee*/
+    bytes calldata /*data*/
+  ) external view override returns (bytes32) {
+    require(msg.sender == address(_provider), "FlashBorrower: Untrusted lender");
+    require(initiator == address(this), "FlashBorrower: Untrusted loan initiator");
+    return _returnValue;
   }
 ```
 </details>
@@ -66,8 +194,8 @@ function setCompleted(uint256 completed) public restricted {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -78,11 +206,12 @@ function setCompleted(uint256 completed) public restricted {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -90,7 +219,10 @@ function setCompleted(uint256 completed) public restricted {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -115,6 +247,7 @@ function setCompleted(uint256 completed) public restricted {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -136,15 +269,16 @@ function setCompleted(uint256 completed) public restricted {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -152,6 +286,7 @@ function setCompleted(uint256 completed) public restricted {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -177,6 +312,7 @@ function setCompleted(uint256 completed) public restricted {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -190,4 +326,6 @@ function setCompleted(uint256 completed) public restricted {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

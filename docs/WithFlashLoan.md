@@ -51,15 +51,17 @@ function flashLoan(
      ******************************************************************************************/
     // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     uint256 previousBalance = stablecoin.balanceOf(address(this));
-    require(previousBalance >= amount, "Balance insufficient");
+    // require(previousBalance >= amount, "Balance insufficient"); <-- already checked in `preFlashLoan` --> `getFlashFeesInternal`
 
     stablecoin.ensureTransfer(address(receiver), amount);
     require(receiver.onFlashLoan(msg.sender, token, amount, fee, data) == keccak256("ERC3156FlashBorrower.onFlashLoan"), "IERC3156: Callback failed");
     stablecoin.ensureTransferFrom(address(receiver), address(this), amount + fee);
-    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
 
     uint256 finalBalance = stablecoin.balanceOf(address(this));
     require(finalBalance >= previousBalance + fee, "Access is denied");
+
+    // Transfer protocol fee to the treasury
+    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
 
     /******************************************************************************************
       POST
@@ -133,8 +135,8 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -145,11 +147,12 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -157,7 +160,10 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -182,6 +188,7 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -203,15 +210,16 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -219,6 +227,7 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -244,6 +253,7 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -257,4 +267,6 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

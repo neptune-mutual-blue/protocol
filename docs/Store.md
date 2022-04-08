@@ -628,7 +628,7 @@ function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
-    require(i < addressArrayStorage[k].length, "Invalid key");
+    require(i < addressArrayStorage[k].length, "Invalid index");
 
     address v = addressArrayStorage[k][i];
     deleteAddressArrayItem(k, v);
@@ -654,7 +654,7 @@ returns(values address[])
 
 ```javascript
 function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
-    values = new address[](keys.length + 1);
+    values = new address[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
       values[i] = addressStorage[keys[i]];
@@ -728,7 +728,7 @@ returns(values uint256[])
 
 ```javascript
 function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
-    values = new uint256[](keys.length + 1);
+    values = new uint256[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
       values[i] = uintStorage[keys[i]];
@@ -1005,8 +1005,8 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -1017,11 +1017,12 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -1029,7 +1030,10 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -1054,6 +1058,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -1075,15 +1080,16 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -1091,6 +1097,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -1116,6 +1123,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -1129,4 +1137,6 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

@@ -46,6 +46,7 @@ bytes32 public constant NS_POOL_TOTAL_REWARD_GIVEN;
 - [getRewardTokenAddressInternal(IStore s, bytes32 key)](#getrewardtokenaddressinternal)
 - [getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key)](#getrewardtokenstablecoinpairaddressinternal)
 - [ensureValidStakingPool(IStore s, bytes32 key)](#ensurevalidstakingpool)
+- [checkIfStakingPoolExists(IStore s, bytes32 key)](#checkifstakingpoolexists)
 - [validateAddOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#validateaddoreditpoolinternal)
 - [addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#addoreditpoolinternal)
 - [_updatePoolValues(IStore s, bytes32 key, uint256[] values)](#_updatepoolvalues)
@@ -366,7 +367,31 @@ function ensureValidStakingPool(IStore s, bytes32 key) external view
 
 ```javascript
 function ensureValidStakingPool(IStore s, bytes32 key) external view {
-    require(s.getBoolByKeys(NS_POOL, key), "Pool invalid or closed");
+    require(checkIfStakingPoolExists(s, key), "Pool invalid or closed");
+  }
+```
+</details>
+
+### checkIfStakingPoolExists
+
+```solidity
+function checkIfStakingPoolExists(IStore s, bytes32 key) public view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bool) {
+    return s.getBoolByKeys(NS_POOL, key);
   }
 ```
 </details>
@@ -401,7 +426,7 @@ function validateAddOrEditPoolInternal(
   ) public view returns (bool) {
     require(key > 0, "Invalid key");
 
-    bool exists = s.getBoolByKeys(NS_POOL, key);
+    bool exists = checkIfStakingPoolExists(s, key);
 
     if (exists == false) {
       require(bytes(name).length > 0, "Invalid name");
@@ -410,7 +435,7 @@ function validateAddOrEditPoolInternal(
       require(addresses[2] != address(0), "Invalid reward token");
       require(addresses[3] != address(0), "Invalid reward token pair");
       require(values[4] > 0, "Provide lockup period in blocks");
-      require(values[5] > 0, "Provide reward token balance");
+      require(values[5] > 0, "Provide reward token allocation");
       require(values[3] > 0, "Provide reward per block");
       require(values[0] > 0, "Please provide staking target");
     }
@@ -574,8 +599,8 @@ function _initializeNewPool(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -586,11 +611,12 @@ function _initializeNewPool(
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -598,7 +624,10 @@ function _initializeNewPool(
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -623,6 +652,7 @@ function _initializeNewPool(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -644,15 +674,16 @@ function _initializeNewPool(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -660,6 +691,7 @@ function _initializeNewPool(
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -685,6 +717,7 @@ function _initializeNewPool(
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -698,4 +731,6 @@ function _initializeNewPool(
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)

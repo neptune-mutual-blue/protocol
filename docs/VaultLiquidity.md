@@ -10,7 +10,7 @@ View Source: [contracts/core/liquidity/VaultLiquidity.sol](../contracts/core/liq
 ## Functions
 
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
-- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#addliquidity)
+- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidity)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
@@ -41,6 +41,7 @@ function transferGovernance(
     uint256 amount
   ) external override nonReentrant {
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -67,7 +68,7 @@ function transferGovernance(
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) external nonpayable nonReentrant 
+function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -77,6 +78,7 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) e
 | coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of liquidity token to supply. | 
 | npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
+| referralCode | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -85,10 +87,12 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) e
 function addLiquidity(
     bytes32 coverKey,
     uint256 amount,
-    uint256 npmStakeToAdd
+    uint256 npmStakeToAdd,
+    bytes32 referralCode
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
+    require(amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -116,7 +120,7 @@ function addLiquidity(
 
     delgate().postAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
 
-    emit PodsIssued(msg.sender, podsToMint, amount);
+    emit PodsIssued(msg.sender, podsToMint, amount, referralCode);
 
     if (previousNpmStake == 0) {
       emit Entered(coverKey, msg.sender);
@@ -156,6 +160,7 @@ function removeLiquidity(
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
+    require(podsToRedeem > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -300,8 +305,8 @@ function accrueInterest() external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
+* [console](console.md)
 * [Context](Context.md)
-* [Controller](Controller.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
@@ -312,11 +317,12 @@ function accrueInterest() external override nonReentrant {
 * [cxToken](cxToken.md)
 * [cxTokenFactory](cxTokenFactory.md)
 * [cxTokenFactoryLibV1](cxTokenFactoryLibV1.md)
+* [Delayable](Delayable.md)
 * [Destroyable](Destroyable.md)
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundERC20Delegator](FakeCompoundERC20Delegator.md)
+* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -324,7 +330,10 @@ function accrueInterest() external override nonReentrant {
 * [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
+* [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
+* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
 * [Finalization](Finalization.md)
+* [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
 * [GovernanceUtilV1](GovernanceUtilV1.md)
 * [IAaveV2LendingPoolLike](IAaveV2LendingPoolLike.md)
@@ -349,6 +358,7 @@ function accrueInterest() external override nonReentrant {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
@@ -370,15 +380,16 @@ function accrueInterest() external override nonReentrant {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
-* [Migrations](Migrations.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
+* [MockFlashBorrower](MockFlashBorrower.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
+* [NPM](NPM.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -386,6 +397,7 @@ function accrueInterest() external override nonReentrant {
 * [Policy](Policy.md)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
+* [PoorMansERC20](PoorMansERC20.md)
 * [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
@@ -411,6 +423,7 @@ function accrueInterest() external override nonReentrant {
 * [StoreKeyUtil](StoreKeyUtil.md)
 * [StrategyLibV1](StrategyLibV1.md)
 * [Strings](Strings.md)
+* [TimelockController](TimelockController.md)
 * [Unstakable](Unstakable.md)
 * [ValidationLibV1](ValidationLibV1.md)
 * [Vault](Vault.md)
@@ -424,4 +437,6 @@ function accrueInterest() external override nonReentrant {
 * [VaultLiquidity](VaultLiquidity.md)
 * [VaultStrategy](VaultStrategy.md)
 * [WithFlashLoan](WithFlashLoan.md)
+* [WithPausability](WithPausability.md)
+* [WithRecovery](WithRecovery.md)
 * [Witness](Witness.md)
