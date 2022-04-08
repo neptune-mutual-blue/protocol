@@ -12,8 +12,8 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('CoverReassurance: getReassurance', () => {
-  let deployed, coverKey
+describe('CoverProvision: increaseProvision', () => {
+  let deployed, coverKey, provisionContract
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -69,24 +69,40 @@ describe('CoverReassurance: getReassurance', () => {
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
-  })
 
-  it('correctly gets reassurance amount', async () => {
-    const coverReassurance = await deployer.deployWithLibraries(cache, 'CoverReassurance',
+    provisionContract = await deployer.deployWithLibraries(cache, 'CoverProvision',
       {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
-        CoverUtilV1: deployed.coverUtilV1.address,
-        NTransferUtilV2: deployed.transferLib.address,
-        ProtoUtilV1: deployed.protoUtilV1.address,
-        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
+        CoverLibV1: deployed.coverLibV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address
       },
       deployed.store.address
     )
 
-    const result = await coverReassurance.getReassurance(coverKey)
-    result.should.equal(helper.ether(1_000_000))
+    await deployed.protocol.addContract(key.PROTOCOL.NS.COVER_PROVISION, provisionContract.address)
+  })
+
+  it('correctly increases provision', async () => {
+    const amount = helper.ether(1)
+
+    await deployed.npm.approve(provisionContract.address, amount)
+    const tx = await provisionContract.increaseProvision(coverKey, amount)
+
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'ProvisionIncreased')
+
+    event.args.key.should.equal(coverKey)
+    event.args.previous.should.equal(0)
+    event.args.current.should.equal(amount)
+  })
+
+  it('reverts when invalid amount is supplied', async () => {
+    const amount = helper.ether(0)
+
+    await deployed.npm.approve(provisionContract.address, amount)
+    await provisionContract.increaseProvision(coverKey, amount)
+      .should.be.rejectedWith('Please specify amount')
   })
 })

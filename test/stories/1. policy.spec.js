@@ -49,7 +49,7 @@ describe('Policy Purchase Stories', () => {
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
   it('provision of 1M NPM tokens was added to the `Compound Finance Cover` pool', async () => {
@@ -87,7 +87,7 @@ describe('Policy Purchase Stories', () => {
    ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
-    await contracts.policy.purchaseCover(...args)
+    await contracts.policy.purchaseCover(...args, key.toBytes32(''))
 
     const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])
     const cxToken = await composer.token.at(cxTokenAddress)
@@ -133,7 +133,7 @@ describe('Policy Purchase Stories', () => {
    ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.not.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
-    await contracts.policy.purchaseCover(...args)
+    await contracts.policy.purchaseCover(...args, key.toBytes32(''))
 
     const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])
     const cxToken = await composer.token.at(cxTokenAddress)

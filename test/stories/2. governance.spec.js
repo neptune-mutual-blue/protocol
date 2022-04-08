@@ -103,7 +103,7 @@ describe('Governance Stories', function () {
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
     // Add provision
     const provision = helper.ether(1_000_001)
@@ -120,7 +120,7 @@ describe('Governance Stories', function () {
       ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
 
     await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
-    await contracts.policy.connect(kimberly).purchaseCover(...args)
+    await contracts.policy.connect(kimberly).purchaseCover(...args, key.toBytes32(''))
 
     let at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
     constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
@@ -130,7 +130,7 @@ describe('Governance Stories', function () {
     fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
 
     await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
-    await contracts.policy.connect(lewis).purchaseCover(...args)
+    await contracts.policy.connect(lewis).purchaseCover(...args, key.toBytes32(''))
 
     at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
     constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)

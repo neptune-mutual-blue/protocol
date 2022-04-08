@@ -112,7 +112,7 @@ describe('Protocol Initialization Stories', () => {
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, npmToStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, npmToStake, key.toBytes32(''))
     const balance = await vault.getStablecoinBalanceOf()
 
     const expected = helper.add(previous.daiBalance, initialLiquidity)
@@ -149,7 +149,7 @@ describe('Protocol Initialization Stories', () => {
     await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
-    await vault.addLiquidity(coverKey, liquidity, npmToStake)
+    await vault.addLiquidity(coverKey, liquidity, npmToStake, key.toBytes32(''))
 
     const expected = helper.add(previous.daiBalance, liquidity)
 
@@ -191,7 +191,7 @@ describe('Protocol Initialization Stories', () => {
 
     // Directly transferring DAI to simulate an income earned from external source(s)
     await contracts.dai.transfer(vault.address, liquidity)
-    // await vault.addLiquidity(coverKey, liquidity)
+    // await vault.addLiquidity(coverKey, liquidity, key.toBytes32(''))
 
     const expected = helper.add(previous.daiBalance, liquidity)
 
@@ -212,7 +212,7 @@ describe('Protocol Initialization Stories', () => {
     await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
-    await vault.addLiquidity(coverKey, liquidity, npmToStake)
+    await vault.addLiquidity(coverKey, liquidity, npmToStake, key.toBytes32(''))
 
     const expected = helper.add(previous.daiBalance, liquidity)
 

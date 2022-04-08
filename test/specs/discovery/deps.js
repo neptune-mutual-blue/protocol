@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
-const { helper, deployer, key } = require('../../../../util')
-const pair = require('../../../../util/composer/uniswap-pair')
-
+const { helper, deployer, key } = require('../../../util')
+const pair = require('../../../util/composer/uniswap-pair')
 const DAYS = 86400
 const cache = null
 
@@ -124,7 +123,7 @@ const deployDependencies = async () => {
       helper.randomAddress()
     ],
     [helper.ether(0), // Cover Fee
-      helper.ether(10), // Min Cover Stake
+      helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Claim period
       helper.percentage(30), // Governance Burn Rate: 30%
@@ -138,19 +137,7 @@ const deployDependencies = async () => {
     ]
   )
 
-  await protocol.grantRoles([
-    {
-      account: owner.address,
-      roles: [
-        key.ACCESS_CONTROL.UPGRADE_AGENT,
-        key.ACCESS_CONTROL.COVER_MANAGER,
-        key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
-        key.ACCESS_CONTROL.PAUSE_AGENT,
-        key.ACCESS_CONTROL.GOVERNANCE_ADMIN,
-        key.ACCESS_CONTROL.UNPAUSE_AGENT
-      ]
-    }
-  ])
+  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
@@ -258,19 +245,6 @@ const deployDependencies = async () => {
     ValidationLibV1: validationLibV1.address
   })
 
-  const cxTokenFactory = await deployer.deployWithLibraries(cache, 'cxTokenFactory',
-    {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      cxTokenFactoryLibV1: cxTokenFactoryLib.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      ValidationLibV1: validationLibV1.address
-    }
-    , store.address
-  )
-
-  await protocol.addContract(key.PROTOCOL.CNS.COVER_CXTOKEN_FACTORY, cxTokenFactory.address)
-
   const governance = await deployer.deployWithLibraries(cache, 'Governance',
     {
       AccessControlLibV1: accessControlLibV1.address,
@@ -311,7 +285,6 @@ const deployDependencies = async () => {
     npmDai,
     store,
     router,
-    factory,
     storeKeyUtil,
     protoUtilV1,
     accessControlLibV1,
@@ -331,7 +304,8 @@ const deployDependencies = async () => {
     stakingContract,
     reassuranceContract,
     governance,
-    resolution
+    resolution,
+    cxTokenFactoryLib
   }
 }
 

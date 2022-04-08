@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
-  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn);
+  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode);
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -19,7 +19,8 @@ interface IPolicy is IMember {
   function purchaseCover(
     bytes32 key,
     uint256 coverDuration,
-    uint256 amountToCover
+    uint256 amountToCover,
+    bytes32 referralCode
   ) external returns (address);
 
   /**

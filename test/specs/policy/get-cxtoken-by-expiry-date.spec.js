@@ -69,12 +69,12 @@ describe('Policy: getCxTokenByExpiryDate', function () {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
   it('must return successfully', async () => {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
+    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
 
