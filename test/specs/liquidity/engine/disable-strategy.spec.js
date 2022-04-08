@@ -75,6 +75,11 @@ describe('Liquidity Engine: disableStrategy', () => {
     event.args.strategy.should.equal(aaveStrategy.address)
   })
 
+  it('must throw while disabling an invalid strategy', async () => {
+    await liquidityEngine.disableStrategy(helper.randomAddress())
+      .should.be.rejectedWith('Invalid strategy')
+  })
+
   it('correctly get disabled strategies', async () => {
     await liquidityEngine.disableStrategy(aaveStrategy.address)
     const disabledStrategies = await liquidityEngine.getDisabledStrategies()

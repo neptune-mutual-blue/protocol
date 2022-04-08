@@ -156,6 +156,8 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
+    require(stablecoinWithdrawn > 0, "Redeeming cDai failed");
+
     // Immediately send DAI to the vault cDAI came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
