@@ -90,12 +90,12 @@ library PriceLibV1 {
     return (2 * reserve1 * lpTokens) / supply;
   }
 
-  function getLastUpdateOnInternal(IStore s) public view returns (uint256) {
+  function getLastUpdateOnInternal(IStore s) external view returns (uint256) {
     bytes32 key = getLastUpdateKey();
     return s.getUintByKey(key);
   }
 
-  function setLastUpdateOn(IStore s) public {
+  function setLastUpdateOn(IStore s) external {
     bytes32 key = getLastUpdateKey();
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }

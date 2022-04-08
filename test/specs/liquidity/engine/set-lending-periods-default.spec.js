@@ -51,6 +51,10 @@ describe('Liquidity Engine: `setLendingPeriodsDefault` function', () => {
 
     event.args.lendingPeriod.should.equal(lendingPeriod)
     event.args.withdrawalWindow.should.equal(withdrawalWindow)
+
+    const result = await liquidityEngine.getLendingPeriods(key.toBytes32(''))
+    result[0].should.equal(lendingPeriod)
+    result[1].should.equal(withdrawalWindow)
   })
 
   it('reverts when protocol is paused', async () => {

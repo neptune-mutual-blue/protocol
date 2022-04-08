@@ -154,6 +154,8 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
+    require(stablecoinWithdrawn > 0, "Redeeming aToken failed");
+
     // Immediately send DAI to the vault aToken came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
@@ -177,7 +179,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     return keccak256(abi.encodePacked(_KEY, coverKey, NS_WITHDRAWALS));
   }
 
-  function getWeight() external pure override returns (uint256) {
+  function getWeight() external pure virtual override returns (uint256) {
     return 10_000; // 100%
   }
 

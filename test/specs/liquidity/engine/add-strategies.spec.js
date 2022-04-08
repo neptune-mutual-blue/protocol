@@ -117,6 +117,25 @@ describe('Liquidity Engine: addStrategies', () => {
     await liquidityEngine.connect(bob).addStrategies([aaveStrategy.address]).should.be.rejectedWith('Forbidden')
   })
 
+  it('reverts when too much weight is specified', async () => {
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+
+    const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
+
+    const invalidStrategy = await deployer.deployWithLibraries(cache, 'InvalidStrategy', {
+      AccessControlLibV1: accessControlLibV1.address,
+      BaseLibV1: baseLibV1.address,
+      NTransferUtilV2: transferLib.address,
+      ProtoUtilV1: protoUtilV1.address,
+      RegistryLibV1: registryLibV1.address,
+      StoreKeyUtil: storeKeyUtil.address,
+      ValidationLibV1: validationLibV1.address
+    }, store.address, aaveLendingPool.address, aToken.address)
+
+    await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_AAVE, invalidStrategy.address)
+    await liquidityEngine.addStrategies([invalidStrategy.address]).should.be.rejectedWith('Weight too much')
+  })
+
   it('reverts when protocol is paused', async () => {
     const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
 

@@ -95,7 +95,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     IERC20, /*token*/
     bytes32 coverKey,
     bytes32 strategyName,
-    uint256 amount
+    uint256 /*amount*/
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);

@@ -38,12 +38,12 @@ library StrategyLibV1 {
   }
 
   function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
-    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey, true));
-    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey, true));
+    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
+    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
     if (lendingPeriod == 0) {
-      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0, true));
-      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0, true));
+      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
+      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
   }
 
@@ -53,17 +53,13 @@ library StrategyLibV1 {
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external {
-    s.setUintByKey(getLendingPeriodKey(coverKey, true), lendingPeriod);
-    s.setUintByKey(getWithdrawalWindowKey(coverKey, true), withdrawalWindow);
+    s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
+    s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
     emit LendingPeriodSet(lendingPeriod, withdrawalWindow);
   }
 
-  function getLendingPeriodKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
-    if (ignoreMissingKey == false) {
-      require(coverKey > 0, "Invalid Cover Key");
-    }
-
+  function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
     }
@@ -71,11 +67,7 @@ library StrategyLibV1 {
     return ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD;
   }
 
-  function getWithdrawalWindowKey(bytes32 coverKey, bool ignoreMissingKey) public pure returns (bytes32) {
-    if (ignoreMissingKey == false) {
-      require(coverKey > 0, "Invalid Cover Key");
-    }
-
+  function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
     }

@@ -41,6 +41,12 @@ describe('Liquidity Engine: `setLendingPeriods` function', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
   })
 
+  it('correct gets the lending period', async () => {
+    const result = await liquidityEngine.getLendingPeriods(coverkey)
+    result[0].should.equal('0')
+    result[1].should.equal('0')
+  })
+
   it('correctly sets lending period', async () => {
     const lendingPeriod = '10'
     const withdrawalWindow = '10'
@@ -52,6 +58,10 @@ describe('Liquidity Engine: `setLendingPeriods` function', () => {
 
     event.args.lendingPeriod.should.equal(lendingPeriod)
     event.args.withdrawalWindow.should.equal(withdrawalWindow)
+
+    const result = await liquidityEngine.getLendingPeriods(coverkey)
+    result[0].should.equal(lendingPeriod)
+    result[1].should.equal(withdrawalWindow)
   })
 
   it('reverts when protocol is paused', async () => {

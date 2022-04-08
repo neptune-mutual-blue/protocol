@@ -64,6 +64,10 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }
 
+  function getLendingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+    return s.getLendingPeriodsInternal(coverKey);
+  }
+
   function getDisabledStrategies() external view override returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }
