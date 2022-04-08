@@ -44,7 +44,8 @@ abstract contract VaultLiquidity is VaultBase {
   function addLiquidity(
     bytes32 coverKey,
     uint256 amount,
-    uint256 npmStakeToAdd
+    uint256 npmStakeToAdd,
+    bytes32 referralCode
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
@@ -76,7 +77,7 @@ abstract contract VaultLiquidity is VaultBase {
 
     delgate().postAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
 
-    emit PodsIssued(msg.sender, podsToMint, amount);
+    emit PodsIssued(msg.sender, podsToMint, amount, referralCode);
 
     if (previousNpmStake == 0) {
       emit Entered(coverKey, msg.sender);

@@ -45,7 +45,8 @@ contract Policy is IPolicy, Recoverable {
   function purchaseCover(
     bytes32 key,
     uint256 coverDuration,
-    uint256 amountToCover
+    uint256 amountToCover,
+    bytes32 referralCode
   ) external override nonReentrant returns (address) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
@@ -57,7 +58,7 @@ contract Policy is IPolicy, Recoverable {
 
     (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn());
+    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode);
     return address(cxToken);
   }
 

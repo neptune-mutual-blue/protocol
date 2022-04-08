@@ -68,13 +68,13 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
   it('must succeed without any errors', async () => {
     const amount = helper.ether(500_000)
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(coverKey, '1', amount)
+    await deployed.policy.purchaseCover(coverKey, '1', amount, key.toBytes32(''))
 
     const commitment = await deployed.policy.getCommitment(coverKey)
     commitment.should.equal(amount)
@@ -86,17 +86,17 @@ describe('Policy: purchaseCover', () => {
   it('must revert if zero is sent as the amount to cover', async () => {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(coverKey, '1', '0')
+    await deployed.policy.purchaseCover(coverKey, '1', '0', key.toBytes32(''))
       .should.be.rejectedWith('Please specify amount')
   })
 
   it('must revert if invalid value is sent as the cover duration', async () => {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(coverKey, '0', helper.ether(500_000))
+    await deployed.policy.purchaseCover(coverKey, '0', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
 
-    await deployed.policy.purchaseCover(coverKey, '5', helper.ether(500_000))
+    await deployed.policy.purchaseCover(coverKey, '5', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
   })
 
@@ -104,7 +104,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.pause()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
+    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
@@ -116,7 +116,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.governance.report(coverKey, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000))
+    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Status not normal')
   })
 })

@@ -94,7 +94,7 @@ describe('Policy: getCoverFeeInfo', () => {
 
     await deployed.dai.approve(deployed.vault.address, payload.inVault)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    await deployed.vault.addLiquidity(coverKey, payload.inVault, minReportingStake)
+    await deployed.vault.addLiquidity(coverKey, payload.inVault, minReportingStake, key.toBytes32(''))
   })
 
   for (const amount of amounts) {

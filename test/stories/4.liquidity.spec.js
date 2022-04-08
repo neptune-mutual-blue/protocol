@@ -56,14 +56,14 @@ describe('Liquidity Stories', () => {
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minReportingStake)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
     await network.provider.send('evm_increaseTime', [1 * DAYS])
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minReportingStake)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
   it('interest could not be accrued before withdrawal period', async () => {
