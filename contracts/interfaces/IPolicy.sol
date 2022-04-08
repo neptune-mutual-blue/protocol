@@ -4,11 +4,11 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
-  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode);
+  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode, uint256 policyId);
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
-   * When you purchase covers, you recieve equal amount of cxTokens back.
+   * When you purchase covers, you receive equal amount of cxTokens back.
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
@@ -21,7 +21,7 @@ interface IPolicy is IMember {
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
-  ) external returns (address);
+  ) external returns (address, uint256);
 
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
