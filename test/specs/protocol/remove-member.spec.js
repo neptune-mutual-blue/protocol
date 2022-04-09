@@ -60,8 +60,8 @@ describe('Removing Protocol Member(s)', () => {
         helper.ether(0.0005), // Flash Loan Fee: 0.5%
         helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
         1 * DAYS, // cooldown period,
-        1 * DAYS // state and liquidity update interval
-      ]
+        1 * DAYS, // state and liquidity update interval
+        helper.percentage(5)]
     )
   })
 

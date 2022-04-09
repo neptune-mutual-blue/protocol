@@ -11,9 +11,6 @@ library ProtoUtilV1 {
 
   uint256 public constant MULTIPLIER = 10_000;
 
-  // @todo Configure this magic number.
-  uint256 public constant MAX_LENDING_RATIO = 500; // 5% (divided by 10,000)
-
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
 
@@ -84,6 +81,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
   bytes32 public constant NS_VAULT_LENDING_LOSSES = "ns:vault:lending:losses";
   bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD = "ns:cover:liquidity:len:p";
+  bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO = "ns:cover:liquidity:max:lr";
   bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW = "ns:cover:liquidity:ww";
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE = "ns:cover:liquidity:min:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_STAKE = "ns:cover:liquidity:stake";

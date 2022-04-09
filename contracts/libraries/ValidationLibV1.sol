@@ -144,7 +144,6 @@ library ValidationLibV1 {
     address caller,
     bytes32 /*strategyName*/
   ) external view {
-    // @todo
     bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
     require(callerIsStrategyContract == true, "Not a strategy contract");
   }

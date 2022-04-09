@@ -82,7 +82,6 @@ contract CoverStake is ICoverStake, Recoverable {
     address account,
     uint256 amount
   ) external override nonReentrant {
-    // @todo this function is not called anywhere. Remove this.
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);

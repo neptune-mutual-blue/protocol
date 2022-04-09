@@ -280,7 +280,8 @@ library StakingPoolLibV1 {
     // First withdraw your rewards
     (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
-    // @suppress-subtraction, @todo: check if the following subtraction could result in an underflow
+    // @suppress-subtraction The maximum amount that can be withdrawn is the staked balance
+    // and therefore underflow is not possible.
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
 

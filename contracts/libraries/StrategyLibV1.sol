@@ -17,7 +17,8 @@ library StrategyLibV1 {
   using RegistryLibV1 for IStore;
 
   event StrategyAdded(address indexed strategy);
-  event LendingPeriodSet(uint256 lendingPeriod, uint256 withdrawalWindow);
+  event LendingPeriodSet(bytes32 indexed coverKey, uint256 lendingPeriod, uint256 withdrawalWindow);
+  event MaxLendingRatioSet(uint256 ratio);
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
@@ -56,7 +57,7 @@ library StrategyLibV1 {
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
-    emit LendingPeriodSet(lendingPeriod, withdrawalWindow);
+    emit LendingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 
   function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
@@ -65,6 +66,20 @@ library StrategyLibV1 {
     }
 
     return ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD;
+  }
+
+  function getMaxLendingRatioInternal(IStore s) external view returns (uint256) {
+    return s.getUintByKey(getMaxLendingRatioKey());
+  }
+
+  function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
+    s.setUintByKey(getMaxLendingRatioKey(), ratio);
+
+    emit MaxLendingRatioSet(ratio);
+  }
+
+  function getMaxLendingRatioKey() public pure returns (bytes32) {
+    return ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
   }
 
   function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {

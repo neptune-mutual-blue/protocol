@@ -54,7 +54,8 @@ describe('Cover: initialize', () => {
         helper.percentage(0.5), // Flash Loan Fee: 0.5%
         helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
         1 * DAYS, // cooldown period,
-        1 * DAYS // state and liquidity update interval
+        1 * DAYS, // state and liquidity update interval
+        helper.percentage(5)
       ]
     )
 

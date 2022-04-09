@@ -53,12 +53,12 @@ describe('Fractionalization of Reserves', () => {
   it('does not allow fractional reserves', async () => {
     let totalPurchased = 0
     const amount = 2_000_000
-    const args = [coverKey, 2, helper.ether(amount)]
+    const args = [coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
 
     let feeIncome = ethers.BigNumber.from(0)
 
     for (let i = 0; i < 2; i++) {
-      const info = (await contracts.policy.getCoverFeeInfo(...args))
+      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -82,8 +82,8 @@ describe('Fractionalization of Reserves', () => {
 
     // Never ending
     for (let i = 0; i < 20; i++) {
-      const args = [coverKey, 2, helper.ether(amount)]
-      const info = (await contracts.policy.getCoverFeeInfo(...args))
+      const args = [coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -101,8 +101,8 @@ describe('Fractionalization of Reserves', () => {
     const amount = 250_000
 
     for (let i = 0; i < 8; i++) {
-      const args = [coverKey, 1, helper.ether(amount)]
-      const info = (await contracts.policy.getCoverFeeInfo(...args))
+      const args = [coverKey, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
       const fee = info.fee
 
       if (i < 4) {

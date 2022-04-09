@@ -64,6 +64,20 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }
 
+  function setMaxLendingRatio(uint256 ratio) external override nonReentrant {
+    require(ratio > 0, "Please specify lending ratio");
+    require(ratio <= ProtoUtilV1.MULTIPLIER, "Invalid lending ratio");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setMaxLendingRatioInternal(ratio);
+  }
+
+  function getMaxLendingRatio() external view override returns (uint256 ratio) {
+    return s.getMaxLendingRatioInternal();
+  }
+
   function getLendingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
     return s.getLendingPeriodsInternal(coverKey);
   }

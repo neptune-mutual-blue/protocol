@@ -134,7 +134,8 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * DAYS // state and liquidity update interval
+      1 * DAYS, // state and liquidity update interval
+      helper.percentage(5) // maximum lending ratio
     ]
   )
 
@@ -147,6 +148,7 @@ const deployDependencies = async () => {
         key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
         key.ACCESS_CONTROL.PAUSE_AGENT,
         key.ACCESS_CONTROL.GOVERNANCE_ADMIN,
+        key.ACCESS_CONTROL.GOVERNANCE_AGENT,
         key.ACCESS_CONTROL.UNPAUSE_AGENT
       ]
     }
