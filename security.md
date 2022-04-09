@@ -40,10 +40,10 @@ yarn gendoc
 
 **Permission**
 
-The deployer automatically obtains the highest-level of access. Thenceforth, accesses are distributed based on authority and technical expertise.
+The deployer automatically obtains the highest-level of access. Subsequent access is distributed according to authority and technical expertise of the protocol's operating team.
 
 - Assign roles to multiple trusted authorities which must be
-  - distributed (not decentralized)
+  - distributed (not necessarily decentralized)
   - hardware-based EOA (not multi-sig contracts)
 - Upon completion of the above ☝️, transfer ownership to a different cold storage wallet
 
@@ -53,19 +53,19 @@ Note that the access control policy of the protocol can change based on our disc
 
 **Low**
 
-A low access-level role can create very little impact on our smart contracts. An attacker obtaining this access level will not be able to compromise the system but can still create annoyance.
+A low-access level role can create very little impact on our smart contracts. An attacker obtaining this level of access will not be able to compromise the system, but may nevertheless create an inconvenience.
 
 **Moderate**
 
-A moderate access-level role if compromised will be able to change numerous protocol configuration parameters. This access level even if compromised should only affect up to the extent of the changed configurations.
+A moderate-access level role, if compromised, may modify many protocol configuration settings. This level of access, even in the event of compromise, should only affect modified configurations.
 
 **High**
 
-A high access-level role if compromised will be able to attack the protocol and drain out funds while still only affecting up to the extent of the acquired access.
+A role with a high level of access, if compromised, will be able to attack the protocol and drain funds while affecting only the extent of acquired access.
 
 **Critical**
 
-The critical access-level roles are able to not only attack the protocol but also change the underlying logic of one or multiple protocol members.
+Critical access level roles can not only attack the protocol, they can also change the underlying logic of one or more protocol members.
 
 | Role                       | Level    | Description                                                                                                                                                                                                                                                      |
 | -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -83,9 +83,13 @@ The critical access-level roles are able to not only attack the protocol but als
 
 [SWC Registry](https://swcregistry.io/)
 
+# Gas Optimization
+
+Please note that we value simplicity, safety, and a good developer experience over gas optimization. We want to make our codebase simpler or easier to understand, rather than using a few tips to save gas. If something is easy to understand, easy to maintain, and functions as intended, it does not need to be optimized.
+
 ## Do Not Trust ERC-20 Contract Addresses
 
-Do not trust ERC-20 addresses that are supplied by users. Check your intended usage and ensure that you validate all ERC-20 operations.
+Do not trust ERC-20 addresses that are supplied by users. Verify your intended use and be sure to validate all ERC-20 operations.
 
 ```solidity
 using NTransferUtilV2 for IERC20;
@@ -175,7 +179,7 @@ function addCover(bytes32 key) external override nonReentrant {
 
 ## Non Reentrancy
 
-Any publicy-accessible function that changes the state must have nonReentrancy modifier.
+Please note that (nearly) all of the Neptune Mutual contracts are depedendent on (or indirectly call) an (or the the-then) implementation of an `IProtocol` contract. Although it is highly unlikely that an IProtocol will `re-enter` into contract calls today, it is best to always use `nonReentrant` modifier provided by Open Zeppelin for future cases because of upgradeable nature of the Neptune Mutual protocol. While it may be a bit expensive gas wise, **any publicy-accessible function that changes the state must have the `nonReentrancy` modifier**.
 
 ```solidity
 function addCover(bytes32 key) external override nonReentrant { // ...}
@@ -184,7 +188,7 @@ function addCover(bytes32 key) external override nonReentrant { // ...}
 
 ## Pausability
 
-Any publicy-accessible function that changes the state must have pausable logic. If pausable is not required, use the comment decorator `@suppress-pausable` to suppress it.
+Any publicy-accessible function that changes the state must have `pausable` logic. If pausable is not required, use the comment decorator `@suppress-pausable` to suppress it.
 
 ```solidity
 function addCover(bytes32 key) external override nonReentrant {

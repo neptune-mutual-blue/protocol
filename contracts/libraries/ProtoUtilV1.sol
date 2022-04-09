@@ -91,9 +91,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_REMOVED = "ns:cover:liquidity:rem";
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
   bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
-  bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE = "ns:cover:liquidity:release";
   bytes32 public constant NS_COVER_REQUIRES_WHITELIST = "ns:cover:requires:whitelist";
-  bytes32 public constant NS_COVER_STABLECOIN_LENT_TOTAL = "ns:cover:sc:total:lent";
 
   bytes32 public constant NS_COVER_HAS_FLASH_LOAN = "ns:cover:has:fl";
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE = "ns:cover:liquidity:fl:fee";

@@ -25,9 +25,21 @@ interface IReporter {
 
   function getActiveIncidentDate(bytes32 key) external view returns (uint256);
 
+  function getAttestation(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake);
+
+  function getDispute(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake);
+
   function getReporter(bytes32 key, uint256 incidentDate) external view returns (address);
 
-  function getResolutionDate(bytes32 key) external view returns (uint256);
+  function getResolutionTimestamp(bytes32 key) external view returns (uint256);
 
   function setFirstReportingStake(uint256 value) external;
 

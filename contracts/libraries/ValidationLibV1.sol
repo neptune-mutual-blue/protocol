@@ -216,25 +216,25 @@ library ValidationLibV1 {
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDate(key) == incidentDate, "Invalid incident date");
+    require(s.getLatestIncidentDateInternal(key) == incidentDate, "Invalid incident date");
   }
 
   function mustHaveDispute(IStore s, bytes32 key) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
     require(hasDispute == true, "Not disputed");
   }
 
   function mustNotHaveDispute(IStore s, bytes32 key) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
     require(hasDispute == false, "Already disputed");
   }
 
   function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view {
-    require(s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
+    require(s.getResolutionTimestampInternal(key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 
   function mustBeAfterReportingPeriod(IStore s, bytes32 key) public view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
+    require(block.timestamp > s.getResolutionTimestampInternal(key), "Reporting still active"); // solhint-disable-line
   }
 
   function mustBeValidCxToken(
@@ -273,7 +273,7 @@ library ValidationLibV1 {
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    uint256 withdrawal = s.getReportingUnstakenAmount(account, key, incidentDate);
+    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, key, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 
@@ -320,7 +320,7 @@ library ValidationLibV1 {
       // Incident occurred. Must unstake with claim during the claim period.
       mustBeDuringClaimPeriod(s, key);
       return;
-    }    
+    }
   }
 
   function mustBeDuringClaimPeriod(IStore s, bytes32 key) public view {

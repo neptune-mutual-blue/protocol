@@ -272,10 +272,6 @@ library VaultLibV1 {
     return releaseAmount;
   }
 
-  function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
-  }
-
   function accrueInterestInternal(IStore s, bytes32 coverKey) external {
     (bool isWithdrawalPeriod, , , , ) = s.getWithdrawalInfoInternal(coverKey);
     require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");

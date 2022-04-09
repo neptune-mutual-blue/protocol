@@ -26,7 +26,7 @@ describe('Governance: report', () => {
       PolicyHelperV1: deployed.policyHelperV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address)
+    }, deployed.store.address, '0')
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -72,14 +72,15 @@ describe('Governance: report', () => {
   })
 
   it('must report correctly', async () => {
-    const [bob] = await ethers.getSigners()
+    const [, bob] = await ethers.getSigners()
 
-    await deployed.npm.transfer(bob.address, helper.ether(2000))
+    await deployed.npm.transfer(bob.address, helper.ether(20000))
+    const amount = helper.ether(10000)
 
     const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 
-    const tx = await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.npm.connect(bob).approve(deployed.governance.address, amount)
+    const tx = await deployed.governance.connect(bob).report(coverKey, reportingInfo, amount)
     const { events } = await tx.wait()
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
@@ -87,14 +88,19 @@ describe('Governance: report', () => {
     attestedEvent.args.key.should.equal(coverKey)
     attestedEvent.args.incidentDate.should.equal(incidentDate)
     attestedEvent.args.witness.should.equal(bob.address)
-    attestedEvent.args.stake.should.equal(helper.ether(1000))
+    attestedEvent.args.stake.should.equal(amount)
 
     const reportedEvent = events.find(x => x.event === 'Reported')
     reportedEvent.args.key.should.equal(coverKey)
     reportedEvent.args.reporter.should.equal(bob.address)
     reportedEvent.args.incidentDate.should.equal(incidentDate)
     reportedEvent.args.info.should.equal(reportingInfo)
-    reportedEvent.args.initialStake.should.equal(helper.ether(1000))
+    reportedEvent.args.initialStake.should.equal(amount)
+
+    const [myStake, totalStake] = await deployed.governance.getAttestation(coverKey, bob.address, incidentDate)
+
+    myStake.should.equal(amount)
+    totalStake.should.equal(amount)
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second
