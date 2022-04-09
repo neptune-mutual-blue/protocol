@@ -71,7 +71,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     require(stake > 0, "Enter a stake");
 
-    s.addAttestation(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
@@ -113,7 +113,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     require(stake > 0, "Enter a stake");
 
-    s.addDispute(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
@@ -137,7 +137,7 @@ abstract contract Witness is Recoverable, IWitness {
    * @return Returns an array of integers --> [yes, no]
    */
   function getStakes(bytes32 key, uint256 incidentDate) external view override returns (uint256, uint256) {
-    return s.getStakes(key, incidentDate);
+    return s.getStakesInternal(key, incidentDate);
   }
 
   /**
@@ -152,6 +152,6 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 incidentDate,
     address account
   ) external view override returns (uint256, uint256) {
-    return s.getStakesOf(account, key, incidentDate);
+    return s.getStakesOfInternal(account, key, incidentDate);
   }
 }

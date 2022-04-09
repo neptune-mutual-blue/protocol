@@ -32,8 +32,8 @@ contract Policy is IPolicy, Recoverable {
 
   uint256 public lastPolicyId;
 
-  constructor(IStore store) Recoverable(store) {
-    lastPolicyId = 100000;
+  constructor(IStore store, uint256 _lastPolicyId) Recoverable(store) {
+    lastPolicyId = _lastPolicyId;
   }
 
   /**

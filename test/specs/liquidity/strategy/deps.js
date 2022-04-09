@@ -300,7 +300,7 @@ const deployDependencies = async () => {
     PolicyHelperV1: policyHelperV1.address,
     StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLibV1.address
-  }, store.address)
+  }, store.address, '0')
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
 

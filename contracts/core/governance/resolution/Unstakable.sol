@@ -36,10 +36,10 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
     s.validateUnstakeWithoutClaim(key, incidentDate);
 
-    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoFor(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
+    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
     s.updateStateAndLiquidity(key);
@@ -64,13 +64,13 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
     s.validateUnstakeWithClaim(key, incidentDate);
 
-    address finalReporter = s.getReporter(key, incidentDate);
+    address finalReporter = s.getReporterInternal(key, incidentDate);
     address burner = s.getBurnAddress();
 
     (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetails(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 

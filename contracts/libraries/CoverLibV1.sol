@@ -40,7 +40,7 @@ library CoverLibV1 {
     values = new uint256[](5);
 
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
-    values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
+    values[1] = s.getStake(key);
     values[2] = s.getStablecoinOwnedByVaultInternal(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 

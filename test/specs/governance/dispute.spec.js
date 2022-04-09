@@ -26,7 +26,7 @@ describe('Governance: dispute', () => {
       PolicyHelperV1: deployed.policyHelperV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address)
+    }, deployed.store.address, '0')
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -72,33 +72,39 @@ describe('Governance: dispute', () => {
   })
 
   it('must dispute correctly', async () => {
-    const [bob] = await ethers.getSigners()
+    const [, bob] = await ethers.getSigners()
 
     await deployed.npm.transfer(bob.address, helper.ether(2000))
+    const amount = helper.ether(1200)
 
     const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.npm.approve(deployed.governance.address, amount)
+    await deployed.governance.report(coverKey, reportingInfo, amount)
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
 
     const disputeInfo = key.toBytes32('dispute-info')
-    await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(1000))
-    const tx = await deployed.governance.connect(bob).dispute(coverKey, incidentDate, disputeInfo, helper.ether(1000))
+    await deployed.npm.connect(bob).approve(deployed.governance.address, amount)
+    const tx = await deployed.governance.connect(bob).dispute(coverKey, incidentDate, disputeInfo, amount)
     const { events } = await tx.wait()
 
     const refutedEvent = events.find(x => x.event === 'Refuted')
     refutedEvent.args.key.should.equal(coverKey)
     refutedEvent.args.incidentDate.should.equal(incidentDate)
     refutedEvent.args.witness.should.equal(bob.address)
-    refutedEvent.args.stake.should.equal(helper.ether(1000))
+    refutedEvent.args.stake.should.equal(amount)
 
     const disputedEvent = events.find(x => x.event === 'Disputed')
     disputedEvent.args.key.should.equal(coverKey)
     disputedEvent.args.reporter.should.equal(bob.address)
     disputedEvent.args.incidentDate.should.equal(incidentDate)
     disputedEvent.args.info.should.equal(disputeInfo)
-    disputedEvent.args.initialStake.should.equal(helper.ether(1000))
+    disputedEvent.args.initialStake.should.equal(amount)
+
+    const [myStake, totalStake] = await deployed.governance.getDispute(coverKey, bob.address, incidentDate)
+
+    myStake.should.equal(amount)
+    totalStake.should.equal(amount)
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second

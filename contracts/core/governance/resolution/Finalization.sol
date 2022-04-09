@@ -51,7 +51,7 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
-    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
     // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);

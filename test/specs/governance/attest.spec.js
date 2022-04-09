@@ -26,7 +26,7 @@ describe('Governance: attest', () => {
       PolicyHelperV1: deployed.policyHelperV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address)
+    }, deployed.store.address, '0')
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 

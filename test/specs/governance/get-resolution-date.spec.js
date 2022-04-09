@@ -12,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Governance: getResolutionDate', () => {
+describe('Governance: getResolutionTimestamp', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -26,7 +26,7 @@ describe('Governance: getResolutionDate', () => {
       PolicyHelperV1: deployed.policyHelperV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address)
+    }, deployed.store.address, '0')
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -83,7 +83,7 @@ describe('Governance: getResolutionDate', () => {
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
 
-    const result = await deployed.governance.getResolutionDate(coverKey)
+    const result = await deployed.governance.getResolutionTimestamp(coverKey)
     result.should.equal(parseInt(incidentDate, 10) + 7 * DAYS)
 
     // Cleanup - resolve, finalize
@@ -101,7 +101,7 @@ describe('Governance: getResolutionDate', () => {
   })
 
   it('must get resolution date correctly when there is no active reporting', async () => {
-    const result = await deployed.governance.getResolutionDate(coverKey)
+    const result = await deployed.governance.getResolutionTimestamp(coverKey)
     result.should.equal(0)
   })
 })

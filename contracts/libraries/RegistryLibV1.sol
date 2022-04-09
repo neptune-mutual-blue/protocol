@@ -48,7 +48,7 @@ library RegistryLibV1 {
   }
 
   function getBondPoolContract(IStore s) external view returns (IBondPool) {
-    return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
+    return IBondPool(getBondPoolAddress(s));
   }
 
   function getProtocolContract(IStore s, bytes32 cns) public view returns (address) {
@@ -83,13 +83,13 @@ library RegistryLibV1 {
   }
 
   function getStakingPoolAddress(IStore s) external view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
-    return vault;
+    address pool = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
+    return pool;
   }
 
-  function getBondPoolAddress(IStore s, bytes32 key) external view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL, key);
-    return vault;
+  function getBondPoolAddress(IStore s) public view returns (address) {
+    address pool = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL);
+    return pool;
   }
 
   function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {

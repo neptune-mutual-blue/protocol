@@ -38,16 +38,16 @@ abstract contract Reporter is IReporter, Witness {
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
     // Set the Resolution Timestamp
-    uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
+    uint256 resolutionDate = block.timestamp + s.getReportingPeriodInternal(key); // solhint-disable-line
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key, resolutionDate);
 
     // Update the values
-    s.addAttestation(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
@@ -71,9 +71,9 @@ abstract contract Reporter is IReporter, Witness {
     s.mustBeDuringReportingPeriod(key);
 
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
 
-    s.addDispute(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
@@ -98,7 +98,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function getFirstReportingStake(bytes32 key) external view override returns (uint256) {
-    return s.getMinReportingStake(key);
+    return s.getMinReportingStakeInternal(key);
   }
 
   function setReportingBurnRate(uint256 value) external override nonReentrant {
@@ -129,10 +129,26 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {
-    return s.getReporter(key, incidentDate);
+    return s.getReporterInternal(key, incidentDate);
   }
 
-  function getResolutionDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
+  function getResolutionTimestamp(bytes32 key) external view override returns (uint256) {
+    return s.getResolutionTimestampInternal(key);
+  }
+
+  function getAttestation(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view override returns (uint256 myStake, uint256 totalStake) {
+    return s.getAttestationInternal(key, who, incidentDate);
+  }
+
+  function getDispute(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view override returns (uint256 myStake, uint256 totalStake) {
+    return s.getDisputeInternal(key, who, incidentDate);
   }
 }
