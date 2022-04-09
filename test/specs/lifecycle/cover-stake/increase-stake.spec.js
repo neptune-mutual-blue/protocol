@@ -88,6 +88,22 @@ describe('CoverStake: increaseStake', () => {
     event.args.amount.should.equal(amount)
   })
 
+  it('correctly burns fees', async () => {
+    const [owner, alice] = await ethers.getSigners()
+    const amount = ethers.BigNumber.from('100')
+    const fee = ethers.BigNumber.from('20')
+
+    await deployed.npm.transfer(alice.address, amount)
+    await deployed.npm.approve(deployed.stakingContract.address, amount.add(fee))
+
+    const tx = await deployed.stakingContract.connect(alice).increaseStake(coverKey, owner.address, amount, fee)
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'FeeBurned')
+
+    event.args.key.should.equal(coverKey)
+    event.args.amount.should.equal(fee)
+  })
+
   it('reverts when fee is less than amount', async () => {
     const [owner, alice] = await ethers.getSigners()
     const amount = helper.ether(100)
