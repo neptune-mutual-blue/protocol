@@ -350,7 +350,7 @@ library GovernanceUtilV1 {
     return fromKey > 0 ? fromKey : fallbackValue;
   }
 
-  function getResolutionDeadlineInternal(IStore s, bytes32 key) public view returns (uint256) {
+  function getResolutionDeadlineInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
   }
 }

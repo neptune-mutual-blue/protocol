@@ -6,7 +6,7 @@
 | IClaimsProcessor.json  | ClaimPeriodSet               | NS_ROLES_COVER_MANAGER            |
 | IClaimsProcessor.json  | Claimed                      | Any                               |
 | ICover.json            | CoverCreated                 | Any (Whitelisted)                 |
-| ICover.json            | CoverCreatorWhitelistUpdated | NS_ROLES_COVER_MANAGER            |
+| ICover.json            | CoverCreatorWhitelistUpdated | NS_ROLES_GOVERNANCE_AGENT         |
 | ICover.json            | CoverFeeSet                  | NS_ROLES_COVER_MANAGER            |
 | ICover.json            | CoverInitialized             | NS_ROLES_COVER_MANAGER            |
 | ICover.json            | CoverStopped                 | NS_ROLES_GOVERNANCE_ADMIN         |

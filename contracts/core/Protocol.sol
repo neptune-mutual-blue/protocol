@@ -38,6 +38,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[9] flashLoanFeeProtocol
    * @param values[10] resolutionCoolDownPeriod
    * @param values[11] state and liquidity update interval
+   * @param values[12] max lending ratio
    */
   function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
     // @suppress-initialization Can only be initialized by the deployer or an admin
@@ -81,6 +82,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
     s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, values[11]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
 
     initialized = 1;
     emit Initialized(addresses, values);

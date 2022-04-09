@@ -71,7 +71,8 @@ const initialize = async (suite, deploymentId) => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       cooldownPeriod,
-      stateUpdateInterval
+      stateUpdateInterval,
+      helper.percentage(5)
     ]
   )
 
@@ -361,7 +362,7 @@ const initialize = async (suite, deploymentId) => {
   },
   {
     account: owner.address,
-    roles: [key.ACCESS_CONTROL.COVER_MANAGER]
+    roles: [key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT]
   }]
 
   await intermediate(cache, protocol, 'grantRoles', payload)

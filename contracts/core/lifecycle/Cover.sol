@@ -133,7 +133,7 @@ contract Cover is CoverBase {
    */
   function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
     s.updateCoverCreatorWhitelistInternal(account, status);
     emit CoverCreatorWhitelistUpdated(account, status);
