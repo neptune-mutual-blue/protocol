@@ -326,6 +326,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

@@ -12,8 +12,9 @@ View Source: [contracts/interfaces/ILiquidityEngine.sol](../contracts/interfaces
 ```js
 event StrategyAdded(address indexed strategy);
 event StrategyDisabled(address indexed strategy);
-event LendingPeriodSet(uint256  lendingPeriod, uint256  withdrawalWindow);
+event LendingPeriodSet(bytes32 indexed coverKey, uint256  lendingPeriod, uint256  withdrawalWindow);
 event LiquidityStateUpdateIntervalSet(uint256  duration);
+event MaxLendingRatioSet(uint256  ratio);
 ```
 
 ## Functions
@@ -24,6 +25,8 @@ event LiquidityStateUpdateIntervalSet(uint256  duration);
 - [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
 - [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
 - [setLiquidityStateUpdateInterval(uint256 value)](#setliquiditystateupdateinterval)
+- [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
+- [getMaxLendingRatio()](#getmaxlendingratio)
 - [getDisabledStrategies()](#getdisabledstrategies)
 - [getActiveStrategies()](#getactivestrategies)
 
@@ -152,6 +155,46 @@ function setLiquidityStateUpdateInterval(uint256 value) external nonpayable
 
 ```javascript
 function setLiquidityStateUpdateInterval(uint256 value) external;
+```
+</details>
+
+### setMaxLendingRatio
+
+```solidity
+function setMaxLendingRatio(uint256 ratio) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| ratio | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMaxLendingRatio(uint256 ratio) external;
+```
+</details>
+
+### getMaxLendingRatio
+
+```solidity
+function getMaxLendingRatio() external view
+returns(ratio uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMaxLendingRatio() external view returns (uint256 ratio);
 ```
 </details>
 
@@ -289,6 +332,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

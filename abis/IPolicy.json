@@ -37,6 +37,18 @@
         "internalType": "uint256",
         "name": "expiresOn",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
       }
     ],
     "name": "CoverPurchased",
@@ -259,6 +271,11 @@
         "internalType": "uint256",
         "name": "amountToCover",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
       }
     ],
     "name": "purchaseCover",
@@ -267,6 +284,11 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",

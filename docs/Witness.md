@@ -71,7 +71,7 @@ function attest(
 
     require(stake > 0, "Enter a stake");
 
-    s.addAttestation(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
@@ -125,7 +125,7 @@ function refute(
 
     require(stake > 0, "Enter a stake");
 
-    s.addDispute(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
@@ -189,7 +189,7 @@ Returns an array of integers --> [yes, no]
 
 ```javascript
 function getStakes(bytes32 key, uint256 incidentDate) external view override returns (uint256, uint256) {
-    return s.getStakes(key, incidentDate);
+    return s.getStakesInternal(key, incidentDate);
   }
 ```
 </details>
@@ -224,7 +224,7 @@ function getStakesOf(
     uint256 incidentDate,
     address account
   ) external view override returns (uint256, uint256) {
-    return s.getStakesOf(account, key, incidentDate);
+    return s.getStakesOfInternal(account, key, incidentDate);
   }
 ```
 </details>
@@ -323,6 +323,7 @@ function getStakesOf(
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

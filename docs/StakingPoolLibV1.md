@@ -527,7 +527,8 @@ function withdrawInternal(
     // First withdraw your rewards
     (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
-    // @suppress-subtraction, @todo: check if the following subtraction could result in an underflow
+    // @suppress-subtraction The maximum amount that can be withdrawn is the staked balance
+    // and therefore underflow is not possible.
     // Individual state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
 
@@ -634,6 +635,7 @@ function withdrawInternal(
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

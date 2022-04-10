@@ -468,7 +468,6 @@ function callerMustBeSpecificStrategyContract(
     address caller,
     bytes32 /*strategyName*/
   ) external view {
-    // @todo
     bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
     require(callerIsStrategyContract == true, "Not a strategy contract");
   }
@@ -742,7 +741,7 @@ function mustBeValidIncidentDate(
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDate(key) == incidentDate, "Invalid incident date");
+    require(s.getLatestIncidentDateInternal(key) == incidentDate, "Invalid incident date");
   }
 ```
 </details>
@@ -765,7 +764,7 @@ function mustHaveDispute(IStore s, bytes32 key) external view
 
 ```javascript
 function mustHaveDispute(IStore s, bytes32 key) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
     require(hasDispute == true, "Not disputed");
   }
 ```
@@ -789,7 +788,7 @@ function mustNotHaveDispute(IStore s, bytes32 key) external view
 
 ```javascript
 function mustNotHaveDispute(IStore s, bytes32 key) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
     require(hasDispute == false, "Already disputed");
   }
 ```
@@ -813,7 +812,7 @@ function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view
 
 ```javascript
 function mustBeDuringReportingPeriod(IStore s, bytes32 key) external view {
-    require(s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
+    require(s.getResolutionTimestampInternal(key) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 ```
 </details>
@@ -836,7 +835,7 @@ function mustBeAfterReportingPeriod(IStore s, bytes32 key) public view
 
 ```javascript
 function mustBeAfterReportingPeriod(IStore s, bytes32 key) public view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key), "Reporting still active"); // solhint-disable-line
+    require(block.timestamp > s.getResolutionTimestampInternal(key), "Reporting still active"); // solhint-disable-line
   }
 ```
 </details>
@@ -938,7 +937,7 @@ function mustNotHaveUnstaken(
     bytes32 key,
     uint256 incidentDate
   ) public view {
-    uint256 withdrawal = s.getReportingUnstakenAmount(account, key, incidentDate);
+    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, key, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 ```
@@ -1025,7 +1024,7 @@ function validateUnstakeWithClaim(
       // Incident occurred. Must unstake with claim during the claim period.
       mustBeDuringClaimPeriod(s, key);
       return;
-    }    
+    }
   }
 ```
 </details>
@@ -1230,6 +1229,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 key) external view 
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

@@ -21,7 +21,7 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getVaultAddress(IStore s, bytes32 key)](#getvaultaddress)
 - [getVaultDelegate(IStore s)](#getvaultdelegate)
 - [getStakingPoolAddress(IStore s)](#getstakingpooladdress)
-- [getBondPoolAddress(IStore s, bytes32 key)](#getbondpooladdress)
+- [getBondPoolAddress(IStore s)](#getbondpooladdress)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
 
 ### getPriceDiscoveryContract
@@ -203,7 +203,7 @@ returns(contract IBondPool)
 
 ```javascript
 function getBondPoolContract(IStore s) external view returns (IBondPool) {
-    return IBondPool(s.getContract(ProtoUtilV1.CNS_POOL_BOND));
+    return IBondPool(getBondPoolAddress(s));
   }
 ```
 </details>
@@ -376,8 +376,8 @@ returns(address)
 
 ```javascript
 function getStakingPoolAddress(IStore s) external view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
-    return vault;
+    address pool = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
+    return pool;
   }
 ```
 </details>
@@ -385,7 +385,7 @@ function getStakingPoolAddress(IStore s) external view returns (address) {
 ### getBondPoolAddress
 
 ```solidity
-function getBondPoolAddress(IStore s, bytes32 key) external view
+function getBondPoolAddress(IStore s) public view
 returns(address)
 ```
 
@@ -394,15 +394,14 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getBondPoolAddress(IStore s, bytes32 key) external view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL, key);
-    return vault;
+function getBondPoolAddress(IStore s) public view returns (address) {
+    address pool = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL);
+    return pool;
   }
 ```
 </details>
@@ -525,6 +524,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

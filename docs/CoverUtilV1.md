@@ -33,10 +33,8 @@ enum CoverStatus {
 - [getCoverStatusKey(bytes32 key)](#getcoverstatuskey)
 - [getCoverStatusOfKey(bytes32 key, uint256 incidentDate)](#getcoverstatusofkey)
 - [getCoverLiquidityAddedKey(bytes32 coverKey, address account)](#getcoverliquidityaddedkey)
-- [getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account)](#getcoverliquidityreleasedatekey)
 - [getCoverLiquidityStakeKey(bytes32 coverKey)](#getcoverliquiditystakekey)
 - [getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account)](#getcoverliquiditystakeindividualkey)
-- [getCoverTotalLentKey(bytes32 coverKey)](#getcovertotallentkey)
 - [getActiveLiquidityUnderProtection(IStore s, bytes32 key)](#getactiveliquidityunderprotection)
 - [_getLiquidityUnderProtectionInfo(IStore s, bytes32 key)](#_getliquidityunderprotectioninfo)
 - [_getCurrentCommitment(IStore s, bytes32 key)](#_getcurrentcommitment)
@@ -439,30 +437,6 @@ function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external p
 ```
 </details>
 
-### getCoverLiquidityReleaseDateKey
-
-```solidity
-function getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account) external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverLiquidityReleaseDateKey(bytes32 coverKey, address account) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_RELEASE_DATE, coverKey, account));
-  }
-```
-</details>
-
 ### getCoverLiquidityStakeKey
 
 ```solidity
@@ -506,29 +480,6 @@ returns(bytes32)
 ```javascript
 function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
-  }
-```
-</details>
-
-### getCoverTotalLentKey
-
-```solidity
-function getCoverTotalLentKey(bytes32 coverKey) external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverTotalLentKey(bytes32 coverKey) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STABLECOIN_LENT_TOTAL, coverKey));
   }
 ```
 </details>
@@ -1022,6 +973,7 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

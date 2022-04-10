@@ -14,6 +14,8 @@ View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/li
 - [disableStrategy(address strategy)](#disablestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
 - [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
+- [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
+- [getMaxLendingRatio()](#getmaxlendingratio)
 - [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
 - [getDisabledStrategies()](#getdisabledstrategies)
 - [getActiveStrategies()](#getactivestrategies)
@@ -177,6 +179,56 @@ function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindo
     require(withdrawalWindow > 0, "Please specify withdrawal window");
 
     s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
+  }
+```
+</details>
+
+### setMaxLendingRatio
+
+```solidity
+function setMaxLendingRatio(uint256 ratio) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| ratio | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMaxLendingRatio(uint256 ratio) external override nonReentrant {
+    require(ratio > 0, "Please specify lending ratio");
+    require(ratio <= ProtoUtilV1.MULTIPLIER, "Invalid lending ratio");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.setMaxLendingRatioInternal(ratio);
+  }
+```
+</details>
+
+### getMaxLendingRatio
+
+```solidity
+function getMaxLendingRatio() external view
+returns(ratio uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMaxLendingRatio() external view override returns (uint256 ratio) {
+    return s.getMaxLendingRatioInternal();
   }
 ```
 </details>
@@ -390,6 +442,7 @@ function getName() external pure override returns (bytes32) {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

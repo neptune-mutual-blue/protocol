@@ -189,6 +189,12 @@
         "internalType": "uint256",
         "name": "liquidityAdded",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
       }
     ],
     "name": "PodsIssued",
@@ -341,6 +347,11 @@
         "internalType": "uint256",
         "name": "npmStake",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "referralCode",
+        "type": "bytes32"
       }
     ],
     "name": "addLiquidity",

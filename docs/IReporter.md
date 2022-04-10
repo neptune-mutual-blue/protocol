@@ -21,8 +21,10 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 - [report(bytes32 key, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
+- [getAttestation(bytes32 key, address who, uint256 incidentDate)](#getattestation)
+- [getDispute(bytes32 key, address who, uint256 incidentDate)](#getdispute)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
-- [getResolutionDate(bytes32 key)](#getresolutiondate)
+- [getResolutionTimestamp(bytes32 key)](#getresolutiontimestamp)
 - [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake()](#getfirstreportingstake)
 - [getFirstReportingStake(bytes32 key)](#getfirstreportingstake)
@@ -104,6 +106,60 @@ function getActiveIncidentDate(bytes32 key) external view returns (uint256);
 ```
 </details>
 
+### getAttestation
+
+```solidity
+function getAttestation(bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAttestation(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake);
+```
+</details>
+
+### getDispute
+
+```solidity
+function getDispute(bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDispute(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view returns (uint256 myStake, uint256 totalStake);
+```
+</details>
+
 ### getReporter
 
 ```solidity
@@ -126,10 +182,10 @@ function getReporter(bytes32 key, uint256 incidentDate) external view returns (a
 ```
 </details>
 
-### getResolutionDate
+### getResolutionTimestamp
 
 ```solidity
-function getResolutionDate(bytes32 key) external view
+function getResolutionTimestamp(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -143,7 +199,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionDate(bytes32 key) external view returns (uint256);
+function getResolutionTimestamp(bytes32 key) external view returns (uint256);
 ```
 </details>
 
@@ -342,6 +398,7 @@ function setReporterCommission(uint256 value) external;
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

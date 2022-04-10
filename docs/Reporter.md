@@ -27,7 +27,9 @@ This contract enables any NPM tokenholder to
 - [setReporterCommission(uint256 value)](#setreportercommission)
 - [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
 - [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
-- [getResolutionDate(bytes32 key)](#getresolutiondate)
+- [getResolutionTimestamp(bytes32 key)](#getresolutiontimestamp)
+- [getAttestation(bytes32 key, address who, uint256 incidentDate)](#getattestation)
+- [getDispute(bytes32 key, address who, uint256 incidentDate)](#getdispute)
 
 ### report
 
@@ -59,16 +61,16 @@ function report(
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
 
     // Set the Resolution Timestamp
-    uint256 resolutionDate = block.timestamp + s.getReportingPeriod(key); // solhint-disable-line
+    uint256 resolutionDate = block.timestamp + s.getReportingPeriodInternal(key); // solhint-disable-line
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key, resolutionDate);
 
     // Update the values
-    s.addAttestation(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
@@ -113,9 +115,9 @@ function dispute(
     s.mustBeDuringReportingPeriod(key);
 
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStake(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
 
-    s.addDispute(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
@@ -195,7 +197,7 @@ returns(uint256)
 
 ```javascript
 function getFirstReportingStake(bytes32 key) external view override returns (uint256) {
-    return s.getMinReportingStake(key);
+    return s.getMinReportingStakeInternal(key);
   }
 ```
 </details>
@@ -301,15 +303,15 @@ returns(address)
 
 ```javascript
 function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {
-    return s.getReporter(key, incidentDate);
+    return s.getReporterInternal(key, incidentDate);
   }
 ```
 </details>
 
-### getResolutionDate
+### getResolutionTimestamp
 
 ```solidity
-function getResolutionDate(bytes32 key) external view
+function getResolutionTimestamp(bytes32 key) external view
 returns(uint256)
 ```
 
@@ -323,8 +325,66 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionDate(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
+function getResolutionTimestamp(bytes32 key) external view override returns (uint256) {
+    return s.getResolutionTimestampInternal(key);
+  }
+```
+</details>
+
+### getAttestation
+
+```solidity
+function getAttestation(bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAttestation(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view override returns (uint256 myStake, uint256 totalStake) {
+    return s.getAttestationInternal(key, who, incidentDate);
+  }
+```
+</details>
+
+### getDispute
+
+```solidity
+function getDispute(bytes32 key, address who, uint256 incidentDate) external view
+returns(myStake uint256, totalStake uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| who | address |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getDispute(
+    bytes32 key,
+    address who,
+    uint256 incidentDate
+  ) external view override returns (uint256 myStake, uint256 totalStake) {
+    return s.getDisputeInternal(key, who, incidentDate);
   }
 ```
 </details>
@@ -423,6 +483,7 @@ function getResolutionDate(bytes32 key) external view override returns (uint256)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

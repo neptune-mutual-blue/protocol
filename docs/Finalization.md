@@ -80,7 +80,7 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
-    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKey(key));
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
     // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
@@ -188,6 +188,7 @@ function _finalize(bytes32 key, uint256 incidentDate) internal {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

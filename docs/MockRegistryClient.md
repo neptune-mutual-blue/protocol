@@ -1,24 +1,28 @@
-# ProtoBase.sol
+# MockRegistryClient.sol
 
-View Source: [contracts/core/ProtoBase.sol](../contracts/core/ProtoBase.sol)
+View Source: [contracts/mock/MockRegistryClient.sol](../contracts/mock/MockRegistryClient.sol)
 
-**↗ Extends: [AccessControl](AccessControl.md), [Pausable](Pausable.md), [Recoverable](Recoverable.md)**
-**↘ Derived Contracts: [Protocol](Protocol.md)**
+**MockRegistryClient**
 
-**ProtoBase**
+## Contract Members
+**Constants & Variables**
+
+```js
+contract IStore public s;
+
+```
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [_setAccessPolicy()](#_setaccesspolicy)
-- [setupRole(bytes32 role, bytes32 adminRole, address account)](#setuprole)
-- [pause()](#pause)
-- [unpause()](#unpause)
+- [getGovernanceContract()](#getgovernancecontract)
+- [getPolicyContract()](#getpolicycontract)
+- [getBondPoolContract()](#getbondpoolcontract)
 
 ### 
 
 ```solidity
-function (IStore store) internal nonpayable Recoverable 
+function (IStore store) public nonpayable
 ```
 
 **Arguments**
@@ -31,16 +35,17 @@ function (IStore store) internal nonpayable Recoverable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    _setAccessPolicy();
+constructor(IStore store) {
+    s = store;
   }
 ```
 </details>
 
-### _setAccessPolicy
+### getGovernanceContract
 
 ```solidity
-function _setAccessPolicy() private nonpayable
+function getGovernanceContract() external view
+returns(contract IGovernance)
 ```
 
 **Arguments**
@@ -52,64 +57,17 @@ function _setAccessPolicy() private nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _setAccessPolicy() private {
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_COVER_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_LIQUIDITY_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_AGENT, AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_RECOVERY_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_PAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
-    _setRoleAdmin(AccessControlLibV1.NS_ROLES_UNPAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
-
-    _setupRole(AccessControlLibV1.NS_ROLES_ADMIN, msg.sender);
+function getGovernanceContract() external view returns (IGovernance) {
+    return s.getGovernanceContract();
   }
 ```
 </details>
 
-### setupRole
+### getPolicyContract
 
 ```solidity
-function setupRole(bytes32 role, bytes32 adminRole, address account) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| role | bytes32 |  | 
-| adminRole | bytes32 |  | 
-| account | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setupRole(
-    bytes32 role,
-    bytes32 adminRole,
-    address account
-  ) external nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
-
-    _setRoleAdmin(role, adminRole);
-
-    if (account != address(0)) {
-      _setupRole(role, account);
-    }
-  }
-```
-</details>
-
-### pause
-
-Pauses this contract.
- Can only be called by "Pause Agents".
-
-```solidity
-function pause() external nonpayable nonReentrant 
+function getPolicyContract() external view
+returns(contract IPolicy)
 ```
 
 **Arguments**
@@ -121,20 +79,17 @@ function pause() external nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function pause() external nonReentrant {
-    AccessControlLibV1.mustBePauseAgent(s);
-    super._pause();
+function getPolicyContract() external view returns (IPolicy) {
+    return s.getPolicyContract();
   }
 ```
 </details>
 
-### unpause
-
-Unpauses this contract.
- Can only be called by "Unpause Agents".
+### getBondPoolContract
 
 ```solidity
-function unpause() external nonpayable whenPaused nonReentrant 
+function getBondPoolContract() external view
+returns(contract IBondPool)
 ```
 
 **Arguments**
@@ -146,9 +101,8 @@ function unpause() external nonpayable whenPaused nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unpause() external whenPaused nonReentrant {
-    AccessControlLibV1.mustBeUnpauseAgent(s);
-    super._unpause();
+function getBondPoolContract() external view returns (IBondPool) {
+    return s.getBondPoolContract();
   }
 ```
 </details>

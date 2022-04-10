@@ -3,7 +3,6 @@ const composer = require('../composer')
 const { ether, getRandomNumber, weiAsToken } = require('../helper')
 const { toBytes32 } = require('../key')
 const { approve } = require('../contract-helper/erc20')
-const faucet = require('../contract-helper/faucet')
 
 const add = async (coverKey, payload) => {
   const [lp] = await ethers.getSigners() // eslint-disable-line
@@ -12,9 +11,6 @@ const add = async (coverKey, payload) => {
 
   const { dai, npm } = payload
   const vault = await composer.vault.getVault(payload, coverKey)
-
-  await faucet.request(dai, amount)
-  await faucet.request(npm, stake)
 
   await approve(dai.address, vault.address, lp, amount)
   await approve(npm.address, vault.address, lp, stake)

@@ -18,7 +18,7 @@ uint256 public lastPolicyId;
 
 ## Functions
 
-- [constructor(IStore store)](#)
+- [constructor(IStore store, uint256 _lastPolicyId)](#)
 - [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
 - [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
@@ -33,7 +33,7 @@ uint256 public lastPolicyId;
 ### 
 
 ```solidity
-function (IStore store) public nonpayable Recoverable 
+function (IStore store, uint256 _lastPolicyId) public nonpayable Recoverable 
 ```
 
 **Arguments**
@@ -41,13 +41,14 @@ function (IStore store) public nonpayable Recoverable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore |  | 
+| _lastPolicyId | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {
-    lastPolicyId = 100000;
+constructor(IStore store, uint256 _lastPolicyId) Recoverable(store) {
+    lastPolicyId = _lastPolicyId;
   }
 ```
 </details>
@@ -432,6 +433,7 @@ function getName() external pure override returns (bytes32) {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

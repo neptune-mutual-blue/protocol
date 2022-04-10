@@ -213,7 +213,7 @@ function updateCoverCreatorWhitelist(address account, bool status) external nonp
 ```javascript
 function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
     s.updateCoverCreatorWhitelistInternal(account, status);
     emit CoverCreatorWhitelistUpdated(account, status);
@@ -398,6 +398,7 @@ function checkIfWhitelistedUser(bytes32 key, address account) external view over
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)
