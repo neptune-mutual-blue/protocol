@@ -48,7 +48,7 @@ contract MockFlashBorrower is IERC3156FlashBorrower {
     bytes calldata /*data*/
   ) external view override returns (bytes32) {
     require(msg.sender == address(_provider), "FlashBorrower: Untrusted lender");
-    require(initiator == address(this), "FlashBorrower: Untrusted loan initiator");
+    require(initiator == address(this), "FlashBorrower: Untrusted loan initiator"); // solhint-disable-line
     return _returnValue;
   }
 }

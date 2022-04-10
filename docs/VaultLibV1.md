@@ -20,7 +20,6 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [preRemoveLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#preremoveliquidityinternal)
 - [_unStakeNpm(IStore s, address account, bytes32 coverKey, uint256 amount, bool exit)](#_unstakenpm)
 - [_redeemPods(IStore s, address account, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempods)
-- [getPodTokenNameInternal(bytes32 coverKey)](#getpodtokennameinternal)
 - [accrueInterestInternal(IStore s, bytes32 coverKey)](#accrueinterestinternal)
 - [mustBeAccrued(IStore s, bytes32 coverKey)](#mustbeaccrued)
 - [getFlashFeesInternal(IStore s, bytes32 coverKey, address token, uint256 amount)](#getflashfeesinternal)
@@ -562,29 +561,6 @@ function _redeemPods(
 ```
 </details>
 
-### getPodTokenNameInternal
-
-```solidity
-function getPodTokenNameInternal(bytes32 coverKey) external pure
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPodTokenNameInternal(bytes32 coverKey) external pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
-  }
-```
-</details>
-
 ### accrueInterestInternal
 
 ```solidity
@@ -905,6 +881,7 @@ function getMaxFlashLoanInternal(
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

@@ -83,7 +83,7 @@ function increaseStake(
     s.npmToken().ensureTransferFrom(account, address(this), amount);
 
     if (fee > 0) {
-      s.npmToken().ensureTransferFrom(address(this), s.getBurnAddress(), fee);
+      s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
       emit FeeBurned(key, fee);
     }
 
@@ -122,7 +122,6 @@ function decreaseStake(
     address account,
     uint256 amount
   ) external override nonReentrant {
-    // @todo this function is not called anywhere. Remove this.
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(key);
@@ -353,6 +352,7 @@ function getName() external pure override returns (bytes32) {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

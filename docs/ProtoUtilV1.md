@@ -9,7 +9,6 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 
 ```js
 uint256 public constant MULTIPLIER;
-uint256 public constant MAX_LENDING_RATIO;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -53,6 +52,7 @@ bytes32 public constant NS_VAULT_STRATEGY_OUT;
 bytes32 public constant NS_VAULT_LENDING_INCOMES;
 bytes32 public constant NS_VAULT_LENDING_LOSSES;
 bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD;
+bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
 bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
@@ -60,9 +60,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_ADDED;
 bytes32 public constant NS_COVER_LIQUIDITY_REMOVED;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
-bytes32 public constant NS_COVER_LIQUIDITY_RELEASE_DATE;
 bytes32 public constant NS_COVER_REQUIRES_WHITELIST;
-bytes32 public constant NS_COVER_STABLECOIN_LENT_TOTAL;
 bytes32 public constant NS_COVER_HAS_FLASH_LOAN;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL;
@@ -688,6 +686,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

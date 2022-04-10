@@ -3,6 +3,12 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "lendingPeriod",
@@ -29,6 +35,19 @@
       }
     ],
     "name": "LiquidityStateUpdateIntervalSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "ratio",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxLendingRatioSet",
     "type": "event"
   },
   {
@@ -110,6 +129,43 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getLendingPeriods",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "lendingPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawalWindow",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMaxLendingRatio",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "ratio",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getName",
     "outputs": [
@@ -172,6 +228,19 @@
       }
     ],
     "name": "setLiquidityStateUpdateInterval",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "ratio",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxLendingRatio",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -62,7 +62,7 @@ function getCoverInfo(IStore s, bytes32 key)
     values = new uint256[](5);
 
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, key);
-    values[1] = s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
+    values[1] = s.getStake(key);
     values[2] = s.getStablecoinOwnedByVaultInternal(key);
     values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
 
@@ -688,6 +688,7 @@ function decreaseProvisionInternal(
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

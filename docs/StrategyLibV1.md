@@ -8,7 +8,8 @@ View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/Stra
 
 ```js
 event StrategyAdded(address indexed strategy);
-event LendingPeriodSet(uint256  lendingPeriod, uint256  withdrawalWindow);
+event LendingPeriodSet(bytes32 indexed coverKey, uint256  lendingPeriod, uint256  withdrawalWindow);
+event MaxLendingRatioSet(uint256  ratio);
 ```
 
 ## Functions
@@ -19,6 +20,9 @@ event LendingPeriodSet(uint256  lendingPeriod, uint256  withdrawalWindow);
 - [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
 - [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
 - [getLendingPeriodKey(bytes32 coverKey)](#getlendingperiodkey)
+- [getMaxLendingRatioInternal(IStore s)](#getmaxlendingratiointernal)
+- [setMaxLendingRatioInternal(IStore s, uint256 ratio)](#setmaxlendingratiointernal)
+- [getMaxLendingRatioKey()](#getmaxlendingratiokey)
 - [getWithdrawalWindowKey(bytes32 coverKey)](#getwithdrawalwindowkey)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
 - [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
@@ -170,7 +174,7 @@ function setLendingPeriodsInternal(
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
-    emit LendingPeriodSet(lendingPeriod, withdrawalWindow);
+    emit LendingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
@@ -198,6 +202,76 @@ function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
     }
 
     return ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD;
+  }
+```
+</details>
+
+### getMaxLendingRatioInternal
+
+```solidity
+function getMaxLendingRatioInternal(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMaxLendingRatioInternal(IStore s) external view returns (uint256) {
+    return s.getUintByKey(getMaxLendingRatioKey());
+  }
+```
+</details>
+
+### setMaxLendingRatioInternal
+
+```solidity
+function setMaxLendingRatioInternal(IStore s, uint256 ratio) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| ratio | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
+    s.setUintByKey(getMaxLendingRatioKey(), ratio);
+
+    emit MaxLendingRatioSet(ratio);
+  }
+```
+</details>
+
+### getMaxLendingRatioKey
+
+```solidity
+function getMaxLendingRatioKey() public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getMaxLendingRatioKey() public pure returns (bytes32) {
+    return ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
   }
 ```
 </details>
@@ -831,6 +905,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

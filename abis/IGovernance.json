@@ -274,6 +274,74 @@
         "internalType": "bytes32",
         "name": "key",
         "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAttestation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "myStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStake",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDispute",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "myStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStake",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
       }
     ],
     "name": "getFirstReportingStake",
@@ -345,7 +413,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "getResolutionDate",
+    "name": "getResolutionTimestamp",
     "outputs": [
       {
         "internalType": "uint256",

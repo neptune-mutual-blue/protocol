@@ -9,5 +9,5 @@ contract Delayable is TimelockController, WithRecovery {
     uint256 minDelay,
     address[] memory proposers,
     address[] memory executors
-  ) TimelockController(minDelay, proposers, executors) {}
+  ) TimelockController(minDelay, proposers, executors) {} // solhint-disable-line
 }

@@ -79,7 +79,7 @@ library PriceLibV1 {
     uint256 reserve1 = values[1];
     uint256 supply = values[2];
 
-    require(supply > 0, "Invalid pair or price not updated");
+    require(supply > 0, "Invalid pair or price not updated"); // solhint-disable-line
 
     address stablecoin = s.getStablecoin();
 

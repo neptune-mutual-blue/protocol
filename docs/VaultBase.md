@@ -11,6 +11,10 @@ View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidit
 **Constants & Variables**
 
 ```js
+//private members
+string private constant _POD_TOKEN_SYMBOL;
+
+//public members
 bytes32 public key;
 address public sc;
 
@@ -44,7 +48,7 @@ constructor(
     IStore store,
     bytes32 coverKey,
     IERC20 stablecoin
-  ) ERC20(_getTokenName(coverKey), "POD") Recoverable(store) {
+  ) ERC20(_getTokenName(coverKey), _POD_TOKEN_SYMBOL) Recoverable(store) {
     key = coverKey;
     sc = address(stablecoin);
   }
@@ -69,7 +73,7 @@ returns(string)
 
 ```javascript
 function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-pod"));
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-ndai"));
   }
 ```
 </details>
@@ -191,6 +195,7 @@ function delgate() public view returns (IVaultDelegate) {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)

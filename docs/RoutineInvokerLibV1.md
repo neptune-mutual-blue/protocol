@@ -439,7 +439,7 @@ function _canDeposit(
     address vault = s.getVaultAddress(key);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * ProtoUtilV1.MAX_LENDING_RATIO) / ProtoUtilV1.MULTIPLIER;
+    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
@@ -755,6 +755,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
+* [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
 * [MockVault](MockVault.md)
 * [NPM](NPM.md)
