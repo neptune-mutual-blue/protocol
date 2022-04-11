@@ -145,10 +145,6 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
   }
 
-  function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account));
-  }
-
   function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey));
   }

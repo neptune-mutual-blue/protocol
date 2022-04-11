@@ -83,11 +83,9 @@ library VaultLibV1 {
    * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
    * @param values[3] totalReassurance -- > Total reassurance for this cover
    * @param values[4] myPodBalance --> Your POD Balance
-   * @param values[5] myDeposits --> Sum of your deposits (in stablecoin)
-   * @param values[6] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
-   * @param values[7] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[8] withdrawalOpen --> The timestamp when withdrawals are opened
-   * @param values[9] withdrawalClose --> The timestamp when withdrawals are closed again
+   * @param values[5] myShare --> My share of the liquidity pool (in stablecoin)
+   * @param values[6] withdrawalOpen --> The timestamp when withdrawals are opened
+   * @param values[7] withdrawalClose --> The timestamp when withdrawals are closed again
    */
   function getInfoInternal(
     IStore s,
@@ -102,27 +100,9 @@ library VaultLibV1 {
     values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[5] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[6] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-    values[7] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[8] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
-    values[9] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
-  }
-
-  function _getCoverLiquidityAddedInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, you));
-  }
-
-  function _getCoverLiquidityRemovedInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
+    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
+    values[6] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
+    values[7] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
   }
 
   /**
@@ -146,8 +126,6 @@ library VaultLibV1 {
 
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
-    _updateCoverLiquidity(s, coverKey, account, amount);
-
     podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
   }
 
@@ -164,15 +142,6 @@ library VaultLibV1 {
       s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
       s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
     }
-  }
-
-  function _updateCoverLiquidity(
-    IStore s,
-    bytes32 coverKey,
-    address account,
-    uint256 amount
-  ) private {
-    s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
   }
 
   function _getMyNpmStake(
@@ -218,9 +187,9 @@ library VaultLibV1 {
 
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
     // come from VaultBase, we still need to ensure if it is a protocol member.
-    // Check `_redeemPods` for more info.
+    // Check `_redeemPodCalculation` for more info.
     // Redeem the PODs and receive DAI
-    releaseAmount = _redeemPods(s, account, coverKey, pod, podsToRedeem);
+    releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
@@ -244,13 +213,12 @@ library VaultLibV1 {
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
   }
 
-  function _redeemPods(
+  function _redeemPodCalculation(
     IStore s,
-    address account,
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem
-  ) private returns (uint256) {
+  ) private view returns (uint256) {
     if (podsToRedeem == 0) {
       return 0;
     }
@@ -265,9 +233,6 @@ library VaultLibV1 {
 
     // You may need to wait till active policies expire
     require(available >= releaseAmount, "Insufficient balance. Lower the amount or wait till policy expiry."); // solhint-disable-line
-
-    // Update values
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, account, releaseAmount);
 
     return releaseAmount;
   }
