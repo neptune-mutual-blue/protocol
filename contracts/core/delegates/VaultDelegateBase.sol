@@ -13,7 +13,7 @@ import "../../libraries/StrategyLibV1.sol";
 
 /**
  * @title Vault POD (Proof of Deposit)
- * @dev The VaultPod has `_mintPods` and `_redeemPods` features which enables
+ * @dev The VaultPod has `_mintPods` and `_redeemPodCalculation` features which enables
  * POD minting and burning on demand. <br /> <br />
  *
  * **How Does This Work?**
