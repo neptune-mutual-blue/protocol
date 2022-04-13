@@ -7,8 +7,6 @@ import "./WithRecovery.sol";
 import "./WithPausability.sol";
 
 contract NPM is WithPausability, WithRecovery, ERC20 {
-  using SafeERC20 for IERC20;
-
   uint256 private constant _CAP = 1_000_000_000 ether;
   uint256 private _issued = 0;
 
@@ -31,11 +29,42 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     address mintTo,
     uint256 amount
   ) external onlyOwner whenNotPaused {
+    _issue(key, mintTo, amount);
+  }
+
+  function issueMany(
+    bytes32 key,
+    address[] memory receivers,
+    uint256[] memory amounts
+  ) external onlyOwner whenNotPaused {
+    require(receivers.length > 0, "No receiver");
+    require(receivers.length == amounts.length, "Invalid args");
+
+    for (uint256 i = 0; i < receivers.length; i++) {
+      _issue(key, receivers[i], amounts[i]);
+    }
+  }
+
+  function transferMany(address[] memory receivers, uint256[] memory amounts) external onlyOwner whenNotPaused {
+    require(receivers.length > 0, "No receiver");
+    require(receivers.length == amounts.length, "Invalid args");
+
+    for (uint256 i = 0; i < receivers.length; i++) {
+      super.transfer(receivers[i], amounts[i]);
+    }
+  }
+
+  function _issue(
+    bytes32 key,
+    address mintTo,
+    uint256 amount
+  ) private {
+    require(amount > 0, "Invalid amount");
+
     super._mint(mintTo, amount);
     _issued += amount;
 
-    require(_issued <= _CAP, "Error: can't exceed cap");
-
+    require(_issued <= _CAP, "Cap exceeded");
     emit Minted(key, mintTo, amount);
   }
 }
