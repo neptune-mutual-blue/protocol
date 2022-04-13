@@ -226,17 +226,16 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
 
   /**
    * @dev Gets information of a given vault by the cover key
+   * @param coverKey Specify cover key to obtain the info of.
    * @param you The address for which the info will be customized
    * @param values[0] totalPods --> Total PODs in existence
    * @param values[1] balance --> Stablecoins held in the vault
    * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
    * @param values[3] totalReassurance -- > Total reassurance for this cover
    * @param values[4] myPodBalance --> Your POD Balance
-   * @param values[5] myDeposits --> Sum of your deposits (in stablecoin)
-   * @param values[6] myWithdrawals --> Sum of your withdrawals  (in stablecoin)
-   * @param values[7] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[8] withdrawalOpen --> The timestamp when withdrawals are opened
-   * @param values[9] withdrawalClose --> The timestamp when withdrawals are closed again
+   * @param values[5] myShare --> My share of the liquidity pool (in stablecoin)
+   * @param values[6] withdrawalOpen --> The timestamp when withdrawals are opened
+   * @param values[7] withdrawalClose --> The timestamp when withdrawals are closed again
    */
   function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
     s.senderMustBeVaultContract(coverKey);

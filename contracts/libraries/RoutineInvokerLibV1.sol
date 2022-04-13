@@ -47,6 +47,8 @@ library RoutineInvokerLibV1 {
     }
 
     s.setLastUpdateOn();
+
+    _updateWithdrawalPeriod(s, key);
   }
 
   function _getUpdateInterval(IStore s) private view returns (uint256) {
@@ -76,16 +78,17 @@ library RoutineInvokerLibV1 {
     }
   }
 
-  function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
+  function _isWithdrawalPeriod(IStore s, bytes32 coverKey) private view returns (bool) {
+    (bool isWithdrawalPeriod, , , , ) = getWithdrawalInfoInternal(s, coverKey);
+    return isWithdrawalPeriod;
+  }
 
-    // Without a lending period and withdrawal window, deposit is not possible
+  function _updateWithdrawalPeriod(IStore s, bytes32 coverKey) private {
+    (, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
+
+    // Without a lending period and withdrawal window, nothing can be updated
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
-      return true;
-    }
-
-    if (isWithdrawalPeriod) {
-      return true;
+      return;
     }
 
     // The withdrawal period is now over.
@@ -105,8 +108,6 @@ library RoutineInvokerLibV1 {
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
       setAccrualCompleteInternal(s, coverKey, false);
     }
-
-    return false;
   }
 
   function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view returns (bool) {
@@ -158,7 +159,7 @@ library RoutineInvokerLibV1 {
       return Action.Withdraw;
     }
 
-    if (_executeIsWithdrawalPeriod(s, coverKey) == true) {
+    if (_isWithdrawalPeriod(s, coverKey) == true) {
       return Action.Withdraw;
     }
 

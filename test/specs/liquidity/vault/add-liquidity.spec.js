@@ -31,6 +31,19 @@ describe('Vault: addLiquidity', () => {
     event.args.referralCode.should.equal(referralCode)
   })
 
+  it('correctly adds liquidity without NPM stake', async () => {
+    const coverKey = key.toBytes32('foo-bar')
+    const amount = '100'
+    const npmStake = helper.ether(0)
+    const referralCode = key.toBytes32('referral-code')
+
+    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.dai.approve(deployed.vault.address, amount)
+
+    await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
+      .should.not.be.rejected
+  })
+
   it('reverts when coverkey is invalid', async () => {
     const coverKey = key.toBytes32('foo-bar2')
     const amount = helper.ether(1_000)

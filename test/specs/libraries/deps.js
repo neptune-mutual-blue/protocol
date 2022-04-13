@@ -1,13 +1,8 @@
 /* eslint-disable no-unused-expressions */
-const { helper, deployer, key } = require('../../../../util')
-const pair = require('../../../../util/composer/uniswap-pair')
-const composer = require('../../../../util/composer')
+const { helper, deployer, key } = require('../../../util')
+const pair = require('../../../util/composer/uniswap-pair')
 
-const SECONDS = 1
-const MINUTES = 60 * SECONDS
-const HOURS = 60 * MINUTES
-const DAYS = 24 * HOURS
-
+const DAYS = 86400
 const cache = null
 
 const deployDependencies = async () => {
@@ -80,6 +75,19 @@ const deployDependencies = async () => {
 
   const transferLib = await deployer.deploy(cache, 'NTransferUtilV2')
 
+  const stakingPoolCoreLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolCoreLibV1', {
+    NTransferUtilV2: transferLib.address,
+    StoreKeyUtil: storeKeyUtil.address
+  })
+
+  const stakingPoolLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolLibV1', {
+    NTransferUtilV2: transferLib.address,
+    ProtoUtilV1: protoUtilV1.address,
+    StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
+    RegistryLibV1: registryLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address
+  })
+
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
   })
 
@@ -138,12 +146,22 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * SECONDS, // state and liquidity update interval
+      1 * DAYS, // state and liquidity update interval
       helper.percentage(5) // maximum lending ratio
     ]
   )
 
-  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
+  await protocol.grantRoles([{
+    account: owner.address,
+    roles: [key.ACCESS_CONTROL.UPGRADE_AGENT,
+      key.ACCESS_CONTROL.COVER_MANAGER,
+      key.ACCESS_CONTROL.LIQUIDITY_MANAGER,
+      key.ACCESS_CONTROL.GOVERNANCE_AGENT,
+      key.ACCESS_CONTROL.GOVERNANCE_ADMIN,
+      key.ACCESS_CONTROL.RECOVERY_AGENT,
+      key.ACCESS_CONTROL.PAUSE_AGENT,
+      key.ACCESS_CONTROL.UNPAUSE_AGENT]
+  }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
@@ -298,41 +316,6 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.GOVERNANCE_RESOLUTION, resolution.address)
 
-  const policy = await deployer.deployWithLibraries(cache, 'Policy', {
-    AccessControlLibV1: accessControlLibV1.address,
-    BaseLibV1: baseLibV1.address,
-    CoverUtilV1: coverUtilV1.address,
-    PolicyHelperV1: policyHelperV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    ValidationLibV1: validationLibV1.address
-  }, store.address, '0')
-
-  await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
-
-  const coverKey = key.toBytes32('foo-bar')
-  const stakeWithFee = helper.ether(10_000)
-  const initialReassuranceAmount = helper.ether(1_000_000)
-  const initialLiquidity = helper.ether(4_000_000)
-  const minReportingStake = helper.ether(250)
-  const reportingPeriod = 7 * DAYS
-  const cooldownPeriod = 1 * DAYS
-  const claimPeriod = 7 * DAYS
-  const floor = helper.percentage(7)
-  const ceiling = helper.percentage(45)
-
-  const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
-
-  const info = key.toBytes32('info')
-
-  cover.updateCoverCreatorWhitelist(owner.address, true)
-
-  await npm.approve(stakingContract.address, stakeWithFee)
-  await dai.approve(reassuranceContract.address, initialReassuranceAmount)
-
-  await cover.addCover(coverKey, info, dai.address, requiresWhitelist, values)
-  await cover.deployVault(coverKey)
-
   const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
@@ -342,22 +325,6 @@ const deployDependencies = async () => {
   }, store.address)
 
   await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
-
-  const vault = await composer.vault.getVault({
-    store: store,
-    libs: {
-      accessControlLibV1: accessControlLibV1,
-      baseLibV1: baseLibV1,
-      transferLib: transferLib,
-      protoUtilV1: protoUtilV1,
-      registryLibV1: registryLibV1,
-      validationLib: validationLibV1
-    }
-  }, coverKey)
-
-  await dai.approve(vault.address, initialLiquidity)
-  await npm.approve(vault.address, minReportingStake)
-  await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
   return {
     npm,
@@ -380,12 +347,12 @@ const deployDependencies = async () => {
     cover,
     coverLibV1,
     policyHelperV1,
+    stakingPoolLibV1,
     strategyLibV1,
     stakingContract,
     reassuranceContract,
     governance,
     resolution,
-    vault,
     liquidityEngine
   }
 }
