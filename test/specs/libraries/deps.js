@@ -316,6 +316,16 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.GOVERNANCE_RESOLUTION, resolution.address)
 
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address)
+
+  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
   return {
     npm,
     dai,
@@ -342,7 +352,8 @@ const deployDependencies = async () => {
     stakingContract,
     reassuranceContract,
     governance,
-    resolution
+    resolution,
+    liquidityEngine
   }
 }
 

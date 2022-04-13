@@ -102,6 +102,33 @@ describe('Governance: finalize', () => {
     event.args.incidentDate.should.equal(incidentDate)
   })
 
+  it('reverts when accessed before claim expiry', async () => {
+    const [bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+
+    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    // // Claim period + 1 second
+    // await network.provider.send('evm_increaseTime', [7 * DAYS])
+    // await network.provider.send('evm_increaseTime', [1])
+
+    await deployed.resolution.finalize(coverKey, incidentDate)
+      .should.be.rejectedWith('Claim still active')
+  })
+
   it('reverts when invalid incident date is specified', async () => {
     await deployed.resolution.finalize(coverKey, 0)
       .should.be.rejectedWith('Please specify incident date')
