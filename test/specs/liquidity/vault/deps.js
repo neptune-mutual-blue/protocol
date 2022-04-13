@@ -3,7 +3,11 @@ const { helper, deployer, key } = require('../../../../util')
 const pair = require('../../../../util/composer/uniswap-pair')
 const composer = require('../../../../util/composer')
 
-const DAYS = 86400
+const SECONDS = 1
+const MINUTES = 60 * SECONDS
+const HOURS = 60 * MINUTES
+const DAYS = 24 * HOURS
+
 const cache = null
 
 const deployDependencies = async () => {
@@ -134,7 +138,7 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
+      1 * SECONDS, // state and liquidity update interval
       helper.percentage(5) // maximum lending ratio
     ]
   )
@@ -329,6 +333,16 @@ const deployDependencies = async () => {
   await cover.addCover(coverKey, info, dai.address, requiresWhitelist, values)
   await cover.deployVault(coverKey)
 
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address)
+
+  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
   const vault = await composer.vault.getVault({
     store: store,
     libs: {
@@ -371,7 +385,8 @@ const deployDependencies = async () => {
     reassuranceContract,
     governance,
     resolution,
-    vault
+    vault,
+    liquidityEngine
   }
 }
 
