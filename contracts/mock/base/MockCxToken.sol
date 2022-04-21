@@ -16,7 +16,7 @@ contract MockCxToken is ERC20 {
     return block.timestamp + 30 days; // solhint-disable-line
   }
 
-  function coverKey() external pure returns (bytes32) {
+  function COVER_KEY() external pure returns (bytes32) {
     return "test";
   }
 }

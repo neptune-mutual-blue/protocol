@@ -8,13 +8,13 @@ interface IUnstakable {
   event ReporterRewardDistributed(address indexed caller, address indexed reporter, uint256 originalReward, uint256 reporterReward);
   event GovernanceBurned(address indexed caller, address indexed burner, uint256 originalReward, uint256 burnedAmount);
 
-  function unstake(bytes32 key, uint256 incidentDate) external;
+  function unstake(bytes32 coverKey, uint256 incidentDate) external;
 
-  function unstakeWithClaim(bytes32 key, uint256 incidentDate) external;
+  function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external;
 
   function getUnstakeInfoFor(
     address account,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   )
     external

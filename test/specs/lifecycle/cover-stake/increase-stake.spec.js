@@ -84,7 +84,7 @@ describe('CoverStake: increaseStake', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'StakeAdded')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.amount.should.equal(amount)
   })
 
@@ -100,7 +100,7 @@ describe('CoverStake: increaseStake', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'FeeBurned')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.amount.should.equal(fee)
   })
 

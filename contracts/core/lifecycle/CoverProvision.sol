@@ -33,47 +33,47 @@ contract CoverProvision is ICoverProvision, Recoverable {
   /**
    * @dev Increases NPM provision for the given cover key.
    * This feature is accessible only to the contract owner (governance).
-   * @param key Provide the cover key you wish to increase the provision of
+   * @param coverKey Provide the cover key you wish to increase the provision of
    * @param amount Specify the amount of NPM tokens you would like to add
    */
-  function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+  function increaseProvision(bytes32 coverKey, uint256 amount) external override nonReentrant {
     require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.mustHaveNormalCoverStatus(key);
+    s.mustHaveNormalCoverStatus(coverKey);
 
-    uint256 provision = s.increaseProvisionInternal(key, amount);
-    emit ProvisionIncreased(key, provision, provision + amount);
+    uint256 provision = s.increaseProvisionInternal(coverKey, amount);
+    emit ProvisionIncreased(coverKey, provision, provision + amount);
   }
 
   /**
    * @dev Decreases NPM provision for the given cover key
    * This feature is accessible only to the contract owner (governance).
-   * @param key Provide the cover key you wish to decrease the provision from
+   * @param coverKey Provide the cover key you wish to decrease the provision from
    * @param amount Specify the amount of NPM tokens you would like to decrease
    */
-  function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
+  function decreaseProvision(bytes32 coverKey, uint256 amount) external override nonReentrant {
     require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-    s.mustHaveNormalCoverStatus(key);
+    s.mustHaveNormalCoverStatus(coverKey);
 
-    uint256 provision = s.decreaseProvisionInternal(key, amount);
+    uint256 provision = s.decreaseProvisionInternal(coverKey, amount);
 
     // @suppress-subtraction Checked usage. The amount is
     // always less than provision if we reach this line.
-    emit ProvisionDecreased(key, provision, provision - amount);
+    emit ProvisionDecreased(coverKey, provision, provision - amount);
   }
 
   /**
    * @dev Gets the NPM provision amount for the given cover key
-   * @param key Enter the cover key to get the provision
+   * @param coverKey Enter the cover key to get the provision
    */
-  function getProvision(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+  function getProvision(bytes32 coverKey) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
   }
 
   /**

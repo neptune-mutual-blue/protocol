@@ -98,7 +98,7 @@ describe('Governance: finalize', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'Finalized')
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
   })
 

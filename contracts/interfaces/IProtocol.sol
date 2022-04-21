@@ -11,8 +11,8 @@ interface IProtocol is IMember, IAccessControl {
     bytes32[] roles;
   }
 
-  event ContractAdded(bytes32 namespace, bytes32 key, address contractAddress);
-  event ContractUpgraded(bytes32 namespace, bytes32 key, address indexed previous, address indexed current);
+  event ContractAdded(bytes32 indexed namespace, bytes32 indexed key, address indexed contractAddress);
+  event ContractUpgraded(bytes32 indexed namespace, bytes32 indexed key, address previous, address indexed current);
   event MemberAdded(address member);
   event MemberRemoved(address member);
 
@@ -20,7 +20,7 @@ interface IProtocol is IMember, IAccessControl {
 
   function addContractWithKey(
     bytes32 namespace,
-    bytes32 key,
+    bytes32 coverKey,
     address contractAddress
   ) external;
 
@@ -34,7 +34,7 @@ interface IProtocol is IMember, IAccessControl {
 
   function upgradeContractWithKey(
     bytes32 namespace,
-    bytes32 key,
+    bytes32 coverKey,
     address previous,
     address current
   ) external;

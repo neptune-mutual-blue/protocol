@@ -47,7 +47,7 @@ describe('Claims Processor: `claim` function', () => {
 
     event.event.should.equal('Claimed')
     event.args.cxToken.should.equal(cxToken.address)
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.account.should.equal(owner.address)
     event.args.reporter.should.equal(helper.zerox)
     event.args.amount.toString().should.equal(amount)

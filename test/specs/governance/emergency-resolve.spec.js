@@ -91,7 +91,7 @@ describe('Governance: emergencyResolve', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'Resolved')
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
     event.args.emergency.should.equal(true)
     event.args.decision.should.equal(true)
@@ -127,7 +127,7 @@ describe('Governance: emergencyResolve', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'Resolved')
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
     event.args.emergency.should.equal(true)
     event.args.decision.should.equal(false)

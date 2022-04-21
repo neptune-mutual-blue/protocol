@@ -3,27 +3,27 @@
 pragma solidity 0.8.0;
 
 interface IWitness {
-  event Attested(bytes32 indexed key, address indexed witness, uint256 incidentDate, uint256 stake);
-  event Refuted(bytes32 indexed key, address indexed witness, uint256 incidentDate, uint256 stake);
+  event Attested(bytes32 indexed coverKey, address indexed witness, uint256 incidentDate, uint256 stake);
+  event Refuted(bytes32 indexed coverKey, address indexed witness, uint256 incidentDate, uint256 stake);
 
   function attest(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external;
 
   function refute(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external;
 
-  function getStatus(bytes32 key) external view returns (uint256);
+  function getStatus(bytes32 coverKey) external view returns (uint256);
 
-  function getStakes(bytes32 key, uint256 incidentDate) external view returns (uint256, uint256);
+  function getStakes(bytes32 coverKey, uint256 incidentDate) external view returns (uint256, uint256);
 
   function getStakesOf(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     address account
   ) external view returns (uint256, uint256);

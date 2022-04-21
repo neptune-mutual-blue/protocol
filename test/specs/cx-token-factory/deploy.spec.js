@@ -65,7 +65,7 @@ describe('cxTokenFactory: Deploy', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'CxTokenDeployed')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.cxToken.should.not.equal(helper.zerox)
     event.args.expiryDate.should.equal(expiryDate)
   })

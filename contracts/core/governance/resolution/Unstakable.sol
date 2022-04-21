@@ -26,23 +26,23 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   /**
    * @dev Reporters on the winning camp can unstake their tokens even after the claim period is over.
    * Warning: during claim periods, you must use `unstakeWithClaim` instead of this to also receive reward.
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date
    */
-  function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
+  function unstake(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
-    s.validateUnstakeWithoutClaim(key, incidentDate);
+    s.validateUnstakeWithoutClaim(coverKey, incidentDate);
 
-    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
   }
@@ -54,23 +54,23 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    *
    * During each `unstake with claim` processing, the protocol distributes reward to
    * the final reporter and also burns some NPM tokens, as described in the documentation.
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date
    */
-  function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override nonReentrant {
+  function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
-    s.validateUnstakeWithClaim(key, incidentDate);
+    s.validateUnstakeWithClaim(coverKey, incidentDate);
 
-    address finalReporter = s.getReporterInternal(key, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
@@ -84,7 +84,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
       s.npmToken().ensureTransfer(burner, toBurn);
     }
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
     emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);
@@ -94,7 +94,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   /**
    * @dev s Gets the unstake information for the supplied account
    * @param account Enter account to get the unstake information of
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date
    * @param totalStakeInWinningCamp Returns the sum total of the stakes contributed by the winning camp
    * @param totalStakeInLosingCamp Returns the sum total of the stakes contributed by the losing camp
@@ -105,7 +105,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    */
   function getUnstakeInfoFor(
     address account,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   )
     external
@@ -121,6 +121,6 @@ abstract contract Unstakable is Resolvable, IUnstakable {
       uint256 unstaken
     )
   {
-    return s.getUnstakeInfoForInternal(account, key, incidentDate);
+    return s.getUnstakeInfoForInternal(account, coverKey, incidentDate);
   }
 }

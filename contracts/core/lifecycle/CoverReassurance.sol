@@ -34,18 +34,18 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
   /**
    * @dev Adds reassurance to the specified cover contract
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param amount Enter the amount you would like to supply
    */
   function addReassurance(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount
   ) external override nonReentrant {
     // @suppress-acl Reassurance can only be added by cover owner or latest cover contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
-    s.mustBeCoverOwnerOrCoverContract(key, msg.sender);
+    s.mustBeValidCoverKey(coverKey);
+    s.mustBeCoverOwnerOrCoverContract(coverKey, msg.sender);
 
     require(amount > 0, "Provide valid amount");
 
@@ -55,35 +55,35 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     address vault = s.getReassuranceVault();
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
 
     reassuranceToken.ensureTransferFrom(account, vault, amount);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit ReassuranceAdded(key, amount);
+    emit ReassuranceAdded(coverKey, amount);
   }
 
-  function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
+  function setWeight(bytes32 coverKey, uint256 weight) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
 
     require(weight > 0, "Please specify weight");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit WeightSet(key, weight);
+    emit WeightSet(coverKey, weight);
   }
 
   /**
    * @dev Gets the reassurance amount of the specified cover contract
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    */
-  function getReassurance(bytes32 key) external view override returns (uint256) {
-    return s.getReassuranceAmountInternal(key);
+  function getReassurance(bytes32 coverKey) external view override returns (uint256) {
+    return s.getReassuranceAmountInternal(coverKey);
   }
 
   /**

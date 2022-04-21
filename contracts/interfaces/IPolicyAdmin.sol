@@ -5,7 +5,7 @@ import "./IMember.sol";
 
 interface IPolicyAdmin is IMember {
   event PolicyRateSet(uint256 floor, uint256 ceiling);
-  event CoverPolicyRateSet(bytes32 key, uint256 floor, uint256 ceiling);
+  event CoverPolicyRateSet(bytes32 indexed coverKey, uint256 floor, uint256 ceiling);
 
   /**
    * @dev Sets policy rates. This feature is only accessible by owner or protocol owner.
@@ -20,7 +20,7 @@ interface IPolicyAdmin is IMember {
    * @param ceiling The highest cover fee rate for this cover
    */
   function setPolicyRatesByKey(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 floor,
     uint256 ceiling
   ) external;
@@ -28,5 +28,5 @@ interface IPolicyAdmin is IMember {
   /**
    * @dev Gets the cover policy rates for the given cover key
    */
-  function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint256 ceiling);
+  function getPolicyRates(bytes32 coverKey) external view returns (uint256 floor, uint256 ceiling);
 }

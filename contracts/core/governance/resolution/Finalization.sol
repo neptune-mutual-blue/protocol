@@ -25,41 +25,41 @@ abstract contract Finalization is Recoverable, IFinalization {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for bytes32;
 
-  function finalize(bytes32 key, uint256 incidentDate) external override nonReentrant {
+  function finalize(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
     require(incidentDate > 0, "Please specify incident date");
 
-    s.mustBeClaimingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterResolutionDeadline(key);
-    s.mustBeAfterClaimExpiry(key);
+    s.mustBeClaimingOrDisputed(coverKey);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey);
+    s.mustBeAfterClaimExpiry(coverKey);
 
-    _finalize(key, incidentDate);
+    _finalize(coverKey, incidentDate);
   }
 
-  function _finalize(bytes32 key, uint256 incidentDate) internal {
+  function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
-    s.setStatusInternal(key, 0, CoverUtilV1.CoverStatus.Normal);
+    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
 
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
 
-    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key);
-    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(key));
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey);
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key);
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key);
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, key, incidentDate)));
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, key, incidentDate)));
+    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
+    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey);
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
 
-    s.updateStateAndLiquidity(key);
-    emit Finalized(key, msg.sender, incidentDate);
+    s.updateStateAndLiquidity(coverKey);
+    emit Finalized(coverKey, msg.sender, incidentDate);
   }
 }
