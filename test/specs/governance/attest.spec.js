@@ -87,7 +87,7 @@ describe('Governance: attest', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Attested')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
     event.args.witness.should.equal(bob.address)
     event.args.stake.should.equal(helper.ether(1000))

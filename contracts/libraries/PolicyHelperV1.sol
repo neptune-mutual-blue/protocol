@@ -21,7 +21,7 @@ library PolicyHelperV1 {
 
   function calculatePolicyFeeInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -36,8 +36,8 @@ library PolicyHelperV1 {
       uint256 rate
     )
   {
-    (floor, ceiling) = getPolicyRatesInternal(s, key);
-    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, key);
+    (floor, ceiling) = getPolicyRatesInternal(s, coverKey);
+    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, coverKey);
 
     require(amountToCover > 0, "Please enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
@@ -62,7 +62,7 @@ library PolicyHelperV1 {
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 
-  function _getCoverPoolAmounts(IStore s, bytes32 key)
+  function _getCoverPoolAmounts(IStore s, bytes32 coverKey)
     private
     view
     returns (
@@ -71,7 +71,7 @@ library PolicyHelperV1 {
       uint256 supportPool
     )
   {
-    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
+    uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey);
 
     stablecoinOwnedByVault = values[0];
     commitment = values[1];
@@ -90,17 +90,17 @@ library PolicyHelperV1 {
 
   function getPolicyFeeInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) public view returns (uint256 fee) {
-    (fee, , , , , ) = calculatePolicyFeeInternal(s, key, coverDuration, amountToCover);
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
   }
 
-  function getPolicyRatesInternal(IStore s, bytes32 key) public view returns (uint256 floor, uint256 ceiling) {
-    if (key > 0) {
-      floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key);
-      ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key);
+  function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view returns (uint256 floor, uint256 ceiling) {
+    if (coverKey > 0) {
+      floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey);
+      ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey);
     }
 
     if (floor == 0) {
@@ -112,33 +112,33 @@ library PolicyHelperV1 {
 
   function getCxTokenInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration
   ) public view returns (address cxToken, uint256 expiryDate) {
     expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
 
     cxToken = s.getAddress(k);
   }
 
   /**
    * @dev Gets the instance of cxToken or deploys a new one based on the cover expiry timestamp
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
   function getCxTokenOrDeployInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration
   ) public returns (ICxToken) {
-    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, key, coverDuration);
+    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, coverKey, coverDuration);
 
     if (cxToken != address(0)) {
       return ICxToken(cxToken);
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(s, key, expiryDate);
+    cxToken = factory.deploy(s, coverKey, expiryDate);
 
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
@@ -152,26 +152,26 @@ library PolicyHelperV1 {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
-   * @param key Enter the cover key you wish to purchase the policy for
+   * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCoverInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getPolicyFeeInternal(s, key, coverDuration, amountToCover);
-    cxToken = getCxTokenOrDeployInternal(s, key, coverDuration);
+    fee = getPolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
+    cxToken = getCxTokenOrDeployInternal(s, coverKey, coverDuration);
 
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
-    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
-    cxToken.mint(key, msg.sender, amountToCover);
+    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(coverKey)), fee);
+    cxToken.mint(coverKey, msg.sender, amountToCover);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
   }
 }

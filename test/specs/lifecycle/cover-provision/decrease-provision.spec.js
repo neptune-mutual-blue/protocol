@@ -94,7 +94,7 @@ describe('CoverProvision: decreaseProvision', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'ProvisionDecreased')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.previous.should.equal(amount)
     event.args.current.should.equal(0)
   })

@@ -85,13 +85,13 @@ describe('Governance: report', () => {
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
     const attestedEvent = events.find(x => x.event === 'Attested')
-    attestedEvent.args.key.should.equal(coverKey)
+    attestedEvent.args.coverKey.should.equal(coverKey)
     attestedEvent.args.incidentDate.should.equal(incidentDate)
     attestedEvent.args.witness.should.equal(bob.address)
     attestedEvent.args.stake.should.equal(amount)
 
     const reportedEvent = events.find(x => x.event === 'Reported')
-    reportedEvent.args.key.should.equal(coverKey)
+    reportedEvent.args.coverKey.should.equal(coverKey)
     reportedEvent.args.reporter.should.equal(bob.address)
     reportedEvent.args.incidentDate.should.equal(incidentDate)
     reportedEvent.args.info.should.equal(reportingInfo)

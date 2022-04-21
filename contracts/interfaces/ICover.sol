@@ -4,13 +4,13 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 key, bytes32 info, bool requiresWhitelist);
-  event CoverUpdated(bytes32 key, bytes32 info);
+  event CoverCreated(bytes32 indexed coverKey, bytes32 info, bool requiresWhitelist);
+  event CoverUpdated(bytes32 indexed coverKey, bytes32 info);
   event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
-  event CoverUserWhitelistUpdated(bytes32 key, address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
@@ -41,7 +41,7 @@ interface ICover is IMember {
    * Read the documentation to learn more about the fees: <br />
    * https://docs.neptunemutual.com/covers/contract-creators
    *
-   * @param key Enter a unique key for this cover
+   * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
    * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
    *
@@ -60,40 +60,40 @@ interface ICover is IMember {
    * @param values[7] ceiling Enter the policy ceiling rate.
    */
   function addCover(
-    bytes32 key,
+    bytes32 coverKey,
     bytes32 info,
     address reassuranceToken,
     bool requiresWhitelist,
     uint256[] memory values
   ) external;
 
-  function deployVault(bytes32 key) external returns (address);
+  function deployVault(bytes32 coverKey) external returns (address);
 
   /**
    * @dev Updates the cover contract.
    * This feature is accessible only to the cover owner or protocol owner (governance).
    *
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param info Enter a new IPFS URL to update
    */
-  function updateCover(bytes32 key, bytes32 info) external;
+  function updateCover(bytes32 coverKey, bytes32 info) external;
 
   function updateCoverCreatorWhitelist(address account, bool whitelisted) external;
 
   function updateCoverUsersWhitelist(
-    bytes32 key,
+    bytes32 coverKey,
     address[] memory accounts,
     bool[] memory statuses
   ) external;
 
   /**
    * @dev Get info of a cover contract by key
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param coverOwner Returns the address of the cover creator
    * @param info Gets the IPFS hash of the cover info
    * @param values Array of uint256 values. See `CoverUtilV1.getCoverInfo`.
    */
-  function getCover(bytes32 key)
+  function getCover(bytes32 coverKey)
     external
     view
     returns (
@@ -102,11 +102,11 @@ interface ICover is IMember {
       uint256[] memory values
     );
 
-  function stopCover(bytes32 key, string memory reason) external;
+  function stopCover(bytes32 coverKey, string memory reason) external;
 
   function checkIfWhitelistedCoverCreator(address account) external view returns (bool);
 
-  function checkIfWhitelistedUser(bytes32 key, address account) external view returns (bool);
+  function checkIfWhitelistedUser(bytes32 coverKey, address account) external view returns (bool);
 
   function setCoverFees(uint256 value) external;
 

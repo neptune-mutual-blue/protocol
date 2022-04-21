@@ -42,38 +42,38 @@ contract Policy is IPolicy, Recoverable {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
-   * @param key Enter the cover key you wish to purchase the policy for
+   * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCover(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
   ) external override nonReentrant returns (address, uint256) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
-    s.senderMustBeWhitelistedIfRequired(key);
+    s.mustHaveNormalCoverStatus(coverKey);
+    s.senderMustBeWhitelistedIfRequired(coverKey);
 
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
+    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(coverKey, coverDuration, amountToCover);
 
     lastPolicyId += 1;
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    emit CoverPurchased(coverKey, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
-  function getCxToken(bytes32 key, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
-    return s.getCxTokenInternal(key, coverDuration);
+  function getCxToken(bytes32 coverKey, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
+    return s.getCxTokenInternal(coverKey, coverDuration);
   }
 
-  function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cxToken) {
-    return s.getCxTokenByExpiryDateInternal(key, expiryDate);
+  function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view override returns (address cxToken) {
+    return s.getCxTokenByExpiryDateInternal(coverKey, expiryDate);
   }
 
   /**
@@ -88,25 +88,25 @@ contract Policy is IPolicy, Recoverable {
   /**
    * Gets the sum total of cover commitment that has not expired yet.
    */
-  function getCommitment(bytes32 key) external view override returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(key);
+  function getCommitment(bytes32 coverKey) external view override returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey);
   }
 
   /**
    * Gets the available liquidity in the pool.
    */
-  function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
-    return s.getStablecoinOwnedByVaultInternal(key);
+  function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
+    return s.getStablecoinOwnedByVaultInternal(coverKey);
   }
 
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function getCoverFeeInfo(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -122,7 +122,7 @@ contract Policy is IPolicy, Recoverable {
       uint256 rate
     )
   {
-    return s.calculatePolicyFeeInternal(key, coverDuration, amountToCover);
+    return s.calculatePolicyFeeInternal(coverKey, coverDuration, amountToCover);
   }
 
   /**
@@ -135,8 +135,8 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[5] Reassurance token price
    * @param _values[6] Reassurance pool weight
    */
-  function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
-    return s.getCoverPoolSummaryInternal(key);
+  function getCoverPoolSummary(bytes32 coverKey) external view override returns (uint256[] memory _values) {
+    return s.getCoverPoolSummaryInternal(coverKey);
   }
 
   /**

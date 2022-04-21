@@ -51,7 +51,7 @@ describe('Policy Admin: setPolicyRatesByKey', () => {
 
     const event = events.find(x => x.event === 'CoverPolicyRateSet')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.floor.should.equal(floor)
     event.args.ceiling.should.equal(ceiling)
 

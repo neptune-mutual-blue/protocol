@@ -26,13 +26,13 @@ library RoutineInvokerLibV1 {
     Withdraw
   }
 
-  function updateStateAndLiquidity(IStore s, bytes32 key) external {
-    _invoke(s, key, address(0));
+  function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
+    _invoke(s, coverKey, address(0));
   }
 
   function _invoke(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     address token
   ) private {
     // solhint-disable-next-line
@@ -42,13 +42,13 @@ library RoutineInvokerLibV1 {
 
     _updateKnownTokenPrices(s, token);
 
-    if (key > 0) {
-      _invokeAssetManagement(s, key);
+    if (coverKey > 0) {
+      _invokeAssetManagement(s, coverKey);
     }
 
     s.setLastUpdateOn();
 
-    _updateWithdrawalPeriod(s, key);
+    _updateWithdrawalPeriod(s, coverKey);
   }
 
   function _getUpdateInterval(IStore s) private view returns (uint256) {
@@ -170,16 +170,16 @@ library RoutineInvokerLibV1 {
     IStore s,
     ILendingStrategy strategy,
     uint256 totalStrategies,
-    bytes32 key
+    bytes32 coverKey
   ) private view returns (uint256) {
-    address vault = s.getVaultAddress(key);
+    address vault = s.getVaultAddress(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
     uint256 maximumAllowed = (stablecoin.balanceOf(vault) * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
-    uint256 alreadyDeposited = s.getAmountInStrategy(key, strategy.getName(), address(stablecoin));
+    uint256 alreadyDeposited = s.getAmountInStrategy(coverKey, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
       return 0;
@@ -188,15 +188,15 @@ library RoutineInvokerLibV1 {
     return canDeposit - alreadyDeposited;
   }
 
-  function _invokeAssetManagement(IStore s, bytes32 key) private {
-    address vault = s.getVaultAddress(key);
-    _withdrawFromDisabled(s, key, vault);
+  function _invokeAssetManagement(IStore s, bytes32 coverKey) private {
+    address vault = s.getVaultAddress(coverKey);
+    _withdrawFromDisabled(s, coverKey, vault);
 
     address[] memory strategies = s.getActiveStrategiesInternal();
 
     for (uint256 i = 0; i < strategies.length; i++) {
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
-      _executeStrategy(s, strategy, strategies.length, vault, key);
+      _executeStrategy(s, strategy, strategies.length, vault, coverKey);
     }
   }
 
@@ -205,51 +205,51 @@ library RoutineInvokerLibV1 {
     ILendingStrategy strategy,
     uint256 totalStrategies,
     address vault,
-    bytes32 key
+    bytes32 coverKey
   ) private {
-    uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, key);
+    uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, coverKey);
     uint256 balance = IERC20(s.getStablecoin()).balanceOf(vault);
 
     if (canDeposit > balance) {
       canDeposit = balance;
     }
 
-    Action action = _executeAndGetAction(s, strategy, key);
+    Action action = _executeAndGetAction(s, strategy, coverKey);
 
     if (action == Action.Deposit && canDeposit == 0) {
       return;
     }
 
     if (action == Action.Withdraw) {
-      _withdrawAllFromStrategy(strategy, vault, key);
+      _withdrawAllFromStrategy(strategy, vault, coverKey);
     } else {
-      _depositToStrategy(strategy, key, canDeposit);
+      _depositToStrategy(strategy, coverKey, canDeposit);
     }
   }
 
   function _depositToStrategy(
     ILendingStrategy strategy,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 amount
   ) private {
-    strategy.deposit(key, amount);
+    strategy.deposit(coverKey, amount);
   }
 
   function _withdrawAllFromStrategy(
     ILendingStrategy strategy,
     address vault,
-    bytes32 key
+    bytes32 coverKey
   ) private returns (uint256 stablecoinWithdrawn) {
     uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(vault);
 
     if (balance > 0) {
-      stablecoinWithdrawn = strategy.withdraw(key);
+      stablecoinWithdrawn = strategy.withdraw(coverKey);
     }
   }
 
   function _withdrawFromDisabled(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     address onBehalfOf
   ) private {
     address[] memory strategies = s.getDisabledStrategiesInternal();
@@ -259,7 +259,7 @@ library RoutineInvokerLibV1 {
       uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(onBehalfOf);
 
       if (balance > 0) {
-        strategy.withdraw(key);
+        strategy.withdraw(coverKey);
       }
     }
   }

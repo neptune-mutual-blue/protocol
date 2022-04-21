@@ -76,7 +76,7 @@ describe('Resolution: configureCoolDownPeriod', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'CooldownPeriodConfigured')
-    event.args.key.should.equal(key.toBytes32(''))
+    event.args.coverKey.should.equal(key.toBytes32(''))
     event.args.period.should.equal(2.5 * DAYS)
 
     // Reset
@@ -88,7 +88,7 @@ describe('Resolution: configureCoolDownPeriod', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'CooldownPeriodConfigured')
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.period.should.equal(2.5 * DAYS)
 
     const result = await deployed.resolution.getCoolDownPeriod(coverKey)

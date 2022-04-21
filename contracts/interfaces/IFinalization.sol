@@ -3,7 +3,7 @@
 pragma solidity 0.8.0;
 
 interface IFinalization {
-  event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
+  event Finalized(bytes32 indexed coverKey, address indexed finalizer, uint256 indexed incidentDate);
 
-  function finalize(bytes32 key, uint256 incidentDate) external;
+  function finalize(bytes32 coverKey, uint256 incidentDate) external;
 }
