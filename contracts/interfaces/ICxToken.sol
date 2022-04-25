@@ -17,5 +17,6 @@ interface ICxToken is IERC20 {
 
   function expiresOn() external view returns (uint256);
 
+  // slither-disable-next-line naming-convention
   function COVER_KEY() external view returns (bytes32);
 }

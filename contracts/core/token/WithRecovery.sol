@@ -12,6 +12,7 @@ abstract contract WithRecovery is Ownable {
    * @dev Recover all Ether held by the contract.
    */
   function recoverEther(address sendTo) external onlyOwner {
+    // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
 

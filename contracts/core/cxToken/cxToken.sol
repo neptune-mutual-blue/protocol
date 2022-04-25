@@ -23,6 +23,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
+  // slither-disable-next-line naming-convention
   bytes32 public immutable override COVER_KEY; // solhint-disable-line
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
