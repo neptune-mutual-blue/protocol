@@ -2,11 +2,11 @@
 
 ## Bug Bounty Program (Protocol)
 
-Will be announced upon completion of our protocol audit.
+Will be made public upon the conclusion of our first round of protocol audit.
 
 ## Bug Bounty Program (Web App)
 
-Will be announced upon completion of our internal security review and third-party penetration test.
+Will be announced upon the conclusion of our internal security investigation and penetration test by a third party.
 
 ## Walker
 
@@ -40,14 +40,14 @@ yarn gendoc
 
 **Permission**
 
-The deployer automatically obtains the highest-level of access. Subsequent access is distributed according to authority and technical expertise of the protocol's operating team.
+The deployer receives the greatest level of access automatically. Subsequent access is granted based on the protocol's operational team's authority and technical expertise.
 
 - Assign roles to multiple trusted authorities which must be
   - distributed (not necessarily decentralized)
   - hardware-based EOA (not multi-sig contracts)
 - Upon completion of the above ☝️, transfer ownership to a different cold storage wallet
 
-Note that the access control policy of the protocol can change based on our discretion.
+Take note that the protocol's access control policy is subject to change at our discretion.
 
 ### Access Levels
 
@@ -179,7 +179,7 @@ function addCover(bytes32 key) external override nonReentrant {
 
 ## Non Reentrancy
 
-Please note that (nearly) all of the Neptune Mutual contracts are depedendent on (or indirectly call) an (or the the-then) implementation of an `IProtocol` contract. Although it is highly unlikely that an IProtocol will `re-enter` into contract calls today, it is best to always use `nonReentrant` modifier provided by Open Zeppelin for future cases because of upgradeable nature of the Neptune Mutual protocol. While it may be a bit expensive gas wise, **any publicy-accessible function that changes the state must have the `nonReentrancy` modifier**.
+Please note that (nearly) all of the Neptune Mutual contracts are dependent on (or indirectly call) an (or the the-then) implementation of an `IProtocol` contract. Although it is highly unlikely that an IProtocol will `re-enter` into contract calls today, it is best to always use `nonReentrant` modifier provided by Open Zeppelin for future cases because of upgradeable nature of the Neptune Mutual protocol. While it may be a bit expensive gas wise, **any publicy-accessible function that changes the state must have the `nonReentrancy` modifier**.
 
 ```solidity
 function addCover(bytes32 key) external override nonReentrant { // ...}

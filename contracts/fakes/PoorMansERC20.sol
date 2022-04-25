@@ -33,8 +33,10 @@ contract PoorMansERC20 {
     if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
-      Transfer(msg.sender, _to, _value);
+      emit Transfer(msg.sender, _to, _value);
     }
+
+    return false;
   }
 
   function transferFrom(
@@ -46,8 +48,10 @@ contract PoorMansERC20 {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
-      Transfer(_from, _to, _value);
+      emit Transfer(_from, _to, _value);
     }
+
+    return false;
   }
 
   function balanceOf(address _owner) external view returns (uint256 balance) {
@@ -56,7 +60,9 @@ contract PoorMansERC20 {
 
   function approve(address _spender, uint256 _value) external returns (bool) {
     allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
+    emit Approval(msg.sender, _spender, _value);
+
+    return false;
   }
 
   function allowance(address _owner, address _spender) external view returns (uint256 remaining) {
