@@ -38,20 +38,20 @@ contract CoverStake is ICoverStake, Recoverable {
 
   /**
    * @dev Increase the stake of the given cover pool
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param account Enter the account from where the NPM tokens will be transferred
    * @param amount Enter the amount of stake
    * @param fee Enter the fee amount. Note: do not enter the fee if you are directly calling this function.
    */
   function increaseStake(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
     s.senderMustBeCoverContract();
 
     require(amount >= fee, "Invalid fee");
@@ -60,68 +60,68 @@ contract CoverStake is ICoverStake, Recoverable {
 
     if (fee > 0) {
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
-      emit FeeBurned(key, fee);
+      emit FeeBurned(coverKey, fee);
     }
 
     // @suppress-subtraction Checked usage. Fee is always less than amount
     // if we reach this far.
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount - fee);
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount - fee);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount - fee);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount - fee);
 
-    emit StakeAdded(key, amount - fee);
+    emit StakeAdded(coverKey, amount - fee);
   }
 
   /**
    * @dev Decreases the stake from the given cover pool
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param account Enter the account to decrease the stake of
    * @param amount Enter the amount of stake to decrease
    */
   function decreaseStake(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
     s.senderMustBeCoverContract();
 
-    uint256 drawingPower = _getDrawingPower(key, account);
+    uint256 drawingPower = _getDrawingPower(coverKey, account);
     require(amount > 0, "Please specify amount");
     require(drawingPower >= amount, "Exceeds your drawing power");
 
     // @suppress-subtraction
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount);
 
     s.npmToken().ensureTransfer(account, amount);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit StakeRemoved(key, amount);
+    emit StakeRemoved(coverKey, amount);
   }
 
   /**
    * @dev Gets the stake of an account for the given cover key
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param account Specify the account to obtain the stake of
    * @return Returns the total stake of the specified account on the given cover key
    */
-  function stakeOf(bytes32 key, address account) public view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account);
+  function stakeOf(bytes32 coverKey, address account) public view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account);
   }
 
   /**
    * @dev Gets the drawing power of (the stake amount that can be withdrawn from)
    * an account.
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param account Specify the account to obtain the drawing power of
    * @return Returns the drawing power of the specified account on the given cover key
    */
-  function _getDrawingPower(bytes32 key, address account) private view returns (uint256) {
-    uint256 yourStake = stakeOf(key, account);
-    bool isOwner = account == s.getCoverOwner(key);
+  function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
+    uint256 yourStake = stakeOf(coverKey, account);
+    bool isOwner = account == s.getCoverOwner(coverKey);
 
     uint256 minStake = s.getMinCoverCreationStake();
 

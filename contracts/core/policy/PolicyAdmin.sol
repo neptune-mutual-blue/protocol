@@ -57,30 +57,30 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * @param ceiling The highest cover fee rate for this cover
    */
   function setPolicyRatesByKey(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 floor,
     uint256 ceiling
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
 
     require(floor > 0, "Please specify floor");
     require(ceiling > 0, "Invalid ceiling");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit CoverPolicyRateSet(key, floor, ceiling);
+    emit CoverPolicyRateSet(coverKey, floor, ceiling);
   }
 
   /**
    * @dev Gets the cover policy rates for the given cover key
    */
-  function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRatesInternal(key);
+  function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
+    return s.getPolicyRatesInternal(coverKey);
   }
 
   /**

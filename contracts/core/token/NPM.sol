@@ -17,10 +17,10 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
   }
 
   function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override whenNotPaused {
+    address,
+    address,
+    uint256
+  ) internal view override whenNotPaused {
     // solhint-disable-previous-line
   }
 

@@ -53,29 +53,29 @@ abstract contract Witness is Recoverable, IWitness {
    * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
    * you are completely aware and fully understand the risk that you may lose all of
    * your stake.
-   * @param key Enter the key of the active cover
+   * @param coverKey Enter the key of the active cover
    * @param incidentDate Enter the active cover's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.
    * Note that you cannot unstake this amount if the decision was not in your favor.
    */
   function attest(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustBeReportingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeDuringReportingPeriod(key);
+    s.mustBeReportingOrDisputed(coverKey);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey);
 
     require(stake > 0, "Enter a stake");
 
-    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(coverKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Attested(key, msg.sender, incidentDate, stake);
+    emit Attested(coverKey, msg.sender, incidentDate, stake);
   }
 
   /**
@@ -94,64 +94,64 @@ abstract contract Witness is Recoverable, IWitness {
    * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
    * you are completely aware and fully understand the risk that you may lose all of
    * your stake.
-   * @param key Enter the key of the active cover
+   * @param coverKey Enter the key of the active cover
    * @param incidentDate Enter the active cover's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.
    * Note that you cannot unstake this amount if the decision was not in your favor.
    */
   function refute(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustHaveDispute(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeDuringReportingPeriod(key);
+    s.mustHaveDispute(coverKey);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey);
 
     require(stake > 0, "Enter a stake");
 
-    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(coverKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Refuted(key, msg.sender, incidentDate, stake);
+    emit Refuted(coverKey, msg.sender, incidentDate, stake);
   }
 
   /**
    * @dev Gets the status of a given cover
-   * @param key Enter the key of the cover you'd like to check the status of
+   * @param coverKey Enter the key of the cover you'd like to check the status of
    * @return Returns the cover status as an integer.
    * For more, check the enum `CoverStatus` on `CoverUtilV1` library.
    */
-  function getStatus(bytes32 key) external view override returns (uint256) {
-    return s.getStatus(key);
+  function getStatus(bytes32 coverKey) external view override returns (uint256) {
+    return s.getStatus(coverKey);
   }
 
   /**
    * @dev Gets the stakes of each side of a given cover governance pool
-   * @param key Enter the key of the cover you'd like to check the stakes of
+   * @param coverKey Enter the key of the cover you'd like to check the stakes of
    * @param incidentDate Enter the active cover's date of incident
    * @return Returns an array of integers --> [yes, no]
    */
-  function getStakes(bytes32 key, uint256 incidentDate) external view override returns (uint256, uint256) {
-    return s.getStakesInternal(key, incidentDate);
+  function getStakes(bytes32 coverKey, uint256 incidentDate) external view override returns (uint256, uint256) {
+    return s.getStakesInternal(coverKey, incidentDate);
   }
 
   /**
    * @dev Gets the stakes of each side of a given cover governance pool for the specified account.
-   * @param key Enter the key of the cover you'd like to check the stakes of
+   * @param coverKey Enter the key of the cover you'd like to check the stakes of
    * @param incidentDate Enter the active cover's date of incident
    * @param account Enter the account you'd like to get the stakes of
    * @return Returns an array of integers --> [yes, no]
    */
   function getStakesOf(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     address account
   ) external view override returns (uint256, uint256) {
-    return s.getStakesOfInternal(account, key, incidentDate);
+    return s.getStakesOfInternal(account, coverKey, incidentDate);
   }
 }

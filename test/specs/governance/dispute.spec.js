@@ -89,13 +89,13 @@ describe('Governance: dispute', () => {
     const { events } = await tx.wait()
 
     const refutedEvent = events.find(x => x.event === 'Refuted')
-    refutedEvent.args.key.should.equal(coverKey)
+    refutedEvent.args.coverKey.should.equal(coverKey)
     refutedEvent.args.incidentDate.should.equal(incidentDate)
     refutedEvent.args.witness.should.equal(bob.address)
     refutedEvent.args.stake.should.equal(amount)
 
     const disputedEvent = events.find(x => x.event === 'Disputed')
-    disputedEvent.args.key.should.equal(coverKey)
+    disputedEvent.args.coverKey.should.equal(coverKey)
     disputedEvent.args.reporter.should.equal(bob.address)
     disputedEvent.args.incidentDate.should.equal(incidentDate)
     disputedEvent.args.info.should.equal(disputeInfo)

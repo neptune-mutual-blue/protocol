@@ -83,8 +83,6 @@ const PROTOCOL = {
     COVER_LIQUIDITY_WITHDRAWAL_WINDOW: toBytes32('ns:cover:liquidity:ww'),
     COVER_LIQUIDITY_MIN_STAKE: toBytes32('ns:cover:liquidity:min:stake'),
     COVER_LIQUIDITY_STAKE: toBytes32('ns:cover:liquidity:stake'),
-    COVER_LIQUIDITY_ADDED: toBytes32('ns:cover:liquidity:add'),
-    COVER_LIQUIDITY_REMOVED: toBytes32('ns:cover:liquidity:rem'),
     COVER_LIQUIDITY_COMMITTED: toBytes32('ns:cover:liquidity:committed'),
     COVER_LIQUIDITY_NAME: toBytes32('ns:cover:liquidityName'),
     COVER_REQUIRES_WHITELIST: toBytes32('ns:cover:requires:whitelist'),

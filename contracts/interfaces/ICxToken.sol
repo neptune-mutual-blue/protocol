@@ -6,7 +6,7 @@ pragma solidity 0.8.0;
 
 interface ICxToken is IERC20 {
   function mint(
-    bytes32 key,
+    bytes32 coverKey,
     address to,
     uint256 amount
   ) external;
@@ -17,5 +17,6 @@ interface ICxToken is IERC20 {
 
   function expiresOn() external view returns (uint256);
 
-  function coverKey() external view returns (bytes32);
+  // slither-disable-next-line naming-convention
+  function COVER_KEY() external view returns (bytes32);
 }

@@ -73,12 +73,12 @@ abstract contract CoverBase is ICover, Recoverable {
 
   /**
    * @dev Get more information about this cover contract
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param coverOwner Returns the address of the cover creator or owner
    * @param info Gets the IPFS hash of the cover info
    * @param values Array of uint256 values
    */
-  function getCover(bytes32 key)
+  function getCover(bytes32 coverKey)
     external
     view
     override
@@ -88,7 +88,7 @@ abstract contract CoverBase is ICover, Recoverable {
       uint256[] memory values
     )
   {
-    return s.getCoverInfo(key);
+    return s.getCoverInfo(coverKey);
   }
 
   /**

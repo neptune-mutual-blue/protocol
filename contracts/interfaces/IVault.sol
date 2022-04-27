@@ -13,9 +13,9 @@ interface IVault is IMember, IERC20 {
   event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256 amount, uint256 fee);
   event NPMStaken(address indexed account, uint256 amount);
   event NPMUnstaken(address indexed account, uint256 amount);
-  event InterestAccrued(bytes32 indexed key);
-  event Entered(bytes32 indexed key, address indexed account);
-  event Exited(bytes32 indexed key, address indexed account);
+  event InterestAccrued(bytes32 indexed coverKey);
+  event Entered(bytes32 indexed coverKey, address indexed account);
+  event Exited(bytes32 indexed coverKey, address indexed account);
 
   function key() external view returns (bytes32);
 

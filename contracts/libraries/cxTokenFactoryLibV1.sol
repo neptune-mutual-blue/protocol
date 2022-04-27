@@ -10,17 +10,17 @@ library cxTokenFactoryLibV1 {
   /**
    * @dev Gets the bytecode of the `cxToken` contract
    * @param s Provide the store instance
-   * @param key Provide the cover key
+   * @param coverKey Provide the cover key
    * @param expiryDate Specify the expiry date of this cxToken instance
    */
   function getByteCode(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 expiryDate
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
 
     //slither-disable-next-line too-many-digits
-    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, key, expiryDate));
+    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, coverKey, expiryDate));
   }
 }

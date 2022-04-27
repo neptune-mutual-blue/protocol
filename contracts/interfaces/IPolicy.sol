@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
-  event CoverPurchased(bytes32 key, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode, uint256 policyId);
+  event CoverPurchased(bytes32 coverKey, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode, uint256 policyId);
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -12,12 +12,12 @@ interface IPolicy is IMember {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
-   * @param key Enter the cover key you wish to purchase the policy for
+   * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCover(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
@@ -25,12 +25,12 @@ interface IPolicy is IMember {
 
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function getCoverFeeInfo(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -55,21 +55,21 @@ interface IPolicy is IMember {
    * @param _values[5] Reassurance token price
    * @param _values[6] Reassurance pool weight
    */
-  function getCoverPoolSummary(bytes32 key) external view returns (uint256[] memory _values);
+  function getCoverPoolSummary(bytes32 coverKey) external view returns (uint256[] memory _values);
 
-  function getCxToken(bytes32 key, uint256 coverDuration) external view returns (address cxToken, uint256 expiryDate);
+  function getCxToken(bytes32 coverKey, uint256 coverDuration) external view returns (address cxToken, uint256 expiryDate);
 
-  function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view returns (address cxToken);
+  function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view returns (address cxToken);
 
   /**
    * Gets the sum total of cover commitment that haven't expired yet.
    */
-  function getCommitment(bytes32 key) external view returns (uint256);
+  function getCommitment(bytes32 coverKey) external view returns (uint256);
 
   /**
    * Gets the available liquidity in the pool.
    */
-  function getAvailableLiquidity(bytes32 key) external view returns (uint256);
+  function getAvailableLiquidity(bytes32 coverKey) external view returns (uint256);
 
   /**
    * @dev Gets the expiry date based on cover duration

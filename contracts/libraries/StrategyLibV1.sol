@@ -17,7 +17,7 @@ library StrategyLibV1 {
   using RegistryLibV1 for IStore;
 
   event StrategyAdded(address indexed strategy);
-  event LendingPeriodSet(bytes32 indexed coverKey, uint256 lendingPeriod, uint256 withdrawalWindow);
+  event LendingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
   event MaxLendingRatioSet(uint256 ratio);
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {

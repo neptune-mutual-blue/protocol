@@ -68,12 +68,12 @@ library RegistryLibV1 {
     return ICover(vault);
   }
 
-  function getVault(IStore s, bytes32 key) external view returns (IVault) {
-    return IVault(getVaultAddress(s, key));
+  function getVault(IStore s, bytes32 coverKey) external view returns (IVault) {
+    return IVault(getVaultAddress(s, coverKey));
   }
 
-  function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, key);
+  function getVaultAddress(IStore s, bytes32 coverKey) public view returns (address) {
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     return vault;
   }
 

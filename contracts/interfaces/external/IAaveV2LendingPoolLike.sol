@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.8.0;
-pragma experimental ABIEncoderV2;
 
 // https://github.com/aave/protocol-v2/blob/master/contracts/interfaces/ILendingPool.sol
 interface IAaveV2LendingPoolLike {

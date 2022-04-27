@@ -31,7 +31,7 @@ interface IStakingPools is IMember {
 
   /**
    * @dev Adds or edits the pool by key
-   * @param key Enter the key of the pool you want to create or edit
+   * @param coverKey Enter the key of the pool you want to create or edit
    * @param name Enter a name for this pool
    * @param poolType Specify the pool type: TokenStaking or PODStaking
    * @param addresses[0] stakingToken The token which is staked in this pool
@@ -46,26 +46,26 @@ interface IStakingPools is IMember {
    * @param values[5] rewardTokenDeposit Enter the value of reward token you are depositing in this transaction.
    */
   function addOrEditPool(
-    bytes32 key,
+    bytes32 coverKey,
     string memory name,
     StakingPoolType poolType,
     address[] memory addresses,
     uint256[] memory values
   ) external;
 
-  function closePool(bytes32 key) external;
+  function closePool(bytes32 coverKey) external;
 
-  function deposit(bytes32 key, uint256 amount) external;
+  function deposit(bytes32 coverKey, uint256 amount) external;
 
-  function withdraw(bytes32 key, uint256 amount) external;
+  function withdraw(bytes32 coverKey, uint256 amount) external;
 
-  function withdrawRewards(bytes32 key) external;
+  function withdrawRewards(bytes32 coverKey) external;
 
-  function calculateRewards(bytes32 key, address account) external view returns (uint256);
+  function calculateRewards(bytes32 coverKey, address account) external view returns (uint256);
 
   /**
    * @dev Gets the info of a given staking pool by key
-   * @param key Provide the staking pool key to fetch info for
+   * @param coverKey Provide the staking pool key to fetch info for
    * @param you Specify the address to customize the info for
    * @param name Returns the name of the staking pool
    * @param addresses[0] stakingToken --> Returns the address of the token which is staked in this pool
@@ -88,7 +88,7 @@ interface IStakingPools is IMember {
    * @param values[13] lastDepositHeight --> Returns the block number of your last deposit
    * @param values[14] lastRewardHeight --> Returns the block number of your last reward
    */
-  function getInfo(bytes32 key, address you)
+  function getInfo(bytes32 coverKey, address you)
     external
     view
     returns (

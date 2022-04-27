@@ -29,14 +29,14 @@ contract VaultFactory is IVaultFactory, Recoverable {
   /**
    * @dev Deploys a new instance of Vault
    * @param s Provide the store contract instance
-   * @param key Enter the cover key related to this Vault instance
+   * @param coverKey Enter the cover key related to this Vault instance
    */
-  function deploy(IStore s, bytes32 key) external override nonReentrant returns (address addr) {
+  function deploy(IStore s, bytes32 coverKey) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
+    s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getStablecoin());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, s.getStablecoin());
 
     // solhint-disable-next-line
     assembly {
@@ -54,7 +54,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
       }
     }
 
-    emit VaultDeployed(key, addr);
+    emit VaultDeployed(coverKey, addr);
   }
 
   /**

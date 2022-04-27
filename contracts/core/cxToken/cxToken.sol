@@ -23,38 +23,39 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
 
-  bytes32 public immutable override coverKey;
+  // slither-disable-next-line naming-convention
+  bytes32 public immutable override COVER_KEY; // solhint-disable-line
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
 
-  function _getTokenName(bytes32 key) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(key)), "-cxtoken"));
+  function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-cxtoken"));
   }
 
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
-   * @param key Enter the cover key or cover this cxToken instance points to
+   * @param coverKey Enter the cover key or cover this cxToken instance points to
    * @param expiry Provide the cover expiry timestamp of this cxToken instance
    */
   constructor(
     IStore store,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 expiry
-  ) ERC20(_getTokenName(key), "cxUSD") Recoverable(store) {
-    coverKey = key;
+  ) ERC20(_getTokenName(coverKey), "cxUSD") Recoverable(store) {
+    COVER_KEY = coverKey;
     expiresOn = expiry;
   }
 
   /**
    * @dev Mints cxTokens when a policy is purchased.
    * This feature can only be accessed by the latest policy smart contract.
-   * @param key Enter the cover key for which the cxTokens are being minted
+   * @param coverKey Enter the cover key for which the cxTokens are being minted
    * @param to Enter the address where the minted token will be sent
    * @param amount Specify the amount of cxTokens to mint
    */
   function mint(
-    bytes32 key,
+    bytes32 coverKey,
     address to,
     uint256 amount
   ) external override nonReentrant {
@@ -62,7 +63,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     s.mustNotBePaused();
 
     require(amount > 0, "Please specify amount");
-    require(key == coverKey, "Invalid cover");
+    require(coverKey == COVER_KEY, "Invalid cover");
     s.senderMustBePolicyContract();
 
     super._mint(to, amount);

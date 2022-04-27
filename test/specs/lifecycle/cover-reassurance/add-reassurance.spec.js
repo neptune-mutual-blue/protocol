@@ -82,7 +82,7 @@ describe('CoverReassurance: addReassurance', () => {
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'ReassuranceAdded')
 
-    event.args.key.should.equal(coverKey)
+    event.args.coverKey.should.equal(coverKey)
     event.args.amount.should.equal(amount)
   })
 

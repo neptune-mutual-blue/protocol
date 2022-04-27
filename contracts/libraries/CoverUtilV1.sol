@@ -28,12 +28,12 @@ library CoverUtilV1 {
     Claimable
   }
 
-  function getCoverOwner(IStore s, bytes32 key) external view returns (address) {
-    return _getCoverOwner(s, key);
+  function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
+    return _getCoverOwner(s, coverKey);
   }
 
-  function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
-    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
+  function _getCoverOwner(IStore s, bytes32 coverKey) private view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 
   function getCoverCreationFeeInfo(IStore s)
@@ -72,8 +72,8 @@ library CoverUtilV1 {
     return value;
   }
 
-  function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+  function getClaimPeriod(IStore s, bytes32 coverKey) external view returns (uint256) {
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey);
     uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
 
     return fromKey > 0 ? fromKey : fallbackValue;
@@ -89,18 +89,18 @@ library CoverUtilV1 {
    * @param _values[5] Reassurance token price
    * @param _values[6] Reassurance pool weight
    */
-  function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
+  function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view returns (uint256[] memory _values) {
     IPriceDiscovery discovery = s.getPriceDiscoveryContract();
 
     _values = new uint256[](7);
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(key);
-    _values[1] = getActiveLiquidityUnderProtection(s, key);
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
+    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
+    _values[1] = getActiveLiquidityUnderProtection(s, coverKey);
+    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
     _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey)), 1 ether);
+    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
   }
 
   /**
@@ -113,36 +113,36 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatus) {
-    return CoverStatus(getStatus(s, key));
+  function getCoverStatus(IStore s, bytes32 coverKey) external view returns (CoverStatus) {
+    return CoverStatus(getStatus(s, coverKey));
   }
 
   function getCoverStatusOf(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusOf(s, key, incidentDate));
+    return CoverStatus(getStatusOf(s, coverKey, incidentDate));
   }
 
-  function getStatus(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusKey(key));
+  function getStatus(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKey(getCoverStatusKey(coverKey));
   }
 
   function getStatusOf(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusOfKey(key, incidentDate));
+    return s.getUintByKey(getCoverStatusOfKey(coverKey, incidentDate));
   }
 
-  function getCoverStatusKey(bytes32 key) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key));
+  function getCoverStatusKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey));
   }
 
-  function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
+  function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
   }
 
   function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
@@ -153,20 +153,20 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
-  function getActiveLiquidityUnderProtection(IStore s, bytes32 key) public view returns (uint256) {
-    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, key);
+  function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey) public view returns (uint256) {
+    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey);
     return current + future;
   }
 
-  function _getLiquidityUnderProtectionInfo(IStore s, bytes32 key) private view returns (uint256 current, uint256 future) {
+  function _getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey) private view returns (uint256 current, uint256 future) {
     uint256 expiryDate = 0;
 
-    (current, expiryDate) = _getCurrentCommitment(s, key);
-    future = _getFutureCommitments(s, key, expiryDate);
+    (current, expiryDate) = _getCurrentCommitment(s, coverKey);
+    future = _getFutureCommitments(s, coverKey, expiryDate);
   }
 
-  function _getCurrentCommitment(IStore s, bytes32 key) private view returns (uint256 amount, uint256 expiryDate) {
-    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, key);
+  function _getCurrentCommitment(IStore s, bytes32 coverKey) private view returns (uint256 amount, uint256 expiryDate) {
+    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, coverKey);
 
     // There isn't any incident for this cover
     // and therefore no need to pay
@@ -175,7 +175,7 @@ library CoverUtilV1 {
     }
 
     expiryDate = _getMonthEndDate(incidentDateIfAny);
-    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
 
     if (address(cxToken) != address(0)) {
       amount = cxToken.totalSupply();
@@ -184,7 +184,7 @@ library CoverUtilV1 {
 
   function _getFutureCommitments(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 ignoredExpiryDate
   ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
@@ -197,7 +197,7 @@ library CoverUtilV1 {
         continue;
       }
 
-      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
 
       if (address(cxToken) != address(0)) {
         sum += cxToken.totalSupply();
@@ -205,8 +205,8 @@ library CoverUtilV1 {
     }
   }
 
-  function getStake(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
+  function getStake(IStore s, bytes32 coverKey) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey);
   }
 
   /**
@@ -221,23 +221,23 @@ library CoverUtilV1 {
    */
   function setStatusInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     CoverStatus status
   ) external {
-    s.setUintByKey(getCoverStatusKey(key), uint256(status));
+    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status));
 
     if (incidentDate > 0) {
-      s.setUintByKey(getCoverStatusOfKey(key, incidentDate), uint256(status));
+      s.setUintByKey(getCoverStatusOfKey(coverKey, incidentDate), uint256(status));
     }
   }
 
   /**
    * @dev Gets the reassurance amount of the specified cover contract
-   * @param key Enter the cover key
+   * @param coverKey Enter the cover key
    */
-  function getReassuranceAmountInternal(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+  function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
   }
 
   /**
@@ -282,20 +282,20 @@ library CoverUtilV1 {
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
   }
 
-  function getActiveIncidentDateInternal(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+  function getActiveIncidentDateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
   }
 
   function getCxTokenByExpiryDateInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 expiryDate
   ) public view returns (address cxToken) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
     cxToken = s.getAddress(k);
   }
 
-  function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, key);
+  function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
   }
 }
