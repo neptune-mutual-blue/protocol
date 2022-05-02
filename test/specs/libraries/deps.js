@@ -326,6 +326,17 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
+  const policy = await deployer.deployWithLibraries(cache, 'Policy', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address, '0')
+
+  await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
+
   return {
     npm,
     dai,
@@ -339,6 +350,8 @@ const deployDependencies = async () => {
     coverUtilV1,
     governanceUtilV1,
     validationLibV1,
+    vaultLib,
+    vaultDelegate,
     baseLibV1,
     transferLib,
     priceLibV1,
@@ -346,6 +359,7 @@ const deployDependencies = async () => {
     routineInvokerLibV1,
     cover,
     coverLibV1,
+    policy,
     policyHelperV1,
     stakingPoolLibV1,
     strategyLibV1,

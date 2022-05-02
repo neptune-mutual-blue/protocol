@@ -69,9 +69,7 @@ contract Store is StoreBase {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
-    if (v) {
-      boolStorage[k] = v;
-    }
+    boolStorage[k] = v;
   }
 
   function setInt(bytes32 k, int256 v) external override {
