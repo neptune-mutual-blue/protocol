@@ -91,11 +91,13 @@ library PriceLibV1 {
   }
 
   function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKey(getLastUpdateKey(coverKey));
+    bytes32 key = getLastUpdateKey(coverKey);
+    return s.getUintByKey(key);
   }
 
   function setLastUpdateOn(IStore s, bytes32 coverKey) external {
-    s.setUintByKey(getLastUpdateKey(coverKey), block.timestamp); // solhint-disable-line
+    bytes32 key = getLastUpdateKey(coverKey);
+    s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
   function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
