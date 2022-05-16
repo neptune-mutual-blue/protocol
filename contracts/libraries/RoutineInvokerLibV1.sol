@@ -36,7 +36,7 @@ library RoutineInvokerLibV1 {
     address token
   ) private {
     // solhint-disable-next-line
-    if (s.getLastUpdateOnInternal() + _getUpdateInterval(s) > block.timestamp) {
+    if (s.getLastUpdateOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
@@ -46,7 +46,7 @@ library RoutineInvokerLibV1 {
       _invokeAssetManagement(s, coverKey);
     }
 
-    s.setLastUpdateOn();
+    s.setLastUpdateOn(coverKey);
 
     _updateWithdrawalPeriod(s, coverKey);
   }

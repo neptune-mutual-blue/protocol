@@ -90,18 +90,18 @@ library PriceLibV1 {
     return (2 * reserve1 * lpTokens) / supply;
   }
 
-  function getLastUpdateOnInternal(IStore s) external view returns (uint256) {
-    bytes32 key = getLastUpdateKey();
+  function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    bytes32 key = getLastUpdateKey(coverKey);
     return s.getUintByKey(key);
   }
 
-  function setLastUpdateOn(IStore s) external {
-    bytes32 key = getLastUpdateKey();
+  function setLastUpdateOn(IStore s, bytes32 coverKey) external {
+    bytes32 key = getLastUpdateKey(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
-  function getLastUpdateKey() public pure returns (bytes32) {
-    return ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE;
+  function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
   }
 
   function getPriceInternal(
