@@ -48,14 +48,6 @@ describe('Protocol Initialization Stories', () => {
     fetchedAddress.should.equal(contracts.reassuranceContract.address)
   })
 
-  it('provision contract was correctly deployed', async () => {
-    contracts.provisionContract.address.should.not.be.empty
-    contracts.provisionContract.address.should.not.equal(helper.zerox)
-
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.NS.COVER_PROVISION))
-    fetchedAddress.should.equal(contracts.provisionContract.address)
-  })
-
   it('cover contract was correctly deployed', async () => {
     contracts.cover.address.should.not.be.empty
     contracts.cover.address.should.not.equal(helper.zerox)

@@ -83,11 +83,9 @@ library CoverUtilV1 {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NPM provision
-   * @param _values[3] NPM price
-   * @param _values[4] The total amount of reassurance tokens
-   * @param _values[5] Reassurance token price
-   * @param _values[6] Reassurance pool weight
+   * @param _values[2] The total amount of reassurance tokens
+   * @param _values[3] Reassurance token price
+   * @param _values[4] Reassurance pool weight
    */
   function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view returns (uint256[] memory _values) {
     IPriceDiscovery discovery = s.getPriceDiscoveryContract();
@@ -96,11 +94,9 @@ library CoverUtilV1 {
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey);
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey)), 1 ether);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey)), 1 ether);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
   }
 
   /**

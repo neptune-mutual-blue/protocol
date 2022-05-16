@@ -46,7 +46,6 @@
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract
  * @property {Object} reassuranceContract - Reassurance contract
- * @property {Object} provisionContract - NPM provision contract
  * @property {Object} vaultFactory - Liquidity vault factory
  * @property {Object} cxTokenFactory - cxToken factory
  * @property {Object} cover - The base cover contract

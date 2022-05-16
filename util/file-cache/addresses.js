@@ -25,7 +25,6 @@ const getContracts = async (file, id) => {
   const compoundStrategy = await getContract(file, id, 'CompoundStrategy')
   const cover = await getContract(file, id, 'Cover')
   const coverLibV1 = await getContract(file, id, 'CoverLibV1')
-  const coverProvision = await getContract(file, id, 'CoverProvision')
   const coverReassurance = await getContract(file, id, 'CoverReassurance')
   const coverStake = await getContract(file, id, 'CoverStake')
   const coverUtilV1 = await getContract(file, id, 'CoverUtilV1')
@@ -74,7 +73,6 @@ const getContracts = async (file, id) => {
     compoundStrategy,
     cover,
     coverLibV1,
-    coverProvision,
     coverReassurance,
     coverStake,
     coverUtilV1,

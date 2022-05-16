@@ -105,14 +105,6 @@ describe('Governance Stories', function () {
     await contracts.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
-    // Add provision
-    const provision = helper.ether(1_000_001)
-
-    await contracts.npm.approve(contracts.provisionContract.address, provision)
-
-    await contracts.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, _o.address)
-    await contracts.provisionContract.increaseProvision(coverKey, provision)
-
     // Purchase a cover
     let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
     let fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
