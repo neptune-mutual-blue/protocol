@@ -28,10 +28,9 @@ contract VaultFactory is IVaultFactory, Recoverable {
 
   /**
    * @dev Deploys a new instance of Vault
-   * @param s Provide the store contract instance
    * @param coverKey Enter the cover key related to this Vault instance
    */
-  function deploy(IStore s, bytes32 coverKey) external override nonReentrant returns (address addr) {
+  function deploy(bytes32 coverKey) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();

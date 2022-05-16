@@ -29,15 +29,10 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
   /**
    * @dev Deploys a new instance of cxTokens
-   * @param s Provide the store contract instance
    * @param coverKey Enter the cover key related to this cxToken instance
    * @param expiryDate Specify the expiry date of this cxToken instance
    */
-  function deploy(
-    IStore s,
-    bytes32 coverKey,
-    uint256 expiryDate
-  ) external override nonReentrant returns (address deployed) {
+  function deploy(bytes32 coverKey, uint256 expiryDate) external override nonReentrant returns (address deployed) {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
