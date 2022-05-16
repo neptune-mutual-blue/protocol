@@ -42,9 +42,7 @@ library CoverLibV1 {
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
     values[1] = s.getStake(coverKey);
     values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    values[4] = s.getActiveLiquidityUnderProtection(coverKey);
+    values[3] = s.getActiveLiquidityUnderProtection(coverKey);
   }
 
   function initializeCoverInternal(
@@ -250,36 +248,5 @@ library CoverLibV1 {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, value);
 
     s.updateStateAndLiquidity(0);
-  }
-
-  function increaseProvisionInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 amount
-  ) external returns (uint256 provision) {
-    provision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey, amount);
-
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
-
-    s.updateStateAndLiquidity(coverKey);
-  }
-
-  function decreaseProvisionInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 amount
-  ) external returns (uint256 provision) {
-    provision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    require(provision >= amount, "Exceeds Balance");
-
-    // @suppress-subtraction Checked usage. Amount is always less than current provision.
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey, amount);
-
-    s.npmToken().ensureTransfer(msg.sender, amount);
-
-    s.updateStateAndLiquidity(coverKey);
   }
 }

@@ -95,7 +95,6 @@ library ProtoUtilV1 {
 
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
-  bytes32 public constant NS_COVER_PROVISION = "ns:cover:provision";
 
   bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
@@ -207,7 +206,6 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
-  bytes32 public constant CNAME_COVER_PROVISION = "CoverProvision";
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";

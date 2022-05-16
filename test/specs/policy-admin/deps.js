@@ -40,9 +40,8 @@ const deployDependencies = async () => {
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
     RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address
   })
 
   const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
@@ -90,10 +89,9 @@ const deployDependencies = async () => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
-    RoutineInvokerLibV1: routineInvokerLibV1.address,
-    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
+    RoutineInvokerLibV1: routineInvokerLibV1.address,
     StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address

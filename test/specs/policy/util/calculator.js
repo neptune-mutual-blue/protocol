@@ -7,7 +7,7 @@ const getCoverFee = (data, amount, duration, debug = false) => {
     return
   }
 
-  data.supportPool = (data.reassuranceAmount + data.provision) * data.INCIDENT_SUPPORT_POOL_CAP_RATIO / data.MULTIPLIER
+  data.supportPool = (data.reassuranceAmount * data.INCIDENT_SUPPORT_POOL_CAP_RATIO) / data.MULTIPLIER
   data.totalAvailableLiquidity = data.inVault + data.supportPool
 
   if (amount > data.totalAvailableLiquidity) {
@@ -41,7 +41,7 @@ const getCoverFee = (data, amount, duration, debug = false) => {
 }
 
 const getCoverFeeBn = (payload, amount, duration, debug = false) => {
-  const supportPool = payload.reassuranceAmount.add(payload.provision).mul(payload.INCIDENT_SUPPORT_POOL_CAP_RATIO.toString()).div(payload.MULTIPLIER.toString())
+  const supportPool = payload.reassuranceAmount.mul(payload.INCIDENT_SUPPORT_POOL_CAP_RATIO.toString()).div(payload.MULTIPLIER.toString())
   const totalAvailableLiquidity = payload.inVault.add(supportPool)
 
   if (amount.gt(totalAvailableLiquidity)) {

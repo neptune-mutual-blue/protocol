@@ -12,7 +12,6 @@ require('chai')
 
 const data = {
   reassuranceAmount: 1_000_000,
-  provision: 0,
   inVault: 24_000_000,
   totalCommitment: 0,
   floor: 0.07,
@@ -23,7 +22,6 @@ const data = {
 
 const payload = {
   reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount)),
-  provision: ethers.BigNumber.from(helper.ether(data.provision)),
   inVault: ethers.BigNumber.from(helper.ether(data.inVault)),
   totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment)),
   floor: ethers.BigNumber.from(helper.percentage(7)),

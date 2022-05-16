@@ -49,11 +49,9 @@ interface IPolicy is IMember {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NPM provision
-   * @param _values[3] NPM price
-   * @param _values[4] The total amount of reassurance tokens
-   * @param _values[5] Reassurance token price
-   * @param _values[6] Reassurance pool weight
+   * @param _values[2] The total amount of reassurance tokens
+   * @param _values[3] Reassurance token price
+   * @param _values[4] Reassurance pool weight
    */
   function getCoverPoolSummary(bytes32 coverKey) external view returns (uint256[] memory _values);
 

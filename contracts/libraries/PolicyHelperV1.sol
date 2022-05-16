@@ -76,16 +76,12 @@ library PolicyHelperV1 {
     stablecoinOwnedByVault = values[0];
     commitment = values[1];
 
-    uint256 npmProvisionTokens = values[2];
-    uint256 npmPrice = values[3];
-    uint256 reassuranceTokens = values[4];
-    uint256 reassuranceTokenPrice = values[5];
-    uint256 incidentPoolCapRatio = values[6];
+    uint256 reassuranceTokens = values[2];
+    uint256 reassuranceTokenPrice = values[3];
+    uint256 reassurancePoolWeight = values[4];
 
     uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
-    uint256 provision = (npmProvisionTokens * npmPrice) / 1 ether;
-
-    supportPool = (((reassurance + provision) * incidentPoolCapRatio) / ProtoUtilV1.MULTIPLIER);
+    supportPool = (reassurance * reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
   }
 
   function getPolicyFeeInternal(

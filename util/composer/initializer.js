@@ -253,16 +253,6 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER, cover.address)
 
-  const provisionContract = await deployer.deployWithLibraries(cache, 'CoverProvision', {
-    AccessControlLibV1: libs.accessControlLibV1.address,
-    BaseLibV1: libs.baseLibV1.address,
-    CoverLibV1: libs.coverLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
-  }, store.address)
-
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.NS.COVER_PROVISION, provisionContract.address)
-
   const policyAdminContract = await deployer.deployWithLibraries(cache, 'PolicyAdmin', {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
@@ -395,7 +385,6 @@ const initialize = async (suite, deploymentId) => {
     protocol,
     stakingContract,
     reassuranceContract,
-    provisionContract,
     vaultFactory,
     cxTokenFactory,
     cover,
