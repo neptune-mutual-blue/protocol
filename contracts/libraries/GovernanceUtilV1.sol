@@ -187,8 +187,7 @@ library GovernanceUtilV1 {
     bytes32 coverKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKE_TS, coverKey, incidentDate, account));
-    k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKEN, coverKey, incidentDate, account));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_UNSTAKEN, coverKey, incidentDate, account));
     return s.getUintByKey(k);
   }
 
