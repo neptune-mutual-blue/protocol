@@ -66,12 +66,4 @@ describe('Recoverable: Token', () => {
     const balance = await fakeToken.balanceOf(receiver)
     balance.should.equal(helper.ether('0'))
   })
-
-  it('must recover tokens sent to the contract', async () => {
-    const receiver = helper.randomAddress()
-
-    await rogueToken.transfer(recoverable.address, helper.ether(4000))
-    await recoverable.recoverToken(rogueToken.address, receiver)
-      .should.be.rejectedWith('Transfer failed')
-  })
 })

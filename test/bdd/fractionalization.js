@@ -100,7 +100,7 @@ describe('Fractionalization of Reserves', () => {
   it('commitments expire over time', async () => {
     const amount = 250_000
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 9; i++) {
       const args = [coverKey, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
       const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
       const fee = info.fee
