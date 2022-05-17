@@ -134,7 +134,7 @@ library PolicyHelperV1 {
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(s, coverKey, expiryDate);
+    cxToken = factory.deploy(coverKey, expiryDate);
 
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts

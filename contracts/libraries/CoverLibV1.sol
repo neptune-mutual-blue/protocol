@@ -156,7 +156,7 @@ library CoverLibV1 {
     s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
 
     // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(s, coverKey);
+    address deployed = s.getVaultFactoryContract().deploy(coverKey);
 
     s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
     return deployed;
