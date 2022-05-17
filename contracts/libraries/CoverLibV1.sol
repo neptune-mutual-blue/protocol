@@ -128,6 +128,15 @@ library CoverLibV1 {
     uint256[] memory values,
     uint256 fee
   ) private {
+    require(coverKey > 0, "Invalid cover key");
+    require(info > 0, "Invalid info");
+    require(values[2] > 0, "Invalid min reporting stake");
+    require(values[3] > 0, "Invalid reporting period");
+    require(values[4] > 0, "Invalid cooldown period");
+    require(values[5] > 0, "Invalid claim period");
+    require(values[6] > 0, "Invalid floor rate");
+    require(values[7] > 0, "Invalid ceiling rate");
+
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
     s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
