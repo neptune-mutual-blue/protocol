@@ -49,7 +49,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
-      require(erc20.transfer(sendTo, balance), "Transfer failed");
+      erc20.transfer(sendTo, balance);
     }
   }
 

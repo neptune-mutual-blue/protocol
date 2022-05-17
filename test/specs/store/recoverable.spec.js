@@ -69,14 +69,4 @@ describe('Store: Recover ERC-20 Tokens', () => {
     await store.recoverToken(fakeToken.address, receiver)
       .should.not.rejected// although the contract has zero balance
   })
-
-  it('must revert if the token does not conform to the ERC-20 standard', async () => {
-    const receiver = helper.randomAddress()
-    const poorMansERC20 = await deployer.deploy(cache, 'PoorMansERC20', 'POOR', 'POOR', helper.ether(100_000))
-
-    await poorMansERC20.transfer(store.address, helper.ether(12345))
-
-    await store.recoverToken(poorMansERC20.address, receiver)
-      .should.be.rejectedWith('Transfer failed')
-  })
 })
