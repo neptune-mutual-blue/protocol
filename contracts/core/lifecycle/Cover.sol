@@ -151,7 +151,6 @@ contract Cover is CoverBase {
     bool[] memory statuses
   ) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.updateCoverUsersWhitelistInternal(coverKey, accounts, statuses);
