@@ -4,8 +4,8 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICoverStake is IMember {
-  event StakeAdded(bytes32 indexed coverKey, uint256 amount);
-  event StakeRemoved(bytes32 indexed coverKey, uint256 amount);
+  event StakeAdded(bytes32 indexed coverKey, address indexed account, uint256 amount);
+  event StakeRemoved(bytes32 indexed coverKey, address indexed account, uint256 amount);
   event FeeBurned(bytes32 indexed coverKey, uint256 amount);
 
   /**
@@ -25,14 +25,9 @@ interface ICoverStake is IMember {
   /**
    * @dev Decreases the stake from the given cover pool
    * @param coverKey Enter the cover key
-   * @param account Enter the account to decrease the stake of
    * @param amount Enter the amount of stake to decrease
    */
-  function decreaseStake(
-    bytes32 coverKey,
-    address account,
-    uint256 amount
-  ) external;
+  function decreaseStake(bytes32 coverKey, uint256 amount) external;
 
   /**
    * @dev Gets the stake of an account for the given cover key
