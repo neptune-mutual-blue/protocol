@@ -384,7 +384,8 @@ const deployDependencies = async () => {
     governance,
     resolution,
     vault,
-    liquidityEngine
+    liquidityEngine,
+    minReportingStake
   }
 }
 

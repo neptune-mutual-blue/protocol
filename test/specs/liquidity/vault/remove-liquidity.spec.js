@@ -32,7 +32,20 @@ describe('Vault: removeLiquidity', () => {
     await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
   })
 
+  it('reverts when tried to exit without removing total NPM stake', async () => {
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+    await deployed.vault.accrueInterest()
+
+    const pods = helper.ether(2000)
+    await deployed.vault.approve(deployed.vault.address, pods)
+
+    await deployed.vault.removeLiquidity(coverKey, pods, npmStake, true)
+      .should.be.rejectedWith('Invalid NPM stake to exit')
+  })
+
   it('successfully removes liquidity', async () => {
+    const totalNPMStake = helper.add(npmStake, deployed.minReportingStake)
+
     await network.provider.send('evm_increaseTime', [1 * HOURS])
     await deployed.vault.accrueInterest()
 
@@ -40,7 +53,7 @@ describe('Vault: removeLiquidity', () => {
     const pods = helper.ether(2000)
     await deployed.vault.approve(deployed.vault.address, pods)
 
-    const tx = await deployed.vault.removeLiquidity(coverKey, pods, npmStake, true)
+    const tx = await deployed.vault.removeLiquidity(coverKey, pods, totalNPMStake, true)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PodsRedeemed')

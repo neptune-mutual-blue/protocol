@@ -205,9 +205,13 @@ library VaultLibV1 {
     bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
-    uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
+    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidity();
 
-    require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    if (exit) {
+      require(remainingStake == amount, "Invalid NPM stake to exit");
+    } else {
+      require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    }
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
