@@ -68,6 +68,7 @@ library ProtoUtilV1 {
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "ns:cover";
 
+  bytes32 public constant NS_COVER_CREATION_DATE = "ns:cover:creation:date";
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";

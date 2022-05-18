@@ -17,6 +17,8 @@ const write = async (contents, nodeUrls = fallbackNodes) => {
     return undefined
   }
 
+  console.info(`https://ipfs.neptunedefi.com/ipfs/${hash}`)
+
   return toBytes32(hash)
 }
 

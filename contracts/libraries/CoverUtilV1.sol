@@ -61,6 +61,10 @@ library CoverUtilV1 {
     return value;
   }
 
+  function getCoverCreationDate(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
+  }
+
   function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
     uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
 

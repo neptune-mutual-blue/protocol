@@ -68,38 +68,34 @@ contract CoverStake is ICoverStake, Recoverable {
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount - fee);
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount - fee);
 
-    emit StakeAdded(coverKey, amount - fee);
+    emit StakeAdded(coverKey, account, amount - fee);
   }
 
   /**
-   * @dev Decreases the stake from the given cover pool
+   * @dev Decreases the stake from the given cover pool.
+   * A cover creator can withdraw their full stake after 365 days
    * @param coverKey Enter the cover key
-   * @param account Enter the account to decrease the stake of
    * @param amount Enter the amount of stake to decrease
    */
-  function decreaseStake(
-    bytes32 coverKey,
-    address account,
-    uint256 amount
-  ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
+  function decreaseStake(bytes32 coverKey, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this function as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
-    s.senderMustBeCoverContract();
+    s.mustHaveNormalCoverStatus(coverKey);
 
-    uint256 drawingPower = _getDrawingPower(coverKey, account);
+    uint256 drawingPower = _getDrawingPower(coverKey, msg.sender);
     require(amount > 0, "Please specify amount");
     require(drawingPower >= amount, "Exceeds your drawing power");
 
     // @suppress-subtraction
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, msg.sender, amount);
 
-    s.npmToken().ensureTransfer(account, amount);
+    s.npmToken().ensureTransfer(msg.sender, amount);
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit StakeRemoved(coverKey, amount);
+    emit StakeRemoved(coverKey, msg.sender, amount);
   }
 
   /**
@@ -120,12 +116,13 @@ contract CoverStake is ICoverStake, Recoverable {
    * @return Returns the drawing power of the specified account on the given cover key
    */
   function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
+    uint256 createdAt = s.getCoverCreationDate(coverKey);
     uint256 yourStake = stakeOf(coverKey, account);
     bool isOwner = account == s.getCoverOwner(coverKey);
 
-    uint256 minStake = s.getMinCoverCreationStake();
+    uint256 minStakeRequired = block.timestamp > createdAt + 365 days ? 0 : s.getMinCoverCreationStake(); // solhint-disable-line
 
-    return isOwner ? yourStake - minStake : yourStake;
+    return isOwner ? yourStake - minStakeRequired : yourStake;
   }
 
   /**
