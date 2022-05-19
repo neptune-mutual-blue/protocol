@@ -172,10 +172,10 @@ library RoutineInvokerLibV1 {
     uint256 totalStrategies,
     bytes32 coverKey
   ) private view returns (uint256) {
-    address vault = s.getVaultAddress(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 totalBalance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 maximumAllowed = (totalBalance * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
@@ -222,9 +222,10 @@ library RoutineInvokerLibV1 {
 
     if (action == Action.Withdraw) {
       _withdrawAllFromStrategy(strategy, vault, coverKey);
-    } else {
-      _depositToStrategy(strategy, coverKey, canDeposit);
+      return;
     }
+
+    _depositToStrategy(strategy, coverKey, canDeposit);
   }
 
   function _depositToStrategy(

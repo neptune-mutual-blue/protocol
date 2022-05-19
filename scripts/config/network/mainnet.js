@@ -15,7 +15,7 @@ const config = {
       withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
       cooldownPeriod: 1 * DAYS,
-      stateUpdateInterval: 12 * HOURS
+      stateUpdateInterval: 1 * HOURS
     },
     knownAccounts: {
       admins: null
