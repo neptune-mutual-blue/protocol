@@ -64,21 +64,22 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {
-    const args = [coverKey, 2, helper.ether(2_500_000)]
-    const { fee } = await contracts.policy.getCoverFeeInfo(...args)
+    const [owner] = await ethers.getSigners()
 
-   ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.equal(helper.zerox)
+    const args = [owner.address, coverKey, 2, helper.ether(2_500_000)]
+    const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])
+
+   ;(await contracts.policy.getCxToken(args[1], args[2]))[0].should.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
     await contracts.policy.purchaseCover(...args, key.toBytes32(''))
 
-    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])
+    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[1], args[2])
     const cxToken = await composer.token.at(cxTokenAddress)
 
-    const [owner] = await ethers.getSigners()
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(args[2].toString())
+    cxDaiBalance.toString().should.equal(args[3].toString())
   })
 
   it('fee should be ~91.75 DAI when purchasing 10K DAI cover for 1 month', async () => {
@@ -110,18 +111,19 @@ describe('Policy Purchase Stories', () => {
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
-    const args = [coverKey, 2, helper.ether(500_000)]
-    const { fee } = await contracts.policy.getCoverFeeInfo(...args)
+    const [owner] = await ethers.getSigners()
 
-   ;(await contracts.policy.getCxToken(args[0], args[1]))[0].should.not.equal(helper.zerox)
+    const args = [owner.address, coverKey, 2, helper.ether(500_000)]
+    const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])
+
+   ;(await contracts.policy.getCxToken(args[1], args[2]))[0].should.not.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
     await contracts.policy.purchaseCover(...args, key.toBytes32(''))
 
-    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[0], args[1])
+    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[1], args[2])
     const cxToken = await composer.token.at(cxTokenAddress)
 
-    const [owner] = await ethers.getSigners()
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
 
     cxDaiBalance.toString().should.equal(helper.ether(3_000_000))

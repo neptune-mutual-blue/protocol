@@ -54,7 +54,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
-    validate(cxToken, coverKey, incidentDate);
+    validate(cxToken, coverKey, incidentDate, amount);
     require(amount > 0, "Enter an amount");
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
@@ -102,10 +102,12 @@ contract Processor is IClaimsProcessor, Recoverable {
   function validate(
     address cxToken,
     bytes32 coverKey,
-    uint256 incidentDate
+    uint256 incidentDate,
+    uint256 amount
   ) public view override returns (bool) {
     s.mustNotBePaused();
-    s.mustBeValidClaim(coverKey, cxToken, incidentDate);
+    s.mustBeValidClaim(msg.sender, coverKey, cxToken, incidentDate, amount);
+    require(isBlacklisted(coverKey, incidentDate, msg.sender) == false, "Access denied");
 
     return true;
   }
@@ -119,6 +121,11 @@ contract Processor is IClaimsProcessor, Recoverable {
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
   }
 
+  /**
+   * @dev Set the claim period of a cover by its key.
+   * @param coverKey Enter the coverKey you want to set the claim period for
+   * @param value Enter a claim period you want to set
+   */
   function setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
@@ -138,6 +145,48 @@ contract Processor is IClaimsProcessor, Recoverable {
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
 
     emit ClaimPeriodSet(coverKey, previous, value);
+  }
+
+  /**
+   * @dev Blacklisted accounts are unable to claim their cxTokens.
+   * @param coverKey Enter the cover key
+   * @param incidentDate Enter the incident date of the cover
+   * @param accounts Enter list of accounts you want to blacklist
+   * @param statuses Enter true if you want to blacklist. False if you want to remove from the blacklist.
+   */
+  function setBlacklist(
+    bytes32 coverKey,
+    uint256 incidentDate,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external override {
+    require(accounts.length == statuses.length, "Invalid args");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+      s.setAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), accounts[i], statuses[i]);
+      emit BlacklistSet(coverKey, incidentDate, accounts[i], statuses[i]);
+    }
+  }
+
+  function _getBlacklistKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, incidentDate));
+  }
+
+  /**
+   * @dev Check if an account is blacklisted from claiming their cover.
+   * @param coverKey Enter the cover key
+   * @param incidentDate Enter the incident date of the cover
+   * @param account Enter the accounts you want to check if blacklisted
+   */
+  function isBlacklisted(
+    bytes32 coverKey,
+    uint256 incidentDate,
+    address account
+  ) public view override returns (bool) {
+    return s.getAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), account);
   }
 
   /**

@@ -73,8 +73,10 @@ describe('Policy: getCxTokenByExpiryDate', function () {
   })
 
   it('must return successfully', async () => {
+    const [owner] = await ethers.getSigners()
+
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
 

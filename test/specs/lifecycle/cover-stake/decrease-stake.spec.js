@@ -74,12 +74,12 @@ describe('CoverStake: decreaseStake', () => {
   })
 
   it('correctly decreases the stake', async () => {
-    const [owner, alice] = await ethers.getSigners()
+    const [alice] = await ethers.getSigners()
     const amount = helper.ether(10)
 
     await deployed.npm.transfer(alice.address, amount)
     await deployed.npm.approve(deployed.stakingContract.address, amount)
-    const tx = await deployed.stakingContract.connect(alice).decreaseStake(coverKey, owner.address, amount)
+    const tx = await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'StakeRemoved')
 
@@ -88,22 +88,22 @@ describe('CoverStake: decreaseStake', () => {
   })
 
   it('reverts when amount is greater than your staked amount', async () => {
-    const [owner, alice] = await ethers.getSigners()
+    const [alice] = await ethers.getSigners()
     const amount = helper.ether(10000)
 
     await deployed.npm.transfer(alice.address, amount)
     await deployed.npm.approve(deployed.stakingContract.address, amount)
-    await deployed.stakingContract.connect(alice).decreaseStake(coverKey, owner.address, amount)
+    await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
       .should.be.rejectedWith('Exceeds your drawing power')
   })
 
   it('reverts when invalid value is passed as amount', async () => {
-    const [owner, alice] = await ethers.getSigners()
+    const [alice] = await ethers.getSigners()
     const amount = helper.ether(0)
 
     await deployed.npm.transfer(alice.address, amount)
     await deployed.npm.approve(deployed.stakingContract.address, amount)
-    await deployed.stakingContract.connect(alice).decreaseStake(coverKey, owner.address, amount)
+    await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
       .should.be.rejectedWith('Please specify amount')
   })
 })

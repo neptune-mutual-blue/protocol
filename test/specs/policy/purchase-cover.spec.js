@@ -72,9 +72,11 @@ describe('Policy: purchaseCover', () => {
   })
 
   it('must succeed without any errors', async () => {
+    const [owner] = await ethers.getSigners()
+
     const amount = helper.ether(500_000)
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
 
     const commitment = await deployed.policy.getCommitment(coverKey)
     commitment.should.equal(amount)
@@ -84,39 +86,47 @@ describe('Policy: purchaseCover', () => {
   })
 
   it('must revert if zero is sent as the amount to cover', async () => {
+    const [owner] = await ethers.getSigners()
+
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(coverKey, '1', '0', key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', '0', key.toBytes32(''))
       .should.be.rejectedWith('Please specify amount')
   })
 
   it('must revert if invalid value is sent as the cover duration', async () => {
+    const [owner] = await ethers.getSigners()
+
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(coverKey, '0', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '0', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
 
-    await deployed.policy.purchaseCover(coverKey, '5', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '5', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
   })
 
   it('must revert if the protocol is paused', async () => {
+    const [owner] = await ethers.getSigners()
+
     await deployed.protocol.pause()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
   })
 
   it('must revert if cover is not normal', async () => {
+    const [owner] = await ethers.getSigners()
+
     const info = key.toBytes32('info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
     await deployed.governance.report(coverKey, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Status not normal')
   })
 })
@@ -187,7 +197,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
 
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
 
     const commitment = await deployed.policy.getCommitment(coverKey)
     commitment.should.equal(amount)
@@ -203,7 +213,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.npm.transfer(bob.address, amount)
 
     await deployed.dai.connect(bob).approve(deployed.policy.address, amount)
-    await deployed.policy.connect(bob).purchaseCover(coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, '1', amount, key.toBytes32(''))
       .should.be.rejectedWith('You are not whitelisted')
   })
 })

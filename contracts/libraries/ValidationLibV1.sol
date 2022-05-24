@@ -253,9 +253,11 @@ library ValidationLibV1 {
 
   function mustBeValidClaim(
     IStore s,
+    address account,
     bytes32 coverKey,
     address cxToken,
-    uint256 incidentDate
+    uint256 incidentDate,
+    uint256 amount
   ) external view {
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
@@ -264,6 +266,8 @@ library ValidationLibV1 {
     mustBeClaimable(s, coverKey);
     mustBeValidIncidentDate(s, coverKey, incidentDate);
     mustBeDuringClaimPeriod(s, coverKey);
+
+    require(ICxToken(cxToken).getClaimablePolicyOf(account) >= amount, "Claim exceeds your coverage");
   }
 
   function mustNotHaveUnstaken(
@@ -344,13 +348,17 @@ library ValidationLibV1 {
     require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender), "Not whitelisted");
   }
 
-  function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey) external view {
+  function senderMustBeWhitelistedIfRequired(
+    IStore s,
+    bytes32 coverKey,
+    address sender
+  ) external view {
     bool required = s.checkIfRequiresWhitelist(coverKey);
 
     if (required == false) {
       return;
     }
 
-    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, msg.sender), "You are not whitelisted");
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, sender), "You are not whitelisted");
   }
 }
