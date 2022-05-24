@@ -72,6 +72,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
+  bytes32 public constant NS_COVER_REASSURANCE_CAPITALIZED_INCIDENT = "ns:cover:reassurance:cap:inc";
   bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
   bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
@@ -159,6 +160,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION = "ns:gov:reporter:commission";
 
   bytes32 public constant NS_CLAIM_PERIOD = "ns:claim:period";
+
+  bytes32 public constant NS_CLAIM_PAYOUTS = "ns:claim:payouts";
 
   /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
   bytes32 public constant NS_CLAIM_BEGIN_TS = "ns:claim:begin:ts";

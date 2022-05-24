@@ -21,6 +21,8 @@ library GovernanceUtilV1 {
   using ProtoUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
 
+  uint256 public constant REASSURANCE_RATE = 2500;
+
   function getReportingPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey);
   }
@@ -80,6 +82,14 @@ library GovernanceUtilV1 {
 
   function _getIncidentOccurredStakesKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate));
+  }
+
+  function _getClaimPayoutsKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_PAYOUTS, coverKey, incidentDate));
+  }
+
+  function _getReassuranceCapitalizedKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_CAPITALIZED_INCIDENT, coverKey, incidentDate));
   }
 
   function _getIndividualIncidentOccurredStakeKey(
@@ -351,5 +361,50 @@ library GovernanceUtilV1 {
 
   function getResolutionDeadlineInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey);
+  }
+
+  function addClaimPayoutsInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 incidentDate,
+    uint256 claimed
+  ) external {
+    s.addUintByKey(_getClaimPayoutsKey(coverKey, incidentDate), claimed);
+  }
+
+  function getClaimPayoutsInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 incidentDate
+  ) public view returns (uint256) {
+    return s.getUintByKey(_getClaimPayoutsKey(coverKey, incidentDate));
+  }
+
+  function getReassuranceCapitalizedInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 incidentDate
+  ) public view returns (uint256) {
+    return s.getUintByKey(_getReassuranceCapitalizedKey(coverKey, incidentDate));
+  }
+
+  function addReassuranceCapitalizedInternal(
+    IStore s,
+    bytes32 coverKey,
+    uint256 incidentDate,
+    uint256 capitalized
+  ) external {
+    s.addUintByKey(_getReassuranceCapitalizedKey(coverKey, incidentDate), capitalized);
+  }
+
+  function getReassuranceTransferAmountInternal(IStore s,bytes32 coverKey, uint256 incidentDate) external view returns (uint256) {
+    uint256 alreadyUsed = getReassuranceCapitalizedInternal(s, coverKey, incidentDate);
+    uint256 reassuranceAmount = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey) + alreadyUsed;
+    uint256 totalClaimPayouts = getClaimPayoutsInternal(s, coverKey, incidentDate);
+
+    uint256 amountToConsider = reassuranceAmount > totalClaimPayouts ? totalClaimPayouts : reassuranceAmount;
+    uint256 transferAmount = (amountToConsider * REASSURANCE_RATE) / ProtoUtilV1.MULTIPLIER;
+
+    return transferAmount - alreadyUsed;
   }
 }
