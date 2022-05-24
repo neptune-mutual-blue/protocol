@@ -149,6 +149,12 @@ contract Processor is IClaimsProcessor, Recoverable {
 
   /**
    * @dev Blacklisted accounts are unable to claim their cxTokens.
+   *
+   * Cover managers can use the blacklist feature to prohibit
+   * an account from claiming their cover. This usually happens when
+   * we suspect a policyholder of being the attacker.
+   *
+   * After performing KYC, we may be able to lift the blacklist.
    * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date of the cover
    * @param accounts Enter list of accounts you want to blacklist
