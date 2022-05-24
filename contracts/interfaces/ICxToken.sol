@@ -19,4 +19,8 @@ interface ICxToken is IERC20 {
 
   // slither-disable-next-line naming-convention
   function COVER_KEY() external view returns (bytes32);
+
+  function getCoverageStartsFrom(address account, uint256 date) external view returns (uint256);
+
+  function getClaimablePolicyOf(address account) external view returns (uint256);
 }

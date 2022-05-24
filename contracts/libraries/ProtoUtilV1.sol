@@ -94,6 +94,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE = "ns:cover:liquidity:fl:fee";
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL = "ns:proto:cover:liquidity:fl:fee";
 
+  bytes32 public constant NS_COVERAGE_LAG = "ns:coverage:lag";
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
 
@@ -103,6 +104,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
   bytes32 public constant NS_COVER_CREATOR_WHITELIST = "ns:cover:creator:whitelist";
   bytes32 public constant NS_COVER_USER_WHITELIST = "ns:cover:user:whitelist";
+  bytes32 public constant NS_COVER_CLAIM_BLACKLIST = "ns:cover:claim:blacklist";
 
   /// @dev Resolution timestamp = timestamp of first reporting + reporting period
   bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS = "ns:gov:resolution:ts";

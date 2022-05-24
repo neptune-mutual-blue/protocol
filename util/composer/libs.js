@@ -60,7 +60,7 @@ const deployAll = async (cache) => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const governanceLib = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
+  const governanceUtilV1 = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
     CoverUtilV1: coverUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
@@ -69,7 +69,7 @@ const deployAll = async (cache) => {
   const validationLibV1 = await deployer.deployWithLibraries(cache, 'ValidationLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
-    GovernanceUtilV1: governanceLib.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
@@ -109,6 +109,9 @@ const deployAll = async (cache) => {
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    ProtoUtilV1: protoUtilV1.address,
     ValidationLibV1: validationLibV1.address
   })
 
@@ -143,7 +146,7 @@ const deployAll = async (cache) => {
     transferLib,
     registryLibV1,
     validationLib: validationLibV1,
-    governanceLib,
+    governanceLib: governanceUtilV1,
     vaultFactoryLib,
     vaultLib,
     cxTokenFactoryLib,

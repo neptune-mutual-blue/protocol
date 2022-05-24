@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-const { network } = require('hardhat')
+const { network, ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
@@ -51,14 +51,15 @@ describe('Fractionalization of Reserves', () => {
   })
 
   it('does not allow fractional reserves', async () => {
+    const [owner] = await ethers.getSigners()
     let totalPurchased = 0
     const amount = 2_000_000
-    const args = [coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+    const args = [owner.address, coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
 
     let feeIncome = ethers.BigNumber.from(0)
 
     for (let i = 0; i < 2; i++) {
-      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -77,13 +78,14 @@ describe('Fractionalization of Reserves', () => {
   })
 
   it('allows reuse of liquidity as policies expire', async () => {
+    const [owner] = await ethers.getSigners()
     let totalPurchased = 0
     const amount = 250_000
 
     // Never ending
     for (let i = 0; i < 20; i++) {
-      const args = [coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
-      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
+      const args = [owner.address, coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -98,11 +100,12 @@ describe('Fractionalization of Reserves', () => {
   })
 
   it('commitments expire over time', async () => {
+    const [owner] = await ethers.getSigners()
     const amount = 250_000
 
     for (let i = 0; i < 9; i++) {
-      const args = [coverKey, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
-      const info = (await contracts.policy.getCoverFeeInfo(args[0], args[1], args[2]))
+      const args = [owner.address, coverKey, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
       const fee = info.fee
 
       if (i < 4) {

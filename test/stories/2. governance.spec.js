@@ -106,26 +106,28 @@ describe('Governance Stories', function () {
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
     // Purchase a cover
-    let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
-    let fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
+    let args = [kimberly.address, coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
+    let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
 
-      ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
+      ; (await contracts.policy.getCxToken(args[1], args[2])).cxToken.should.equal(helper.zerox)
 
     await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(...args, key.toBytes32(''))
 
-    let at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    let at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
     constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
 
     // Purchase a cover
-    args = [coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
-    fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
+    args = [lewis.address, coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
+    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
 
     await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
     constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)
+
+    await network.provider.send('evm_increaseTime', [2 * constants.DAYS])
   })
 
   it('can not claim until an incident occurs', async () => {

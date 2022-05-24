@@ -148,12 +148,14 @@ library PolicyHelperV1 {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   * @param onBehalfOf Enter the address where the claim tokens (cxTokens) should be sent.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCoverInternal(
     IStore s,
+    address onBehalfOf,
     bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
@@ -166,8 +168,24 @@ library PolicyHelperV1 {
 
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(coverKey)), fee);
-    cxToken.mint(coverKey, msg.sender, amountToCover);
+    cxToken.mint(coverKey, onBehalfOf, amountToCover);
 
     s.updateStateAndLiquidity(coverKey);
+  }
+
+  function getCoverageLagInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
+    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
+
+    if (custom > 0) {
+      return custom;
+    }
+
+    if (global > 0) {
+      return global;
+    }
+
+    // fallback
+    return 1 days;
   }
 }

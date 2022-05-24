@@ -97,11 +97,12 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
   })
 
   it('must not return zero when active incident is greater than zero and policies purchased', async () => {
+    const [owner] = await ethers.getSigners()
     const coverageAmount = helper.ether(500_000)
 
     // Purchase policy so that cxToken is created
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', coverageAmount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', coverageAmount, key.toBytes32(''))
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const expiryDate = await deployed.policy.getExpiryDate(block.timestamp, '1')
     const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
