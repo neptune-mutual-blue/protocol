@@ -172,6 +172,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
     s.mustNotBePaused();
+    s.mustMaintainBlockHeightOffset(coverKey);
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
