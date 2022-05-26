@@ -18,30 +18,30 @@ This contract enables any NPM tokenholder to
 
 ## Functions
 
-- [report(bytes32 key, bytes32 info, uint256 stake)](#report)
-- [dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [report(bytes32 coverKey, bytes32 info, uint256 stake)](#report)
+- [dispute(bytes32 coverKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
 - [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake()](#getfirstreportingstake)
-- [getFirstReportingStake(bytes32 key)](#getfirstreportingstake)
+- [getFirstReportingStake(bytes32 coverKey)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
-- [getActiveIncidentDate(bytes32 key)](#getactiveincidentdate)
-- [getReporter(bytes32 key, uint256 incidentDate)](#getreporter)
-- [getResolutionTimestamp(bytes32 key)](#getresolutiontimestamp)
-- [getAttestation(bytes32 key, address who, uint256 incidentDate)](#getattestation)
-- [getDispute(bytes32 key, address who, uint256 incidentDate)](#getdispute)
+- [getActiveIncidentDate(bytes32 coverKey)](#getactiveincidentdate)
+- [getReporter(bytes32 coverKey, uint256 incidentDate)](#getreporter)
+- [getResolutionTimestamp(bytes32 coverKey)](#getresolutiontimestamp)
+- [getAttestation(bytes32 coverKey, address who, uint256 incidentDate)](#getattestation)
+- [getDispute(bytes32 coverKey, address who, uint256 incidentDate)](#getdispute)
 
 ### report
 
 ```solidity
-function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function report(bytes32 coverKey, bytes32 info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | info | bytes32 |  | 
 | stake | uint256 |  | 
 
@@ -50,33 +50,33 @@ function report(bytes32 key, bytes32 info, uint256 stake) external nonpayable no
 
 ```javascript
 function report(
-    bytes32 key,
+    bytes32 coverKey,
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
+    s.mustHaveNormalCoverStatus(coverKey);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(coverKey), "Stake insufficient");
 
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, incidentDate);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, incidentDate);
 
     // Set the Resolution Timestamp
-    uint256 resolutionDate = block.timestamp + s.getReportingPeriodInternal(key); // solhint-disable-line
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, key, resolutionDate);
+    uint256 resolutionDate = block.timestamp + s.getReportingPeriodInternal(coverKey); // solhint-disable-line
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, resolutionDate);
 
     // Update the values
-    s.addAttestationInternal(key, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(coverKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Reported(key, msg.sender, incidentDate, info, stake, resolutionDate);
-    emit Attested(key, msg.sender, incidentDate, stake);
+    emit Reported(coverKey, msg.sender, incidentDate, info, stake, resolutionDate);
+    emit Attested(coverKey, msg.sender, incidentDate, stake);
   }
 ```
 </details>
@@ -84,14 +84,14 @@ function report(
 ### dispute
 
 ```solidity
-function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function dispute(bytes32 coverKey, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | info | bytes32 |  | 
 | stake | uint256 |  | 
@@ -101,7 +101,7 @@ function dispute(bytes32 key, uint256 incidentDate, bytes32 info, uint256 stake)
 
 ```javascript
 function dispute(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     bytes32 info,
     uint256 stake
@@ -109,21 +109,21 @@ function dispute(
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustNotHaveDispute(key);
-    s.mustBeReporting(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeDuringReportingPeriod(key);
+    s.mustNotHaveDispute(coverKey);
+    s.mustBeReporting(coverKey);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey);
 
     require(stake > 0, "Stake insufficient");
-    require(stake >= s.getMinReportingStakeInternal(key), "Stake insufficient");
+    require(stake >= s.getMinReportingStakeInternal(coverKey), "Stake insufficient");
 
-    s.addDisputeInternal(key, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(coverKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Disputed(key, msg.sender, incidentDate, info, stake);
-    emit Refuted(key, msg.sender, incidentDate, stake);
+    emit Disputed(coverKey, msg.sender, incidentDate, info, stake);
+    emit Refuted(coverKey, msg.sender, incidentDate, stake);
   }
 ```
 </details>
@@ -182,7 +182,7 @@ function getFirstReportingStake() external view override returns (uint256) {
 ### getFirstReportingStake
 
 ```solidity
-function getFirstReportingStake(bytes32 key) external view
+function getFirstReportingStake(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -190,14 +190,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getFirstReportingStake(bytes32 key) external view override returns (uint256) {
-    return s.getMinReportingStakeInternal(key);
+function getFirstReportingStake(bytes32 coverKey) external view override returns (uint256) {
+    return s.getMinReportingStakeInternal(coverKey);
   }
 ```
 </details>
@@ -264,7 +264,7 @@ function setReporterCommission(uint256 value) external override nonReentrant {
 ### getActiveIncidentDate
 
 ```solidity
-function getActiveIncidentDate(bytes32 key) external view
+function getActiveIncidentDate(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -272,14 +272,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveIncidentDate(bytes32 key) external view override returns (uint256) {
-    return s.getActiveIncidentDateInternal(key);
+function getActiveIncidentDate(bytes32 coverKey) external view override returns (uint256) {
+    return s.getActiveIncidentDateInternal(coverKey);
   }
 ```
 </details>
@@ -287,7 +287,7 @@ function getActiveIncidentDate(bytes32 key) external view override returns (uint
 ### getReporter
 
 ```solidity
-function getReporter(bytes32 key, uint256 incidentDate) external view
+function getReporter(bytes32 coverKey, uint256 incidentDate) external view
 returns(address)
 ```
 
@@ -295,15 +295,15 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getReporter(bytes32 key, uint256 incidentDate) external view override returns (address) {
-    return s.getReporterInternal(key, incidentDate);
+function getReporter(bytes32 coverKey, uint256 incidentDate) external view override returns (address) {
+    return s.getReporterInternal(coverKey, incidentDate);
   }
 ```
 </details>
@@ -311,7 +311,7 @@ function getReporter(bytes32 key, uint256 incidentDate) external view override r
 ### getResolutionTimestamp
 
 ```solidity
-function getResolutionTimestamp(bytes32 key) external view
+function getResolutionTimestamp(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -319,14 +319,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionTimestamp(bytes32 key) external view override returns (uint256) {
-    return s.getResolutionTimestampInternal(key);
+function getResolutionTimestamp(bytes32 coverKey) external view override returns (uint256) {
+    return s.getResolutionTimestampInternal(coverKey);
   }
 ```
 </details>
@@ -334,7 +334,7 @@ function getResolutionTimestamp(bytes32 key) external view override returns (uin
 ### getAttestation
 
 ```solidity
-function getAttestation(bytes32 key, address who, uint256 incidentDate) external view
+function getAttestation(bytes32 coverKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
 
@@ -342,7 +342,7 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | who | address |  | 
 | incidentDate | uint256 |  | 
 
@@ -351,11 +351,11 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getAttestation(
-    bytes32 key,
+    bytes32 coverKey,
     address who,
     uint256 incidentDate
   ) external view override returns (uint256 myStake, uint256 totalStake) {
-    return s.getAttestationInternal(key, who, incidentDate);
+    return s.getAttestationInternal(coverKey, who, incidentDate);
   }
 ```
 </details>
@@ -363,7 +363,7 @@ function getAttestation(
 ### getDispute
 
 ```solidity
-function getDispute(bytes32 key, address who, uint256 incidentDate) external view
+function getDispute(bytes32 coverKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
 
@@ -371,7 +371,7 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | who | address |  | 
 | incidentDate | uint256 |  | 
 
@@ -380,11 +380,11 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getDispute(
-    bytes32 key,
+    bytes32 coverKey,
     address who,
     uint256 incidentDate
   ) external view override returns (uint256 myStake, uint256 totalStake) {
-    return s.getDisputeInternal(key, who, incidentDate);
+    return s.getDisputeInternal(coverKey, who, incidentDate);
   }
 ```
 </details>
@@ -406,7 +406,6 @@ function getDispute(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -438,7 +437,6 @@ function getDispute(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -466,6 +464,7 @@ function getDispute(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -476,6 +475,8 @@ function getDispute(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -485,8 +486,12 @@ function getDispute(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

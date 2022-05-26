@@ -40,9 +40,10 @@ describe('CoverReassurance: getReassurance', () => {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
 
     const info = key.toBytes32('info')
 
@@ -62,7 +63,7 @@ describe('CoverReassurance: getReassurance', () => {
         transferLib: deployed.transferLib,
         protoUtilV1: deployed.protoUtilV1,
         registryLibV1: deployed.registryLibV1,
-        validationLib: deployed.validationLibV1
+        validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
 
@@ -77,9 +78,11 @@ describe('CoverReassurance: getReassurance', () => {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
         CoverUtilV1: deployed.coverUtilV1.address,
+        GovernanceUtilV1: deployed.governanceUtilV1.address,
+        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
         NTransferUtilV2: deployed.transferLib.address,
         ProtoUtilV1: deployed.protoUtilV1.address,
-        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address
       },

@@ -1,93 +1,226 @@
-# ICoverProvision.sol
+# MockAccessControlUser.sol
 
-View Source: [contracts/interfaces/ICoverProvision.sol](../contracts/interfaces/ICoverProvision.sol)
+View Source: [contracts/mock/lib-user/MockAccessControlUser.sol](../contracts/mock/lib-user/MockAccessControlUser.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [CoverProvision](CoverProvision.md)**
+**MockAccessControlUser**
 
-**ICoverProvision**
-
-**Events**
+## Contract Members
+**Constants & Variables**
 
 ```js
-event ProvisionIncreased(bytes32  key, uint256  previous, uint256  current);
-event ProvisionDecreased(bytes32  key, uint256  previous, uint256  current);
+contract IStore public s;
+
 ```
 
 ## Functions
 
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
+- [constructor(IStore store)](#)
+- [callerMustBeAdmin(address caller)](#callermustbeadmin)
+- [callerMustBeCoverManager(address caller)](#callermustbecovermanager)
+- [callerMustBeGovernanceAgent(address caller)](#callermustbegovernanceagent)
+- [callerMustBeGovernanceAdmin(address caller)](#callermustbegovernanceadmin)
+- [callerMustBeRecoveryAgent(address caller)](#callermustberecoveryagent)
+- [callerMustBePauseAgent(address caller)](#callermustbepauseagent)
+- [callerMustBeUnpauseAgent(address caller)](#callermustbeunpauseagent)
+- [hasAccess(bytes32 role, address user)](#hasaccess)
 
-### increaseProvision
-
-Increases NPM provision for the given cover key.
- This feature is accessible only to the contract owner (governance).
+### 
 
 ```solidity
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable
+function (IStore store) public nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Provide the cover key you wish to increase the provision of | 
-| amount | uint256 | Specify the amount of NPM tokens you would like to add | 
+| store | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function increaseProvision(bytes32 key, uint256 amount) external;
+constructor(IStore store) {
+    s = store;
+  }
 ```
 </details>
 
-### decreaseProvision
-
-Decreases NPM provision for the given cover key
- This feature is accessible only to the contract owner (governance).
+### callerMustBeAdmin
 
 ```solidity
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable
+function callerMustBeAdmin(address caller) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Provide the cover key you wish to decrease the provision from | 
-| amount | uint256 | Specify the amount of NPM tokens you would like to decrease | 
+| caller | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function decreaseProvision(bytes32 key, uint256 amount) external;
+function callerMustBeAdmin(address caller) external view {
+    s.callerMustBeAdmin(caller);
+  }
 ```
 </details>
 
-### getProvision
-
-Gets the NPM provision amount for the given cover key
+### callerMustBeCoverManager
 
 ```solidity
-function getProvision(bytes32 key) external view
-returns(uint256)
+function callerMustBeCoverManager(address caller) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key to get the provision | 
+| caller | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getProvision(bytes32 key) external view returns (uint256);
+function callerMustBeCoverManager(address caller) external view {
+    s.callerMustBeCoverManager(caller);
+  }
+```
+</details>
+
+### callerMustBeGovernanceAgent
+
+```solidity
+function callerMustBeGovernanceAgent(address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeGovernanceAgent(address caller) external view {
+    s.callerMustBeGovernanceAgent(caller);
+  }
+```
+</details>
+
+### callerMustBeGovernanceAdmin
+
+```solidity
+function callerMustBeGovernanceAdmin(address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeGovernanceAdmin(address caller) external view {
+    s.callerMustBeGovernanceAdmin(caller);
+  }
+```
+</details>
+
+### callerMustBeRecoveryAgent
+
+```solidity
+function callerMustBeRecoveryAgent(address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeRecoveryAgent(address caller) external view {
+    s.callerMustBeRecoveryAgent(caller);
+  }
+```
+</details>
+
+### callerMustBePauseAgent
+
+```solidity
+function callerMustBePauseAgent(address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBePauseAgent(address caller) external view {
+    s.callerMustBePauseAgent(caller);
+  }
+```
+</details>
+
+### callerMustBeUnpauseAgent
+
+```solidity
+function callerMustBeUnpauseAgent(address caller) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| caller | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function callerMustBeUnpauseAgent(address caller) external view {
+    s.callerMustBeUnpauseAgent(caller);
+  }
+```
+</details>
+
+### hasAccess
+
+```solidity
+function hasAccess(bytes32 role, address user) public view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| role | bytes32 |  | 
+| user | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function hasAccess(bytes32 role, address user) public view returns (bool) {
+    return s.hasAccess(role, user);
+  }
 ```
 </details>
 
@@ -108,7 +241,6 @@ function getProvision(bytes32 key) external view returns (uint256);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -140,7 +272,6 @@ function getProvision(bytes32 key) external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -168,6 +299,7 @@ function getProvision(bytes32 key) external view returns (uint256);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -178,6 +310,8 @@ function getProvision(bytes32 key) external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -187,8 +321,12 @@ function getProvision(bytes32 key) external view returns (uint256);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

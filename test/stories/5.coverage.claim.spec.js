@@ -55,6 +55,7 @@ describe('Coverage Claim Stories', function () {
     const claimPeriod = 7 * constants.DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     if ((new Date()).getDate() > 22) {
       await network.provider.send('evm_increaseTime', [10 * constants.DAYS])
@@ -67,7 +68,7 @@ describe('Coverage Claim Stories', function () {
 
     // Create a new cover
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 

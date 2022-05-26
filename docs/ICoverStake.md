@@ -10,30 +10,30 @@ View Source: [contracts/interfaces/ICoverStake.sol](../contracts/interfaces/ICov
 **Events**
 
 ```js
-event StakeAdded(bytes32  key, uint256  amount);
-event StakeRemoved(bytes32  key, uint256  amount);
-event FeeBurned(bytes32  key, uint256  amount);
+event StakeAdded(bytes32 indexed coverKey, address indexed account, uint256  amount);
+event StakeRemoved(bytes32 indexed coverKey, address indexed account, uint256  amount);
+event FeeBurned(bytes32 indexed coverKey, uint256  amount);
 ```
 
 ## Functions
 
-- [increaseStake(bytes32 key, address account, uint256 amount, uint256 fee)](#increasestake)
-- [decreaseStake(bytes32 key, address account, uint256 amount)](#decreasestake)
-- [stakeOf(bytes32 key, address account)](#stakeof)
+- [increaseStake(bytes32 coverKey, address account, uint256 amount, uint256 fee)](#increasestake)
+- [decreaseStake(bytes32 coverKey, uint256 amount)](#decreasestake)
+- [stakeOf(bytes32 coverKey, address account)](#stakeof)
 
 ### increaseStake
 
 Increase the stake of the given cover pool
 
 ```solidity
-function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable
+function increaseStake(bytes32 coverKey, address account, uint256 amount, uint256 fee) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address | Enter the account from where the NPM tokens will be transferred | 
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
@@ -43,7 +43,7 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 
 ```javascript
 function increaseStake(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount,
     uint256 fee
@@ -56,26 +56,21 @@ function increaseStake(
 Decreases the stake from the given cover pool
 
 ```solidity
-function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable
+function decreaseStake(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-| account | address | Enter the account to decrease the stake of | 
+| coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of stake to decrease | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function decreaseStake(
-    bytes32 key,
-    address account,
-    uint256 amount
-  ) external;
+function decreaseStake(bytes32 coverKey, uint256 amount) external;
 ```
 </details>
 
@@ -84,7 +79,7 @@ function decreaseStake(
 Gets the stake of an account for the given cover key
 
 ```solidity
-function stakeOf(bytes32 key, address account) external view
+function stakeOf(bytes32 coverKey, address account) external view
 returns(uint256)
 ```
 
@@ -92,7 +87,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account to obtain the stake of | 
 
 **Returns**
@@ -103,7 +98,7 @@ Returns the total stake of the specified account on the given cover key
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stakeOf(bytes32 key, address account) external view returns (uint256);
+function stakeOf(bytes32 coverKey, address account) external view returns (uint256);
 ```
 </details>
 
@@ -124,7 +119,6 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -156,7 +150,6 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -184,6 +177,7 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -194,6 +188,8 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -203,8 +199,12 @@ function stakeOf(bytes32 key, address account) external view returns (uint256);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

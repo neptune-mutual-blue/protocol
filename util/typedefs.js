@@ -9,8 +9,8 @@
  * @property {Object} coverUtilV1 - Cover utility library
  * @property {Object} transferLib - Transfer helper library
  * @property {Object} registryLibV1 - Registry helper library
- * @property {Object} validationLib - Validation helper library
- * @property {Object} governanceLib - Governance utility library
+ * @property {Object} validationLibV1 - Validation helper library
+ * @property {Object} governanceUtilV1 - Governance utility library
  * @property {Object} vaultFactoryLib - Vault factory library
  * @property {Object} vaultLib - Vault library
  * @property {Object} cxTokenFactoryLib - cxToken factory library

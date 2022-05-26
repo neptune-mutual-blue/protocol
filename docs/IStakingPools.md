@@ -29,27 +29,27 @@ event RewardsWithdrawn(bytes32 indexed key, address indexed account, address ind
 
 ## Functions
 
-- [addOrEditPool(bytes32 key, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values)](#addoreditpool)
-- [closePool(bytes32 key)](#closepool)
-- [deposit(bytes32 key, uint256 amount)](#deposit)
-- [withdraw(bytes32 key, uint256 amount)](#withdraw)
-- [withdrawRewards(bytes32 key)](#withdrawrewards)
-- [calculateRewards(bytes32 key, address account)](#calculaterewards)
-- [getInfo(bytes32 key, address you)](#getinfo)
+- [addOrEditPool(bytes32 coverKey, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values)](#addoreditpool)
+- [closePool(bytes32 coverKey)](#closepool)
+- [deposit(bytes32 coverKey, uint256 amount)](#deposit)
+- [withdraw(bytes32 coverKey, uint256 amount)](#withdraw)
+- [withdrawRewards(bytes32 coverKey)](#withdrawrewards)
+- [calculateRewards(bytes32 coverKey, address account)](#calculaterewards)
+- [getInfo(bytes32 coverKey, address you)](#getinfo)
 
 ### addOrEditPool
 
 Adds or edits the pool by key
 
 ```solidity
-function addOrEditPool(bytes32 key, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values) external nonpayable
+function addOrEditPool(bytes32 coverKey, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
+| coverKey | bytes32 | Enter the key of the pool you want to create or edit | 
 | name | string | Enter a name for this pool | 
 | poolType | enum IStakingPools.StakingPoolType | Specify the pool type: TokenStaking or PODStaking | 
 | addresses | address[] | [0] stakingToken The token which is staked in this pool | 
@@ -60,7 +60,7 @@ function addOrEditPool(bytes32 key, string name, enum IStakingPools.StakingPoolT
 
 ```javascript
 function addOrEditPool(
-    bytes32 key,
+    bytes32 coverKey,
     string memory name,
     StakingPoolType poolType,
     address[] memory addresses,
@@ -72,89 +72,89 @@ function addOrEditPool(
 ### closePool
 
 ```solidity
-function closePool(bytes32 key) external nonpayable
+function closePool(bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function closePool(bytes32 key) external;
+function closePool(bytes32 coverKey) external;
 ```
 </details>
 
 ### deposit
 
 ```solidity
-function deposit(bytes32 key, uint256 amount) external nonpayable
+function deposit(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(bytes32 key, uint256 amount) external;
+function deposit(bytes32 coverKey, uint256 amount) external;
 ```
 </details>
 
 ### withdraw
 
 ```solidity
-function withdraw(bytes32 key, uint256 amount) external nonpayable
+function withdraw(bytes32 coverKey, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdraw(bytes32 key, uint256 amount) external;
+function withdraw(bytes32 coverKey, uint256 amount) external;
 ```
 </details>
 
 ### withdrawRewards
 
 ```solidity
-function withdrawRewards(bytes32 key) external nonpayable
+function withdrawRewards(bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdrawRewards(bytes32 key) external;
+function withdrawRewards(bytes32 coverKey) external;
 ```
 </details>
 
 ### calculateRewards
 
 ```solidity
-function calculateRewards(bytes32 key, address account) external view
+function calculateRewards(bytes32 coverKey, address account) external view
 returns(uint256)
 ```
 
@@ -162,14 +162,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculateRewards(bytes32 key, address account) external view returns (uint256);
+function calculateRewards(bytes32 coverKey, address account) external view returns (uint256);
 ```
 </details>
 
@@ -178,7 +178,7 @@ function calculateRewards(bytes32 key, address account) external view returns (u
 Gets the info of a given staking pool by key
 
 ```solidity
-function getInfo(bytes32 key, address you) external view
+function getInfo(bytes32 coverKey, address you) external view
 returns(name string, addresses address[], values uint256[])
 ```
 
@@ -186,14 +186,14 @@ returns(name string, addresses address[], values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Provide the staking pool key to fetch info for | 
+| coverKey | bytes32 | Provide the staking pool key to fetch info for | 
 | you | address | Specify the address to customize the info for | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 key, address you)
+function getInfo(bytes32 coverKey, address you)
     external
     view
     returns (
@@ -221,7 +221,6 @@ function getInfo(bytes32 key, address you)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -253,7 +252,6 @@ function getInfo(bytes32 key, address you)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -281,6 +279,7 @@ function getInfo(bytes32 key, address you)
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -291,6 +290,8 @@ function getInfo(bytes32 key, address you)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -300,8 +301,12 @@ function getInfo(bytes32 key, address you)
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

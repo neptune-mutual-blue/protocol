@@ -12,10 +12,10 @@ const deployDependencies = async () => {
     dependencies: {
       AccessControlLibV1: all.accessControlLibV1.address,
       BaseLibV1: all.baseLibV1.address,
-      GovernanceUtilV1: all.governanceLib.address,
+      GovernanceUtilV1: all.governanceUtilV1.address,
       PolicyHelperV1: all.policyHelperV1.address,
       ProtoUtilV1: all.protoUtilV1.address,
-      ValidationLibV1: all.validationLib.address
+      ValidationLibV1: all.validationLibV1.address
     },
     all
   }

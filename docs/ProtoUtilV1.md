@@ -14,7 +14,6 @@ bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
 bytes32 public constant CNS_UNISWAP_V2_ROUTER;
 bytes32 public constant CNS_UNISWAP_V2_FACTORY;
-bytes32 public constant CNS_REASSURANCE_VAULT;
 bytes32 public constant CNS_PRICE_DISCOVERY;
 bytes32 public constant CNS_TREASURY;
 bytes32 public constant CNS_COVER_REASSURANCE;
@@ -40,11 +39,14 @@ bytes32 public constant CNS_BURNER;
 bytes32 public constant NS_MEMBERS;
 bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_COVER;
+bytes32 public constant NS_COVER_CREATION_DATE;
 bytes32 public constant NS_COVER_CREATION_FEE;
 bytes32 public constant NS_COVER_CREATION_MIN_STAKE;
 bytes32 public constant NS_COVER_REASSURANCE;
+bytes32 public constant NS_COVER_REASSURANCE_PAYOUT;
 bytes32 public constant NS_COVER_REASSURANCE_TOKEN;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
+bytes32 public constant NS_COVER_REASSURANCE_RATE;
 bytes32 public constant NS_COVER_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
@@ -56,23 +58,22 @@ bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
 bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
-bytes32 public constant NS_COVER_LIQUIDITY_ADDED;
-bytes32 public constant NS_COVER_LIQUIDITY_REMOVED;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
 bytes32 public constant NS_COVER_LIQUIDITY_NAME;
 bytes32 public constant NS_COVER_REQUIRES_WHITELIST;
 bytes32 public constant NS_COVER_HAS_FLASH_LOAN;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL;
+bytes32 public constant NS_COVERAGE_LAG;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
-bytes32 public constant NS_COVER_PROVISION;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
 bytes32 public constant NS_COVER_CXTOKEN;
 bytes32 public constant NS_COVER_CREATOR_WHITELIST;
 bytes32 public constant NS_COVER_USER_WHITELIST;
+bytes32 public constant NS_COVER_CLAIM_BLACKLIST;
 bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS;
 bytes32 public constant NS_GOVERNANCE_UNSTAKEN;
 bytes32 public constant NS_GOVERNANCE_UNSTAKE_TS;
@@ -90,6 +91,7 @@ bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO;
 bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE;
 bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION;
 bytes32 public constant NS_CLAIM_PERIOD;
+bytes32 public constant NS_CLAIM_PAYOUTS;
 bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
 bytes32 public constant NS_RESOLUTION_DEADLINE;
@@ -121,7 +123,6 @@ bytes32 public constant CNAME_GOVERNANCE;
 bytes32 public constant CNAME_RESOLUTION;
 bytes32 public constant CNAME_VAULT_FACTORY;
 bytes32 public constant CNAME_CXTOKEN_FACTORY;
-bytes32 public constant CNAME_COVER_PROVISION;
 bytes32 public constant CNAME_COVER_STAKE;
 bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
@@ -147,7 +148,6 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
 - [getUniswapV2Factory(IStore s)](#getuniswapv2factory)
 - [getTreasury(IStore s)](#gettreasury)
-- [getReassuranceVault(IStore s)](#getreassurancevault)
 - [getStablecoin(IStore s)](#getstablecoin)
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
@@ -475,29 +475,6 @@ function getTreasury(IStore s) external view returns (address) {
 ```
 </details>
 
-### getReassuranceVault
-
-```solidity
-function getReassuranceVault(IStore s) external view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReassuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(CNS_REASSURANCE_VAULT);
-  }
-```
-</details>
-
 ### getStablecoin
 
 ```solidity
@@ -609,7 +586,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -641,7 +617,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -669,6 +644,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -679,6 +655,8 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -688,8 +666,12 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

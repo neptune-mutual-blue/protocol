@@ -3,9 +3,9 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -22,10 +22,16 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -41,10 +47,16 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -60,13 +72,8 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -96,7 +103,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -124,7 +131,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {

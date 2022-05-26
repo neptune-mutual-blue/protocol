@@ -20,6 +20,8 @@ interface ICoverReassurance is IMember {
 
   function setWeight(bytes32 coverKey, uint256 weight) external;
 
+  function capitalizePool(bytes32 coverKey, uint256 incidentDate) external;
+
   /**
    * @dev Gets the reassurance amount of the specified cover contract
    * @param coverKey Enter the cover key

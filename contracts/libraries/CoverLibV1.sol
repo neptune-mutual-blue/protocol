@@ -93,6 +93,7 @@ library CoverLibV1 {
    * @param values[5] claimPeriod Enter the claim period.
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
+   * @param values[8] reassuranceRate Enter the reassurance rate.
    */
   function addCoverInternal(
     IStore s,
@@ -136,6 +137,7 @@ library CoverLibV1 {
     require(values[5] > 0, "Invalid claim period");
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
+    require(values[8] > 0, "Invalid reassurance rate");
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
@@ -157,6 +159,7 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey, values[5]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
   }
 
   function deployVaultInternal(IStore s, bytes32 coverKey) external returns (address) {

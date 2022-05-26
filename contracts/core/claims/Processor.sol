@@ -63,6 +63,8 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(coverKey);
     address finalReporter = s.getReporterInternal(coverKey, incidentDate);
 
+    s.addClaimPayoutsInternal(coverKey, incidentDate, amount);
+
     // @suppress-division Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
     uint256 platformFee = (amount * s.getClaimPlatformFeeInternal()) / ProtoUtilV1.MULTIPLIER;

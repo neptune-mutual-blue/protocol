@@ -3,9 +3,9 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -22,9 +22,9 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -41,7 +41,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -56,6 +56,24 @@
       }
     ],
     "name": "addReassurance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "capitalizePool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -77,7 +95,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       }
     ],
@@ -96,7 +114,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {

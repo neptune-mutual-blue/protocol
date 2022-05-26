@@ -77,6 +77,7 @@ contract Cover is CoverBase {
    * @param values[5] claimPeriod Enter the claim period.
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
+   * @param values[8] reassuranceRate Enter the reassurance rate.
    */
   function addCover(
     bytes32 coverKey,

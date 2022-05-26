@@ -8,6 +8,7 @@ import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/NTransferUtilV2.sol";
+import "../../libraries/GovernanceUtilV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -28,7 +29,9 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
   using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using RegistryLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using GovernanceUtilV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
@@ -49,15 +52,12 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     require(amount > 0, "Provide valid amount");
 
-    // IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
     IERC20 reassuranceToken = IERC20(s.getStablecoin());
 
-    address vault = s.getReassuranceVault();
-
     s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
 
-    reassuranceToken.ensureTransferFrom(account, vault, amount);
+    reassuranceToken.ensureTransferFrom(account, address(this), amount);
 
     s.updateStateAndLiquidity(coverKey);
 
@@ -76,6 +76,29 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     s.updateStateAndLiquidity(coverKey);
 
     emit WeightSet(coverKey, weight);
+  }
+
+  function capitalizePool(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey);
+    s.mustBeClaimable(coverKey);
+    s.mustBeAfterClaimExpiry(coverKey);
+
+    IVault vault = s.getVault(coverKey);
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+
+    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+
+    require(toTransfer > 0, "Nothing to capitalize");
+
+    stablecoin.ensureTransfer(address(vault), toTransfer);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
+    s.addReassurancePayoutInternal(coverKey, incidentDate, toTransfer);
   }
 
   /**

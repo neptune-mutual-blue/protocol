@@ -9,23 +9,25 @@ View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToke
 
 ## Functions
 
-- [mint(bytes32 key, address to, uint256 amount)](#mint)
+- [mint(bytes32 coverKey, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [createdOn()](#createdon)
 - [expiresOn()](#expireson)
-- [coverKey()](#coverkey)
+- [COVER_KEY()](#cover_key)
+- [getCoverageStartsFrom(address account, uint256 date)](#getcoveragestartsfrom)
+- [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
 
 ### mint
 
 ```solidity
-function mint(bytes32 key, address to, uint256 amount) external nonpayable
+function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | to | address |  | 
 | amount | uint256 |  | 
 
@@ -34,7 +36,7 @@ function mint(bytes32 key, address to, uint256 amount) external nonpayable
 
 ```javascript
 function mint(
-    bytes32 key,
+    bytes32 coverKey,
     address to,
     uint256 amount
   ) external;
@@ -101,10 +103,10 @@ function expiresOn() external view returns (uint256);
 ```
 </details>
 
-### coverKey
+### COVER_KEY
 
 ```solidity
-function coverKey() external view
+function COVER_KEY() external view
 returns(bytes32)
 ```
 
@@ -117,7 +119,50 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function coverKey() external view returns (bytes32);
+function COVER_KEY() external view returns (bytes32);
+```
+</details>
+
+### getCoverageStartsFrom
+
+```solidity
+function getCoverageStartsFrom(address account, uint256 date) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
+| date | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverageStartsFrom(address account, uint256 date) external view returns (uint256);
+```
+</details>
+
+### getClaimablePolicyOf
+
+```solidity
+function getClaimablePolicyOf(address account) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getClaimablePolicyOf(address account) external view returns (uint256);
 ```
 </details>
 
@@ -138,7 +183,6 @@ function coverKey() external view returns (bytes32);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -170,7 +214,6 @@ function coverKey() external view returns (bytes32);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -198,6 +241,7 @@ function coverKey() external view returns (bytes32);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -208,6 +252,8 @@ function coverKey() external view returns (bytes32);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -217,8 +263,12 @@ function coverKey() external view returns (bytes32);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

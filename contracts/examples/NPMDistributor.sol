@@ -89,7 +89,7 @@ contract NPMDistributor is ReentrancyGuard {
   /**
    * @dev Returns the protocol claims processor contract instance.
    */
-  function getClaimsProcessorContract() public view returns (IClaimsProcessor) {
+  function getClaimsProcessorContract() external view returns (IClaimsProcessor) {
     return IClaimsProcessor(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_CLAIM_PROCESSOR))));
   }
 

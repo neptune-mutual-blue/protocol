@@ -9,29 +9,29 @@ View Source: [contracts/interfaces/IWitness.sol](../contracts/interfaces/IWitnes
 **Events**
 
 ```js
-event Attested(bytes32 indexed key, address indexed witness, uint256  incidentDate, uint256  stake);
-event Refuted(bytes32 indexed key, address indexed witness, uint256  incidentDate, uint256  stake);
+event Attested(bytes32 indexed coverKey, address indexed witness, uint256  incidentDate, uint256  stake);
+event Refuted(bytes32 indexed coverKey, address indexed witness, uint256  incidentDate, uint256  stake);
 ```
 
 ## Functions
 
-- [attest(bytes32 key, uint256 incidentDate, uint256 stake)](#attest)
-- [refute(bytes32 key, uint256 incidentDate, uint256 stake)](#refute)
-- [getStatus(bytes32 key)](#getstatus)
-- [getStakes(bytes32 key, uint256 incidentDate)](#getstakes)
-- [getStakesOf(bytes32 key, uint256 incidentDate, address account)](#getstakesof)
+- [attest(bytes32 coverKey, uint256 incidentDate, uint256 stake)](#attest)
+- [refute(bytes32 coverKey, uint256 incidentDate, uint256 stake)](#refute)
+- [getStatus(bytes32 coverKey)](#getstatus)
+- [getStakes(bytes32 coverKey, uint256 incidentDate)](#getstakes)
+- [getStakesOf(bytes32 coverKey, uint256 incidentDate, address account)](#getstakesof)
 
 ### attest
 
 ```solidity
-function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
+function attest(bytes32 coverKey, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
@@ -40,7 +40,7 @@ function attest(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 
 ```javascript
 function attest(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external;
@@ -50,14 +50,14 @@ function attest(
 ### refute
 
 ```solidity
-function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpayable
+function refute(bytes32 coverKey, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | stake | uint256 |  | 
 
@@ -66,7 +66,7 @@ function refute(bytes32 key, uint256 incidentDate, uint256 stake) external nonpa
 
 ```javascript
 function refute(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 stake
   ) external;
@@ -76,7 +76,7 @@ function refute(
 ### getStatus
 
 ```solidity
-function getStatus(bytes32 key) external view
+function getStatus(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -84,20 +84,20 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStatus(bytes32 key) external view returns (uint256);
+function getStatus(bytes32 coverKey) external view returns (uint256);
 ```
 </details>
 
 ### getStakes
 
 ```solidity
-function getStakes(bytes32 key, uint256 incidentDate) external view
+function getStakes(bytes32 coverKey, uint256 incidentDate) external view
 returns(uint256, uint256)
 ```
 
@@ -105,21 +105,21 @@ returns(uint256, uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStakes(bytes32 key, uint256 incidentDate) external view returns (uint256, uint256);
+function getStakes(bytes32 coverKey, uint256 incidentDate) external view returns (uint256, uint256);
 ```
 </details>
 
 ### getStakesOf
 
 ```solidity
-function getStakesOf(bytes32 key, uint256 incidentDate, address account) external view
+function getStakesOf(bytes32 coverKey, uint256 incidentDate, address account) external view
 returns(uint256, uint256)
 ```
 
@@ -127,7 +127,7 @@ returns(uint256, uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | account | address |  | 
 
@@ -136,7 +136,7 @@ returns(uint256, uint256)
 
 ```javascript
 function getStakesOf(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     address account
   ) external view returns (uint256, uint256);
@@ -160,7 +160,6 @@ function getStakesOf(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -192,7 +191,6 @@ function getStakesOf(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -220,6 +218,7 @@ function getStakesOf(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -230,6 +229,8 @@ function getStakesOf(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -239,8 +240,12 @@ function getStakesOf(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -10,12 +10,12 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 **Events**
 
 ```js
-event CoverCreated(bytes32  key, bytes32  info, bool  requiresWhitelist);
-event CoverUpdated(bytes32  key, bytes32  info);
+event CoverCreated(bytes32 indexed coverKey, bytes32  info, bool  requiresWhitelist);
+event CoverUpdated(bytes32 indexed coverKey, bytes32  info);
 event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string  reason);
 event VaultDeployed(bytes32 indexed coverKey, address  vault);
 event CoverCreatorWhitelistUpdated(address  account, bool  status);
-event CoverUserWhitelistUpdated(bytes32  key, address  account, bool  status);
+event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address  account, bool  status);
 event CoverFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
 event MinStakeToAddLiquiditySet(uint256  previous, uint256  current);
@@ -25,15 +25,15 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ## Functions
 
 - [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcover)
-- [deployVault(bytes32 key)](#deployvault)
-- [updateCover(bytes32 key, bytes32 info)](#updatecover)
+- [addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcover)
+- [deployVault(bytes32 coverKey)](#deployvault)
+- [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
 - [updateCoverCreatorWhitelist(address account, bool whitelisted)](#updatecovercreatorwhitelist)
-- [updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
-- [getCover(bytes32 key)](#getcover)
-- [stopCover(bytes32 key, string reason)](#stopcover)
+- [updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
+- [getCover(bytes32 coverKey)](#getcover)
+- [stopCover(bytes32 coverKey, string reason)](#stopcover)
 - [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
-- [checkIfWhitelistedUser(bytes32 key, address account)](#checkifwhitelisteduser)
+- [checkIfWhitelistedUser(bytes32 coverKey, address account)](#checkifwhitelisteduser)
 - [setCoverFees(uint256 value)](#setcoverfees)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 - [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
@@ -76,14 +76,14 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable
+function addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter a unique key for this cover | 
+| coverKey | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
 | reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
 | requiresWhitelist | bool |  | 
@@ -94,7 +94,7 @@ function addCover(bytes32 key, bytes32 info, address reassuranceToken, bool requ
 
 ```javascript
 function addCover(
-    bytes32 key,
+    bytes32 coverKey,
     bytes32 info,
     address reassuranceToken,
     bool requiresWhitelist,
@@ -106,7 +106,7 @@ function addCover(
 ### deployVault
 
 ```solidity
-function deployVault(bytes32 key) external nonpayable
+function deployVault(bytes32 coverKey) external nonpayable
 returns(address)
 ```
 
@@ -114,13 +114,13 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deployVault(bytes32 key) external returns (address);
+function deployVault(bytes32 coverKey) external returns (address);
 ```
 </details>
 
@@ -130,21 +130,21 @@ Updates the cover contract.
  This feature is accessible only to the cover owner or protocol owner (governance).
 
 ```solidity
-function updateCover(bytes32 key, bytes32 info) external nonpayable
+function updateCover(bytes32 coverKey, bytes32 info) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | info | bytes32 | Enter a new IPFS URL to update | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateCover(bytes32 key, bytes32 info) external;
+function updateCover(bytes32 coverKey, bytes32 info) external;
 ```
 </details>
 
@@ -172,14 +172,14 @@ function updateCoverCreatorWhitelist(address account, bool whitelisted) external
 ### updateCoverUsersWhitelist
 
 ```solidity
-function updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statuses) external nonpayable
+function updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] statuses) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | accounts | address[] |  | 
 | statuses | bool[] |  | 
 
@@ -188,7 +188,7 @@ function updateCoverUsersWhitelist(bytes32 key, address[] accounts, bool[] statu
 
 ```javascript
 function updateCoverUsersWhitelist(
-    bytes32 key,
+    bytes32 coverKey,
     address[] memory accounts,
     bool[] memory statuses
   ) external;
@@ -200,7 +200,7 @@ function updateCoverUsersWhitelist(
 Get info of a cover contract by key
 
 ```solidity
-function getCover(bytes32 key) external view
+function getCover(bytes32 coverKey) external view
 returns(coverOwner address, info bytes32, values uint256[])
 ```
 
@@ -208,13 +208,13 @@ returns(coverOwner address, info bytes32, values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCover(bytes32 key)
+function getCover(bytes32 coverKey)
     external
     view
     returns (
@@ -228,21 +228,21 @@ function getCover(bytes32 key)
 ### stopCover
 
 ```solidity
-function stopCover(bytes32 key, string reason) external nonpayable
+function stopCover(bytes32 coverKey, string reason) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | reason | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stopCover(bytes32 key, string memory reason) external;
+function stopCover(bytes32 coverKey, string memory reason) external;
 ```
 </details>
 
@@ -270,7 +270,7 @@ function checkIfWhitelistedCoverCreator(address account) external view returns (
 ### checkIfWhitelistedUser
 
 ```solidity
-function checkIfWhitelistedUser(bytes32 key, address account) external view
+function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 returns(bool)
 ```
 
@@ -278,14 +278,14 @@ returns(bool)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfWhitelistedUser(bytes32 key, address account) external view returns (bool);
+function checkIfWhitelistedUser(bytes32 coverKey, address account) external view returns (bool);
 ```
 </details>
 
@@ -366,7 +366,6 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -398,7 +397,6 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -426,6 +424,7 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -436,6 +435,8 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -445,8 +446,12 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

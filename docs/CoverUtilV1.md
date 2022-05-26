@@ -19,40 +19,40 @@ enum CoverStatus {
 
 ## Functions
 
-- [getCoverOwner(IStore s, bytes32 key)](#getcoverowner)
-- [_getCoverOwner(IStore s, bytes32 key)](#_getcoverowner)
+- [getCoverOwner(IStore s, bytes32 coverKey)](#getcoverowner)
+- [_getCoverOwner(IStore s, bytes32 coverKey)](#_getcoverowner)
 - [getCoverCreationFeeInfo(IStore s)](#getcovercreationfeeinfo)
 - [getMinCoverCreationStake(IStore s)](#getmincovercreationstake)
+- [getCoverCreationDate(IStore s, bytes32 coverKey)](#getcovercreationdate)
 - [getMinStakeToAddLiquidity(IStore s)](#getminstaketoaddliquidity)
-- [getClaimPeriod(IStore s, bytes32 key)](#getclaimperiod)
-- [getCoverPoolSummaryInternal(IStore s, bytes32 key)](#getcoverpoolsummaryinternal)
-- [getCoverStatus(IStore s, bytes32 key)](#getcoverstatus)
-- [getCoverStatusOf(IStore s, bytes32 key, uint256 incidentDate)](#getcoverstatusof)
-- [getStatus(IStore s, bytes32 key)](#getstatus)
-- [getStatusOf(IStore s, bytes32 key, uint256 incidentDate)](#getstatusof)
-- [getCoverStatusKey(bytes32 key)](#getcoverstatuskey)
-- [getCoverStatusOfKey(bytes32 key, uint256 incidentDate)](#getcoverstatusofkey)
-- [getCoverLiquidityAddedKey(bytes32 coverKey, address account)](#getcoverliquidityaddedkey)
+- [getClaimPeriod(IStore s, bytes32 coverKey)](#getclaimperiod)
+- [getCoverPoolSummaryInternal(IStore s, bytes32 coverKey)](#getcoverpoolsummaryinternal)
+- [getCoverStatus(IStore s, bytes32 coverKey)](#getcoverstatus)
+- [getCoverStatusOf(IStore s, bytes32 coverKey, uint256 incidentDate)](#getcoverstatusof)
+- [getStatus(IStore s, bytes32 coverKey)](#getstatus)
+- [getStatusOf(IStore s, bytes32 coverKey, uint256 incidentDate)](#getstatusof)
+- [getCoverStatusKey(bytes32 coverKey)](#getcoverstatuskey)
+- [getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate)](#getcoverstatusofkey)
 - [getCoverLiquidityStakeKey(bytes32 coverKey)](#getcoverliquiditystakekey)
 - [getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account)](#getcoverliquiditystakeindividualkey)
-- [getActiveLiquidityUnderProtection(IStore s, bytes32 key)](#getactiveliquidityunderprotection)
-- [_getLiquidityUnderProtectionInfo(IStore s, bytes32 key)](#_getliquidityunderprotectioninfo)
-- [_getCurrentCommitment(IStore s, bytes32 key)](#_getcurrentcommitment)
-- [_getFutureCommitments(IStore s, bytes32 key, uint256 ignoredExpiryDate)](#_getfuturecommitments)
-- [getStake(IStore s, bytes32 key)](#getstake)
-- [setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum CoverUtilV1.CoverStatus status)](#setstatusinternal)
-- [getReassuranceAmountInternal(IStore s, bytes32 key)](#getreassuranceamountinternal)
+- [getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey)](#getactiveliquidityunderprotection)
+- [_getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey)](#_getliquidityunderprotectioninfo)
+- [_getCurrentCommitment(IStore s, bytes32 coverKey)](#_getcurrentcommitment)
+- [_getFutureCommitments(IStore s, bytes32 coverKey, uint256 ignoredExpiryDate)](#_getfuturecommitments)
+- [getStake(IStore s, bytes32 coverKey)](#getstake)
+- [setStatusInternal(IStore s, bytes32 coverKey, uint256 incidentDate, enum CoverUtilV1.CoverStatus status)](#setstatusinternal)
+- [getReassuranceAmountInternal(IStore s, bytes32 coverKey)](#getreassuranceamountinternal)
 - [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
 - [_getNextMonthEndDate(uint256 date, uint256 monthsToAdd)](#_getnextmonthenddate)
 - [_getMonthEndDate(uint256 date)](#_getmonthenddate)
-- [getActiveIncidentDateInternal(IStore s, bytes32 key)](#getactiveincidentdateinternal)
-- [getCxTokenByExpiryDateInternal(IStore s, bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydateinternal)
-- [checkIfRequiresWhitelist(IStore s, bytes32 key)](#checkifrequireswhitelist)
+- [getActiveIncidentDateInternal(IStore s, bytes32 coverKey)](#getactiveincidentdateinternal)
+- [getCxTokenByExpiryDateInternal(IStore s, bytes32 coverKey, uint256 expiryDate)](#getcxtokenbyexpirydateinternal)
+- [checkIfRequiresWhitelist(IStore s, bytes32 coverKey)](#checkifrequireswhitelist)
 
 ### getCoverOwner
 
 ```solidity
-function getCoverOwner(IStore s, bytes32 key) external view
+function getCoverOwner(IStore s, bytes32 coverKey) external view
 returns(address)
 ```
 
@@ -61,14 +61,14 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverOwner(IStore s, bytes32 key) external view returns (address) {
-    return _getCoverOwner(s, key);
+function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
+    return _getCoverOwner(s, coverKey);
   }
 ```
 </details>
@@ -76,7 +76,7 @@ function getCoverOwner(IStore s, bytes32 key) external view returns (address) {
 ### _getCoverOwner
 
 ```solidity
-function _getCoverOwner(IStore s, bytes32 key) private view
+function _getCoverOwner(IStore s, bytes32 coverKey) private view
 returns(address)
 ```
 
@@ -85,14 +85,14 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getCoverOwner(IStore s, bytes32 key) private view returns (address) {
-    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, key);
+function _getCoverOwner(IStore s, bytes32 coverKey) private view returns (address) {
+    return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 ```
 </details>
@@ -160,6 +160,30 @@ function getMinCoverCreationStake(IStore s) public view returns (uint256) {
 ```
 </details>
 
+### getCoverCreationDate
+
+```solidity
+function getCoverCreationDate(IStore s, bytes32 coverKey) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverCreationDate(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
+  }
+```
+</details>
+
 ### getMinStakeToAddLiquidity
 
 ```solidity
@@ -193,7 +217,7 @@ function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
 ### getClaimPeriod
 
 ```solidity
-function getClaimPeriod(IStore s, bytes32 key) external view
+function getClaimPeriod(IStore s, bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -202,14 +226,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, key);
+function getClaimPeriod(IStore s, bytes32 coverKey) external view returns (uint256) {
+    uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey);
     uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
 
     return fromKey > 0 ? fromKey : fallbackValue;
@@ -222,7 +246,7 @@ function getClaimPeriod(IStore s, bytes32 key) external view returns (uint256) {
 Returns the values of the given cover key
 
 ```solidity
-function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view
+function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view
 returns(_values uint256[])
 ```
 
@@ -231,24 +255,22 @@ returns(_values uint256[])
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverPoolSummaryInternal(IStore s, bytes32 key) external view returns (uint256[] memory _values) {
+function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view returns (uint256[] memory _values) {
     IPriceDiscovery discovery = s.getPriceDiscoveryContract();
 
     _values = new uint256[](7);
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(key);
-    _values[1] = getActiveLiquidityUnderProtection(s, key);
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.npmToken()), 1 ether);
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
-    _values[5] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key)), 1 ether);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key);
+    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
+    _values[1] = getActiveLiquidityUnderProtection(s, coverKey);
+    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    _values[3] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey)), 1 ether);
+    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
   }
 ```
 </details>
@@ -263,7 +285,7 @@ Gets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function getCoverStatus(IStore s, bytes32 key) external view
+function getCoverStatus(IStore s, bytes32 coverKey) external view
 returns(enum CoverUtilV1.CoverStatus)
 ```
 
@@ -272,14 +294,14 @@ returns(enum CoverUtilV1.CoverStatus)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatus) {
-    return CoverStatus(getStatus(s, key));
+function getCoverStatus(IStore s, bytes32 coverKey) external view returns (CoverStatus) {
+    return CoverStatus(getStatus(s, coverKey));
   }
 ```
 </details>
@@ -287,7 +309,7 @@ function getCoverStatus(IStore s, bytes32 key) external view returns (CoverStatu
 ### getCoverStatusOf
 
 ```solidity
-function getCoverStatusOf(IStore s, bytes32 key, uint256 incidentDate) external view
+function getCoverStatusOf(IStore s, bytes32 coverKey, uint256 incidentDate) external view
 returns(enum CoverUtilV1.CoverStatus)
 ```
 
@@ -296,7 +318,7 @@ returns(enum CoverUtilV1.CoverStatus)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -305,10 +327,10 @@ returns(enum CoverUtilV1.CoverStatus)
 ```javascript
 function getCoverStatusOf(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusOf(s, key, incidentDate));
+    return CoverStatus(getStatusOf(s, coverKey, incidentDate));
   }
 ```
 </details>
@@ -316,7 +338,7 @@ function getCoverStatusOf(
 ### getStatus
 
 ```solidity
-function getStatus(IStore s, bytes32 key) public view
+function getStatus(IStore s, bytes32 coverKey) public view
 returns(uint256)
 ```
 
@@ -325,14 +347,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStatus(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusKey(key));
+function getStatus(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKey(getCoverStatusKey(coverKey));
   }
 ```
 </details>
@@ -340,7 +362,7 @@ function getStatus(IStore s, bytes32 key) public view returns (uint256) {
 ### getStatusOf
 
 ```solidity
-function getStatusOf(IStore s, bytes32 key, uint256 incidentDate) public view
+function getStatusOf(IStore s, bytes32 coverKey, uint256 incidentDate) public view
 returns(uint256)
 ```
 
@@ -349,7 +371,7 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -358,10 +380,10 @@ returns(uint256)
 ```javascript
 function getStatusOf(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusOfKey(key, incidentDate));
+    return s.getUintByKey(getCoverStatusOfKey(coverKey, incidentDate));
   }
 ```
 </details>
@@ -369,54 +391,7 @@ function getStatusOf(
 ### getCoverStatusKey
 
 ```solidity
-function getCoverStatusKey(bytes32 key) public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverStatusKey(bytes32 key) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key));
-  }
-```
-</details>
-
-### getCoverStatusOfKey
-
-```solidity
-function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverStatusOfKey(bytes32 key, uint256 incidentDate) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, key, incidentDate));
-  }
-```
-</details>
-
-### getCoverLiquidityAddedKey
-
-```solidity
-function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure
+function getCoverStatusKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -425,14 +400,37 @@ returns(bytes32)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverLiquidityAddedKey(bytes32 coverKey, address account) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_ADDED, coverKey, account));
+function getCoverStatusKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey));
+  }
+```
+</details>
+
+### getCoverStatusOfKey
+
+```solidity
+function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
   }
 ```
 </details>
@@ -487,7 +485,7 @@ function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) 
 ### getActiveLiquidityUnderProtection
 
 ```solidity
-function getActiveLiquidityUnderProtection(IStore s, bytes32 key) public view
+function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey) public view
 returns(uint256)
 ```
 
@@ -496,14 +494,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveLiquidityUnderProtection(IStore s, bytes32 key) public view returns (uint256) {
-    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, key);
+function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey) public view returns (uint256) {
+    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey);
     return current + future;
   }
 ```
@@ -512,7 +510,7 @@ function getActiveLiquidityUnderProtection(IStore s, bytes32 key) public view re
 ### _getLiquidityUnderProtectionInfo
 
 ```solidity
-function _getLiquidityUnderProtectionInfo(IStore s, bytes32 key) private view
+function _getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey) private view
 returns(current uint256, future uint256)
 ```
 
@@ -521,17 +519,17 @@ returns(current uint256, future uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getLiquidityUnderProtectionInfo(IStore s, bytes32 key) private view returns (uint256 current, uint256 future) {
+function _getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey) private view returns (uint256 current, uint256 future) {
     uint256 expiryDate = 0;
 
-    (current, expiryDate) = _getCurrentCommitment(s, key);
-    future = _getFutureCommitments(s, key, expiryDate);
+    (current, expiryDate) = _getCurrentCommitment(s, coverKey);
+    future = _getFutureCommitments(s, coverKey, expiryDate);
   }
 ```
 </details>
@@ -539,7 +537,7 @@ function _getLiquidityUnderProtectionInfo(IStore s, bytes32 key) private view re
 ### _getCurrentCommitment
 
 ```solidity
-function _getCurrentCommitment(IStore s, bytes32 key) private view
+function _getCurrentCommitment(IStore s, bytes32 coverKey) private view
 returns(amount uint256, expiryDate uint256)
 ```
 
@@ -548,14 +546,14 @@ returns(amount uint256, expiryDate uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getCurrentCommitment(IStore s, bytes32 key) private view returns (uint256 amount, uint256 expiryDate) {
-    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, key);
+function _getCurrentCommitment(IStore s, bytes32 coverKey) private view returns (uint256 amount, uint256 expiryDate) {
+    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, coverKey);
 
     // There isn't any incident for this cover
     // and therefore no need to pay
@@ -564,7 +562,7 @@ function _getCurrentCommitment(IStore s, bytes32 key) private view returns (uint
     }
 
     expiryDate = _getMonthEndDate(incidentDateIfAny);
-    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
 
     if (address(cxToken) != address(0)) {
       amount = cxToken.totalSupply();
@@ -576,7 +574,7 @@ function _getCurrentCommitment(IStore s, bytes32 key) private view returns (uint
 ### _getFutureCommitments
 
 ```solidity
-function _getFutureCommitments(IStore s, bytes32 key, uint256 ignoredExpiryDate) private view
+function _getFutureCommitments(IStore s, bytes32 coverKey, uint256 ignoredExpiryDate) private view
 returns(sum uint256)
 ```
 
@@ -585,7 +583,7 @@ returns(sum uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | ignoredExpiryDate | uint256 |  | 
 
 <details>
@@ -594,7 +592,7 @@ returns(sum uint256)
 ```javascript
 function _getFutureCommitments(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 ignoredExpiryDate
   ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
@@ -607,7 +605,7 @@ function _getFutureCommitments(
         continue;
       }
 
-      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, key, expiryDate));
+      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
 
       if (address(cxToken) != address(0)) {
         sum += cxToken.totalSupply();
@@ -620,7 +618,7 @@ function _getFutureCommitments(
 ### getStake
 
 ```solidity
-function getStake(IStore s, bytes32 key) external view
+function getStake(IStore s, bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -629,14 +627,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStake(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key);
+function getStake(IStore s, bytes32 coverKey) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey);
   }
 ```
 </details>
@@ -651,7 +649,7 @@ Sets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum CoverUtilV1.CoverStatus status) external nonpayable
+function setStatusInternal(IStore s, bytes32 coverKey, uint256 incidentDate, enum CoverUtilV1.CoverStatus status) external nonpayable
 ```
 
 **Arguments**
@@ -659,7 +657,7 @@ function setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum Cov
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | status | enum CoverUtilV1.CoverStatus |  | 
 
@@ -669,14 +667,14 @@ function setStatusInternal(IStore s, bytes32 key, uint256 incidentDate, enum Cov
 ```javascript
 function setStatusInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     CoverStatus status
   ) external {
-    s.setUintByKey(getCoverStatusKey(key), uint256(status));
+    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status));
 
     if (incidentDate > 0) {
-      s.setUintByKey(getCoverStatusOfKey(key, incidentDate), uint256(status));
+      s.setUintByKey(getCoverStatusOfKey(coverKey, incidentDate), uint256(status));
     }
   }
 ```
@@ -687,7 +685,7 @@ function setStatusInternal(
 Gets the reassurance amount of the specified cover contract
 
 ```solidity
-function getReassuranceAmountInternal(IStore s, bytes32 key) external view
+function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -696,14 +694,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getReassuranceAmountInternal(IStore s, bytes32 key) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key);
+function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
   }
 ```
 </details>
@@ -804,7 +802,7 @@ function _getMonthEndDate(uint256 date) private pure returns (uint256) {
 ### getActiveIncidentDateInternal
 
 ```solidity
-function getActiveIncidentDateInternal(IStore s, bytes32 key) public view
+function getActiveIncidentDateInternal(IStore s, bytes32 coverKey) public view
 returns(uint256)
 ```
 
@@ -813,14 +811,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveIncidentDateInternal(IStore s, bytes32 key) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key);
+function getActiveIncidentDateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
   }
 ```
 </details>
@@ -828,7 +826,7 @@ function getActiveIncidentDateInternal(IStore s, bytes32 key) public view return
 ### getCxTokenByExpiryDateInternal
 
 ```solidity
-function getCxTokenByExpiryDateInternal(IStore s, bytes32 key, uint256 expiryDate) public view
+function getCxTokenByExpiryDateInternal(IStore s, bytes32 coverKey, uint256 expiryDate) public view
 returns(cxToken address)
 ```
 
@@ -837,7 +835,7 @@ returns(cxToken address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | expiryDate | uint256 |  | 
 
 <details>
@@ -846,10 +844,10 @@ returns(cxToken address)
 ```javascript
 function getCxTokenByExpiryDateInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 expiryDate
   ) public view returns (address cxToken) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
     cxToken = s.getAddress(k);
   }
 ```
@@ -858,7 +856,7 @@ function getCxTokenByExpiryDateInternal(
 ### checkIfRequiresWhitelist
 
 ```solidity
-function checkIfRequiresWhitelist(IStore s, bytes32 key) external view
+function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view
 returns(bool)
 ```
 
@@ -867,14 +865,14 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, key);
+function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
   }
 ```
 </details>
@@ -896,7 +894,6 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -928,7 +925,6 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -956,6 +952,7 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -966,6 +963,8 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -975,8 +974,12 @@ function checkIfRequiresWhitelist(IStore s, bytes32 key) external view returns (
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

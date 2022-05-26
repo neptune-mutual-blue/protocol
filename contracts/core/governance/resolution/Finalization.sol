@@ -35,6 +35,9 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.mustBeAfterResolutionDeadline(coverKey);
     s.mustBeAfterClaimExpiry(coverKey);
 
+    uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    require(transferable == 0, "Pool must be capitalized");
+
     _finalize(coverKey, incidentDate);
   }
 
