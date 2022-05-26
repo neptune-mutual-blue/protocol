@@ -81,6 +81,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
   bytes32 public constant NS_VAULT_LENDING_LOSSES = "ns:vault:lending:losses";
+  bytes32 public constant NS_VAULT_DEPOSIT_HEIGHTS = "ns:vault:deposit:heights";
   bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD = "ns:cover:liquidity:len:p";
   bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO = "ns:cover:liquidity:max:lr";
   bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW = "ns:cover:liquidity:ww";
