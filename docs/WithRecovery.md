@@ -31,6 +31,7 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 
 ```javascript
 function recoverEther(address sendTo) external onlyOwner {
+    // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
 ```
@@ -78,7 +79,6 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -110,7 +110,6 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -138,6 +137,7 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -148,6 +148,8 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -157,8 +159,12 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

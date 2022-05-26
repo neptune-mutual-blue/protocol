@@ -10,21 +10,24 @@ View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces
 **Events**
 
 ```js
-event Claimed(address indexed cxToken, bytes32 indexed key, uint256  incidentDate, address indexed account, address  reporter, uint256  amount, uint256  reporterFee, uint256  platformFee, uint256  claimed);
-event ClaimPeriodSet(bytes32 indexed key, uint256  previous, uint256  current);
+event Claimed(address indexed cxToken, bytes32 indexed coverKey, uint256  incidentDate, address indexed account, address  reporter, uint256  amount, uint256  reporterFee, uint256  platformFee, uint256  claimed);
+event ClaimPeriodSet(bytes32 indexed coverKey, uint256  previous, uint256  current);
+event BlacklistSet(bytes32 indexed coverKey, uint256 indexed incidentDate, address indexed account, bool  status);
 ```
 
 ## Functions
 
-- [claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cxToken, bytes32 key, uint256 incidentDate)](#validate)
-- [setClaimPeriod(bytes32 key, uint256 value)](#setclaimperiod)
-- [getClaimExpiryDate(bytes32 key)](#getclaimexpirydate)
+- [claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount)](#claim)
+- [validate(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount)](#validate)
+- [setClaimPeriod(bytes32 coverKey, uint256 value)](#setclaimperiod)
+- [getClaimExpiryDate(bytes32 coverKey)](#getclaimexpirydate)
+- [setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts, bool[] statuses)](#setblacklist)
+- [isBlacklisted(bytes32 coverKey, uint256 incidentDate, address account)](#isblacklisted)
 
 ### claim
 
 ```solidity
-function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amount) external nonpayable
+function claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -32,7 +35,7 @@ function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amoun
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | cxToken | address |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | amount | uint256 |  | 
 
@@ -42,7 +45,7 @@ function claim(address cxToken, bytes32 key, uint256 incidentDate, uint256 amoun
 ```javascript
 function claim(
     address cxToken,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     uint256 amount
   ) external;
@@ -52,7 +55,7 @@ function claim(
 ### validate
 
 ```solidity
-function validate(address cxToken, bytes32 key, uint256 incidentDate) external view
+function validate(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount) external view
 returns(bool)
 ```
 
@@ -61,8 +64,9 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | cxToken | address |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
+| amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -70,8 +74,9 @@ returns(bool)
 ```javascript
 function validate(
     address cxToken,
-    bytes32 key,
-    uint256 incidentDate
+    bytes32 coverKey,
+    uint256 incidentDate,
+    uint256 amount
   ) external view returns (bool);
 ```
 </details>
@@ -79,28 +84,28 @@ function validate(
 ### setClaimPeriod
 
 ```solidity
-function setClaimPeriod(bytes32 key, uint256 value) external nonpayable
+function setClaimPeriod(bytes32 coverKey, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimPeriod(bytes32 key, uint256 value) external;
+function setClaimPeriod(bytes32 coverKey, uint256 value) external;
 ```
 </details>
 
 ### getClaimExpiryDate
 
 ```solidity
-function getClaimExpiryDate(bytes32 key) external view
+function getClaimExpiryDate(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -108,13 +113,68 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimExpiryDate(bytes32 key) external view returns (uint256);
+function getClaimExpiryDate(bytes32 coverKey) external view returns (uint256);
+```
+</details>
+
+### setBlacklist
+
+```solidity
+function setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts, bool[] statuses) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBlacklist(
+    bytes32 coverKey,
+    uint256 incidentDate,
+    address[] memory accounts,
+    bool[] memory statuses
+  ) external;
+```
+</details>
+
+### isBlacklisted
+
+```solidity
+function isBlacklisted(bytes32 coverKey, uint256 incidentDate, address account) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isBlacklisted(
+    bytes32 coverKey,
+    uint256 incidentDate,
+    address account
+  ) external view returns (bool);
 ```
 </details>
 
@@ -135,7 +195,6 @@ function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -167,7 +226,6 @@ function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -195,6 +253,7 @@ function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -205,6 +264,8 @@ function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -214,8 +275,12 @@ function getClaimExpiryDate(bytes32 key) external view returns (uint256);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

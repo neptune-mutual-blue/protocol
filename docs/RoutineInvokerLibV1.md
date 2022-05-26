@@ -16,11 +16,12 @@ enum Action {
 
 ## Functions
 
-- [updateStateAndLiquidity(IStore s, bytes32 key)](#updatestateandliquidity)
-- [_invoke(IStore s, bytes32 key, address token)](#_invoke)
+- [updateStateAndLiquidity(IStore s, bytes32 coverKey)](#updatestateandliquidity)
+- [_invoke(IStore s, bytes32 coverKey, address token)](#_invoke)
 - [_getUpdateInterval(IStore s)](#_getupdateinterval)
 - [getWithdrawalInfoInternal(IStore s, bytes32 coverKey)](#getwithdrawalinfointernal)
-- [_executeIsWithdrawalPeriod(IStore s, bytes32 coverKey)](#_executeiswithdrawalperiod)
+- [_isWithdrawalPeriod(IStore s, bytes32 coverKey)](#_iswithdrawalperiod)
+- [_updateWithdrawalPeriod(IStore s, bytes32 coverKey)](#_updatewithdrawalperiod)
 - [isAccrualCompleteInternal(IStore s, bytes32 coverKey)](#isaccrualcompleteinternal)
 - [setAccrualCompleteInternal(IStore s, bytes32 coverKey, bool flag)](#setaccrualcompleteinternal)
 - [getAccrualInvocationKey(bytes32 coverKey)](#getaccrualinvocationkey)
@@ -28,18 +29,18 @@ enum Action {
 - [getNextWithdrawalEndKey(bytes32 coverKey)](#getnextwithdrawalendkey)
 - [mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey)](#mustbeduringwithdrawalperiod)
 - [_executeAndGetAction(IStore s, ILendingStrategy , bytes32 coverKey)](#_executeandgetaction)
-- [_canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 key)](#_candeposit)
-- [_invokeAssetManagement(IStore s, bytes32 key)](#_invokeassetmanagement)
-- [_executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStrategies, address vault, bytes32 key)](#_executestrategy)
-- [_depositToStrategy(ILendingStrategy strategy, bytes32 key, uint256 amount)](#_deposittostrategy)
-- [_withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 key)](#_withdrawallfromstrategy)
-- [_withdrawFromDisabled(IStore s, bytes32 key, address onBehalfOf)](#_withdrawfromdisabled)
+- [_canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 coverKey)](#_candeposit)
+- [_invokeAssetManagement(IStore s, bytes32 coverKey)](#_invokeassetmanagement)
+- [_executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStrategies, address vault, bytes32 coverKey)](#_executestrategy)
+- [_depositToStrategy(ILendingStrategy strategy, bytes32 coverKey, uint256 amount)](#_deposittostrategy)
+- [_withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 coverKey)](#_withdrawallfromstrategy)
+- [_withdrawFromDisabled(IStore s, bytes32 coverKey, address onBehalfOf)](#_withdrawfromdisabled)
 - [_updateKnownTokenPrices(IStore s, address token)](#_updateknowntokenprices)
 
 ### updateStateAndLiquidity
 
 ```solidity
-function updateStateAndLiquidity(IStore s, bytes32 key) external nonpayable
+function updateStateAndLiquidity(IStore s, bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
@@ -47,14 +48,14 @@ function updateStateAndLiquidity(IStore s, bytes32 key) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateStateAndLiquidity(IStore s, bytes32 key) external {
-    _invoke(s, key, address(0));
+function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
+    _invoke(s, coverKey, address(0));
   }
 ```
 </details>
@@ -62,7 +63,7 @@ function updateStateAndLiquidity(IStore s, bytes32 key) external {
 ### _invoke
 
 ```solidity
-function _invoke(IStore s, bytes32 key, address token) private nonpayable
+function _invoke(IStore s, bytes32 coverKey, address token) private nonpayable
 ```
 
 **Arguments**
@@ -70,7 +71,7 @@ function _invoke(IStore s, bytes32 key, address token) private nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | token | address |  | 
 
 <details>
@@ -79,21 +80,23 @@ function _invoke(IStore s, bytes32 key, address token) private nonpayable
 ```javascript
 function _invoke(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     address token
   ) private {
     // solhint-disable-next-line
-    if (s.getLastUpdateOnInternal() + _getUpdateInterval(s) > block.timestamp) {
+    if (s.getLastUpdateOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
     _updateKnownTokenPrices(s, token);
 
-    if (key > 0) {
-      _invokeAssetManagement(s, key);
+    if (coverKey > 0) {
+      _invokeAssetManagement(s, coverKey);
     }
 
-    s.setLastUpdateOn();
+    s.setLastUpdateOn(coverKey);
+
+    _updateWithdrawalPeriod(s, coverKey);
   }
 ```
 </details>
@@ -164,10 +167,10 @@ function getWithdrawalInfoInternal(IStore s, bytes32 coverKey)
 ```
 </details>
 
-### _executeIsWithdrawalPeriod
+### _isWithdrawalPeriod
 
 ```solidity
-function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private nonpayable
+function _isWithdrawalPeriod(IStore s, bytes32 coverKey) private view
 returns(bool)
 ```
 
@@ -182,16 +185,36 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns (bool) {
-    (bool isWithdrawalPeriod, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
+function _isWithdrawalPeriod(IStore s, bytes32 coverKey) private view returns (bool) {
+    (bool isWithdrawalPeriod, , , , ) = getWithdrawalInfoInternal(s, coverKey);
+    return isWithdrawalPeriod;
+  }
+```
+</details>
 
-    // Without a lending period and withdrawal window, deposit is not possible
+### _updateWithdrawalPeriod
+
+```solidity
+function _updateWithdrawalPeriod(IStore s, bytes32 coverKey) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _updateWithdrawalPeriod(IStore s, bytes32 coverKey) private {
+    (, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
+
+    // Without a lending period and withdrawal window, nothing can be updated
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
-      return true;
-    }
-
-    if (isWithdrawalPeriod) {
-      return true;
+      return;
     }
 
     // The withdrawal period is now over.
@@ -211,8 +234,6 @@ function _executeIsWithdrawalPeriod(IStore s, bytes32 coverKey) private returns 
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
       setAccrualCompleteInternal(s, coverKey, false);
     }
-
-    return false;
   }
 ```
 </details>
@@ -401,7 +422,7 @@ function _executeAndGetAction(
       return Action.Withdraw;
     }
 
-    if (_executeIsWithdrawalPeriod(s, coverKey) == true) {
+    if (_isWithdrawalPeriod(s, coverKey) == true) {
       return Action.Withdraw;
     }
 
@@ -413,7 +434,7 @@ function _executeAndGetAction(
 ### _canDeposit
 
 ```solidity
-function _canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 key) private view
+function _canDeposit(IStore s, ILendingStrategy strategy, uint256 totalStrategies, bytes32 coverKey) private view
 returns(uint256)
 ```
 
@@ -424,7 +445,7 @@ returns(uint256)
 | s | IStore |  | 
 | strategy | ILendingStrategy |  | 
 | totalStrategies | uint256 |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -434,16 +455,16 @@ function _canDeposit(
     IStore s,
     ILendingStrategy strategy,
     uint256 totalStrategies,
-    bytes32 key
+    bytes32 coverKey
   ) private view returns (uint256) {
-    address vault = s.getVaultAddress(key);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 totalBalance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 maximumAllowed = (totalBalance * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
-    uint256 alreadyDeposited = s.getAmountInStrategy(key, strategy.getName(), address(stablecoin));
+    uint256 alreadyDeposited = s.getAmountInStrategy(coverKey, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
       return 0;
@@ -457,7 +478,7 @@ function _canDeposit(
 ### _invokeAssetManagement
 
 ```solidity
-function _invokeAssetManagement(IStore s, bytes32 key) private nonpayable
+function _invokeAssetManagement(IStore s, bytes32 coverKey) private nonpayable
 ```
 
 **Arguments**
@@ -465,21 +486,21 @@ function _invokeAssetManagement(IStore s, bytes32 key) private nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _invokeAssetManagement(IStore s, bytes32 key) private {
-    address vault = s.getVaultAddress(key);
-    _withdrawFromDisabled(s, key, vault);
+function _invokeAssetManagement(IStore s, bytes32 coverKey) private {
+    address vault = s.getVaultAddress(coverKey);
+    _withdrawFromDisabled(s, coverKey, vault);
 
     address[] memory strategies = s.getActiveStrategiesInternal();
 
     for (uint256 i = 0; i < strategies.length; i++) {
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
-      _executeStrategy(s, strategy, strategies.length, vault, key);
+      _executeStrategy(s, strategy, strategies.length, vault, coverKey);
     }
   }
 ```
@@ -488,7 +509,7 @@ function _invokeAssetManagement(IStore s, bytes32 key) private {
 ### _executeStrategy
 
 ```solidity
-function _executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStrategies, address vault, bytes32 key) private nonpayable
+function _executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStrategies, address vault, bytes32 coverKey) private nonpayable
 ```
 
 **Arguments**
@@ -499,7 +520,7 @@ function _executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStra
 | strategy | ILendingStrategy |  | 
 | totalStrategies | uint256 |  | 
 | vault | address |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -510,26 +531,27 @@ function _executeStrategy(
     ILendingStrategy strategy,
     uint256 totalStrategies,
     address vault,
-    bytes32 key
+    bytes32 coverKey
   ) private {
-    uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, key);
+    uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, coverKey);
     uint256 balance = IERC20(s.getStablecoin()).balanceOf(vault);
 
     if (canDeposit > balance) {
       canDeposit = balance;
     }
 
-    Action action = _executeAndGetAction(s, strategy, key);
+    Action action = _executeAndGetAction(s, strategy, coverKey);
 
     if (action == Action.Deposit && canDeposit == 0) {
       return;
     }
 
     if (action == Action.Withdraw) {
-      _withdrawAllFromStrategy(strategy, vault, key);
-    } else {
-      _depositToStrategy(strategy, key, canDeposit);
+      _withdrawAllFromStrategy(strategy, vault, coverKey);
+      return;
     }
+
+    _depositToStrategy(strategy, coverKey, canDeposit);
   }
 ```
 </details>
@@ -537,7 +559,7 @@ function _executeStrategy(
 ### _depositToStrategy
 
 ```solidity
-function _depositToStrategy(ILendingStrategy strategy, bytes32 key, uint256 amount) private nonpayable
+function _depositToStrategy(ILendingStrategy strategy, bytes32 coverKey, uint256 amount) private nonpayable
 ```
 
 **Arguments**
@@ -545,7 +567,7 @@ function _depositToStrategy(ILendingStrategy strategy, bytes32 key, uint256 amou
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | strategy | ILendingStrategy |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | amount | uint256 |  | 
 
 <details>
@@ -554,10 +576,10 @@ function _depositToStrategy(ILendingStrategy strategy, bytes32 key, uint256 amou
 ```javascript
 function _depositToStrategy(
     ILendingStrategy strategy,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 amount
   ) private {
-    strategy.deposit(key, amount);
+    strategy.deposit(coverKey, amount);
   }
 ```
 </details>
@@ -565,7 +587,7 @@ function _depositToStrategy(
 ### _withdrawAllFromStrategy
 
 ```solidity
-function _withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 key) private nonpayable
+function _withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 coverKey) private nonpayable
 returns(stablecoinWithdrawn uint256)
 ```
 
@@ -575,7 +597,7 @@ returns(stablecoinWithdrawn uint256)
 | ------------- |------------- | -----|
 | strategy | ILendingStrategy |  | 
 | vault | address |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -584,12 +606,12 @@ returns(stablecoinWithdrawn uint256)
 function _withdrawAllFromStrategy(
     ILendingStrategy strategy,
     address vault,
-    bytes32 key
+    bytes32 coverKey
   ) private returns (uint256 stablecoinWithdrawn) {
     uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(vault);
 
     if (balance > 0) {
-      stablecoinWithdrawn = strategy.withdraw(key);
+      stablecoinWithdrawn = strategy.withdraw(coverKey);
     }
   }
 ```
@@ -598,7 +620,7 @@ function _withdrawAllFromStrategy(
 ### _withdrawFromDisabled
 
 ```solidity
-function _withdrawFromDisabled(IStore s, bytes32 key, address onBehalfOf) private nonpayable
+function _withdrawFromDisabled(IStore s, bytes32 coverKey, address onBehalfOf) private nonpayable
 ```
 
 **Arguments**
@@ -606,7 +628,7 @@ function _withdrawFromDisabled(IStore s, bytes32 key, address onBehalfOf) privat
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | onBehalfOf | address |  | 
 
 <details>
@@ -615,7 +637,7 @@ function _withdrawFromDisabled(IStore s, bytes32 key, address onBehalfOf) privat
 ```javascript
 function _withdrawFromDisabled(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     address onBehalfOf
   ) private {
     address[] memory strategies = s.getDisabledStrategiesInternal();
@@ -625,7 +647,7 @@ function _withdrawFromDisabled(
       uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(onBehalfOf);
 
       if (balance > 0) {
-        strategy.withdraw(key);
+        strategy.withdraw(coverKey);
       }
     }
   }
@@ -678,7 +700,6 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -710,7 +731,6 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -738,6 +758,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -748,6 +769,8 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -757,8 +780,12 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

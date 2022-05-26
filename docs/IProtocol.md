@@ -20,8 +20,8 @@ struct AccountWithRoles {
 **Events**
 
 ```js
-event ContractAdded(bytes32  namespace, bytes32  key, address  contractAddress);
-event ContractUpgraded(bytes32  namespace, bytes32  key, address indexed previous, address indexed current);
+event ContractAdded(bytes32 indexed namespace, bytes32 indexed key, address indexed contractAddress);
+event ContractUpgraded(bytes32 indexed namespace, bytes32 indexed key, address  previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
 event Initialized(address[]  addresses, uint256[]  values);
@@ -30,10 +30,10 @@ event Initialized(address[]  addresses, uint256[]  values);
 ## Functions
 
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
-- [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
+- [addContractWithKey(bytes32 namespace, bytes32 coverKey, address contractAddress)](#addcontractwithkey)
 - [initialize(address[] addresses, uint256[] values)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
-- [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
+- [upgradeContractWithKey(bytes32 namespace, bytes32 coverKey, address previous, address current)](#upgradecontractwithkey)
 - [addMember(address member)](#addmember)
 - [removeMember(address member)](#removemember)
 - [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
@@ -62,7 +62,7 @@ function addContract(bytes32 namespace, address contractAddress) external;
 ### addContractWithKey
 
 ```solidity
-function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress) external nonpayable
+function addContractWithKey(bytes32 namespace, bytes32 coverKey, address contractAddress) external nonpayable
 ```
 
 **Arguments**
@@ -70,7 +70,7 @@ function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddr
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | namespace | bytes32 |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | contractAddress | address |  | 
 
 <details>
@@ -79,7 +79,7 @@ function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddr
 ```javascript
 function addContractWithKey(
     bytes32 namespace,
-    bytes32 key,
+    bytes32 coverKey,
     address contractAddress
   ) external;
 ```
@@ -135,7 +135,7 @@ function upgradeContract(
 ### upgradeContractWithKey
 
 ```solidity
-function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current) external nonpayable
+function upgradeContractWithKey(bytes32 namespace, bytes32 coverKey, address previous, address current) external nonpayable
 ```
 
 **Arguments**
@@ -143,7 +143,7 @@ function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | namespace | bytes32 |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | previous | address |  | 
 | current | address |  | 
 
@@ -153,7 +153,7 @@ function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous
 ```javascript
 function upgradeContractWithKey(
     bytes32 namespace,
-    bytes32 key,
+    bytes32 coverKey,
     address previous,
     address current
   ) external;
@@ -237,7 +237,6 @@ function grantRoles(AccountWithRoles[] memory detail) external;
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -269,7 +268,6 @@ function grantRoles(AccountWithRoles[] memory detail) external;
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -297,6 +295,7 @@ function grantRoles(AccountWithRoles[] memory detail) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -307,6 +306,8 @@ function grantRoles(AccountWithRoles[] memory detail) external;
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -316,8 +317,12 @@ function grantRoles(AccountWithRoles[] memory detail) external;
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

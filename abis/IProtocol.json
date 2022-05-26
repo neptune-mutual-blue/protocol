@@ -3,19 +3,19 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
         "name": "namespace",
         "type": "bytes32"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
         "name": "key",
         "type": "bytes32"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "contractAddress",
         "type": "address"
@@ -28,19 +28,19 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
         "name": "namespace",
         "type": "bytes32"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "bytes32",
         "name": "key",
         "type": "bytes32"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "address",
         "name": "previous",
         "type": "address"
@@ -202,7 +202,7 @@
       },
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -427,7 +427,7 @@
       },
       {
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {

@@ -6,18 +6,19 @@ View Source: [contracts/libraries/PolicyHelperV1.sol](../contracts/libraries/Pol
 
 ## Functions
 
-- [calculatePolicyFeeInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#calculatepolicyfeeinternal)
-- [_getCoverPoolAmounts(IStore s, bytes32 key)](#_getcoverpoolamounts)
-- [getPolicyFeeInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getpolicyfeeinternal)
-- [getPolicyRatesInternal(IStore s, bytes32 key)](#getpolicyratesinternal)
-- [getCxTokenInternal(IStore s, bytes32 key, uint256 coverDuration)](#getcxtokeninternal)
-- [getCxTokenOrDeployInternal(IStore s, bytes32 key, uint256 coverDuration)](#getcxtokenordeployinternal)
-- [purchaseCoverInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover)](#purchasecoverinternal)
+- [calculatePolicyFeeInternal(IStore s, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover)](#calculatepolicyfeeinternal)
+- [_getCoverPoolAmounts(IStore s, bytes32 coverKey)](#_getcoverpoolamounts)
+- [getPolicyFeeInternal(IStore s, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover)](#getpolicyfeeinternal)
+- [getPolicyRatesInternal(IStore s, bytes32 coverKey)](#getpolicyratesinternal)
+- [getCxTokenInternal(IStore s, bytes32 coverKey, uint256 coverDuration)](#getcxtokeninternal)
+- [getCxTokenOrDeployInternal(IStore s, bytes32 coverKey, uint256 coverDuration)](#getcxtokenordeployinternal)
+- [purchaseCoverInternal(IStore s, address onBehalfOf, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover)](#purchasecoverinternal)
+- [getCoverageLagInternal(IStore s, bytes32 coverKey)](#getcoveragelaginternal)
 
 ### calculatePolicyFeeInternal
 
 ```solidity
-function calculatePolicyFeeInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover) public view
+function calculatePolicyFeeInternal(IStore s, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover) public view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, floor uint256, ceiling uint256, rate uint256)
 ```
 
@@ -26,7 +27,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | coverDuration | uint256 |  | 
 | amountToCover | uint256 |  | 
 
@@ -36,7 +37,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 ```javascript
 function calculatePolicyFeeInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -51,8 +52,8 @@ function calculatePolicyFeeInternal(
       uint256 rate
     )
   {
-    (floor, ceiling) = getPolicyRatesInternal(s, key);
-    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, key);
+    (floor, ceiling) = getPolicyRatesInternal(s, coverKey);
+    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, coverKey);
 
     require(amountToCover > 0, "Please enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
@@ -82,7 +83,7 @@ function calculatePolicyFeeInternal(
 ### _getCoverPoolAmounts
 
 ```solidity
-function _getCoverPoolAmounts(IStore s, bytes32 key) private view
+function _getCoverPoolAmounts(IStore s, bytes32 coverKey) private view
 returns(stablecoinOwnedByVault uint256, commitment uint256, supportPool uint256)
 ```
 
@@ -91,13 +92,13 @@ returns(stablecoinOwnedByVault uint256, commitment uint256, supportPool uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getCoverPoolAmounts(IStore s, bytes32 key)
+function _getCoverPoolAmounts(IStore s, bytes32 coverKey)
     private
     view
     returns (
@@ -106,21 +107,17 @@ function _getCoverPoolAmounts(IStore s, bytes32 key)
       uint256 supportPool
     )
   {
-    uint256[] memory values = s.getCoverPoolSummaryInternal(key);
+    uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey);
 
     stablecoinOwnedByVault = values[0];
     commitment = values[1];
 
-    uint256 npmProvisionTokens = values[2];
-    uint256 npmPrice = values[3];
-    uint256 reassuranceTokens = values[4];
-    uint256 reassuranceTokenPrice = values[5];
-    uint256 incidentPoolCapRatio = values[6];
+    uint256 reassuranceTokens = values[2];
+    uint256 reassuranceTokenPrice = values[3];
+    uint256 reassurancePoolWeight = values[4];
 
     uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
-    uint256 provision = (npmProvisionTokens * npmPrice) / 1 ether;
-
-    supportPool = (((reassurance + provision) * incidentPoolCapRatio) / ProtoUtilV1.MULTIPLIER);
+    supportPool = (reassurance * reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
   }
 ```
 </details>
@@ -128,7 +125,7 @@ function _getCoverPoolAmounts(IStore s, bytes32 key)
 ### getPolicyFeeInternal
 
 ```solidity
-function getPolicyFeeInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover) public view
+function getPolicyFeeInternal(IStore s, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover) public view
 returns(fee uint256)
 ```
 
@@ -137,7 +134,7 @@ returns(fee uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | coverDuration | uint256 |  | 
 | amountToCover | uint256 |  | 
 
@@ -147,11 +144,11 @@ returns(fee uint256)
 ```javascript
 function getPolicyFeeInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) public view returns (uint256 fee) {
-    (fee, , , , , ) = calculatePolicyFeeInternal(s, key, coverDuration, amountToCover);
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
   }
 ```
 </details>
@@ -159,7 +156,7 @@ function getPolicyFeeInternal(
 ### getPolicyRatesInternal
 
 ```solidity
-function getPolicyRatesInternal(IStore s, bytes32 key) public view
+function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view
 returns(floor uint256, ceiling uint256)
 ```
 
@@ -168,16 +165,16 @@ returns(floor uint256, ceiling uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPolicyRatesInternal(IStore s, bytes32 key) public view returns (uint256 floor, uint256 ceiling) {
-    if (key > 0) {
-      floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key);
-      ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key);
+function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view returns (uint256 floor, uint256 ceiling) {
+    if (coverKey > 0) {
+      floor = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey);
+      ceiling = s.getUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey);
     }
 
     if (floor == 0) {
@@ -192,7 +189,7 @@ function getPolicyRatesInternal(IStore s, bytes32 key) public view returns (uint
 ### getCxTokenInternal
 
 ```solidity
-function getCxTokenInternal(IStore s, bytes32 key, uint256 coverDuration) public view
+function getCxTokenInternal(IStore s, bytes32 coverKey, uint256 coverDuration) public view
 returns(cxToken address, expiryDate uint256)
 ```
 
@@ -201,7 +198,7 @@ returns(cxToken address, expiryDate uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | coverDuration | uint256 |  | 
 
 <details>
@@ -210,11 +207,11 @@ returns(cxToken address, expiryDate uint256)
 ```javascript
 function getCxTokenInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration
   ) public view returns (address cxToken, uint256 expiryDate) {
     expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, key, expiryDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
 
     cxToken = s.getAddress(k);
   }
@@ -226,7 +223,7 @@ function getCxTokenInternal(
 Gets the instance of cxToken or deploys a new one based on the cover expiry timestamp
 
 ```solidity
-function getCxTokenOrDeployInternal(IStore s, bytes32 key, uint256 coverDuration) public nonpayable
+function getCxTokenOrDeployInternal(IStore s, bytes32 coverKey, uint256 coverDuration) public nonpayable
 returns(contract ICxToken)
 ```
 
@@ -235,7 +232,7 @@ returns(contract ICxToken)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 
 <details>
@@ -244,17 +241,17 @@ returns(contract ICxToken)
 ```javascript
 function getCxTokenOrDeployInternal(
     IStore s,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration
   ) public returns (ICxToken) {
-    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, key, coverDuration);
+    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, coverKey, coverDuration);
 
     if (cxToken != address(0)) {
       return ICxToken(cxToken);
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(s, key, expiryDate);
+    cxToken = factory.deploy(coverKey, expiryDate);
 
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
@@ -273,7 +270,7 @@ Purchase cover for the specified amount. <br /> <br />
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
 ```solidity
-function purchaseCoverInternal(IStore s, bytes32 key, uint256 coverDuration, uint256 amountToCover) external nonpayable
+function purchaseCoverInternal(IStore s, address onBehalfOf, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover) external nonpayable
 returns(cxToken contract ICxToken, fee uint256)
 ```
 
@@ -282,7 +279,8 @@ returns(cxToken contract ICxToken, fee uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 | Enter the cover key you wish to purchase the policy for | 
+| onBehalfOf | address | Enter the address where the claim tokens (cxTokens) should be sent. | 
+| coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
@@ -292,21 +290,58 @@ returns(cxToken contract ICxToken, fee uint256)
 ```javascript
 function purchaseCoverInternal(
     IStore s,
-    bytes32 key,
+    address onBehalfOf,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getPolicyFeeInternal(s, key, coverDuration, amountToCover);
-    cxToken = getCxTokenOrDeployInternal(s, key, coverDuration);
+    fee = getPolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
+    cxToken = getCxTokenOrDeployInternal(s, coverKey, coverDuration);
 
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
-    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(key)), fee);
-    cxToken.mint(key, msg.sender, amountToCover);
+    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(coverKey)), fee);
+    cxToken.mint(coverKey, onBehalfOf, amountToCover);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
+  }
+```
+</details>
+
+### getCoverageLagInternal
+
+```solidity
+function getCoverageLagInternal(IStore s, bytes32 coverKey) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverageLagInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
+    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
+
+    if (custom > 0) {
+      return custom;
+    }
+
+    if (global > 0) {
+      return global;
+    }
+
+    // fallback
+    return 1 days;
   }
 ```
 </details>
@@ -328,7 +363,6 @@ function purchaseCoverInternal(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -360,7 +394,6 @@ function purchaseCoverInternal(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -388,6 +421,7 @@ function purchaseCoverInternal(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -398,6 +432,8 @@ function purchaseCoverInternal(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -407,8 +443,12 @@ function purchaseCoverInternal(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

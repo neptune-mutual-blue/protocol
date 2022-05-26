@@ -17,10 +17,10 @@ When you create a new cover, you have to specify the amount of
 ## Functions
 
 - [constructor(IStore store)](#)
-- [increaseStake(bytes32 key, address account, uint256 amount, uint256 fee)](#increasestake)
-- [decreaseStake(bytes32 key, address account, uint256 amount)](#decreasestake)
-- [stakeOf(bytes32 key, address account)](#stakeof)
-- [_getDrawingPower(bytes32 key, address account)](#_getdrawingpower)
+- [increaseStake(bytes32 coverKey, address account, uint256 amount, uint256 fee)](#increasestake)
+- [decreaseStake(bytes32 coverKey, uint256 amount)](#decreasestake)
+- [stakeOf(bytes32 coverKey, address account)](#stakeof)
+- [_getDrawingPower(bytes32 coverKey, address account)](#_getdrawingpower)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -51,14 +51,14 @@ constructor(IStore store) Recoverable(store) {}
 Increase the stake of the given cover pool
 
 ```solidity
-function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee) external nonpayable nonReentrant 
+function increaseStake(bytes32 coverKey, address account, uint256 amount, uint256 fee) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address | Enter the account from where the NPM tokens will be transferred | 
 | amount | uint256 | Enter the amount of stake | 
 | fee | uint256 | Enter the fee amount. Note: do not enter the fee if you are directly calling this function. | 
@@ -68,14 +68,14 @@ function increaseStake(bytes32 key, address account, uint256 amount, uint256 fee
 
 ```javascript
 function increaseStake(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
     // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
     s.senderMustBeCoverContract();
 
     require(amount >= fee, "Invalid fee");
@@ -84,62 +84,58 @@ function increaseStake(
 
     if (fee > 0) {
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
-      emit FeeBurned(key, fee);
+      emit FeeBurned(coverKey, fee);
     }
 
     // @suppress-subtraction Checked usage. Fee is always less than amount
     // if we reach this far.
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount - fee);
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount - fee);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount - fee);
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount - fee);
 
-    emit StakeAdded(key, amount - fee);
+    emit StakeAdded(coverKey, account, amount - fee);
   }
 ```
 </details>
 
 ### decreaseStake
 
-Decreases the stake from the given cover pool
+Decreases the stake from the given cover pool.
+ A cover creator can withdraw their full stake after 365 days
 
 ```solidity
-function decreaseStake(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
+function decreaseStake(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
-| account | address | Enter the account to decrease the stake of | 
+| coverKey | bytes32 | Enter the cover key | 
 | amount | uint256 | Enter the amount of stake to decrease | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function decreaseStake(
-    bytes32 key,
-    address account,
-    uint256 amount
-  ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
+function decreaseStake(bytes32 coverKey, uint256 amount) external override nonReentrant {
+    // @suppress-acl Marking this function as publicly accessible
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
-    s.senderMustBeCoverContract();
+    s.mustBeValidCoverKey(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
 
-    uint256 drawingPower = _getDrawingPower(key, account);
+    uint256 drawingPower = _getDrawingPower(coverKey, msg.sender);
     require(amount > 0, "Please specify amount");
     require(drawingPower >= amount, "Exceeds your drawing power");
 
     // @suppress-subtraction
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, key, amount);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, msg.sender, amount);
 
-    s.npmToken().ensureTransfer(account, amount);
+    s.npmToken().ensureTransfer(msg.sender, amount);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit StakeRemoved(key, amount);
+    emit StakeRemoved(coverKey, msg.sender, amount);
   }
 ```
 </details>
@@ -149,7 +145,7 @@ function decreaseStake(
 Gets the stake of an account for the given cover key
 
 ```solidity
-function stakeOf(bytes32 key, address account) public view
+function stakeOf(bytes32 coverKey, address account) public view
 returns(uint256)
 ```
 
@@ -157,7 +153,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account to obtain the stake of | 
 
 **Returns**
@@ -168,8 +164,8 @@ Returns the total stake of the specified account on the given cover key
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stakeOf(bytes32 key, address account) public view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, key, account);
+function stakeOf(bytes32 coverKey, address account) public view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account);
   }
 ```
 </details>
@@ -180,7 +176,7 @@ Gets the drawing power of (the stake amount that can be withdrawn from)
  an account.
 
 ```solidity
-function _getDrawingPower(bytes32 key, address account) private view
+function _getDrawingPower(bytes32 coverKey, address account) private view
 returns(uint256)
 ```
 
@@ -188,7 +184,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address | Specify the account to obtain the drawing power of | 
 
 **Returns**
@@ -199,13 +195,14 @@ Returns the drawing power of the specified account on the given cover key
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _getDrawingPower(bytes32 key, address account) private view returns (uint256) {
-    uint256 yourStake = stakeOf(key, account);
-    bool isOwner = account == s.getCoverOwner(key);
+function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
+    uint256 createdAt = s.getCoverCreationDate(coverKey);
+    uint256 yourStake = stakeOf(coverKey, account);
+    bool isOwner = account == s.getCoverOwner(coverKey);
 
-    uint256 minStake = s.getMinCoverCreationStake();
+    uint256 minStakeRequired = block.timestamp > createdAt + 365 days ? 0 : s.getMinCoverCreationStake(); // solhint-disable-line
 
-    return isOwner ? yourStake - minStake : yourStake;
+    return isOwner ? yourStake - minStakeRequired : yourStake;
   }
 ```
 </details>
@@ -275,7 +272,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -307,7 +303,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -335,6 +330,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -345,6 +341,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -354,8 +352,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

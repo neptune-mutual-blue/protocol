@@ -86,6 +86,7 @@ describe('Governance Stories', function () {
     const claimPeriod = 7 * constants.DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
@@ -94,7 +95,7 @@ describe('Governance Stories', function () {
 
     // Create a new cover
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 
@@ -423,6 +424,13 @@ describe('Governance Stories', function () {
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.lewis.address, coverKey, incidentDate, balance)
       .should.be.rejectedWith('Claim period has expired')
+  })
+
+  it('a portion of the reassurance fund is capitalized back to the cover pool', async () => {
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await contracts.reassuranceContract.capitalizePool(coverKey, incidentDate)
+      .should.not.be.rejected
   })
 
   it('a governance agent finalizes the cover', async () => {

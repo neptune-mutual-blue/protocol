@@ -243,9 +243,10 @@ describe('AccessControlLibV1: _deleteContract', () => {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
 
     const info = key.toBytes32('info')
 
@@ -265,7 +266,7 @@ describe('AccessControlLibV1: _deleteContract', () => {
         transferLib: deployed.transferLib,
         protoUtilV1: deployed.protoUtilV1,
         registryLibV1: deployed.registryLibV1,
-        validationLib: deployed.validationLibV1
+        validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
   })

@@ -19,14 +19,14 @@ uint256 public lastPolicyId;
 ## Functions
 
 - [constructor(IStore store, uint256 _lastPolicyId)](#)
-- [purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
-- [getCxToken(bytes32 key, uint256 coverDuration)](#getcxtoken)
-- [getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate)](#getcxtokenbyexpirydate)
+- [purchaseCover(address onBehalfOf, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
+- [getCxToken(bytes32 coverKey, uint256 coverDuration)](#getcxtoken)
+- [getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
-- [getCommitment(bytes32 key)](#getcommitment)
-- [getAvailableLiquidity(bytes32 key)](#getavailableliquidity)
-- [getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
-- [getCoverPoolSummary(bytes32 key)](#getcoverpoolsummary)
+- [getCommitment(bytes32 coverKey)](#getcommitment)
+- [getAvailableLiquidity(bytes32 coverKey)](#getavailableliquidity)
+- [getCoverFeeInfo(bytes32 coverKey, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
+- [getCoverPoolSummary(bytes32 coverKey)](#getcoverpoolsummary)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -62,7 +62,7 @@ Purchase cover for the specified amount. <br /> <br />
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
 ```solidity
-function purchaseCover(bytes32 key, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable nonReentrant 
+function purchaseCover(address onBehalfOf, bytes32 coverKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable nonReentrant 
 returns(address, uint256)
 ```
 
@@ -70,7 +70,8 @@ returns(address, uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key you wish to purchase the policy for | 
+| onBehalfOf | address | Enter an address you would like to send the claim tokens (cxTokens) to. | 
+| coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 | referralCode | bytes32 |  | 
@@ -80,24 +81,26 @@ returns(address, uint256)
 
 ```javascript
 function purchaseCover(
-    bytes32 key,
+    address onBehalfOf,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
   ) external override nonReentrant returns (address, uint256) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
-    s.senderMustBeWhitelistedIfRequired(key);
+    s.mustHaveNormalCoverStatus(coverKey);
+    s.senderMustBeWhitelistedIfRequired(coverKey, onBehalfOf);
 
+    require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(key, coverDuration, amountToCover);
+    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(onBehalfOf, coverKey, coverDuration, amountToCover);
 
     lastPolicyId += 1;
 
-    emit CoverPurchased(key, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    emit CoverPurchased(coverKey, msg.sender, onBehalfOf, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 ```
@@ -106,7 +109,7 @@ function purchaseCover(
 ### getCxToken
 
 ```solidity
-function getCxToken(bytes32 key, uint256 coverDuration) external view
+function getCxToken(bytes32 coverKey, uint256 coverDuration) external view
 returns(cxToken address, expiryDate uint256)
 ```
 
@@ -114,15 +117,15 @@ returns(cxToken address, expiryDate uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | coverDuration | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCxToken(bytes32 key, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
-    return s.getCxTokenInternal(key, coverDuration);
+function getCxToken(bytes32 coverKey, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
+    return s.getCxTokenInternal(coverKey, coverDuration);
   }
 ```
 </details>
@@ -130,7 +133,7 @@ function getCxToken(bytes32 key, uint256 coverDuration) external view override r
 ### getCxTokenByExpiryDate
 
 ```solidity
-function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view
+function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view
 returns(cxToken address)
 ```
 
@@ -138,15 +141,15 @@ returns(cxToken address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | expiryDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCxTokenByExpiryDate(bytes32 key, uint256 expiryDate) external view override returns (address cxToken) {
-    return s.getCxTokenByExpiryDateInternal(key, expiryDate);
+function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view override returns (address cxToken) {
+    return s.getCxTokenByExpiryDateInternal(coverKey, expiryDate);
   }
 ```
 </details>
@@ -180,7 +183,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure overr
 ### getCommitment
 
 ```solidity
-function getCommitment(bytes32 key) external view
+function getCommitment(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -188,14 +191,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCommitment(bytes32 key) external view override returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(key);
+function getCommitment(bytes32 coverKey) external view override returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey);
   }
 ```
 </details>
@@ -203,7 +206,7 @@ function getCommitment(bytes32 key) external view override returns (uint256) {
 ### getAvailableLiquidity
 
 ```solidity
-function getAvailableLiquidity(bytes32 key) external view
+function getAvailableLiquidity(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -211,14 +214,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAvailableLiquidity(bytes32 key) external view override returns (uint256) {
-    return s.getStablecoinOwnedByVaultInternal(key);
+function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
+    return s.getStablecoinOwnedByVaultInternal(coverKey);
   }
 ```
 </details>
@@ -228,7 +231,7 @@ function getAvailableLiquidity(bytes32 key) external view override returns (uint
 Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
-function getCoverFeeInfo(bytes32 key, uint256 coverDuration, uint256 amountToCover) external view
+function getCoverFeeInfo(bytes32 coverKey, uint256 coverDuration, uint256 amountToCover) external view
 returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, floor uint256, ceiling uint256, rate uint256)
 ```
 
@@ -236,7 +239,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
 | amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
 
@@ -245,7 +248,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 
 ```javascript
 function getCoverFeeInfo(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -261,7 +264,7 @@ function getCoverFeeInfo(
       uint256 rate
     )
   {
-    return s.calculatePolicyFeeInternal(key, coverDuration, amountToCover);
+    return s.calculatePolicyFeeInternal(coverKey, coverDuration, amountToCover);
   }
 ```
 </details>
@@ -271,7 +274,7 @@ function getCoverFeeInfo(
 Returns the values of the given cover key
 
 ```solidity
-function getCoverPoolSummary(bytes32 key) external view
+function getCoverPoolSummary(bytes32 coverKey) external view
 returns(_values uint256[])
 ```
 
@@ -279,14 +282,14 @@ returns(_values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverPoolSummary(bytes32 key) external view override returns (uint256[] memory _values) {
-    return s.getCoverPoolSummaryInternal(key);
+function getCoverPoolSummary(bytes32 coverKey) external view override returns (uint256[] memory _values) {
+    return s.getCoverPoolSummaryInternal(coverKey);
   }
 ```
 </details>
@@ -356,7 +359,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -388,7 +390,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -416,6 +417,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -426,6 +428,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -435,8 +439,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

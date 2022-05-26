@@ -11,9 +11,9 @@ View Source: [contracts/libraries/PriceLibV1.sol](../contracts/libraries/PriceLi
 - [getLastKnownPairInfoInternal(IStore s, IUniswapV2PairLike pair)](#getlastknownpairinfointernal)
 - [_setTokenPrice(IStore s, address token, address stablecoin, IUniswapV2PairLike pair)](#_settokenprice)
 - [getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens)](#getpairliquidityinstablecoin)
-- [getLastUpdateOnInternal(IStore s)](#getlastupdateoninternal)
-- [setLastUpdateOn(IStore s)](#setlastupdateon)
-- [getLastUpdateKey()](#getlastupdatekey)
+- [getLastUpdateOnInternal(IStore s, bytes32 coverKey)](#getlastupdateoninternal)
+- [setLastUpdateOn(IStore s, bytes32 coverKey)](#setlastupdateon)
+- [getLastUpdateKey(bytes32 coverKey)](#getlastupdatekey)
 - [getPriceInternal(IStore s, address token, address stablecoin, uint256 multiplier)](#getpriceinternal)
 - [getNpmPriceInternal(IStore s, uint256 multiplier)](#getnpmpriceinternal)
 - [_getReserve0Key(IUniswapV2PairLike pair)](#_getreserve0key)
@@ -176,7 +176,7 @@ function getPairLiquidityInStablecoin(
     uint256 reserve1 = values[1];
     uint256 supply = values[2];
 
-    require(supply > 0, "Invalid pair or price not updated");
+    require(supply > 0, "Invalid pair or price not updated"); // solhint-disable-line
 
     address stablecoin = s.getStablecoin();
 
@@ -192,7 +192,7 @@ function getPairLiquidityInStablecoin(
 ### getLastUpdateOnInternal
 
 ```solidity
-function getLastUpdateOnInternal(IStore s) external view
+function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -201,13 +201,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLastUpdateOnInternal(IStore s) external view returns (uint256) {
-    bytes32 key = getLastUpdateKey();
+function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    bytes32 key = getLastUpdateKey(coverKey);
     return s.getUintByKey(key);
   }
 ```
@@ -216,7 +217,7 @@ function getLastUpdateOnInternal(IStore s) external view returns (uint256) {
 ### setLastUpdateOn
 
 ```solidity
-function setLastUpdateOn(IStore s) external nonpayable
+function setLastUpdateOn(IStore s, bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
@@ -224,13 +225,14 @@ function setLastUpdateOn(IStore s) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLastUpdateOn(IStore s) external {
-    bytes32 key = getLastUpdateKey();
+function setLastUpdateOn(IStore s, bytes32 coverKey) external {
+    bytes32 key = getLastUpdateKey(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 ```
@@ -239,7 +241,7 @@ function setLastUpdateOn(IStore s) external {
 ### getLastUpdateKey
 
 ```solidity
-function getLastUpdateKey() public pure
+function getLastUpdateKey(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -247,13 +249,14 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLastUpdateKey() public pure returns (bytes32) {
-    return ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE;
+function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
   }
 ```
 </details>
@@ -442,7 +445,6 @@ function _getPair(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -474,7 +476,6 @@ function _getPair(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -502,6 +503,7 @@ function _getPair(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -512,6 +514,8 @@ function _getPair(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -521,8 +525,12 @@ function _getPair(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

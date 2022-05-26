@@ -35,11 +35,12 @@ describe('Fractionalization of Reserves', () => {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, '0', minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, '0', minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 

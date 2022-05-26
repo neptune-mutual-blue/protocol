@@ -17,8 +17,8 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getProtocolContract(IStore s, bytes32 cns)](#getprotocolcontract)
 - [getProtocolContract(IStore s, bytes32 cns, bytes32 key)](#getprotocolcontract)
 - [getCoverContract(IStore s)](#getcovercontract)
-- [getVault(IStore s, bytes32 key)](#getvault)
-- [getVaultAddress(IStore s, bytes32 key)](#getvaultaddress)
+- [getVault(IStore s, bytes32 coverKey)](#getvault)
+- [getVaultAddress(IStore s, bytes32 coverKey)](#getvaultaddress)
 - [getVaultDelegate(IStore s)](#getvaultdelegate)
 - [getStakingPoolAddress(IStore s)](#getstakingpooladdress)
 - [getBondPoolAddress(IStore s)](#getbondpooladdress)
@@ -288,7 +288,7 @@ function getCoverContract(IStore s) external view returns (ICover) {
 ### getVault
 
 ```solidity
-function getVault(IStore s, bytes32 key) external view
+function getVault(IStore s, bytes32 coverKey) external view
 returns(contract IVault)
 ```
 
@@ -297,14 +297,14 @@ returns(contract IVault)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getVault(IStore s, bytes32 key) external view returns (IVault) {
-    return IVault(getVaultAddress(s, key));
+function getVault(IStore s, bytes32 coverKey) external view returns (IVault) {
+    return IVault(getVaultAddress(s, coverKey));
   }
 ```
 </details>
@@ -312,7 +312,7 @@ function getVault(IStore s, bytes32 key) external view returns (IVault) {
 ### getVaultAddress
 
 ```solidity
-function getVaultAddress(IStore s, bytes32 key) public view
+function getVaultAddress(IStore s, bytes32 coverKey) public view
 returns(address)
 ```
 
@@ -321,14 +321,14 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getVaultAddress(IStore s, bytes32 key) public view returns (address) {
-    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, key);
+function getVaultAddress(IStore s, bytes32 coverKey) public view returns (address) {
+    address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     return vault;
   }
 ```
@@ -447,7 +447,6 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -479,7 +478,6 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -507,6 +505,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -517,6 +516,8 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -526,8 +527,12 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

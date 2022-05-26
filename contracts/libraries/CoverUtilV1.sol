@@ -61,7 +61,7 @@ library CoverUtilV1 {
     return value;
   }
 
-  function getCoverCreationDate(IStore s, bytes32 coverKey) public view returns (uint256) {
+  function getCoverCreationDate(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
   }
 

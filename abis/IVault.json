@@ -30,7 +30,7 @@
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -49,7 +49,7 @@
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       },
       {
@@ -124,7 +124,7 @@
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "key",
+        "name": "coverKey",
         "type": "bytes32"
       }
     ],

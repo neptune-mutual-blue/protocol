@@ -49,6 +49,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
+      // slither-disable-next-line unchecked-transfer
       erc20.transfer(sendTo, balance);
     }
   }

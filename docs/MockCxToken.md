@@ -11,7 +11,8 @@ View Source: [contracts/mock/base/MockCxToken.sol](../contracts/mock/base/MockCx
 - [constructor()](#)
 - [burn(uint256 amount)](#burn)
 - [expiresOn()](#expireson)
-- [coverKey()](#coverkey)
+- [getClaimablePolicyOf(address )](#getclaimablepolicyof)
+- [COVER_KEY()](#cover_key)
 
 ### 
 
@@ -78,10 +79,33 @@ function expiresOn() external view returns (uint256) {
 ```
 </details>
 
-### coverKey
+### getClaimablePolicyOf
 
 ```solidity
-function coverKey() external pure
+function getClaimablePolicyOf(address ) external pure
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+|  | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getClaimablePolicyOf(address) external pure returns (uint256) {
+    return 1000 ether;
+  }
+```
+</details>
+
+### COVER_KEY
+
+```solidity
+function COVER_KEY() external pure
 returns(bytes32)
 ```
 
@@ -94,7 +118,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function coverKey() external pure returns (bytes32) {
+function COVER_KEY() external pure returns (bytes32) {
     return "test";
   }
 ```
@@ -117,7 +141,6 @@ function coverKey() external pure returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -149,7 +172,6 @@ function coverKey() external pure returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -177,6 +199,7 @@ function coverKey() external pure returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -187,6 +210,8 @@ function coverKey() external pure returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -196,8 +221,12 @@ function coverKey() external pure returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

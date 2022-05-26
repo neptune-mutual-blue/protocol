@@ -22,9 +22,10 @@ describe('Cover: addCover', () => {
   const claimPeriod = 7 * DAYS
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
+  const reassuranceRate = helper.percentage(50)
 
   const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
   const info = key.toBytes32('info')
 
   before(async () => {
@@ -75,7 +76,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    const values = [helper.ether(1), initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [helper.ether(1), initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
       .should.be.rejectedWith('Your stake is too low')
   })

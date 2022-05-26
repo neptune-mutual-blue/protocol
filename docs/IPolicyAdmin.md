@@ -11,14 +11,17 @@ View Source: [contracts/interfaces/IPolicyAdmin.sol](../contracts/interfaces/IPo
 
 ```js
 event PolicyRateSet(uint256  floor, uint256  ceiling);
-event CoverPolicyRateSet(bytes32  key, uint256  floor, uint256  ceiling);
+event CoverPolicyRateSet(bytes32 indexed coverKey, uint256  floor, uint256  ceiling);
+event CoverageLagSet(bytes32 indexed coverKey, uint256  window);
 ```
 
 ## Functions
 
 - [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
-- [setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
-- [getPolicyRates(bytes32 key)](#getpolicyrates)
+- [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
+- [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
+- [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
+- [getCoverageLag(bytes32 coverKey)](#getcoveragelag)
 
 ### setPolicyRates
 
@@ -48,14 +51,14 @@ function setPolicyRates(uint256 floor, uint256 ceiling) external;
 Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
 
 ```solidity
-function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable
+function setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | floor | uint256 | The lowest cover fee rate for this cover | 
 | ceiling | uint256 | The highest cover fee rate for this cover | 
 
@@ -64,7 +67,7 @@ function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) extern
 
 ```javascript
 function setPolicyRatesByKey(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 floor,
     uint256 ceiling
   ) external;
@@ -76,7 +79,7 @@ function setPolicyRatesByKey(
 Gets the cover policy rates for the given cover key
 
 ```solidity
-function getPolicyRates(bytes32 key) external view
+function getPolicyRates(bytes32 coverKey) external view
 returns(floor uint256, ceiling uint256)
 ```
 
@@ -84,13 +87,55 @@ returns(floor uint256, ceiling uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint256 ceiling);
+function getPolicyRates(bytes32 coverKey) external view returns (uint256 floor, uint256 ceiling);
+```
+</details>
+
+### setCoverageLag
+
+```solidity
+function setCoverageLag(bytes32 coverKey, uint256 window) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| window | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverageLag(bytes32 coverKey, uint256 window) external;
+```
+</details>
+
+### getCoverageLag
+
+```solidity
+function getCoverageLag(bytes32 coverKey) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverageLag(bytes32 coverKey) external view returns (uint256);
 ```
 </details>
 
@@ -111,7 +156,6 @@ function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint2
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -143,7 +187,6 @@ function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint2
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -171,6 +214,7 @@ function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint2
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -181,6 +225,8 @@ function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint2
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -190,8 +236,12 @@ function getPolicyRates(bytes32 key) external view returns (uint256 floor, uint2
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

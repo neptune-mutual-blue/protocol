@@ -176,9 +176,11 @@ const deployDependencies = async () => {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   }, store.address)
@@ -320,9 +322,10 @@ const deployDependencies = async () => {
   const claimPeriod = 7 * DAYS
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
+  const reassuranceRate = helper.percentage(50)
 
   const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
 
   const info = key.toBytes32('info')
 
@@ -352,7 +355,7 @@ const deployDependencies = async () => {
       transferLib: transferLib,
       protoUtilV1: protoUtilV1,
       registryLibV1: registryLibV1,
-      validationLib: validationLibV1
+      validationLibV1: validationLibV1
     }
   }, coverKey)
 

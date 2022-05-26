@@ -43,7 +43,7 @@ contract MockAccessControlUser {
     s.callerMustBeUnpauseAgent(caller);
   }
 
-  function hasAccess(bytes32 role, address user) public view returns (bool) {
+  function hasAccess(bytes32 role, address user) external view returns (bool) {
     return s.hasAccess(role, user);
   }
 }

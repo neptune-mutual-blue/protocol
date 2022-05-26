@@ -193,11 +193,14 @@ const deployDependencies = async () => {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
+
   }, store.address)
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_REASSURANCE, reassuranceContract.address)

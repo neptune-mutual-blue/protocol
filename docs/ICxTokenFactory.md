@@ -10,17 +10,17 @@ View Source: [contracts/interfaces/ICxTokenFactory.sol](../contracts/interfaces/
 **Events**
 
 ```js
-event CxTokenDeployed(bytes32 indexed key, address  cxToken, uint256  expiryDate);
+event CxTokenDeployed(bytes32 indexed coverKey, address  cxToken, uint256  expiryDate);
 ```
 
 ## Functions
 
-- [deploy(IStore s, bytes32 key, uint256 expiryDate)](#deploy)
+- [deploy(bytes32 coverKey, uint256 expiryDate)](#deploy)
 
 ### deploy
 
 ```solidity
-function deploy(IStore s, bytes32 key, uint256 expiryDate) external nonpayable
+function deploy(bytes32 coverKey, uint256 expiryDate) external nonpayable
 returns(address)
 ```
 
@@ -28,19 +28,14 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | expiryDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deploy(
-    IStore s,
-    bytes32 key,
-    uint256 expiryDate
-  ) external returns (address);
+function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address);
 ```
 </details>
 
@@ -61,7 +56,6 @@ function deploy(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -93,7 +87,6 @@ function deploy(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -121,6 +114,7 @@ function deploy(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -131,6 +125,8 @@ function deploy(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -140,8 +136,12 @@ function deploy(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

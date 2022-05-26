@@ -3,7 +3,7 @@
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md), [IRecoverable](IRecoverable.md)**
-**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [CoverBase](CoverBase.md), [CoverProvision](CoverProvision.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultDelegateBase](VaultDelegateBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
+**↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [CoverBase](CoverBase.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [PriceDiscovery](PriceDiscovery.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultDelegateBase](VaultDelegateBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
 
@@ -119,7 +119,6 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -151,7 +150,6 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -179,6 +177,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -189,6 +188,8 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -198,8 +199,12 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -90,8 +90,10 @@ function transfer(address _to, uint256 _value) external returns (bool) {
     if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
-      Transfer(msg.sender, _to, _value);
+      emit Transfer(msg.sender, _to, _value);
     }
+
+    return false;
   }
 ```
 </details>
@@ -124,8 +126,10 @@ function transferFrom(
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
-      Transfer(_from, _to, _value);
+      emit Transfer(_from, _to, _value);
     }
+
+    return false;
   }
 ```
 </details>
@@ -173,7 +177,9 @@ returns(bool)
 ```javascript
 function approve(address _spender, uint256 _value) external returns (bool) {
     allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
+    emit Approval(msg.sender, _spender, _value);
+
+    return false;
   }
 ```
 </details>
@@ -219,7 +225,6 @@ function allowance(address _owner, address _spender) external view returns (uint
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -251,7 +256,6 @@ function allowance(address _owner, address _spender) external view returns (uint
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -279,6 +283,7 @@ function allowance(address _owner, address _spender) external view returns (uint
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -289,6 +294,8 @@ function allowance(address _owner, address _spender) external view returns (uint
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -298,8 +305,12 @@ function allowance(address _owner, address _spender) external view returns (uint
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

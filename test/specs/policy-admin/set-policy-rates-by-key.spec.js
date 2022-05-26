@@ -31,7 +31,7 @@ describe('Policy Admin: setPolicyRatesByKey', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY_ADMIN, deployed.policyAdminContract.address)
 
     coverKey = key.toBytes32('foo-bar')
-    const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100)]
+    const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100), helper.percentage(30)]
     const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)

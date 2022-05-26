@@ -18,9 +18,9 @@ event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidit
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
 event NPMStaken(address indexed account, uint256  amount);
 event NPMUnstaken(address indexed account, uint256  amount);
-event InterestAccrued(bytes32 indexed key);
-event Entered(bytes32 indexed key, address indexed account);
-event Exited(bytes32 indexed key, address indexed account);
+event InterestAccrued(bytes32 indexed coverKey);
+event Entered(bytes32 indexed coverKey, address indexed account);
+event Exited(bytes32 indexed coverKey, address indexed account);
 ```
 
 ## Functions
@@ -348,7 +348,6 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -380,7 +379,6 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -408,6 +406,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -418,6 +417,8 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -427,8 +428,12 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

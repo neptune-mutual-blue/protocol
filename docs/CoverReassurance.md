@@ -17,9 +17,10 @@ Reassurance tokens can be added by a covered project to demonstrate coverage sup
 ## Functions
 
 - [constructor(IStore store)](#)
-- [addReassurance(bytes32 key, address account, uint256 amount)](#addreassurance)
-- [setWeight(bytes32 key, uint256 weight)](#setweight)
-- [getReassurance(bytes32 key)](#getreassurance)
+- [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
+- [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
+- [capitalizePool(bytes32 coverKey, uint256 incidentDate)](#capitalizepool)
+- [getReassurance(bytes32 coverKey)](#getreassurance)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -48,14 +49,14 @@ constructor(IStore store) Recoverable(store) {}
 Adds reassurance to the specified cover contract
 
 ```solidity
-function addReassurance(bytes32 key, address account, uint256 amount) external nonpayable nonReentrant 
+function addReassurance(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | account | address |  | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
@@ -64,30 +65,27 @@ function addReassurance(bytes32 key, address account, uint256 amount) external n
 
 ```javascript
 function addReassurance(
-    bytes32 key,
+    bytes32 coverKey,
     address account,
     uint256 amount
   ) external override nonReentrant {
     // @suppress-acl Reassurance can only be added by cover owner or latest cover contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(key);
-    s.mustBeCoverOwnerOrCoverContract(key, msg.sender);
+    s.mustBeValidCoverKey(coverKey);
+    s.mustBeCoverOwnerOrCoverContract(coverKey, msg.sender);
 
     require(amount > 0, "Provide valid amount");
 
-    // IERC20 reassuranceToken = IERC20(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, key));
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
     IERC20 reassuranceToken = IERC20(s.getStablecoin());
 
-    address vault = s.getReassuranceVault();
+    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, key, amount);
+    reassuranceToken.ensureTransferFrom(account, address(this), amount);
 
-    reassuranceToken.ensureTransferFrom(account, vault, amount);
+    s.updateStateAndLiquidity(coverKey);
 
-    s.updateStateAndLiquidity(key);
-
-    emit ReassuranceAdded(key, amount);
+    emit ReassuranceAdded(coverKey, amount);
   }
 ```
 </details>
@@ -95,32 +93,74 @@ function addReassurance(
 ### setWeight
 
 ```solidity
-function setWeight(bytes32 key, uint256 weight) external nonpayable nonReentrant 
+function setWeight(bytes32 coverKey, uint256 weight) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | weight | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
+function setWeight(bytes32 coverKey, uint256 weight) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
 
     require(weight > 0, "Please specify weight");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, key, weight);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit WeightSet(key, weight);
+    emit WeightSet(coverKey, weight);
+  }
+```
+</details>
+
+### capitalizePool
+
+```solidity
+function capitalizePool(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function capitalizePool(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey);
+    s.mustBeClaimable(coverKey);
+    s.mustBeAfterClaimExpiry(coverKey);
+
+    IVault vault = s.getVault(coverKey);
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+
+    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+
+    require(toTransfer > 0, "Nothing to capitalize");
+
+    stablecoin.transfer(address(vault), toTransfer);
+    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
+    s.addReassurancePayoutInternal(coverKey, incidentDate, toTransfer);
   }
 ```
 </details>
@@ -130,7 +170,7 @@ function setWeight(bytes32 key, uint256 weight) external override nonReentrant {
 Gets the reassurance amount of the specified cover contract
 
 ```solidity
-function getReassurance(bytes32 key) external view
+function getReassurance(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -138,14 +178,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getReassurance(bytes32 key) external view override returns (uint256) {
-    return s.getReassuranceAmountInternal(key);
+function getReassurance(bytes32 coverKey) external view override returns (uint256) {
+    return s.getReassuranceAmountInternal(coverKey);
   }
 ```
 </details>
@@ -215,7 +255,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -247,7 +286,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -275,6 +313,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -285,6 +324,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -294,8 +335,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -22,7 +22,6 @@ library ProtoUtilV1 {
 
   bytes32 public constant CNS_UNISWAP_V2_ROUTER = "cns:core:uni:v2:router";
   bytes32 public constant CNS_UNISWAP_V2_FACTORY = "cns:core:uni:v2:factory";
-  bytes32 public constant CNS_REASSURANCE_VAULT = "cns:core:reassurance:vault";
   bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
   bytes32 public constant CNS_TREASURY = "cns:core:treasury";
   bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
@@ -72,8 +71,10 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
+  bytes32 public constant NS_COVER_REASSURANCE_PAYOUT = "ns:cover:reassurance:payout";
   bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
+  bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
   bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
   bytes32 public constant NS_COVER_INFO = "ns:cover:info";
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
@@ -162,6 +163,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_GOVERNANCE_REPORTER_COMMISSION = "ns:gov:reporter:commission";
 
   bytes32 public constant NS_CLAIM_PERIOD = "ns:claim:period";
+
+  bytes32 public constant NS_CLAIM_PAYOUTS = "ns:claim:payouts";
 
   /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
   bytes32 public constant NS_CLAIM_BEGIN_TS = "ns:claim:begin:ts";
@@ -295,10 +298,6 @@ library ProtoUtilV1 {
 
   function getTreasury(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_TREASURY);
-  }
-
-  function getReassuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(CNS_REASSURANCE_VAULT);
   }
 
   function getStablecoin(IStore s) external view returns (address) {

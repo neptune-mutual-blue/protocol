@@ -128,9 +128,6 @@ describe('Protocol Constructor & Initializer', () => {
 
     const sTreasury = await store.getAddress(key.PROTOCOL.CNS.TREASURY)
     sTreasury.should.equal(treasury)
-
-    const sReassuranceVault = await store.getAddress(key.PROTOCOL.CNS.REASSURANCE_VAULT)
-    sReassuranceVault.should.equal(reassuranceVault)
   })
 
   it('should allow initializing more than once', async () => {
@@ -290,46 +287,6 @@ describe('Protocol Constructor & Initializer', () => {
         helper.percentage(5)
       ]
     ).should.be.rejectedWith('Invalid Treasury')
-  })
-
-  it('should fail when zero address is provided as reassurance vault', async () => {
-    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
-      {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
-      },
-      store.address
-    )
-
-    await store.setBool(key.qualify(protocol.address), true)
-    await store.setBool(key.qualifyMember(protocol.address), true)
-
-    await protocol.initialize(
-      [helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        helper.zerox],
-      [helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Invalid Reassurance Vault')
   })
 
   it('should fail if a non-admin tries to re-initialize the protocol', async () => {

@@ -88,14 +88,12 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
     require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     require(addresses[4] != address(0), "Invalid Treasury");
-    require(addresses[5] != address(0), "Invalid Reassurance Vault");
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
     s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
-    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[5]);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
@@ -110,6 +108,7 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, values[11]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
+    s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
     initialized = 1;
     emit Initialized(addresses, values);
@@ -388,7 +387,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -420,7 +418,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -448,6 +445,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -458,6 +456,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -467,8 +467,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

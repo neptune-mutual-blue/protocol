@@ -8,10 +8,10 @@ const atAddress = async (at, libraries) => {
     libraries: {
       AccessControlLibV1: libraries.accessControlLibV1.address,
       BaseLibV1: libraries.baseLibV1.address,
-      GovernanceUtilV1: libraries.governanceLib.address,
+      GovernanceUtilV1: libraries.governanceUtilV1.address,
       PolicyHelperV1: libraries.policyHelperV1.address,
       ProtoUtilV1: libraries.protoUtilV1.address,
-      ValidationLibV1: libraries.validationLib.address
+      ValidationLibV1: libraries.validationLibV1.address
 
     }
   })

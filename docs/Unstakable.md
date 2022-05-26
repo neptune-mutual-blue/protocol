@@ -12,9 +12,9 @@ Enables tokenholders unstake their tokens after
 
 ## Functions
 
-- [unstake(bytes32 key, uint256 incidentDate)](#unstake)
-- [unstakeWithClaim(bytes32 key, uint256 incidentDate)](#unstakewithclaim)
-- [getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [unstake(bytes32 coverKey, uint256 incidentDate)](#unstake)
+- [unstakeWithClaim(bytes32 coverKey, uint256 incidentDate)](#unstakewithclaim)
+- [getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
@@ -22,34 +22,34 @@ Reporters on the winning camp can unstake their tokens even after the claim peri
  Warning: during claim periods, you must use `unstakeWithClaim` instead of this to also receive reward.
 
 ```solidity
-function unstake(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstake(bytes32 key, uint256 incidentDate) external override nonReentrant {
+function unstake(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
-    s.validateUnstakeWithoutClaim(key, incidentDate);
+    s.validateUnstakeWithoutClaim(coverKey, incidentDate);
 
-    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, 0, 0, 0);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
   }
@@ -65,34 +65,34 @@ Reporters on the winning camp can unstake their token with a `claim` to receive
  the final reporter and also burns some NPM tokens, as described in the documentation.
 
 ```solidity
-function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override nonReentrant {
+function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
-    s.validateUnstakeWithClaim(key, incidentDate);
+    s.validateUnstakeWithClaim(coverKey, incidentDate);
 
-    address finalReporter = s.getReporterInternal(key, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, key, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, key, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
@@ -106,7 +106,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override n
       s.npmToken().ensureTransfer(burner, toBurn);
     }
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
     emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
     emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);
@@ -120,7 +120,7 @@ function unstakeWithClaim(bytes32 key, uint256 incidentDate) external override n
 s Gets the unstake information for the supplied account
 
 ```solidity
-function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
+function getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
@@ -129,7 +129,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | account | address | Enter account to get the unstake information of | 
-| key | bytes32 | Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
@@ -138,7 +138,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 ```javascript
 function getUnstakeInfoFor(
     address account,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   )
     external
@@ -154,7 +154,7 @@ function getUnstakeInfoFor(
       uint256 unstaken
     )
   {
-    return s.getUnstakeInfoForInternal(account, key, incidentDate);
+    return s.getUnstakeInfoForInternal(account, coverKey, incidentDate);
   }
 ```
 </details>
@@ -176,7 +176,6 @@ function getUnstakeInfoFor(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -208,7 +207,6 @@ function getUnstakeInfoFor(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -236,6 +234,7 @@ function getUnstakeInfoFor(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -246,6 +245,8 @@ function getUnstakeInfoFor(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -255,8 +256,12 @@ function getUnstakeInfoFor(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

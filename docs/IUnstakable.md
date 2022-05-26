@@ -16,56 +16,56 @@ event GovernanceBurned(address indexed caller, address indexed burner, uint256  
 
 ## Functions
 
-- [unstake(bytes32 key, uint256 incidentDate)](#unstake)
-- [unstakeWithClaim(bytes32 key, uint256 incidentDate)](#unstakewithclaim)
-- [getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate)](#getunstakeinfofor)
+- [unstake(bytes32 coverKey, uint256 incidentDate)](#unstake)
+- [unstakeWithClaim(bytes32 coverKey, uint256 incidentDate)](#unstakewithclaim)
+- [getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
 ```solidity
-function unstake(bytes32 key, uint256 incidentDate) external nonpayable
+function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstake(bytes32 key, uint256 incidentDate) external;
+function unstake(bytes32 coverKey, uint256 incidentDate) external;
 ```
 </details>
 
 ### unstakeWithClaim
 
 ```solidity
-function unstakeWithClaim(bytes32 key, uint256 incidentDate) external nonpayable
+function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstakeWithClaim(bytes32 key, uint256 incidentDate) external;
+function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external;
 ```
 </details>
 
 ### getUnstakeInfoFor
 
 ```solidity
-function getUnstakeInfoFor(address account, bytes32 key, uint256 incidentDate) external view
+function getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
@@ -74,7 +74,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | account | address |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -83,7 +83,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 ```javascript
 function getUnstakeInfoFor(
     address account,
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate
   )
     external
@@ -117,7 +117,6 @@ function getUnstakeInfoFor(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -149,7 +148,6 @@ function getUnstakeInfoFor(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -177,6 +175,7 @@ function getUnstakeInfoFor(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -187,6 +186,8 @@ function getUnstakeInfoFor(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -196,8 +197,12 @@ function getUnstakeInfoFor(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
