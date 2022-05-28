@@ -8,6 +8,7 @@ const deployAll = async (cache, tokens) => {
   const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', pair.address)
   const lendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
   const daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', dai.address, cDai.address)
+  const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
   await dai.addMinter(lendingPool.address, true)
   await aToken.addMinter(lendingPool.address, true)
@@ -15,7 +16,7 @@ const deployAll = async (cache, tokens) => {
   await dai.addMinter(daiDelegator.address, true)
   await cDai.addMinter(daiDelegator.address, true)
 
-  return { router, pair, factory, aave: { lendingPool }, compound: { daiDelegator } }
+  return { router, pair, factory, priceOracle, aave: { lendingPool }, compound: { daiDelegator } }
 }
 
 module.exports = { deployAll }

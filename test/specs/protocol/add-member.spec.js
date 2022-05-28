@@ -12,7 +12,6 @@ require('chai')
 
 describe('Adding a New Protocol Member', () => {
   const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {
@@ -42,14 +41,19 @@ describe('Adding a New Protocol Member', () => {
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
     await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period

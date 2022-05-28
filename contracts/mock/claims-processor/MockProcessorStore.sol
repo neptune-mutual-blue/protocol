@@ -5,6 +5,7 @@ import "../base/MockStore.sol";
 import "../base/MockProtocol.sol";
 import "./MockVault.sol";
 import "../../libraries/ProtoUtilV1.sol";
+import "../../fakes/FakePriceOracle.sol";
 
 library MockProcessorStoreLib {
   function initialize(
@@ -14,9 +15,11 @@ library MockProcessorStoreLib {
   ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
     MockVault vault = new MockVault();
+    FakePriceOracle oracle = new FakePriceOracle();
 
     s.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
     s.setAddress(ProtoUtilV1.CNS_COVER_STABLECOIN, cxToken);
+    s.setAddress(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, address(oracle));
 
     s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
     s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);

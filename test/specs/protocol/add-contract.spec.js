@@ -12,7 +12,6 @@ require('chai')
 
 describe('Adding a New Protocol Contract', () => {
   const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {
@@ -42,14 +41,19 @@ describe('Adding a New Protocol Contract', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period

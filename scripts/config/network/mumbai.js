@@ -2,7 +2,6 @@ require('dotenv').config()
 const wallet = require('../../../util/wallet')
 const { ACCESS_CONTROL } = require('../../../util/key')
 const MINUTES = 60
-const HOURS = 60 * MINUTES
 
 const config = {
   80001: {
@@ -18,7 +17,7 @@ const config = {
       withdrawalWindow: 60 * MINUTES,
       claimPeriod: 120 * MINUTES,
       cooldownPeriod: 5 * MINUTES,
-      stateUpdateInterval: 1 * HOURS
+      stateUpdateInterval: 5 * MINUTES
     },
     knownAccounts: [
       {
@@ -71,7 +70,8 @@ const config = {
       addresses: {
         factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
         router: '0x8954AfA98594b838bda56FE4C12a09D7739D179b',
-        masterChef: ''
+        masterChef: '',
+        npmPriceOracle: '0x171805fd059590A36DB0e72f7aD644dCE1edbE6a'
       }
     },
     aave: {

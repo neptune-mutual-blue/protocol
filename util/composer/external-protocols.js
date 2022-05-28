@@ -11,6 +11,7 @@ const getExternalProtocols = async (cache, tokens) => {
 
   let router = network?.uniswapV2Like?.addresses?.router
   let factory = network?.uniswapV2Like?.addresses?.factory
+  let npmPriceOracle = network?.uniswapV2Like?.addresses?.npmPriceOracle
   let aaveLendingPool = network?.aave?.addresses?.lendingPool
   let compoundDaiDelegator = network?.compound?.dai?.delegator
 
@@ -32,11 +33,16 @@ const getExternalProtocols = async (cache, tokens) => {
     if (!compoundDaiDelegator) {
       compoundDaiDelegator = fakes.compound.daiDelegator.address
     }
+
+    if (!npmPriceOracle) {
+      npmPriceOracle = fakes.priceOracle.address
+    }
   }
 
   return {
     router,
     factory,
+    npmPriceOracle,
     aaveLendingPool,
     compoundDaiDelegator
   }

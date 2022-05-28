@@ -41,7 +41,6 @@ const getContracts = async (file, id) => {
   const policy = await getContract(file, id, 'Policy')
   const policyAdmin = await getContract(file, id, 'PolicyAdmin')
   const policyHelperV1 = await getContract(file, id, 'PolicyHelperV1')
-  const priceDiscovery = await getContract(file, id, 'PriceDiscovery')
   const priceLibV1 = await getContract(file, id, 'PriceLibV1')
   const processor = await getContract(file, id, 'Processor')
   const protocol = await getContract(file, id, 'Protocol')
@@ -85,7 +84,6 @@ const getContracts = async (file, id) => {
     policy,
     policyAdmin,
     policyHelperV1,
-    priceDiscovery,
     priceLibV1,
     processor,
     protocol,

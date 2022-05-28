@@ -8,7 +8,6 @@ import "../interfaces/ICover.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/IBondPool.sol";
 import "../interfaces/ICoverStake.sol";
-import "../interfaces/IPriceDiscovery.sol";
 import "../interfaces/ICxTokenFactory.sol";
 import "../interfaces/ICoverReassurance.sol";
 import "../interfaces/IGovernance.sol";
@@ -18,10 +17,6 @@ import "../interfaces/IVaultFactory.sol";
 library RegistryLibV1 {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-
-  function getPriceDiscoveryContract(IStore s) external view returns (IPriceDiscovery) {
-    return IPriceDiscovery(s.getContract(ProtoUtilV1.CNS_PRICE_DISCOVERY));
-  }
 
   function getGovernanceContract(IStore s) external view returns (IGovernance) {
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE));

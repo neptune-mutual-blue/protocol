@@ -9,14 +9,14 @@ import "../interfaces/IVault.sol";
 import "../interfaces/IClaimsProcessor.sol";
 
 /**
- * @title NPM Distributor contract
+ * @title Neptune Mutual Distributor contract
  * @dev The distributor contract enables resellers to interact with
  * the Neptune Mutual protocol and offer policies to their users.
  *
  * This contract demonstrates how a distributor may charge an extra fee
  * and deposit the proceeds in their own treasury account.
  */
-contract NPMDistributor is ReentrancyGuard {
+contract NpmDistributor is ReentrancyGuard {
   using SafeERC20 for IERC20;
   using SafeERC20 for IVault;
 

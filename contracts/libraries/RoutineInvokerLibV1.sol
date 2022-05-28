@@ -27,20 +27,16 @@ library RoutineInvokerLibV1 {
   }
 
   function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
-    _invoke(s, coverKey, address(0));
+    _invoke(s, coverKey);
   }
 
-  function _invoke(
-    IStore s,
-    bytes32 coverKey,
-    address token
-  ) private {
+  function _invoke(IStore s, bytes32 coverKey) private {
     // solhint-disable-next-line
     if (s.getLastUpdateOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
-    _updateKnownTokenPrices(s, token);
+    PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
       _invokeAssetManagement(s, coverKey);
@@ -263,15 +259,5 @@ library RoutineInvokerLibV1 {
         strategy.withdraw(coverKey);
       }
     }
-  }
-
-  function _updateKnownTokenPrices(IStore s, address token) private {
-    address npm = s.getNpmTokenAddress();
-
-    if (token != address(0) && token != npm) {
-      PriceLibV1.setTokenPriceInStablecoinInternal(s, token);
-    }
-
-    PriceLibV1.setTokenPriceInStablecoinInternal(s, npm);
   }
 }

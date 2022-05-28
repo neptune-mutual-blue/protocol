@@ -31,7 +31,6 @@ const deployDependencies = async () => {
   })
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     StrategyLibV1: strategyLibV1.address
   })
