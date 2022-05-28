@@ -32,7 +32,7 @@ library RoutineInvokerLibV1 {
 
   function _invoke(IStore s, bytes32 coverKey) private {
     // solhint-disable-next-line
-    if (s.getLastUpdateOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
+    if (s.getLastUpdatedOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
@@ -42,7 +42,7 @@ library RoutineInvokerLibV1 {
       _invokeAssetManagement(s, coverKey);
     }
 
-    s.setLastUpdateOn(coverKey);
+    s.setLastUpdatedOn(coverKey);
 
     _updateWithdrawalPeriod(s, coverKey);
   }

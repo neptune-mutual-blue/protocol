@@ -30,12 +30,12 @@ library PriceLibV1 {
     return getPriceOracleInternal(s).consultPair(amountIn);
   }
 
-  function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+  function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     bytes32 key = getLastUpdateKey(coverKey);
     return s.getUintByKey(key);
   }
 
-  function setLastUpdateOn(IStore s, bytes32 coverKey) external {
+  function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
     bytes32 key = getLastUpdateKey(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
