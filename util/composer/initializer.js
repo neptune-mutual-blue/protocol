@@ -26,7 +26,7 @@ const initialize = async (suite, deploymentId) => {
   const tokens = await fakeTokenComposer.compose(cache)
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
 
-  const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
+  const { router, factory, aaveLendingPool, compoundDaiDelegator, npmPriceOracle } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
@@ -54,12 +54,14 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
   await intermediate(cache, protocol, 'initialize',
-    [helper.zero1,
+    [
+      helper.zero1,
       router,
       factory,
       npm.address,
       sample.fake.TREASURY,
-      sample.fake.REASSURANCE_VAULT],
+      npmPriceOracle
+    ],
     [helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -334,16 +336,6 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
   await intermediate(cache, liquidityEngine, 'addStrategies', [compoundStrategy.address])
 
-  const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
-    AccessControlLibV1: libs.accessControlLibV1.address,
-    BaseLibV1: libs.baseLibV1.address,
-    PriceLibV1: libs.priceLibV1.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    ValidationLibV1: libs.validationLibV1.address
-  }, store.address)
-
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.PRICE_DISCOVERY, priceDiscovery.address)
-
   const payload = [{
     account: cover.address,
     roles: [key.ACCESS_CONTROL.UPGRADE_AGENT]
@@ -391,7 +383,6 @@ const initialize = async (suite, deploymentId) => {
     cxTokenFactory,
     cover,
     liquidityEngine,
-    priceDiscovery,
     policyAdminContract,
     policy,
     governance,

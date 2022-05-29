@@ -32,7 +32,8 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(10_000)
+    reassurance: ether(10_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x6262382d65786368616e67650000000000000000000000000000000000000000', // toBytes32('bb8-exchange')
@@ -96,7 +97,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000)
+    reassurance: ether(20_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x6372706f6f6c0000000000000000000000000000000000000000000000000000', // toBytes32('crpool')
@@ -164,7 +166,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(50_000)
+    reassurance: ether(50_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x68696369662d62616e6b00000000000000000000000000000000000000000000', // toBytes32('hicif-bank')
@@ -193,7 +196,8 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000)
+    reassurance: ether(20_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x68756f62692d77616e0000000000000000000000000000000000000000000000', // toBytes32('huobi-wan')
@@ -263,7 +267,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(20_000),
-    reassurance: ether(10_000)
+    reassurance: ether(10_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x6f626b0000000000000000000000000000000000000000000000000000000000', // toBytes32('obk')
@@ -332,7 +337,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(30_000)
+    reassurance: ether(30_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x71616e696c69612d6361706974616c0000000000000000000000000000000000', // toBytes32('qanilia-capital')
@@ -360,7 +366,8 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000)
+    reassurance: ether(20_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x73616272652d6f7261636c657300000000000000000000000000000000000000', // toBytes32('sabre-oracles')
@@ -423,7 +430,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(150_000)
+    reassurance: ether(150_000),
+    reassuranceRate: percentage(25)
   },
   {
     key: '0x7832643200000000000000000000000000000000000000000000000000000000', // toBytes32('x2d2')
@@ -487,7 +495,8 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000)
+    reassurance: ether(20_000),
+    reassuranceRate: percentage(25)
   }
 ]
 

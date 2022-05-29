@@ -17,10 +17,6 @@ import "../Recoverable.sol";
  * for their project. This helps bring the cover fee down and enhances
  * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
  * as a support to the liquidity providers when a cover incident occurs.
- *
- * Without negatively affecting the price much,
- * the protocol will gradually convert the reassurance tokens
- * to stablecoin liquidity.
  */
 contract CoverReassurance is ICoverReassurance, Recoverable {
   using ProtoUtilV1 for bytes;

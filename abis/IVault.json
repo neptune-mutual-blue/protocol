@@ -147,7 +147,7 @@
         "type": "uint256"
       }
     ],
-    "name": "NPMStaken",
+    "name": "NpmStaken",
     "type": "event"
   },
   {
@@ -166,7 +166,7 @@
         "type": "uint256"
       }
     ],
-    "name": "NPMUnstaken",
+    "name": "NpmUnstaken",
     "type": "event"
   },
   {

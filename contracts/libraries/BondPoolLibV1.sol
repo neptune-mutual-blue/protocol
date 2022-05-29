@@ -30,8 +30,7 @@ library BondPoolLibV1 {
   bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED = "ns:pool:bond:total:npm:distrib";
 
   function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
-    IUniswapV2PairLike pair = IUniswapV2PairLike(_getLpTokenAddress(s));
-    uint256 dollarValue = s.getPairLiquidityInStablecoin(pair, lpTokens);
+    uint256 dollarValue = s.convertNpmLpUnitsToStabelcoin(lpTokens);
 
     uint256 npmPrice = s.getNpmPriceInternal(1 ether);
     uint256 discount = _getDiscountRate(s);

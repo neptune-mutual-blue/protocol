@@ -24,6 +24,7 @@ library ProtoUtilV1 {
   bytes32 public constant CNS_UNISWAP_V2_FACTORY = "cns:core:uni:v2:factory";
   bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
   bytes32 public constant CNS_TREASURY = "cns:core:treasury";
+  bytes32 public constant CNS_NPM_PRICE_ORACLE = "cns:core:npm:price:oracle";
   bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
   bytes32 public constant CNS_POOL_BOND = "cns:pool:bond";
   bytes32 public constant CNS_COVER_POLICY = "cns:cover:policy";
@@ -186,10 +187,6 @@ library ProtoUtilV1 {
   /// 'ns:claim:platform:fee'
   bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
 
-  bytes32 public constant NS_LP_RESERVE0 = "ns:uni:lp:reserve0";
-  bytes32 public constant NS_LP_RESERVE1 = "ns:uni:lp:reserve1";
-  bytes32 public constant NS_LP_TOTAL_SUPPLY = "ns:uni:lp:totalSupply";
-
   bytes32 public constant NS_LAST_LIQUIDITY_STATE_UPDATE = "ns:last:snl:update";
   bytes32 public constant NS_LIQUIDITY_STATE_UPDATE_INTERVAL = "ns:snl:update:interval";
   bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
@@ -207,7 +204,6 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_STAKING_POOL = "StakingPool";
   bytes32 public constant CNAME_POD_STAKING_POOL = "PODStakingPool";
   bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
-  bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
@@ -294,6 +290,10 @@ library ProtoUtilV1 {
 
   function getUniswapV2Factory(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
+  }
+
+  function getNpmPriceOracle(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
   }
 
   function getTreasury(IStore s) external view returns (address) {

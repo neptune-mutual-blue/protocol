@@ -420,7 +420,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "previousNPMStake",
+        "name": "previousNpmStake",
         "type": "uint256"
       }
     ],

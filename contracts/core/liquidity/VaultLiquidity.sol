@@ -83,7 +83,7 @@ abstract contract VaultLiquidity is VaultBase {
       emit Entered(coverKey, msg.sender);
     }
 
-    emit NPMStaken(msg.sender, npmStakeToAdd);
+    emit NpmStaken(msg.sender, npmStakeToAdd);
   }
 
   /**
@@ -132,7 +132,7 @@ abstract contract VaultLiquidity is VaultBase {
     }
 
     if (npmStakeToRemove > 0) {
-      emit NPMUnstaken(msg.sender, npmStakeToRemove);
+      emit NpmUnstaken(msg.sender, npmStakeToRemove);
     }
   }
 

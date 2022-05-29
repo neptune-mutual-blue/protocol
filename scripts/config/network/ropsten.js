@@ -71,7 +71,8 @@ const config = {
       addresses: {
         factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
         router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
-        masterChef: '0x80C7DD17B01855a6D2347444a0FCC36136a314de'
+        masterChef: '0x80C7DD17B01855a6D2347444a0FCC36136a314de',
+        npmPriceOracle: null
       }
     },
     aave: {

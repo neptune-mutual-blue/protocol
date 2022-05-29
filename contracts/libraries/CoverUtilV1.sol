@@ -92,14 +92,12 @@ library CoverUtilV1 {
    * @param _values[4] Reassurance pool weight
    */
   function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view returns (uint256[] memory _values) {
-    IPriceDiscovery discovery = s.getPriceDiscoveryContract();
-
     _values = new uint256[](7);
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
-    _values[3] = discovery.getTokenPriceInStableCoin(address(s.getAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey)), 1 ether);
+    _values[3] = 1 ether;
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
   }
 

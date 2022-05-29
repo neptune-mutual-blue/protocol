@@ -41,7 +41,6 @@ describe('Recoverable: Ether', () => {
 
   it('must allow `ForceEther` contract to destroy itself', async () => {
     await forceEther.destruct(recoverable.address)
-    console.info(recoverable.address)
 
     const balance = await waffle.provider.getBalance(recoverable.address)
     balance.should.equal(helper.ether(1))

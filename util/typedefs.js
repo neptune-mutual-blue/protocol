@@ -49,7 +49,6 @@
  * @property {Object} vaultFactory - Liquidity vault factory
  * @property {Object} cxTokenFactory - cxToken factory
  * @property {Object} cover - The base cover contract
- * @property {Object} priceDiscovery - Price discovery contract
  * @property {Object} liquidityEngine - Liquidity engine contract
  * @property {Object} aaveStrategy - Aave lending strategy contract
  * @property {Object} policyAdminContract - Policy admin contract
