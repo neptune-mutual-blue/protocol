@@ -6,6 +6,7 @@ const DAYS = 86400
 const cache = null
 
 const deployDependencies = async () => {
+  const stateAndLiquidityUpdateInterval = 1 * DAYS
   const [owner] = await ethers.getSigners()
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
@@ -147,7 +148,7 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
+      stateAndLiquidityUpdateInterval, // state and liquidity update interval
       helper.percentage(5) // maximum lending ratio
     ]
   )
@@ -363,7 +364,8 @@ const deployDependencies = async () => {
     reassuranceContract,
     governance,
     resolution,
-    liquidityEngine
+    liquidityEngine,
+    stateAndLiquidityUpdateInterval
   }
 }
 

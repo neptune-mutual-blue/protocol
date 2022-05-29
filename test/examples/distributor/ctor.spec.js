@@ -20,7 +20,7 @@ describe('Distributor Constructor', () => {
     const treasury = helper.randomAddress()
     const feePercentage = helper.percentage(20)
 
-    const distributor = await deployer.deploy(cache, 'NPMDistributor', deployed.store.address, treasury, feePercentage)
+    const distributor = await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
     distributor.address.should.not.equal(helper.zerox)
 
     ;(await distributor.store()).should.equal(deployed.store.address)
@@ -32,7 +32,7 @@ describe('Distributor Constructor', () => {
     const treasury = helper.randomAddress()
     const feePercentage = helper.percentage(20)
 
-    await deployer.deploy(cache, 'NPMDistributor', helper.zerox, treasury, feePercentage)
+    await deployer.deploy(cache, 'NpmDistributor', helper.zerox, treasury, feePercentage)
       .should.be.rejectedWith('Invalid store')
   })
 
@@ -40,7 +40,7 @@ describe('Distributor Constructor', () => {
     const treasury = helper.zerox
     const feePercentage = helper.percentage(20)
 
-    await deployer.deploy(cache, 'NPMDistributor', deployed.store.address, treasury, feePercentage)
+    await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
       .should.be.rejectedWith('Invalid treasury')
   })
 
@@ -48,7 +48,7 @@ describe('Distributor Constructor', () => {
     const treasury = helper.randomAddress()
     const feePercentage = helper.percentage(0)
 
-    await deployer.deploy(cache, 'NPMDistributor', deployed.store.address, treasury, feePercentage)
+    await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
       .should.be.rejectedWith('Invalid fee percentage')
   })
 })
