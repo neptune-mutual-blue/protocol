@@ -135,8 +135,10 @@ library ValidationLibV1 {
   }
 
   function callerMustBeStrategyContract(IStore s, address caller) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
-    require(callerIsStrategyContract == true, "Not a strategy contract");
+    bool isActive = s.getBoolByKey(_getIsActiveStrategyKey(caller));
+    bool wasDisabled = s.getBoolByKey(_getIsDisabledStrategyKey(caller));
+
+    require(isActive == true || wasDisabled == true, "Not a strategy contract");
   }
 
   function callerMustBeSpecificStrategyContract(
@@ -150,6 +152,10 @@ library ValidationLibV1 {
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
+  }
+
+  function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
 
   function senderMustBeProtocolMember(IStore s) external view {
