@@ -86,6 +86,7 @@ describe('Governance Stories', function () {
     const claimPeriod = 7 * constants.DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
@@ -94,7 +95,7 @@ describe('Governance Stories', function () {
 
     // Create a new cover
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 
@@ -105,35 +106,29 @@ describe('Governance Stories', function () {
     await contracts.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
-    // Add provision
-    const provision = helper.ether(1_000_001)
-
-    await contracts.npm.approve(contracts.provisionContract.address, provision)
-
-    await contracts.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, _o.address)
-    await contracts.provisionContract.increaseProvision(coverKey, provision)
-
     // Purchase a cover
-    let args = [coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
-    let fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
+    let args = [kimberly.address, coverKey, 2, helper.ether(constants.coverAmounts.kimberly)]
+    let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
 
-      ; (await contracts.policy.getCxToken(args[0], args[1])).cxToken.should.equal(helper.zerox)
+      ; (await contracts.policy.getCxToken(args[1], args[2])).cxToken.should.equal(helper.zerox)
 
     await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(...args, key.toBytes32(''))
 
-    let at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    let at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
     constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
 
     // Purchase a cover
-    args = [coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
-    fee = (await contracts.policy.getCoverFeeInfo(...args)).fee
+    args = [lewis.address, coverKey, 3, helper.ether(constants.coverAmounts.lewis)]
+    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
 
     await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[0], args[1])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
     constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)
+
+    await network.provider.send('evm_increaseTime', [2 * constants.DAYS])
   })
 
   it('can not claim until an incident occurs', async () => {
@@ -429,6 +424,13 @@ describe('Governance Stories', function () {
 
     await contracts.claimsProcessor.connect(lewis).claim(constants.cxTokens.lewis.address, coverKey, incidentDate, balance)
       .should.be.rejectedWith('Claim period has expired')
+  })
+
+  it('a portion of the reassurance fund is capitalized back to the cover pool', async () => {
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+
+    await contracts.reassuranceContract.capitalizePool(coverKey, incidentDate)
+      .should.not.be.rejected
   })
 
   it('a governance agent finalizes the cover', async () => {

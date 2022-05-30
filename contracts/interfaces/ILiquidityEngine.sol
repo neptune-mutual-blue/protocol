@@ -8,6 +8,7 @@ pragma solidity 0.8.0;
 interface ILiquidityEngine is IMember {
   event StrategyAdded(address indexed strategy);
   event StrategyDisabled(address indexed strategy);
+  event StrategyDeleted(address indexed strategy);
   event LendingPeriodSet(bytes32 indexed coverKey, uint256 lendingPeriod, uint256 withdrawalWindow);
   event LiquidityStateUpdateIntervalSet(uint256 duration);
   event MaxLendingRatioSet(uint256 ratio);
@@ -15,6 +16,8 @@ interface ILiquidityEngine is IMember {
   function addStrategies(address[] memory strategies) external;
 
   function disableStrategy(address strategy) external;
+
+  function deleteStrategy(address strategy) external;
 
   function setLendingPeriods(
     bytes32 coverKey,

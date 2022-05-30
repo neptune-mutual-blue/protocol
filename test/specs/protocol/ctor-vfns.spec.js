@@ -12,7 +12,6 @@ require('chai')
 
 describe('Protocol Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
-  const reassuranceVault = helper.randomAddress()
   let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1
 
   before(async () => {
@@ -45,14 +44,19 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -90,6 +94,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.zero1,
@@ -97,8 +103,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -128,9 +136,6 @@ describe('Protocol Constructor & Initializer', () => {
 
     const sTreasury = await store.getAddress(key.PROTOCOL.CNS.TREASURY)
     sTreasury.should.equal(treasury)
-
-    const sReassuranceVault = await store.getAddress(key.PROTOCOL.CNS.REASSURANCE_VAULT)
-    sReassuranceVault.should.equal(reassuranceVault)
   })
 
   it('should allow initializing more than once', async () => {
@@ -149,6 +154,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.zero1,
@@ -156,8 +163,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -180,8 +189,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         helper.zerox, // Can't change NPM address
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -228,14 +239,19 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         helper.zerox,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -268,14 +284,19 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zero1,
+      [
+        helper.zero1,
         router.address,
         helper.randomAddress(), // factory
         npm.address,
         helper.zerox,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -290,46 +311,6 @@ describe('Protocol Constructor & Initializer', () => {
         helper.percentage(5)
       ]
     ).should.be.rejectedWith('Invalid Treasury')
-  })
-
-  it('should fail when zero address is provided as reassurance vault', async () => {
-    const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
-      {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
-      },
-      store.address
-    )
-
-    await store.setBool(key.qualify(protocol.address), true)
-    await store.setBool(key.qualifyMember(protocol.address), true)
-
-    await protocol.initialize(
-      [helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        helper.zerox],
-      [helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Invalid Reassurance Vault')
   })
 
   it('should fail if a non-admin tries to re-initialize the protocol', async () => {
@@ -350,6 +331,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.zero1,
@@ -357,8 +340,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -383,8 +368,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -417,6 +404,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.zero1,
@@ -424,8 +413,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -448,8 +439,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         npm.address,
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -482,14 +475,19 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
-      [helper.zerox,
+      [
+        helper.zerox,
         router.address,
         helper.randomAddress(), // factory
         helper.randomAddress(),
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -522,6 +520,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.randomAddress(),
@@ -529,8 +529,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.randomAddress(), // factory
         helper.randomAddress(),
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period
@@ -563,6 +565,8 @@ describe('Protocol Constructor & Initializer', () => {
     await store.setBool(key.qualify(protocol.address), true)
     await store.setBool(key.qualifyMember(protocol.address), true)
 
+    const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
     await protocol.initialize(
       [
         helper.randomAddress(),
@@ -570,8 +574,10 @@ describe('Protocol Constructor & Initializer', () => {
         helper.zerox, // factory
         helper.randomAddress(),
         treasury,
-        reassuranceVault],
-      [helper.ether(0), // Cover Fee
+        priceOracle.address
+      ],
+      [
+        helper.ether(0), // Cover Fee
         helper.ether(0), // Min Cover Stake
         helper.ether(250), // Min Reporting Stake
         7 * DAYS, // Claim period

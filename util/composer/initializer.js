@@ -26,7 +26,7 @@ const initialize = async (suite, deploymentId) => {
   const tokens = await fakeTokenComposer.compose(cache)
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
 
-  const { router, factory, aaveLendingPool, compoundDaiDelegator } = await getExternalProtocols(cache, tokens)
+  const { router, factory, aaveLendingPool, compoundDaiDelegator, npmPriceOracle } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
@@ -45,7 +45,7 @@ const initialize = async (suite, deploymentId) => {
       ProtoUtilV1: libs.protoUtilV1.address,
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     },
     store.address
   )
@@ -54,12 +54,14 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
   await intermediate(cache, protocol, 'initialize',
-    [helper.zero1,
+    [
+      helper.zero1,
       router,
       factory,
       npm.address,
       sample.fake.TREASURY,
-      sample.fake.REASSURANCE_VAULT],
+      npmPriceOracle
+    ],
     [helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
@@ -84,7 +86,7 @@ const initialize = async (suite, deploymentId) => {
     BondPoolLibV1: libs.bondPoolLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     PriceLibV1: libs.priceLibV1.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.BOND_POOL, bondPoolContract.address)
@@ -101,7 +103,7 @@ const initialize = async (suite, deploymentId) => {
     StakingPoolCoreLibV1: libs.stakingPoolCoreLibV1.address,
     StakingPoolLibV1: libs.stakingPoolLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STAKING_POOL, stakingPoolContract.address)
@@ -145,7 +147,7 @@ const initialize = async (suite, deploymentId) => {
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_STAKE, stakingContract.address)
@@ -154,11 +156,13 @@ const initialize = async (suite, deploymentId) => {
     AccessControlLibV1: libs.accessControlLibV1.address,
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
+    GovernanceUtilV1: libs.governanceUtilV1.address,
     RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
     NTransferUtilV2: libs.transferLib.address,
     ProtoUtilV1: libs.protoUtilV1.address,
+    RegistryLibV1: libs.registryLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_REASSURANCE, reassuranceContract.address)
@@ -168,7 +172,7 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
-      ValidationLibV1: libs.validationLib.address,
+      ValidationLibV1: libs.validationLibV1.address,
       VaultFactoryLibV1: libs.vaultFactoryLib.address
     }
     , store.address
@@ -184,7 +188,7 @@ const initialize = async (suite, deploymentId) => {
       RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       StrategyLibV1: libs.strategyLibV1.address,
-      ValidationLibV1: libs.validationLib.address,
+      ValidationLibV1: libs.validationLibV1.address,
       VaultLibV1: libs.vaultLib.address
     }
     , store.address
@@ -198,7 +202,7 @@ const initialize = async (suite, deploymentId) => {
       BaseLibV1: libs.baseLibV1.address,
       cxTokenFactoryLibV1: libs.cxTokenFactoryLib.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     }
     , store.address
   )
@@ -210,12 +214,12 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       CoverUtilV1: libs.coverUtilV1.address,
-      GovernanceUtilV1: libs.governanceLib.address,
+      GovernanceUtilV1: libs.governanceUtilV1.address,
       NTransferUtilV2: libs.transferLib.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     },
     store.address
   )
@@ -231,8 +235,8 @@ const initialize = async (suite, deploymentId) => {
       ProtoUtilV1: libs.protoUtilV1.address,
       CoverUtilV1: libs.coverUtilV1.address,
       NTransferUtilV2: libs.transferLib.address,
-      ValidationLibV1: libs.validationLib.address,
-      GovernanceUtilV1: libs.governanceLib.address
+      ValidationLibV1: libs.validationLibV1.address,
+      GovernanceUtilV1: libs.governanceUtilV1.address
     },
     store.address
   )
@@ -246,22 +250,12 @@ const initialize = async (suite, deploymentId) => {
       CoverLibV1: libs.coverLibV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     },
     store.address
   )
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER, cover.address)
-
-  const provisionContract = await deployer.deployWithLibraries(cache, 'CoverProvision', {
-    AccessControlLibV1: libs.accessControlLibV1.address,
-    BaseLibV1: libs.baseLibV1.address,
-    CoverLibV1: libs.coverLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
-  }, store.address)
-
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.NS.COVER_PROVISION, provisionContract.address)
 
   const policyAdminContract = await deployer.deployWithLibraries(cache, 'PolicyAdmin', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -269,7 +263,7 @@ const initialize = async (suite, deploymentId) => {
     PolicyHelperV1: libs.policyHelperV1.address,
     RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY_ADMIN, policyAdminContract.address)
@@ -280,7 +274,7 @@ const initialize = async (suite, deploymentId) => {
     CoverUtilV1: libs.coverUtilV1.address,
     PolicyHelperV1: libs.policyHelperV1.address,
     StrategyLibV1: libs.strategyLibV1.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address, '0')
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY, policy.address)
@@ -289,13 +283,13 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
-      GovernanceUtilV1: libs.governanceLib.address,
+      GovernanceUtilV1: libs.governanceUtilV1.address,
       RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       NTransferUtilV2: libs.transferLib.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     },
     store.address
   )
@@ -307,7 +301,7 @@ const initialize = async (suite, deploymentId) => {
     BaseLibV1: libs.baseLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
     StrategyLibV1: libs.strategyLibV1.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
@@ -322,7 +316,7 @@ const initialize = async (suite, deploymentId) => {
       ProtoUtilV1: libs.protoUtilV1.address,
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
-      ValidationLibV1: libs.validationLib.address
+      ValidationLibV1: libs.validationLibV1.address
     }, store.address, aaveLendingPool, aToken.address)
 
     await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)
@@ -336,21 +330,11 @@ const initialize = async (suite, deploymentId) => {
     ProtoUtilV1: libs.protoUtilV1.address,
     RegistryLibV1: libs.registryLibV1.address,
     StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLib.address
+    ValidationLibV1: libs.validationLibV1.address
   }, store.address, compoundDaiDelegator, cDai.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
   await intermediate(cache, liquidityEngine, 'addStrategies', [compoundStrategy.address])
-
-  const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
-    AccessControlLibV1: libs.accessControlLibV1.address,
-    BaseLibV1: libs.baseLibV1.address,
-    PriceLibV1: libs.priceLibV1.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    ValidationLibV1: libs.validationLib.address
-  }, store.address)
-
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.PRICE_DISCOVERY, priceDiscovery.address)
 
   const payload = [{
     account: cover.address,
@@ -395,12 +379,10 @@ const initialize = async (suite, deploymentId) => {
     protocol,
     stakingContract,
     reassuranceContract,
-    provisionContract,
     vaultFactory,
     cxTokenFactory,
     cover,
     liquidityEngine,
-    priceDiscovery,
     policyAdminContract,
     policy,
     governance,

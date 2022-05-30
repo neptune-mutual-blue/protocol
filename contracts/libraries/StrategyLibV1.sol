@@ -24,11 +24,20 @@ library StrategyLibV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
+  function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
+  }
+
   function disableStrategyInternal(IStore s, address toFind) external {
     // @suppress-address-trust-issue Check caller.
-    _deleteStrategy(s, toFind);
+    _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
+  }
+
+  function deleteStrategyInternal(IStore s, address toFind) external {
+    // @suppress-address-trust-issue Check caller.
+    _deleteStrategy(s, toFind);
   }
 
   function addStrategiesInternal(IStore s, address[] memory strategies) external {
@@ -99,7 +108,7 @@ library StrategyLibV1 {
     emit StrategyAdded(deployedOn);
   }
 
-  function _deleteStrategy(IStore s, address toFind) private {
+  function _disableStrategy(IStore s, address toFind) private {
     bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
 
     uint256 pos = s.getAddressArrayItemPosition(key, toFind);
@@ -107,6 +116,17 @@ library StrategyLibV1 {
 
     s.deleteAddressArrayItem(key, toFind);
     s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), true);
+  }
+
+  function _deleteStrategy(IStore s, address toFind) private {
+    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED;
+
+    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+    require(pos > 0, "Invalid strategy");
+
+    s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), false);
   }
 
   function getDisabledStrategiesInternal(IStore s) external view returns (address[] memory strategies) {

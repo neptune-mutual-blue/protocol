@@ -23,7 +23,7 @@ const create = async (payload, info) => {
   const { dai, cover } = contracts
 
   const { key } = info
-  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist } = info
+  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate } = info
   const hashBytes32 = await ipfs.write(info)
 
   const values = [
@@ -34,7 +34,8 @@ const create = async (payload, info) => {
     cooldownPeriod.toString(),
     claimPeriod.toString(),
     pricingFloor.toString(),
-    pricingCeiling.toString()
+    pricingCeiling.toString(),
+    reassuranceRate.toString()
   ]
 
   await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, requiresWhitelist, values)

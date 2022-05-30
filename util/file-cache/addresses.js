@@ -25,7 +25,6 @@ const getContracts = async (file, id) => {
   const compoundStrategy = await getContract(file, id, 'CompoundStrategy')
   const cover = await getContract(file, id, 'Cover')
   const coverLibV1 = await getContract(file, id, 'CoverLibV1')
-  const coverProvision = await getContract(file, id, 'CoverProvision')
   const coverReassurance = await getContract(file, id, 'CoverReassurance')
   const coverStake = await getContract(file, id, 'CoverStake')
   const coverUtilV1 = await getContract(file, id, 'CoverUtilV1')
@@ -42,7 +41,6 @@ const getContracts = async (file, id) => {
   const policy = await getContract(file, id, 'Policy')
   const policyAdmin = await getContract(file, id, 'PolicyAdmin')
   const policyHelperV1 = await getContract(file, id, 'PolicyHelperV1')
-  const priceDiscovery = await getContract(file, id, 'PriceDiscovery')
   const priceLibV1 = await getContract(file, id, 'PriceLibV1')
   const processor = await getContract(file, id, 'Processor')
   const protocol = await getContract(file, id, 'Protocol')
@@ -74,7 +72,6 @@ const getContracts = async (file, id) => {
     compoundStrategy,
     cover,
     coverLibV1,
-    coverProvision,
     coverReassurance,
     coverStake,
     coverUtilV1,
@@ -87,7 +84,6 @@ const getContracts = async (file, id) => {
     policy,
     policyAdmin,
     policyHelperV1,
-    priceDiscovery,
     priceLibV1,
     processor,
     protocol,

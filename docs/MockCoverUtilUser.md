@@ -1,124 +1,48 @@
-# NPM Cover Provision (CoverProvision.sol)
+# MockCoverUtilUser.sol
 
-View Source: [contracts/core/lifecycle/CoverProvision.sol](../contracts/core/lifecycle/CoverProvision.sol)
+View Source: [contracts/mock/lib-user/MockCoverUtil.sol](../contracts/mock/lib-user/MockCoverUtil.sol)
 
-**↗ Extends: [ICoverProvision](ICoverProvision.md), [Recoverable](Recoverable.md)**
+**MockCoverUtilUser**
 
-**CoverProvision**
+## Contract Members
+**Constants & Variables**
 
-Through governance, NPM tokens can be allocated as provision or `Reward Pool Support`
- for any given cover. This not only fosters community participation but also incentivizes
- the liquidity providers or acts as a defense/support during cover incidents.
- Along with the NPM provisions, the liquidity providers also have `[Reassurance Token Support](CoverReassurance.md)`
- for the rainy day.
+```js
+contract IStore public s;
+
+```
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [increaseProvision(bytes32 key, uint256 amount)](#increaseprovision)
-- [decreaseProvision(bytes32 key, uint256 amount)](#decreaseprovision)
-- [getProvision(bytes32 key)](#getprovision)
-- [version()](#version)
-- [getName()](#getname)
+- [getActiveLiquidityUnderProtection(bytes32 coverKey)](#getactiveliquidityunderprotection)
 
 ### 
 
-Constructs this contract
-
 ```solidity
-function (IStore store) public nonpayable Recoverable 
+function (IStore store) public nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide the store contract instance | 
+| store | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {}
-```
-</details>
-
-### increaseProvision
-
-Increases NPM provision for the given cover key.
- This feature is accessible only to the contract owner (governance).
-
-```solidity
-function increaseProvision(bytes32 key, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Provide the cover key you wish to increase the provision of | 
-| amount | uint256 | Specify the amount of NPM tokens you would like to add | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function increaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    s.mustHaveNormalCoverStatus(key);
-
-    uint256 provision = s.increaseProvisionInternal(key, amount);
-    emit ProvisionIncreased(key, provision, provision + amount);
+constructor(IStore store) {
+    s = store;
   }
 ```
 </details>
 
-### decreaseProvision
-
-Decreases NPM provision for the given cover key
- This feature is accessible only to the contract owner (governance).
+### getActiveLiquidityUnderProtection
 
 ```solidity
-function decreaseProvision(bytes32 key, uint256 amount) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 | Provide the cover key you wish to decrease the provision from | 
-| amount | uint256 | Specify the amount of NPM tokens you would like to decrease | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function decreaseProvision(bytes32 key, uint256 amount) external override nonReentrant {
-    require(amount > 0, "Please specify amount");
-
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-    s.mustHaveNormalCoverStatus(key);
-
-    uint256 provision = s.decreaseProvisionInternal(key, amount);
-
-    // @suppress-subtraction Checked usage. The amount is
-    // always less than provision if we reach this line.
-    emit ProvisionDecreased(key, provision, provision - amount);
-  }
-```
-</details>
-
-### getProvision
-
-Gets the NPM provision amount for the given cover key
-
-```solidity
-function getProvision(bytes32 key) external view
+function getActiveLiquidityUnderProtection(bytes32 coverKey) public view
 returns(uint256)
 ```
 
@@ -126,62 +50,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the cover key to get the provision | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getProvision(bytes32 key) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, key);
-  }
-```
-</details>
-
-### version
-
-Version number of this contract
-
-```solidity
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
-### getName
-
-Name of this contract
-
-```solidity
-function getName() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_COVER_PROVISION;
+function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey);
   }
 ```
 </details>
@@ -203,7 +79,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -235,7 +110,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -263,6 +137,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -273,6 +148,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -282,8 +159,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -12,7 +12,7 @@ const attacher = async (address, libraries) => {
     BaseLibV1: libraries.baseLibV1.address,
     ProtoUtilV1: libraries.protoUtilV1.address,
     StoreKeyUtil: libraries.storeKeyUtil.address,
-    ValidationLibV1: libraries.validationLib.address
+    ValidationLibV1: libraries.validationLibV1.address
   })
 }
 

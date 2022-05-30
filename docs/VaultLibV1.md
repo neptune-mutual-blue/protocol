@@ -9,17 +9,14 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 - [calculatePodsInternal(IStore s, bytes32 coverKey, address pod, uint256 liquidityToAdd)](#calculatepodsinternal)
 - [calculateLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToBurn)](#calculateliquidityinternal)
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address you)](#getinfointernal)
-- [_getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityaddedinternal)
-- [_getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you)](#_getcoverliquidityremovedinternal)
 - [preAddLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 amount, uint256 npmStakeToAdd)](#preaddliquidityinternal)
 - [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
-- [_updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatecoverliquidity)
 - [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
 - [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
 - [mustHaveNoBalanceInStrategies(IStore s, bytes32 coverKey, address stablecoin)](#musthavenobalanceinstrategies)
 - [preRemoveLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#preremoveliquidityinternal)
 - [_unStakeNpm(IStore s, address account, bytes32 coverKey, uint256 amount, bool exit)](#_unstakenpm)
-- [_redeemPods(IStore s, address account, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempods)
+- [_redeemPodCalculation(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempodcalculation)
 - [accrueInterestInternal(IStore s, bytes32 coverKey)](#accrueinterestinternal)
 - [mustBeAccrued(IStore s, bytes32 coverKey)](#mustbeaccrued)
 - [getFlashFeesInternal(IStore s, bytes32 coverKey, address token, uint256 amount)](#getflashfeesinternal)
@@ -156,69 +153,9 @@ function getInfoInternal(
     values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[5] = _getCoverLiquidityAddedInternal(s, coverKey, you); // Sum of your deposits (in stablecoin)
-    values[6] = _getCoverLiquidityRemovedInternal(s, coverKey, you); // Sum of your withdrawals  (in stablecoin)
-    values[7] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[8] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
-    values[9] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
-  }
-```
-</details>
-
-### _getCoverLiquidityAddedInternal
-
-```solidity
-function _getCoverLiquidityAddedInternal(IStore s, bytes32 coverKey, address you) private view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| you | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCoverLiquidityAddedInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, you));
-  }
-```
-</details>
-
-### _getCoverLiquidityRemovedInternal
-
-```solidity
-function _getCoverLiquidityRemovedInternal(IStore s, bytes32 coverKey, address you) private view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| you | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCoverLiquidityRemovedInternal(
-    IStore s,
-    bytes32 coverKey,
-    address you
-  ) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, you);
+    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
+    values[6] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
+    values[7] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
   }
 ```
 </details>
@@ -261,8 +198,6 @@ function preAddLiquidityInternal(
 
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
-    _updateCoverLiquidity(s, coverKey, account, amount);
-
     podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
   }
 ```
@@ -301,36 +236,6 @@ function _updateNpmStake(
       s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
       s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
     }
-  }
-```
-</details>
-
-### _updateCoverLiquidity
-
-```solidity
-function _updateCoverLiquidity(IStore s, bytes32 coverKey, address account, uint256 amount) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| account | address |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _updateCoverLiquidity(
-    IStore s,
-    bytes32 coverKey,
-    address account,
-    uint256 amount
-  ) private {
-    s.addUintByKey(CoverUtilV1.getCoverLiquidityAddedKey(coverKey, account), amount); // Your liquidity
   }
 ```
 </details>
@@ -460,9 +365,9 @@ function preRemoveLiquidityInternal(
 
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
     // come from VaultBase, we still need to ensure if it is a protocol member.
-    // Check `_redeemPods` for more info.
+    // Check `_redeemPodCalculation` for more info.
     // Redeem the PODs and receive DAI
-    releaseAmount = _redeemPods(s, account, coverKey, pod, podsToRedeem);
+    releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
@@ -500,9 +405,13 @@ function _unStakeNpm(
     bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
-    uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
+    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidity();
 
-    require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    if (exit) {
+      require(remainingStake == amount, "Invalid NPM stake to exit");
+    } else {
+      require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    }
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
@@ -510,10 +419,10 @@ function _unStakeNpm(
 ```
 </details>
 
-### _redeemPods
+### _redeemPodCalculation
 
 ```solidity
-function _redeemPods(IStore s, address account, bytes32 coverKey, address pod, uint256 podsToRedeem) private nonpayable
+function _redeemPodCalculation(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem) private view
 returns(uint256)
 ```
 
@@ -522,7 +431,6 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| account | address |  | 
 | coverKey | bytes32 |  | 
 | pod | address |  | 
 | podsToRedeem | uint256 |  | 
@@ -531,13 +439,12 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _redeemPods(
+function _redeemPodCalculation(
     IStore s,
-    address account,
     bytes32 coverKey,
     address pod,
     uint256 podsToRedeem
-  ) private returns (uint256) {
+  ) private view returns (uint256) {
     if (podsToRedeem == 0) {
       return 0;
     }
@@ -552,9 +459,6 @@ function _redeemPods(
 
     // You may need to wait till active policies expire
     require(available >= releaseAmount, "Insufficient balance. Lower the amount or wait till policy expiry."); // solhint-disable-line
-
-    // Update values
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_LIQUIDITY_REMOVED, coverKey, account, releaseAmount);
 
     return releaseAmount;
   }
@@ -804,7 +708,6 @@ function getMaxFlashLoanInternal(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -836,7 +739,6 @@ function getMaxFlashLoanInternal(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -864,6 +766,7 @@ function getMaxFlashLoanInternal(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -874,6 +777,8 @@ function getMaxFlashLoanInternal(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -883,8 +788,12 @@ function getMaxFlashLoanInternal(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

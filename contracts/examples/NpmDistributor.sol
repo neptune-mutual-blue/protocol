@@ -9,14 +9,14 @@ import "../interfaces/IVault.sol";
 import "../interfaces/IClaimsProcessor.sol";
 
 /**
- * @title NPM Distributor contract
+ * @title Neptune Mutual Distributor contract
  * @dev The distributor contract enables resellers to interact with
  * the Neptune Mutual protocol and offer policies to their users.
  *
  * This contract demonstrates how a distributor may charge an extra fee
  * and deposit the proceeds in their own treasury account.
  */
-contract NPMDistributor is ReentrancyGuard {
+contract NpmDistributor is ReentrancyGuard {
   using SafeERC20 for IERC20;
   using SafeERC20 for IVault;
 
@@ -89,7 +89,7 @@ contract NPMDistributor is ReentrancyGuard {
   /**
    * @dev Returns the protocol claims processor contract instance.
    */
-  function getClaimsProcessorContract() public view returns (IClaimsProcessor) {
+  function getClaimsProcessorContract() external view returns (IClaimsProcessor) {
     return IClaimsProcessor(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_CLAIM_PROCESSOR))));
   }
 
@@ -155,64 +155,12 @@ contract NPMDistributor is ReentrancyGuard {
     dai.safeIncreaseAllowance(address(policy), premium);
 
     // Purchase protection for this user
-    (address cxTokenAt, ) = policy.purchaseCover(coverKey, duration, protection, referralCode);
-
-    // Transfer the received cxDAI or cxUSD to the user
-    IERC20 cxToken = IERC20(cxTokenAt);
-    cxToken.safeTransfer(msg.sender, cxToken.balanceOf(address(this)));
+    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, duration, protection, referralCode);
 
     // Send your fee (+ any remaining DAI balance) to your treasury address
     dai.safeTransfer(treasury, dai.balanceOf(address(this)));
 
     emit PolicySold(coverKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
-  }
-
-  /**
-   * @dev  Allows you to claim cxTokens in exchange for immediate DAI payouts.
-   *
-   * This function will succeed only if the cover's existing incident
-   * has been resolved and you are claiming your cxTokens within the claim period.
-   *
-   * Before executing this function, confirm that the amount of cxTokens
-   * to be spent by this contract has been approved.
-   *
-   * @param cxToken Provide the instance of cxToken you would like to claim.
-   * @param coverKey Enter the cover key for which you want to file a claim.
-   * @param incidentDate Enter the date and time the incident was first reported.
-   * @param amount Enter the amount of cxTokens you would like to claim.
-   * You must approve this contract in advance of spending the cxTokens.
-   */
-  function claimPolicy(
-    IERC20 cxToken,
-    bytes32 coverKey,
-    uint256 incidentDate,
-    uint256 amount
-  ) external nonReentrant {
-    require(address(cxToken) != address(0), "Invalid cxToken");
-    require(coverKey > 0, "Invalid key");
-    require(incidentDate > 0, "Invalid incident date");
-    require(amount > 0, "Invalid amount");
-
-    IClaimsProcessor processor = getClaimsProcessorContract();
-    require(address(processor) != address(0), "Fatal: Processor missing");
-
-    IERC20 dai = getStablecoin();
-    require(address(dai) != address(0), "Fatal: DAI missing");
-
-    // Before moving forward, first drain all balances of this contract
-    _drain(dai);
-    _drain(cxToken);
-
-    cxToken.safeTransferFrom(msg.sender, address(this), amount);
-    cxToken.safeIncreaseAllowance(address(processor), amount);
-
-    processor.claim(address(cxToken), coverKey, incidentDate, amount);
-
-    // Transfer the received DAI payout to the sender
-    uint256 payout = dai.balanceOf(address(this));
-    dai.safeTransfer(msg.sender, payout);
-
-    emit PolicyClaimed(coverKey, address(cxToken), msg.sender, incidentDate, amount, payout);
   }
 
   function addLiquidity(

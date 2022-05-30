@@ -22,9 +22,9 @@ library ProtoUtilV1 {
 
   bytes32 public constant CNS_UNISWAP_V2_ROUTER = "cns:core:uni:v2:router";
   bytes32 public constant CNS_UNISWAP_V2_FACTORY = "cns:core:uni:v2:factory";
-  bytes32 public constant CNS_REASSURANCE_VAULT = "cns:core:reassurance:vault";
   bytes32 public constant CNS_PRICE_DISCOVERY = "cns:core:price:discovery";
   bytes32 public constant CNS_TREASURY = "cns:core:treasury";
+  bytes32 public constant CNS_NPM_PRICE_ORACLE = "cns:core:npm:price:oracle";
   bytes32 public constant CNS_COVER_REASSURANCE = "cns:cover:reassurance";
   bytes32 public constant CNS_POOL_BOND = "cns:pool:bond";
   bytes32 public constant CNS_COVER_POLICY = "cns:cover:policy";
@@ -68,11 +68,14 @@ library ProtoUtilV1 {
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "ns:cover";
 
+  bytes32 public constant NS_COVER_CREATION_DATE = "ns:cover:creation:date";
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
+  bytes32 public constant NS_COVER_REASSURANCE_PAYOUT = "ns:cover:reassurance:payout";
   bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
+  bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
   bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
   bytes32 public constant NS_COVER_INFO = "ns:cover:info";
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
@@ -80,6 +83,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
   bytes32 public constant NS_VAULT_LENDING_LOSSES = "ns:vault:lending:losses";
+  bytes32 public constant NS_VAULT_DEPOSIT_HEIGHTS = "ns:vault:deposit:heights";
   bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD = "ns:cover:liquidity:len:p";
   bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO = "ns:cover:liquidity:max:lr";
   bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW = "ns:cover:liquidity:ww";
@@ -93,9 +97,9 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE = "ns:cover:liquidity:fl:fee";
   bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL = "ns:proto:cover:liquidity:fl:fee";
 
+  bytes32 public constant NS_COVERAGE_LAG = "ns:coverage:lag";
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
-  bytes32 public constant NS_COVER_PROVISION = "ns:cover:provision";
 
   bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
@@ -103,6 +107,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
   bytes32 public constant NS_COVER_CREATOR_WHITELIST = "ns:cover:creator:whitelist";
   bytes32 public constant NS_COVER_USER_WHITELIST = "ns:cover:user:whitelist";
+  bytes32 public constant NS_COVER_CLAIM_BLACKLIST = "ns:cover:claim:blacklist";
 
   /// @dev Resolution timestamp = timestamp of first reporting + reporting period
   bytes32 public constant NS_GOVERNANCE_RESOLUTION_TS = "ns:gov:resolution:ts";
@@ -160,6 +165,8 @@ library ProtoUtilV1 {
 
   bytes32 public constant NS_CLAIM_PERIOD = "ns:claim:period";
 
+  bytes32 public constant NS_CLAIM_PAYOUTS = "ns:claim:payouts";
+
   /// @dev A 24-hour delay after a governance agent "resolves" an actively reported cover.
   bytes32 public constant NS_CLAIM_BEGIN_TS = "ns:claim:begin:ts";
 
@@ -180,10 +187,6 @@ library ProtoUtilV1 {
   /// 'ns:claim:platform:fee'
   bytes32 public constant NS_CLAIM_REPORTER_COMMISSION = "ns:claim:reporter:commission";
 
-  bytes32 public constant NS_LP_RESERVE0 = "ns:uni:lp:reserve0";
-  bytes32 public constant NS_LP_RESERVE1 = "ns:uni:lp:reserve1";
-  bytes32 public constant NS_LP_TOTAL_SUPPLY = "ns:uni:lp:totalSupply";
-
   bytes32 public constant NS_LAST_LIQUIDITY_STATE_UPDATE = "ns:last:snl:update";
   bytes32 public constant NS_LIQUIDITY_STATE_UPDATE_INTERVAL = "ns:snl:update:interval";
   bytes32 public constant NS_LENDING_STRATEGY_ACTIVE = "ns:lending:strategy:active";
@@ -201,13 +204,11 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_STAKING_POOL = "StakingPool";
   bytes32 public constant CNAME_POD_STAKING_POOL = "PODStakingPool";
   bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
-  bytes32 public constant CNAME_PRICE_DISCOVERY = "PriceDiscovery";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
   bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
   bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
-  bytes32 public constant CNAME_COVER_PROVISION = "CoverProvision";
   bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
   bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
@@ -291,12 +292,12 @@ library ProtoUtilV1 {
     return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
   }
 
-  function getTreasury(IStore s) external view returns (address) {
-    return s.getAddressByKey(CNS_TREASURY);
+  function getNpmPriceOracle(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
   }
 
-  function getReassuranceVault(IStore s) external view returns (address) {
-    return s.getAddressByKey(CNS_REASSURANCE_VAULT);
+  function getTreasury(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_TREASURY);
   }
 
   function getStablecoin(IStore s) external view returns (address) {

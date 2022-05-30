@@ -4,7 +4,17 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
-  event CoverPurchased(bytes32 coverKey, address indexed account, address indexed cxToken, uint256 fee, uint256 amountToCover, uint256 expiresOn, bytes32 indexed referralCode, uint256 policyId);
+  event CoverPurchased(
+    bytes32 coverKey,
+    address indexed account,
+    address onBehalfOf,
+    address indexed cxToken,
+    uint256 fee,
+    uint256 amountToCover,
+    uint256 expiresOn,
+    bytes32 indexed referralCode,
+    uint256 policyId
+  );
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -12,11 +22,13 @@ interface IPolicy is IMember {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCover(
+    address onBehalfOf,
     bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover,
@@ -49,11 +61,9 @@ interface IPolicy is IMember {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NPM provision
-   * @param _values[3] NPM price
-   * @param _values[4] The total amount of reassurance tokens
-   * @param _values[5] Reassurance token price
-   * @param _values[6] Reassurance pool weight
+   * @param _values[2] The total amount of reassurance tokens
+   * @param _values[3] Reassurance token price
+   * @param _values[4] Reassurance pool weight
    */
   function getCoverPoolSummary(bytes32 coverKey) external view returns (uint256[] memory _values);
 

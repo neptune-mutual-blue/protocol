@@ -36,10 +36,8 @@ const deployDependencies = async () => {
   })
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address
   })
 
   const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
@@ -104,15 +102,19 @@ const deployDependencies = async () => {
   await store.setBool(key.qualify(protocol.address), true)
   await store.setBool(key.qualifyMember(protocol.address), true)
 
+  const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
   await protocol.initialize(
-    [helper.zero1,
+    [
+      helper.zero1,
       router.address,
       helper.randomAddress(), // factory
       npm.address,
       helper.randomAddress(),
-      helper.randomAddress()
+      priceOracle.address
     ],
-    [helper.ether(0), // Cover Fee
+    [
+      helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Claim period

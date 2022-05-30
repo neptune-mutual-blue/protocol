@@ -9,50 +9,50 @@ View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IRes
 **Events**
 
 ```js
-event Resolved(bytes32  key, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
-event CooldownPeriodConfigured(bytes32  key, uint256  period);
+event Resolved(bytes32 indexed coverKey, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
+event CooldownPeriodConfigured(bytes32 indexed coverKey, uint256  period);
 ```
 
 ## Functions
 
-- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
-- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
-- [configureCoolDownPeriod(bytes32 key, uint256 period)](#configurecooldownperiod)
-- [getCoolDownPeriod(bytes32 key)](#getcooldownperiod)
-- [getResolutionDeadline(bytes32 key)](#getresolutiondeadline)
+- [resolve(bytes32 coverKey, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
+- [getResolutionDeadline(bytes32 coverKey)](#getresolutiondeadline)
 
 ### resolve
 
 ```solidity
-function resolve(bytes32 key, uint256 incidentDate) external nonpayable
+function resolve(bytes32 coverKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function resolve(bytes32 key, uint256 incidentDate) external;
+function resolve(bytes32 coverKey, uint256 incidentDate) external;
 ```
 </details>
 
 ### emergencyResolve
 
 ```solidity
-function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable
+function emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | decision | bool |  | 
 
@@ -61,7 +61,7 @@ function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) exte
 
 ```javascript
 function emergencyResolve(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     bool decision
   ) external;
@@ -71,28 +71,28 @@ function emergencyResolve(
 ### configureCoolDownPeriod
 
 ```solidity
-function configureCoolDownPeriod(bytes32 key, uint256 period) external nonpayable
+function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | period | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function configureCoolDownPeriod(bytes32 key, uint256 period) external;
+function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external;
 ```
 </details>
 
 ### getCoolDownPeriod
 
 ```solidity
-function getCoolDownPeriod(bytes32 key) external view
+function getCoolDownPeriod(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -100,20 +100,20 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoolDownPeriod(bytes32 key) external view returns (uint256);
+function getCoolDownPeriod(bytes32 coverKey) external view returns (uint256);
 ```
 </details>
 
 ### getResolutionDeadline
 
 ```solidity
-function getResolutionDeadline(bytes32 key) external view
+function getResolutionDeadline(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -121,13 +121,13 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionDeadline(bytes32 key) external view returns (uint256);
+function getResolutionDeadline(bytes32 coverKey) external view returns (uint256);
 ```
 </details>
 
@@ -148,7 +148,6 @@ function getResolutionDeadline(bytes32 key) external view returns (uint256);
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -180,7 +179,6 @@ function getResolutionDeadline(bytes32 key) external view returns (uint256);
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -208,6 +206,7 @@ function getResolutionDeadline(bytes32 key) external view returns (uint256);
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -218,6 +217,8 @@ function getResolutionDeadline(bytes32 key) external view returns (uint256);
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -227,8 +228,12 @@ function getResolutionDeadline(bytes32 key) external view returns (uint256);
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

@@ -16,6 +16,10 @@ contract MockCxToken is ERC20 {
     return block.timestamp + 30 days; // solhint-disable-line
   }
 
+  function getClaimablePolicyOf(address) external pure returns (uint256) {
+    return 1000 ether;
+  }
+
   // slither-disable-next-line naming-convention
   function COVER_KEY() external pure returns (bytes32) {
     return "test";

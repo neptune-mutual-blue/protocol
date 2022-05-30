@@ -5,8 +5,11 @@ import "../../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/security/Pausable.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/utils/SafeERC20.sol";
 
 abstract contract StoreBase is IStore, Pausable, Ownable {
+  using SafeERC20 for IERC20;
+
   mapping(bytes32 => int256) public intStorage;
   mapping(bytes32 => uint256) public uintStorage;
   mapping(bytes32 => uint256[]) public uintsStorage;
@@ -49,7 +52,8 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
-      require(erc20.transfer(sendTo, balance), "Transfer failed");
+      // slither-disable-next-line unchecked-transfer
+      erc20.safeTransfer(sendTo, balance);
     }
   }
 

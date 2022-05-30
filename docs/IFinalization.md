@@ -9,31 +9,31 @@ View Source: [contracts/interfaces/IFinalization.sol](../contracts/interfaces/IF
 **Events**
 
 ```js
-event Finalized(bytes32 indexed key, address indexed finalizer, uint256 indexed incidentDate);
+event Finalized(bytes32 indexed coverKey, address indexed finalizer, uint256 indexed incidentDate);
 ```
 
 ## Functions
 
-- [finalize(bytes32 key, uint256 incidentDate)](#finalize)
+- [finalize(bytes32 coverKey, uint256 incidentDate)](#finalize)
 
 ### finalize
 
 ```solidity
-function finalize(bytes32 key, uint256 incidentDate) external nonpayable
+function finalize(bytes32 coverKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function finalize(bytes32 key, uint256 incidentDate) external;
+function finalize(bytes32 coverKey, uint256 incidentDate) external;
 ```
 </details>
 
@@ -54,7 +54,6 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -86,7 +85,6 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -114,6 +112,7 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -124,6 +123,8 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -133,8 +134,12 @@ function finalize(bytes32 key, uint256 incidentDate) external;
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

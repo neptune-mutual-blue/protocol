@@ -25,7 +25,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param addresses[2] uniswapV2FactoryLike
    * @param addresses[3] npm
    * @param addresses[4] treasury
-   * @param addresses[5] reassuranceVault
+   * @param addresses[5] npm price oracle
    * @param values[0] coverCreationFees
    * @param values[1] minCoverCreationStake
    * @param values[2] firstReportingStake
@@ -61,14 +61,14 @@ contract Protocol is IProtocol, ProtoBase {
     require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
     require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     require(addresses[4] != address(0), "Invalid Treasury");
-    require(addresses[5] != address(0), "Invalid Reassurance Vault");
+    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
     s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
-    s.setAddressByKey(ProtoUtilV1.CNS_REASSURANCE_VAULT, addresses[5]);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, addresses[5]);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
@@ -83,6 +83,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, values[11]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
+    s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
     initialized = 1;
     emit Initialized(addresses, values);

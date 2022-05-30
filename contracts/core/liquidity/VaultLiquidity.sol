@@ -83,7 +83,7 @@ abstract contract VaultLiquidity is VaultBase {
       emit Entered(coverKey, msg.sender);
     }
 
-    emit NPMStaken(msg.sender, npmStakeToAdd);
+    emit NpmStaken(msg.sender, npmStakeToAdd);
   }
 
   /**
@@ -113,6 +113,8 @@ abstract contract VaultLiquidity is VaultBase {
     IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
     IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
 
+    super._burn(address(this), podsToRedeem);
+
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
       IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
@@ -130,7 +132,7 @@ abstract contract VaultLiquidity is VaultBase {
     }
 
     if (npmStakeToRemove > 0) {
-      emit NPMUnstaken(msg.sender, npmStakeToRemove);
+      emit NpmUnstaken(msg.sender, npmStakeToRemove);
     }
   }
 

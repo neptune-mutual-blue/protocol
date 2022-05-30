@@ -1,0 +1,52 @@
+{
+  "name": "npm-price-oracle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "cp ../.env .env && hardhat compile",
+    "build": "cp ../.env .env && hardhat compile",
+    "clean": "hardhat clean",
+    "compile:clean": "cp ../.env .env && hardhat clean && hardhat compile",
+    "build:clean": "npm run compile:clean",
+    "deploy": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
+    "slither": "slither .",
+    "fix": "standard --fix"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "bugs": {
+    "url": "https://github.com/neptune-mutual/protocol/issues"
+  },
+  "homepage": "https://github.com/neptune-mutual/protocol#readme",
+  "standard": {
+    "env": [
+      "mocha"
+    ],
+    "global": [
+      "ethers",
+      "task",
+      "contract",
+      "artifacts",
+      "web3"
+    ]
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.3",
+    "@nomiclabs/hardhat-etherscan": "^2.1.8",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@uniswap/lib": "^4.0.1-alpha",
+    "@uniswap/v2-core": "1.0.0",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "dotenv": "^10.0.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.2",
+    "hardhat": "^2.8.0",
+    "hardhat-contract-sizer": "^2.1.1",
+    "hardhat-gas-reporter": "^1.0.6",
+    "solidity-coverage": "^0.7.17",
+    "standard": "^16.0.4",
+    "openzeppelin-solidity": "3.4.0"
+  }
+}

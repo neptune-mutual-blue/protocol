@@ -13,43 +13,43 @@ Enables governance agents to resolve a contract undergoing reporting.
 
 ## Functions
 
-- [resolve(bytes32 key, uint256 incidentDate)](#resolve)
-- [emergencyResolve(bytes32 key, uint256 incidentDate, bool decision)](#emergencyresolve)
-- [_resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
-- [configureCoolDownPeriod(bytes32 key, uint256 period)](#configurecooldownperiod)
-- [getCoolDownPeriod(bytes32 key)](#getcooldownperiod)
-- [getResolutionDeadline(bytes32 key)](#getresolutiondeadline)
+- [resolve(bytes32 coverKey, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [_resolve(bytes32 coverKey, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
+- [getResolutionDeadline(bytes32 coverKey)](#getresolutiondeadline)
 
 ### resolve
 
 ```solidity
-function resolve(bytes32 key, uint256 incidentDate) external nonpayable nonReentrant 
+function resolve(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function resolve(bytes32 key, uint256 incidentDate) external override nonReentrant {
+function resolve(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
-    s.mustBeReportingOrDisputed(key);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterReportingPeriod(key);
-    s.mustNotHaveResolutionDeadline(key);
+    s.mustBeReportingOrDisputed(coverKey);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeAfterReportingPeriod(coverKey);
+    s.mustNotHaveResolutionDeadline(coverKey);
 
-    bool decision = s.getCoverStatus(key) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool decision = s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.IncidentHappened;
 
-    _resolve(key, incidentDate, decision, false);
+    _resolve(coverKey, incidentDate, decision, false);
   }
 ```
 </details>
@@ -57,14 +57,14 @@ function resolve(bytes32 key, uint256 incidentDate) external override nonReentra
 ### emergencyResolve
 
 ```solidity
-function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
+function emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | decision | bool |  | 
 
@@ -73,7 +73,7 @@ function emergencyResolve(bytes32 key, uint256 incidentDate, bool decision) exte
 
 ```javascript
 function emergencyResolve(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     bool decision
   ) external override nonReentrant {
@@ -81,11 +81,11 @@ function emergencyResolve(
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
-    s.mustBeValidIncidentDate(key, incidentDate);
-    s.mustBeAfterReportingPeriod(key);
-    s.mustBeBeforeResolutionDeadline(key);
+    s.mustBeValidIncidentDate(coverKey, incidentDate);
+    s.mustBeAfterReportingPeriod(coverKey);
+    s.mustBeBeforeResolutionDeadline(coverKey);
 
-    _resolve(key, incidentDate, decision, true);
+    _resolve(coverKey, incidentDate, decision, true);
   }
 ```
 </details>
@@ -93,14 +93,14 @@ function emergencyResolve(
 ### _resolve
 
 ```solidity
-function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergency) private nonpayable
+function _resolve(bytes32 coverKey, uint256 incidentDate, bool decision, bool emergency) private nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | decision | bool |  | 
 | emergency | bool |  | 
@@ -110,20 +110,20 @@ function _resolve(bytes32 key, uint256 incidentDate, bool decision, bool emergen
 
 ```javascript
 function _resolve(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 incidentDate,
     bool decision,
     bool emergency
   ) private {
     // A grace period given to a governance admin(s) to defend
     // against a concensus attack(s).
-    uint256 cooldownPeriod = s.getCoolDownPeriodInternal(key);
+    uint256 cooldownPeriod = s.getCoolDownPeriodInternal(coverKey);
 
     // The timestamp until when a governance admin is allowed
     // to perform emergency resolution.
     // After this timestamp, the cover has to be claimable
     // or finalized
-    uint256 deadline = s.getResolutionDeadlineInternal(key);
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
 
     // A cover, when being resolved, will either directly go to finalization or have a claim period.
     //
@@ -145,28 +145,28 @@ function _resolve(
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
-    s.setStatusInternal(key, incidentDate, status);
+    s.setStatusInternal(coverKey, incidentDate, status);
 
     if (deadline == 0) {
       // Deadline can't be before claim begin date.
       // In other words, once a cover becomes claimable, emergency resolution
       // can not be performed any longer
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
-      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, key, deadline);
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, deadline);
     }
 
     // Claim begins when deadline timestamp is passed
     uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
 
     // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(key) : 0;
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
 
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, claimExpiresAt);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, claimExpiresAt);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit Resolved(key, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
+    emit Resolved(coverKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }
 ```
 </details>
@@ -174,33 +174,33 @@ function _resolve(
 ### configureCoolDownPeriod
 
 ```solidity
-function configureCoolDownPeriod(bytes32 key, uint256 period) external nonpayable nonReentrant 
+function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | period | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function configureCoolDownPeriod(bytes32 key, uint256 period) external override nonReentrant {
+function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     require(period > 0, "Please specify period");
 
-    if (key > 0) {
-      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, key, period);
+    if (coverKey > 0) {
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, period);
     } else {
       s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, period);
     }
 
-    emit CooldownPeriodConfigured(key, period);
+    emit CooldownPeriodConfigured(coverKey, period);
   }
 ```
 </details>
@@ -208,7 +208,7 @@ function configureCoolDownPeriod(bytes32 key, uint256 period) external override 
 ### getCoolDownPeriod
 
 ```solidity
-function getCoolDownPeriod(bytes32 key) external view
+function getCoolDownPeriod(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -216,14 +216,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoolDownPeriod(bytes32 key) external view override returns (uint256) {
-    return s.getCoolDownPeriodInternal(key);
+function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
+    return s.getCoolDownPeriodInternal(coverKey);
   }
 ```
 </details>
@@ -231,7 +231,7 @@ function getCoolDownPeriod(bytes32 key) external view override returns (uint256)
 ### getResolutionDeadline
 
 ```solidity
-function getResolutionDeadline(bytes32 key) external view
+function getResolutionDeadline(bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -239,14 +239,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionDeadline(bytes32 key) external view override returns (uint256) {
-    return s.getResolutionDeadlineInternal(key);
+function getResolutionDeadline(bytes32 coverKey) external view override returns (uint256) {
+    return s.getResolutionDeadlineInternal(coverKey);
   }
 ```
 </details>
@@ -268,7 +268,6 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -300,7 +299,6 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -328,6 +326,7 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -338,6 +337,8 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -347,8 +348,12 @@ function getResolutionDeadline(bytes32 key) external view override returns (uint
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

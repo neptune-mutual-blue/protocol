@@ -24,8 +24,11 @@ event Minted(bytes32 indexed key, address indexed account, uint256  amount);
 ## Functions
 
 - [constructor(address timelockOrOwner)](#)
-- [_beforeTokenTransfer(address from, address to, uint256 amount)](#_beforetokentransfer)
+- [_beforeTokenTransfer(address , address , uint256 )](#_beforetokentransfer)
 - [issue(bytes32 key, address mintTo, uint256 amount)](#issue)
+- [issueMany(bytes32 key, address[] receivers, uint256[] amounts)](#issuemany)
+- [transferMany(address[] receivers, uint256[] amounts)](#transfermany)
+- [_issue(bytes32 key, address mintTo, uint256 amount)](#_issue)
 
 ### 
 
@@ -52,26 +55,26 @@ constructor(address timelockOrOwner) Ownable() Pausable() ERC20("Neptune Mutual 
 ### _beforeTokenTransfer
 
 ```solidity
-function _beforeTokenTransfer(address from, address to, uint256 amount) internal nonpayable whenNotPaused 
+function _beforeTokenTransfer(address , address , uint256 ) internal view whenNotPaused 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| from | address |  | 
-| to | address |  | 
-| amount | uint256 |  | 
+|  | address |  | 
+|  | address |  | 
+|  | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override whenNotPaused {
+    address,
+    address,
+    uint256
+  ) internal view override whenNotPaused {
     // solhint-disable-previous-line
   }
 ```
@@ -100,11 +103,101 @@ function issue(
     address mintTo,
     uint256 amount
   ) external onlyOwner whenNotPaused {
+    _issue(key, mintTo, amount);
+  }
+```
+</details>
+
+### issueMany
+
+```solidity
+function issueMany(bytes32 key, address[] receivers, uint256[] amounts) external nonpayable onlyOwner whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| receivers | address[] |  | 
+| amounts | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function issueMany(
+    bytes32 key,
+    address[] memory receivers,
+    uint256[] memory amounts
+  ) external onlyOwner whenNotPaused {
+    require(receivers.length > 0, "No receiver");
+    require(receivers.length == amounts.length, "Invalid args");
+
+    for (uint256 i = 0; i < receivers.length; i++) {
+      _issue(key, receivers[i], amounts[i]);
+    }
+  }
+```
+</details>
+
+### transferMany
+
+```solidity
+function transferMany(address[] receivers, uint256[] amounts) external nonpayable onlyOwner whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| receivers | address[] |  | 
+| amounts | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function transferMany(address[] memory receivers, uint256[] memory amounts) external onlyOwner whenNotPaused {
+    require(receivers.length > 0, "No receiver");
+    require(receivers.length == amounts.length, "Invalid args");
+
+    for (uint256 i = 0; i < receivers.length; i++) {
+      super.transfer(receivers[i], amounts[i]);
+    }
+  }
+```
+</details>
+
+### _issue
+
+```solidity
+function _issue(bytes32 key, address mintTo, uint256 amount) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| mintTo | address |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _issue(
+    bytes32 key,
+    address mintTo,
+    uint256 amount
+  ) private {
+    require(amount > 0, "Invalid amount");
+
     super._mint(mintTo, amount);
     _issued += amount;
 
-    require(_issued <= _CAP, "Error: can't exceed cap");
-
+    require(_issued <= _CAP, "Cap exceeded");
     emit Minted(key, mintTo, amount);
   }
 ```
@@ -127,7 +220,6 @@ function issue(
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -159,7 +251,6 @@ function issue(
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -187,6 +278,7 @@ function issue(
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -197,6 +289,8 @@ function issue(
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -206,8 +300,12 @@ function issue(
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

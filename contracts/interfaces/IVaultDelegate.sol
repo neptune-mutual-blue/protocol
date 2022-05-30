@@ -11,7 +11,7 @@ interface IVaultDelegate is IMember {
     bytes32 coverKey,
     uint256 amount,
     uint256 npmStake
-  ) external returns (uint256 podsToMint, uint256 previousNPMStake);
+  ) external returns (uint256 podsToMint, uint256 previousNpmStake);
 
   function postAddLiquidity(
     address caller,

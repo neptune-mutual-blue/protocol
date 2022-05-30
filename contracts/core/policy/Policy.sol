@@ -42,11 +42,13 @@ contract Policy is IPolicy, Recoverable {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function purchaseCover(
+    address onBehalfOf,
     bytes32 coverKey,
     uint256 coverDuration,
     uint256 amountToCover,
@@ -55,16 +57,17 @@ contract Policy is IPolicy, Recoverable {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey);
+    s.senderMustBeWhitelistedIfRequired(coverKey, onBehalfOf);
 
+    require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(coverKey, coverDuration, amountToCover);
+    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(onBehalfOf, coverKey, coverDuration, amountToCover);
 
     lastPolicyId += 1;
 
-    emit CoverPurchased(coverKey, msg.sender, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    emit CoverPurchased(coverKey, msg.sender, onBehalfOf, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
@@ -129,11 +132,9 @@ contract Policy is IPolicy, Recoverable {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of NPM provision
-   * @param _values[3] NPM price
-   * @param _values[4] The total amount of reassurance tokens
-   * @param _values[5] Reassurance token price
-   * @param _values[6] Reassurance pool weight
+   * @param _values[2] The total amount of reassurance tokens
+   * @param _values[3] Reassurance token price
+   * @param _values[4] Reassurance pool weight
    */
   function getCoverPoolSummary(bytes32 coverKey) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummaryInternal(coverKey);

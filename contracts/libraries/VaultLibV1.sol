@@ -20,6 +20,9 @@ library VaultLibV1 {
   using RoutineInvokerLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
+  // Before withdrawing, wait for the following number of blocks after deposit
+  uint256 public constant WITHDRAWAL_HEIGHT_OFFSET = 1;
+
   /**
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
    */
@@ -127,6 +130,12 @@ library VaultLibV1 {
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
     podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
+
+    _updateLastBlock(s, coverKey);
+  }
+
+  function _updateLastBlock(IStore s, bytes32 coverKey) private {
+    s.setUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey), block.number);
   }
 
   function _updateNpmStake(
@@ -169,6 +178,11 @@ library VaultLibV1 {
     require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
   }
 
+  function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view {
+    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey));
+    require(block.number > lastDeposit + WITHDRAWAL_HEIGHT_OFFSET, "Please wait a few blocks");
+  }
+
   /**
    * @dev Removes liquidity from the specified cover contract
    * @param coverKey Enter the cover key
@@ -205,9 +219,13 @@ library VaultLibV1 {
     bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
-    uint256 minStakeToMaintain = exit ? 0 : s.getMinStakeToAddLiquidity();
+    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidity();
 
-    require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    if (exit) {
+      require(remainingStake == amount, "Invalid NPM stake to exit");
+    } else {
+      require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
+    }
 
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
     s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake

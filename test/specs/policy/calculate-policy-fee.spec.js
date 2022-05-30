@@ -20,7 +20,6 @@ const durations = [1, 2, 3]
 
 const data = {
   reassuranceAmount: 1_000_000,
-  provision: 0,
   inVault: 14_000_000,
   totalCommitment: 0,
   floor: 0.07,
@@ -31,11 +30,11 @@ const data = {
 
 const payload = {
   reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount)),
-  provision: ethers.BigNumber.from(helper.ether(data.provision)),
   inVault: ethers.BigNumber.from(helper.ether(data.inVault)),
   totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment)),
   floor: ethers.BigNumber.from(helper.percentage(7)),
   ceiling: ethers.BigNumber.from(helper.percentage(45)),
+  reassuranceRate: helper.percentage(50),
   MULTIPLIER,
   INCIDENT_SUPPORT_POOL_CAP_RATIO
 }
@@ -68,7 +67,7 @@ describe('Policy: getCoverFeeInfo', () => {
     const claimPeriod = 7 * DAYS
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling]
+    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate]
 
     const info = await ipfs.write([coverKey, ...values])
 
@@ -88,7 +87,7 @@ describe('Policy: getCoverFeeInfo', () => {
         transferLib: deployed.transferLib,
         protoUtilV1: deployed.protoUtilV1,
         registryLibV1: deployed.registryLibV1,
-        validationLib: deployed.validationLibV1
+        validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
 

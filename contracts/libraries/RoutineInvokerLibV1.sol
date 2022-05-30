@@ -27,26 +27,22 @@ library RoutineInvokerLibV1 {
   }
 
   function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
-    _invoke(s, coverKey, address(0));
+    _invoke(s, coverKey);
   }
 
-  function _invoke(
-    IStore s,
-    bytes32 coverKey,
-    address token
-  ) private {
+  function _invoke(IStore s, bytes32 coverKey) private {
     // solhint-disable-next-line
-    if (s.getLastUpdateOnInternal() + _getUpdateInterval(s) > block.timestamp) {
+    if (s.getLastUpdatedOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
-    _updateKnownTokenPrices(s, token);
+    PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
       _invokeAssetManagement(s, coverKey);
     }
 
-    s.setLastUpdateOn();
+    s.setLastUpdatedOn(coverKey);
 
     _updateWithdrawalPeriod(s, coverKey);
   }
@@ -172,10 +168,10 @@ library RoutineInvokerLibV1 {
     uint256 totalStrategies,
     bytes32 coverKey
   ) private view returns (uint256) {
-    address vault = s.getVaultAddress(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 maximumAllowed = (stablecoin.balanceOf(vault) * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 totalBalance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 maximumAllowed = (totalBalance * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
@@ -222,9 +218,10 @@ library RoutineInvokerLibV1 {
 
     if (action == Action.Withdraw) {
       _withdrawAllFromStrategy(strategy, vault, coverKey);
-    } else {
-      _depositToStrategy(strategy, coverKey, canDeposit);
+      return;
     }
+
+    _depositToStrategy(strategy, coverKey, canDeposit);
   }
 
   function _depositToStrategy(
@@ -262,15 +259,5 @@ library RoutineInvokerLibV1 {
         strategy.withdraw(coverKey);
       }
     }
-  }
-
-  function _updateKnownTokenPrices(IStore s, address token) private {
-    address npm = s.getNpmTokenAddress();
-
-    if (token != address(0) && token != npm) {
-      PriceLibV1.setTokenPriceInStablecoinInternal(s, token);
-    }
-
-    PriceLibV1.setTokenPriceInStablecoinInternal(s, npm);
   }
 }

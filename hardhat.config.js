@@ -32,7 +32,7 @@ const config = {
       gas: 'auto'
     },
     mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com/',
+      url: 'https://matic-mumbai.chainstacklabs.com',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
       // gasPrice: 30000000000,

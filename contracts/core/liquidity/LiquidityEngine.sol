@@ -41,6 +41,16 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     emit StrategyDisabled(strategy);
   }
 
+  function deleteStrategy(address strategy) external override nonReentrant {
+    // @suppress-address-trust-issue The address strategy can be trusted
+    // because this function can only be invoked by a liquidity manager.
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.deleteStrategyInternal(strategy);
+    emit StrategyDeleted(strategy);
+  }
+
   function setLendingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,

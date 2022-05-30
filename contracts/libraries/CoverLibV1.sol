@@ -42,9 +42,7 @@ library CoverLibV1 {
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
     values[1] = s.getStake(coverKey);
     values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    values[4] = s.getActiveLiquidityUnderProtection(coverKey);
+    values[3] = s.getActiveLiquidityUnderProtection(coverKey);
   }
 
   function initializeCoverInternal(
@@ -95,6 +93,7 @@ library CoverLibV1 {
    * @param values[5] claimPeriod Enter the claim period.
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
+   * @param values[8] reassuranceRate Enter the reassurance rate.
    */
   function addCoverInternal(
     IStore s,
@@ -130,6 +129,16 @@ library CoverLibV1 {
     uint256[] memory values,
     uint256 fee
   ) private {
+    require(coverKey > 0, "Invalid cover key");
+    require(info > 0, "Invalid info");
+    require(values[2] > 0, "Invalid min reporting stake");
+    require(values[3] > 0, "Invalid reporting period");
+    require(values[4] > 0, "Invalid cooldown period");
+    require(values[5] > 0, "Invalid claim period");
+    require(values[6] > 0, "Invalid floor rate");
+    require(values[7] > 0, "Invalid ceiling rate");
+    require(values[8] > 0, "Invalid reassurance rate");
+
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
     s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
@@ -143,12 +152,14 @@ library CoverLibV1 {
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
 
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, values[2]);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey, values[3]);
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, values[4]);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey, values[5]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
   }
 
   function deployVaultInternal(IStore s, bytes32 coverKey) external returns (address) {
@@ -158,7 +169,7 @@ library CoverLibV1 {
     s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
 
     // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(s, coverKey);
+    address deployed = s.getVaultFactoryContract().deploy(coverKey);
 
     s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
     return deployed;
@@ -250,36 +261,5 @@ library CoverLibV1 {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, value);
 
     s.updateStateAndLiquidity(0);
-  }
-
-  function increaseProvisionInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 amount
-  ) external returns (uint256 provision) {
-    provision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey, amount);
-
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
-
-    s.updateStateAndLiquidity(coverKey);
-  }
-
-  function decreaseProvisionInternal(
-    IStore s,
-    bytes32 coverKey,
-    uint256 amount
-  ) external returns (uint256 provision) {
-    provision = s.getUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey);
-
-    require(provision >= amount, "Exceeds Balance");
-
-    // @suppress-subtraction Checked usage. Amount is always less than current provision.
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_PROVISION, coverKey, amount);
-
-    s.npmToken().ensureTransfer(msg.sender, amount);
-
-    s.updateStateAndLiquidity(coverKey);
   }
 }

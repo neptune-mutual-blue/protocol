@@ -32,10 +32,8 @@ const deployAll = async (cache) => {
   })
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    ProtoUtilV1: protoUtilV1.address,
-    RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address
   })
 
   const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
@@ -61,16 +59,16 @@ const deployAll = async (cache) => {
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const governanceLib = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
+  const governanceUtilV1 = await deployer.deployWithLibraries(cache, 'GovernanceUtilV1', {
     CoverUtilV1: coverUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
-  const validationLib = await deployer.deployWithLibraries(cache, 'ValidationLibV1', {
+  const validationLibV1 = await deployer.deployWithLibraries(cache, 'ValidationLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
-    GovernanceUtilV1: governanceLib.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
@@ -79,13 +77,12 @@ const deployAll = async (cache) => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
-    RoutineInvokerLibV1: routineInvokerLibV1.address,
-    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
+    RoutineInvokerLibV1: routineInvokerLibV1.address,
     StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
-    ValidationLibV1: validationLib.address
+    ValidationLibV1: validationLibV1.address
   })
 
   const vaultLib = await deployer.deployWithLibraries(cache, 'VaultLibV1', {
@@ -105,13 +102,16 @@ const deployAll = async (cache) => {
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
-    ValidationLibV1: validationLib.address
+    ValidationLibV1: validationLibV1.address
   })
 
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
-    ValidationLibV1: validationLib.address
+    GovernanceUtilV1: governanceUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    ProtoUtilV1: protoUtilV1.address,
+    ValidationLibV1: validationLibV1.address
   })
 
   const stakingPoolCoreLibV1 = await deployer.deployWithLibraries(cache, 'StakingPoolCoreLibV1', {
@@ -132,7 +132,7 @@ const deployAll = async (cache) => {
     PriceLibV1: priceLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address,
-    ValidationLibV1: validationLib.address
+    ValidationLibV1: validationLibV1.address
   })
 
   return {
@@ -144,8 +144,8 @@ const deployAll = async (cache) => {
     coverUtilV1,
     transferLib,
     registryLibV1,
-    validationLib,
-    governanceLib,
+    validationLibV1,
+    governanceUtilV1,
     vaultFactoryLib,
     vaultLib,
     cxTokenFactoryLib,

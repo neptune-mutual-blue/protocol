@@ -6,6 +6,7 @@ const DAYS = 86400
 const cache = null
 
 const deployDependencies = async () => {
+  const stateAndLiquidityUpdateInterval = 1 * DAYS
   const [owner] = await ethers.getSigners()
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
@@ -38,10 +39,8 @@ const deployDependencies = async () => {
   })
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
-    RegistryLibV1: registryLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address
   })
 
   const priceLibV1 = await deployer.deployWithLibraries(cache, 'PriceLibV1', {
@@ -94,10 +93,9 @@ const deployDependencies = async () => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
-    RoutineInvokerLibV1: routineInvokerLibV1.address,
-    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
+    RoutineInvokerLibV1: routineInvokerLibV1.address,
     StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
@@ -127,15 +125,19 @@ const deployDependencies = async () => {
   await store.setBool(key.qualify(protocol.address), true)
   await store.setBool(key.qualifyMember(protocol.address), true)
 
+  const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
+
   await protocol.initialize(
-    [helper.zero1,
+    [
+      helper.zero1,
       router.address,
       factory.address, // factory
       npm.address,
       helper.randomAddress(),
-      helper.randomAddress()
+      priceOracle.address
     ],
-    [helper.ether(0), // Cover Fee
+    [
+      helper.ether(0), // Cover Fee
       helper.ether(0), // Min Cover Stake
       helper.ether(250), // Min Reporting Stake
       7 * DAYS, // Claim period
@@ -146,7 +148,7 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
+      stateAndLiquidityUpdateInterval, // state and liquidity update interval
       helper.percentage(5) // maximum lending ratio
     ]
   )
@@ -196,9 +198,11 @@ const deployDependencies = async () => {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   }, store.address)
@@ -253,19 +257,12 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_VAULT_DELEGATE, vaultDelegate.address)
 
-  const priceDiscovery = await deployer.deployWithLibraries(cache, 'PriceDiscovery', {
-    AccessControlLibV1: accessControlLibV1.address,
-    BaseLibV1: baseLibV1.address,
-    PriceLibV1: priceLibV1.address,
-    ProtoUtilV1: protoUtilV1.address,
-    ValidationLibV1: validationLibV1.address
-  }, store.address)
-
-  await protocol.addContract(key.PROTOCOL.CNS.PRICE_DISCOVERY, priceDiscovery.address)
-
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    ProtoUtilV1: protoUtilV1.address,
     ValidationLibV1: validationLibV1.address
   })
 
@@ -326,6 +323,17 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
+  const policy = await deployer.deployWithLibraries(cache, 'Policy', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address, '0')
+
+  await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
+
   return {
     npm,
     dai,
@@ -339,6 +347,8 @@ const deployDependencies = async () => {
     coverUtilV1,
     governanceUtilV1,
     validationLibV1,
+    vaultLib,
+    vaultDelegate,
     baseLibV1,
     transferLib,
     priceLibV1,
@@ -346,6 +356,7 @@ const deployDependencies = async () => {
     routineInvokerLibV1,
     cover,
     coverLibV1,
+    policy,
     policyHelperV1,
     stakingPoolLibV1,
     strategyLibV1,
@@ -353,7 +364,8 @@ const deployDependencies = async () => {
     reassuranceContract,
     governance,
     resolution,
-    liquidityEngine
+    liquidityEngine,
+    stateAndLiquidityUpdateInterval
   }
 }
 

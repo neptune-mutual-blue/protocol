@@ -41,9 +41,10 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
 
     const info = key.toBytes32('info')
 
@@ -63,7 +64,7 @@ describe('Policy: getCxTokenByExpiryDate', function () {
         transferLib: deployed.transferLib,
         protoUtilV1: deployed.protoUtilV1,
         registryLibV1: deployed.registryLibV1,
-        validationLib: deployed.validationLibV1
+        validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
 
@@ -73,8 +74,10 @@ describe('Policy: getCxTokenByExpiryDate', function () {
   })
 
   it('must return successfully', async () => {
+    const [owner] = await ethers.getSigners()
+
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
 

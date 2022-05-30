@@ -11,7 +11,7 @@ require('chai')
   .should()
 
 describe('Recoverable: Token', () => {
-  let deployed, recoverable, fakeToken, rogueToken
+  let deployed, recoverable, fakeToken
 
   before(async () => {
     deployed = await deployDependencies()
@@ -25,7 +25,6 @@ describe('Recoverable: Token', () => {
     }, deployed.store.address)
 
     fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000))
-    rogueToken = await deployer.deploy(cache, 'PoorMansERC20', 'ROGUE', 'ROGUE', helper.ether(100_000))
   })
 
   it('must not allow non recovery agents to recover tokens', async () => {
@@ -65,13 +64,5 @@ describe('Recoverable: Token', () => {
 
     const balance = await fakeToken.balanceOf(receiver)
     balance.should.equal(helper.ether('0'))
-  })
-
-  it('must recover tokens sent to the contract', async () => {
-    const receiver = helper.randomAddress()
-
-    await rogueToken.transfer(recoverable.address, helper.ether(4000))
-    await recoverable.recoverToken(rogueToken.address, receiver)
-      .should.be.rejectedWith('Transfer failed')
   })
 })

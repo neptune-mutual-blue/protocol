@@ -13,7 +13,7 @@ As and when required by the protocol,
 ## Functions
 
 - [constructor(IStore store)](#)
-- [deploy(IStore s, bytes32 key)](#deploy)
+- [deploy(bytes32 coverKey)](#deploy)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -44,7 +44,7 @@ constructor(IStore store) Recoverable(store) {}
 Deploys a new instance of Vault
 
 ```solidity
-function deploy(IStore s, bytes32 key) external nonpayable nonReentrant 
+function deploy(bytes32 coverKey) external nonpayable nonReentrant 
 returns(addr address)
 ```
 
@@ -52,19 +52,18 @@ returns(addr address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore | Provide the store contract instance | 
-| key | bytes32 | Enter the cover key related to this Vault instance | 
+| coverKey | bytes32 | Enter the cover key related to this Vault instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deploy(IStore s, bytes32 key) external override nonReentrant returns (address addr) {
+function deploy(bytes32 coverKey) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(key);
+    s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, key, s.getStablecoin());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, s.getStablecoin());
 
     // solhint-disable-next-line
     assembly {
@@ -82,7 +81,7 @@ function deploy(IStore s, bytes32 key) external override nonReentrant returns (a
       }
     }
 
-    emit VaultDeployed(key, addr);
+    emit VaultDeployed(coverKey, addr);
   }
 ```
 </details>
@@ -152,7 +151,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -184,7 +182,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -212,6 +209,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -222,6 +220,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -231,8 +231,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

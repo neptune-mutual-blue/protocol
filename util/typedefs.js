@@ -9,8 +9,8 @@
  * @property {Object} coverUtilV1 - Cover utility library
  * @property {Object} transferLib - Transfer helper library
  * @property {Object} registryLibV1 - Registry helper library
- * @property {Object} validationLib - Validation helper library
- * @property {Object} governanceLib - Governance utility library
+ * @property {Object} validationLibV1 - Validation helper library
+ * @property {Object} governanceUtilV1 - Governance utility library
  * @property {Object} vaultFactoryLib - Vault factory library
  * @property {Object} vaultLib - Vault library
  * @property {Object} cxTokenFactoryLib - cxToken factory library
@@ -46,11 +46,9 @@
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract
  * @property {Object} reassuranceContract - Reassurance contract
- * @property {Object} provisionContract - NPM provision contract
  * @property {Object} vaultFactory - Liquidity vault factory
  * @property {Object} cxTokenFactory - cxToken factory
  * @property {Object} cover - The base cover contract
- * @property {Object} priceDiscovery - Price discovery contract
  * @property {Object} liquidityEngine - Liquidity engine contract
  * @property {Object} aaveStrategy - Aave lending strategy contract
  * @property {Object} policyAdminContract - Policy admin contract

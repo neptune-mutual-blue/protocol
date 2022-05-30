@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
-const { helper, key, storeUtil, ipfs, sample } = require('../../util')
+const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
 
 require('chai')
@@ -48,14 +48,6 @@ describe('Protocol Initialization Stories', () => {
     fetchedAddress.should.equal(contracts.reassuranceContract.address)
   })
 
-  it('provision contract was correctly deployed', async () => {
-    contracts.provisionContract.address.should.not.be.empty
-    contracts.provisionContract.address.should.not.equal(helper.zerox)
-
-    const fetchedAddress = await contracts.store.getAddress(key.qualifyBytes32(key.PROTOCOL.NS.COVER_PROVISION))
-    fetchedAddress.should.equal(contracts.provisionContract.address)
-  })
-
   it('cover contract was correctly deployed', async () => {
     contracts.cover.address.should.not.be.empty
     contracts.cover.address.should.not.equal(helper.zerox)
@@ -85,19 +77,18 @@ describe('Protocol Initialization Stories', () => {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const reassuranceRate = helper.percentage(50)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
 
-    const reassuranceVault = await storeUtil.getReassuranceVaultAddress(contracts.store)
-
     previous = {
       daiBalance: '0',
-      reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(reassuranceVault)).toString()
+      reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)).toString()
     }
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
     await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
   })
@@ -130,9 +121,7 @@ describe('Protocol Initialization Stories', () => {
   })
 
   it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
-    const vault = await storeUtil.getReassuranceVaultAddress(contracts.store)
-
-    const balance = await contracts.reassuranceToken.balanceOf(vault)
+    const balance = await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)
 
     const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000))
     balance.toString().should.equal(expected.toString())
@@ -171,14 +160,13 @@ describe('Protocol Initialization Stories', () => {
   it('reassurance token allocation was increased', async () => {
     const [owner] = await ethers.getSigners()
     const liquidity = helper.ether(20000)
-    const vault = await storeUtil.getReassuranceVaultAddress(contracts.store)
 
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, liquidity)
     await contracts.reassuranceContract.addReassurance(coverKey, owner.address, liquidity)
 
     const expected = helper.add(previous.reassuranceTokenBalance, liquidity)
 
-    const balance = await contracts.reassuranceToken.balanceOf(vault)
+    const balance = await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)
 
     balance.toString().should.equal(expected.toString())
 

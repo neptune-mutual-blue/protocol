@@ -134,22 +134,28 @@ library ValidationLibV1 {
     require(senderIsStrategyContract == true, "Not a strategy contract");
   }
 
-  function callerMustBeStrategyContract(IStore s, address caller) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
-    require(callerIsStrategyContract == true, "Not a strategy contract");
+  function callerMustBeStrategyContract(IStore s, address caller) public view {
+    bool isActive = s.getBoolByKey(_getIsActiveStrategyKey(caller));
+    bool wasDisabled = s.getBoolByKey(_getIsDisabledStrategyKey(caller));
+
+    require(isActive == true || wasDisabled == true, "Not a strategy contract");
   }
 
   function callerMustBeSpecificStrategyContract(
     IStore s,
     address caller,
-    bytes32 /*strategyName*/
+    bytes32 strategyName
   ) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
-    require(callerIsStrategyContract == true, "Not a strategy contract");
+    callerMustBeStrategyContract(s, caller);
+    require(IMember(caller).getName() == strategyName, "Access denied");
   }
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
+  }
+
+  function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
 
   function senderMustBeProtocolMember(IStore s) external view {
@@ -253,9 +259,11 @@ library ValidationLibV1 {
 
   function mustBeValidClaim(
     IStore s,
+    address account,
     bytes32 coverKey,
     address cxToken,
-    uint256 incidentDate
+    uint256 incidentDate,
+    uint256 amount
   ) external view {
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
@@ -264,6 +272,8 @@ library ValidationLibV1 {
     mustBeClaimable(s, coverKey);
     mustBeValidIncidentDate(s, coverKey, incidentDate);
     mustBeDuringClaimPeriod(s, coverKey);
+
+    require(ICxToken(cxToken).getClaimablePolicyOf(account) >= amount, "Claim exceeds your coverage");
   }
 
   function mustNotHaveUnstaken(
@@ -344,13 +354,17 @@ library ValidationLibV1 {
     require(s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender), "Not whitelisted");
   }
 
-  function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey) external view {
+  function senderMustBeWhitelistedIfRequired(
+    IStore s,
+    bytes32 coverKey,
+    address sender
+  ) external view {
     bool required = s.checkIfRequiresWhitelist(coverKey);
 
     if (required == false) {
       return;
     }
 
-    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, msg.sender), "You are not whitelisted");
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, sender), "You are not whitelisted");
   }
 }

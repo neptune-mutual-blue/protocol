@@ -71,7 +71,10 @@ contract Store is StoreBase {
 
     if (v) {
       boolStorage[k] = v;
+      return;
     }
+
+    delete boolStorage[k];
   }
 
   function setInt(bytes32 k, int256 v) external override {

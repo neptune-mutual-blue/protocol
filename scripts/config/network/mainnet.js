@@ -1,4 +1,4 @@
-const HOURS = 3600
+const MINUTES = 60
 const DAYS = 86400
 
 const config = {
@@ -15,7 +15,7 @@ const config = {
       withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
       cooldownPeriod: 1 * DAYS,
-      stateUpdateInterval: 12 * HOURS
+      stateUpdateInterval: 5 * MINUTES
     },
     knownAccounts: {
       admins: null
@@ -25,7 +25,8 @@ const config = {
       addresses: {
         factory: null,
         router: null,
-        masterChef: null
+        masterChef: null,
+        npmPriceOracle: null
       }
     },
     aave: {

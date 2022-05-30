@@ -13,8 +13,10 @@ The policy admin contract enables the owner (governance)
 
 - [constructor(IStore store)](#)
 - [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
-- [setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
-- [getPolicyRates(bytes32 key)](#getpolicyrates)
+- [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
+- [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
+- [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
+- [getCoverageLag(bytes32 coverKey)](#getcoveragelag)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -81,14 +83,14 @@ function setPolicyRates(uint256 floor, uint256 ceiling) external override nonRee
 Sets policy rates for the given cover key. This feature is only accessible by cover manager.
 
 ```solidity
-function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
+function setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 | floor | uint256 | The lowest cover fee rate for this cover | 
 | ceiling | uint256 | The highest cover fee rate for this cover | 
 
@@ -97,23 +99,68 @@ function setPolicyRatesByKey(bytes32 key, uint256 floor, uint256 ceiling) extern
 
 ```javascript
 function setPolicyRatesByKey(
-    bytes32 key,
+    bytes32 coverKey,
     uint256 floor,
     uint256 ceiling
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeValidCoverKey(key);
+    s.mustBeValidCoverKey(coverKey);
 
     require(floor > 0, "Please specify floor");
     require(ceiling > 0, "Invalid ceiling");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, key, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, key, ceiling);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
 
-    s.updateStateAndLiquidity(key);
+    s.updateStateAndLiquidity(coverKey);
 
-    emit CoverPolicyRateSet(key, floor, ceiling);
+    emit CoverPolicyRateSet(coverKey, floor, ceiling);
+  }
+```
+</details>
+
+### setCoverageLag
+
+The coverage of a policy begins at the EOD timestamp
+ of the policy purchase date plus the coverage lag.
+ Coverage lag is a specified time period that can be set globally
+ or on a per-cover basis to delay the start of coverage.
+ This allows us to defend against time-based opportunistic attacks,
+ which occur when an attacker purchases coverage after
+ an incident has occurred but before the incident has been reported.
+
+```solidity
+function setCoverageLag(bytes32 coverKey, uint256 window) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| window | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setCoverageLag(bytes32 coverKey, uint256 window) external override {
+    require(window >= 1 days, "Enter at least 1 day");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    if (coverKey > 0) {
+      s.mustBeValidCoverKey(coverKey);
+      s.setUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey, window);
+
+      emit CoverageLagSet(coverKey, window);
+      return;
+    }
+
+    s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, window);
+    emit CoverageLagSet(coverKey, window);
   }
 ```
 </details>
@@ -123,7 +170,7 @@ function setPolicyRatesByKey(
 Gets the cover policy rates for the given cover key
 
 ```solidity
-function getPolicyRates(bytes32 key) external view
+function getPolicyRates(bytes32 coverKey) external view
 returns(floor uint256, ceiling uint256)
 ```
 
@@ -131,14 +178,39 @@ returns(floor uint256, ceiling uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPolicyRates(bytes32 key) external view override returns (uint256 floor, uint256 ceiling) {
-    return s.getPolicyRatesInternal(key);
+function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
+    return s.getPolicyRatesInternal(coverKey);
+  }
+```
+</details>
+
+### getCoverageLag
+
+Gets the policy lag for the given cover key
+
+```solidity
+function getCoverageLag(bytes32 coverKey) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {
+    return s.getCoverageLagInternal(coverKey);
   }
 ```
 </details>
@@ -208,7 +280,6 @@ function getName() external pure override returns (bytes32) {
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
 * [CoverLibV1](CoverLibV1.md)
-* [CoverProvision](CoverProvision.md)
 * [CoverReassurance](CoverReassurance.md)
 * [CoverStake](CoverStake.md)
 * [CoverUtilV1](CoverUtilV1.md)
@@ -240,7 +311,6 @@ function getName() external pure override returns (bytes32) {
 * [IClaimsProcessor](IClaimsProcessor.md)
 * [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md)
 * [ICover](ICover.md)
-* [ICoverProvision](ICoverProvision.md)
 * [ICoverReassurance](ICoverReassurance.md)
 * [ICoverStake](ICoverStake.md)
 * [ICxToken](ICxToken.md)
@@ -268,6 +338,7 @@ function getName() external pure override returns (bytes32) {
 * [IResolvable](IResolvable.md)
 * [IStakingPools](IStakingPools.md)
 * [IStore](IStore.md)
+* [IStoreLike](IStoreLike.md)
 * [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)
 * [IUniswapV2PairLike](IUniswapV2PairLike.md)
 * [IUniswapV2RouterLike](IUniswapV2RouterLike.md)
@@ -278,6 +349,8 @@ function getName() external pure override returns (bytes32) {
 * [IWitness](IWitness.md)
 * [LiquidityEngine](LiquidityEngine.md)
 * [MaliciousToken](MaliciousToken.md)
+* [MockAccessControlUser](MockAccessControlUser.md)
+* [MockCoverUtilUser](MockCoverUtilUser.md)
 * [MockCxToken](MockCxToken.md)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
@@ -287,8 +360,12 @@ function getName() external pure override returns (bytes32) {
 * [MockProtocol](MockProtocol.md)
 * [MockRegistryClient](MockRegistryClient.md)
 * [MockStore](MockStore.md)
+* [MockStoreKeyUtilUser](MockStoreKeyUtilUser.md)
+* [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
+* [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
+* [NPMDistributor](NPMDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)

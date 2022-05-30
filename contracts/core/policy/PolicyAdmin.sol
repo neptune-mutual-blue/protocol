@@ -77,10 +77,46 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   }
 
   /**
+   * @dev The coverage of a policy begins at the EOD timestamp
+   * of the policy purchase date plus the coverage lag.
+   *
+   * Coverage lag is a specified time period that can be set globally
+   * or on a per-cover basis to delay the start of coverage.
+   *
+   * This allows us to defend against time-based opportunistic attacks,
+   * which occur when an attacker purchases coverage after
+   * an incident has occurred but before the incident has been reported.
+   */
+  function setCoverageLag(bytes32 coverKey, uint256 window) external override {
+    require(window >= 1 days, "Enter at least 1 day");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeCoverManager(s);
+
+    if (coverKey > 0) {
+      s.mustBeValidCoverKey(coverKey);
+      s.setUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey, window);
+
+      emit CoverageLagSet(coverKey, window);
+      return;
+    }
+
+    s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, window);
+    emit CoverageLagSet(coverKey, window);
+  }
+
+  /**
    * @dev Gets the cover policy rates for the given cover key
    */
   function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
     return s.getPolicyRatesInternal(coverKey);
+  }
+
+  /**
+   * @dev Gets the policy lag for the given cover key
+   */
+  function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {
+    return s.getCoverageLagInternal(coverKey);
   }
 
   /**

@@ -21,7 +21,7 @@ describe('Distributor: `removeLiquidity` function', () => {
     treasury = helper.randomAddress()
     feePercentage = helper.percentage(20)
 
-    distributor = await deployer.deploy(cache, 'NPMDistributor', deployed.store.address, treasury, feePercentage)
+    distributor = await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
 
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000)
