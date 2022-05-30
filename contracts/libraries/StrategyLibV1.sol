@@ -24,6 +24,10 @@ library StrategyLibV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
+  function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
+  }
+
   function disableStrategyInternal(IStore s, address toFind) external {
     // @suppress-address-trust-issue Check caller.
     _disableStrategy(s, toFind);
@@ -112,6 +116,7 @@ library StrategyLibV1 {
 
     s.deleteAddressArrayItem(key, toFind);
     s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), true);
   }
 
   function _deleteStrategy(IStore s, address toFind) private {
@@ -121,6 +126,7 @@ library StrategyLibV1 {
     require(pos > 0, "Invalid strategy");
 
     s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), false);
   }
 
   function getDisabledStrategiesInternal(IStore s) external view returns (address[] memory strategies) {
