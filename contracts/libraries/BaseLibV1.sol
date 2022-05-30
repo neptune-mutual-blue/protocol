@@ -10,6 +10,7 @@ import "../interfaces/IPausable.sol";
 
 library BaseLibV1 {
   using ValidationLibV1 for IStore;
+  using SafeERC20 for IERC20;
 
   /**
    * @dev Recover all Ether held by the contract.
@@ -35,7 +36,7 @@ library BaseLibV1 {
 
     if (balance > 0) {
       // slither-disable-next-line unchecked-transfer
-      erc20.transfer(sendTo, balance);
+      erc20.safeTransfer(sendTo, balance);
     }
   }
 }
