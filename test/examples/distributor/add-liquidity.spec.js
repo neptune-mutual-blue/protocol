@@ -19,7 +19,7 @@ describe('Distributor: `addLiquidity` function', () => {
     treasury = helper.randomAddress()
     feePercentage = helper.percentage(20)
 
-    distributor = await deployer.deploy(cache, 'NPMDistributor', deployed.store.address, treasury, feePercentage)
+    distributor = await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
   })
 
   it('must correctly add liquidity', async () => {
