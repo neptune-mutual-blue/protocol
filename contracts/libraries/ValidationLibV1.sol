@@ -50,6 +50,22 @@ library ValidationLibV1 {
    * @dev Reverts if the key does not resolve in a valid cover contract
    * or if the cover is under governance.
    * @param coverKey Enter the cover key to check
+   * @param productKey Enter the product key to check
+   */
+  function mustHaveNormalCoverProductStatus(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
+    require(supportsProductsInternal(s, coverKey), "Invalid product");
+    require(s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+  }
+
+  /**
+   * @dev Reverts if the key does not resolve in a valid cover contract
+   * or if the cover is under governance.
+   * @param coverKey Enter the cover key to check
    */
   function mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
@@ -62,6 +78,60 @@ library ValidationLibV1 {
    */
   function mustBeValidCoverKey(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
+  }
+
+  /**
+   * @dev Reverts if the cover does not support creating products.
+   * @param coverKey Enter the cover key to check
+   */
+  function mustSupportProducts(IStore s, bytes32 coverKey) external view {
+    require(supportsProductsInternal(s, coverKey), "Does not have products");
+  }
+
+  function supportsProductsInternal(IStore s, bytes32 coverKey) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey);
+  }
+
+  /**
+   * @dev Reverts if the key does not resolve in a valid product of a cover contract.
+   * @param coverKey Enter the cover key to check
+   * @param productKey Enter the cover key to check
+   */
+  function mustBeValidProduct(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(isValidProductInternal(s, coverKey, productKey), "Product does not exist");
+  }
+
+  function isValidProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
+  }
+
+  /**
+   * @dev Reverts if the key resolves in an expired product.
+   * @param coverKey Enter the cover key to check
+   * @param productKey Enter the cover key to check
+   */
+  function mustBeActiveProduct(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(isActiveProductInternal(s, coverKey, productKey), "Product retired or deleted");
+  }
+
+  function isActiveProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (bool) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == 1;
   }
 
   /**
@@ -169,20 +239,36 @@ library ValidationLibV1 {
 
   *********************************************************************************************/
 
-  function mustBeReporting(IStore s, bytes32 coverKey) external view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+  function mustBeReporting(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 
-  function mustBeDisputed(IStore s, bytes32 coverKey) external view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+  function mustBeDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
-  function mustBeClaimable(IStore s, bytes32 coverKey) public view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
+  function mustBeClaimable(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
   }
 
-  function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatus(coverKey);
+  function mustBeClaimingOrDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    CoverUtilV1.CoverStatus status = s.getCoverProductStatus(coverKey, productKey);
 
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
@@ -190,68 +276,104 @@ library ValidationLibV1 {
     require(claiming || falseReporting, "Not claimable nor disputed");
   }
 
-  function mustBeReportingOrDisputed(IStore s, bytes32 coverKey) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatus(coverKey);
+  function mustBeReportingOrDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    CoverUtilV1.CoverStatus status = s.getCoverProductStatus(coverKey, productKey);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
     require(incidentHappened || falseReporting, "Not reported nor disputed");
   }
 
-  function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey) external view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+  function mustBeBeforeResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
 
     if (deadline > 0) {
       require(block.timestamp < deadline, "Emergency resolution deadline over"); // solhint-disable-line
     }
   }
 
-  function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey) external view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+  function mustNotHaveResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
     require(deadline == 0, "Resolution already has deadline");
   }
 
-  function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey) public view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+  function mustBeAfterResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
     require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
   }
 
   function mustBeValidIncidentDate(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDateInternal(coverKey) == incidentDate, "Invalid incident date");
+    require(s.getLatestIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
   }
 
-  function mustHaveDispute(IStore s, bytes32 coverKey) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+  function mustHaveDispute(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
     require(hasDispute == true, "Not disputed");
   }
 
-  function mustNotHaveDispute(IStore s, bytes32 coverKey) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+  function mustNotHaveDispute(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
     require(hasDispute == false, "Already disputed");
   }
 
-  function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey) external view {
-    require(s.getResolutionTimestampInternal(coverKey) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
+  function mustBeDuringReportingPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getResolutionTimestampInternal(coverKey, productKey) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 
-  function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey) public view {
-    require(block.timestamp > s.getResolutionTimestampInternal(coverKey), "Reporting still active"); // solhint-disable-line
+  function mustBeAfterReportingPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(block.timestamp > s.getResolutionTimestampInternal(coverKey, productKey), "Reporting still active"); // solhint-disable-line
   }
 
   function mustBeValidCxToken(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address cxToken,
     uint256 incidentDate
   ) public view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken) == true, "Unknown cxToken");
 
     bytes32 COVER_KEY = ICxToken(cxToken).COVER_KEY(); // solhint-disable-line
-    require(coverKey == COVER_KEY, "Invalid cxToken");
+    bytes32 PRODUCT_KEY = ICxToken(cxToken).PRODUCT_KEY(); // solhint-disable-line
+
+    require(coverKey == COVER_KEY && productKey == PRODUCT_KEY, "Invalid cxToken");
 
     uint256 expires = ICxToken(cxToken).expiresOn();
     require(expires > incidentDate, "Invalid or expired cxToken");
@@ -261,6 +383,7 @@ library ValidationLibV1 {
     IStore s,
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     address cxToken,
     uint256 incidentDate,
     uint256 amount
@@ -268,10 +391,10 @@ library ValidationLibV1 {
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
     // s.mustBeProtocolMember(cxToken);
-    mustBeValidCxToken(s, coverKey, cxToken, incidentDate);
-    mustBeClaimable(s, coverKey);
-    mustBeValidIncidentDate(s, coverKey, incidentDate);
-    mustBeDuringClaimPeriod(s, coverKey);
+    mustBeValidCxToken(s, coverKey, productKey, cxToken, incidentDate);
+    mustBeClaimable(s, coverKey, productKey);
+    mustBeValidIncidentDate(s, coverKey, productKey, incidentDate);
+    mustBeDuringClaimPeriod(s, coverKey, productKey);
 
     require(ICxToken(cxToken).getClaimablePolicyOf(account) >= amount, "Claim exceeds your coverage");
   }
@@ -280,24 +403,26 @@ library ValidationLibV1 {
     IStore s,
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, coverKey, incidentDate);
+    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, coverKey, productKey, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 
   function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
-    mustNotHaveUnstaken(s, msg.sender, coverKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey);
+    mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
+    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey);
+    mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
     // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
     // The above code is not useful after finalization but it helps avoid
@@ -307,34 +432,39 @@ library ValidationLibV1 {
   function validateUnstakeWithClaim(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
-    mustNotHaveUnstaken(s, msg.sender, coverKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey);
+    mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
+    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
     // to access this feature. But they can still access `unstake` feature
     // to withdraw their stake.
-    mustBeValidIncidentDate(s, coverKey, incidentDate);
+    mustBeValidIncidentDate(s, coverKey, productKey, incidentDate);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey);
+    mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Claimable;
+    bool incidentHappened = s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
-      mustBeDuringClaimPeriod(s, coverKey);
+      mustBeDuringClaimPeriod(s, coverKey, productKey);
       return;
     }
   }
 
-  function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey) public view {
-    uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey);
-    uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+  function mustBeDuringClaimPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
+    uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
     require(beginsFrom > 0, "Invalid claim begin date");
     require(expiresAt > beginsFrom, "Invalid claim period");
@@ -343,8 +473,12 @@ library ValidationLibV1 {
     require(block.timestamp <= expiresAt, "Claim period has expired"); // solhint-disable-line
   }
 
-  function mustBeAfterClaimExpiry(IStore s, bytes32 coverKey) external view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey), "Claim still active"); // solhint-disable-line
+  function mustBeAfterClaimExpiry(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey), "Claim still active"); // solhint-disable-line
   }
 
   /**
@@ -357,14 +491,30 @@ library ValidationLibV1 {
   function senderMustBeWhitelistedIfRequired(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address sender
   ) external view {
-    bool required = s.checkIfRequiresWhitelist(coverKey);
+    bool required = s.checkIfRequiresWhitelist(coverKey, productKey);
 
     if (required == false) {
       return;
     }
 
-    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, sender), "You are not whitelisted");
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, sender), "You are not whitelisted");
+  }
+
+  function mustBeSupportedProductOrEmpty(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    bool hasProducts = supportsProductsInternal(s, coverKey);
+
+    if (hasProducts) {
+      require(productKey > 0, "Specify product");
+    }
+
+    mustBeValidProduct(s, coverKey, productKey);
+    mustBeActiveProduct(s, coverKey, productKey);
   }
 }

@@ -244,7 +244,7 @@ library VaultLibV1 {
     s.mustBeProtocolMember(pod);
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getActiveLiquidityUnderProtection(coverKey);
+    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);

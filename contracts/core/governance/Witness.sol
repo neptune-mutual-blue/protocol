@@ -60,22 +60,23 @@ abstract contract Witness is Recoverable, IWitness {
    */
   function attest(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustBeReportingOrDisputed(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeDuringReportingPeriod(coverKey);
+    s.mustBeReportingOrDisputed(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey, productKey);
 
     require(stake > 0, "Enter a stake");
 
-    s.addAttestationInternal(coverKey, msg.sender, incidentDate, stake);
+    s.addAttestationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Attested(coverKey, msg.sender, incidentDate, stake);
+    emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
   }
 
   /**
@@ -101,23 +102,24 @@ abstract contract Witness is Recoverable, IWitness {
    */
   function refute(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
-    s.mustHaveDispute(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeDuringReportingPeriod(coverKey);
+    s.mustHaveDispute(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey, productKey);
 
     require(stake > 0, "Enter a stake");
 
-    s.addDisputeInternal(coverKey, msg.sender, incidentDate, stake);
+    s.addDisputeInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
-    emit Refuted(coverKey, msg.sender, incidentDate, stake);
+    emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);
   }
 
   /**
@@ -126,8 +128,8 @@ abstract contract Witness is Recoverable, IWitness {
    * @return Returns the cover status as an integer.
    * For more, check the enum `CoverStatus` on `CoverUtilV1` library.
    */
-  function getStatus(bytes32 coverKey) external view override returns (uint256) {
-    return s.getStatus(coverKey);
+  function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getProductStatus(coverKey, productKey);
   }
 
   /**
@@ -136,8 +138,12 @@ abstract contract Witness is Recoverable, IWitness {
    * @param incidentDate Enter the active cover's date of incident
    * @return Returns an array of integers --> [yes, no]
    */
-  function getStakes(bytes32 coverKey, uint256 incidentDate) external view override returns (uint256, uint256) {
-    return s.getStakesInternal(coverKey, incidentDate);
+  function getStakes(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external view override returns (uint256, uint256) {
+    return s.getStakesInternal(coverKey, productKey, incidentDate);
   }
 
   /**
@@ -149,9 +155,10 @@ abstract contract Witness is Recoverable, IWitness {
    */
   function getStakesOf(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     address account
   ) external view override returns (uint256, uint256) {
-    return s.getStakesOfInternal(account, coverKey, incidentDate);
+    return s.getStakesOfInternal(account, coverKey, productKey, incidentDate);
   }
 }

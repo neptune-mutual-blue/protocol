@@ -50,6 +50,7 @@ contract Policy is IPolicy, Recoverable {
   function purchaseCover(
     address onBehalfOf,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
@@ -57,26 +58,35 @@ contract Policy is IPolicy, Recoverable {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey, onBehalfOf);
+    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(onBehalfOf, coverKey, coverDuration, amountToCover);
+    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
 
     lastPolicyId += 1;
 
-    emit CoverPurchased(coverKey, msg.sender, onBehalfOf, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    emit CoverPurchased(coverKey, productKey, msg.sender, onBehalfOf, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
-  function getCxToken(bytes32 coverKey, uint256 coverDuration) external view override returns (address cxToken, uint256 expiryDate) {
-    return s.getCxTokenInternal(coverKey, coverDuration);
+  function getCxToken(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 coverDuration
+  ) external view override returns (address cxToken, uint256 expiryDate) {
+    return s.getCxTokenInternal(coverKey, productKey, coverDuration);
   }
 
-  function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view override returns (address cxToken) {
-    return s.getCxTokenByExpiryDateInternal(coverKey, expiryDate);
+  function getCxTokenByExpiryDate(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 expiryDate
+  ) external view override returns (address cxToken) {
+    return s.getCxTokenByExpiryDateInternal(coverKey, productKey, expiryDate);
   }
 
   /**
@@ -91,8 +101,8 @@ contract Policy is IPolicy, Recoverable {
   /**
    * Gets the sum total of cover commitment that has not expired yet.
    */
-  function getCommitment(bytes32 coverKey) external view override returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey);
+  function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
   }
 
   /**
@@ -110,6 +120,7 @@ contract Policy is IPolicy, Recoverable {
    */
   function getCoverFeeInfo(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -125,7 +136,7 @@ contract Policy is IPolicy, Recoverable {
       uint256 rate
     )
   {
-    return s.calculatePolicyFeeInternal(coverKey, coverDuration, amountToCover);
+    return s.calculatePolicyFeeInternal(coverKey, productKey, coverDuration, amountToCover);
   }
 
   /**
@@ -136,8 +147,8 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[3] Reassurance token price
    * @param _values[4] Reassurance pool weight
    */
-  function getCoverPoolSummary(bytes32 coverKey) external view override returns (uint256[] memory _values) {
-    return s.getCoverPoolSummaryInternal(coverKey);
+  function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (uint256[] memory _values) {
+    return s.getCoverPoolSummaryInternal(coverKey, productKey);
   }
 
   /**

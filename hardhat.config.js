@@ -17,23 +17,16 @@ const config = {
       //   blockNumber: 11819774
       // }
     },
-    ropsten: {
-      url: `${process.env.ROPSTEN_RPC_URL}`,
-      chainId: 3,
-      accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 15000000000,
-      gas: 'auto'
-    },
-    bscTestnet: {
-      url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-      chainId: 97,
+    mumbai: {
+      url: 'https://matic-mumbai.chainstacklabs.com',
+      chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
       // gasPrice: 30000000000,
       gas: 'auto'
     },
-    mumbai: {
-      url: 'https://matic-mumbai.chainstacklabs.com',
-      chainId: 80001,
+    fuji: {
+      url: 'https://api.avax-test.network/ext/bc/C/rpc',
+      chainId: 43113,
       accounts: [process.env.PRIVATE_KEY],
       // gasPrice: 30000000000,
       gas: 'auto'

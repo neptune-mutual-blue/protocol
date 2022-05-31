@@ -19,6 +19,7 @@ library CoverUtilV1 {
   using AccessControlLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
   using StrategyLibV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   enum CoverStatus {
     Normal,
@@ -91,14 +92,22 @@ library CoverUtilV1 {
    * @param _values[3] Reassurance token price
    * @param _values[4] Reassurance pool weight
    */
-  function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey) external view returns (uint256[] memory _values) {
+  function getCoverPoolSummaryInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (uint256[] memory _values) {
     _values = new uint256[](7);
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    _values[1] = getActiveLiquidityUnderProtection(s, coverKey);
+    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
     _values[3] = 1 ether;
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+  }
+
+  function isUndergovernanceInternal(IStore s, bytes32 coverKey) external view returns (bool) {
+    // @todo: Liquidity withdrawal should not be possible if any product under this cover is reporting
   }
 
   /**
@@ -115,24 +124,46 @@ library CoverUtilV1 {
     return CoverStatus(getStatus(s, coverKey));
   }
 
-  function getCoverStatusOf(
-    IStore s,
-    bytes32 coverKey,
-    uint256 incidentDate
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusOf(s, coverKey, incidentDate));
-  }
-
   function getStatus(IStore s, bytes32 coverKey) public view returns (uint256) {
     return s.getUintByKey(getCoverStatusKey(coverKey));
+  }
+
+  function getCoverProductStatus(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (CoverStatus) {
+    return CoverStatus(getProductStatus(s, coverKey, productKey));
+  }
+
+  function getProductStatus(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (uint256) {
+    return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
+  }
+
+  function getCoverProductStatusOf(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external view returns (CoverStatus) {
+    return CoverStatus(getStatusOf(s, coverKey, productKey, incidentDate));
   }
 
   function getStatusOf(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusOfKey(coverKey, incidentDate));
+    return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
+  }
+
+  function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey));
   }
 
   function getCoverStatusKey(bytes32 coverKey) public pure returns (bytes32) {
@@ -141,6 +172,14 @@ library CoverUtilV1 {
 
   function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
+  }
+
+  function getCoverProductStatusOfKey(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey, incidentDate));
   }
 
   function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
@@ -155,20 +194,40 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
-  function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey) public view returns (uint256) {
-    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey);
+  function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) public view returns (uint256 total) {
+    bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+
+    for (uint256 i = 0; i < products.length; i++) {
+      total += getActiveLiquidityUnderProtection(s, coverKey, products[i]);
+    }
+  }
+
+  function getActiveLiquidityUnderProtection(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (uint256) {
+    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey, productKey);
     return current + future;
   }
 
-  function _getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey) private view returns (uint256 current, uint256 future) {
+  function _getLiquidityUnderProtectionInfo(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) private view returns (uint256 current, uint256 future) {
     uint256 expiryDate = 0;
 
-    (current, expiryDate) = _getCurrentCommitment(s, coverKey);
-    future = _getFutureCommitments(s, coverKey, expiryDate);
+    (current, expiryDate) = _getCurrentCommitment(s, coverKey, productKey);
+    future = _getFutureCommitments(s, coverKey, productKey, expiryDate);
   }
 
-  function _getCurrentCommitment(IStore s, bytes32 coverKey) private view returns (uint256 amount, uint256 expiryDate) {
-    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, coverKey);
+  function _getCurrentCommitment(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) private view returns (uint256 amount, uint256 expiryDate) {
+    uint256 incidentDateIfAny = getActiveIncidentDateInternal(s, coverKey, productKey);
 
     // There isn't any incident for this cover
     // and therefore no need to pay
@@ -177,7 +236,7 @@ library CoverUtilV1 {
     }
 
     expiryDate = _getMonthEndDate(incidentDateIfAny);
-    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
+    ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, productKey, expiryDate));
 
     if (address(cxToken) != address(0)) {
       amount = cxToken.totalSupply();
@@ -187,6 +246,7 @@ library CoverUtilV1 {
   function _getFutureCommitments(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 ignoredExpiryDate
   ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
@@ -199,7 +259,7 @@ library CoverUtilV1 {
         continue;
       }
 
-      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, expiryDate));
+      ICxToken cxToken = ICxToken(getCxTokenByExpiryDateInternal(s, coverKey, productKey, expiryDate));
 
       if (address(cxToken) != address(0)) {
         sum += cxToken.totalSupply();
@@ -224,13 +284,22 @@ library CoverUtilV1 {
   function setStatusInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     CoverStatus status
   ) external {
     s.setUintByKey(getCoverStatusKey(coverKey), uint256(status));
 
+    if (productKey > 0) {
+      s.setUintByKey(getCoverProductStatusKey(coverKey, productKey), uint256(status));
+    }
+
     if (incidentDate > 0) {
       s.setUintByKey(getCoverStatusOfKey(coverKey, incidentDate), uint256(status));
+
+      if (productKey > 0) {
+        s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
+      }
     }
   }
 
@@ -284,20 +353,38 @@ library CoverUtilV1 {
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
   }
 
-  function getActiveIncidentDateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
+  function getActiveIncidentDateInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
   function getCxTokenByExpiryDateInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 expiryDate
   ) public view returns (address cxToken) {
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
+
+    if (s.supportsProductsInternal(coverKey)) {
+      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
+    }
+
     cxToken = s.getAddress(k);
   }
 
-  function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
+  function checkIfRequiresWhitelist(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey);
+  }
+
+  function getCapitalEfficiencyRatioInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CAPITAL_EFFICIENCY_RATIO, coverKey);
   }
 }

@@ -13,7 +13,9 @@ const networks = {
   },
   80001: {
     approximateBlockTime: 3
-
+  },
+  43113: {
+    approximateBlockTime: 2
   },
   31337: {
     approximateBlockTime: 1
@@ -21,10 +23,16 @@ const networks = {
 }
 
 const minutesToBlocks = (chainId, minutes) => {
-  const seconds = minutes * 60
-  const { approximateBlockTime } = networks[chainId]
+  try {
+    const seconds = minutes * 60
+    const { approximateBlockTime } = networks[chainId]
 
-  return seconds / approximateBlockTime
+    return seconds / approximateBlockTime
+  } catch (error) {
+    console.error(error)
+  }
+
+  return networks[1]
 }
 
 const hoursToBlocks = (chainId, hours) => {

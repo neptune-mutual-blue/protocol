@@ -67,6 +67,7 @@ library ProtoUtilV1 {
 
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "ns:cover";
+  bytes32 public constant NS_COVER_PRODUCT = "ns:cover:product";
 
   bytes32 public constant NS_COVER_CREATION_DATE = "ns:cover:creation:date";
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
@@ -76,9 +77,11 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
   bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
+  bytes32 public constant NS_COVER_CAPITAL_EFFICIENCY_RATIO = "ns:cover:capital:eff:ratio";
   bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
   bytes32 public constant NS_COVER_INFO = "ns:cover:info";
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
+  bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS = "ns:cover:supports:products";
 
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";

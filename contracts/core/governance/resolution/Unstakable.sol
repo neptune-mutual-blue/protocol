@@ -29,22 +29,26 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date
    */
-  function unstake(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  function unstake(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
-    s.validateUnstakeWithoutClaim(coverKey, incidentDate);
+    s.validateUnstakeWithoutClaim(coverKey, productKey, incidentDate);
 
-    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, incidentDate);
+    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
+    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, 0);
   }
 
   /**
@@ -57,20 +61,24 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date
    */
-  function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  function unstakeWithClaim(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
-    s.validateUnstakeWithClaim(coverKey, incidentDate);
+    s.validateUnstakeWithClaim(coverKey, productKey, incidentDate);
 
-    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
@@ -86,9 +94,9 @@ abstract contract Unstakable is Resolvable, IUnstakable {
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
-    emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);
-    emit GovernanceBurned(msg.sender, burner, myReward, toBurn);
+    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, myReward);
+    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, myReward, toReporter);
+    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, myReward, toBurn);
   }
 
   /**
@@ -106,6 +114,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   function getUnstakeInfoFor(
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   )
     external
@@ -121,6 +130,6 @@ abstract contract Unstakable is Resolvable, IUnstakable {
       uint256 unstaken
     )
   {
-    return s.getUnstakeInfoForInternal(account, coverKey, incidentDate);
+    return s.getUnstakeInfoForInternal(account, coverKey, productKey, incidentDate);
   }
 }

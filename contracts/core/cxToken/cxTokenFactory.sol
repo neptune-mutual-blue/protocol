@@ -32,7 +32,11 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
    * @param coverKey Enter the cover key related to this cxToken instance
    * @param expiryDate Specify the expiry date of this cxToken instance
    */
-  function deploy(bytes32 coverKey, uint256 expiryDate) external override nonReentrant returns (address deployed) {
+  function deploy(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 expiryDate
+  ) external override nonReentrant returns (address deployed) {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
@@ -40,7 +44,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, productKey, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -62,9 +66,9 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
-    s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, deployed);
+    s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, deployed);
 
-    emit CxTokenDeployed(coverKey, deployed, expiryDate);
+    emit CxTokenDeployed(coverKey, productKey, deployed, expiryDate);
   }
 
   /**

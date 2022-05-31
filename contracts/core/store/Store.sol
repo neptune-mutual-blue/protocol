@@ -95,9 +95,19 @@ contract Store is StoreBase {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
-    if (addressArrayAddressPositionMap[k][v] == 0) {
+    if (addressArrayPositionMap[k][v] == 0) {
       addressArrayStorage[k].push(v);
-      addressArrayAddressPositionMap[k][v] = addressArrayStorage[k].length;
+      addressArrayPositionMap[k][v] = addressArrayStorage[k].length;
+    }
+  }
+
+  function setBytes32ArrayItem(bytes32 k, bytes32 v) external override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    if (bytes32ArrayPositionMap[k][v] == 0) {
+      bytes32ArrayStorage[k].push(v);
+      bytes32ArrayPositionMap[k][v] = bytes32ArrayStorage[k].length;
     }
   }
 
@@ -161,19 +171,38 @@ contract Store is StoreBase {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
-    require(addressArrayAddressPositionMap[k][v] > 0, "Not found");
+    require(addressArrayPositionMap[k][v] > 0, "Not found");
 
-    uint256 i = addressArrayAddressPositionMap[k][v] - 1;
+    uint256 i = addressArrayPositionMap[k][v] - 1;
     uint256 count = addressArrayStorage[k].length;
 
     if (i + 1 != count) {
       addressArrayStorage[k][i] = addressArrayStorage[k][count - 1];
       address theThenLastAddress = addressArrayStorage[k][i];
-      addressArrayAddressPositionMap[k][theThenLastAddress] = i + 1;
+      addressArrayPositionMap[k][theThenLastAddress] = i + 1;
     }
 
     addressArrayStorage[k].pop();
-    delete addressArrayAddressPositionMap[k][v];
+    delete addressArrayPositionMap[k][v];
+  }
+
+  function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    require(bytes32ArrayPositionMap[k][v] > 0, "Not found");
+
+    uint256 i = bytes32ArrayPositionMap[k][v] - 1;
+    uint256 count = bytes32ArrayStorage[k].length;
+
+    if (i + 1 != count) {
+      bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
+      bytes32 theThenLastbytes32 = bytes32ArrayStorage[k][i];
+      bytes32ArrayPositionMap[k][theThenLastbytes32] = i + 1;
+    }
+
+    bytes32ArrayStorage[k].pop();
+    delete bytes32ArrayPositionMap[k][v];
   }
 
   function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
@@ -184,6 +213,16 @@ contract Store is StoreBase {
 
     address v = addressArrayStorage[k][i];
     deleteAddressArrayItem(k, v);
+  }
+
+  function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external override {
+    _throwIfPaused();
+    _throwIfSenderNotProtocolMember();
+
+    require(i < bytes32ArrayStorage[k].length, "Invalid index");
+
+    bytes32 v = bytes32ArrayStorage[k][i];
+    deleteBytes32ArrayItem(k, v);
   }
 
   function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
@@ -242,8 +281,16 @@ contract Store is StoreBase {
     return addressArrayStorage[k];
   }
 
+  function getBytes32Array(bytes32 k) external view override returns (bytes32[] memory) {
+    return bytes32ArrayStorage[k];
+  }
+
   function getAddressArrayItemPosition(bytes32 k, address toFind) external view override returns (uint256) {
-    return addressArrayAddressPositionMap[k][toFind];
+    return addressArrayPositionMap[k][toFind];
+  }
+
+  function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view override returns (uint256) {
+    return bytes32ArrayPositionMap[k][toFind];
   }
 
   function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view override returns (address) {
@@ -251,7 +298,16 @@ contract Store is StoreBase {
     return addressArrayStorage[k][i];
   }
 
+  function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view override returns (bytes32) {
+    require(bytes32ArrayStorage[k].length > i, "Invalid index");
+    return bytes32ArrayStorage[k][i];
+  }
+
   function countAddressArrayItems(bytes32 k) external view override returns (uint256) {
     return addressArrayStorage[k].length;
+  }
+
+  function countBytes32ArrayItems(bytes32 k) external view override returns (uint256) {
+    return bytes32ArrayStorage[k].length;
   }
 }

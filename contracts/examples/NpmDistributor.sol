@@ -20,8 +20,17 @@ contract NpmDistributor is ReentrancyGuard {
   using SafeERC20 for IERC20;
   using SafeERC20 for IVault;
 
-  event PolicySold(bytes32 indexed coverKey, address indexed cxToken, address indexed account, uint256 duration, uint256 protection, bytes32 referralCode, uint256 fee, uint256 premium);
-  event PolicyClaimed(bytes32 indexed coverKey, address indexed cxToken, address indexed account, uint256 incidentDate, uint256 amount, uint256 payout);
+  event PolicySold(
+    bytes32 indexed coverKey,
+    bytes32 indexed productKey,
+    address indexed cxToken,
+    address account,
+    uint256 duration,
+    uint256 protection,
+    bytes32 referralCode,
+    uint256 fee,
+    uint256 premium
+  );
   event LiquidityAdded(bytes32 indexed coverKey, address indexed account, bytes32 indexed referralCode, uint256 amount, uint256 npmStake);
   event LiquidityRemoved(bytes32 indexed coverKey, address indexed account, uint256 amount, uint256 npmStake, bool exit);
   event Drained(IERC20 indexed token, address indexed to, uint256 amount);
@@ -101,13 +110,14 @@ contract NpmDistributor is ReentrancyGuard {
    */
   function getPremium(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 duration,
     uint256 protection
   ) public view returns (uint256 premium, uint256 fee) {
     IPolicy policy = getPolicyContract();
     require(address(policy) != address(0), "Fatal: Policy missing");
 
-    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, duration, protection);
+    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
 
     // Add your fee in addition to the protocol premium
     fee = (premium * feePercentage) / MULTIPLIER;
@@ -131,6 +141,7 @@ contract NpmDistributor is ReentrancyGuard {
    */
   function purchasePolicy(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 duration,
     uint256 protection,
     bytes32 referralCode
@@ -146,7 +157,7 @@ contract NpmDistributor is ReentrancyGuard {
     require(address(dai) != address(0), "Fatal: DAI missing");
 
     // Get fee info
-    (uint256 premium, uint256 fee) = getPremium(coverKey, duration, protection);
+    (uint256 premium, uint256 fee) = getPremium(coverKey, productKey, duration, protection);
 
     // Transfer DAI to this contract
     dai.safeTransferFrom(msg.sender, address(this), premium + fee);
@@ -155,12 +166,12 @@ contract NpmDistributor is ReentrancyGuard {
     dai.safeIncreaseAllowance(address(policy), premium);
 
     // Purchase protection for this user
-    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, duration, protection, referralCode);
+    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, productKey, duration, protection, referralCode);
 
     // Send your fee (+ any remaining DAI balance) to your treasury address
     dai.safeTransfer(treasury, dai.balanceOf(address(this)));
 
-    emit PolicySold(coverKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
+    emit PolicySold(coverKey, productKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
   }
 
   function addLiquidity(

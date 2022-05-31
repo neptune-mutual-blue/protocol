@@ -60,6 +60,7 @@ contract Cover is CoverBase {
    * https://docs.neptunemutual.com/covers/contract-creators
    *
    * @param coverKey Enter a unique key for this cover
+   * @param supportsProducts Indicates that this cover supports product(s)
    * @param info IPFS info of the cover contract
    * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
    *
@@ -67,7 +68,6 @@ contract Cover is CoverBase {
    * for their own project. This helps bring the cover fee down and enhances
    * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
    * as a support to the liquidity providers when a cover incident occurs.
-   * @param requiresWhitelist If set to true, this cover will only support whitelisted addresses.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
@@ -78,12 +78,13 @@ contract Cover is CoverBase {
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
    * @param values[8] reassuranceRate Enter the reassurance rate.
+   * @param values[9] capitalEfficiencyRatio Enter the capital efficiency ratio.
    */
   function addCover(
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
-    bool requiresWhitelist,
     uint256[] memory values
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
@@ -95,8 +96,35 @@ contract Cover is CoverBase {
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(coverKey, info, reassuranceToken, requiresWhitelist, values);
-    emit CoverCreated(coverKey, info, requiresWhitelist);
+    s.addCoverInternal(coverKey, supportsProducts, info, reassuranceToken, values);
+    emit CoverCreated(coverKey, info);
+  }
+
+  function addProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] memory values
+  ) external override {
+    s.mustNotBePaused();
+    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+
+    s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
+    emit ProductCreated(coverKey, productKey, info, requiresWhitelist, values);
+  }
+
+  function updateProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] memory values
+  ) external override {
+    s.mustNotBePaused();
+    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+
+    s.updateProductInternal(coverKey, productKey, info, values);
+    emit ProductUpdated(coverKey, productKey, info, values);
   }
 
   function deployVault(bytes32 coverKey) external override nonReentrant returns (address) {
@@ -116,13 +144,17 @@ contract Cover is CoverBase {
    * @param coverKey Enter the cover key you want to stop
    * @param reason Provide a reason to stop this cover
    */
-  function stopCover(bytes32 coverKey, string memory reason) external override nonReentrant {
+  function stopCover(
+    bytes32 coverKey,
+    bytes32 productKey,
+    string memory reason
+  ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
-    s.stopCoverInternal(coverKey);
-    emit CoverStopped(coverKey, msg.sender, reason);
+    s.stopCoverInternal(coverKey, productKey);
+    emit CoverStopped(coverKey, productKey, msg.sender, reason);
   }
 
   /**
@@ -148,13 +180,14 @@ contract Cover is CoverBase {
    */
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
+    bytes32 productKey,
     address[] memory accounts,
     bool[] memory statuses
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
-    s.updateCoverUsersWhitelistInternal(coverKey, accounts, statuses);
+    s.updateCoverUsersWhitelistInternal(coverKey, productKey, accounts, statuses);
   }
 
   /**
@@ -167,7 +200,11 @@ contract Cover is CoverBase {
   /**
    * @dev Signifies if a given account is a whitelisted user
    */
-  function checkIfWhitelistedUser(bytes32 coverKey, address account) external view override returns (bool) {
-    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account);
+  function checkIfWhitelistedUser(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address account
+  ) external view override returns (bool) {
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
   }
 }

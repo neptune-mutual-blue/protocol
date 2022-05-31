@@ -46,6 +46,7 @@ contract Processor is IClaimsProcessor, Recoverable {
   function claim(
     address cxToken,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
@@ -54,16 +55,16 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
-    validate(cxToken, coverKey, incidentDate, amount);
+    validate(cxToken, coverKey, productKey, incidentDate, amount);
     require(amount > 0, "Enter an amount");
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(coverKey);
-    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
-    s.addClaimPayoutsInternal(coverKey, incidentDate, amount);
+    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, amount);
 
     // @suppress-division Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
@@ -91,7 +92,7 @@ contract Processor is IClaimsProcessor, Recoverable {
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Claimed(cxToken, coverKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
+    emit Claimed(cxToken, coverKey, productKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
   }
 
   /**
@@ -104,12 +105,13 @@ contract Processor is IClaimsProcessor, Recoverable {
   function validate(
     address cxToken,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 amount
   ) public view override returns (bool) {
     s.mustNotBePaused();
-    s.mustBeValidClaim(msg.sender, coverKey, cxToken, incidentDate, amount);
-    require(isBlacklisted(coverKey, incidentDate, msg.sender) == false, "Access denied");
+    s.mustBeValidClaim(msg.sender, coverKey, productKey, cxToken, incidentDate, amount);
+    require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
 
     return true;
   }
@@ -119,8 +121,8 @@ contract Processor is IClaimsProcessor, Recoverable {
    * even when the policy was valid.
    * @param coverKey Enter the key of the cover you're checking
    */
-  function getClaimExpiryDate(bytes32 coverKey) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+  function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
   }
 
   /**
@@ -164,6 +166,7 @@ contract Processor is IClaimsProcessor, Recoverable {
    */
   function setBlacklist(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     address[] memory accounts,
     bool[] memory statuses
@@ -174,13 +177,17 @@ contract Processor is IClaimsProcessor, Recoverable {
     AccessControlLibV1.mustBeCoverManager(s);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      s.setAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), accounts[i], statuses[i]);
-      emit BlacklistSet(coverKey, incidentDate, accounts[i], statuses[i]);
+      s.setAddressBooleanByKey(_getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
+      emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
     }
   }
 
-  function _getBlacklistKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, incidentDate));
+  function _getBlacklistKey(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, productKey, incidentDate));
   }
 
   /**
@@ -191,10 +198,11 @@ contract Processor is IClaimsProcessor, Recoverable {
    */
   function isBlacklisted(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     address account
   ) public view override returns (bool) {
-    return s.getAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), account);
+    return s.getAddressBooleanByKey(_getBlacklistKey(coverKey, productKey, incidentDate), account);
   }
 
   /**

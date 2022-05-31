@@ -31,6 +31,8 @@ interface IStore {
 
   function setAddressArrayItem(bytes32 k, address v) external;
 
+  function setBytes32ArrayItem(bytes32 k, bytes32 v) external;
+
   function deleteAddress(bytes32 k) external;
 
   function deleteUint(bytes32 k) external;
@@ -49,7 +51,11 @@ interface IStore {
 
   function deleteAddressArrayItem(bytes32 k, address v) external;
 
+  function deleteBytes32ArrayItem(bytes32 k, bytes32 v) external;
+
   function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external;
+
+  function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external;
 
   function getAddressValues(bytes32[] memory keys) external view returns (address[] memory values);
 
@@ -75,9 +81,17 @@ interface IStore {
 
   function countAddressArrayItems(bytes32 k) external view returns (uint256);
 
+  function countBytes32ArrayItems(bytes32 k) external view returns (uint256);
+
   function getAddressArray(bytes32 k) external view returns (address[] memory);
+
+  function getBytes32Array(bytes32 k) external view returns (bytes32[] memory);
 
   function getAddressArrayItemPosition(bytes32 k, address toFind) external view returns (uint256);
 
+  function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view returns (uint256);
+
   function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns (address);
+
+  function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view returns (bytes32);
 }
