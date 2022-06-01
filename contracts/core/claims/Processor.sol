@@ -175,6 +175,7 @@ contract Processor is IClaimsProcessor, Recoverable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     for (uint256 i = 0; i < accounts.length; i++) {
       s.setAddressBooleanByKey(_getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);

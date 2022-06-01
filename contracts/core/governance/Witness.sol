@@ -66,6 +66,7 @@ abstract contract Witness is Recoverable, IWitness {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeDuringReportingPeriod(coverKey, productKey);
@@ -109,6 +110,7 @@ abstract contract Witness is Recoverable, IWitness {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveDispute(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeDuringReportingPeriod(coverKey, productKey);

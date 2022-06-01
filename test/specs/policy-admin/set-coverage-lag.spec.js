@@ -31,14 +31,14 @@ describe('Policy Admin: setCoverageLag', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY_ADMIN, deployed.policyAdminContract.address)
 
     coverKey = key.toBytes32('foo-bar')
-    const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100), helper.percentage(30)]
+    const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100), helper.percentage(30), '1']
     const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, helper.ether(10_000))
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, false, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, false, values)
     await deployed.cover.deployVault(coverKey)
   })
 

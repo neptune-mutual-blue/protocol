@@ -27,6 +27,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
   // slither-disable-next-line naming-convention
   bytes32 public immutable override COVER_KEY; // solhint-disable-line
+  // slither-disable-next-line naming-convention
   bytes32 public immutable override PRODUCT_KEY; // solhint-disable-line
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
@@ -121,6 +122,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     require(coverKey == COVER_KEY, "Invalid cover");
     require(productKey == PRODUCT_KEY, "Invalid product");
 
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBePolicyContract();
 
     uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line

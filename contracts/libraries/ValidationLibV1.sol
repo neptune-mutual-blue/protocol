@@ -58,7 +58,7 @@ library ValidationLibV1 {
     bytes32 productKey
   ) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(supportsProductsInternal(s, coverKey), "Invalid product");
+    require(s.supportsProductsInternal(coverKey), "Invalid product");
     require(s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
   }
 
@@ -85,11 +85,7 @@ library ValidationLibV1 {
    * @param coverKey Enter the cover key to check
    */
   function mustSupportProducts(IStore s, bytes32 coverKey) external view {
-    require(supportsProductsInternal(s, coverKey), "Does not have products");
-  }
-
-  function supportsProductsInternal(IStore s, bytes32 coverKey) public view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey);
+    require(s.supportsProductsInternal(coverKey), "Does not have products");
   }
 
   /**
@@ -102,15 +98,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) public view {
-    require(isValidProductInternal(s, coverKey, productKey), "Product does not exist");
-  }
-
-  function isValidProductInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
+    require(s.isValidProductInternal(coverKey, productKey), "Product does not exist");
   }
 
   /**
@@ -123,15 +111,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) public view {
-    require(isActiveProductInternal(s, coverKey, productKey), "Product retired or deleted");
-  }
-
-  function isActiveProductInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (bool) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == 1;
+    require(s.isActiveProductInternal(coverKey, productKey), "Product retired or deleted");
   }
 
   /**
@@ -388,14 +368,11 @@ library ValidationLibV1 {
     uint256 incidentDate,
     uint256 amount
   ) external view {
-    // @note: cxTokens are no longer protocol members
-    // as we will end up with way too many contracts
-    // s.mustBeProtocolMember(cxToken);
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustBeValidCxToken(s, coverKey, productKey, cxToken, incidentDate);
     mustBeClaimable(s, coverKey, productKey);
     mustBeValidIncidentDate(s, coverKey, productKey, incidentDate);
     mustBeDuringClaimPeriod(s, coverKey, productKey);
-
     require(ICxToken(cxToken).getClaimablePolicyOf(account) >= amount, "Claim exceeds your coverage");
   }
 
@@ -417,6 +394,7 @@ library ValidationLibV1 {
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
     mustBeAfterReportingPeriod(s, coverKey, productKey);
 
@@ -436,6 +414,7 @@ library ValidationLibV1 {
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
     mustBeAfterReportingPeriod(s, coverKey, productKey);
 
@@ -494,7 +473,8 @@ library ValidationLibV1 {
     bytes32 productKey,
     address sender
   ) external view {
-    bool required = s.checkIfRequiresWhitelist(coverKey, productKey);
+    bool supportsProducts = s.supportsProductsInternal(coverKey);
+    bool required = supportsProducts ? s.checkIfProductRequiresWhitelist(coverKey, productKey) : s.checkIfRequiresWhitelist(coverKey);
 
     if (required == false) {
       return;
@@ -507,14 +487,14 @@ library ValidationLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) external view {
-    bool hasProducts = supportsProductsInternal(s, coverKey);
+  ) public view {
+    bool hasProducts = s.supportsProductsInternal(coverKey);
+
+    hasProducts ? require(productKey > 0, "Specify a product") : require(productKey == 0, "Invalid product");
 
     if (hasProducts) {
-      require(productKey > 0, "Specify product");
+      mustBeValidProduct(s, coverKey, productKey);
+      mustBeActiveProduct(s, coverKey, productKey);
     }
-
-    mustBeValidProduct(s, coverKey, productKey);
-    mustBeActiveProduct(s, coverKey, productKey);
   }
 }

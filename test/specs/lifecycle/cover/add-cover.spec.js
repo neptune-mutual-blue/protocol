@@ -23,9 +23,10 @@ describe('Cover: addCover', () => {
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
+  const capitalEfficiencyRatio = '1'
 
   const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
   const info = key.toBytes32('info')
 
   before(async () => {
@@ -40,7 +41,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
   })
 
@@ -52,7 +53,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.connect(bob).addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.connect(bob).addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
       .should.be.rejectedWith('Not whitelisted')
   })
 
@@ -64,7 +65,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.npm.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.npm.address, requiresWhitelist, values)
       .should.be.rejectedWith('Invalid reassurance token')
   })
 
@@ -76,8 +77,8 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    const values = [helper.ether(1), initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    const v = [helper.ether(1), initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, v)
       .should.be.rejectedWith('Your stake is too low')
   })
 })

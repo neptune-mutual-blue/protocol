@@ -83,7 +83,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
     s.mustBeClaimable(coverKey, productKey);

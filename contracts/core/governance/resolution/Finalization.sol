@@ -34,6 +34,7 @@ abstract contract Finalization is Recoverable, IFinalization {
     AccessControlLibV1.mustBeGovernanceAgent(s);
     require(incidentDate > 0, "Please specify incident date");
 
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeClaimingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeAfterResolutionDeadline(coverKey, productKey);

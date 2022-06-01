@@ -641,7 +641,6 @@ library StoreKeyUtil {
   }
 
   function _getKey(bytes32 key1, bytes32 key2) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2));
   }
 
@@ -650,12 +649,10 @@ library StoreKeyUtil {
     bytes32 key2,
     bytes32 key3
   ) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2, key3));
   }
 
   function _getKey(bytes32 key, address account) private pure returns (bytes32) {
-    require(key > 0 && account != address(0), "Invalid key(s)");
     return keccak256(abi.encodePacked(key, account));
   }
 
@@ -664,7 +661,6 @@ library StoreKeyUtil {
     bytes32 key2,
     address account
   ) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2, account));
   }
 

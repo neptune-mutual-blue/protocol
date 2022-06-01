@@ -23,7 +23,7 @@ library CoverLibV1 {
   using StrategyLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
-  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
   function getCoverInfo(
     IStore s,
@@ -105,6 +105,7 @@ library CoverLibV1 {
     bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external {
     // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version. Check caller.
@@ -113,7 +114,7 @@ library CoverLibV1 {
     (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
 
     // Set the basic cover info
-    _addCover(s, coverKey, supportsProducts, info, reassuranceToken, values, fee);
+    _addCover(s, coverKey, supportsProducts, info, reassuranceToken, requiresWhitelist, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(coverKey, msg.sender, values[0], fee);
@@ -130,6 +131,7 @@ library CoverLibV1 {
     bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values,
     uint256 fee
   ) private {
@@ -142,8 +144,11 @@ library CoverLibV1 {
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
     require(values[8] > 0, "Invalid reassurance rate");
-    require(supportsProducts == true && values[9] > 0 && values[9] < 25, "Please provide `CER` value");
-    require(supportsProducts == false && values[9] == 0, "Invalid CER");
+    require(values[9] > 0 && values[9] <= 25, "Please provide valid `CE` value");
+
+    if (supportsProducts == false) {
+      require(values[9] == 1, "Invalid `CE` value");
+    }
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
@@ -159,6 +164,9 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
+
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, values[2]);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey, values[3]);
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, values[4]);
@@ -207,8 +215,7 @@ library CoverLibV1 {
     require(values[0] > 0 && values[1] <= 2, "Invalid product status");
 
     s.mustBeValidCoverKey(coverKey);
-    s.mustBeValidProduct(coverKey, productKey);
-    s.mustBeActiveProduct(coverKey, productKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
@@ -258,6 +265,7 @@ library CoverLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external {
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Stopped);
   }
 
@@ -273,11 +281,18 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
+    bool supportsProducts,
     address account,
     bool status
   ) private {
-    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
-    emit CoverUserWhitelistUpdated(coverKey, account, status);
+    if (supportsProducts) {
+      s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
+      emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
+      return;
+    }
+
+    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account, status);
+    emit CoverUserWhitelistUpdated(coverKey, 0, account, status);
   }
 
   function updateCoverUsersWhitelistInternal(
@@ -288,9 +303,10 @@ library CoverLibV1 {
     bool[] memory statuses
   ) external {
     require(accounts.length == statuses.length, "Inconsistent array sizes");
+    bool supportsProducts = s.supportsProductsInternal(coverKey);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      _updateCoverUserWhitelistInternal(s, coverKey, productKey, accounts[i], statuses[i]);
+      _updateCoverUserWhitelistInternal(s, coverKey, productKey, supportsProducts, accounts[i], statuses[i]);
     }
   }
 

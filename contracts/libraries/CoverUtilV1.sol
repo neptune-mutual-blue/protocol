@@ -19,7 +19,6 @@ library CoverUtilV1 {
   using AccessControlLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
   using StrategyLibV1 for IStore;
-  using ValidationLibV1 for IStore;
 
   enum CoverStatus {
     Normal,
@@ -194,7 +193,7 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
-  function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) public view returns (uint256 total) {
+  function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view returns (uint256 total) {
     bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
@@ -369,14 +368,14 @@ library CoverUtilV1 {
   ) public view returns (address cxToken) {
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
 
-    if (s.supportsProductsInternal(coverKey)) {
+    if (supportsProductsInternal(s, coverKey)) {
       k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
     }
 
     cxToken = s.getAddress(k);
   }
 
-  function checkIfRequiresWhitelist(
+  function checkIfProductRequiresWhitelist(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
@@ -384,7 +383,31 @@ library CoverUtilV1 {
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey);
   }
 
+  function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
+  }
+
   function getCapitalEfficiencyRatioInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CAPITAL_EFFICIENCY_RATIO, coverKey);
+  }
+
+  function supportsProductsInternal(IStore s, bytes32 coverKey) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey);
+  }
+
+  function isValidProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
+  }
+
+  function isActiveProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (bool) {
+    return s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == 1;
   }
 }

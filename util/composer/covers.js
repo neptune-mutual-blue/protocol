@@ -1,4 +1,5 @@
 const { ethers } = require('ethers')
+const { helper } = require('..')
 const { covers } = require('../../examples/covers')
 const ipfs = require('../ipfs')
 const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
@@ -26,6 +27,9 @@ const create = async (payload, info) => {
   const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate } = info
   const hashBytes32 = await ipfs.write(info)
 
+  const supportsProducts = false
+  const capitalEfficiencyRatio = 1
+
   const values = [
     stakeWithFees.toString(),
     reassurance.toString(),
@@ -35,10 +39,11 @@ const create = async (payload, info) => {
     claimPeriod.toString(),
     pricingFloor.toString(),
     pricingCeiling.toString(),
-    reassuranceRate.toString()
+    reassuranceRate.toString(),
+    capitalEfficiencyRatio.toString()
   ]
 
-  await intermediate(cache, cover, 'addCover', key, hashBytes32, dai.address, requiresWhitelist, values)
+  await intermediate(cache, cover, 'addCover', key, supportsProducts, hashBytes32, dai.address, requiresWhitelist, values)
   await rest(100)
   await intermediate(cache, cover, 'deployVault', key)
 }

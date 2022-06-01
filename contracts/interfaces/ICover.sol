@@ -12,7 +12,7 @@ interface ICover is IMember {
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
-  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
@@ -66,6 +66,7 @@ interface ICover is IMember {
     bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external;
 

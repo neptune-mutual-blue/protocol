@@ -14,6 +14,7 @@ import "../liquidity/Vault.sol";
 contract Cover is CoverBase {
   using AccessControlLibV1 for IStore;
   using CoverLibV1 for IStore;
+  using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
@@ -85,6 +86,7 @@ contract Cover is CoverBase {
     bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
+    bool requiresWhitelist,
     uint256[] memory values
   ) external override nonReentrant {
     // @suppress-acl Can only be called by a whitelisted address
@@ -96,7 +98,7 @@ contract Cover is CoverBase {
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
     require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(coverKey, supportsProducts, info, reassuranceToken, values);
+    s.addCoverInternal(coverKey, supportsProducts, info, reassuranceToken, requiresWhitelist, values);
     emit CoverCreated(coverKey, info);
   }
 
@@ -121,6 +123,7 @@ contract Cover is CoverBase {
     uint256[] memory values
   ) external override {
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.updateProductInternal(coverKey, productKey, info, values);
@@ -150,6 +153,7 @@ contract Cover is CoverBase {
     string memory reason
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveNormalCoverStatus(coverKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
@@ -185,6 +189,7 @@ contract Cover is CoverBase {
     bool[] memory statuses
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.updateCoverUsersWhitelistInternal(coverKey, productKey, accounts, statuses);
@@ -205,6 +210,12 @@ contract Cover is CoverBase {
     bytes32 productKey,
     address account
   ) external view override returns (bool) {
-    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
+    bool supportsProducts = s.supportsProductsInternal(coverKey);
+
+    if (supportsProducts) {
+      return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
+    }
+
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account);
   }
 }

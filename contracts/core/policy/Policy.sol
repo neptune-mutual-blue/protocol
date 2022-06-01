@@ -58,6 +58,7 @@ contract Policy is IPolicy, Recoverable {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 

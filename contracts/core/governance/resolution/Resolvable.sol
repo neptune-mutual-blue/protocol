@@ -32,6 +32,7 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeAfterReportingPeriod(coverKey, productKey);
@@ -52,6 +53,7 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustBeBeforeResolutionDeadline(coverKey, productKey);

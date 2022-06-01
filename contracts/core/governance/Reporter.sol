@@ -34,6 +34,7 @@ abstract contract Reporter is IReporter, Witness {
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     productKey > 0 ? s.mustHaveNormalCoverProductStatus(coverKey, productKey) : s.mustHaveNormalCoverStatus(coverKey);
 
@@ -67,6 +68,7 @@ abstract contract Reporter is IReporter, Witness {
     // @suppress-acl Marking this as publicly accessible
 
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustNotHaveDispute(coverKey, productKey);
     s.mustBeReporting(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);

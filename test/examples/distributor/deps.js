@@ -149,6 +149,7 @@ const deployDependencies = async () => {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       CoverLibV1: coverLibV1.address,
+      CoverUtilV1: coverUtilV1.address,
       ProtoUtilV1: protoUtilV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address
@@ -327,9 +328,10 @@ const deployDependencies = async () => {
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
+  const capitalEfficiencyRatio = '1'
 
   const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
 
   const info = key.toBytes32('info')
 
@@ -338,7 +340,7 @@ const deployDependencies = async () => {
   await npm.approve(stakingContract.address, stakeWithFee)
   await dai.approve(reassuranceContract.address, initialReassuranceAmount)
 
-  await cover.addCover(coverKey, info, dai.address, requiresWhitelist, values)
+  await cover.addCover(coverKey, false, info, dai.address, requiresWhitelist, values)
   await cover.deployVault(coverKey)
 
   const vault = await composer.vault.getVault({
