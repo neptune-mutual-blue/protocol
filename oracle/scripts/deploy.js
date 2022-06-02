@@ -6,9 +6,9 @@ const main = async () => {
 
   console.log('Deployer: %s. Balance: %s', deployer.address, await deployer.getBalance())
 
-  const ContractFactory = await ethers.getContractFactory('NPMPriceOracle')
+  const ContractFactory = await ethers.getContractFactory('NpmPriceOracle')
 
-  const oracle = await ContractFactory.deploy(config[80001].stablecoinPairs.NPM_DAI)
+  const oracle = await ContractFactory.deploy(config[80001].stablecoinPairs.NPM_DAI, config[80001].deployedTokens.NPM)
   await oracle.deployed()
 
   console.log('Deployed: https://mumbai.polygonscan.com/address/%s', oracle.address)
