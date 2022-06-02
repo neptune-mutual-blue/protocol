@@ -65,9 +65,10 @@ describe('Policy: getCoverFeeInfo', () => {
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
+    const capitalEfficiencyRatio = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate]
+    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate, capitalEfficiencyRatio]
 
     const info = await ipfs.write([coverKey, ...values])
 
@@ -76,7 +77,7 @@ describe('Policy: getCoverFeeInfo', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, payload.reassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
     deployed.vault = await composer.vault.getVault({
@@ -101,7 +102,7 @@ describe('Policy: getCoverFeeInfo', () => {
       const expected = helper.formatCurrency(getFee(amount, duration), 4).trim()
 
       it(`must return fee: ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s)`, async () => {
-        const fees = await deployed.policy.getCoverFeeInfo(coverKey, duration.toString(), helper.ether(amount))
+        const fees = await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, duration.toString(), helper.ether(amount))
 
         expected.should.equal(helper.formatCurrency(helper.weiToEther(fees), 4))
       })
@@ -109,12 +110,12 @@ describe('Policy: getCoverFeeInfo', () => {
   }
 
   it('must revert if zero is specified as the amount to cover', async () => {
-    await deployed.policy.getCoverFeeInfo(coverKey, '1', helper.ether(0))
+    await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, '1', helper.ether(0))
       .should.be.rejectedWith('Please enter an amount')
   })
 
   it('must revert if invalid value is specified as the cover duration', async () => {
-    await deployed.policy.getCoverFeeInfo(coverKey, '0', helper.ether(10000))
+    await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, '0', helper.ether(10000))
       .should.be.rejectedWith('Invalid duration')
   })
 })

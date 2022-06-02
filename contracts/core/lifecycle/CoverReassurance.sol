@@ -74,27 +74,33 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     emit WeightSet(coverKey, weight);
   }
 
-  function capitalizePool(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  function capitalizePool(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterResolutionDeadline(coverKey);
-    s.mustBeClaimable(coverKey);
-    s.mustBeAfterClaimExpiry(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey, productKey);
+    s.mustBeClaimable(coverKey, productKey);
+    s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     IVault vault = s.getVault(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
 
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
-    s.addReassurancePayoutInternal(coverKey, incidentDate, toTransfer);
+    s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
+
+    emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);
   }
 
   /**

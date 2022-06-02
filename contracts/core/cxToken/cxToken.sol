@@ -27,6 +27,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
   // slither-disable-next-line naming-convention
   bytes32 public immutable override COVER_KEY; // solhint-disable-line
+  // slither-disable-next-line naming-convention
+  bytes32 public immutable override PRODUCT_KEY; // solhint-disable-line
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
 
@@ -43,9 +45,11 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   constructor(
     IStore store,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 expiry
   ) ERC20(_getTokenName(coverKey), "cxUSD") Recoverable(store) {
     COVER_KEY = coverKey;
+    PRODUCT_KEY = productKey;
     expiresOn = expiry;
   }
 
@@ -66,7 +70,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    * @param account Enter an account.
    */
   function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
-    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY);
+    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
     // Only the policies purchased before 24-48 hours (based on configuration) are considered valid.
     // Given the current codebase, the following loop looks redundant.
@@ -75,7 +79,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     for (uint256 i = 0; i < 14; i++) {
       uint256 date = _getEOD(incidentDate + (i * 1 days));
 
-      if (date > _getEOD(s.getResolutionTimestampInternal(COVER_KEY))) {
+      if (date > _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY))) {
         break;
       }
 
@@ -107,6 +111,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    */
   function mint(
     bytes32 coverKey,
+    bytes32 productKey,
     address to,
     uint256 amount
   ) external override nonReentrant {
@@ -115,6 +120,9 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
     require(amount > 0, "Please specify amount");
     require(coverKey == COVER_KEY, "Invalid cover");
+    require(productKey == PRODUCT_KEY, "Invalid product");
+
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBePolicyContract();
 
     uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line

@@ -6,6 +6,7 @@ import "./IMember.sol";
 interface IPolicy is IMember {
   event CoverPurchased(
     bytes32 coverKey,
+    bytes32 productKey,
     address indexed account,
     address onBehalfOf,
     address indexed cxToken,
@@ -30,6 +31,7 @@ interface IPolicy is IMember {
   function purchaseCover(
     address onBehalfOf,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
@@ -38,11 +40,13 @@ interface IPolicy is IMember {
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function getCoverFeeInfo(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -65,16 +69,24 @@ interface IPolicy is IMember {
    * @param _values[3] Reassurance token price
    * @param _values[4] Reassurance pool weight
    */
-  function getCoverPoolSummary(bytes32 coverKey) external view returns (uint256[] memory _values);
+  function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view returns (uint256[] memory _values);
 
-  function getCxToken(bytes32 coverKey, uint256 coverDuration) external view returns (address cxToken, uint256 expiryDate);
+  function getCxToken(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 coverDuration
+  ) external view returns (address cxToken, uint256 expiryDate);
 
-  function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view returns (address cxToken);
+  function getCxTokenByExpiryDate(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 expiryDate
+  ) external view returns (address cxToken);
 
   /**
    * Gets the sum total of cover commitment that haven't expired yet.
    */
-  function getCommitment(bytes32 coverKey) external view returns (uint256);
+  function getCommitment(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
 
   /**
    * Gets the available liquidity in the pool.

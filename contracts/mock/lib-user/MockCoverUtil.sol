@@ -18,7 +18,7 @@ contract MockCoverUtilUser {
     s = store;
   }
 
-  function getActiveLiquidityUnderProtection(bytes32 coverKey) external view returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey);
+  function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
   }
 }

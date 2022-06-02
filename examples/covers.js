@@ -67,7 +67,7 @@ const covers = [
     stakingPool: {
       name: 'Earn BEC',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'BEC' },
           uniRewardTokenDollarPair: { token: 'BEC' },
           stakingTarget: ether(400_000),
@@ -136,7 +136,7 @@ const covers = [
     stakingPool: {
       name: 'Earn CRPOOL',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'CRPOOL' },
           uniRewardTokenDollarPair: { token: 'CRPOOL' },
           stakingTarget: ether(10_000_000),
@@ -237,7 +237,7 @@ const covers = [
     stakingPool: {
       name: 'Earn HWT',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'HWT' },
           uniRewardTokenDollarPair: { token: 'HWT' },
           stakingTarget: ether(1_000_000),
@@ -307,7 +307,7 @@ const covers = [
     stakingPool: {
       name: 'Earn OBK',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'OBK' },
           uniRewardTokenDollarPair: { token: 'OBK' },
           stakingTarget: ether(800_000),
@@ -400,7 +400,7 @@ const covers = [
     stakingPool: {
       name: 'Earn SABRE',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'SABRE' },
           uniRewardTokenDollarPair: { token: 'SABRE' },
           stakingTarget: ether(800_000),
@@ -465,7 +465,7 @@ const covers = [
     stakingPool: {
       name: 'Earn XD',
       settings: {
-        3: {
+        43113: {
           rewardToken: { symbol: 'XD' },
           uniRewardTokenDollarPair: { token: 'XD' },
           stakingTarget: ether(800_000),

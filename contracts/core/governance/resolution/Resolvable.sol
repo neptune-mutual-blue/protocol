@@ -23,23 +23,29 @@ abstract contract Resolvable is Finalization, IResolvable {
   using ValidationLibV1 for bytes32;
   using NTransferUtilV2 for IERC20;
 
-  function resolve(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  function resolve(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
-    s.mustBeReportingOrDisputed(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterReportingPeriod(coverKey);
-    s.mustNotHaveResolutionDeadline(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeReportingOrDisputed(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterReportingPeriod(coverKey, productKey);
+    s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool decision = s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened;
 
-    _resolve(coverKey, incidentDate, decision, false);
+    _resolve(coverKey, productKey, incidentDate, decision, false);
   }
 
   function emergencyResolve(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     bool decision
   ) external override nonReentrant {
@@ -47,15 +53,17 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterReportingPeriod(coverKey);
-    s.mustBeBeforeResolutionDeadline(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterReportingPeriod(coverKey, productKey);
+    s.mustBeBeforeResolutionDeadline(coverKey, productKey);
 
-    _resolve(coverKey, incidentDate, decision, true);
+    _resolve(coverKey, productKey, incidentDate, decision, true);
   }
 
   function _resolve(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     bool decision,
     bool emergency
@@ -68,7 +76,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     // to perform emergency resolution.
     // After this timestamp, the cover has to be claimable
     // or finalized
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
 
     // A cover, when being resolved, will either directly go to finalization or have a claim period.
     //
@@ -90,14 +98,14 @@ abstract contract Resolvable is Finalization, IResolvable {
     CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
-    s.setStatusInternal(coverKey, incidentDate, status);
+    s.setStatusInternal(coverKey, productKey, incidentDate, status);
 
     if (deadline == 0) {
       // Deadline can't be before claim begin date.
       // In other words, once a cover becomes claimable, emergency resolution
       // can not be performed any longer
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
-      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, deadline);
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, deadline);
     }
 
     // Claim begins when deadline timestamp is passed
@@ -106,12 +114,12 @@ abstract contract Resolvable is Finalization, IResolvable {
     // Claim expires after the period specified by the cover creator.
     uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
 
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, claimExpiresAt);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey, claimExpiresAt);
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Resolved(coverKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
+    emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }
 
   function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external override nonReentrant {
@@ -133,7 +141,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     return s.getCoolDownPeriodInternal(coverKey);
   }
 
-  function getResolutionDeadline(bytes32 coverKey) external view override returns (uint256) {
-    return s.getResolutionDeadlineInternal(coverKey);
+  function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getResolutionDeadlineInternal(coverKey, productKey);
   }
 }

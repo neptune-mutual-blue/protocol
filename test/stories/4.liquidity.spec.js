@@ -44,8 +44,8 @@ describe('Liquidity Stories', () => {
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
+    await contracts.cover.addCover(coverKey, false, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
   })
 

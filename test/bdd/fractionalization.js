@@ -36,12 +36,13 @@ describe('Fractionalization of Reserves', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
+    const capitalEfficiencyRatio = '1'
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, '0', minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
+    const values = [stakeWithFee, '0', minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
+    await contracts.cover.addCover(coverKey, false, info, contracts.reassuranceToken.address, requiresWhitelist, values)
     await contracts.cover.deployVault(coverKey)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
@@ -55,12 +56,12 @@ describe('Fractionalization of Reserves', () => {
     const [owner] = await ethers.getSigners()
     let totalPurchased = 0
     const amount = 2_000_000
-    const args = [owner.address, coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
 
     let feeIncome = ethers.BigNumber.from(0)
 
     for (let i = 0; i < 2; i++) {
-      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -74,8 +75,8 @@ describe('Fractionalization of Reserves', () => {
       totalPurchased += amount
     }
 
-    await contracts.policy.getCoverFeeInfo(coverKey, 2, feeIncome.sub(1)).should.not.be.rejected
-    await contracts.policy.getCoverFeeInfo(coverKey, 2, feeIncome).should.be.rejectedWith('Insufficient fund')
+    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome.sub(1)).should.not.be.rejected
+    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome).should.be.rejectedWith('Insufficient fund')
   })
 
   it('allows reuse of liquidity as policies expire', async () => {
@@ -85,8 +86,8 @@ describe('Fractionalization of Reserves', () => {
 
     // Never ending
     for (let i = 0; i < 20; i++) {
-      const args = [owner.address, coverKey, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
-      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
+      const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
@@ -105,8 +106,8 @@ describe('Fractionalization of Reserves', () => {
     const amount = 250_000
 
     for (let i = 0; i < 9; i++) {
-      const args = [owner.address, coverKey, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
-      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3]))
+      const args = [owner.address, coverKey, helper.emptyBytes32, 1, helper.ether(amount), key.toBytes32('REF-CODE-001')]
+      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
       const fee = info.fee
 
       if (i < 4) {

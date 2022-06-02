@@ -29,9 +29,10 @@ describe('cxTokenFactory: Deploy', () => {
     const floor = helper.percentage(1)
     const ceiling = helper.percentage(10)
     const reassuranceRate = helper.percentage(50)
+    const capitalEfficiencyRatio = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+    const values = [stakeWithFee, reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
 
     const info = await ipfs.write([coverKey, ...values])
 
@@ -52,7 +53,7 @@ describe('cxTokenFactory: Deploy', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, reassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
   })
 
   it('must successfully deploy a new vault', async () => {

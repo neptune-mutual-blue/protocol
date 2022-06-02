@@ -4,13 +4,15 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 indexed coverKey, bytes32 info, bool requiresWhitelist);
+  event CoverCreated(bytes32 indexed coverKey, bytes32 info);
+  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values);
   event CoverUpdated(bytes32 indexed coverKey, bytes32 info);
-  event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
+  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, uint256[] values);
+  event CoverStopped(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed stoppedBy, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
-  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
@@ -61,6 +63,7 @@ interface ICover is IMember {
    */
   function addCover(
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
     address reassuranceToken,
     bool requiresWhitelist,
@@ -68,6 +71,21 @@ interface ICover is IMember {
   ) external;
 
   function deployVault(bytes32 coverKey) external returns (address);
+
+  function addProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] memory values
+  ) external;
+
+  function updateProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] memory values
+  ) external;
 
   /**
    * @dev Updates the cover contract.
@@ -82,6 +100,7 @@ interface ICover is IMember {
 
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
+    bytes32 productKey,
     address[] memory accounts,
     bool[] memory statuses
   ) external;
@@ -93,7 +112,7 @@ interface ICover is IMember {
    * @param info Gets the IPFS hash of the cover info
    * @param values Array of uint256 values. See `CoverUtilV1.getCoverInfo`.
    */
-  function getCover(bytes32 coverKey)
+  function getCover(bytes32 coverKey, bytes32 productKey)
     external
     view
     returns (
@@ -102,11 +121,19 @@ interface ICover is IMember {
       uint256[] memory values
     );
 
-  function stopCover(bytes32 coverKey, string memory reason) external;
+  function stopCover(
+    bytes32 coverKey,
+    bytes32 productKey,
+    string memory reason
+  ) external;
 
   function checkIfWhitelistedCoverCreator(address account) external view returns (bool);
 
-  function checkIfWhitelistedUser(bytes32 coverKey, address account) external view returns (bool);
+  function checkIfWhitelistedUser(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address account
+  ) external view returns (bool);
 
   function setCoverFees(uint256 value) external;
 

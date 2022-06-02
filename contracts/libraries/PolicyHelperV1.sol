@@ -22,6 +22,7 @@ library PolicyHelperV1 {
   function calculatePolicyFeeInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -37,18 +38,18 @@ library PolicyHelperV1 {
     )
   {
     (floor, ceiling) = getPolicyRatesInternal(s, coverKey);
-    (uint256 stablecoinOwnedByVault, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, coverKey);
+    (uint256 availableLiquidity, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, coverKey, productKey);
 
     require(amountToCover > 0, "Please enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
-    require(stablecoinOwnedByVault - commitment > amountToCover, "Insufficient fund");
+    require(availableLiquidity - commitment > amountToCover, "Insufficient fund");
 
-    totalAvailableLiquidity = stablecoinOwnedByVault + supportPool;
+    totalAvailableLiquidity = availableLiquidity + supportPool;
     utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    console.log("[cp] s: %s. p: %s. u: %s", stablecoinOwnedByVault, supportPool, utilizationRatio);
+    console.log("[cp] s: %s. p: %s. u: %s", availableLiquidity, supportPool, utilizationRatio);
     console.log("[cp]: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
 
     rate = utilizationRatio > floor ? utilizationRatio : floor;
@@ -62,18 +63,22 @@ library PolicyHelperV1 {
     fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
   }
 
-  function _getCoverPoolAmounts(IStore s, bytes32 coverKey)
+  function _getCoverPoolAmounts(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  )
     private
     view
     returns (
-      uint256 stablecoinOwnedByVault,
+      uint256 availableLiquidity,
       uint256 commitment,
       uint256 supportPool
     )
   {
-    uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey);
+    uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey, productKey);
 
-    stablecoinOwnedByVault = values[0];
+    uint256 stablecoinOwnedByVault = values[0];
     commitment = values[1];
 
     uint256 reassuranceTokens = values[2];
@@ -82,15 +87,19 @@ library PolicyHelperV1 {
 
     uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
     supportPool = (reassurance * reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
+
+    uint256 cer = s.getCapitalEfficiencyRatioInternal(coverKey);
+    availableLiquidity = stablecoinOwnedByVault * cer;
   }
 
   function getPolicyFeeInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) public view returns (uint256 fee) {
-    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
   }
 
   function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view returns (uint256 floor, uint256 ceiling) {
@@ -109,10 +118,11 @@ library PolicyHelperV1 {
   function getCxTokenInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration
   ) public view returns (address cxToken, uint256 expiryDate) {
     expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
 
     cxToken = s.getAddress(k);
   }
@@ -125,16 +135,17 @@ library PolicyHelperV1 {
   function getCxTokenOrDeployInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration
   ) public returns (ICxToken) {
-    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, coverKey, coverDuration);
+    (address cxToken, uint256 expiryDate) = getCxTokenInternal(s, coverKey, productKey, coverDuration);
 
     if (cxToken != address(0)) {
       return ICxToken(cxToken);
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(coverKey, expiryDate);
+    cxToken = factory.deploy(coverKey, productKey, expiryDate);
 
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
@@ -157,18 +168,19 @@ library PolicyHelperV1 {
     IStore s,
     address onBehalfOf,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getPolicyFeeInternal(s, coverKey, coverDuration, amountToCover);
-    cxToken = getCxTokenOrDeployInternal(s, coverKey, coverDuration);
+    fee = getPolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+    cxToken = getCxTokenOrDeployInternal(s, coverKey, productKey, coverDuration);
 
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(coverKey)), fee);
-    cxToken.mint(coverKey, onBehalfOf, amountToCover);
+    cxToken.mint(coverKey, productKey, onBehalfOf, amountToCover);
 
     s.updateStateAndLiquidity(coverKey);
   }

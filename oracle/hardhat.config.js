@@ -38,6 +38,13 @@ const config = {
       // gasPrice: 30000000000,
       gas: 'auto'
     },
+    fuji: {
+      url: 'https://api.avax-test.network/ext/bc/C/rpc',
+      chainId: 43113,
+      accounts: [process.env.PRIVATE_KEY],
+      gas: 'auto',
+      explorer: 'https://testnet.snowtrace.io'
+    },
     local: {
       url: 'http://localhost:8545/',
       chainId: 1337,

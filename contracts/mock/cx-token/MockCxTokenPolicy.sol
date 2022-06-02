@@ -12,9 +12,10 @@ contract MockCxTokenPolicy {
 
   function callMint(
     bytes32 key,
+    bytes32 productKey,
     address to,
     uint256 amount
   ) external {
-    cxToken.mint(key, to, amount);
+    cxToken.mint(key, productKey, to, amount);
   }
 }

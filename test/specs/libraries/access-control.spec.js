@@ -244,9 +244,10 @@ describe('AccessControlLibV1: _deleteContract', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
+    const capitalEfficiencyRatio = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
 
     const info = key.toBytes32('info')
 
@@ -255,7 +256,7 @@ describe('AccessControlLibV1: _deleteContract', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
     deployed.vault = await composer.vault.getVault({
