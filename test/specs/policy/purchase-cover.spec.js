@@ -78,9 +78,9 @@ describe('Policy: purchaseCover', () => {
 
     const amount = helper.ether(500_000)
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
 
-    const commitment = await deployed.policy.getCommitment(coverKey)
+    const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal(amount)
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
@@ -92,7 +92,7 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', '0', key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', '0', key.toBytes32(''))
       .should.be.rejectedWith('Please specify amount')
   })
 
@@ -101,10 +101,10 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '0', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '0', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '5', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '5', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
   })
 
@@ -114,7 +114,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.pause()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
@@ -128,7 +128,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Status not normal')
   })
 })
@@ -198,12 +198,12 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     const [owner] = await ethers.getSigners()
     const amount = helper.ether(500_000)
 
-    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
 
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
 
-    const commitment = await deployed.policy.getCommitment(coverKey)
+    const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal(amount)
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
@@ -217,7 +217,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.npm.transfer(bob.address, amount)
 
     await deployed.dai.connect(bob).approve(deployed.policy.address, amount)
-    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
       .should.be.rejectedWith('You are not whitelisted')
   })
 })

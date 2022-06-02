@@ -99,7 +99,7 @@ describe('Governance: report', () => {
     reportedEvent.args.info.should.equal(reportingInfo)
     reportedEvent.args.initialStake.should.equal(amount)
 
-    const [myStake, totalStake] = await deployed.governance.getAttestation(coverKey, bob.address, incidentDate)
+    const [myStake, totalStake] = await deployed.governance.getAttestation(coverKey, helper.emptyBytes32, bob.address, incidentDate)
 
     myStake.should.equal(amount)
     totalStake.should.equal(amount)

@@ -28,24 +28,24 @@ describe('Claims Processor: `validate` function', () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
     await cxToken.approve(processor.address, '1')
 
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200))
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200))
   })
 
   it('must reject if the protocol is paused', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
-    await store.initialize(coverKey, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
     await protocol.setPaused(true)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Protocol is paused')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Protocol is paused')
     await protocol.setPaused(false)
   })
 
@@ -53,103 +53,103 @@ describe('Claims Processor: `validate` function', () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
     await store.disassociateCxToken(cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Unknown cxToken')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Unknown cxToken')
   })
 
   it('must reject if the cxToken key does not match with the given cover key', async () => {
     const coverKey = key.toBytes32('invalid-key')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid cxToken')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid cxToken')
   })
 
   it('must reject if the cxToken has already expired', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = moment('2055-01-01') // very far into the future
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate.unix(), helper.ether(200)).should.be.rejectedWith('Invalid or expired cxToken')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate.unix(), helper.ether(200)).should.be.rejectedWith('Invalid or expired cxToken')
   })
 
   it('must reject if the cover is not resolved, i.e. claimable', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
-    await store.setCoverStatus(coverKey, 1)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.setCoverStatus(coverKey, helper.emptyBytes32, 1)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Not claimable')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Not claimable')
   })
 
   it('must reject if incident date is invalid', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '12345'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid incident date')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid incident date')
   })
 
   it('must reject if there is no claim begin date set', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
-    await store.setClaimBeginTimestamp(coverKey, '0')
-    await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-02').unix())
+    await store.setClaimBeginTimestamp(coverKey, helper.emptyBytes32, '0')
+    await store.setClaimExpiryTimestamp(coverKey, helper.emptyBytes32, moment('2030-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid claim begin date')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid claim begin date')
   })
 
   it('must reject if claim expiry date is greater than claim begin date', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
-    await store.setClaimBeginTimestamp(coverKey, moment('2030-02-01').unix())
-    await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-01').unix())
+    await store.setClaimBeginTimestamp(coverKey, helper.emptyBytes32, moment('2030-02-01').unix())
+    await store.setClaimExpiryTimestamp(coverKey, helper.emptyBytes32, moment('2030-01-01').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid claim period')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Invalid claim period')
   })
 
   it('must reject if claim period has not begun', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
-    await store.setClaimBeginTimestamp(coverKey, moment('2030-01-01').unix())
-    await store.setClaimExpiryTimestamp(coverKey, moment('2030-01-02').unix())
+    await store.setClaimBeginTimestamp(coverKey, helper.emptyBytes32, moment('2030-01-01').unix())
+    await store.setClaimExpiryTimestamp(coverKey, helper.emptyBytes32, moment('2030-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Claim period hasn\'t begun')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Claim period hasn\'t begun')
   })
 
   it('must reject if claim period is over or expired', async () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
-    await store.setClaimBeginTimestamp(coverKey, moment('2010-01-01').unix())
-    await store.setClaimExpiryTimestamp(coverKey, moment('2010-01-02').unix())
+    await store.setClaimBeginTimestamp(coverKey, helper.emptyBytes32, moment('2010-01-01').unix())
+    await store.setClaimExpiryTimestamp(coverKey, helper.emptyBytes32, moment('2010-01-02').unix())
 
     await cxToken.approve(processor.address, '1')
-    await processor.validate(cxToken.address, coverKey, incidentDate, helper.ether(200)).should.be.rejectedWith('Claim period has expired')
+    await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Claim period has expired')
   })
 })

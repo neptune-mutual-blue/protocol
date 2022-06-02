@@ -103,7 +103,7 @@ describe('Governance: dispute', () => {
     disputedEvent.args.info.should.equal(disputeInfo)
     disputedEvent.args.initialStake.should.equal(amount)
 
-    const [myStake, totalStake] = await deployed.governance.getDispute(coverKey, bob.address, incidentDate)
+    const [myStake, totalStake] = await deployed.governance.getDispute(coverKey, helper.emptyBytes32, bob.address, incidentDate)
 
     myStake.should.equal(amount)
     totalStake.should.equal(amount)

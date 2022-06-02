@@ -94,7 +94,7 @@ describe('Coverage Claim Stories', function () {
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Alice purchases a cover
-    args = [alice.address, coverKey, 2, helper.ether(constants.coverAmounts.alice)]
+    args = [alice.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.alice)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(alice).approve(contracts.policy.address, fee)
@@ -106,7 +106,7 @@ describe('Coverage Claim Stories', function () {
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Bob purchases a cover #1 (Valid)
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -119,7 +119,7 @@ describe('Coverage Claim Stories', function () {
 
     // Bob purchases a cover #2 (Invalid)
 
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -132,7 +132,7 @@ describe('Coverage Claim Stories', function () {
 
     // Bob purchases a cover #3 (Invalid)
 
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -208,7 +208,7 @@ describe('Coverage Claim Stories', function () {
     const [, attacker] = await ethers.getSigners()
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.setBlacklist(coverKey, incidentDate, [attacker.address], [true])
+    await contracts.claimsProcessor.setBlacklist(coverKey, helper.emptyBytes32, incidentDate, [attacker.address], [true])
   })
 
   it('the attacker was unable to claim their coverage', async () => {

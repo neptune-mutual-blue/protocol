@@ -79,7 +79,6 @@ describe('Cover Constructor', () => {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
         CoverLibV1: deployed.coverLibV1.address,
-        CoverUtilV1: deployed.coverUtilV1.address,
         ProtoUtilV1: deployed.protoUtilV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address

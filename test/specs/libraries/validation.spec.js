@@ -165,7 +165,7 @@ describe('ValidationLibV1: mustBeDisputed', () => {
   it('revert when not disputed', async () => {
     const coverKey = key.toBytes32('foo-bar')
 
-    await mockContract.mustBeDisputed(coverKey)
+    await mockContract.mustBeDisputed(coverKey, helper.emptyBytes32)
       .should.be.rejectedWith('Not disputed')
   })
 
@@ -188,7 +188,7 @@ describe('ValidationLibV1: mustBeDisputed', () => {
     await deployed.npm.connect(bob).approve(deployed.governance.address, disputeAmount)
     await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, disputeAmount)
 
-    await mockContract.mustBeDisputed(coverKey)
+    await mockContract.mustBeDisputed(coverKey, helper.emptyBytes32)
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second

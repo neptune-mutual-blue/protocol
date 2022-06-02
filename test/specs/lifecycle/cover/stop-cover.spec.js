@@ -44,7 +44,7 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.stopCover(coverKey, 'reason: testing')
+    await deployed.cover.stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
   })
 
   it('reverts when not accessed by GovernanceAdmin', async () => {
@@ -58,7 +58,7 @@ describe('Cover: stopCover', () => {
     await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    await deployed.cover.connect(bob).stopCover(coverKey, 'reason: testing')
+    await deployed.cover.connect(bob).stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
       .should.be.rejectedWith('Forbidden')
   })
 })

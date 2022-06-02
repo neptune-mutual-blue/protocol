@@ -78,18 +78,18 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     const [owner] = await ethers.getSigners()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
 
     const expiryDate = await deployed.policy.getExpiryDate(block.timestamp, '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
+    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, helper.emptyBytes32, expiryDate)
     cxToken.should.not.equal(helper.zerox)
   })
 
   it('must return zero address if invalid cover was specified', async () => {
     const expiryDate = await deployed.policy.getExpiryDate(moment().unix().toString(), '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(key.toBytes32('fizz-buzz'), expiryDate)
+    const cxToken = await deployed.policy.getCxTokenByExpiryDate(key.toBytes32('fizz-buzz'), helper.emptyBytes32, expiryDate)
     await cxToken.should.equal(helper.zerox)
   })
 })

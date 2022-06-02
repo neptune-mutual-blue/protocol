@@ -63,7 +63,7 @@ describe('cxTokenFactory: Deploy', () => {
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, alice.address)
 
-    const tx = await factory.connect(alice).deploy(coverKey, expiryDate)
+    const tx = await factory.connect(alice).deploy(coverKey, helper.emptyBytes32, expiryDate)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'CxTokenDeployed')
 
@@ -76,7 +76,7 @@ describe('cxTokenFactory: Deploy', () => {
     const [, alice] = await ethers.getSigners()
     const expiryDate = '0'
 
-    await factory.connect(alice).deploy(coverKey, expiryDate)
+    await factory.connect(alice).deploy(coverKey, helper.emptyBytes32, expiryDate)
       .should.be.rejectedWith('Please specify expiry date')
   })
 
@@ -85,8 +85,8 @@ describe('cxTokenFactory: Deploy', () => {
     const blockTimestamp = await blockHelper.getTimestamp()
     const expiryDate = blockTimestamp.add(4, 'd').unix()
 
-    await factory.connect(alice).deploy(coverKey, expiryDate)
-    await factory.connect(alice).deploy(coverKey, expiryDate)
+    await factory.connect(alice).deploy(coverKey, helper.emptyBytes32, expiryDate)
+    await factory.connect(alice).deploy(coverKey, helper.emptyBytes32, expiryDate)
       .should.be.rejectedWith('Already deployed')
   })
 })

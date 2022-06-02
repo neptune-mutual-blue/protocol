@@ -81,7 +81,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     const activeIncidentDate = await mockStoreUser['getUintByKeys(bytes32,bytes32)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey)
     activeIncidentDate.should.equal('0')
 
-    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey)
+    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
     result.should.equal('0')
   })
 
@@ -92,7 +92,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     const previous = await mockStoreUser['getUintByKeys(bytes32,bytes32)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey)
     await mockStoreUser['setUintByKeys(bytes32,bytes32,uint256)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, activeIncidentDate)
 
-    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey)
+    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
     result.should.equal('0')
 
     await mockStoreUser['setUintByKeys(bytes32,bytes32,uint256)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, previous)
@@ -104,19 +104,13 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
 
     // Purchase policy so that cxToken is created
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', coverageAmount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', coverageAmount, key.toBytes32(''))
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const expiryDate = await deployed.policy.getExpiryDate(block.timestamp, '1')
-    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, expiryDate)
+    const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, helper.emptyBytes32, expiryDate)
     cxToken.should.not.equal(helper.zerox)
 
-    const activeIncidentDate = expiryDate
-    const previous = await mockStoreUser['getUintByKeys(bytes32,bytes32)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey)
-    await mockStoreUser['setUintByKeys(bytes32,bytes32,uint256)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, activeIncidentDate)
-
-    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey)
+    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
     result.should.equal(coverageAmount)
-
-    await mockStoreUser['setUintByKeys(bytes32,bytes32,uint256)'](key.PROTOCOL.NS.GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, previous)
   })
 })

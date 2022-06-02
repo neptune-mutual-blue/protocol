@@ -20,7 +20,7 @@ describe('cxToken: Constructor', () => {
     libraries = await deployDependencies()
     store = { address: helper.randomAddress() }
 
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
   })
 
   it('must correctly construct', async () => {

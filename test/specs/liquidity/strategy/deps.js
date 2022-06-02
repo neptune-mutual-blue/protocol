@@ -148,7 +148,6 @@ const deployDependencies = async () => {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       CoverLibV1: coverLibV1.address,
-      CoverUtilV1: coverUtilV1.address,
       ProtoUtilV1: protoUtilV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address

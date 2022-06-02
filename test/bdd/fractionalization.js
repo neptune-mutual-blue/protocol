@@ -120,7 +120,7 @@ describe('Fractionalization of Reserves', () => {
       await contracts.npm.approve(contracts.governance.address, helper.ether(1000))
     }
 
-    const commitment = await contracts.policy.getCommitment(coverKey)
+    const commitment = await contracts.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal('0')
   })
 })

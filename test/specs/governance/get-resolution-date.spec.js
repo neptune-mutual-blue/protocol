@@ -85,7 +85,7 @@ describe('Governance: getResolutionTimestamp', () => {
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    const result = await deployed.governance.getResolutionTimestamp(coverKey)
+    const result = await deployed.governance.getResolutionTimestamp(coverKey, helper.emptyBytes32)
     result.should.equal(parseInt(incidentDate, 10) + 7 * DAYS)
 
     // Cleanup - resolve, finalize
@@ -103,7 +103,7 @@ describe('Governance: getResolutionTimestamp', () => {
   })
 
   it('must get resolution date correctly when there is no active reporting', async () => {
-    const result = await deployed.governance.getResolutionTimestamp(coverKey)
+    const result = await deployed.governance.getResolutionTimestamp(coverKey, helper.emptyBytes32)
     result.should.equal(0)
   })
 })

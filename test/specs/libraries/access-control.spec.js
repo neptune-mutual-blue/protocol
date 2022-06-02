@@ -236,7 +236,6 @@ describe('AccessControlLibV1: _deleteContract', () => {
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
-    // const initialLiquidity = helper.ether(0)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS

@@ -281,18 +281,11 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    bool supportsProducts,
     address account,
     bool status
   ) private {
-    if (supportsProducts) {
-      s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
-      emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
-      return;
-    }
-
-    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account, status);
-    emit CoverUserWhitelistUpdated(coverKey, 0, account, status);
+    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
+    emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
   }
 
   function updateCoverUsersWhitelistInternal(
@@ -303,10 +296,9 @@ library CoverLibV1 {
     bool[] memory statuses
   ) external {
     require(accounts.length == statuses.length, "Inconsistent array sizes");
-    bool supportsProducts = s.supportsProductsInternal(coverKey);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      _updateCoverUserWhitelistInternal(s, coverKey, productKey, supportsProducts, accounts[i], statuses[i]);
+      _updateCoverUserWhitelistInternal(s, coverKey, productKey, accounts[i], statuses[i]);
     }
   }
 

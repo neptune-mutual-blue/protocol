@@ -1,6 +1,6 @@
 const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key } = require('../../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const blockHelper = require('../../../util/block')
 
@@ -23,7 +23,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 
@@ -35,7 +35,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, owner.address, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, owner.address, amount)
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
 

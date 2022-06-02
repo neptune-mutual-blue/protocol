@@ -1,6 +1,6 @@
 const BigNumber = require('bignumber.js')
 const { deployDependencies } = require('./deps')
-const { deployer, key } = require('../../../util')
+const { deployer, key, helper } = require('../../../util')
 const attacher = require('../../../util/attach')
 const blockHelper = require('../../../util/block')
 
@@ -22,7 +22,7 @@ describe('cxToken: `burn` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 
@@ -33,7 +33,7 @@ describe('cxToken: `burn` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, owner.address, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, owner.address, amount)
 
     await cxToken.burn('85')
 
@@ -48,7 +48,7 @@ describe('cxToken: `burn` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, owner.address, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, owner.address, amount)
 
     await cxToken.burn('0').should.be.rejectedWith('Please specify amount')
   })
@@ -62,7 +62,7 @@ describe('cxToken: `burn` function', () => {
     await store.registerPolicyContract(policy.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
-    await policy.callMint(coverKey, owner.address, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, owner.address, amount)
 
     await protocol.setPaused(true)
 

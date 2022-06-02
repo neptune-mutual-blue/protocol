@@ -109,10 +109,6 @@ library CoverUtilV1 {
     // @todo: Liquidity withdrawal should not be possible if any product under this cover is reporting
   }
 
-  function getStatusInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusKey(coverKey));
-  }
-
   function getCoverStatusInternal(
     IStore s,
     bytes32 coverKey,
@@ -136,11 +132,7 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) public view returns (uint256) {
-    if (productKey > 0) {
-      return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
-    }
-
-    return s.getUintByKey(getCoverStatusKey(coverKey));
+    return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
   }
 
   function getCoverProductStatusOf(
@@ -158,11 +150,7 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    if (productKey > 0) {
-      return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
-    }
-
-    return s.getUintByKey(getCoverStatusOfKey(coverKey, incidentDate));
+    return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
   }
 
   function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
@@ -291,18 +279,11 @@ library CoverUtilV1 {
     uint256 incidentDate,
     CoverStatus status
   ) external {
-    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status));
-
-    if (productKey > 0) {
-      s.setUintByKey(getCoverProductStatusKey(coverKey, productKey), uint256(status));
-    }
+    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status)); // Entire cover
+    s.setUintByKey(getCoverProductStatusKey(coverKey, productKey), uint256(status)); // This product
 
     if (incidentDate > 0) {
-      s.setUintByKey(getCoverStatusOfKey(coverKey, incidentDate), uint256(status));
-
-      if (productKey > 0) {
-        s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
-      }
+      s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
     }
   }
 
@@ -370,12 +351,7 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 expiryDate
   ) public view returns (address cxToken) {
-    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
-
-    if (supportsProductsInternal(s, coverKey)) {
-      k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
-    }
-
+    bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
     cxToken = s.getAddress(k);
   }
 

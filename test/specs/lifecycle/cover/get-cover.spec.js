@@ -44,7 +44,7 @@ describe('Cover: getCover', () => {
     await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    const result = await deployed.cover.getCover(coverKey)
+    const result = await deployed.cover.getCover(coverKey, helper.emptyBytes32)
 
     result.coverOwner.should.equal(owner.address)
     result.info.should.equal(info)

@@ -24,4 +24,9 @@ contract MockCxToken is ERC20 {
   function COVER_KEY() external pure returns (bytes32) {
     return "test";
   }
+
+  // slither-disable-next-line naming-convention
+  function PRODUCT_KEY() external pure returns (bytes32) {
+    return "";
+  }
 }

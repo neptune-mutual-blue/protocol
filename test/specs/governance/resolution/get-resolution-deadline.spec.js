@@ -85,7 +85,7 @@ describe('Resolution: getResolutionDeadline', () => {
     await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     // Reporting period + 1 second + Cooldown period
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
+    const result = await deployed.resolution.getResolutionDeadline(coverKey, helper.emptyBytes32)
     result.should.be.gt(parseInt(incidentDate, 10) + (7 * DAYS) + (1 * DAYS))
 
     // Clean up - finalize
@@ -99,7 +99,7 @@ describe('Resolution: getResolutionDeadline', () => {
   })
 
   it('must return zero if there is no active reporting', async () => {
-    const result = await deployed.resolution.getResolutionDeadline(coverKey)
+    const result = await deployed.resolution.getResolutionDeadline(coverKey, helper.emptyBytes32)
     result.should.equal(0)
   })
 })

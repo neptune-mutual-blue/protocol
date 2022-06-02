@@ -21,7 +21,6 @@ describe('Vault Library', () => {
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
     const initialReassuranceAmount = helper.ether(1_000_000)
-    // const initialLiquidity = helper.ether(0)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -84,9 +83,6 @@ describe('Vault Library', () => {
 
     it('must revert when pod and liquidity mismatch', async () => {
       await deployed.dai.transfer(deployed.vault.address, helper.ether(1))
-
-      const supply = await deployed.vault.totalSupply()
-      console.log(supply)
 
       await deployed.vault.calculatePods(helper.ether(1))
         .should.be.rejectedWith('Liquidity/POD mismatch')

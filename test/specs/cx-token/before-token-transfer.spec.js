@@ -23,7 +23,7 @@ describe('cxToken: `_beforeTokenTransfer` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 
@@ -34,7 +34,7 @@ describe('cxToken: `_beforeTokenTransfer` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, owner.address, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, owner.address, amount)
 
     await ethers.provider.send('evm_increaseTime', [DAYS * 3])
 

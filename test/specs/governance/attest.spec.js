@@ -80,7 +80,7 @@ describe('Governance: attest', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, helper.emptyBytes32, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 

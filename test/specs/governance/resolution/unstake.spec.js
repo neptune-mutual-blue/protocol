@@ -91,7 +91,7 @@ describe('Resolution: unstake', () => {
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    const tx = await deployed.resolution.unstake(coverKey, incidentDate)
+    const tx = await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Unstaken')
 
@@ -119,7 +119,7 @@ describe('Resolution: unstake', () => {
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    await deployed.resolution.unstake(coverKey, incidentDate)
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
       .should.be.rejectedWith('Still unresolved')
 
     // Clean up - Resolve and finalize
@@ -148,7 +148,7 @@ describe('Resolution: unstake', () => {
     await network.provider.send('evm_increaseTime', [1])
     await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
-    await deployed.resolution.unstake(coverKey, incidentDate)
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
       .should.be.rejectedWith('Still unresolved')
 
     // Clean up - finalize
@@ -162,7 +162,7 @@ describe('Resolution: unstake', () => {
   })
 
   it('reverts when invalid value is passed as incident date', async () => {
-    await deployed.resolution.unstake(coverKey, 0).should.be.rejectedWith('Please specify incident date')
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, 0).should.be.rejectedWith('Please specify incident date')
   })
 
   it('reverts when protocol is paused', async () => {
@@ -172,7 +172,7 @@ describe('Resolution: unstake', () => {
 
     await deployed.protocol.pause()
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
-    await deployed.resolution.unstake(coverKey, incidentDate).should.be.rejectedWith('Protocol is paused')
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate).should.be.rejectedWith('Protocol is paused')
 
     // Clean up - Unpause, Resolve and finalize
     await deployed.protocol.unpause()
@@ -205,8 +205,8 @@ describe('Resolution: unstake', () => {
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    await deployed.resolution.unstake(coverKey, incidentDate)
-    await deployed.resolution.unstake(coverKey, incidentDate)
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
       .should.be.rejectedWith('Already unstaken')
 
     // Claim period + 1 second

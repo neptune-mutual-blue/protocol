@@ -22,7 +22,7 @@ describe('cxToken: `mint` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 
@@ -33,7 +33,7 @@ describe('cxToken: `mint` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, to, amount)
+    await policy.callMint(coverKey, helper.emptyBytes32, to, amount)
   })
 
   it('must reject when the protocol is paused', async () => {
@@ -47,7 +47,7 @@ describe('cxToken: `mint` function', () => {
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
     await protocol.setPaused(true)
 
-    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Protocol is paused')
+    await policy.callMint(coverKey, helper.emptyBytes32, to, amount).should.be.rejectedWith('Protocol is paused')
   })
 
   it('must reject when invalid amount is supplied', async () => {
@@ -57,7 +57,7 @@ describe('cxToken: `mint` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Please specify amount')
+    await policy.callMint(coverKey, helper.emptyBytes32, to, amount).should.be.rejectedWith('Please specify amount')
   })
 
   it('must reject when invalid cover key is supplied', async () => {
@@ -67,7 +67,7 @@ describe('cxToken: `mint` function', () => {
     await store.initialize()
     await store.registerPolicyContract(policy.address)
 
-    await policy.callMint(key.toBytes32('foobar'), to, amount)
+    await policy.callMint(key.toBytes32('foobar'), helper.emptyBytes32, to, amount)
       .should.be.rejectedWith('Invalid cover')
   })
 
@@ -77,6 +77,6 @@ describe('cxToken: `mint` function', () => {
 
     await store.initialize()
 
-    await policy.callMint(coverKey, to, amount).should.be.rejectedWith('Access denied')
+    await policy.callMint(coverKey, helper.emptyBytes32, to, amount).should.be.rejectedWith('Access denied')
   })
 })

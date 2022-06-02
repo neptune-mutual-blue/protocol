@@ -152,6 +152,7 @@ contract Cover is CoverBase {
     bytes32 productKey,
     string memory reason
   ) external override nonReentrant {
+    // @todo: check if productKey is required
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveNormalCoverStatus(coverKey);
@@ -210,12 +211,6 @@ contract Cover is CoverBase {
     bytes32 productKey,
     address account
   ) external view override returns (bool) {
-    bool supportsProducts = s.supportsProductsInternal(coverKey);
-
-    if (supportsProducts) {
-      return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
-    }
-
-    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account);
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
   }
 }

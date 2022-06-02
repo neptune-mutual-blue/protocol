@@ -44,9 +44,9 @@ describe('Cover: updateCoverUsersWhitelist', () => {
     await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
     await deployed.cover.deployVault(coverKey)
 
-    const statusBefore = await deployed.cover.checkIfWhitelistedUser(coverKey, owner.address)
-    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
-    const statusAfter = await deployed.cover.checkIfWhitelistedUser(coverKey, owner.address)
+    const statusBefore = await deployed.cover.checkIfWhitelistedUser(coverKey, helper.emptyBytes32, owner.address)
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
+    const statusAfter = await deployed.cover.checkIfWhitelistedUser(coverKey, helper.emptyBytes32, owner.address)
 
     statusBefore.should.equal(false)
     statusAfter.should.equal(true)
@@ -57,7 +57,7 @@ describe('Cover: updateCoverUsersWhitelist', () => {
 
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
-    await deployed.cover.connect(bob).updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+    await deployed.cover.connect(bob).updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
       .should.be.rejectedWith('Forbidden')
   })
 
@@ -68,7 +68,7 @@ describe('Cover: updateCoverUsersWhitelist', () => {
 
     await deployed.protocol.pause()
 
-    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
