@@ -125,7 +125,7 @@ describe('Policy: purchaseCover', () => {
 
     const info = key.toBytes32('info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, info, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
     await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))

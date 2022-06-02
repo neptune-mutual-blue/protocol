@@ -81,14 +81,14 @@ describe('Governance: finalize', () => {
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
@@ -96,7 +96,7 @@ describe('Governance: finalize', () => {
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    const tx = await deployed.resolution.finalize(coverKey, incidentDate)
+    const tx = await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'Finalized')
@@ -112,27 +112,24 @@ describe('Governance: finalize', () => {
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    // // Claim period + 1 second
-    // await network.provider.send('evm_increaseTime', [7 * DAYS])
-    // await network.provider.send('evm_increaseTime', [1])
 
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
       .should.be.rejectedWith('Claim still active')
   })
 
   it('reverts when invalid incident date is specified', async () => {
-    await deployed.resolution.finalize(coverKey, 0)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, 0)
       .should.be.rejectedWith('Please specify incident date')
   })
 })

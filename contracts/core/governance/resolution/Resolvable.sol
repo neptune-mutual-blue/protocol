@@ -38,7 +38,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getCoverProductStatus(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool decision = s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }

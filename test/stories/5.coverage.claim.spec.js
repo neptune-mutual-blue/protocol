@@ -149,15 +149,15 @@ describe('Coverage Claim Stories', function () {
 
     const info = await ipfs.write(constants.reportInfo)
     await contracts.npm.approve(contracts.governance.address, helper.ether(100_000))
-    await contracts.governance.report(coverKey, info, helper.ether(100_000))
+    await contracts.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(100_000))
 
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.resolution.resolve(coverKey, incidentDate)
+    await contracts.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
   })
@@ -168,12 +168,12 @@ describe('Coverage Claim Stories', function () {
     const balance = await constants.cxTokens.alice.balanceOf(alice.address)
     constants.cxTokens.alice.connect(alice).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     const before = await contracts.dai.balanceOf(alice.address)
 
-    await contracts.claimsProcessor.connect(alice).claim(constants.cxTokens.alice.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(alice).claim(constants.cxTokens.alice.address, coverKey, helper.emptyBytes32, incidentDate, balance)
     const after = await contracts.dai.balanceOf(alice.address)
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
@@ -187,9 +187,9 @@ describe('Coverage Claim Stories', function () {
     const balance = await constants.cxTokens.bob.balanceOf(bob.address)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, helper.emptyBytes32, incidentDate, balance)
       .should.be.rejectedWith('Claim exceeds your coverage')
   })
 
@@ -199,14 +199,14 @@ describe('Coverage Claim Stories', function () {
     const claimAmount = helper.ether(100)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, claimAmount)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, incidentDate, claimAmount)
+    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, helper.emptyBytes32, incidentDate, claimAmount)
   })
 
   it('the attacker was blacklisted', async () => {
     const [, attacker] = await ethers.getSigners()
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     await contracts.claimsProcessor.setBlacklist(coverKey, incidentDate, [attacker.address], [true])
   })
@@ -217,9 +217,9 @@ describe('Coverage Claim Stories', function () {
     const balance = await constants.cxTokens.bob.balanceOf(attacker.address)
     constants.cxTokens.attacker.connect(attacker).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(attacker).claim(constants.cxTokens.attacker.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(attacker).claim(constants.cxTokens.attacker.address, coverKey, helper.emptyBytes32, incidentDate, balance)
       .should.be.rejectedWith('Access denied')
   })
 })

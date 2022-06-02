@@ -82,10 +82,10 @@ describe('Governance: report', () => {
     const reportingInfo = key.toBytes32('reporting-info')
 
     await deployed.npm.connect(bob).approve(deployed.governance.address, amount)
-    const tx = await deployed.governance.connect(bob).report(coverKey, reportingInfo, amount)
+    const tx = await deployed.governance.connect(bob).report(coverKey, helper.emptyBytes32, reportingInfo, amount)
     const { events } = await tx.wait()
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     const attestedEvent = events.find(x => x.event === 'Attested')
     attestedEvent.args.coverKey.should.equal(coverKey)
     attestedEvent.args.incidentDate.should.equal(incidentDate)
@@ -108,14 +108,14 @@ describe('Governance: report', () => {
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('reverts when tried to report twice', async () => {
@@ -125,24 +125,24 @@ describe('Governance: report', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
       .should.be.rejectedWith('Status not normal')
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('reverts when invalid value is passed as stake', async () => {
@@ -152,7 +152,7 @@ describe('Governance: report', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(0))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(0))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(0))
       .should.be.rejectedWith('Stake insufficient')
   })
 
@@ -163,7 +163,7 @@ describe('Governance: report', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(25))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(25))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(25))
       .should.be.rejectedWith('Stake insufficient')
   })
 })

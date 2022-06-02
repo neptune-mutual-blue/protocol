@@ -109,6 +109,18 @@ library CoverUtilV1 {
     // @todo: Liquidity withdrawal should not be possible if any product under this cover is reporting
   }
 
+  function getStatusInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKey(getCoverStatusKey(coverKey));
+  }
+
+  function getCoverStatusInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (CoverStatus) {
+    return CoverStatus(getStatusInternal(s, coverKey, productKey));
+  }
+
   /**
    * @dev Gets the current status of a given cover
    *
@@ -119,28 +131,16 @@ library CoverUtilV1 {
    * 4 - claimable, claims accepted for payout
    *
    */
-  function getCoverStatus(IStore s, bytes32 coverKey) external view returns (CoverStatus) {
-    return CoverStatus(getStatus(s, coverKey));
-  }
-
-  function getStatus(IStore s, bytes32 coverKey) public view returns (uint256) {
-    return s.getUintByKey(getCoverStatusKey(coverKey));
-  }
-
-  function getCoverProductStatus(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getProductStatus(s, coverKey, productKey));
-  }
-
-  function getProductStatus(
+  function getStatusInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
+    if (productKey > 0) {
+      return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
+    }
+
+    return s.getUintByKey(getCoverStatusKey(coverKey));
   }
 
   function getCoverProductStatusOf(
@@ -158,7 +158,11 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
+    if (productKey > 0) {
+      return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
+    }
+
+    return s.getUintByKey(getCoverStatusOfKey(coverKey, incidentDate));
   }
 
   function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {

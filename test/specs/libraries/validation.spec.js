@@ -180,13 +180,13 @@ describe('ValidationLibV1: mustBeDisputed', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, attestAmount)
-    await deployed.governance.report(coverKey, reportingInfo, attestAmount)
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, attestAmount)
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     const disputeInfo = key.toBytes32('dispute-info')
     await deployed.npm.connect(bob).approve(deployed.governance.address, disputeAmount)
-    await deployed.governance.connect(bob).dispute(coverKey, incidentDate, disputeInfo, disputeAmount)
+    await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, disputeAmount)
 
     await mockContract.mustBeDisputed(coverKey)
 
@@ -194,13 +194,13 @@ describe('ValidationLibV1: mustBeDisputed', () => {
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 })

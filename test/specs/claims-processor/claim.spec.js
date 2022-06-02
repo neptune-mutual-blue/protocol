@@ -29,7 +29,7 @@ describe('Claims Processor: `claim` function', () => {
     await store.initialize(coverKey, cxToken.address)
     await cxToken.approve(processor.address, '1')
 
-    await processor.claim(cxToken.address, coverKey, incidentDate, '1')
+    await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, '1')
   })
 
   it('must correctly emit `Claimed` event', async () => {
@@ -41,7 +41,7 @@ describe('Claims Processor: `claim` function', () => {
     await store.initialize(coverKey, cxToken.address)
     await cxToken.approve(processor.address, '1')
 
-    const tx = await processor.claim(cxToken.address, coverKey, incidentDate, amount)
+    const tx = await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amount)
     const { events } = await tx.wait()
     const event = events.pop()
 
@@ -63,7 +63,7 @@ describe('Claims Processor: `claim` function', () => {
     await store.initialize(coverKey, cxToken.address)
     await cxToken.approve(processor.address, '1')
 
-    await processor.claim(cxToken.address, coverKey, incidentDate, '0')
+    await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, '0')
       .should.be.rejectedWith('Enter an amount')
   })
 })

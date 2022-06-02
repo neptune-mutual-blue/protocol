@@ -76,13 +76,13 @@ describe('Resolution: getResolutionDeadline', () => {
   it('must get resolution deadline correctly', async () => {
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     // Reporting period + 1 second + Cooldown period
     const result = await deployed.resolution.getResolutionDeadline(coverKey)
@@ -95,7 +95,7 @@ describe('Resolution: getResolutionDeadline', () => {
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('must return zero if there is no active reporting', async () => {

@@ -78,9 +78,9 @@ describe('Resolution: getUnstakeInfoFor', () => {
 
     const info = key.toBytes32('info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, info, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     const result = await deployed.resolution.getUnstakeInfoFor(owner.address, coverKey, incidentDate)
 
     result.myStakeInWinningCamp.should.equal(helper.ether(1000))

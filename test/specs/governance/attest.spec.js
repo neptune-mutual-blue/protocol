@@ -80,12 +80,12 @@ describe('Governance: attest', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(1000))
-    const tx = await deployed.governance.connect(bob).attest(coverKey, incidentDate, helper.ether(1000))
+    const tx = await deployed.governance.connect(bob).attest(coverKey, helper.emptyBytes32, incidentDate, helper.ether(1000))
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Attested')
 
@@ -98,14 +98,14 @@ describe('Governance: attest', () => {
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('reverts when tried to attest after reporting period', async () => {
@@ -115,27 +115,27 @@ describe('Governance: attest', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
     await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.connect(bob).attest(coverKey, incidentDate, helper.ether(1000))
+    await deployed.governance.connect(bob).attest(coverKey, helper.emptyBytes32, incidentDate, helper.ether(1000))
       .should.be.rejectedWith('Reporting window closed')
 
     // Cleanup - resolve, finalize
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('reverts when tried to attest after resolved', async () => {
@@ -145,17 +145,17 @@ describe('Governance: attest', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.connect(bob).attest(coverKey, incidentDate, helper.ether(1000))
+    await deployed.governance.connect(bob).attest(coverKey, helper.emptyBytes32, incidentDate, helper.ether(1000))
       .should.be.rejectedWith('Not reported nor disputed')
 
     // Cleanup - finalize
@@ -165,7 +165,7 @@ describe('Governance: attest', () => {
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
   it('reverts when invalid value is passed as stake', async () => {
@@ -175,25 +175,25 @@ describe('Governance: attest', () => {
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, reportingInfo, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
 
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(0))
-    await deployed.governance.connect(bob).attest(coverKey, incidentDate, helper.ether(0))
+    await deployed.governance.connect(bob).attest(coverKey, helper.emptyBytes32, incidentDate, helper.ether(0))
       .should.be.rejectedWith('Enter a stake')
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.finalize(coverKey, incidentDate)
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 })

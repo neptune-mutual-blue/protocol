@@ -131,7 +131,7 @@ abstract contract Witness is Recoverable, IWitness {
    * For more, check the enum `CoverStatus` on `CoverUtilV1` library.
    */
   function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    return s.getProductStatus(coverKey, productKey);
+    return s.getStatusInternal(coverKey, productKey);
   }
 
   /**
