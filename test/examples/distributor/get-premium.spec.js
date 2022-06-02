@@ -26,7 +26,7 @@ describe('Distributor: `getPremium` function', () => {
     const duration = '2'
     const protection = helper.ether(10_000)
 
-    const [premium, fee] = await distributor.getPremium(coverKey, duration, protection)
+    const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
 
     premium.should.be.gt('0')
     fee.should.be.gt('0')
@@ -40,7 +40,7 @@ describe('Distributor: `getPremium` function', () => {
     const storeKey = key.qualifyBytes32(key.toBytes32('cns:cover:policy'))
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.getPremium(coverKey, duration, protection)
+    await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)

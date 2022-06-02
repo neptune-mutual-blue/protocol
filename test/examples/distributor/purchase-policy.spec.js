@@ -29,10 +29,10 @@ describe('Distributor: `purchasePolicy` function', () => {
     const protection = helper.ether(10_000)
     const referralCode = key.toBytes32('referral-code')
 
-    const [premium, fee] = await distributor.getPremium(coverKey, duration, protection)
+    const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
 
     await deployed.dai.approve(distributor.address, premium.add(fee))
-    const tx = await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    const tx = await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PolicySold')
@@ -55,7 +55,7 @@ describe('Distributor: `purchasePolicy` function', () => {
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid key')
   })
 
@@ -66,7 +66,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid duration')
   })
 
@@ -77,7 +77,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid protection amount')
   })
 
@@ -92,7 +92,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const storeKey = key.qualifyBytes32(key.toBytes32('cns:cover:policy'))
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)
@@ -109,7 +109,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const storeKey = key.toBytes32('cns:cover:sc')
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Fatal: DAI missing')
 
     await deployed.store.setAddress(storeKey, deployed.dai.address)
