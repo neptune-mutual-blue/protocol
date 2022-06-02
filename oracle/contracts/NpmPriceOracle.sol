@@ -3,10 +3,11 @@
 pragma solidity 0.6.6;
 
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
-import "@uniswap/lib/contracts/libraries/FixedPoint.sol";
 import "@uniswap/v2-periphery/contracts/libraries/UniswapV2OracleLibrary.sol";
+import "@uniswap/lib/contracts/libraries/FixedPoint.sol";
 import "@uniswap/lib/contracts/libraries/Babylonian.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./IPriceOracle.sol";
 
 contract NpmPriceOracle is IPriceOracle {
@@ -14,10 +15,13 @@ contract NpmPriceOracle is IPriceOracle {
   using FixedPoint for *;
 
   uint256 public constant UPDATE_INTERVAL = 30 minutes;
+  uint256 public constant NPM_MULTIPLIER = 1 ether;
 
   address public immutable token0;
   address public immutable token1;
   IUniswapV2Pair public immutable pair;
+
+  address public immutable npm;
 
   uint256 public price0CumulativeLast;
   uint256 public price1CumulativeLast;
@@ -26,14 +30,19 @@ contract NpmPriceOracle is IPriceOracle {
   FixedPoint.uq112x112 public price0Average;
   FixedPoint.uq112x112 public price1Average;
 
-  constructor(IUniswapV2Pair _pair) public {
+  constructor(IUniswapV2Pair _pair, address _npm) public {
     require(address(_pair) != address(0), "Invalid pair");
+    require(_npm != address(0), "Invalid NPM token");
+    require(_pair.token0() == _npm || _pair.token1() == _npm, "Not NPM pair");
+
     (uint256 reserve0, uint256 reserve1, uint32 lastTimestamp) = _pair.getReserves();
     require(reserve0 != 0 && reserve1 != 0, "No reserve");
 
     pair = _pair;
     token0 = _pair.token0();
     token1 = _pair.token1();
+
+    npm = _npm;
 
     price0CumulativeLast = _pair.price0CumulativeLast();
     price1CumulativeLast = _pair.price1CumulativeLast();
@@ -71,7 +80,7 @@ contract NpmPriceOracle is IPriceOracle {
     uint256 supply = pair.totalSupply();
     (uint256 r0, uint256 r1, ) = pair.getReserves();
 
-    uint256 p0 = consult(token0, 1 ether);
+    uint256 p0 = token0 == npm ? consult(token0, NPM_MULTIPLIER) : consult(token1, NPM_MULTIPLIER);
 
     return _calculateFairLpPrice(r0, r1, p0, supply, amountIn);
   }

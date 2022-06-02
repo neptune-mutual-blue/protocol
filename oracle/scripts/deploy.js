@@ -11,7 +11,7 @@ const main = async () => {
 
   const ContractFactory = await ethers.getContractFactory('NpmPriceOracle')
 
-  const oracle = await ContractFactory.deploy(config[network.config.chainId].stablecoinPairs.NPM_DAI)
+  const oracle = await ContractFactory.deploy(config[80001].stablecoinPairs.NPM_DAI, config[80001].deployedTokens.NPM)
   await oracle.deployed()
 
   console.log('Deployed: %s/address/%s', network.config.explorer, oracle.address)
