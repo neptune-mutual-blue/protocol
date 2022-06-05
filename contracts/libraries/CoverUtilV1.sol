@@ -96,13 +96,14 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view returns (uint256[] memory _values) {
-    _values = new uint256[](7);
+    _values = new uint256[](6);
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
     _values[3] = 1 ether;
     _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+    _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_WEIGHT, coverKey, productKey);
   }
 
   function isUndergovernanceInternal(IStore s, bytes32 coverKey) external view returns (bool) {
@@ -365,10 +366,6 @@ library CoverUtilV1 {
 
   function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
-  }
-
-  function getCapitalEfficiencyRatioInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_CAPITAL_EFFICIENCY_RATIO, coverKey);
   }
 
   function supportsProductsInternal(IStore s, bytes32 coverKey) public view returns (bool) {

@@ -84,12 +84,16 @@ library PolicyHelperV1 {
     uint256 reassuranceTokens = values[2];
     uint256 reassuranceTokenPrice = values[3];
     uint256 reassurancePoolWeight = values[4];
+    uint256 weight = values[5];
 
     uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
     supportPool = (reassurance * reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
 
-    uint256 cer = s.getCapitalEfficiencyRatioInternal(coverKey);
-    availableLiquidity = stablecoinOwnedByVault * cer;
+    availableLiquidity = stablecoinOwnedByVault;
+
+    if (s.supportsProductsInternal(coverKey)) {
+      availableLiquidity = (stablecoinOwnedByVault * weight) / ProtoUtilV1.MULTIPLIER;
+    }
   }
 
   function getPolicyFeeInternal(

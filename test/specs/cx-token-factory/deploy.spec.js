@@ -29,10 +29,10 @@ describe('cxTokenFactory: Deploy', () => {
     const floor = helper.percentage(1)
     const ceiling = helper.percentage(10)
     const reassuranceRate = helper.percentage(50)
-    const capitalEfficiencyRatio = '1'
+    const placeholderValue = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, capitalEfficiencyRatio]
+    const values = [stakeWithFee, reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, placeholderValue]
 
     const info = await ipfs.write([coverKey, ...values])
 

@@ -144,11 +144,6 @@ library CoverLibV1 {
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
     require(values[8] > 0, "Invalid reassurance rate");
-    require(values[9] > 0 && values[9] <= 25, "Please provide valid `CE` value");
-
-    if (supportsProducts == false) {
-      require(values[9] == 1, "Invalid `CE` value");
-    }
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
@@ -174,7 +169,6 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_CAPITAL_EFFICIENCY_RATIO, coverKey, values[9]);
   }
 
   function addProductInternal(
@@ -199,10 +193,12 @@ library CoverLibV1 {
     require(values[1] > 0 && values[1] <= 10_000, "Invalid product weight");
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
     s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_WEIGHT, coverKey, productKey, values[1]);
   }
 
   function updateProductInternal(
