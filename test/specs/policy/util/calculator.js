@@ -7,8 +7,8 @@ const getCoverFee = (data, amount, duration, debug = false) => {
     return
   }
 
-  data.supportPool = (data.reassuranceAmount * data.INCIDENT_SUPPORT_POOL_CAP_RATIO) / data.MULTIPLIER
-  data.totalAvailableLiquidity = data.inVault + data.supportPool
+  data.reassuranceFund = (data.reassuranceAmount * data.INCIDENT_SUPPORT_POOL_CAP_RATIO) / data.MULTIPLIER
+  data.totalAvailableLiquidity = data.inVault + data.reassuranceFund
 
   if (amount > data.totalAvailableLiquidity) {
     throw new Error('Balance insufficient')
@@ -17,7 +17,7 @@ const getCoverFee = (data, amount, duration, debug = false) => {
   // solidity-like truncation
   data.utilizationRatio = truncate(((data.totalCommitment + amount) / data.totalAvailableLiquidity), 4)
 
-  debug && console.debug('s: %s. p: %s. u: %s', data.inVault, data.supportPool, data.utilizationRatio)
+  debug && console.debug('s: %s. p: %s. u: %s', data.inVault, data.reassuranceFund, data.utilizationRatio)
   debug && console.debug('c: %s, a: %s. t: %s', data.totalCommitment, amount, data.totalAvailableLiquidity)
 
   let rate = data.utilizationRatio > data.floor ? data.utilizationRatio : data.floor
@@ -41,15 +41,15 @@ const getCoverFee = (data, amount, duration, debug = false) => {
 }
 
 const getCoverFeeBn = (payload, amount, duration, debug = false) => {
-  const supportPool = payload.reassuranceAmount.mul(payload.INCIDENT_SUPPORT_POOL_CAP_RATIO.toString()).div(payload.MULTIPLIER.toString())
-  const totalAvailableLiquidity = payload.inVault.add(supportPool)
+  const reassuranceFund = payload.reassuranceAmount.mul(payload.INCIDENT_SUPPORT_POOL_CAP_RATIO.toString()).div(payload.MULTIPLIER.toString())
+  const totalAvailableLiquidity = payload.inVault.add(reassuranceFund)
 
   if (amount.gt(totalAvailableLiquidity)) {
     throw new Error('Balance insufficient')
   }
 
   const utilizationRatio = payload.totalCommitment.add(amount).mul(payload.MULTIPLIER).div(totalAvailableLiquidity)
-  debug && console.debug('s: %s. p: %s. u: %s', payload.inVault, supportPool, utilizationRatio)
+  debug && console.debug('s: %s. p: %s. u: %s', payload.inVault, reassuranceFund, utilizationRatio)
   debug && console.debug('c: %s, a: %s. t: %s', payload.totalCommitment, amount, totalAvailableLiquidity)
 
   let rate = utilizationRatio.gt(payload.floor) ? utilizationRatio : payload.floor

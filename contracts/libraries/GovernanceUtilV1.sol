@@ -32,8 +32,8 @@ library GovernanceUtilV1 {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
   }
 
-  function getClaimPlatformFeeInternal(IStore s) external view returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE);
+  function getPlatformCoverFeeRateInternal(IStore s) external view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
   }
 
   function getClaimReporterCommissionInternal(IStore s) external view returns (uint256) {

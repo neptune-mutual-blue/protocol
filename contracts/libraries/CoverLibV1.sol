@@ -197,7 +197,7 @@ library CoverLibV1 {
     // 1 --> Active
     // 2 --> Retired
     require(values[0] == 1, "Status must be active");
-    require(values[1] > 0 && values[1] <= 10_000, "Invalid product weight");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
@@ -205,7 +205,7 @@ library CoverLibV1 {
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_WEIGHT, coverKey, productKey, values[1]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
   }
 
   function updateProductInternal(

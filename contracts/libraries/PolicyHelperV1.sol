@@ -38,7 +38,7 @@ library PolicyHelperV1 {
     )
   {
     (floor, ceiling) = getPolicyRatesInternal(s, coverKey);
-    (uint256 availableLiquidity, uint256 commitment, uint256 supportPool) = _getCoverPoolAmounts(s, coverKey, productKey);
+    (uint256 availableLiquidity, uint256 commitment, uint256 reassuranceFund) = _getCoverPoolAmounts(s, coverKey, productKey);
 
     require(amountToCover > 0, "Please enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
@@ -46,10 +46,10 @@ library PolicyHelperV1 {
 
     require(availableLiquidity - commitment > amountToCover, "Insufficient fund");
 
-    totalAvailableLiquidity = availableLiquidity + supportPool;
+    totalAvailableLiquidity = availableLiquidity + reassuranceFund;
     utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    console.log("[cp] s: %s. p: %s. u: %s", availableLiquidity, supportPool, utilizationRatio);
+    console.log("[cp] s: %s. p: %s. u: %s", availableLiquidity, reassuranceFund, utilizationRatio);
     console.log("[cp]: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
 
     rate = utilizationRatio > floor ? utilizationRatio : floor;
@@ -73,26 +73,32 @@ library PolicyHelperV1 {
     returns (
       uint256 availableLiquidity,
       uint256 commitment,
-      uint256 supportPool
+      uint256 reassuranceFund
     )
   {
     uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey, productKey);
 
-    uint256 stablecoinOwnedByVault = values[0];
+    /*
+     * values[0] stablecoinOwnedByVault --> The total amount in the cover pool
+     * values[1] commitment --> The total commitment amount
+     * values[2] reassurance
+     * values[3] reassurancePoolWeight
+     * values[4] count --> Count of products under this cover
+     * values[5] leverage
+     * values[6] efficiency --> Cover product efficiency weight
+     */
+
+    availableLiquidity = values[0];
     commitment = values[1];
 
-    uint256 reassuranceTokens = values[2];
-    uint256 reassuranceTokenPrice = values[3];
-    uint256 reassurancePoolWeight = values[4];
-    uint256 weight = values[5];
-
-    uint256 reassurance = (reassuranceTokens * reassuranceTokenPrice) / 1 ether;
-    supportPool = (reassurance * reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
-
-    availableLiquidity = stablecoinOwnedByVault;
+    // (reassurance * reassurancePoolWeight) / multiplier
+    reassuranceFund = (values[2] * values[3]) / ProtoUtilV1.MULTIPLIER;
 
     if (s.supportsProductsInternal(coverKey)) {
-      availableLiquidity = (stablecoinOwnedByVault * weight) / ProtoUtilV1.MULTIPLIER;
+      require(values[4] > 0, "Misconfigured or retired product");
+
+      // (stablecoinOwnedByVault * leverage * efficiency) / (count * multiplier)
+      availableLiquidity = (values[0] * values[5] * values[6]) / (values[4] * ProtoUtilV1.MULTIPLIER);
     }
   }
 
@@ -102,8 +108,11 @@ library PolicyHelperV1 {
     bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
-  ) public view returns (uint256 fee) {
+  ) public view returns (uint256 fee, uint256 platformFee) {
     (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+
+    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
+    platformFee = (fee * rate) / ProtoUtilV1.MULTIPLIER;
   }
 
   function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view returns (uint256 floor, uint256 ceiling) {
@@ -175,15 +184,28 @@ library PolicyHelperV1 {
     bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
-  ) external returns (ICxToken cxToken, uint256 fee) {
-    fee = getPolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+  )
+    external
+    returns (
+      ICxToken cxToken,
+      uint256 fee,
+      uint256 platformFee
+    )
+  {
+    (fee, platformFee) = getPolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+    require(fee > 0, "Insufficient fee");
+    require(platformFee > 0, "Insufficient platform fee");
+
     cxToken = getCxTokenOrDeployInternal(s, coverKey, productKey, coverDuration);
 
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
-    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(s.getVault(coverKey)), fee);
+    IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
+    IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
+    IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
+
     cxToken.mint(coverKey, productKey, onBehalfOf, amountToCover);
 
     s.updateStateAndLiquidity(coverKey);

@@ -7,10 +7,10 @@ interface IPolicy is IMember {
   event CoverPurchased(
     bytes32 coverKey,
     bytes32 productKey,
-    address indexed account,
     address onBehalfOf,
     address indexed cxToken,
     uint256 fee,
+    uint256 platformFee,
     uint256 amountToCover,
     uint256 expiresOn,
     bytes32 indexed referralCode,
@@ -65,9 +65,11 @@ interface IPolicy is IMember {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of reassurance tokens
-   * @param _values[3] Reassurance token price
-   * @param _values[4] Reassurance pool weight
+   * @param _values[2] Reassurance amount
+   * @param _values[3] Reassurance pool weight
+   * @param _values[4] Count of products under this cover
+   * @param _values[5] Leverage
+   * @param _values[6] Cover product efficiency weight
    */
   function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view returns (uint256[] memory _values);
 

@@ -76,7 +76,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, values[6]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);

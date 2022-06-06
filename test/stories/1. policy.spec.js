@@ -55,13 +55,15 @@ describe('Policy Purchase Stories', () => {
 
   it('cover pool summary values are accurate', async () => {
     const result = await contracts.policy.getCoverPoolSummary(coverKey, helper.emptyBytes32)
-    const [totalAmountInPool, totalCommitment, reassurance, reassurancePrice, reassuranceWeight] = result
+    const [totalAmountInPool, totalCommitment, reassurance, reassuranceWeight, count, leverage, efficiency] = result
 
     totalAmountInPool.toString().should.equal(helper.ether(24_000_000))
-    totalCommitment.toString().should.equal(helper.ether(0))
+    totalCommitment.toString().should.equal('0')
     reassurance.toString().should.equal(helper.ether(1_000_000))
-    reassurancePrice.toString().should.equal(helper.ether(1))
     reassuranceWeight.toString().should.equal(helper.percentage(100))
+    count.toString().should.equal('0')
+    leverage.toString().should.equal('1')
+    efficiency.toString().should.equal('0')
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {

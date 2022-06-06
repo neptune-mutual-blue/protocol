@@ -66,11 +66,11 @@ contract Policy is IPolicy, Recoverable {
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    (ICxToken cxToken, uint256 fee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
-
     lastPolicyId += 1;
 
-    emit CoverPurchased(coverKey, productKey, msg.sender, onBehalfOf, address(cxToken), fee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
+
+    emit CoverPurchased(coverKey, productKey, onBehalfOf, address(cxToken), fee, platformFee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
@@ -144,9 +144,11 @@ contract Policy is IPolicy, Recoverable {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of reassurance tokens
-   * @param _values[3] Reassurance token price
-   * @param _values[4] Reassurance pool weight
+   * @param _values[2] Reassurance amount
+   * @param _values[3] Reassurance pool weight
+   * @param _values[4] Count of products under this cover
+   * @param _values[5] Leverage
+   * @param _values[6] Cover product efficiency weight
    */
   function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummaryInternal(coverKey, productKey);

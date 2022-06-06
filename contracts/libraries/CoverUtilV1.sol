@@ -87,23 +87,26 @@ library CoverUtilV1 {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of reassurance tokens
-   * @param _values[3] Reassurance token price
-   * @param _values[4] Reassurance pool weight
+   * @param _values[2] Reassurance amount
+   * @param _values[3] Reassurance pool weight
+   * @param _values[4] Count of products under this cover
+   * @param _values[5] Leverage
+   * @param _values[6] Cover product efficiency weight
    */
   function getCoverPoolSummaryInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
   ) external view returns (uint256[] memory _values) {
-    _values = new uint256[](6);
+    _values = new uint256[](8);
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey);
     _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
-    _values[3] = 1 ether;
-    _values[4] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
-    _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_WEIGHT, coverKey, productKey);
+    _values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+    _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+    _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
+    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
   }
 
   function getCoverStatusInternal(

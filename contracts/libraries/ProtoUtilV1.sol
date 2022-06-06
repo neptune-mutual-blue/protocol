@@ -68,7 +68,7 @@ library ProtoUtilV1 {
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "ns:cover";
   bytes32 public constant NS_COVER_PRODUCT = "ns:cover:product";
-  bytes32 public constant NS_COVER_PRODUCT_WEIGHT = "ns:cover:product:weight";
+  bytes32 public constant NS_COVER_PRODUCT_EFFICIENCY = "ns:cover:product:efficiency";
 
   bytes32 public constant NS_COVER_CREATION_DATE = "ns:cover:creation:date";
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
@@ -184,7 +184,7 @@ library ProtoUtilV1 {
 
   /// @dev The percentage rate (x MULTIPLIER) of amount deducted by the platform
   /// for each successful claims payout
-  bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";
+  bytes32 public constant NS_COVER_PLATFORM_FEE = "ns:cover:platform:fee";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount provided to the first reporter
   /// upon favorable incident resolution. This amount is a commission of the

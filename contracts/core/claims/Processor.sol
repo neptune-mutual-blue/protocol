@@ -68,7 +68,7 @@ contract Processor is IClaimsProcessor, Recoverable {
 
     // @suppress-division Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
-    uint256 platformFee = (amount * s.getClaimPlatformFeeInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 platformFee = (amount * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
     // @suppress-division Checked side effects. If the claim reporter commission is zero
     // or a very small number, reporterFee fee becomes zero due to data loss.
