@@ -66,10 +66,10 @@ describe('Governance: `setFirstReportingStake` function', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
-    const placeholderValue = '1'
+    const leverage = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, placeholderValue]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
 
     const info = key.toBytes32('info')
 

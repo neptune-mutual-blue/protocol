@@ -79,7 +79,7 @@ contract Cover is CoverBase {
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
    * @param values[8] reassuranceRate Enter the reassurance rate.
-   * @param values[9] reserved Reserved
+   * @param values[9] reserved Leverage Factor
    */
   function addCover(
     bytes32 coverKey,

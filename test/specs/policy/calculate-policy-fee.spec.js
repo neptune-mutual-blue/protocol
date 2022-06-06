@@ -65,10 +65,10 @@ describe('Policy: getCoverFeeInfo', () => {
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
-    const placeholderValue = '1'
+    const leverage = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate, placeholderValue]
+    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate, leverage]
 
     const info = await ipfs.write([coverKey, ...values])
 

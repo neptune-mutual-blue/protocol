@@ -28,7 +28,7 @@ const create = async (payload, info) => {
   const hashBytes32 = await ipfs.write(info)
 
   const supportsProducts = false
-  const placeholderValue = 1
+  const leverage = 1
 
   const values = [
     stakeWithFees.toString(),
@@ -40,7 +40,7 @@ const create = async (payload, info) => {
     pricingFloor.toString(),
     pricingCeiling.toString(),
     reassuranceRate.toString(),
-    placeholderValue.toString()
+    leverage.toString()
   ]
 
   await intermediate(cache, cover, 'addCover', key, supportsProducts, hashBytes32, dai.address, requiresWhitelist, values)

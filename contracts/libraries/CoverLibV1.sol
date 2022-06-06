@@ -144,6 +144,12 @@ library CoverLibV1 {
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
     require(values[8] > 0, "Invalid reassurance rate");
+    require(values[9] > 0 && values[9] < 25, "Invalid leverage");
+
+    if (supportsProducts == false) {
+      // Standalone pools do not support any leverage
+      require(values[9] == 1, "Invalid leverage");
+    }
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
@@ -169,6 +175,7 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey, values[9]);
   }
 
   function addProductInternal(
