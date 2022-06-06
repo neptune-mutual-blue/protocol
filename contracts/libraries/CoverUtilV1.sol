@@ -106,10 +106,6 @@ library CoverUtilV1 {
     _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_WEIGHT, coverKey, productKey);
   }
 
-  function isUndergovernanceInternal(IStore s, bytes32 coverKey) external view returns (bool) {
-    // @todo: Liquidity withdrawal should not be possible if any product under this cover is reporting
-  }
-
   function getCoverStatusInternal(
     IStore s,
     bytes32 coverKey,
@@ -187,6 +183,12 @@ library CoverUtilV1 {
   }
 
   function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view returns (uint256 total) {
+    bool supportsProducts = supportsProductsInternal(s, coverKey);
+
+    if (supportsProducts == false) {
+      return getActiveLiquidityUnderProtection(s, coverKey, 0);
+    }
+
     bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {

@@ -193,11 +193,11 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.senderMustBeVaultContract(coverKey);
     s.updateStateAndLiquidity(coverKey);
 
-    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context of `preRemoveLiquidity`.
+    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
   }
 
   /**
-   * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+   * @dev Calculates the amount of PODs to mint for the given amount of liquidity to transfer
    */
   function calculatePodsImplementation(bytes32 coverKey, uint256 forStablecoinUnits) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
