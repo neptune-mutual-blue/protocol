@@ -427,4 +427,99 @@ contract MockStoreKeyUtilUser {
   ) external view returns (address) {
     return s.getAddressArrayItemByIndexByKeys(key1, key2, key3, index);
   }
+
+  function setBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+    s.setBytes32ArrayByKey(key, value);
+  }
+
+  function setBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    s.setBytes32ArrayByKeys(key1, key2, value);
+  }
+
+  function setBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    s.setBytes32ArrayByKeys(key1, key2, key3, value);
+  }
+
+  function countBytes32ArrayByKey(bytes32 key) external view returns (uint256) {
+    return s.countBytes32ArrayByKey(key);
+  }
+
+  function countBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (uint256) {
+    return s.countBytes32ArrayByKeys(key1, key2);
+  }
+
+  function countBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.countBytes32ArrayByKeys(key1, key2, key3);
+  }
+
+  function getBytes32ArrayByKey(bytes32 key) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKey(key);
+  }
+
+  function getBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKeys(key1, key2);
+  }
+
+  function getBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKeys(key1, key2, key3);
+  }
+
+  function getBytes32ArrayItemPositionByKey(bytes32 key, bytes32 bytes32ToFind) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKey(key, bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemPositionByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKeys(key1, key2, bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemPositionByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKeys(key1, key2, key3, bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemByIndexByKey(bytes32 key, uint256 index) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKey(key, index);
+  }
+
+  function getBytes32ArrayItemByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKeys(key1, key2, index);
+  }
+
+  function getBytes32ArrayItemByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKeys(key1, key2, key3, index);
+  }
 }

@@ -199,6 +199,8 @@ library CoverLibV1 {
     require(values[0] == 1, "Status must be active");
     require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
 
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == false, "Already exists");
+
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
     s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
@@ -215,7 +217,7 @@ library CoverLibV1 {
     bytes32 info,
     uint256[] memory values
   ) external {
-    require(values[0] > 0 && values[0] <= 2, "Invalid product status");
+    require(values[0] <= 2, "Invalid product status");
     require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
 
     s.mustBeValidCoverKey(coverKey);

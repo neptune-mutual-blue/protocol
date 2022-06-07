@@ -628,3 +628,189 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKeys (3 keys)', () => {
       .should.be.rejectedWith('Invalid index')
   })
 })
+
+describe('StoreKeyUtil: getBytes32ArrayItemPositionByKey', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testvalue = helper.randomPrivateKey()
+
+    await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+    const result = await mockContract['getBytes32ArrayItemPositionByKey(bytes32,bytes32)'](testkey1, testvalue)
+    result.should.equal(2)
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayItemPositionByKeys (2 keys)', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testvalue = helper.randomPrivateKey()
+
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+    const result = await mockContract['getBytes32ArrayItemPositionByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+    result.should.equal(2)
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayItemPositionByKeys (3 keys)', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testkey3 = key.toBytes32('testkey3')
+    const testvalue = helper.randomPrivateKey()
+
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+    const result = await mockContract['getBytes32ArrayItemPositionByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+    result.should.equal(2)
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKey', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testvalue = helper.randomPrivateKey()
+    const testindex = 1
+
+    await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+    const result = await mockContract['getBytes32ArrayItemByIndexByKey(bytes32,uint256)'](testkey1, testindex)
+    result.should.equal(testvalue)
+  })
+
+  it('reverts when invalid value is passed as index', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testindex = 2
+
+    await mockContract['getBytes32ArrayItemByIndexByKey(bytes32,uint256)'](testkey1, testindex)
+      .should.be.rejectedWith('Invalid index')
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKeys (2 keys)', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testvalue = helper.randomPrivateKey()
+    const testindex = 1
+
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+    const result = await mockContract['getBytes32ArrayItemByIndexByKeys(bytes32,bytes32,uint256)'](testkey1, testkey2, testindex)
+    result.should.equal(testvalue)
+  })
+
+  it('reverts when invalid value is passed as index', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testindex = 2
+
+    await mockContract['getBytes32ArrayItemByIndexByKeys(bytes32,bytes32,uint256)'](testkey1, testkey2, testindex)
+      .should.be.rejectedWith('Invalid index')
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKeys (3 keys)', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  it('must get value correctly', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testkey3 = key.toBytes32('testkey3')
+    const testvalue = helper.randomPrivateKey()
+    const testindex = 1
+
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, key.toBytes32(''))
+    await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+    const result = await mockContract['getBytes32ArrayItemByIndexByKeys(bytes32,bytes32,bytes32,uint256)'](testkey1, testkey2, testkey3, testindex)
+    result.should.equal(testvalue)
+  })
+
+  it('reverts when invalid value is passed as index', async () => {
+    const testkey1 = key.toBytes32('testkey1')
+    const testkey2 = key.toBytes32('testkey2')
+    const testkey3 = key.toBytes32('testkey3')
+    const testindex = 2
+
+    await mockContract['getBytes32ArrayItemByIndexByKeys(bytes32,bytes32,bytes32,uint256)'](testkey1, testkey2, testkey3, testindex)
+      .should.be.rejectedWith('Invalid index')
+  })
+})
