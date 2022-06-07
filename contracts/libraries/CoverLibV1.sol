@@ -215,12 +215,14 @@ library CoverLibV1 {
     bytes32 info,
     uint256[] memory values
   ) external {
-    require(values[0] > 0 && values[1] <= 2, "Invalid product status");
+    require(values[0] > 0 && values[0] <= 2, "Invalid product status");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
 
     s.mustBeValidCoverKey(coverKey);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
   }
 
