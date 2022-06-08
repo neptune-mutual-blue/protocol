@@ -17,7 +17,6 @@ const settings = {
 const root = path.join(process.cwd(), 'contracts')
 const readFile = async (where) => (await fs.readFile(where)).toString()
 const removeComments = (content) => content.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '')
-const removePragma = (content) => content
 const countLines = (content) => content.split('\n').filter(x => x.trim().split(' ').length > settings.prettierLineBreaks).length // minimum 3 characters
 
 const getFiles = async () => {
@@ -37,7 +36,7 @@ const getFiles = async () => {
 
 const getLines = async (file) => {
   const content = removeComments(await readFile(file))
-  const lines = countLines(removePragma(content))
+  const lines = countLines(content)
 
   return {
     content,
