@@ -39,8 +39,7 @@ describe('Cover: addProduct', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-    await deployed.cover.addCover(coverKey, true, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
   })
 
   it('correctly adds product when accessed by cover creator', async () => {
@@ -83,8 +82,7 @@ describe('Cover: addProduct', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     await deployed.cover.addProduct(coverKey, key.toBytes32(''), info, requiresWhitelist, [1, 100])
       .should.be.rejectedWith('Does not have products')

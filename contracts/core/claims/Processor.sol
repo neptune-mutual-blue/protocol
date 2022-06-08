@@ -56,7 +56,6 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
     validate(cxToken, coverKey, productKey, incidentDate, amount);
-    require(amount > 0, "Enter an amount");
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
     ICxToken(cxToken).burn(amount);
@@ -112,6 +111,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     s.mustNotBePaused();
     s.mustBeValidClaim(msg.sender, coverKey, productKey, cxToken, incidentDate, amount);
     require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
+    require(amount > 0, "Enter an amount");
 
     return true;
   }
@@ -170,7 +170,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     address[] memory accounts,
     bool[] memory statuses
-  ) external override {
+  ) external override nonReentrant {
     require(accounts.length == statuses.length, "Invalid args");
 
     s.mustNotBePaused();

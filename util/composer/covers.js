@@ -24,7 +24,7 @@ const create = async (payload, info) => {
   const { dai, cover } = contracts
 
   const { key } = info
-  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate } = info
+  const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate, vault } = info
   const hashBytes32 = await ipfs.write(info)
 
   const supportsProducts = false
@@ -43,9 +43,8 @@ const create = async (payload, info) => {
     leverage.toString()
   ]
 
-  await intermediate(cache, cover, 'addCover', key, supportsProducts, hashBytes32, dai.address, requiresWhitelist, values)
+  await intermediate(cache, cover, 'addCover', key, hashBytes32, vault.name, vault.symbol, supportsProducts, requiresWhitelist, values)
   await rest(100)
-  await intermediate(cache, cover, 'deployVault', key)
 }
 
 module.exports = { createCovers }

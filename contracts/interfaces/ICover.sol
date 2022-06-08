@@ -45,12 +45,6 @@ interface ICover is IMember {
    *
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
@@ -63,14 +57,13 @@ interface ICover is IMember {
    */
   function addCover(
     bytes32 coverKey,
-    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
+    string memory tokenName,
+    string memory tokenSymbol,
+    bool supportsProducts,
     bool requiresWhitelist,
     uint256[] memory values
-  ) external;
-
-  function deployVault(bytes32 coverKey) external returns (address);
+  ) external returns (address);
 
   function addProduct(
     bytes32 coverKey,

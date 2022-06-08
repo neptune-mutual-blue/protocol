@@ -12,23 +12,18 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
-  /// @dev POD token contract symbol
-  string private constant _POD_TOKEN_SYMBOL = "nDAI";
-
   bytes32 public override key;
   address public override sc;
 
   constructor(
     IStore store,
     bytes32 coverKey,
+    string memory tokenName,
+    string memory tokenSymbol,
     IERC20 stablecoin
-  ) ERC20(_getTokenName(coverKey), _POD_TOKEN_SYMBOL) Recoverable(store) {
+  ) ERC20(tokenName, tokenSymbol) Recoverable(store) {
     key = coverKey;
     sc = address(stablecoin);
-  }
-
-  function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-ndai"));
   }
 
   function delgate() public view returns (IVaultDelegate) {

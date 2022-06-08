@@ -63,12 +63,6 @@ contract Cover is CoverBase {
    * @param coverKey Enter a unique key for this cover
    * @param supportsProducts Indicates that this cover supports product(s)
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
@@ -83,12 +77,13 @@ contract Cover is CoverBase {
    */
   function addCover(
     bytes32 coverKey,
-    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
+    string memory tokenName,
+    string memory tokenSymbol,
+    bool supportsProducts,
     bool requiresWhitelist,
     uint256[] memory values
-  ) external override nonReentrant {
+  ) external override nonReentrant returns (address) {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
     // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
@@ -96,10 +91,14 @@ contract Cover is CoverBase {
     s.senderMustBeWhitelistedCoverCreator();
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
-    require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(coverKey, supportsProducts, info, reassuranceToken, requiresWhitelist, values);
+    s.addCoverInternal(coverKey, supportsProducts, info, requiresWhitelist, values);
+
     emit CoverCreated(coverKey, info);
+
+    address vault = s.deployVaultInternal(coverKey, tokenName, tokenSymbol);
+    emit VaultDeployed(coverKey, vault);
+    return vault;
   }
 
   function addProduct(
@@ -128,18 +127,6 @@ contract Cover is CoverBase {
 
     s.updateProductInternal(coverKey, productKey, info, values);
     emit ProductUpdated(coverKey, productKey, info, values);
-  }
-
-  function deployVault(bytes32 coverKey) external override nonReentrant returns (address) {
-    s.mustNotBePaused();
-    s.mustHaveStoppedCoverStatus(coverKey);
-
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
-
-    address vault = s.deployVaultInternal(coverKey);
-    emit VaultDeployed(coverKey, vault);
-
-    return vault;
   }
 
   /**

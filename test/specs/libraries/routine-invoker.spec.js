@@ -43,8 +43,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)

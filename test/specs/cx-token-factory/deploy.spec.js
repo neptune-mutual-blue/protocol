@@ -53,7 +53,7 @@ describe('cxTokenFactory: Deploy', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, reassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
   })
 
   it('must successfully deploy a new vault', async () => {

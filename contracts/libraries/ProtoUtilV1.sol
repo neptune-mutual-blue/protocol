@@ -75,7 +75,6 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
   bytes32 public constant NS_COVER_REASSURANCE_PAYOUT = "ns:cover:reassurance:payout";
-  bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
   bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
   bytes32 public constant NS_COVER_LEVERAGE_FACTOR = "ns:cover:leverage:factor";
@@ -109,6 +108,8 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
   bytes32 public constant NS_COVER_STATUS = "ns:cover:status";
   bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
+  bytes32 public constant NS_VAULT_TOKEN_NAME = "ns:vault:token:name";
+  bytes32 public constant NS_VAULT_TOKEN_SYMBOL = "ns:vault:token:symbol";
   bytes32 public constant NS_COVER_CREATOR_WHITELIST = "ns:cover:creator:whitelist";
   bytes32 public constant NS_COVER_USER_WHITELIST = "ns:cover:user:whitelist";
   bytes32 public constant NS_COVER_CLAIM_BLACKLIST = "ns:cover:claim:blacklist";

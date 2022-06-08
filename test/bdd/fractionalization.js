@@ -42,8 +42,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     const requiresWhitelist = false
     const values = [stakeWithFee, '0', minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-    await contracts.cover.addCover(coverKey, false, info, contracts.reassuranceToken.address, requiresWhitelist, values)
-    await contracts.cover.deployVault(coverKey)
+    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, contracts.reassuranceToken.address, requiresWhitelist, values)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 

@@ -82,12 +82,6 @@ library CoverLibV1 {
    * @param s Provide store instance
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
@@ -104,7 +98,6 @@ library CoverLibV1 {
     bytes32 coverKey,
     bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
     uint256[] memory values
   ) external {
@@ -114,7 +107,7 @@ library CoverLibV1 {
     (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
 
     // Set the basic cover info
-    _addCover(s, coverKey, supportsProducts, info, reassuranceToken, requiresWhitelist, values, fee);
+    _addCover(s, coverKey, supportsProducts, info, requiresWhitelist, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(coverKey, msg.sender, values[0], fee);
@@ -130,7 +123,6 @@ library CoverLibV1 {
     bytes32 coverKey,
     bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
     uint256[] memory values,
     uint256 fee
@@ -153,12 +145,9 @@ library CoverLibV1 {
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
-    s.setStatusInternal(coverKey, 0, 0, CoverUtilV1.CoverStatus.Stopped);
-
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, supportsProducts);
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey, msg.sender);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey, reassuranceToken);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
@@ -228,14 +217,17 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
   }
 
-  function deployVaultInternal(IStore s, bytes32 coverKey) external returns (address) {
+  function deployVaultInternal(
+    IStore s,
+    bytes32 coverKey,
+    string memory tokenName,
+    string memory tokenSymbol
+  ) external returns (address) {
     address vault = s.getProtocolContract(ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     require(vault == address(0), "Vault already deployed");
 
-    s.setStatusInternal(coverKey, 0, 0, CoverUtilV1.CoverStatus.Normal);
-
     // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(coverKey);
+    address deployed = s.getVaultFactoryContract().deploy(coverKey, tokenName, tokenSymbol);
 
     s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
     return deployed;

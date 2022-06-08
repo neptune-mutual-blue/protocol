@@ -53,8 +53,7 @@ describe('Cover Constructor', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     deployed.vault = await composer.vault.getVault({
       store: deployed.store,
@@ -79,7 +78,6 @@ describe('Cover Constructor', () => {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
         CoverLibV1: deployed.coverLibV1.address,
-        ProtoUtilV1: deployed.protoUtilV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address
       },

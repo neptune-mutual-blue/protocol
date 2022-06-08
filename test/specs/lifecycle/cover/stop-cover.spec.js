@@ -41,8 +41,7 @@ describe('Cover: stopCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     await deployed.cover.stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
   })
@@ -55,8 +54,7 @@ describe('Cover: stopCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     await deployed.cover.connect(bob).stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
       .should.be.rejectedWith('Forbidden')

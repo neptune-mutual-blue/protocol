@@ -42,8 +42,7 @@ describe('Cover: updateProduct', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, true, info, deployed.dai.address, requiresWhitelist, coverValues)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, coverValues)
 
     await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, productValues)
   })

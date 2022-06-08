@@ -69,8 +69,7 @@ describe('Coverage Claim Stories', function () {
     // Create a new cover
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-    await contracts.cover.addCover(coverKey, false, info, contracts.reassuranceToken.address, requiresWhitelist, values)
-    await contracts.cover.deployVault(coverKey)
+    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)

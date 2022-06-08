@@ -38,8 +38,7 @@ describe('Policy Admin: setCoverageLag', () => {
 
     await deployed.npm.approve(deployed.stakingContract.address, helper.ether(10_000))
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, false, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, false, values)
   })
 
   it('succeeds without any errors if zero is specified as cover key', async () => {

@@ -8,6 +8,10 @@ const covers = [
     key: '0x616e696d617465642d6272616e64730000000000000000000000000000000000', // toBytes32('animated-brands')
     coverName: 'Animated Brands',
     projectName: 'Animated Brands',
+    vault: {
+      name: 'Animated Brands POD',
+      symbol: 'AB-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Smart Contract', 'NFT', 'Gaming'],
     about:
@@ -39,6 +43,10 @@ const covers = [
     key: '0x6262382d65786368616e67650000000000000000000000000000000000000000', // toBytes32('bb8-exchange')
     coverName: 'Bb8 Exchange Cover',
     projectName: 'Bb8 Exchange',
+    vault: {
+      name: 'Bb8 POD',
+      symbol: 'BEC-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'BB8 Exchange is a global cryptocurrency exchange that lets users from over 140 countries buy and sell over 1200 different digital currencies and tokens. BB8 Exchange offers a simple buy/sell crypto function for beginners as well as a variety of crypto-earning options, in addition to expert cryptocurrency spot and futures trading platforms. On this platform, both novice and expert traders may find what they\'re looking for.',
@@ -104,6 +112,10 @@ const covers = [
     key: '0x6372706f6f6c0000000000000000000000000000000000000000000000000000', // toBytes32('crpool')
     coverName: 'Crystalpool Cover',
     projectName: 'Crystalpool',
+    vault: {
+      name: 'Crystalpool POD',
+      symbol: 'CRPOOL-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Smart Contract', 'Borrowing', 'Lending'],
     about: 'The BSC ecosystem will be home to Crystalpool, the first decentralized marketplace for unsecured liquidity on the blockchain. Crystalpool Finance will integrate the full-stack scaling solution to give its customers more access and functionality, as well as its single-borrower liquidity pools, thematic pools, and tokenized credit solution, offering retail lenders more access to high-yielding loan options.',
@@ -173,6 +185,10 @@ const covers = [
     key: '0x68696369662d62616e6b00000000000000000000000000000000000000000000', // toBytes32('hicif-bank')
     coverName: 'Hicif Bank OTC Cover',
     projectName: 'Hicif Bank',
+    vault: {
+      name: 'Hicif POD',
+      symbol: 'HCF-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Wallet', 'Investing', 'Trading'],
     about: 'Hicif Bank, which was founded in 2017 and is based on the beautiful Portuguese island of Madeira, is one of the world\'s leading digital banks, aiming to deliver financial solutions to more countries than any other digital bank.',
@@ -203,6 +219,10 @@ const covers = [
     key: '0x68756f62692d77616e0000000000000000000000000000000000000000000000', // toBytes32('huobi-wan')
     coverName: 'Huobi-Wan Cover',
     projectName: 'Huobi-Wan',
+    vault: {
+      name: 'Huobi-Wan POD',
+      symbol: 'HWT-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Exchange', 'DeFi', 'Exchange'],
     about: 'HUOBI-WAN is a cryptocurrency exchange situated in the Canary Islands that offers secure, dependable, and convenient trading services for thousands of digital assets. Since its inception in 2019, HUOBI-WAN has enabled users to buy, sell, stake, and borrow a wide range of cryptocurrencies, providing an all-encompassing ecosystem for experienced crypto traders and investors. It distinguishes itself through cutting-edge technology, a diverse product offering, and a truly global presence that spans more than 80 countries.',
@@ -274,6 +294,10 @@ const covers = [
     key: '0x6f626b0000000000000000000000000000000000000000000000000000000000', // toBytes32('obk')
     coverName: 'Ob1-Ex Cover',
     projectName: 'Ob1-Ex',
+    vault: {
+      name: 'Ob1-Ex POD',
+      symbol: 'OBX-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'OB1-EX is a cutting-edge cryptocurrency exchange with advanced financial services that strives to provide you everything you need to make informed trading and investing decisions. OB1-EX is dedicated to serving hundred and thousands of users in over 30 countries with a diverse collection of opportunities connected to spot, margin, futures, options, DeFi, lending, and mining services, with over 500 digital assets and trading pairs.',
@@ -344,6 +368,10 @@ const covers = [
     key: '0x71616e696c69612d6361706974616c0000000000000000000000000000000000', // toBytes32('qanilia-capital')
     coverName: 'Qanilia Capital Cover',
     projectName: 'Qanilia Capital',
+    vault: {
+      name: 'Qanilia POD',
+      symbol: 'QNL-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Wallet', 'Investing', 'Trading'],
     about: 'Qanilia Capital is a cryptocurrency and digital asset platform that offers personal and institutional clients investment alternatives. Qanilia Capital was founded in 2019 and is headquartered in China, and is on course to deliver cutting-edge trading capabilities, creative goods, and individualized service that is fast, simple, and secure access to the decentralised financial sector.',
@@ -373,6 +401,10 @@ const covers = [
     key: '0x73616272652d6f7261636c657300000000000000000000000000000000000000', // toBytes32('sabre-oracles')
     coverName: 'Sabre Oracles Cover',
     projectName: 'Sabre Oracles',
+    vault: {
+      name: 'Sabre Oracles POD',
+      symbol: 'SABRE-nDAI'
+    },
     requiresWhitelist: false,
     tags: ['Smart Contract', 'DeFi', 'Oracle'],
     about: 'Sabre Oracles, founded in 2015, offers a non-exclusive, credibly neutral, and highly reliable oracle solution by bridging real-world data to automate, simplify, and secure smart contracts, with the goal of developing a blockchain network that uses real-time data from financial markets for a secure interface and DeFi platforms.',
@@ -437,6 +469,10 @@ const covers = [
     key: '0x7832643200000000000000000000000000000000000000000000000000000000', // toBytes32('x2d2')
     coverName: 'X2D2 Exchange Cover',
     projectName: 'X2D2 Exchange',
+    vault: {
+      name: 'X2D2 POD',
+      symbol: 'X2D2-nDAI'
+    },
     requiresWhitelist: true,
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'X2D2-Exchange was established in 2020 and is based in Seychelles. X2D2-Exchange has active operation centers in Bangalore, Hong Kong, Japan, and other countries, and offers a comprehensive trading platform that supports 50+ high-quality currencies and 100 trading pairs, allowing users to access the safest, most efficient, and professional digital asset investment services.',

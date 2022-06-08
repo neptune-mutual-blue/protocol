@@ -32,7 +32,10 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
 
-  function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
+  function _getTokenName(bytes32 coverKey, bytes32 productKey) private pure returns (string memory) {
+    if (productKey > 0) {
+      return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-", string(abi.encodePacked(productKey)), "-cxtoken"));
+    }
     return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-cxtoken"));
   }
 
@@ -47,7 +50,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 expiry
-  ) ERC20(_getTokenName(coverKey), "cxUSD") Recoverable(store) {
+  ) ERC20(_getTokenName(coverKey, productKey), "cxUSD") Recoverable(store) {
     COVER_KEY = coverKey;
     PRODUCT_KEY = productKey;
     expiresOn = expiry;

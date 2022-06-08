@@ -149,7 +149,6 @@ const deployDependencies = async () => {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       CoverLibV1: coverLibV1.address,
-      ProtoUtilV1: protoUtilV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address
     },
@@ -339,8 +338,7 @@ const deployDependencies = async () => {
   await npm.approve(stakingContract.address, stakeWithFee)
   await dai.approve(reassuranceContract.address, initialReassuranceAmount)
 
-  await cover.addCover(coverKey, false, info, dai.address, requiresWhitelist, values)
-  await cover.deployVault(coverKey)
+  await cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
   const vault = await composer.vault.getVault({
     store: store,

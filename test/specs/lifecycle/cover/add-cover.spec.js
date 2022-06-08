@@ -41,8 +41,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
   })
 
   it('reverts when not accessed by whitelisted cover creator', async () => {
@@ -53,7 +52,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.connect(bob).addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, values)
+    await deployed.cover.connect(bob).addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
       .should.be.rejectedWith('Not whitelisted')
   })
 
@@ -65,7 +64,7 @@ describe('Cover: addCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, false, info, deployed.npm.address, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, deployed.npm.address, requiresWhitelist, values)
       .should.be.rejectedWith('Invalid reassurance token')
   })
 
@@ -78,7 +77,7 @@ describe('Cover: addCover', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     const v = [helper.ether(1), initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-    await deployed.cover.addCover(coverKey, false, info, deployed.dai.address, requiresWhitelist, v)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, v)
       .should.be.rejectedWith('Your stake is too low')
   })
 })
