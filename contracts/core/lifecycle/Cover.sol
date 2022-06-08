@@ -152,10 +152,9 @@ contract Cover is CoverBase {
     bytes32 productKey,
     string memory reason
   ) external override nonReentrant {
-    // @todo: check if productKey is required
     s.mustNotBePaused();
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveNormalCoverStatus(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     s.stopCoverInternal(coverKey, productKey);
