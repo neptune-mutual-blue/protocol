@@ -85,34 +85,6 @@ describe('Policy Purchase Stories', () => {
     cxDaiBalance.toString().should.equal(args[4].toString())
   })
 
-  it('fee should be ~91.75 DAI when purchasing 10K DAI cover for 1 month', async () => {
-    const result = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 1, helper.ether(10_000))
-    const { fee } = result
-
-    helper.weiToEther(fee).toFixed(2).should.equal('91.75')
-  })
-
-  it('fee should be ~$8731.25 when purchasing 250K DAI cover for 3 months', async () => {
-    const result = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 3, helper.ether(250_000))
-    const { fee } = result
-
-    helper.weiToEther(fee).toFixed(2).should.equal('8731.25')
-  })
-
-  it('fee should be ~5404.17 when purchasing 500K DAI cover for 1 month', async () => {
-    const result = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 1, helper.ether(500_000))
-    const { fee } = result
-
-    helper.weiToEther(fee).toFixed(2).should.equal('5404.17')
-  })
-
-  it('fee should be ~$11641.67en purchasing 500K DAI cover for 2 months', async () => {
-    const result = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, helper.ether(500_000))
-    const { fee } = result
-
-    helper.weiToEther(fee).toFixed(2).should.equal('11641.67')
-  })
-
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
     const [owner] = await ethers.getSigners()
 

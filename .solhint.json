@@ -4,7 +4,10 @@
     "avoid-throw": "off",
     "avoid-suicide": "error",
     "avoid-sha3": "warn",
-    "compiler-version": "off",
+    "compiler-version": [
+      "error",
+      "0.8.0"
+    ],
     "comprehensive-interface": "off",
     "max-line-length": "off",
     "ordering": "off",
@@ -13,6 +16,12 @@
       {
         "ignoreConstructors": true
       }
-    ]
+    ],
+    "reason-string": "error",
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "private-vars-leading-underscore": "error"
   }
 }

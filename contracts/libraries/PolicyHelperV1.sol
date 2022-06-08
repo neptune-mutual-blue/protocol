@@ -49,8 +49,8 @@ library PolicyHelperV1 {
     totalAvailableLiquidity = availableLiquidity + reassuranceFund;
     utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    console.log("[cp] s: %s. p: %s. u: %s", availableLiquidity, reassuranceFund, utilizationRatio);
-    console.log("[cp]: %s, a: %s. t: %s", commitment, amountToCover, totalAvailableLiquidity);
+    console.log("[cp] s: %s p: %s u: %s", availableLiquidity, reassuranceFund, utilizationRatio);
+    console.log("[cp] c: %s a: %s t: %s", commitment, amountToCover, totalAvailableLiquidity);
 
     rate = utilizationRatio > floor ? utilizationRatio : floor;
 
@@ -60,7 +60,12 @@ library PolicyHelperV1 {
       rate = ceiling;
     }
 
-    fee = (amountToCover * rate * coverDuration) / (12 * ProtoUtilV1.MULTIPLIER);
+    uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
+    uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(block.timestamp, expiryDate); // solhint-disable-line
+
+    console.log("[cp] r: %s e: %s d: %s", rate, expiryDate, daysCovered);
+
+    fee = (amountToCover * rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
   }
 
   function _getCoverPoolAmounts(

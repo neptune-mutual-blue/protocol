@@ -35,6 +35,7 @@
     "stories": "hardhat test ./test/stories/*.js",
     "bdd": "hardhat test ./test/bdd/*.js",
     "story": "npm run stories",
+    "count": "node util/count-lines/index.js",
     "walk": "node ./util/analyzers/chain-state | sed -r \"s/\\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g\" > ./.todo/_Walker.sol && echo View file 👉 ./.todo/_Walker.sol"
   },
   "repository": {

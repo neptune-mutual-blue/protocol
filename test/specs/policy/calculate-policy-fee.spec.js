@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
+const moment = require('moment')
 const { helper, deployer, key, ipfs } = require('../../../util')
 const { getCoverFee } = require('./util/calculator')
 const composer = require('../../../util/composer')
@@ -39,10 +40,15 @@ const payload = {
   INCIDENT_SUPPORT_POOL_CAP_RATIO
 }
 
-const getFee = (amount, duration) => getCoverFee(data, amount, duration, false)
+const getFee = (amount, duration, days) => getCoverFee(data, amount, duration, days, false)
+
+const getDaysCovered = (startTimestamp, duration) => {
+  const monthToAdd = moment.unix(startTimestamp).utc(false).date() >= 25 ? duration : duration - 1
+  return moment.unix(startTimestamp).utc(false).add(monthToAdd, 'months').endOf('month').diff(moment.unix(startTimestamp), 'days')
+}
 
 describe('Policy: getCoverFeeInfo', () => {
-  let deployed, coverKey
+  let deployed, coverKey, startTimestamp
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -95,19 +101,24 @@ describe('Policy: getCoverFeeInfo', () => {
     await deployed.dai.approve(deployed.vault.address, payload.inVault)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
     await deployed.vault.addLiquidity(coverKey, payload.inVault, minReportingStake, key.toBytes32(''))
+
+    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+    startTimestamp = block.timestamp
   })
 
-  for (const amount of amounts) {
-    for (const duration of durations) {
-      const expected = helper.formatCurrency(getFee(amount, duration), 4).trim()
+  it('must return correct fee', async () => {
+    for (const amount of amounts) {
+      for (const duration of durations) {
+        const days = getDaysCovered(startTimestamp, duration)
+        const expected = helper.formatCurrency(getFee(amount, duration, days), 4).trim()
 
-      it(`must return fee: ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s)`, async () => {
+        console.info(`Expected ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s). Days: ${days}`)
         const fees = await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, duration.toString(), helper.ether(amount))
 
         expected.should.equal(helper.formatCurrency(helper.weiToEther(fees), 4))
-      })
+      }
     }
-  }
+  })
 
   it('must revert if zero is specified as the amount to cover', async () => {
     await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, '1', helper.ether(0))

@@ -48,8 +48,8 @@ library GovernanceUtilV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) external view returns (uint256) {
-    return _getLatestIncidentDateInternal(s, coverKey, productKey);
+  ) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
   function getResolutionTimestampInternal(
@@ -209,7 +209,7 @@ library GovernanceUtilV1 {
     // Incident dates are reset when a reporting is finalized.
     // This check ensures only the people who come to unstake
     // before the finalization will receive rewards
-    if (_getLatestIncidentDateInternal(s, coverKey, productKey) == incidentDate) {
+    if (getLatestIncidentDateInternal(s, coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
       reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
@@ -381,14 +381,6 @@ library GovernanceUtilV1 {
   ) external view returns (uint256 myStake, uint256 totalStake) {
     myStake = s.getUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, who));
     totalStake = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
-  }
-
-  function _getLatestIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) private view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
   function getCoolDownPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {

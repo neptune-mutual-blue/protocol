@@ -19,7 +19,7 @@ const coverKey = key.toBytes32('Compound Finance Cover')
  */
 let contracts = {}
 
-describe('Fractionalization of Reserves', () => {
+describe('Fractionalization of Standalone Pool Reserves', () => {
   beforeEach(async () => {
     contracts = await composer.initializer.initialize(true)
 
@@ -58,16 +58,16 @@ describe('Fractionalization of Reserves', () => {
     const amount = 2_000_000
     const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(amount), key.toBytes32('REF-CODE-001')]
 
-    let feeIncome = ethers.BigNumber.from(0)
+    let totalFee = ethers.BigNumber.from(0)
 
     for (let i = 0; i < 2; i++) {
       const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
-      feeIncome = feeIncome.add(fee)
+      totalFee = totalFee.add(fee)
 
-      console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee), totalPurchased.toLocaleString(), formatEther(available))
+      console.info('[#%s] Fee: %s. Total fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee), formatEther(totalFee), totalPurchased.toLocaleString(), formatEther(available))
 
       await contracts.dai.approve(contracts.policy.address, fee)
       await contracts.policy.purchaseCover(...args)
@@ -75,8 +75,11 @@ describe('Fractionalization of Reserves', () => {
       totalPurchased += amount
     }
 
-    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome.sub(1)).should.not.be.rejected
-    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome).should.be.rejectedWith('Insufficient fund')
+    // Minus protocol fees
+    const feeIncome = totalFee.mul(935).div(1000)
+
+    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome).should.not.be.rejected
+    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome.add(1)).should.be.rejectedWith('Insufficient fund')
   })
 
   it('allows reuse of liquidity as policies expire', async () => {
@@ -93,7 +96,7 @@ describe('Fractionalization of Reserves', () => {
 
       console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee), totalPurchased.toLocaleString(), formatEther(available))
 
-      await contracts.dai.approve(contracts.policy.address, fee)
+      await contracts.dai.approve(contracts.policy.address, ethers.constants.MaxUint256)
       await contracts.policy.purchaseCover(...args)
 
       totalPurchased += amount
