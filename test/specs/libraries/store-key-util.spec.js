@@ -26,7 +26,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: addUintByKey', () => {
     it('must add value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.ether(1)
+      const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract.addUintByKey(testkey, testvalue)
     })
@@ -35,7 +35,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: countAddressArrayByKey', () => {
     it('must count address correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
       const result = await mockContract['countAddressArrayByKey(bytes32)'](testkey1)
@@ -47,7 +47,7 @@ describe('StoreKeyUtil Library', () => {
     it('must count address correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
       const result = await mockContract['countAddressArrayByKeys(bytes32,bytes32)'](testkey1, testkey2)
@@ -60,7 +60,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
       const result = await mockContract['countAddressArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3)
@@ -68,10 +68,46 @@ describe('StoreKeyUtil Library', () => {
     })
   })
 
+  describe('StoreKeyUtil: countBytes32ArrayByKey', () => {
+    it('must count bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+      const result = await mockContract['countBytes32ArrayByKey(bytes32)'](testkey1)
+      result.should.equal(1)
+    })
+  })
+
+  describe('StoreKeyUtil: countBytes32ArrayByKeys (2 keys)', () => {
+    it('must count bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+      const result = await mockContract['countBytes32ArrayByKeys(bytes32,bytes32)'](testkey1, testkey2)
+      result.should.equal(1)
+    })
+  })
+
+  describe('StoreKeyUtil: countBytes32ArrayByKeys (3 keys)', () => {
+    it('must count bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testkey3 = key.toBytes32('testkey3')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+      const result = await mockContract['countBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3)
+      result.should.equal(1)
+    })
+  })
+
   describe('StoreKeyUtil: deleteAddressByKey', () => {
     it('must delete value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract.setAddressByKey(testkey, testvalue)
       await mockContract.deleteAddressByKey(testkey)
@@ -91,7 +127,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: deleteAddressArrayByIndexByKey', () => {
     it('must delete address correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
       const testindex = 0
 
       await mockContract.setAddressArrayByKey(testkey, testvalue)
@@ -112,7 +148,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testindex = 0
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
       await mockContract['deleteAddressArrayByIndexByKeys(bytes32,bytes32,uint256)'](testkey1, testkey2, testindex)
@@ -134,7 +170,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
       const testindex = 0
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
       await mockContract['deleteAddressArrayByIndexByKeys(bytes32,bytes32,bytes32,uint256)'](testkey1, testkey2, testkey3, testindex)
@@ -144,7 +180,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: deleteAddressArrayByKey', () => {
     it('must delete address correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
       await mockContract['deleteAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
@@ -155,7 +191,7 @@ describe('StoreKeyUtil Library', () => {
     it('must delete address correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
       await mockContract['deleteAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
@@ -167,7 +203,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
       await mockContract['deleteAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
@@ -199,6 +235,92 @@ describe('StoreKeyUtil Library', () => {
     })
   })
 
+  describe('StoreKeyUtil: deleteBytes32ArrayByIndexByKey', () => {
+    it('must delete bytes32 correctly', async () => {
+      const testkey = key.toBytes32('testkey')
+      const testvalue = helper.randomPrivateKey()
+      const testindex = 0
+
+      await mockContract.setBytes32ArrayByKey(testkey, testvalue)
+      await mockContract.deleteBytes32ArrayByIndexByKey(testkey, testindex)
+    })
+
+    it('reverts when invalid value is passed as index', async () => {
+      const testkey = key.toBytes32('testkey')
+      const testindex = 3
+
+      await mockContract.deleteBytes32ArrayByIndexByKey(testkey, testindex)
+        .should.be.rejectedWith('Invalid index')
+    })
+  })
+
+  describe('StoreKeyUtil: deleteBytes32ArrayByIndexByKeys (2 keys)', () => {
+    it('must delete bytes32 array correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testindex = 0
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+      await mockContract['deleteBytes32ArrayByIndexByKeys(bytes32,bytes32,uint256)'](testkey1, testkey2, testindex)
+    })
+
+    it('reverts when invalid value is passed as index', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testindex = 2
+
+      await mockContract['deleteBytes32ArrayByIndexByKeys(bytes32,bytes32,uint256)'](testkey1, testkey2, testindex)
+        .should.be.rejectedWith('Invalid index')
+    })
+  })
+
+  describe('StoreKeyUtil: deleteBytes32ArrayByIndexByKeys (3 keys)', () => {
+    it('must delete bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testkey3 = key.toBytes32('testkey3')
+      const testindex = 0
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+      await mockContract['deleteBytes32ArrayByIndexByKeys(bytes32,bytes32,bytes32,uint256)'](testkey1, testkey2, testkey3, testindex)
+    })
+  })
+
+  describe('StoreKeyUtil: deleteBytes32ArrayByKey', () => {
+    it('must delete bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+      await mockContract['deleteBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+    })
+  })
+
+  describe('StoreKeyUtil: deleteBytes32ArrayByKeys (2 keys)', () => {
+    it('must delete bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+      await mockContract['deleteBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+    })
+  })
+
+  describe('StoreKeyUtil: deleteBytes32ArrayByKeys (3 keys)', () => {
+    it('must delete bytes32 correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testkey3 = key.toBytes32('testkey3')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+      await mockContract['deleteBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+    })
+  })
+
   describe('StoreKeyUtil: deleteUintByKey', () => {
     it('must delete value correctly', async () => {
       const testkey = key.toBytes32('testkey')
@@ -210,54 +332,24 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: getAddressByKey', () => {
     it('must get value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract.setAddressByKey(testkey, testvalue)
       const result = await mockContract.getAddressByKey(testkey)
       result.should.equal(testvalue)
     })
-  })
 
-  describe('StoreKeyUtil: getAddressArrayByKey', () => {
-    it('must get value correctly', async () => {
-      const testkey1 = key.toBytes32('testkey1')
-      const testvalue = helper.zero1
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
 
-      await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
-      const result = await mockContract['getAddressArrayByKey(bytes32)'](testkey1)
-      result.should.deep.equal([testvalue])
-    })
-  })
-
-  describe('StoreKeyUtil: getAddressArrayByKeys (2 keys)', () => {
-    it('must get value correctly', async () => {
-      const testkey1 = key.toBytes32('testkey1')
-      const testkey2 = key.toBytes32('testkey2')
-      const testvalue = helper.zero1
-
-      await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
-      const result = await mockContract['getAddressArrayByKeys(bytes32,bytes32)'](testkey1, testkey2)
-      result.should.deep.equal([testvalue])
-    })
-  })
-
-  describe('StoreKeyUtil: getAddressArrayByKeys (3 keys)', () => {
-    it('must get value correctly', async () => {
-      const testkey1 = key.toBytes32('testkey1')
-      const testkey2 = key.toBytes32('testkey2')
-      const testkey3 = key.toBytes32('testkey3')
-      const testvalue = helper.zero1
-
-      await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
-      const result = await mockContract['getAddressArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3)
-      result.should.deep.equal([testvalue])
+      await mockContract.getAddressByKey(testkey).should.be.rejectedWith('Invalid key')
     })
   })
 
   describe('StoreKeyUtil: getAddressBooleanByKey', () => {
     it('must get value correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
-      const account = helper.zero1
+      const account = helper.randomAddress()
       const testvalue = true
 
       await mockContract['setAddressBooleanByKey(bytes32,address,bool)'](testkey1, account, testvalue)
@@ -271,7 +363,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
-      const account = helper.zero1
+      const account = helper.randomAddress()
       const testvalue = true
 
       await mockContract['setAddressBooleanByKeys(bytes32,bytes32,bytes32,address,bool)'](testkey1, testkey2, testkey3, account, testvalue)
@@ -289,6 +381,12 @@ describe('StoreKeyUtil Library', () => {
       const result = await mockContract.getBoolByKey(testkey)
       result.should.equal(testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.getBoolByKey(testkey).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: getBytes32ByKey', () => {
@@ -299,6 +397,12 @@ describe('StoreKeyUtil Library', () => {
       await mockContract.setBytes32ByKey(testkey, testvalue)
       const result = await mockContract.getBytes32ByKey(testkey)
       result.should.equal(testvalue)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.getBytes32ByKey(testkey).should.be.rejectedWith('Invalid key')
     })
   })
 
@@ -311,23 +415,35 @@ describe('StoreKeyUtil Library', () => {
       const result = await mockContract.getStringByKey(testkey)
       result.should.equal(testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.getStringByKey(testkey).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: getUintByKey', () => {
     it('must get value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.ether(1)
+      const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract.setUintByKey(testkey, testvalue)
       const result = await mockContract.getUintByKey(testkey)
       result.should.be.equal(testvalue)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.getUintByKey(testkey).should.be.rejectedWith('Invalid key')
     })
   })
 
   describe('StoreKeyUtil: setAddressByKey', () => {
     it('must set value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract.setAddressByKey(testkey, testvalue)
     })
@@ -338,7 +454,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
     })
@@ -347,7 +463,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: setAddressBooleanByKey', () => {
     it('must set value correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
-      const account = helper.zero1
+      const account = helper.randomAddress()
       const testvalue = true
 
       await mockContract['setAddressBooleanByKey(bytes32,address,bool)'](testkey1, account, testvalue)
@@ -359,7 +475,7 @@ describe('StoreKeyUtil Library', () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
       const testkey3 = key.toBytes32('testkey3')
-      const account = helper.zero1
+      const account = helper.randomAddress()
       const testvalue = true
 
       await mockContract['setAddressBooleanByKeys(bytes32,bytes32,bytes32,address,bool)'](testkey1, testkey2, testkey3, account, testvalue)
@@ -369,7 +485,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: setAddressArrayByKey', () => {
     it('must set address correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
-      const testvalue = helper.zero1
+      const testvalue = helper.randomAddress()
 
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
     })
@@ -387,7 +503,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: setBoolByKeys', () => {
     it('must set boolean correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testaccount = helper.zero1
+      const testaccount = helper.randomAddress()
       const testvalue = true
 
       await mockContract['setBoolByKeys(bytes32,address,bool)'](testkey, testaccount, testvalue)
@@ -415,7 +531,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: setUintByKey', () => {
     it('must set value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.ether(1)
+      const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract.setUintByKey(testkey, testvalue)
     })
@@ -425,8 +541,8 @@ describe('StoreKeyUtil Library', () => {
     it('must set value correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
-      const testaccount = helper.zero1
-      const testvalue = helper.ether(1)
+      const testaccount = helper.randomAddress()
+      const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract['setUintByKeys(bytes32,bytes32,address,uint256)'](testkey1, testkey2, testaccount, testvalue)
     })
@@ -435,7 +551,7 @@ describe('StoreKeyUtil Library', () => {
   describe('StoreKeyUtil: subtractUintByKey', () => {
     it('must subtract value correctly', async () => {
       const testkey = key.toBytes32('testkey')
-      const testvalue = helper.ether(1)
+      const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract.addUintByKey(testkey, testvalue)
       await mockContract.subtractUintByKey(testkey, testvalue)
@@ -459,7 +575,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKey', () => {
 
   it('must get value correctly', async () => {
     const testkey1 = key.toBytes32('testkey1')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
 
     await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, helper.zerox)
     await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
@@ -485,7 +601,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKeys (2 keys)', () => {
   it('must get value correctly', async () => {
     const testkey1 = key.toBytes32('testkey1')
     const testkey2 = key.toBytes32('testkey2')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
 
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, helper.zerox)
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
@@ -512,7 +628,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKeys (3 keys)', () => {
     const testkey1 = key.toBytes32('testkey1')
     const testkey2 = key.toBytes32('testkey2')
     const testkey3 = key.toBytes32('testkey3')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
 
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, helper.zerox)
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
@@ -537,7 +653,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKey', () => {
 
   it('must get value correctly', async () => {
     const testkey1 = key.toBytes32('testkey1')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
     const testindex = 1
 
     await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, helper.zerox)
@@ -572,7 +688,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKeys (2 keys)', () => {
   it('must get value correctly', async () => {
     const testkey1 = key.toBytes32('testkey1')
     const testkey2 = key.toBytes32('testkey2')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
     const testindex = 1
 
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, helper.zerox)
@@ -609,7 +725,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKeys (3 keys)', () => {
     const testkey1 = key.toBytes32('testkey1')
     const testkey2 = key.toBytes32('testkey2')
     const testkey3 = key.toBytes32('testkey3')
-    const testvalue = helper.zero1
+    const testvalue = helper.randomAddress()
     const testindex = 1
 
     await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, helper.zerox)
@@ -812,5 +928,107 @@ describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKeys (3 keys)', () => {
 
     await mockContract['getBytes32ArrayItemByIndexByKeys(bytes32,bytes32,bytes32,uint256)'](testkey1, testkey2, testkey3, testindex)
       .should.be.rejectedWith('Invalid index')
+  })
+})
+
+describe('StoreKeyUtil: getBytes32ArrayByKey & getBytes32ArrayByKeys', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  describe('StoreKeyUtil: getBytes32ArrayByKey', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKey(bytes32,bytes32)'](testkey1, testvalue)
+      const result = await mockContract['getBytes32ArrayByKey(bytes32)'](testkey1)
+      result.should.deep.equal([testvalue])
+    })
+  })
+
+  describe('StoreKeyUtil: getBytes32ArrayByKeys (2 keys)', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testvalue)
+      const result = await mockContract['getBytes32ArrayByKeys(bytes32,bytes32)'](testkey1, testkey2)
+      result.should.deep.equal([testvalue])
+    })
+  })
+
+  describe('StoreKeyUtil: getBytes32ArrayByKeys (3 keys)', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testkey3 = key.toBytes32('testkey3')
+      const testvalue = helper.randomPrivateKey()
+
+      await mockContract['setBytes32ArrayByKeys(bytes32,bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3, testvalue)
+      const result = await mockContract['getBytes32ArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3)
+      result.should.deep.equal([testvalue])
+    })
+  })
+})
+
+describe('StoreKeyUtil: getAddressArrayByKey & getAddressArrayByKeys', () => {
+  let deployed, mockContract
+
+  before(async () => {
+    deployed = await deployDependencies()
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockStoreKeyUtilUser',
+      { StoreKeyUtil: deployed.storeKeyUtil.address },
+      deployed.store.address
+    )
+    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+  })
+
+  describe('StoreKeyUtil: getAddressArrayByKey', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testvalue = helper.randomAddress()
+
+      await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
+      const result = await mockContract['getAddressArrayByKey(bytes32)'](testkey1)
+      result.should.deep.equal([testvalue])
+    })
+  })
+
+  describe('StoreKeyUtil: getAddressArrayByKeys (2 keys)', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testvalue = helper.randomAddress()
+
+      await mockContract['setAddressArrayByKeys(bytes32,bytes32,address)'](testkey1, testkey2, testvalue)
+      const result = await mockContract['getAddressArrayByKeys(bytes32,bytes32)'](testkey1, testkey2)
+      result.should.deep.equal([testvalue])
+    })
+  })
+
+  describe('StoreKeyUtil: getAddressArrayByKeys (3 keys)', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const testkey3 = key.toBytes32('testkey3')
+      const testvalue = helper.randomAddress()
+
+      await mockContract['setAddressArrayByKeys(bytes32,bytes32,bytes32,address)'](testkey1, testkey2, testkey3, testvalue)
+      const result = await mockContract['getAddressArrayByKeys(bytes32,bytes32,bytes32)'](testkey1, testkey2, testkey3)
+      result.should.deep.equal([testvalue])
+    })
   })
 })

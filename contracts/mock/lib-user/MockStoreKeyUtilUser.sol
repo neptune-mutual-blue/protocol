@@ -203,6 +203,48 @@ contract MockStoreKeyUtilUser {
     s.deleteBytes32ByKeys(key1, key2);
   }
 
+  function deleteBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+    s.deleteBytes32ArrayByKey(key, value);
+  }
+
+  function deleteBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    s.deleteBytes32ArrayByKeys(key1, key2, value);
+  }
+
+  function deleteBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    s.deleteBytes32ArrayByKeys(key1, key2, key3, value);
+  }
+
+  function deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index) external {
+    s.deleteBytes32ArrayByIndexByKey(key, index);
+  }
+
+  function deleteBytes32ArrayByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external {
+    s.deleteBytes32ArrayByIndexByKeys(key1, key2, index);
+  }
+
+  function deleteBytes32ArrayByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external {
+    s.deleteBytes32ArrayByIndexByKeys(key1, key2, key3, index);
+  }
+
   function deleteBoolByKey(bytes32 key) external {
     s.deleteBoolByKey(key);
   }
