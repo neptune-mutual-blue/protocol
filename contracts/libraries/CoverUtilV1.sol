@@ -161,7 +161,7 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey));
   }
 
-  function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) public pure returns (bytes32) {
+  function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
   }
 
@@ -381,7 +381,7 @@ library CoverUtilV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) public view returns (bool) {
+  ) external view returns (bool) {
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
   }
 
@@ -389,7 +389,7 @@ library CoverUtilV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) public view returns (bool) {
+  ) external view returns (bool) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == 1;
   }
 }

@@ -44,7 +44,7 @@ contract FakeStore is IStore {
     uintStorage[k] = existing - v;
   }
 
-  function setUints(bytes32 k, uint256[] memory v) external override {
+  function setUints(bytes32 k, uint256[] calldata v) external override {
     uintsStorage[k] = v;
   }
 
@@ -132,7 +132,7 @@ contract FakeStore is IStore {
     deleteAddressArrayItem(k, v);
   }
 
-  function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+  function getAddressValues(bytes32[] calldata keys) external view override returns (address[] memory values) {
     values = new address[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -148,7 +148,7 @@ contract FakeStore is IStore {
     return addressBooleanStorage[k][a];
   }
 
-  function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+  function getUintValues(bytes32[] calldata keys) external view override returns (uint256[] memory values) {
     values = new uint256[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {

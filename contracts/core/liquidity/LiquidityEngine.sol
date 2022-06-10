@@ -16,7 +16,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
 
   constructor(IStore s) Recoverable(s) {} // solhint-disable-line
 
-  function addStrategies(address[] memory strategies) external override nonReentrant {
+  function addStrategies(address[] calldata strategies) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 

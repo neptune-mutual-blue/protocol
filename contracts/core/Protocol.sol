@@ -40,7 +40,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[11] state and liquidity update interval
    * @param values[12] max lending ratio
    */
-  function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
+  function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
     // @suppress-initialization Can only be initialized by the deployer or an admin
     // @suppress-acl Can only be called by the deployer or an admin
     s.mustBeProtocolMember(msg.sender);
@@ -151,7 +151,7 @@ contract Protocol is IProtocol, ProtoBase {
     emit MemberAdded(member);
   }
 
-  function grantRoles(AccountWithRoles[] memory detail) external override nonReentrant {
+  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant {
     AccessControlLibV1.mustBeAdmin(s);
 
     for (uint256 i = 0; i < detail.length; i++) {

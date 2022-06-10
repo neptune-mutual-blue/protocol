@@ -30,22 +30,27 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     uint256 amount
   ) external onlyOwner whenNotPaused {
     _issue(key, mintTo, amount);
+    _issued += amount;
+    require(_issued <= _CAP, "Cap exceeded");
   }
 
   function issueMany(
     bytes32 key,
-    address[] memory receivers,
-    uint256[] memory amounts
+    address[] calldata receivers,
+    uint256[] calldata amounts
   ) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
+
+    _issued += _sumOf(amounts);
+    require(_issued <= _CAP, "Cap exceeded");
 
     for (uint256 i = 0; i < receivers.length; i++) {
       _issue(key, receivers[i], amounts[i]);
     }
   }
 
-  function transferMany(address[] memory receivers, uint256[] memory amounts) external onlyOwner whenNotPaused {
+  function transferMany(address[] calldata receivers, uint256[] calldata amounts) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
 
@@ -60,11 +65,13 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     uint256 amount
   ) private {
     require(amount > 0, "Invalid amount");
-
     super._mint(mintTo, amount);
-    _issued += amount;
-
-    require(_issued <= _CAP, "Cap exceeded");
     emit Minted(key, mintTo, amount);
+  }
+
+  function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total) {
+    for (uint256 i = 0; i < amounts.length; i++) {
+      total += amounts[i];
+    }
   }
 }

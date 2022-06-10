@@ -62,7 +62,7 @@ describe('NPM Token: Issuances', () => {
     const balance = await npm.balanceOf(owner.address)
     balance.should.equal(amount)
   })
-  it('should be reject if zero amount was specified', async () => {
+  it('should be rejected if zero amount was specified', async () => {
     const [owner, timelockOrOwner] = await ethers.getSigners()
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
@@ -89,7 +89,7 @@ describe('NPM Token: Issuances', () => {
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
     const issueTo = owner.address
-    const amount = ethers.BigNumber.from(helper.ether(900_000_000))
+    const amount = ethers.BigNumber.from(helper.ether(900_000_001))
 
     await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount.add(1))
       .should.be.rejectedWith('Cap exceeded')

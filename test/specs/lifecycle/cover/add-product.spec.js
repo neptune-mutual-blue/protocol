@@ -39,7 +39,7 @@ describe('Cover: addProduct', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, values)
   })
 
   it('correctly adds product when accessed by cover creator', async () => {

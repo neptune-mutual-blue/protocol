@@ -43,8 +43,8 @@ interface IClaimsProcessor is IMember {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    address[] memory accounts,
-    bool[] memory statuses
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external;
 
   function isBlacklisted(

@@ -58,11 +58,11 @@ interface ICover is IMember {
   function addCover(
     bytes32 coverKey,
     bytes32 info,
-    string memory tokenName,
-    string memory tokenSymbol,
+    string calldata tokenName,
+    string calldata tokenSymbol,
     bool supportsProducts,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external returns (address);
 
   function addProduct(
@@ -70,14 +70,14 @@ interface ICover is IMember {
     bytes32 productKey,
     bytes32 info,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external;
 
   function updateProduct(
     bytes32 coverKey,
     bytes32 productKey,
     bytes32 info,
-    uint256[] memory values
+    uint256[] calldata values
   ) external;
 
   /**
@@ -94,8 +94,8 @@ interface ICover is IMember {
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
     bytes32 productKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external;
 
   /**
@@ -117,7 +117,7 @@ interface ICover is IMember {
   function stopCover(
     bytes32 coverKey,
     bytes32 productKey,
-    string memory reason
+    string calldata reason
   ) external;
 
   function checkIfWhitelistedCoverCreator(address account) external view returns (bool);

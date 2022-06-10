@@ -78,15 +78,14 @@ contract Cover is CoverBase {
   function addCover(
     bytes32 coverKey,
     bytes32 info,
-    string memory tokenName,
-    string memory tokenSymbol,
+    string calldata tokenName,
+    string calldata tokenSymbol,
     bool supportsProducts,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external override nonReentrant returns (address) {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
@@ -106,7 +105,7 @@ contract Cover is CoverBase {
     bytes32 productKey,
     bytes32 info,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external override {
     s.mustNotBePaused();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
@@ -119,7 +118,7 @@ contract Cover is CoverBase {
     bytes32 coverKey,
     bytes32 productKey,
     bytes32 info,
-    uint256[] memory values
+    uint256[] calldata values
   ) external override {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
@@ -137,7 +136,7 @@ contract Cover is CoverBase {
   function stopCover(
     bytes32 coverKey,
     bytes32 productKey,
-    string memory reason
+    string calldata reason
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
@@ -172,8 +171,8 @@ contract Cover is CoverBase {
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
     bytes32 productKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);

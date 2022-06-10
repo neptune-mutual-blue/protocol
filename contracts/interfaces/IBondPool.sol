@@ -8,7 +8,7 @@ interface IBondPool is IMember {
   event BondCreated(address indexed account, uint256 lpTokens, uint256 npmToVest, uint256 unlockDate);
   event BondClaimed(address indexed account, uint256 amount);
 
-  function setup(address[] memory addresses, uint256[] memory values) external;
+  function setup(address[] calldata addresses, uint256[] calldata values) external;
 
   function createBond(uint256 lpTokens, uint256 minNpmDesired) external;
 
@@ -18,5 +18,5 @@ interface IBondPool is IMember {
 
   function calculateTokensForLp(uint256 lpTokens) external view returns (uint256);
 
-  function getInfo(address forAccount) external view returns (address[] memory addresses, uint256[] memory values);
+  function getInfo(address forAccount) external view returns (address[] calldata addresses, uint256[] calldata values);
 }

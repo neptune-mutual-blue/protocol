@@ -19,7 +19,7 @@ interface IUniswapV2RouterLike {
 
   function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
 
-  function getAmountsIn(uint256 amountOut, address[] memory path) external view returns (uint256[] memory amounts);
+  function getAmountsIn(uint256 amountOut, address[] calldata path) external view returns (uint256[] memory amounts);
 
   function quote(
     uint256 amountA,

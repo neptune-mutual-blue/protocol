@@ -49,11 +49,11 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     require(amount > 0, "Provide valid amount");
 
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
-    IERC20 reassuranceToken = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoin());
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
 
-    reassuranceToken.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(account, address(this), amount);
 
     s.updateStateAndLiquidity(coverKey);
 

@@ -56,18 +56,6 @@ describe('Cover: addCover', () => {
       .should.be.rejectedWith('Not whitelisted')
   })
 
-  it('reverts when invalid value is passed as reassuranceToken', async () => {
-    const [owner] = await ethers.getSigners()
-
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
-
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, deployed.npm.address, requiresWhitelist, values)
-      .should.be.rejectedWith('Invalid reassurance token')
-  })
-
   it('reverts when stake amount is less NS_COVER_CREATION_MIN_STAKE', async () => {
     const [owner] = await ethers.getSigners()
 

@@ -25,7 +25,7 @@
     "gendoc": "npm run gendoc:local",
     "gendoc:local": "rm -rf build && rm -rf docs && truffle compile && node ../../solidoc2/cli.js",
     "gendoc:global": "rm -rf build && rm -rf docs && truffle compile && solidoc2",
-    "slither": "slither .",
+    "slither": "~/Library/Python/3.8/bin/slither .",
     "slither:x": "slither . --print human-summary,vars-and-auth",
     "slither:save": "slither . > ./.todo/slither.log 2>&1",
     "slither:x:save": "slither . --print human-summary,vars-and-auth  > ./.todo/slither.x.log 2>&1",

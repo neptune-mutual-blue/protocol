@@ -24,7 +24,7 @@ interface IProtocol is IMember, IAccessControl {
     address contractAddress
   ) external;
 
-  function initialize(address[] memory addresses, uint256[] memory values) external;
+  function initialize(address[] calldata addresses, uint256[] calldata values) external;
 
   function upgradeContract(
     bytes32 namespace,
@@ -43,7 +43,7 @@ interface IProtocol is IMember, IAccessControl {
 
   function removeMember(address member) external;
 
-  function grantRoles(AccountWithRoles[] memory detail) external;
+  function grantRoles(AccountWithRoles[] calldata detail) external;
 
   event Initialized(address[] addresses, uint256[] values);
 }

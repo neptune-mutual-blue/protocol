@@ -45,7 +45,7 @@ contract Store is StoreBase {
     uintStorage[k] = existing - v;
   }
 
-  function setUints(bytes32 k, uint256[] memory v) external override {
+  function setUints(bytes32 k, uint256[] calldata v) external override {
     _throwIfPaused();
     _throwIfSenderNotProtocolMember();
 
@@ -225,7 +225,7 @@ contract Store is StoreBase {
     deleteBytes32ArrayItem(k, v);
   }
 
-  function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+  function getAddressValues(bytes32[] calldata keys) external view override returns (address[] memory values) {
     values = new address[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -241,7 +241,7 @@ contract Store is StoreBase {
     return addressBooleanStorage[k][a];
   }
 
-  function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+  function getUintValues(bytes32[] calldata keys) external view override returns (uint256[] memory values) {
     values = new uint256[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {

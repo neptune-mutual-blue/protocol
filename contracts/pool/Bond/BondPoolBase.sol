@@ -48,7 +48,7 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
    * @param values[2] - Vesting Term
    * @param values[3] - NPM to Top Up Now
    */
-  function setup(address[] memory addresses, uint256[] memory values) external override nonReentrant {
+  function setup(address[] calldata addresses, uint256[] calldata values) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
 

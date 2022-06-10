@@ -99,10 +99,8 @@ library CoverLibV1 {
     bool supportsProducts,
     bytes32 info,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external {
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version. Check caller.
-
     // First validate the information entered
     (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
 
@@ -124,7 +122,7 @@ library CoverLibV1 {
     bool supportsProducts,
     bytes32 info,
     bool requiresWhitelist,
-    uint256[] memory values,
+    uint256[] calldata values,
     uint256 fee
   ) private {
     require(coverKey > 0, "Invalid cover key");
@@ -173,7 +171,7 @@ library CoverLibV1 {
     bytes32 productKey,
     bytes32 info,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external {
     s.mustBeValidCoverKey(coverKey);
     s.mustSupportProducts(coverKey);
@@ -204,7 +202,7 @@ library CoverLibV1 {
     bytes32 coverKey,
     bytes32 productKey,
     bytes32 info,
-    uint256[] memory values
+    uint256[] calldata values
   ) external {
     require(values[0] <= 2, "Invalid product status");
     require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
@@ -220,8 +218,8 @@ library CoverLibV1 {
   function deployVaultInternal(
     IStore s,
     bytes32 coverKey,
-    string memory tokenName,
-    string memory tokenSymbol
+    string calldata tokenName,
+    string calldata tokenSymbol
   ) external returns (address) {
     address vault = s.getProtocolContract(ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     require(vault == address(0), "Vault already deployed");
@@ -291,8 +289,8 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external {
     require(accounts.length == statuses.length, "Inconsistent array sizes");
 

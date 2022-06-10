@@ -36,6 +36,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     if (productKey > 0) {
       return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-", string(abi.encodePacked(productKey)), "-cxtoken"));
     }
+
     return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-cxtoken"));
   }
 

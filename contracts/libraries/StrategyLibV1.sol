@@ -40,7 +40,7 @@ library StrategyLibV1 {
     _deleteStrategy(s, toFind);
   }
 
-  function addStrategiesInternal(IStore s, address[] memory strategies) external {
+  function addStrategiesInternal(IStore s, address[] calldata strategies) external {
     for (uint256 i = 0; i < strategies.length; i++) {
       address strategy = strategies[i];
       _addStrategy(s, strategy);

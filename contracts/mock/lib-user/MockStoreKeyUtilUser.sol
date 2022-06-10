@@ -74,14 +74,14 @@ contract MockStoreKeyUtilUser {
     s.subtractUintByKeys(key1, key2, account, value);
   }
 
-  function setStringByKey(bytes32 key, string memory value) external {
+  function setStringByKey(bytes32 key, string calldata value) external {
     s.setStringByKey(key, value);
   }
 
   function setStringByKeys(
     bytes32 key1,
     bytes32 key2,
-    string memory value
+    string calldata value
   ) external {
     s.setStringByKeys(key1, key2, value);
   }

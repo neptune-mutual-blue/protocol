@@ -41,7 +41,7 @@ describe('Vault Constructor and Views', () => {
       ProtoUtilV1: protoUtilV1.address,
       RegistryLibV1: registryLibV1.address,
       ValidationLibV1: validationLibV1.address
-    }, store.address, coverKey, liquidityToken.address)
+    }, store.address, coverKey, 'Vault', 'VAULT', liquidityToken.address)
 
     const _store = await vault.s()
     _store.should.equal(store.address)

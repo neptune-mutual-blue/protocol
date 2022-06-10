@@ -14,8 +14,8 @@ library VaultFactoryLibV1 {
   function getByteCode(
     IStore s,
     bytes32 coverKey,
-    string memory tokenName,
-    string memory tokenSymbol,
+    string calldata tokenName,
+    string calldata tokenSymbol,
     address liquidityToken
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, coverKey));

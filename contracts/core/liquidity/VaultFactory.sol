@@ -32,8 +32,8 @@ contract VaultFactory is IVaultFactory, Recoverable {
    */
   function deploy(
     bytes32 coverKey,
-    string memory tokenName,
-    string memory tokenSymbol
+    string calldata tokenName,
+    string calldata tokenSymbol
   ) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);

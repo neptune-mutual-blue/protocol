@@ -194,8 +194,8 @@ library BondPoolLibV1 {
    */
   function setupBondPoolInternal(
     IStore s,
-    address[] memory addresses,
-    uint256[] memory values
+    address[] calldata addresses,
+    uint256[] calldata values
   ) external {
     if (addresses[0] != address(0)) {
       s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, addresses[0]);

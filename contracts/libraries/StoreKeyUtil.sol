@@ -102,7 +102,7 @@ library StoreKeyUtil {
   function setStringByKey(
     IStore s,
     bytes32 key,
-    string memory value
+    string calldata value
   ) external {
     require(key > 0, "Invalid key");
     s.setString(key, value);
@@ -112,7 +112,7 @@ library StoreKeyUtil {
     IStore s,
     bytes32 key1,
     bytes32 key2,
-    string memory value
+    string calldata value
   ) external {
     return s.setString(_getKey(key1, key2), value);
   }

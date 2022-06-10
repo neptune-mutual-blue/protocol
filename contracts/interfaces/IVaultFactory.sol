@@ -9,7 +9,7 @@ interface IVaultFactory is IMember {
 
   function deploy(
     bytes32 coverKey,
-    string memory name,
-    string memory symbol
+    string calldata name,
+    string calldata symbol
   ) external returns (address);
 }
