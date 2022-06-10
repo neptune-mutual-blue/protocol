@@ -16,7 +16,69 @@ require('chai')
 describe('CoverReassurance: capitalizePool', () => {
   let deployed, coverKey
 
-  before(async () => {
+  async function reportAndClaim(executeBefore = "") {
+    const [owner, bob, alice] = await ethers.getSigners()
+    const amountToCover = helper.ether(100_000)
+    let incidentDate = "0";
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+
+    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+
+    if(executeBefore !== "purchase") {
+      await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
+      const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
+      const cxToken = await cxTokenUtil.atAddress(at, {
+        accessControlLibV1: deployed.accessControlLibV1,
+        baseLibV1: deployed.baseLibV1,
+        governanceUtilV1: deployed.governanceUtilV1,
+        policyHelperV1: deployed.policyHelperV1,
+        protoUtilV1: deployed.protoUtilV1,
+        validationLibV1: deployed.validationLibV1
+      })
+
+      const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+      const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()
+      const coverageLagPeriod = tomorrowEOD - block.timestamp
+
+      // Coverage lag + 1 second
+      await network.provider.send('evm_increaseTime', [coverageLagPeriod])
+      await network.provider.send('evm_increaseTime', [1])
+
+      if(executeBefore !== 'report') {
+        await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+        incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
+
+        // Reporting period + 1 second
+        await network.provider.send('evm_increaseTime', [7 * DAYS])
+        await network.provider.send('evm_increaseTime', [1])
+
+        if(executeBefore !== "resolve") {
+          await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+
+          // Cooldown period + 1 second
+          await network.provider.send('evm_increaseTime', [1 * DAYS])
+          await network.provider.send('evm_increaseTime', [1])
+
+          await cxToken.approve(deployed.claimsProcessor.address, amountToCover)
+
+          if(executeBefore !== "claim") {
+            await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amountToCover)
+
+            if(executeBefore !== "claimExpire") {
+              // Claim period + 1 second
+              await network.provider.send('evm_increaseTime', [7 * DAYS])
+              await network.provider.send('evm_increaseTime', [1])
+            }
+          }
+        }
+      }
+    }
+
+    return {owner, amountToCover, reportingInfo, incidentDate, bob, alice};
+  }
+
+  beforeEach(async () => {
     const [owner] = await ethers.getSigners()
     deployed = await deployDependencies()
 
@@ -63,50 +125,8 @@ describe('CoverReassurance: capitalizePool', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
-  it('correctly gets reassurance amount', async () => {
-    const [owner] = await ethers.getSigners()
-    const amountToCover = helper.ether(100_000)
-
-    const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
-    const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
-    const cxToken = await cxTokenUtil.atAddress(at, {
-      accessControlLibV1: deployed.accessControlLibV1,
-      baseLibV1: deployed.baseLibV1,
-      governanceUtilV1: deployed.governanceUtilV1,
-      policyHelperV1: deployed.policyHelperV1,
-      protoUtilV1: deployed.protoUtilV1,
-      validationLibV1: deployed.validationLibV1
-    })
-
-    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-    const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()
-    const coverageLagPeriod = tomorrowEOD - block.timestamp
-
-    // Coverage lag + 1 second
-    await network.provider.send('evm_increaseTime', [coverageLagPeriod])
-    await network.provider.send('evm_increaseTime', [1])
-
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
-
-    // Reporting period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
-    // Cooldown period + 1 second
-    await network.provider.send('evm_increaseTime', [1 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-
-    await cxToken.approve(deployed.claimsProcessor.address, amountToCover)
-    await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amountToCover)
-
-    // Claim period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
+  it('correctly capitalizes pool', async () => {
+    const { incidentDate } = await reportAndClaim();    
 
     const tx = await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate)
     const { events } = await tx.wait()
@@ -119,4 +139,45 @@ describe('CoverReassurance: capitalizePool', () => {
 
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
+
+  it('revert on protocol pause', async () => {
+      const { incidentDate } = await reportAndClaim();
+
+      await deployed.protocol.pause();
+
+      const tx = await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate).should.be.rejectedWith('Protocol is paused')
+  })
+
+  it('revert on insufficient access', async () => {
+    const { incidentDate, bob } = await reportAndClaim();
+
+    await deployed.reassuranceContract.connect(bob).capitalizePool(coverKey, helper.emptyBytes32, incidentDate).should.be.rejectedWith('Forbidden')
+  })
+
+  it('revert on invalid product key', async () => {
+    const productKey = key.toBytes32('invalid')
+    const { incidentDate } = await reportAndClaim();
+
+    await deployed.reassuranceContract.capitalizePool(coverKey, productKey, incidentDate).should.be.rejectedWith('Invalid product')
+  })
+
+  it("revert on invalid incident date", async () => {
+    const { incidentDate } = await reportAndClaim();
+    const invalidDate = (incidentDate + 24 * 60 * 60).toString();
+
+    await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, invalidDate).should.be.rejectedWith('Invalid incident date')
+  })
+
+  it("revert on before resolution date", async () => {
+    const { incidentDate } = await reportAndClaim(executeBefore="resolve");
+
+    await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate).should.be.rejectedWith('Still unresolved')
+  })
+
+  it("revert if claim not expired", async () => {
+    const { incidentDate } = await reportAndClaim(executeBefore="claimExpire");
+    
+    await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate).should.be.rejectedWith('Claim still active')
+  })
+
 })
