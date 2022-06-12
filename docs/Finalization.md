@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Finalization Contract (Finalization.sol)
+# Finalization Contract (Finalization.sol)
 
 View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
@@ -28,9 +28,9 @@ function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ex
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key you want to finalize | 
+| productKey | bytes32 | Enter the product key you want to finalize | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -41,13 +41,14 @@ function finalize(
     bytes32 productKey,
     uint256 incidentDate
   ) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
     require(incidentDate > 0, "Please specify incident date");
 
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustBeClaimingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeClaimingOrDisputed(coverKey, productKey);
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
@@ -62,7 +63,7 @@ function finalize(
 ### _finalize
 
 ```solidity
-function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) internal nonpayable
+function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
 ```
 
 **Arguments**
@@ -81,7 +82,7 @@ function _finalize(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  ) internal {
+  ) private {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
     s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);

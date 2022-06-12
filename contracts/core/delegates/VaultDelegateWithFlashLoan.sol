@@ -7,12 +7,7 @@ import "./VaultDelegateBase.sol";
 /**
  * @title With Flash Loan Delegate Contract
  *
- * @dev WithFlashLoan contract implements `EIP-3156 Flash Loan`.
- * Using flash loans, you can borrow up to the total available amount of
- * the stablecoin liquidity available in this cover liquidity pool.
- * You need to return back the borrowed amount + fee in the same transaction.
- * The function `flashFee` enables you to check, in advance, fee that
- * you need to pay to take out the loan.
+ * @dev VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
  */
 abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   using ProtoUtilV1 for IStore;

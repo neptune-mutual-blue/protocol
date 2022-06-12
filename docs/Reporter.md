@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Reporter Contract (Reporter.sol)
+# Reporter Contract (Reporter.sol)
 
 View Source: [contracts/core/governance/Reporter.sol](../contracts/core/governance/Reporter.sol)
 
@@ -9,19 +9,18 @@ View Source: [contracts/core/governance/Reporter.sol](../contracts/core/governan
 
 This contract enables any NPM tokenholder to
  report an incident or dispute a reported incident.
- <br />
  The reporters can submit incidents and/or dispute them as well.
  When a cover pool is reporting, other tokenholders can also join
- the reporters achieve a resolution.
+ the reporters to achieve a resolution.
  The reporter who first submits an incident is known as `First Reporter` whereas
  the reporter who disputes the reported incident is called `Candidate Reporter`.
+ Valid reporter is the reporter getting resolution in their favor.
 
 ## Functions
 
 - [report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake)](#report)
 - [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
-- [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
-- [getFirstReportingStake()](#getfirstreportingstake)
+- [setFirstReportingStake(bytes32 coverKey, uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake(bytes32 coverKey)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
@@ -29,9 +28,29 @@ This contract enables any NPM tokenholder to
 - [getReporter(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreporter)
 - [getResolutionTimestamp(bytes32 coverKey, bytes32 productKey)](#getresolutiontimestamp)
 - [getAttestation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestation)
-- [getDispute(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getdispute)
+- [getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutation)
 
 ### report
+
+Stake a specified minimum NPM tokens to submit an incident.
+ Check out the function `getFirstReportingStake(coverKey)` to
+ check the minimum amount needed to report this cover.
+ **Rewards:**
+ If you get resolution in your favor, you will receive these rewards:
+ - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
+ - A 5% commission on the protocol earnings of all claim payouts in stablecoin.
+ - Your proportional share of the 60% pool of the invalid camp.
+ **Warning:**
+ Please carefully check the coverage rules and exclusions in detail
+ before you submit this report. You entire stake will be forfeited
+ if resolution does not go in your favor. You will be able to unstake
+ and receive back your NPM only if:
+ By using this function directly via a smart contract call,
+ through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+ you are completely aware, fully understand, and accept the risk that you may lose all of
+ your stake.
+ - incident resolution is in your favor
+ - after reporting period ends
 
 ```solidity
 function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake) external nonpayable nonReentrant 
@@ -41,10 +60,10 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| stake | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key you are reporting | 
+| productKey | bytes32 | Enter the product key you are reporting | 
+| info | bytes32 | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Animated Brands Exploit, August 2024',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',   }` | 
+| stake | uint256 | Enter the amount you would like to stake to submit this report | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -86,6 +105,26 @@ function report(
 
 ### dispute
 
+If you believe that a reported incident is wrong, you can stake a specified
+ minimum NPM tokens to refute an active incident.
+ Check out the function `getFirstReportingStake(coverKey)` to
+ check the minimum amount needed to dispute this cover.
+ **Rewards:**
+ If you get resolution in your favor, you will receive these rewards:
+ - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
+ - Your proportional share of the 60% pool of the invalid camp.
+ **Warning:**
+ Please carefully check the coverage rules and exclusions in detail
+ before you submit this report. You entire stake will be forfeited
+ if resolution does not go in your favor. You will be able to unstake
+ and receive back your NPM only if:
+ By using this function directly via a smart contract call,
+ through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+ you are completely aware, fully understand, and accept the risk that you may lose all of
+ your stake.
+ - incident resolution is in your favor
+ - after reporting period ends
+
 ```solidity
 function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
 ```
@@ -94,11 +133,11 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the cover key you are reporting | 
+| productKey | bytes32 | Enter the product key you are reporting | 
 | incidentDate | uint256 |  | 
-| info | bytes32 |  | 
-| stake | uint256 |  | 
+| info | bytes32 | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Wrong Incident Reporting',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',   }` | 
+| stake | uint256 | Enter the amount you would like to stake to submit this dispute | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -136,37 +175,48 @@ function dispute(
 
 ### setFirstReportingStake
 
+Allows a cover manager set first reporting (minimum) stake of a given cover.
+
 ```solidity
-function setFirstReportingStake(uint256 value) external nonpayable nonReentrant 
+function setFirstReportingStake(bytes32 coverKey, uint256 value) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| coverKey | bytes32 | Provide a coverKey or leave it empty. If empty, the stake is set as  fallback value. Covers that do not have customized first reporting stake will infer to the fallback value. | 
+| value | uint256 | Enter the first reporting stake in NPM units | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setFirstReportingStake(uint256 value) external override nonReentrant {
+function setFirstReportingStake(bytes32 coverKey, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
     require(value > 0, "Please specify value");
 
-    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
+    uint256 previous = getFirstReportingStake(coverKey);
 
-    emit FirstReportingStakeSet(previous, value);
+    if (coverKey > 0) {
+      s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, value);
+    } else {
+      s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
+    }
+
+    emit FirstReportingStakeSet(coverKey, previous, value);
   }
 ```
 </details>
 
 ### getFirstReportingStake
 
+Returns the minimum amount of NPM tokens required to `report` or `dispute`
+ a cover.
+
 ```solidity
-function getFirstReportingStake() external view
+function getFirstReportingStake(bytes32 coverKey) public view
 returns(uint256)
 ```
 
@@ -174,41 +224,24 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| coverKey | bytes32 | Specify the cover you want to get the minimum stake required value of. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getFirstReportingStake() external view override returns (uint256) {
-    return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
-  }
-```
-</details>
-
-### getFirstReportingStake
-
-```solidity
-function getFirstReportingStake(bytes32 coverKey) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getFirstReportingStake(bytes32 coverKey) external view override returns (uint256) {
+function getFirstReportingStake(bytes32 coverKey) public view override returns (uint256) {
     return s.getMinReportingStakeInternal(coverKey);
   }
 ```
 </details>
 
 ### setReportingBurnRate
+
+Allows a cover manager set burn rate of the NPM tokens of the invalid camp.
+ The protocol forfeits all stakes of invalid camp voters. During `unstakeWithClaim`,
+ NPM tokens get proportionately burned as configured here.
+ The unclaimed and thus unburned NPM stakes will be manually pulled and burned on a periodic but not-so-frequent basis.
 
 ```solidity
 function setReportingBurnRate(uint256 value) external nonpayable nonReentrant 
@@ -218,7 +251,7 @@ function setReportingBurnRate(uint256 value) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Enter the burn rate in percentage value (Check ProtoUtilV1.MULTIPLIER for division) | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -240,6 +273,11 @@ function setReportingBurnRate(uint256 value) external override nonReentrant {
 
 ### setReporterCommission
 
+Allows a cover manager set reporter comission of the NPM tokens from the invalid camp.
+ The protocol forfeits all stakes of invalid camp voters. During `unstakeWithClaim`,
+ NPM tokens get proportionately transferred to the **valid reporter** as configured here.
+ The unclaimed and thus unrewarded NPM stakes will be manually pulled and burned on a periodic but not-so-frequent basis.
+
 ```solidity
 function setReporterCommission(uint256 value) external nonpayable nonReentrant 
 ```
@@ -248,7 +286,7 @@ function setReporterCommission(uint256 value) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Enter the valid reporter comission in percentage value (Check ProtoUtilV1.MULTIPLIER for division) | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -269,6 +307,8 @@ function setReporterCommission(uint256 value) external override nonReentrant {
 
 ### getActiveIncidentDate
 
+Gets the latest incident date of a given cover and product
+
 ```solidity
 function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
@@ -278,8 +318,8 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the cover key you want to get the incident of | 
+| productKey | bytes32 | Enter the product key you want to get the incident of | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -293,6 +333,10 @@ function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external vi
 
 ### getReporter
 
+Gets the reporter of a cover by its incident date
+ Please note that until resolution deadline is over, the returned
+ reporter might keep changing.
+
 ```solidity
 function getReporter(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 returns(address)
@@ -302,8 +346,8 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the cover key you would like to get the reporter of | 
+| productKey | bytes32 | Enter the product key you would like to get the reporter of | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -322,6 +366,8 @@ function getReporter(
 
 ### getResolutionTimestamp
 
+Retuns the resolution date of a given cover
+
 ```solidity
 function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
@@ -331,8 +377,8 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the cover key to get the resolution date of | 
+| productKey | bytes32 | Enter the product key to get the resolution date of | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -346,6 +392,9 @@ function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external v
 
 ### getAttestation
 
+Gets an account's attestation details. Please also check `getRefutation` since an account
+ is not restricted to submit both `attestations` and `refutations`.
+
 ```solidity
 function getAttestation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
@@ -355,9 +404,9 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| who | address |  | 
+| coverKey | bytes32 | Enter the cover key you want to get attestation of | 
+| productKey | bytes32 | Enter the product key you want to get attestation of | 
+| who | address | Enter the account you want to get attestation of | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -375,10 +424,13 @@ function getAttestation(
 ```
 </details>
 
-### getDispute
+### getRefutation
+
+Gets an account's refutation details. Please also check `getAttestation` since an account
+ is not restricted to submit both `attestations` and `refutations`.
 
 ```solidity
-function getDispute(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
+function getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
 
@@ -386,22 +438,22 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| who | address |  | 
+| coverKey | bytes32 | Enter the cover key you want to get refutation of | 
+| productKey | bytes32 | Enter the product key you want to get refutation of | 
+| who | address | Enter the account you want to get refutation of | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getDispute(
+function getRefutation(
     bytes32 coverKey,
     bytes32 productKey,
     address who,
     uint256 incidentDate
   ) external view override returns (uint256 myStake, uint256 totalStake) {
-    return s.getDisputeInternal(coverKey, productKey, who, incidentDate);
+    return s.getRefutationInternal(coverKey, productKey, who, incidentDate);
   }
 ```
 </details>

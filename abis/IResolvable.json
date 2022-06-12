@@ -28,6 +28,12 @@
         "type": "bytes32"
       },
       {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "incidentDate",
@@ -93,6 +99,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -133,6 +144,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getResolutionDeadline",
@@ -151,6 +167,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {

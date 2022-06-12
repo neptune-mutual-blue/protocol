@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Governance Contract (Governance.sol)
+# Governance Contract (Governance.sol)
 
 View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
 
@@ -7,9 +7,9 @@ View Source: [contracts/core/governance/Governance.sol](../contracts/core/govern
 **Governance**
 
 The governance contract allows any NPM tokenholder
- stake a given number of NPM tokens to submit a report.
+ stake a specific minimum number of NPM tokens to submit a report.
  The reporting process begins after an incident report is submitted
- and usually lasts for 7-days or higher.
+ and usually lasts for 7-days or higher based on a cover's configuration.
  It also allows follow-on reporters to submit their stakes to support
  the first reporter or add stakes to dispute the original report.
 

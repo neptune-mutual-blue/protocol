@@ -13,12 +13,6 @@
         "internalType": "bytes32",
         "name": "info",
         "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "requiresWhitelist",
-        "type": "bool"
       }
     ],
     "name": "CoverCreated",
@@ -92,8 +86,14 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
         "internalType": "address",
-        "name": "deletedBy",
+        "name": "stoppedBy",
         "type": "address"
       },
       {
@@ -135,7 +135,13 @@
         "type": "bytes32"
       },
       {
-        "indexed": false,
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -199,6 +205,74 @@
       },
       {
         "indexed": false,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "info",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "requiresWhitelist",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "ProductCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "info",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "ProductUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "vault",
         "type": "address"
@@ -220,9 +294,19 @@
         "type": "bytes32"
       },
       {
-        "internalType": "address",
-        "name": "reassuranceToken",
-        "type": "address"
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenSymbol",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "supportsProducts",
+        "type": "bool"
       },
       {
         "internalType": "bool",
@@ -236,6 +320,45 @@
       }
     ],
     "name": "addCover",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "info",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bool",
+        "name": "requiresWhitelist",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "addProduct",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -267,6 +390,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -289,24 +417,10 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
-      }
-    ],
-    "name": "deployVault",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "productKey",
         "type": "bytes32"
       }
     ],
@@ -409,6 +523,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "string",
         "name": "reason",
         "type": "string"
@@ -463,6 +582,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "address[]",
         "name": "accounts",
         "type": "address[]"
@@ -474,6 +598,34 @@
       }
     ],
     "name": "updateCoverUsersWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "info",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "updateProduct",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

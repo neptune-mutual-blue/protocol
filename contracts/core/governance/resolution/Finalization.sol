@@ -8,7 +8,7 @@ import "../../../libraries/ValidationLibV1.sol";
 import "../../../libraries/RoutineInvokerLibV1.sol";
 
 /**
- * @title Neptune Mutual Governance: Finalization Contract
+ * @title Finalization Contract
  * @dev This contract allows governance agents "finalize"
  * a resolved cover product after the claim period.
  *
@@ -25,18 +25,36 @@ abstract contract Finalization is Recoverable, IFinalization {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for bytes32;
 
+  /**
+   * Finalizes a cover pool or a product contract.
+   * Once finalized, the cover resets back to the normal state.
+   *
+   * Note:
+   *
+   * An incident can be finalized:
+   *
+   * - by a governance agent
+   * - if it was reported and resolved
+   * - after claim period
+   * - after reassurance fund is capitalized back to the liquidity pool
+   *
+   * @param coverKey Enter the cover key you want to finalize
+   * @param productKey Enter the product key you want to finalize
+   * @param incidentDate Enter the date of this incident reporting
+   */
   function finalize(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
   ) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
     require(incidentDate > 0, "Please specify incident date");
 
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustBeClaimingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeClaimingOrDisputed(coverKey, productKey);
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
@@ -50,7 +68,7 @@ abstract contract Finalization is Recoverable, IFinalization {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  ) internal {
+  ) private {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
     s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);

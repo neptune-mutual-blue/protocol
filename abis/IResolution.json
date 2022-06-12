@@ -29,6 +29,12 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "finalizer",
         "type": "address"
@@ -48,6 +54,18 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "caller",
         "type": "address"
@@ -79,6 +97,18 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "caller",
         "type": "address"
@@ -112,6 +142,12 @@
         "indexed": true,
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -157,6 +193,18 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
       {
         "indexed": true,
         "internalType": "address",
@@ -205,6 +253,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -225,6 +278,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -276,6 +334,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getResolutionDeadline",
@@ -299,6 +362,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -356,6 +424,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -374,6 +447,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -389,6 +467,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {

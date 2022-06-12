@@ -7,7 +7,7 @@ interface IReporter {
   event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, bytes32 info, uint256 initialStake);
 
   event ReportingBurnRateSet(uint256 previous, uint256 current);
-  event FirstReportingStakeSet(uint256 previous, uint256 current);
+  event FirstReportingStakeSet(bytes32 coverKey, uint256 previous, uint256 current);
   event ReporterCommissionSet(uint256 previous, uint256 current);
 
   function report(
@@ -34,7 +34,7 @@ interface IReporter {
     uint256 incidentDate
   ) external view returns (uint256 myStake, uint256 totalStake);
 
-  function getDispute(
+  function getRefutation(
     bytes32 coverKey,
     bytes32 productKey,
     address who,
@@ -49,9 +49,7 @@ interface IReporter {
 
   function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
 
-  function setFirstReportingStake(uint256 value) external;
-
-  function getFirstReportingStake() external view returns (uint256);
+  function setFirstReportingStake(bytes32 coverKey, uint256 value) external;
 
   function getFirstReportingStake(bytes32 coverKey) external view returns (uint256);
 

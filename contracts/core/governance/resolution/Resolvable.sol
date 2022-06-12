@@ -7,12 +7,11 @@ import "../../../interfaces/IResolvable.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 /**
- * @title Neptune Mutual Governance: Resolvable Contract
+ * @title Resolvable Contract
  * @dev Enables governance agents to resolve a contract undergoing reporting.
- * Provides a cool-down period of 24-hours during when governance admins
+ * Has a cool-down period of 24-hours (or as overridden) during when governance admins
  * can perform emergency resolution to defend against governance attacks.
  */
-
 abstract contract Resolvable is Finalization, IResolvable {
   using GovernanceUtilV1 for IStore;
   using ProtoUtilV1 for IStore;
@@ -23,6 +22,24 @@ abstract contract Resolvable is Finalization, IResolvable {
   using ValidationLibV1 for bytes32;
   using NTransferUtilV2 for IERC20;
 
+  /**
+   * @dev Marks as a cover as "resolved" after the reporting period.
+   * A resolution has a (configurable) 24-hour cooldown period
+   * that enables governance admins to revese decision in case of
+   * attack or mistake.
+   *
+   * Note:
+   * An incident can be resolved:
+   *
+   * - by a governance agent
+   * - if it was reported
+   * - after the reporting period
+   * - if it wasn't resolved earlier
+   *
+   * @param coverKey Enter the cover key you want to resolve
+   * @param productKey Enter the product key you want to resolve
+   * @param incidentDate Enter the date of this incident reporting
+   */
   function resolve(
     bytes32 coverKey,
     bytes32 productKey,
@@ -32,9 +49,10 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
@@ -43,6 +61,21 @@ abstract contract Resolvable is Finalization, IResolvable {
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }
 
+  /**
+   * @dev Enables governance admins to perform emergency resolution.
+   *
+   * Note:
+   * An incident can undergo an emergency resolution:
+   *
+   * - by a governance admin
+   * - if it was reported
+   * - after the reporting period
+   * - before the resolution deadline
+   *
+   * @param coverKey Enter the cover key on which you want to perform emergency resolve
+   * @param productKey Enter the product key on which you want to perform emergency resolve
+   * @param incidentDate Enter the date of this incident reporting
+   */
   function emergencyResolve(
     bytes32 coverKey,
     bytes32 productKey,
@@ -122,6 +155,13 @@ abstract contract Resolvable is Finalization, IResolvable {
     emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }
 
+  /**
+   * @dev Allows a governance admin to add or update resolution cooldown period for a given cover.
+   *
+   * @param coverKey Provide a coverKey or leave it empty. If empty, the cooldown period is set as
+   * fallback value. Covers that do not have customized cooldown period will infer to the fallback value.
+   * @param period Enter the cooldown period duration
+   */
   function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
@@ -137,10 +177,16 @@ abstract contract Resolvable is Finalization, IResolvable {
     emit CooldownPeriodConfigured(coverKey, period);
   }
 
+  /**
+   * @dev Gets the cooldown period of a given cover
+   */
   function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoolDownPeriodInternal(coverKey);
   }
 
+  /**
+   * @dev Gets the resolution deadline of a given cover
+   */
   function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getResolutionDeadlineInternal(coverKey, productKey);
   }

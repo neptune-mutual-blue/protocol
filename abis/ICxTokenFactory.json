@@ -9,6 +9,12 @@
         "type": "bytes32"
       },
       {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "cxToken",
@@ -30,6 +36,16 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
       },
       {
         "internalType": "uint256",

@@ -34,7 +34,7 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestationinternal)
 - [addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#adddisputeinternal)
 - [getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey)](#gethasdisputekeyinternal)
-- [getDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getdisputeinternal)
+- [getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutationinternal)
 - [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownperiodinternal)
 - [getResolutionDeadlineInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getresolutiondeadlineinternal)
 - [addClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 claimed)](#addclaimpayoutsinternal)
@@ -179,7 +179,10 @@ returns(uint256)
 
 ```javascript
 function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
+    uint256 fb = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
+
+    return custom > 0 ? custom : fb;
   }
 ```
 </details>
@@ -994,10 +997,10 @@ function getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey) public p
 ```
 </details>
 
-### getDisputeInternal
+### getRefutationInternal
 
 ```solidity
-function getDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
+function getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
 
@@ -1015,7 +1018,7 @@ returns(myStake uint256, totalStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getDisputeInternal(
+function getRefutationInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,

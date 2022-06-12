@@ -9,8 +9,8 @@ import "../../../libraries/ValidationLibV1.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 /**
- * @title Neptune Mutual Governance: Unstakable Contract
- * @dev Enables tokenholders unstake their tokens after
+ * @title Unstakable Contract
+ * @dev Enables voters to unstake their NPM tokens after
  * resolution is achieved on any cover product.
  */
 abstract contract Unstakable is Resolvable, IUnstakable {
@@ -24,9 +24,16 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   using NTransferUtilV2 for IERC20;
 
   /**
-   * @dev Reporters on the winning camp can unstake their tokens even after the claim period is over.
-   * Warning: during claim periods, you must use `unstakeWithClaim` instead of this to also receive reward.
+   * @dev Reporters on the valid camp can unstake their tokens even after the claim period is over.
+   * Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
+   * use this function.
+   *
+   * **Warning:**
+   *
+   * You should instead use `unstakeWithClaim` throughout the claim period.
+   *
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date
    */
   function unstake(
@@ -52,13 +59,15 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   }
 
   /**
-   * @dev Reporters on the winning camp can unstake their token with a `claim` to receive
-   * back their original stake with a certain portion of the losing camp's stake
+   * @dev Reporters on the valid camp can unstake their token with a `claim` to receive
+   * back their original stake with a portion of the invalid camp's stake
    * as an additional reward.
    *
    * During each `unstake with claim` processing, the protocol distributes reward to
    * the final reporter and also burns some NPM tokens, as described in the documentation.
+   *
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date
    */
   function unstakeWithClaim(
@@ -100,7 +109,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
   }
 
   /**
-   * @dev s Gets the unstake information for the supplied account
+   * @dev Gets the unstake information for the supplied account
+   *
    * @param account Enter account to get the unstake information of
    * @param coverKey Enter the cover key
    * @param incidentDate Enter the incident date

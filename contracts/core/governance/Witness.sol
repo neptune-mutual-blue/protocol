@@ -13,9 +13,9 @@ import "../../libraries/RegistryLibV1.sol";
 import "../../interfaces/IVault.sol";
 
 /**
- * @title Neptune Mutual Governance: Witness Contract
+ * @title Witness Contract
  * @dev The witeness contract enables NPM tokenholders to
- * participate in an already-reported cover incident.
+ * participate in an active cover incident.
  * <br />
  * The participants can choose to support an incident by `attesting`
  * or they can also disagree by `refuting` the incident. In both cases,
@@ -49,10 +49,13 @@ abstract contract Witness is Recoverable, IWitness {
    * Although you may believe that the incident did actually occur, you may still be wrong.
    * Even when you are right, the governance participants could outcast you.
    *
+   *
    * By using this function directly via a smart contract call,
    * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
-   * you are completely aware and fully understand the risk that you may lose all of
+   * you are completely aware, fully understand, and accept the risk that you may lose all of
    * your stake.
+   *
+   *
    * @param coverKey Enter the key of the active cover
    * @param incidentDate Enter the active cover's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.
@@ -92,10 +95,12 @@ abstract contract Witness is Recoverable, IWitness {
    * Although you may believe that the incident did not occur, you may still be wrong.
    * Even when you are right, the governance participants could outcast you.
    *
+   *
    * By using this function directly via a smart contract call,
    * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
-   * you are completely aware and fully understand the risk that you may lose all of
+   * you are completely aware, fully understand, and accept the risk that you may lose all of
    * your stake.
+   *
    * @param coverKey Enter the key of the active cover
    * @param incidentDate Enter the active cover's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.

@@ -41,7 +41,10 @@ library GovernanceUtilV1 {
   }
 
   function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
+    uint256 fb = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
+    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
+
+    return custom > 0 ? custom : fb;
   }
 
   function getLatestIncidentDateInternal(
@@ -372,7 +375,7 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE, coverKey, productKey));
   }
 
-  function getDisputeInternal(
+  function getRefutationInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,

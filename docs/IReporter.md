@@ -12,7 +12,7 @@ View Source: [contracts/interfaces/IReporter.sol](../contracts/interfaces/IRepor
 event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, bytes32  info, uint256  initialStake, uint256  resolutionTimestamp);
 event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, bytes32  info, uint256  initialStake);
 event ReportingBurnRateSet(uint256  previous, uint256  current);
-event FirstReportingStakeSet(uint256  previous, uint256  current);
+event FirstReportingStakeSet(bytes32  coverKey, uint256  previous, uint256  current);
 event ReporterCommissionSet(uint256  previous, uint256  current);
 ```
 
@@ -22,11 +22,10 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 - [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
 - [getActiveIncidentDate(bytes32 coverKey, bytes32 productKey)](#getactiveincidentdate)
 - [getAttestation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestation)
-- [getDispute(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getdispute)
+- [getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutation)
 - [getReporter(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreporter)
 - [getResolutionTimestamp(bytes32 coverKey, bytes32 productKey)](#getresolutiontimestamp)
-- [setFirstReportingStake(uint256 value)](#setfirstreportingstake)
-- [getFirstReportingStake()](#getfirstreportingstake)
+- [setFirstReportingStake(bytes32 coverKey, uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake(bytes32 coverKey)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
 - [setReporterCommission(uint256 value)](#setreportercommission)
@@ -140,10 +139,10 @@ function getAttestation(
 ```
 </details>
 
-### getDispute
+### getRefutation
 
 ```solidity
-function getDispute(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
+function getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
 ```
 
@@ -160,7 +159,7 @@ returns(myStake uint256, totalStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getDispute(
+function getRefutation(
     bytes32 coverKey,
     bytes32 productKey,
     address who,
@@ -221,40 +220,21 @@ function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external v
 ### setFirstReportingStake
 
 ```solidity
-function setFirstReportingStake(uint256 value) external nonpayable
+function setFirstReportingStake(bytes32 coverKey, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setFirstReportingStake(uint256 value) external;
-```
-</details>
-
-### getFirstReportingStake
-
-```solidity
-function getFirstReportingStake() external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getFirstReportingStake() external view returns (uint256);
+function setFirstReportingStake(bytes32 coverKey, uint256 value) external;
 ```
 </details>
 

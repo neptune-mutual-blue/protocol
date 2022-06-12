@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Unstakable Contract (Unstakable.sol)
+# Unstakable Contract (Unstakable.sol)
 
 View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/core/governance/resolution/Unstakable.sol)
 
@@ -7,7 +7,7 @@ View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/
 
 **Unstakable**
 
-Enables tokenholders unstake their tokens after
+Enables voters to unstake their NPM tokens after
  resolution is achieved on any cover product.
 
 ## Functions
@@ -18,8 +18,11 @@ Enables tokenholders unstake their tokens after
 
 ### unstake
 
-Reporters on the winning camp can unstake their tokens even after the claim period is over.
- Warning: during claim periods, you must use `unstakeWithClaim` instead of this to also receive reward.
+Reporters on the valid camp can unstake their tokens even after the claim period is over.
+ Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
+ use this function.
+ **Warning:**
+ You should instead use `unstakeWithClaim` throughout the claim period.
 
 ```solidity
 function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
@@ -30,7 +33,7 @@ function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| productKey | bytes32 |  | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
@@ -63,8 +66,8 @@ function unstake(
 
 ### unstakeWithClaim
 
-Reporters on the winning camp can unstake their token with a `claim` to receive
- back their original stake with a certain portion of the losing camp's stake
+Reporters on the valid camp can unstake their token with a `claim` to receive
+ back their original stake with a portion of the invalid camp's stake
  as an additional reward.
  During each `unstake with claim` processing, the protocol distributes reward to
  the final reporter and also burns some NPM tokens, as described in the documentation.
@@ -78,7 +81,7 @@ function unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incident
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| productKey | bytes32 |  | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
@@ -127,7 +130,7 @@ function unstakeWithClaim(
 
 ### getUnstakeInfoFor
 
-s Gets the unstake information for the supplied account
+Gets the unstake information for the supplied account
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view

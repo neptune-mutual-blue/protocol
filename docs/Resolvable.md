@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Resolvable Contract (Resolvable.sol)
+# Resolvable Contract (Resolvable.sol)
 
 View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/core/governance/resolution/Resolvable.sol)
 
@@ -8,7 +8,7 @@ View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/
 **Resolvable**
 
 Enables governance agents to resolve a contract undergoing reporting.
- Provides a cool-down period of 24-hours during when governance admins
+ Has a cool-down period of 24-hours (or as overridden) during when governance admins
  can perform emergency resolution to defend against governance attacks.
 
 ## Functions
@@ -22,6 +22,17 @@ Enables governance agents to resolve a contract undergoing reporting.
 
 ### resolve
 
+Marks as a cover as "resolved" after the reporting period.
+ A resolution has a (configurable) 24-hour cooldown period
+ that enables governance admins to revese decision in case of
+ attack or mistake.
+ Note:
+ An incident can be resolved:
+ - by a governance agent
+ - if it was reported
+ - after the reporting period
+ - if it wasn't resolved earlier
+
 ```solidity
 function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
@@ -30,9 +41,9 @@ function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key you want to resolve | 
+| productKey | bytes32 | Enter the product key you want to resolve | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -47,9 +58,10 @@ function resolve(
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeReportingOrDisputed(coverKey, productKey);
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
@@ -62,6 +74,14 @@ function resolve(
 
 ### emergencyResolve
 
+Enables governance admins to perform emergency resolution.
+ Note:
+ An incident can undergo an emergency resolution:
+ - by a governance admin
+ - if it was reported
+ - after the reporting period
+ - before the resolution deadline
+
 ```solidity
 function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
 ```
@@ -70,9 +90,9 @@ function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key on which you want to perform emergency resolve | 
+| productKey | bytes32 | Enter the product key on which you want to perform emergency resolve | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
 | decision | bool |  | 
 
 <details>
@@ -184,6 +204,8 @@ function _resolve(
 
 ### configureCoolDownPeriod
 
+Allows a governance admin to add or update resolution cooldown period for a given cover.
+
 ```solidity
 function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external nonpayable nonReentrant 
 ```
@@ -192,8 +214,8 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external nonp
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| period | uint256 |  | 
+| coverKey | bytes32 | Provide a coverKey or leave it empty. If empty, the cooldown period is set as  fallback value. Covers that do not have customized cooldown period will infer to the fallback value. | 
+| period | uint256 | Enter the cooldown period duration | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -218,6 +240,8 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external over
 
 ### getCoolDownPeriod
 
+Gets the cooldown period of a given cover
+
 ```solidity
 function getCoolDownPeriod(bytes32 coverKey) external view
 returns(uint256)
@@ -240,6 +264,8 @@ function getCoolDownPeriod(bytes32 coverKey) external view override returns (uin
 </details>
 
 ### getResolutionDeadline
+
+Gets the resolution deadline of a given cover
 
 ```solidity
 function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view

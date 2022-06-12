@@ -7,12 +7,7 @@ View Source: [contracts/core/delegates/VaultDelegateWithFlashLoan.sol](../contra
 
 **VaultDelegateWithFlashLoan**
 
-WithFlashLoan contract implements `EIP-3156 Flash Loan`.
- Using flash loans, you can borrow up to the total available amount of
- the stablecoin liquidity available in this cover liquidity pool.
- You need to return back the borrowed amount + fee in the same transaction.
- The function `flashFee` enables you to check, in advance, fee that
- you need to pay to take out the loan.
+VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
 
 ## Functions
 

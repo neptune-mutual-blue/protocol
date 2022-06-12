@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Witness Contract (Witness.sol)
+# Witness Contract (Witness.sol)
 
 View Source: [contracts/core/governance/Witness.sol](../contracts/core/governance/Witness.sol)
 
@@ -8,7 +8,7 @@ View Source: [contracts/core/governance/Witness.sol](../contracts/core/governanc
 **Witness**
 
 The witeness contract enables NPM tokenholders to
- participate in an already-reported cover incident.
+ participate in an active cover incident.
  <br />
  The participants can choose to support an incident by `attesting`
  or they can also disagree by `refuting` the incident. In both cases,
@@ -39,7 +39,7 @@ Support the reported incident by staking your NPM token.
  Even when you are right, the governance participants could outcast you.
  By using this function directly via a smart contract call,
  through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
- you are completely aware and fully understand the risk that you may lose all of
+ you are completely aware, fully understand, and accept the risk that you may lose all of
  your stake.
 
 ```solidity
@@ -95,7 +95,7 @@ Reject the reported incident by staking your NPM token.
  Even when you are right, the governance participants could outcast you.
  By using this function directly via a smart contract call,
  through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
- you are completely aware and fully understand the risk that you may lose all of
+ you are completely aware, fully understand, and accept the risk that you may lose all of
  your stake.
 
 ```solidity

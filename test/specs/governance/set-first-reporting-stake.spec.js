@@ -82,27 +82,21 @@ describe('Governance: `setFirstReportingStake` function', () => {
   })
 
   it('must set first reporting stake ', async () => {
-    await deployed.governance.setFirstReportingStake(amount)
+    await deployed.governance.setFirstReportingStake(helper.emptyBytes32, amount)
+    await deployed.governance.setFirstReportingStake(coverKey, minReportingStake)
   })
 
   it('must get first reporting stake ', async () => {
-    await deployed.governance.setFirstReportingStake(amount)
-    const result = await governance['getFirstReportingStake()']()
+    const result = await governance.getFirstReportingStake(helper.emptyBytes32)
     result.should.equal(amount)
   })
 
   it('must get first reporting stake ', async () => {
-    await deployed.governance.setFirstReportingStake(amount)
-    const result = await governance['getFirstReportingStake()']()
-    result.should.equal(amount)
-  })
-
-  it('must get first reporting stake of a cover ', async () => {
-    const result = await deployed.governance['getFirstReportingStake(bytes32)'](coverKey)
+    const result = await governance.getFirstReportingStake(coverKey)
     result.should.equal(minReportingStake)
   })
 
   it('reverts when zero is specified as minReportingStake', async () => {
-    await deployed.governance.setFirstReportingStake('0').should.be.rejectedWith('Please specify value')
+    await deployed.governance.setFirstReportingStake(coverKey, '0').should.be.rejectedWith('Please specify value')
   })
 })
