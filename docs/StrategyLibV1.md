@@ -15,7 +15,9 @@ event MaxLendingRatioSet(uint256  ratio);
 ## Functions
 
 - [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
+- [_getIsDisabledStrategyKey(address strategyAddress)](#_getisdisabledstrategykey)
 - [disableStrategyInternal(IStore s, address toFind)](#disablestrategyinternal)
+- [deleteStrategyInternal(IStore s, address toFind)](#deletestrategyinternal)
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
 - [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
 - [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
@@ -25,6 +27,7 @@ event MaxLendingRatioSet(uint256  ratio);
 - [getMaxLendingRatioKey()](#getmaxlendingratiokey)
 - [getWithdrawalWindowKey(bytes32 coverKey)](#getwithdrawalwindowkey)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
+- [_disableStrategy(IStore s, address toFind)](#_disablestrategy)
 - [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
 - [getDisabledStrategiesInternal(IStore s)](#getdisabledstrategiesinternal)
 - [getActiveStrategiesInternal(IStore s)](#getactivestrategiesinternal)
@@ -64,6 +67,29 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 ```
 </details>
 
+### _getIsDisabledStrategyKey
+
+```solidity
+function _getIsDisabledStrategyKey(address strategyAddress) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategyAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
+  }
+```
+</details>
+
 ### disableStrategyInternal
 
 ```solidity
@@ -83,9 +109,33 @@ function disableStrategyInternal(IStore s, address toFind) external nonpayable
 ```javascript
 function disableStrategyInternal(IStore s, address toFind) external {
     // @suppress-address-trust-issue Check caller.
-    _deleteStrategy(s, toFind);
+    _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
+  }
+```
+</details>
+
+### deleteStrategyInternal
+
+```solidity
+function deleteStrategyInternal(IStore s, address toFind) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| toFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteStrategyInternal(IStore s, address toFind) external {
+    // @suppress-address-trust-issue Check caller.
+    _deleteStrategy(s, toFind);
   }
 ```
 </details>
@@ -107,7 +157,7 @@ function addStrategiesInternal(IStore s, address[] strategies) external nonpayab
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addStrategiesInternal(IStore s, address[] memory strategies) external {
+function addStrategiesInternal(IStore s, address[] calldata strategies) external {
     for (uint256 i = 0; i < strategies.length; i++) {
       address strategy = strategies[i];
       _addStrategy(s, strategy);
@@ -331,6 +381,36 @@ function _addStrategy(IStore s, address deployedOn) private {
 ```
 </details>
 
+### _disableStrategy
+
+```solidity
+function _disableStrategy(IStore s, address toFind) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| toFind | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _disableStrategy(IStore s, address toFind) private {
+    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
+
+    uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+    require(pos > 0, "Invalid strategy");
+
+    s.deleteAddressArrayItem(key, toFind);
+    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), true);
+  }
+```
+</details>
+
 ### _deleteStrategy
 
 ```solidity
@@ -349,13 +429,13 @@ function _deleteStrategy(IStore s, address toFind) private nonpayable
 
 ```javascript
 function _deleteStrategy(IStore s, address toFind) private {
-    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
+    bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED;
 
     uint256 pos = s.getAddressArrayItemPosition(key, toFind);
     require(pos > 0, "Invalid strategy");
 
     s.deleteAddressArrayItem(key, toFind);
-    s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+    s.setBoolByKey(_getIsDisabledStrategyKey(toFind), false);
   }
 ```
 </details>
@@ -548,9 +628,7 @@ function preTransferToStrategyInternal(
     bytes32 strategyName,
     uint256 amount
   ) external {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return;
     }
 
@@ -588,9 +666,7 @@ function postReceiveFromStrategyInternal(
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return (income, loss);
     }
 
@@ -840,6 +916,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -878,7 +955,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -903,6 +980,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -913,7 +991,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -922,7 +1000,6 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

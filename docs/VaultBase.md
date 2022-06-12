@@ -11,10 +11,6 @@ View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidit
 **Constants & Variables**
 
 ```js
-//private members
-string private constant _POD_TOKEN_SYMBOL;
-
-//public members
 bytes32 public key;
 address public sc;
 
@@ -22,14 +18,13 @@ address public sc;
 
 ## Functions
 
-- [constructor(IStore store, bytes32 coverKey, IERC20 stablecoin)](#)
-- [_getTokenName(bytes32 coverKey)](#_gettokenname)
+- [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin)](#)
 - [delgate()](#delgate)
 
 ### 
 
 ```solidity
-function (IStore store, bytes32 coverKey, IERC20 stablecoin) internal nonpayable ERC20 Recoverable 
+function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) internal nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
@@ -38,6 +33,8 @@ function (IStore store, bytes32 coverKey, IERC20 stablecoin) internal nonpayable
 | ------------- |------------- | -----|
 | store | IStore |  | 
 | coverKey | bytes32 |  | 
+| tokenName | string |  | 
+| tokenSymbol | string |  | 
 | stablecoin | IERC20 |  | 
 
 <details>
@@ -47,33 +44,12 @@ function (IStore store, bytes32 coverKey, IERC20 stablecoin) internal nonpayable
 constructor(
     IStore store,
     bytes32 coverKey,
+    string memory tokenName,
+    string memory tokenSymbol,
     IERC20 stablecoin
-  ) ERC20(_getTokenName(coverKey), _POD_TOKEN_SYMBOL) Recoverable(store) {
+  ) ERC20(tokenName, tokenSymbol) Recoverable(store) {
     key = coverKey;
     sc = address(stablecoin);
-  }
-```
-</details>
-
-### _getTokenName
-
-```solidity
-function _getTokenName(bytes32 coverKey) private pure
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-ndai"));
   }
 ```
 </details>
@@ -130,6 +106,7 @@ function delgate() public view returns (IVaultDelegate) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -168,7 +145,7 @@ function delgate() public view returns (IVaultDelegate) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -193,6 +170,7 @@ function delgate() public view returns (IVaultDelegate) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -203,7 +181,7 @@ function delgate() public view returns (IVaultDelegate) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -212,7 +190,6 @@ function delgate() public view returns (IVaultDelegate) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

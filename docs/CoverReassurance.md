@@ -10,16 +10,13 @@ Reassurance tokens can be added by a covered project to demonstrate coverage sup
  for their project. This helps bring the cover fee down and enhances
  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
  as a support to the liquidity providers when a cover incident occurs.
- Without negatively affecting the price much,
- the protocol will gradually convert the reassurance tokens
- to stablecoin liquidity.
 
 ## Functions
 
 - [constructor(IStore store)](#)
 - [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
-- [capitalizePool(bytes32 coverKey, uint256 incidentDate)](#capitalizepool)
+- [capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#capitalizepool)
 - [getReassurance(bytes32 coverKey)](#getreassurance)
 - [version()](#version)
 - [getName()](#getname)
@@ -77,11 +74,11 @@ function addReassurance(
     require(amount > 0, "Provide valid amount");
 
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
-    IERC20 reassuranceToken = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoin());
 
     s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
 
-    reassuranceToken.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(account, address(this), amount);
 
     s.updateStateAndLiquidity(coverKey);
 
@@ -126,7 +123,7 @@ function setWeight(bytes32 coverKey, uint256 weight) external override nonReentr
 ### capitalizePool
 
 ```solidity
-function capitalizePool(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
+function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -134,33 +131,40 @@ function capitalizePool(bytes32 coverKey, uint256 incidentDate) external nonpaya
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function capitalizePool(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+function capitalizePool(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterResolutionDeadline(coverKey);
-    s.mustBeClaimable(coverKey);
-    s.mustBeAfterClaimExpiry(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey, productKey);
+    s.mustBeClaimable(coverKey, productKey);
+    s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     IVault vault = s.getVault(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
 
     require(toTransfer > 0, "Nothing to capitalize");
 
-    stablecoin.transfer(address(vault), toTransfer);
+    stablecoin.ensureTransfer(address(vault), toTransfer);
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
-    s.addReassurancePayoutInternal(coverKey, incidentDate, toTransfer);
+    s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
+
+    emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);
   }
 ```
 </details>
@@ -267,6 +271,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -305,7 +310,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -330,6 +335,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -340,7 +346,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -349,7 +355,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -6,25 +6,19 @@ View Source: [contracts/libraries/PriceLibV1.sol](../contracts/libraries/PriceLi
 
 ## Functions
 
-- [setTokenPriceInStablecoinInternal(IStore s, address token)](#settokenpriceinstablecoininternal)
-- [setTokenPriceInternal(IStore s, address token, address stablecoin)](#settokenpriceinternal)
-- [getLastKnownPairInfoInternal(IStore s, IUniswapV2PairLike pair)](#getlastknownpairinfointernal)
-- [_setTokenPrice(IStore s, address token, address stablecoin, IUniswapV2PairLike pair)](#_settokenprice)
-- [getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens)](#getpairliquidityinstablecoin)
-- [getLastUpdateOnInternal(IStore s, bytes32 coverKey)](#getlastupdateoninternal)
-- [setLastUpdateOn(IStore s, bytes32 coverKey)](#setlastupdateon)
+- [getPriceOracleInternal(IStore s)](#getpriceoracleinternal)
+- [setNpmPrice(IStore s)](#setnpmprice)
+- [convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn)](#convertnpmlpunitstostabelcoin)
+- [getLastUpdatedOnInternal(IStore s, bytes32 coverKey)](#getlastupdatedoninternal)
+- [setLastUpdatedOn(IStore s, bytes32 coverKey)](#setlastupdatedon)
 - [getLastUpdateKey(bytes32 coverKey)](#getlastupdatekey)
-- [getPriceInternal(IStore s, address token, address stablecoin, uint256 multiplier)](#getpriceinternal)
-- [getNpmPriceInternal(IStore s, uint256 multiplier)](#getnpmpriceinternal)
-- [_getReserve0Key(IUniswapV2PairLike pair)](#_getreserve0key)
-- [_getReserve1Key(IUniswapV2PairLike pair)](#_getreserve1key)
-- [_getPairTotalSupplyKey(IUniswapV2PairLike pair)](#_getpairtotalsupplykey)
-- [_getPair(IStore s, address token, address stablecoin)](#_getpair)
+- [getNpmPriceInternal(IStore s, uint256 amountIn)](#getnpmpriceinternal)
 
-### setTokenPriceInStablecoinInternal
+### getPriceOracleInternal
 
 ```solidity
-function setTokenPriceInStablecoinInternal(IStore s, address token) internal nonpayable
+function getPriceOracleInternal(IStore s) public view
+returns(contract IPriceOracle)
 ```
 
 **Arguments**
@@ -32,27 +26,21 @@ function setTokenPriceInStablecoinInternal(IStore s, address token) internal non
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| token | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setTokenPriceInStablecoinInternal(IStore s, address token) internal {
-    if (token == address(0)) {
-      return;
-    }
-
-    address stablecoin = s.getStablecoin();
-    setTokenPriceInternal(s, token, stablecoin);
+function getPriceOracleInternal(IStore s) public view returns (IPriceOracle) {
+    return IPriceOracle(s.getNpmPriceOracle());
   }
 ```
 </details>
 
-### setTokenPriceInternal
+### setNpmPrice
 
 ```solidity
-function setTokenPriceInternal(IStore s, address token, address stablecoin) internal nonpayable
+function setNpmPrice(IStore s) internal nonpayable
 ```
 
 **Arguments**
@@ -60,96 +48,21 @@ function setTokenPriceInternal(IStore s, address token, address stablecoin) inte
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| token | address |  | 
-| stablecoin | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setTokenPriceInternal(
-    IStore s,
-    address token,
-    address stablecoin
-  ) internal {
-    IUniswapV2PairLike pair = _getPair(s, token, stablecoin);
-    _setTokenPrice(s, token, stablecoin, pair);
+function setNpmPrice(IStore s) internal {
+    getPriceOracleInternal(s).update();
   }
 ```
 </details>
 
-### getLastKnownPairInfoInternal
-
-Returns the last persisted pair info
+### convertNpmLpUnitsToStabelcoin
 
 ```solidity
-function getLastKnownPairInfoInternal(IStore s, IUniswapV2PairLike pair) public view
-returns(values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Provide store instance | 
-| pair | IUniswapV2PairLike | Provide pair instance | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getLastKnownPairInfoInternal(IStore s, IUniswapV2PairLike pair) public view returns (uint256[] memory values) {
-    values = new uint256[](3);
-
-    values[0] = s.getUintByKey(_getReserve0Key(pair));
-    values[1] = s.getUintByKey(_getReserve1Key(pair));
-    values[2] = s.getUintByKey(_getPairTotalSupplyKey(pair));
-  }
-```
-</details>
-
-### _setTokenPrice
-
-```solidity
-function _setTokenPrice(IStore s, address token, address stablecoin, IUniswapV2PairLike pair) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | address |  | 
-| stablecoin | address |  | 
-| pair | IUniswapV2PairLike |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _setTokenPrice(
-    IStore s,
-    address token,
-    address stablecoin,
-    IUniswapV2PairLike pair
-  ) private {
-    if (token == stablecoin) {
-      return;
-    }
-
-    (uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
-
-    s.setUintByKey(_getReserve0Key(pair), reserve0);
-    s.setUintByKey(_getReserve1Key(pair), reserve1);
-    s.setUintByKey(_getPairTotalSupplyKey(pair), pair.totalSupply());
-  }
-```
-</details>
-
-### getPairLiquidityInStablecoin
-
-```solidity
-function getPairLiquidityInStablecoin(IStore s, IUniswapV2PairLike pair, uint256 lpTokens) external view
+function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view
 returns(uint256)
 ```
 
@@ -158,41 +71,22 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| pair | IUniswapV2PairLike |  | 
-| lpTokens | uint256 |  | 
+| amountIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getPairLiquidityInStablecoin(
-    IStore s,
-    IUniswapV2PairLike pair,
-    uint256 lpTokens
-  ) external view returns (uint256) {
-    uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
-
-    uint256 reserve0 = values[0];
-    uint256 reserve1 = values[1];
-    uint256 supply = values[2];
-
-    require(supply > 0, "Invalid pair or price not updated"); // solhint-disable-line
-
-    address stablecoin = s.getStablecoin();
-
-    if (pair.token0() == stablecoin) {
-      return (2 * reserve0 * lpTokens) / supply;
-    }
-
-    return (2 * reserve1 * lpTokens) / supply;
+function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view returns (uint256) {
+    return getPriceOracleInternal(s).consultPair(amountIn);
   }
 ```
 </details>
 
-### getLastUpdateOnInternal
+### getLastUpdatedOnInternal
 
 ```solidity
-function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view
+function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view
 returns(uint256)
 ```
 
@@ -207,17 +101,17 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLastUpdateOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     bytes32 key = getLastUpdateKey(coverKey);
     return s.getUintByKey(key);
   }
 ```
 </details>
 
-### setLastUpdateOn
+### setLastUpdatedOn
 
 ```solidity
-function setLastUpdateOn(IStore s, bytes32 coverKey) external nonpayable
+function setLastUpdatedOn(IStore s, bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
@@ -231,7 +125,7 @@ function setLastUpdateOn(IStore s, bytes32 coverKey) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLastUpdateOn(IStore s, bytes32 coverKey) external {
+function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
     bytes32 key = getLastUpdateKey(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
@@ -261,52 +155,10 @@ function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
 ```
 </details>
 
-### getPriceInternal
-
-```solidity
-function getPriceInternal(IStore s, address token, address stablecoin, uint256 multiplier) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | address |  | 
-| stablecoin | address |  | 
-| multiplier | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPriceInternal(
-    IStore s,
-    address token,
-    address stablecoin,
-    uint256 multiplier
-  ) public view returns (uint256) {
-    IUniswapV2PairLike pair = _getPair(s, token, stablecoin);
-    IUniswapV2RouterLike router = IUniswapV2RouterLike(s.getUniswapV2Router());
-
-    uint256[] memory values = getLastKnownPairInfoInternal(s, pair);
-    uint256 reserve0 = values[0];
-    uint256 reserve1 = values[1];
-
-    if (pair.token0() == stablecoin) {
-      return router.getAmountIn(multiplier, reserve0, reserve1);
-    }
-
-    return router.getAmountIn(multiplier, reserve1, reserve0);
-  }
-```
-</details>
-
 ### getNpmPriceInternal
 
 ```solidity
-function getNpmPriceInternal(IStore s, uint256 multiplier) external view
+function getNpmPriceInternal(IStore s, uint256 amountIn) external view
 returns(uint256)
 ```
 
@@ -315,115 +167,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| multiplier | uint256 |  | 
+| amountIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getNpmPriceInternal(IStore s, uint256 multiplier) external view returns (uint256) {
-    return getPriceInternal(s, s.getNpmTokenAddress(), s.getStablecoin(), multiplier);
-  }
-```
-</details>
-
-### _getReserve0Key
-
-```solidity
-function _getReserve0Key(IUniswapV2PairLike pair) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| pair | IUniswapV2PairLike |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getReserve0Key(IUniswapV2PairLike pair) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LP_RESERVE0, pair));
-  }
-```
-</details>
-
-### _getReserve1Key
-
-```solidity
-function _getReserve1Key(IUniswapV2PairLike pair) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| pair | IUniswapV2PairLike |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getReserve1Key(IUniswapV2PairLike pair) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LP_RESERVE1, pair));
-  }
-```
-</details>
-
-### _getPairTotalSupplyKey
-
-```solidity
-function _getPairTotalSupplyKey(IUniswapV2PairLike pair) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| pair | IUniswapV2PairLike |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getPairTotalSupplyKey(IUniswapV2PairLike pair) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LP_TOTAL_SUPPLY, pair));
-  }
-```
-</details>
-
-### _getPair
-
-```solidity
-function _getPair(IStore s, address token, address stablecoin) private view
-returns(contract IUniswapV2PairLike)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | address |  | 
-| stablecoin | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getPair(
-    IStore s,
-    address token,
-    address stablecoin
-  ) private view returns (IUniswapV2PairLike) {
-    IUniswapV2FactoryLike factory = IUniswapV2FactoryLike(s.getUniswapV2Factory());
-    IUniswapV2PairLike pair = IUniswapV2PairLike(factory.getPair(token, stablecoin));
-
-    return pair;
+function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (uint256) {
+    return getPriceOracleInternal(s).consult(s.getNpmTokenAddress(), amountIn);
   }
 ```
 </details>
@@ -457,6 +208,7 @@ function _getPair(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -495,7 +247,7 @@ function _getPair(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -520,6 +272,7 @@ function _getPair(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -530,7 +283,7 @@ function _getPair(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -539,7 +292,6 @@ function _getPair(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

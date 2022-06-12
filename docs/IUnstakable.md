@@ -9,21 +9,21 @@ View Source: [contracts/interfaces/IUnstakable.sol](../contracts/interfaces/IUns
 **Events**
 
 ```js
-event Unstaken(address indexed caller, uint256  originalStake, uint256  reward);
-event ReporterRewardDistributed(address indexed caller, address indexed reporter, uint256  originalReward, uint256  reporterReward);
-event GovernanceBurned(address indexed caller, address indexed burner, uint256  originalReward, uint256  burnedAmount);
+event Unstaken(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed caller, uint256  originalStake, uint256  reward);
+event ReporterRewardDistributed(bytes32 indexed coverKey, bytes32 indexed productKey, address  caller, address indexed reporter, uint256  originalReward, uint256  reporterReward);
+event GovernanceBurned(bytes32 indexed coverKey, bytes32 indexed productKey, address  caller, address indexed burner, uint256  originalReward, uint256  burnedAmount);
 ```
 
 ## Functions
 
-- [unstake(bytes32 coverKey, uint256 incidentDate)](#unstake)
-- [unstakeWithClaim(bytes32 coverKey, uint256 incidentDate)](#unstakewithclaim)
-- [getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate)](#getunstakeinfofor)
+- [unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#unstake)
+- [unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#unstakewithclaim)
+- [getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
 ```solidity
-function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable
+function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
@@ -31,20 +31,25 @@ function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstake(bytes32 coverKey, uint256 incidentDate) external;
+function unstake(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 ```
 </details>
 
 ### unstakeWithClaim
 
 ```solidity
-function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpayable
+function unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
@@ -52,20 +57,25 @@ function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpa
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external;
+function unstakeWithClaim(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 ```
 </details>
 
 ### getUnstakeInfoFor
 
 ```solidity
-function getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate) external view
+function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
@@ -75,6 +85,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 | ------------- |------------- | -----|
 | account | address |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -84,6 +95,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 function getUnstakeInfoFor(
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   )
     external
@@ -129,6 +141,7 @@ function getUnstakeInfoFor(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -167,7 +180,7 @@ function getUnstakeInfoFor(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -192,6 +205,7 @@ function getUnstakeInfoFor(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -202,7 +216,7 @@ function getUnstakeInfoFor(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -211,7 +225,6 @@ function getUnstakeInfoFor(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

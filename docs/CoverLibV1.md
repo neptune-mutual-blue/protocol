@@ -7,22 +7,24 @@ View Source: [contracts/libraries/CoverLibV1.sol](../contracts/libraries/CoverLi
 **Events**
 
 ```js
-event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address  account, bool  status);
+event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool  status);
 ```
 
 ## Functions
 
-- [getCoverInfo(IStore s, bytes32 coverKey)](#getcoverinfo)
+- [getCoverInfo(IStore s, bytes32 coverKey, bytes32 productKey)](#getcoverinfo)
 - [initializeCoverInternal(IStore s, address liquidityToken, bytes32 liquidityName)](#initializecoverinternal)
-- [addCoverInternal(IStore s, bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcoverinternal)
-- [_addCover(IStore s, bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values, uint256 fee)](#_addcover)
-- [deployVaultInternal(IStore s, bytes32 coverKey)](#deployvaultinternal)
+- [addCoverInternal(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values)](#addcoverinternal)
+- [_addCover(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values, uint256 fee)](#_addcover)
+- [addProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproductinternal)
+- [updateProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values)](#updateproductinternal)
+- [deployVaultInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol)](#deployvaultinternal)
 - [_validateAndGetFee(IStore s, bytes32 coverKey, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 - [updateCoverInternal(IStore s, bytes32 coverKey, bytes32 info)](#updatecoverinternal)
-- [stopCoverInternal(IStore s, bytes32 coverKey)](#stopcoverinternal)
+- [stopCoverInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#stopcoverinternal)
 - [updateCoverCreatorWhitelistInternal(IStore s, address account, bool status)](#updatecovercreatorwhitelistinternal)
-- [_updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, address account, bool status)](#_updatecoveruserwhitelistinternal)
-- [updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelistinternal)
+- [_updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address account, bool status)](#_updatecoveruserwhitelistinternal)
+- [updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelistinternal)
 - [setCoverFeesInternal(IStore s, uint256 value)](#setcoverfeesinternal)
 - [setMinCoverCreationStakeInternal(IStore s, uint256 value)](#setmincovercreationstakeinternal)
 - [setMinStakeToAddLiquidityInternal(IStore s, uint256 value)](#setminstaketoaddliquidityinternal)
@@ -30,7 +32,7 @@ event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address  account, bool
 ### getCoverInfo
 
 ```solidity
-function getCoverInfo(IStore s, bytes32 coverKey) external view
+function getCoverInfo(IStore s, bytes32 coverKey, bytes32 productKey) external view
 returns(owner address, info bytes32, values uint256[])
 ```
 
@@ -40,12 +42,17 @@ returns(owner address, info bytes32, values uint256[])
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverInfo(IStore s, bytes32 coverKey)
+function getCoverInfo(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  )
     external
     view
     returns (
@@ -62,7 +69,7 @@ function getCoverInfo(IStore s, bytes32 coverKey)
     values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
     values[1] = s.getStake(coverKey);
     values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getActiveLiquidityUnderProtection(coverKey);
+    values[3] = s.getActiveLiquidityUnderProtection(coverKey, productKey);
   }
 ```
 </details>
@@ -115,7 +122,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCoverInternal(IStore s, bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable
+function addCoverInternal(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
 ```
 
 **Arguments**
@@ -124,8 +131,8 @@ function addCoverInternal(IStore s, bytes32 coverKey, bytes32 info, address reas
 | ------------- |------------- | -----|
 | s | IStore | Provide store instance | 
 | coverKey | bytes32 | Enter a unique key for this cover | 
+| supportsProducts | bool |  | 
 | info | bytes32 | IPFS info of the cover contract | 
-| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
 | requiresWhitelist | bool |  | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
@@ -136,18 +143,16 @@ function addCoverInternal(IStore s, bytes32 coverKey, bytes32 info, address reas
 function addCoverInternal(
     IStore s,
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external {
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version. Check caller.
-
     // First validate the information entered
     (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
 
     // Set the basic cover info
-    _addCover(s, coverKey, info, reassuranceToken, requiresWhitelist, values, fee);
+    _addCover(s, coverKey, supportsProducts, info, requiresWhitelist, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(coverKey, msg.sender, values[0], fee);
@@ -163,7 +168,7 @@ function addCoverInternal(
 ### _addCover
 
 ```solidity
-function _addCover(IStore s, bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values, uint256 fee) private nonpayable
+function _addCover(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values, uint256 fee) private nonpayable
 ```
 
 **Arguments**
@@ -172,8 +177,8 @@ function _addCover(IStore s, bytes32 coverKey, bytes32 info, address reassurance
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| supportsProducts | bool |  | 
 | info | bytes32 |  | 
-| reassuranceToken | address |  | 
 | requiresWhitelist | bool |  | 
 | values | uint256[] |  | 
 | fee | uint256 |  | 
@@ -185,10 +190,10 @@ function _addCover(IStore s, bytes32 coverKey, bytes32 info, address reassurance
 function _addCover(
     IStore s,
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
-    uint256[] memory values,
+    uint256[] calldata values,
     uint256 fee
   ) private {
     require(coverKey > 0, "Invalid cover key");
@@ -200,21 +205,27 @@ function _addCover(
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
     require(values[8] > 0, "Invalid reassurance rate");
+    require(values[9] > 0 && values[9] < 25, "Invalid leverage");
+
+    if (supportsProducts == false) {
+      // Standalone pools do not support any leverage
+      require(values[9] == 1, "Invalid leverage");
+    }
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
-
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, supportsProducts);
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey, msg.sender);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey, reassuranceToken);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
 
     // Set the fee charged during cover creation
     s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
+
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, values[2]);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey, values[3]);
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, values[4]);
@@ -222,6 +233,102 @@ function _addCover(
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey, values[9]);
+  }
+```
+</details>
+
+### addProductInternal
+
+```solidity
+function addProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| info | bytes32 |  | 
+| requiresWhitelist | bool |  | 
+| values | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] calldata values
+  ) external {
+    s.mustBeValidCoverKey(coverKey);
+    s.mustSupportProducts(coverKey);
+
+    require(productKey > 0, "Invalid product key");
+    require(info > 0, "Invalid info");
+
+    // Product Status
+    // 0 --> Deleted
+    // 1 --> Active
+    // 2 --> Retired
+    require(values[0] == 1, "Status must be active");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == false, "Already exists");
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+    s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
+  }
+```
+</details>
+
+### updateProductInternal
+
+```solidity
+function updateProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| info | bytes32 |  | 
+| values | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] calldata values
+  ) external {
+    require(values[0] <= 2, "Invalid product status");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+
+    s.mustBeValidCoverKey(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
   }
 ```
 </details>
@@ -229,7 +336,7 @@ function _addCover(
 ### deployVaultInternal
 
 ```solidity
-function deployVaultInternal(IStore s, bytes32 coverKey) external nonpayable
+function deployVaultInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol) external nonpayable
 returns(address)
 ```
 
@@ -239,19 +346,24 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| tokenName | string |  | 
+| tokenSymbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deployVaultInternal(IStore s, bytes32 coverKey) external returns (address) {
+function deployVaultInternal(
+    IStore s,
+    bytes32 coverKey,
+    string calldata tokenName,
+    string calldata tokenSymbol
+  ) external returns (address) {
     address vault = s.getProtocolContract(ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     require(vault == address(0), "Vault already deployed");
 
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
-
     // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(coverKey);
+    address deployed = s.getVaultFactoryContract().deploy(coverKey, tokenName, tokenSymbol);
 
     s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
     return deployed;
@@ -329,7 +441,7 @@ function updateCoverInternal(
 ### stopCoverInternal
 
 ```solidity
-function stopCoverInternal(IStore s, bytes32 coverKey) external nonpayable
+function stopCoverInternal(IStore s, bytes32 coverKey, bytes32 productKey) external nonpayable
 ```
 
 **Arguments**
@@ -338,13 +450,19 @@ function stopCoverInternal(IStore s, bytes32 coverKey) external nonpayable
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stopCoverInternal(IStore s, bytes32 coverKey) external {
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
+function stopCoverInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external {
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Stopped);
   }
 ```
 </details>
@@ -380,7 +498,7 @@ function updateCoverCreatorWhitelistInternal(
 ### _updateCoverUserWhitelistInternal
 
 ```solidity
-function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, address account, bool status) private nonpayable
+function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address account, bool status) private nonpayable
 ```
 
 **Arguments**
@@ -389,6 +507,7 @@ function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, address a
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | account | address |  | 
 | status | bool |  | 
 
@@ -399,11 +518,12 @@ function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, address a
 function _updateCoverUserWhitelistInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address account,
     bool status
   ) private {
-    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account, status);
-    emit CoverUserWhitelistUpdated(coverKey, account, status);
+    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
+    emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
   }
 ```
 </details>
@@ -411,7 +531,7 @@ function _updateCoverUserWhitelistInternal(
 ### updateCoverUsersWhitelistInternal
 
 ```solidity
-function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, address[] accounts, bool[] statuses) external nonpayable
+function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses) external nonpayable
 ```
 
 **Arguments**
@@ -420,6 +540,7 @@ function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, address[]
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | accounts | address[] |  | 
 | statuses | bool[] |  | 
 
@@ -430,13 +551,14 @@ function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, address[]
 function updateCoverUsersWhitelistInternal(
     IStore s,
     bytes32 coverKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    bytes32 productKey,
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external {
     require(accounts.length == statuses.length, "Inconsistent array sizes");
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      _updateCoverUserWhitelistInternal(s, coverKey, accounts[i], statuses[i]);
+      _updateCoverUserWhitelistInternal(s, coverKey, productKey, accounts[i], statuses[i]);
     }
   }
 ```
@@ -558,6 +680,7 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -596,7 +719,7 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -621,6 +744,7 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -631,7 +755,7 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -640,7 +764,6 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

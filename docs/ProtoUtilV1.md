@@ -16,6 +16,7 @@ bytes32 public constant CNS_UNISWAP_V2_ROUTER;
 bytes32 public constant CNS_UNISWAP_V2_FACTORY;
 bytes32 public constant CNS_PRICE_DISCOVERY;
 bytes32 public constant CNS_TREASURY;
+bytes32 public constant CNS_NPM_PRICE_ORACLE;
 bytes32 public constant CNS_COVER_REASSURANCE;
 bytes32 public constant CNS_POOL_BOND;
 bytes32 public constant CNS_COVER_POLICY;
@@ -39,20 +40,24 @@ bytes32 public constant CNS_BURNER;
 bytes32 public constant NS_MEMBERS;
 bytes32 public constant NS_CONTRACTS;
 bytes32 public constant NS_COVER;
+bytes32 public constant NS_COVER_PRODUCT;
+bytes32 public constant NS_COVER_PRODUCT_EFFICIENCY;
 bytes32 public constant NS_COVER_CREATION_DATE;
 bytes32 public constant NS_COVER_CREATION_FEE;
 bytes32 public constant NS_COVER_CREATION_MIN_STAKE;
 bytes32 public constant NS_COVER_REASSURANCE;
 bytes32 public constant NS_COVER_REASSURANCE_PAYOUT;
-bytes32 public constant NS_COVER_REASSURANCE_TOKEN;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_REASSURANCE_RATE;
+bytes32 public constant NS_COVER_LEVERAGE_FACTOR;
 bytes32 public constant NS_COVER_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
+bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS;
 bytes32 public constant NS_VAULT_STRATEGY_OUT;
 bytes32 public constant NS_VAULT_LENDING_INCOMES;
 bytes32 public constant NS_VAULT_LENDING_LOSSES;
+bytes32 public constant NS_VAULT_DEPOSIT_HEIGHTS;
 bytes32 public constant NS_COVER_LIQUIDITY_LENDING_PERIOD;
 bytes32 public constant NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
 bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
@@ -71,6 +76,8 @@ bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
 bytes32 public constant NS_COVER_CXTOKEN;
+bytes32 public constant NS_VAULT_TOKEN_NAME;
+bytes32 public constant NS_VAULT_TOKEN_SYMBOL;
 bytes32 public constant NS_COVER_CREATOR_WHITELIST;
 bytes32 public constant NS_COVER_USER_WHITELIST;
 bytes32 public constant NS_COVER_CLAIM_BLACKLIST;
@@ -96,11 +103,8 @@ bytes32 public constant NS_CLAIM_BEGIN_TS;
 bytes32 public constant NS_CLAIM_EXPIRY_TS;
 bytes32 public constant NS_RESOLUTION_DEADLINE;
 bytes32 public constant NS_RESOLUTION_COOL_DOWN_PERIOD;
-bytes32 public constant NS_CLAIM_PLATFORM_FEE;
+bytes32 public constant NS_COVER_PLATFORM_FEE;
 bytes32 public constant NS_CLAIM_REPORTER_COMMISSION;
-bytes32 public constant NS_LP_RESERVE0;
-bytes32 public constant NS_LP_RESERVE1;
-bytes32 public constant NS_LP_TOTAL_SUPPLY;
 bytes32 public constant NS_LAST_LIQUIDITY_STATE_UPDATE;
 bytes32 public constant NS_LIQUIDITY_STATE_UPDATE_INTERVAL;
 bytes32 public constant NS_LENDING_STRATEGY_ACTIVE;
@@ -117,7 +121,6 @@ bytes32 public constant CNAME_BOND_POOL;
 bytes32 public constant CNAME_STAKING_POOL;
 bytes32 public constant CNAME_POD_STAKING_POOL;
 bytes32 public constant CNAME_CLAIMS_PROCESSOR;
-bytes32 public constant CNAME_PRICE_DISCOVERY;
 bytes32 public constant CNAME_COVER;
 bytes32 public constant CNAME_GOVERNANCE;
 bytes32 public constant CNAME_RESOLUTION;
@@ -147,6 +150,7 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getNpmTokenAddress(IStore s)](#getnpmtokenaddress)
 - [getUniswapV2Router(IStore s)](#getuniswapv2router)
 - [getUniswapV2Factory(IStore s)](#getuniswapv2factory)
+- [getNpmPriceOracle(IStore s)](#getnpmpriceoracle)
 - [getTreasury(IStore s)](#gettreasury)
 - [getStablecoin(IStore s)](#getstablecoin)
 - [getBurnAddress(IStore s)](#getburnaddress)
@@ -452,6 +456,29 @@ function getUniswapV2Factory(IStore s) external view returns (address) {
 ```
 </details>
 
+### getNpmPriceOracle
+
+```solidity
+function getNpmPriceOracle(IStore s) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getNpmPriceOracle(IStore s) external view returns (address) {
+    return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
+  }
+```
+</details>
+
 ### getTreasury
 
 ```solidity
@@ -598,6 +625,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -636,7 +664,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -661,6 +689,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -671,7 +700,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -680,7 +709,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

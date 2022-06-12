@@ -6,14 +6,14 @@ View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/librarie
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 coverKey, uint256 expiryDate)](#getbytecode)
+- [getByteCode(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate)](#getbytecode)
 
 ### getByteCode
 
 Gets the bytecode of the `cxToken` contract
 
 ```solidity
-function getByteCode(IStore s, bytes32 coverKey, uint256 expiryDate) external pure
+function getByteCode(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external pure
 returns(bytecode bytes, salt bytes32)
 ```
 
@@ -23,6 +23,8 @@ returns(bytecode bytes, salt bytes32)
 | ------------- |------------- | -----|
 | s | IStore | Provide the store instance | 
 | coverKey | bytes32 | Provide the cover key | 
+| productKey | bytes32 |  | 
+| tokenName | string |  | 
 | expiryDate | uint256 | Specify the expiry date of this cxToken instance | 
 
 <details>
@@ -32,12 +34,15 @@ returns(bytecode bytes, salt bytes32)
 function getByteCode(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
+    string memory tokenName,
     uint256 expiryDate
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
-    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, expiryDate));
+    salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
 
     //slither-disable-next-line too-many-digits
-    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, coverKey, expiryDate));
+    bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, coverKey, productKey, tokenName, expiryDate));
+    require(bytecode.length > 0, "Invalid bytecode");
   }
 ```
 </details>
@@ -71,6 +76,7 @@ function getByteCode(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -109,7 +115,7 @@ function getByteCode(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -134,6 +140,7 @@ function getByteCode(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -144,7 +151,7 @@ function getByteCode(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -153,7 +160,6 @@ function getByteCode(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -9,18 +9,19 @@ View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToke
 
 ## Functions
 
-- [mint(bytes32 coverKey, address to, uint256 amount)](#mint)
+- [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [createdOn()](#createdon)
 - [expiresOn()](#expireson)
 - [COVER_KEY()](#cover_key)
+- [PRODUCT_KEY()](#product_key)
 - [getCoverageStartsFrom(address account, uint256 date)](#getcoveragestartsfrom)
 - [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
 
 ### mint
 
 ```solidity
-function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable
+function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -28,6 +29,7 @@ function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | to | address |  | 
 | amount | uint256 |  | 
 
@@ -37,6 +39,7 @@ function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable
 ```javascript
 function mint(
     bytes32 coverKey,
+    bytes32 productKey,
     address to,
     uint256 amount
   ) external;
@@ -123,6 +126,26 @@ function COVER_KEY() external view returns (bytes32);
 ```
 </details>
 
+### PRODUCT_KEY
+
+```solidity
+function PRODUCT_KEY() external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function PRODUCT_KEY() external view returns (bytes32);
+```
+</details>
+
 ### getCoverageStartsFrom
 
 ```solidity
@@ -195,6 +218,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -233,7 +257,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -258,6 +282,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -268,7 +293,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -277,7 +302,6 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -6,14 +6,12 @@ View Source: [contracts/core/cxToken/cxTokenFactory.sol](../contracts/core/cxTok
 
 **cxTokenFactory**
 
-As and when required by the protocol,
- the cxTokenFactory contract creates new instances of
- cxTokens on demand.
+Deploys new instances of cxTokens on demand.
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [deploy(bytes32 coverKey, uint256 expiryDate)](#deploy)
+- [deploy(bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate)](#deploy)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -44,7 +42,7 @@ constructor(IStore store) Recoverable(store) {}
 Deploys a new instance of cxTokens
 
 ```solidity
-function deploy(bytes32 coverKey, uint256 expiryDate) external nonpayable nonReentrant 
+function deploy(bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external nonpayable nonReentrant 
 returns(deployed address)
 ```
 
@@ -53,21 +51,29 @@ returns(deployed address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key related to this cxToken instance | 
+| productKey | bytes32 | Enter the product key related to this cxToken instance | 
+| tokenName | string |  | 
 | expiryDate | uint256 | Specify the expiry date of this cxToken instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deploy(bytes32 coverKey, uint256 expiryDate) external override nonReentrant returns (address deployed) {
+function deploy(
+    bytes32 coverKey,
+    bytes32 productKey,
+    string calldata tokenName,
+    uint256 expiryDate
+  ) external override nonReentrant returns (address deployed) {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
-    s.mustBeValidCoverKey(coverKey);
     s.senderMustBePolicyContract();
+    s.mustBeValidCoverKey(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, productKey, tokenName, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 
@@ -89,9 +95,9 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external override nonReent
 
     s.setAddress(salt, deployed);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
-    s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, deployed);
+    s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, deployed);
 
-    emit CxTokenDeployed(coverKey, deployed, expiryDate);
+    emit CxTokenDeployed(coverKey, productKey, deployed, expiryDate);
   }
 ```
 </details>
@@ -173,6 +179,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -211,7 +218,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -236,6 +243,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -246,7 +254,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -255,7 +263,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

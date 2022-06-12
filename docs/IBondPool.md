@@ -41,7 +41,7 @@ function setup(address[] addresses, uint256[] values) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setup(address[] memory addresses, uint256[] memory values) external;
+function setup(address[] calldata addresses, uint256[] calldata values) external;
 ```
 </details>
 
@@ -143,7 +143,7 @@ returns(addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address forAccount) external view returns (address[] memory addresses, uint256[] memory values);
+function getInfo(address forAccount) external view returns (address[] calldata addresses, uint256[] calldata values);
 ```
 </details>
 
@@ -176,6 +176,7 @@ function getInfo(address forAccount) external view returns (address[] memory add
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -214,7 +215,7 @@ function getInfo(address forAccount) external view returns (address[] memory add
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -239,6 +240,7 @@ function getInfo(address forAccount) external view returns (address[] memory add
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -249,7 +251,7 @@ function getInfo(address forAccount) external view returns (address[] memory add
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -258,7 +260,6 @@ function getInfo(address forAccount) external view returns (address[] memory add
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

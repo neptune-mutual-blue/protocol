@@ -59,8 +59,7 @@ returns(uint256)
 
 ```javascript
 function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
-    IUniswapV2PairLike pair = IUniswapV2PairLike(_getLpTokenAddress(s));
-    uint256 dollarValue = s.getPairLiquidityInStablecoin(pair, lpTokens);
+    uint256 dollarValue = s.convertNpmLpUnitsToStabelcoin(lpTokens);
 
     uint256 npmPrice = s.getNpmPriceInternal(1 ether);
     uint256 discount = _getDiscountRate(s);
@@ -495,8 +494,8 @@ function setupBondPoolInternal(IStore s, address[] addresses, uint256[] values) 
 ```javascript
 function setupBondPoolInternal(
     IStore s,
-    address[] memory addresses,
-    uint256[] memory values
+    address[] calldata addresses,
+    uint256[] calldata values
   ) external {
     if (addresses[0] != address(0)) {
       s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, addresses[0]);
@@ -556,6 +555,7 @@ function setupBondPoolInternal(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -594,7 +594,7 @@ function setupBondPoolInternal(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -619,6 +619,7 @@ function setupBondPoolInternal(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -629,7 +630,7 @@ function setupBondPoolInternal(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -638,7 +639,6 @@ function setupBondPoolInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

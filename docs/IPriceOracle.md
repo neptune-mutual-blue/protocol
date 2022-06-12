@@ -1,51 +1,62 @@
-# Price Discovery Contract (PriceDiscovery.sol)
+# IPriceOracle.sol
 
-View Source: [contracts/core/discovery/PriceDiscovery.sol](../contracts/core/discovery/PriceDiscovery.sol)
+View Source: [contracts/interfaces/IPriceOracle.sol](../contracts/interfaces/IPriceOracle.sol)
 
-**↗ Extends: [IPriceDiscovery](IPriceDiscovery.md), [Recoverable](Recoverable.md)**
+**↘ Derived Contracts: [FakePriceOracle](FakePriceOracle.md)**
 
-**PriceDiscovery**
-
-Provides features to discover price of a given token, uses UniswapV2 and compatible forks
+**IPriceOracle**
 
 ## Functions
 
-- [constructor(IStore store)](#)
-- [getTokenPriceInStableCoin(address token, uint256 multiplier)](#gettokenpriceinstablecoin)
-- [getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier)](#gettokenpriceinliquiditytoken)
-- [version()](#version)
-- [getName()](#getname)
+- [update()](#update)
+- [consult(address token, uint256 amountIn)](#consult)
+- [consultPair(uint256 amountIn)](#consultpair)
 
-### 
-
-Constructs this contract
+### update
 
 ```solidity
-function (IStore store) public nonpayable Recoverable 
+function update() external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore | Provide an implementation of IStore | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store) Recoverable(store) {}
+function update() external;
 ```
 </details>
 
-### getTokenPriceInStableCoin
-
-Gets the price of the given token against the platform's stablecoin.
- Warning: the `token` and `liquidityToken` must have a Uniswap V2 Pair.
- the result will be incorrect.
+### consult
 
 ```solidity
-function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
+function consult(address token, uint256 amountIn) external view
+returns(amountOut uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | address |  | 
+| amountIn | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function consult(address token, uint256 amountIn) external view returns (uint256 amountOut);
+```
+</details>
+
+### consultPair
+
+```solidity
+function consultPair(uint256 amountIn) external view
 returns(uint256)
 ```
 
@@ -53,103 +64,13 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address | Provide the token address to get the price of | 
-| multiplier | uint256 | Enter the token price multiplier | 
+| amountIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTokenPriceInStableCoin(address token, uint256 multiplier) external view override returns (uint256) {
-    address stablecoin = s.getStablecoin();
-    return this.getTokenPriceInLiquidityToken(token, stablecoin, multiplier);
-  }
-```
-</details>
-
-### getTokenPriceInLiquidityToken
-
-Gets the price of the given token against the given liquidity token.
- Warning: the `token` and `liquidityToken` must have a Uniswap V2 Pair.
-
-```solidity
-function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| token | address | Provide the token address to get the price of | 
-| liquidityToken | address | Provide the liquidity token address to get the price in | 
-| multiplier | uint256 | Enter the token price multiplier | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getTokenPriceInLiquidityToken(
-    address token,
-    address liquidityToken,
-    uint256 multiplier
-  ) external view override returns (uint256) {
-    if (token == liquidityToken) {
-      return multiplier;
-    }
-
-    uint256 price = s.getPriceInternal(token, liquidityToken, multiplier);
-
-    return price;
-  }
-```
-</details>
-
-### version
-
-Version number of this contract
-
-```solidity
-function version() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
-  }
-```
-</details>
-
-### getName
-
-Name of this contract
-
-```solidity
-function getName() external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_PRICE_DISCOVERY;
-  }
+function consultPair(uint256 amountIn) external view returns (uint256);
 ```
 </details>
 
@@ -182,6 +103,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -220,7 +142,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -245,6 +167,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -255,7 +178,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -264,7 +187,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

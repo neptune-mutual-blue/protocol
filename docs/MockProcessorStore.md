@@ -8,21 +8,21 @@ View Source: [contracts/mock/claims-processor/MockProcessorStore.sol](../contrac
 
 ## Functions
 
-- [initialize(MockStore s, bytes32 key, address cxToken)](#initialize)
+- [initialize(MockStore s, bytes32 coverKey, bytes32 productKey, address cxToken)](#initialize)
 - [disassociateCxToken(MockStore s, address cxToken)](#disassociatecxtoken)
-- [setCoverStatus(MockStore s, bytes32 key, uint256 value)](#setcoverstatus)
-- [setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value)](#setclaimbegintimestamp)
-- [setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value)](#setclaimexpirytimestamp)
-- [initialize(bytes32 key, address cxToken)](#initialize)
+- [setCoverStatus(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value)](#setcoverstatus)
+- [setClaimBeginTimestamp(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value)](#setclaimbegintimestamp)
+- [setClaimExpiryTimestamp(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value)](#setclaimexpirytimestamp)
+- [initialize(bytes32 coverKey, bytes32 productKey, address cxToken)](#initialize)
 - [disassociateCxToken(address cxToken)](#disassociatecxtoken)
-- [setCoverStatus(bytes32 key, uint256 value)](#setcoverstatus)
-- [setClaimBeginTimestamp(bytes32 key, uint256 value)](#setclaimbegintimestamp)
-- [setClaimExpiryTimestamp(bytes32 key, uint256 value)](#setclaimexpirytimestamp)
+- [setCoverStatus(bytes32 coverKey, bytes32 productKey, uint256 value)](#setcoverstatus)
+- [setClaimBeginTimestamp(bytes32 coverKey, bytes32 productKey, uint256 value)](#setclaimbegintimestamp)
+- [setClaimExpiryTimestamp(bytes32 coverKey, bytes32 productKey, uint256 value)](#setclaimexpirytimestamp)
 
 ### initialize
 
 ```solidity
-function initialize(MockStore s, bytes32 key, address cxToken) external nonpayable
+function initialize(MockStore s, bytes32 coverKey, bytes32 productKey, address cxToken) external nonpayable
 returns(values address[])
 ```
 
@@ -31,7 +31,8 @@ returns(values address[])
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | MockStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | cxToken | address |  | 
 
 <details>
@@ -40,25 +41,28 @@ returns(values address[])
 ```javascript
 function initialize(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     address cxToken
   ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
     MockVault vault = new MockVault();
+    FakePriceOracle oracle = new FakePriceOracle();
 
     s.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
     s.setAddress(ProtoUtilV1.CNS_COVER_STABLECOIN, cxToken);
+    s.setAddress(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, address(oracle));
 
     s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
     s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
-    s.setUint(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, 1234);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey)), 1234);
 
     s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
-    s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", key, address(vault));
+    s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", coverKey, address(vault));
 
-    setCoverStatus(s, key, 4);
-    setClaimBeginTimestamp(s, key, block.timestamp - 100 days); // solhint-disable-line
-    setClaimExpiryTimestamp(s, key, block.timestamp + 100 days); // solhint-disable-line
+    setCoverStatus(s, coverKey, productKey, 4);
+    setClaimBeginTimestamp(s, coverKey, productKey, block.timestamp - 100 days); // solhint-disable-line
+    setClaimExpiryTimestamp(s, coverKey, productKey, block.timestamp + 100 days); // solhint-disable-line
 
     values = new address[](2);
 
@@ -94,7 +98,7 @@ function disassociateCxToken(MockStore s, address cxToken) external {
 ### setCoverStatus
 
 ```solidity
-function setCoverStatus(MockStore s, bytes32 key, uint256 value) public nonpayable
+function setCoverStatus(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value) public nonpayable
 ```
 
 **Arguments**
@@ -102,7 +106,8 @@ function setCoverStatus(MockStore s, bytes32 key, uint256 value) public nonpayab
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | MockStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
@@ -111,10 +116,11 @@ function setCoverStatus(MockStore s, bytes32 key, uint256 value) public nonpayab
 ```javascript
 function setCoverStatus(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_COVER_STATUS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey)), value);
   }
 ```
 </details>
@@ -122,7 +128,7 @@ function setCoverStatus(
 ### setClaimBeginTimestamp
 
 ```solidity
-function setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value) public nonpayable
+function setClaimBeginTimestamp(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value) public nonpayable
 ```
 
 **Arguments**
@@ -130,7 +136,8 @@ function setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value) public 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | MockStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
@@ -139,10 +146,11 @@ function setClaimBeginTimestamp(MockStore s, bytes32 key, uint256 value) public 
 ```javascript
 function setClaimBeginTimestamp(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey)), value);
   }
 ```
 </details>
@@ -150,7 +158,7 @@ function setClaimBeginTimestamp(
 ### setClaimExpiryTimestamp
 
 ```solidity
-function setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value) public nonpayable
+function setClaimExpiryTimestamp(MockStore s, bytes32 coverKey, bytes32 productKey, uint256 value) public nonpayable
 ```
 
 **Arguments**
@@ -158,7 +166,8 @@ function setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value) public
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | MockStore |  | 
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
@@ -167,10 +176,11 @@ function setClaimExpiryTimestamp(MockStore s, bytes32 key, uint256 value) public
 ```javascript
 function setClaimExpiryTimestamp(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey)), value);
   }
 ```
 </details>
@@ -178,7 +188,7 @@ function setClaimExpiryTimestamp(
 ### initialize
 
 ```solidity
-function initialize(bytes32 key, address cxToken) external nonpayable
+function initialize(bytes32 coverKey, bytes32 productKey, address cxToken) external nonpayable
 returns(values address[])
 ```
 
@@ -186,15 +196,20 @@ returns(values address[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | cxToken | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(bytes32 key, address cxToken) external returns (address[] memory values) {
-    return MockProcessorStoreLib.initialize(this, key, cxToken);
+function initialize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address cxToken
+  ) external returns (address[] memory values) {
+    return MockProcessorStoreLib.initialize(this, coverKey, productKey, cxToken);
   }
 ```
 </details>
@@ -224,22 +239,27 @@ function disassociateCxToken(address cxToken) external {
 ### setCoverStatus
 
 ```solidity
-function setCoverStatus(bytes32 key, uint256 value) external nonpayable
+function setCoverStatus(bytes32 coverKey, bytes32 productKey, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverStatus(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setCoverStatus(this, key, value);
+function setCoverStatus(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setCoverStatus(this, coverKey, productKey, value);
   }
 ```
 </details>
@@ -247,22 +267,27 @@ function setCoverStatus(bytes32 key, uint256 value) external {
 ### setClaimBeginTimestamp
 
 ```solidity
-function setClaimBeginTimestamp(bytes32 key, uint256 value) external nonpayable
+function setClaimBeginTimestamp(bytes32 coverKey, bytes32 productKey, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimBeginTimestamp(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setClaimBeginTimestamp(this, key, value);
+function setClaimBeginTimestamp(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setClaimBeginTimestamp(this, coverKey, productKey, value);
   }
 ```
 </details>
@@ -270,22 +295,27 @@ function setClaimBeginTimestamp(bytes32 key, uint256 value) external {
 ### setClaimExpiryTimestamp
 
 ```solidity
-function setClaimExpiryTimestamp(bytes32 key, uint256 value) external nonpayable
+function setClaimExpiryTimestamp(bytes32 coverKey, bytes32 productKey, uint256 value) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | value | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setClaimExpiryTimestamp(this, key, value);
+function setClaimExpiryTimestamp(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setClaimExpiryTimestamp(this, coverKey, productKey, value);
   }
 ```
 </details>
@@ -319,6 +349,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -357,7 +388,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -382,6 +413,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -392,7 +424,7 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -401,7 +433,6 @@ function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -9,22 +9,22 @@ View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IRes
 **Events**
 
 ```js
-event Resolved(bytes32 indexed coverKey, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
+event Resolved(bytes32 indexed coverKey, bytes32 indexed productKey, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
 event CooldownPeriodConfigured(bytes32 indexed coverKey, uint256  period);
 ```
 
 ## Functions
 
-- [resolve(bytes32 coverKey, uint256 incidentDate)](#resolve)
-- [emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision)](#emergencyresolve)
+- [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
+- [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
 - [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
 - [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
-- [getResolutionDeadline(bytes32 coverKey)](#getresolutiondeadline)
+- [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve
 
 ```solidity
-function resolve(bytes32 coverKey, uint256 incidentDate) external nonpayable
+function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
@@ -32,20 +32,25 @@ function resolve(bytes32 coverKey, uint256 incidentDate) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function resolve(bytes32 coverKey, uint256 incidentDate) external;
+function resolve(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 ```
 </details>
 
 ### emergencyResolve
 
 ```solidity
-function emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision) external nonpayable
+function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision) external nonpayable
 ```
 
 **Arguments**
@@ -53,6 +58,7 @@ function emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 | decision | bool |  | 
 
@@ -62,6 +68,7 @@ function emergencyResolve(bytes32 coverKey, uint256 incidentDate, bool decision)
 ```javascript
 function emergencyResolve(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     bool decision
   ) external;
@@ -113,7 +120,7 @@ function getCoolDownPeriod(bytes32 coverKey) external view returns (uint256);
 ### getResolutionDeadline
 
 ```solidity
-function getResolutionDeadline(bytes32 coverKey) external view
+function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
 ```
 
@@ -122,12 +129,13 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getResolutionDeadline(bytes32 coverKey) external view returns (uint256);
+function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
 ```
 </details>
 
@@ -160,6 +168,7 @@ function getResolutionDeadline(bytes32 coverKey) external view returns (uint256)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -198,7 +207,7 @@ function getResolutionDeadline(bytes32 coverKey) external view returns (uint256)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -223,6 +232,7 @@ function getResolutionDeadline(bytes32 coverKey) external view returns (uint256)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -233,7 +243,7 @@ function getResolutionDeadline(bytes32 coverKey) external view returns (uint256)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -242,7 +252,6 @@ function getResolutionDeadline(bytes32 coverKey) external view returns (uint256)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

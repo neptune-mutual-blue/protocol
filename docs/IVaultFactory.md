@@ -15,12 +15,12 @@ event VaultDeployed(bytes32 indexed coverKey, address  vault);
 
 ## Functions
 
-- [deploy(bytes32 coverKey)](#deploy)
+- [deploy(bytes32 coverKey, string name, string symbol)](#deploy)
 
 ### deploy
 
 ```solidity
-function deploy(bytes32 coverKey) external nonpayable
+function deploy(bytes32 coverKey, string name, string symbol) external nonpayable
 returns(address)
 ```
 
@@ -29,12 +29,18 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| name | string |  | 
+| symbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deploy(bytes32 coverKey) external returns (address);
+function deploy(
+    bytes32 coverKey,
+    string calldata name,
+    string calldata symbol
+  ) external returns (address);
 ```
 </details>
 
@@ -67,6 +73,7 @@ function deploy(bytes32 coverKey) external returns (address);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -105,7 +112,7 @@ function deploy(bytes32 coverKey) external returns (address);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -130,6 +137,7 @@ function deploy(bytes32 coverKey) external returns (address);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -140,7 +148,7 @@ function deploy(bytes32 coverKey) external returns (address);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -149,7 +157,6 @@ function deploy(bytes32 coverKey) external returns (address);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

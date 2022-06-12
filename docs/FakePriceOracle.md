@@ -1,113 +1,89 @@
-# Vault.sol
+# FakePriceOracle.sol
 
-View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Vault.sol)
+View Source: [contracts/fakes/FakePriceOracle.sol](../contracts/fakes/FakePriceOracle.sol)
 
-**↗ Extends: [WithFlashLoan](WithFlashLoan.md)**
+**↗ Extends: [IPriceOracle](IPriceOracle.md)**
 
-**Vault**
+**FakePriceOracle**
+
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 private _counter;
+
+```
 
 ## Functions
 
-- [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken)](#)
-- [getInfo(address you)](#getinfo)
-- [version()](#version)
-- [getName()](#getname)
+- [update()](#update)
+- [consult(address , uint256 amountIn)](#consult)
+- [consultPair(uint256 amountIn)](#consultpair)
 
-### 
+### update
 
 ```solidity
-function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken) public nonpayable VaultBase 
+function update() external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-| coverKey | bytes32 |  | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
-| liquidityToken | IERC20 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(
-    IStore store,
-    bytes32 coverKey,
-    string memory tokenName,
-    string memory tokenSymbol,
-    IERC20 liquidityToken
-  ) VaultBase(store, coverKey, tokenName, tokenSymbol, liquidityToken) {}
-```
-</details>
-
-### getInfo
-
-For further details, check delegate contract's documentation.
-
-```solidity
-function getInfo(address you) external view
-returns(values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| you | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getInfo(address you) external view override returns (uint256[] memory values) {
-    return delgate().getInfoImplementation(key, you);
+function update() external override {
+    _counter++;
   }
 ```
 </details>
 
-### version
+### consult
 
 ```solidity
-function version() external pure
-returns(bytes32)
+function consult(address , uint256 amountIn) external pure
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+|  | address |  | 
+| amountIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function version() external pure override returns (bytes32) {
-    return "v0.1";
+function consult(address, uint256 amountIn) external pure override returns (uint256) {
+    return amountIn * 2;
   }
 ```
 </details>
 
-### getName
+### consultPair
 
 ```solidity
-function getName() external pure
-returns(bytes32)
+function consultPair(uint256 amountIn) external pure
+returns(uint256)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| amountIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
+function consultPair(uint256 amountIn) external pure override returns (uint256) {
+    return amountIn;
   }
 ```
 </details>

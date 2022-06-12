@@ -10,17 +10,17 @@ View Source: [contracts/interfaces/ICxTokenFactory.sol](../contracts/interfaces/
 **Events**
 
 ```js
-event CxTokenDeployed(bytes32 indexed coverKey, address  cxToken, uint256  expiryDate);
+event CxTokenDeployed(bytes32 indexed coverKey, bytes32 indexed productKey, address  cxToken, uint256  expiryDate);
 ```
 
 ## Functions
 
-- [deploy(bytes32 coverKey, uint256 expiryDate)](#deploy)
+- [deploy(bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate)](#deploy)
 
 ### deploy
 
 ```solidity
-function deploy(bytes32 coverKey, uint256 expiryDate) external nonpayable
+function deploy(bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external nonpayable
 returns(address)
 ```
 
@@ -29,13 +29,20 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| tokenName | string |  | 
 | expiryDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address);
+function deploy(
+    bytes32 coverKey,
+    bytes32 productKey,
+    string calldata tokenName,
+    uint256 expiryDate
+  ) external returns (address);
 ```
 </details>
 
@@ -68,6 +75,7 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -106,7 +114,7 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -131,6 +139,7 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -141,7 +150,7 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -150,7 +159,6 @@ function deploy(bytes32 coverKey, uint256 expiryDate) external returns (address)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -420,9 +420,9 @@ returns(bool)
 function validateAddOrEditPoolInternal(
     IStore s,
     bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
+    string calldata name,
+    address[] calldata addresses,
+    uint256[] calldata values
   ) public view returns (bool) {
     require(key > 0, "Invalid key");
 
@@ -470,9 +470,9 @@ function addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] add
 function addOrEditPoolInternal(
     IStore s,
     bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
+    string calldata name,
+    address[] calldata addresses,
+    uint256[] calldata values
   ) external {
     bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
 
@@ -521,7 +521,7 @@ function _updatePoolValues(IStore s, bytes32 key, uint256[] values) private nonp
 function _updatePoolValues(
     IStore s,
     bytes32 key,
-    uint256[] memory values
+    uint256[] calldata values
   ) private {
     if (values[0] > 0) {
       s.setUintByKeys(NS_POOL_STAKING_TARGET, key, values[0]);
@@ -575,7 +575,7 @@ function _initializeNewPool(IStore s, bytes32 key, address[] addresses) private 
 function _initializeNewPool(
     IStore s,
     bytes32 key,
-    address[] memory addresses
+    address[] calldata addresses
   ) private {
     s.setAddressByKeys(NS_POOL_STAKING_TOKEN, key, addresses[0]);
     s.setAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[1]);
@@ -616,6 +616,7 @@ function _initializeNewPool(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -654,7 +655,7 @@ function _initializeNewPool(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -679,6 +680,7 @@ function _initializeNewPool(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -689,7 +691,7 @@ function _initializeNewPool(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -698,7 +700,6 @@ function _initializeNewPool(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

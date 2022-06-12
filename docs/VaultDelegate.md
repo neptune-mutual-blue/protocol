@@ -1,4 +1,4 @@
-# Cover Vault for Liquidity (VaultDelegate.sol)
+# Vault Delegate (VaultDelegate.sol)
 
 View Source: [contracts/core/delegates/VaultDelegate.sol](../contracts/core/delegates/VaultDelegate.sol)
 
@@ -11,9 +11,11 @@ Liquidity providers can earn fees by adding stablecoin liquidity
  where fees automatically get accumulated and compounded. <br /> <br />
  **Fees** <br />
  - Cover fees paid in stablecoin get added to the liquidity pool.
- - The protocol supplies a small portion of idle assets to lending protocols (v2).
+ - The protocol supplies a small portion of idle assets to third-party lending protocols.
  - Flash loan interest also gets added back to the pool.
- - To protect liquidity providers from cover incidents, they can redeem up to 25% of the cover payouts through `reassurance fund` allocation.
+ - Cover creators can donate a small portion of their revenue as a reassurance fund
+ to protect liquidity providers. This assists liquidity providers in the event of an exploit
+ by preventing pool depletion.
 
 ## Functions
 
@@ -68,6 +70,7 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -106,7 +109,7 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -131,6 +134,7 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -141,7 +145,7 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -150,7 +154,6 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -1,63 +1,63 @@
-# IPriceDiscovery.sol
+# MockLiquidityEngineUser.sol
 
-View Source: [contracts/interfaces/IPriceDiscovery.sol](../contracts/interfaces/IPriceDiscovery.sol)
+View Source: [contracts/mock/lib-user/MockLiquidityEngineUser.sol](../contracts/mock/lib-user/MockLiquidityEngineUser.sol)
 
-**↗ Extends: [IMember](IMember.md)**
-**↘ Derived Contracts: [PriceDiscovery](PriceDiscovery.md)**
+**MockLiquidityEngineUser**
 
-**IPriceDiscovery**
+## Contract Members
+**Constants & Variables**
+
+```js
+contract IStore public s;
+
+```
 
 ## Functions
 
-- [getTokenPriceInStableCoin(address token, uint256 multiplier)](#gettokenpriceinstablecoin)
-- [getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier)](#gettokenpriceinliquiditytoken)
+- [constructor(IStore store)](#)
+- [setMaxLendingRatioInternal(uint256 ratio)](#setmaxlendingratiointernal)
 
-### getTokenPriceInStableCoin
+### 
 
 ```solidity
-function getTokenPriceInStableCoin(address token, uint256 multiplier) external view
-returns(uint256)
+function (IStore store) public nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address |  | 
-| multiplier | uint256 |  | 
+| store | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTokenPriceInStableCoin(address token, uint256 multiplier) external view returns (uint256);
+constructor(IStore store) {
+    s = store;
+  }
 ```
 </details>
 
-### getTokenPriceInLiquidityToken
+### setMaxLendingRatioInternal
 
 ```solidity
-function getTokenPriceInLiquidityToken(address token, address liquidityToken, uint256 multiplier) external view
-returns(uint256)
+function setMaxLendingRatioInternal(uint256 ratio) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address |  | 
-| liquidityToken | address |  | 
-| multiplier | uint256 |  | 
+| ratio | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTokenPriceInLiquidityToken(
-    address token,
-    address liquidityToken,
-    uint256 multiplier
-  ) external view returns (uint256);
+function setMaxLendingRatioInternal(uint256 ratio) external {
+    s.setMaxLendingRatioInternal(ratio);
+  }
 ```
 </details>
 
@@ -90,6 +90,7 @@ function getTokenPriceInLiquidityToken(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -128,7 +129,7 @@ function getTokenPriceInLiquidityToken(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -153,6 +154,7 @@ function getTokenPriceInLiquidityToken(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -163,7 +165,7 @@ function getTokenPriceInLiquidityToken(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -172,7 +174,6 @@ function getTokenPriceInLiquidityToken(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
