@@ -5,7 +5,8 @@ pragma solidity 0.8.0;
 import "./VaultDelegateBase.sol";
 
 /**
- * @title With Flash Loan Contract
+ * @title With Flash Loan Delegate Contract
+ *
  * @dev WithFlashLoan contract implements `EIP-3156 Flash Loan`.
  * Using flash loans, you can borrow up to the total available amount of
  * the stablecoin liquidity available in this cover liquidity pool.
@@ -51,6 +52,18 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     return s.getMaxFlashLoanInternal(coverKey, token);
   }
 
+  /**
+   * @dev This hook runs before `flashLoan` implementation on vault(s)
+   *
+   * Note:
+   *
+   * - msg.sender must be the correct vault contract
+   * - Cover status should be normal
+   *
+   * @param coverKey Enter the cover key
+   * @param token Enter the token you want to borrow
+   * @param amount Enter the flash loan amount to receive
+   */
   function preFlashLoan(
     address, /*caller*/
     bytes32 coverKey,
@@ -84,6 +97,16 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     require(protocolFee > 0, "Loan too small");
   }
 
+  /**
+   * @dev This hook runs after `flashLoan` implementation on vault(s)
+   *
+   * Note:
+   *
+   * - msg.sender must be the correct vault contract
+   * - Cover status should be normal
+   *
+   * @param coverKey Enter the cover key
+   */
   function postFlashLoan(
     address, /*caller*/
     bytes32 coverKey,
@@ -93,6 +116,7 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     bytes calldata /*data*/
   ) external override {
     s.senderMustBeVaultContract(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
     s.updateStateAndLiquidity(coverKey);

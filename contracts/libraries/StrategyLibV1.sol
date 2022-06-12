@@ -8,6 +8,7 @@ import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
 import "./NTransferUtilV2.sol";
+import "./RegistryLibV1.sol";
 import "hardhat/console.sol";
 
 library StrategyLibV1 {
@@ -175,9 +176,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 amount
   ) external {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return;
     }
 
@@ -192,9 +191,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return (income, loss);
     }
 

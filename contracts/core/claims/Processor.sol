@@ -14,9 +14,12 @@ import "../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Claims Processor Contract
- * @dev Enables the policyholders to submit a claim and receive immediate payouts during claim period.
- * The claims which are submitted after the claim expiry period are considered invalid
- * and therefore receive no payouts.
+ * @dev The claims processor contract allows policyholders to file a claim and get instant payouts during the claim period.
+ *
+ * There is a lag period before a policy begins coverage.
+ * After the next day's UTC EOD timestamp, policies take effect and are valid until the expiration period.
+ * Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+ * If a claim isn't made during the claim period, it isn't valid and there is no payout.
  */
 contract Processor is IClaimsProcessor, Recoverable {
   using GovernanceUtilV1 for IStore;
@@ -30,16 +33,19 @@ contract Processor is IClaimsProcessor, Recoverable {
 
   /**
    * @dev Constructs this contract
+   *
    * @param store Provide an implementation of IStore
    */
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
-   * @dev Enables policyholders to claim their cxTokens which results in a payout.
-   * The payout is provided only when the active cover is marked and resolved as "Incident Happened".
+   * @dev Enables a policyholder to claim their cxTokens to receive a payout.
+   * The payout is provided only when the active cover is marked as "Incident Happened"
+   * and has "Claimable" status.
    *
    * @param cxToken Provide the address of the claim token that you're using for this claim.
    * @param coverKey Enter the key of the cover you're claiming
+   * @param productKey Enter the key of the product you're claiming
    * @param incidentDate Enter the active cover's date of incident
    * @param amount Enter the amount of cxTokens you want to transfer
    */
@@ -96,8 +102,10 @@ contract Processor is IClaimsProcessor, Recoverable {
 
   /**
    * @dev Validates a given claim
+   *
    * @param cxToken Provide the address of the claim token that you're using for this claim.
    * @param coverKey Enter the key of the cover you're validating the claim for
+   * @param productKey Enter the key of the product you're validating the claim for
    * @param incidentDate Enter the active cover's date of incident
    * @return Returns true if the given claim is valid and can result in a successful payout
    */
@@ -117,16 +125,21 @@ contract Processor is IClaimsProcessor, Recoverable {
   }
 
   /**
-   * @dev Returns claim expiry date. A policy can not be claimed after the expiry date
-   * even when the policy was valid.
+   * @dev Returns claim expiration date.
+   * Even if the policy was valid, it cannot be claimed after the expiry date.
+   *
    * @param coverKey Enter the key of the cover you're checking
+   * @param productKey Enter the key of the product you're checking
    */
   function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
   }
 
   /**
-   * @dev Set the claim period of a cover by its key.
+   * @dev Sets the claim period of a cover by its key.
+   * If you do not specify any cover key, the value specified here will be set as fallback.
+   * Cover that do not have any specific claim period will default to the fallback value.
+   *
    * @param coverKey Enter the coverKey you want to set the claim period for
    * @param value Enter a claim period you want to set
    */
@@ -159,7 +172,9 @@ contract Processor is IClaimsProcessor, Recoverable {
    * we suspect a policyholder of being the attacker.
    *
    * After performing KYC, we may be able to lift the blacklist.
+   *
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date of the cover
    * @param accounts Enter list of accounts you want to blacklist
    * @param statuses Enter true if you want to blacklist. False if you want to remove from the blacklist.
@@ -178,24 +193,17 @@ contract Processor is IClaimsProcessor, Recoverable {
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      s.setAddressBooleanByKey(_getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
+      s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
       emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
     }
-  }
-
-  function _getBlacklistKey(
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 incidentDate
-  ) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, productKey, incidentDate));
   }
 
   /**
    * @dev Check if an account is blacklisted from claiming their cover.
    * @param coverKey Enter the cover key
-   * @param incidentDate Enter the incident date of the cover
-   * @param account Enter the accounts you want to check if blacklisted
+   * @param coverKey Enter the product key
+   * @param incidentDate Enter the incident date of this cover
+   * @param account Enter the account to see if it is blacklisted
    */
   function isBlacklisted(
     bytes32 coverKey,
@@ -203,7 +211,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     address account
   ) public view override returns (bool) {
-    return s.getAddressBooleanByKey(_getBlacklistKey(coverKey, productKey, incidentDate), account);
+    return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), account);
   }
 
   /**

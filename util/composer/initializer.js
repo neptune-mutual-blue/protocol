@@ -282,6 +282,7 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
+      CoverUtilV1: libs.coverUtilV1.address,
       GovernanceUtilV1: libs.governanceUtilV1.address,
       RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       NTransferUtilV2: libs.transferLib.address,

@@ -10,6 +10,7 @@ interface ICxTokenFactory is IMember {
   function deploy(
     bytes32 coverKey,
     bytes32 productKey,
+    string calldata tokenName,
     uint256 expiryDate
   ) external returns (address);
 }

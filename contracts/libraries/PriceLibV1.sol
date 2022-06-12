@@ -11,8 +11,6 @@ import "../interfaces/external/IUniswapV2FactoryLike.sol";
 import "./NTransferUtilV2.sol";
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
-import "./ValidationLibV1.sol";
-import "./RegistryLibV1.sol";
 
 library PriceLibV1 {
   using ProtoUtilV1 for IStore;

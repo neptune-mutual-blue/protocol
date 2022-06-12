@@ -23,7 +23,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
 
     libraries = await deployDependencies()
     store = await deployer.deploy(cache, 'MockCxTokenStore')
-    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, expiryDate)
+    cxToken = await deployer.deployWithLibraries(cache, 'cxToken', libraries.dependencies, store.address, coverKey, helper.emptyBytes32, 'test', expiryDate)
     policy = await deployer.deploy(cache, 'MockCxTokenPolicy', cxToken.address)
   })
 

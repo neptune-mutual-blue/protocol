@@ -279,7 +279,7 @@ library ValidationLibV1 {
       require(block.timestamp < deadline, "Emergency resolution deadline over"); // solhint-disable-line
     }
   }
-        
+
   function mustNotHaveResolutionDeadline(
     IStore s,
     bytes32 coverKey,

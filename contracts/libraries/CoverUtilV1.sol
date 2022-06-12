@@ -185,6 +185,14 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
+  function getBlacklistKey(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, productKey, incidentDate));
+  }
+
   function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view returns (uint256 total) {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 

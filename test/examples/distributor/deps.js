@@ -359,6 +359,7 @@ const deployDependencies = async () => {
   const processor = await deployer.deployWithLibraries(cache, 'Processor', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
     GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     NTransferUtilV2: transferLib.address,

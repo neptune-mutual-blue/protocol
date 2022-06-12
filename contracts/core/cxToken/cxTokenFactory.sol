@@ -9,9 +9,7 @@ import "../Recoverable.sol";
 
 /**
  * @title cxToken Factory Contract
- * @dev As and when required by the protocol,
- * the cxTokenFactory contract creates new instances of
- * cxTokens on demand.
+ * @dev Deploys new instances of cxTokens on demand.
  */
 // slither-disable-next-line naming-convention
 contract cxTokenFactory is ICxTokenFactory, Recoverable {
@@ -30,22 +28,24 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
   /**
    * @dev Deploys a new instance of cxTokens
    * @param coverKey Enter the cover key related to this cxToken instance
+   * @param productKey Enter the product key related to this cxToken instance
    * @param expiryDate Specify the expiry date of this cxToken instance
    */
   function deploy(
     bytes32 coverKey,
     bytes32 productKey,
+    string calldata tokenName,
     uint256 expiryDate
   ) external override nonReentrant returns (address deployed) {
     // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
+    s.senderMustBePolicyContract();
     s.mustBeValidCoverKey(coverKey);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBePolicyContract();
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, productKey, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, productKey, tokenName, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 

@@ -163,12 +163,47 @@ library PolicyHelperV1 {
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(coverKey, productKey, expiryDate);
+    cxToken = factory.deploy(coverKey, productKey, _getCxTokenName(coverKey, productKey, expiryDate), expiryDate);
 
     // @note: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
     // s.getProtocol().addMember(cxToken);
     return ICxToken(cxToken);
+  }
+
+  /**
+   * @dev Returns month name of a given date
+   */
+  function _getMonthName(uint256 date) private pure returns (bytes3) {
+    bytes3[13] memory m = [bytes3(0), "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+    uint256 month = BokkyPooBahsDateTimeLibrary.getMonth(date);
+
+    return m[month];
+  }
+
+  /**
+   * @dev Returns cxToken name from the supplied inputs.
+   *
+   * Format:
+   *
+   * For basket cover pool product
+   * --> cxusd:dex:uni:nov (cxUSD)
+   *
+   * For standalone cover pool
+   * --> cxusd:bal:nov (cxUSD)
+   */
+  function _getCxTokenName(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 expiry
+  ) private pure returns (string memory) {
+    bytes3 month = _getMonthName(expiry);
+
+    if (productKey > 0) {
+      return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(productKey)), ":", string(abi.encodePacked(month))));
+    }
+
+    return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(month))));
   }
 
   /**

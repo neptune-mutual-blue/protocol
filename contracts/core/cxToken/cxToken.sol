@@ -16,6 +16,15 @@ import "../Recoverable.sol";
  * When a cover incident is successfully resolved, each unit of cxTokens can be redeemed at 1:1 ratio
  * of 1 cxToken = 1 DAI/BUSD/USDC (minus platform fees).
  *
+ *
+ * Important:
+ *
+ * cxTokens are not transferrable. You can use cxTokens only to submit a claim.
+ *
+ * There is a lag period before your cxTokens starts its coverage.
+ * After the next day's UTC EOD timestamp, cxTokens take effect and are valid until the expiration period.
+ * Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+ *
  */
 // slither-disable-next-line naming-convention
 contract cxToken is ICxToken, Recoverable, ERC20 {
@@ -32,26 +41,20 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   uint256 public immutable override createdOn = block.timestamp; // solhint-disable-line
   uint256 public immutable override expiresOn;
 
-  function _getTokenName(bytes32 coverKey, bytes32 productKey) private pure returns (string memory) {
-    if (productKey > 0) {
-      return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-", string(abi.encodePacked(productKey)), "-cxtoken"));
-    }
-
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-cxtoken"));
-  }
-
   /**
    * @dev Constructs this contract
    * @param store Provide the store contract instance
-   * @param coverKey Enter the cover key or cover this cxToken instance points to
-   * @param expiry Provide the cover expiry timestamp of this cxToken instance
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
+   * @param expiry Provide the cover expiry timestamp
    */
   constructor(
     IStore store,
     bytes32 coverKey,
     bytes32 productKey,
+    string memory tokenName,
     uint256 expiry
-  ) ERC20(_getTokenName(coverKey, productKey), "cxUSD") Recoverable(store) {
+  ) ERC20(tokenName, "cxUSD") Recoverable(store) {
     COVER_KEY = coverKey;
     PRODUCT_KEY = productKey;
     expiresOn = expiry;
@@ -119,15 +122,14 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     address to,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl Can only be called by the latest policy contract
-    s.mustNotBePaused();
-
     require(amount > 0, "Please specify amount");
     require(coverKey == COVER_KEY, "Invalid cover");
     require(productKey == PRODUCT_KEY, "Invalid product");
 
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    // @suppress-acl Can only be called by the latest policy contract
+    s.mustNotBePaused();
     s.senderMustBePolicyContract();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;

@@ -12,6 +12,7 @@ const deployDependencies = async () => {
     dependencies: {
       AccessControlLibV1: all.accessControlLibV1.address,
       BaseLibV1: all.baseLibV1.address,
+      CoverUtilV1: all.coverUtilV1.address,
       GovernanceUtilV1: all.governanceUtilV1.address,
       RoutineInvokerLibV1: all.routineInvokerLibV1.address,
       NTransferUtilV2: all.transferLib.address,
