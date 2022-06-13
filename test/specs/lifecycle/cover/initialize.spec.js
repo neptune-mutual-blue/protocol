@@ -85,6 +85,7 @@ describe('Cover: initialize', () => {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
         CoverLibV1: deployed.coverLibV1.address,
+        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address
       },
@@ -107,6 +108,7 @@ describe('Cover: initialize', () => {
         AccessControlLibV1: deployed.accessControlLibV1.address,
         BaseLibV1: deployed.baseLibV1.address,
         CoverLibV1: deployed.coverLibV1.address,
+        RoutineInvokerLibV1: deployed.routineInvokerLibV1.address,
         StoreKeyUtil: deployed.storeKeyUtil.address,
         ValidationLibV1: deployed.validationLibV1.address
       },

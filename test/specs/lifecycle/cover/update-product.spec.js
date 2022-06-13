@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-expressions */
-const { ethers } = require('hardhat')
+const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const { helper, key } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const composer = require('../../../../util/composer')
 const DAYS = 86400
+const HOURS = 60 * 60
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -43,8 +45,28 @@ describe('Cover: updateProduct', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, coverValues)
-
     await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, productValues)
+
+    const initialLiquidity = helper.ether(4_000_000)
+    const lendingPeriod = 1 * HOURS
+    const withdrawalWindow = 1 * HOURS
+
+    const vault = await composer.vault.getVault({
+      store: deployed.store,
+      libs: {
+        accessControlLibV1: deployed.accessControlLibV1,
+        baseLibV1: deployed.baseLibV1,
+        transferLib: deployed.transferLib,
+        protoUtilV1: deployed.protoUtilV1,
+        registryLibV1: deployed.registryLibV1,
+        validationLibV1: deployed.validationLibV1
+      }
+    }, coverKey)
+    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+    await deployed.dai.approve(vault.address, initialLiquidity)
+    await deployed.npm.approve(vault.address, minReportingStake)
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
   })
 
   it('correctly update product when accessed by cover creator', async () => {

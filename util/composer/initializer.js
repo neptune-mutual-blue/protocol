@@ -248,6 +248,7 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       CoverLibV1: libs.coverLibV1.address,
+      RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLibV1.address
     },

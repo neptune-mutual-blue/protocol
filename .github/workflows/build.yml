@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches: "*"
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: "*"
+
+env:
+  POLYGONSCAN_API_KEY: "85YY3JPPG0FBK9H35H1B8Z4BCK0FOR2GN4"
+  ETHERSCAN_API_KEY: "85YY3JPPG0FBK9H35H1B8Z4BCK0FOR2GN4"
+  BSCSCAN_API_KEY: "85YY3JPPG0FBK9H35H1B8Z4BCK0FOR2GN4"
+  PRIVATE_KEY: "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v2
+        with:
+          node-version: "v16.13.1"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn run build
+
+      - name: Tests
+        run: yarn coverage
