@@ -6,7 +6,7 @@ const { approve } = require('../contract-helper/erc20')
 
 const add = async (coverKey, payload) => {
   const [lp] = await ethers.getSigners() // eslint-disable-line
-  const amount = ether(getRandomNumber(250_000, 5_000_000))
+  const amount = ether(getRandomNumber(250_000, 5_000_000), 6)
   const stake = ether(getRandomNumber(1000, 125_000))
 
   const { dai, npm } = payload

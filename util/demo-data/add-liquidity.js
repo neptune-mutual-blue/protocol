@@ -1,3 +1,4 @@
+const { ethers } = require('hardhat')
 const { covers } = require('../../examples/covers')
 const composer = require('../composer')
 const { ether, getRandomNumber, weiAsToken } = require('../helper')
@@ -6,18 +7,20 @@ const { approve } = require('../contract-helper/erc20')
 
 const add = async (coverKey, payload) => {
   const [lp] = await ethers.getSigners() // eslint-disable-line
-  const amount = ether(getRandomNumber(250_000, 5_000_000))
+  const amount = ether(getRandomNumber(1_250_000, 5_000_000), 6)
   const stake = ether(getRandomNumber(1000, 125_000))
 
   const { dai, npm } = payload
   const vault = await composer.vault.getVault(payload, coverKey)
 
-  await approve(dai.address, vault.address, lp, amount)
-  await approve(npm.address, vault.address, lp, stake)
+  await approve(dai.address, vault.address, lp, ethers.constants.MaxUint256)
+  await approve(npm.address, vault.address, lp, ethers.constants.MaxUint256)
 
-  await vault.connect(lp).addLiquidity(coverKey, amount, stake, toBytes32(''))
+  console.info('Adding %s to the vault. Stake: %s. From: %s', weiAsToken(amount, 'DAI', 6), weiAsToken(stake, 'NPM'), lp.address)
 
-  console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'DAI'), weiAsToken(stake, 'NPM'))
+  await vault.addLiquidity(coverKey, amount, stake, toBytes32(''))
+
+  console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'DAI', 6), weiAsToken(stake, 'NPM'))
 }
 
 const addLiquidity = async (payload) => {

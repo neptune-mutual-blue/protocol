@@ -1,5 +1,4 @@
 const { ethers } = require('ethers')
-const { helper } = require('..')
 const { covers } = require('../../examples/covers')
 const ipfs = require('../ipfs')
 const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
@@ -21,7 +20,7 @@ const createCovers = async (payload) => {
 
 const create = async (payload, info) => {
   const { intermediate, cache, contracts } = payload
-  const { dai, cover } = contracts
+  const { cover } = contracts
 
   const { key } = info
   const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate, vault } = info

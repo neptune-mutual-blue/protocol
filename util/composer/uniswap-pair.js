@@ -10,27 +10,29 @@ const createPairs = async (routerAt, factoryAt, pairInfo) => {
   const pairs = []
   const [owner] = await ethers.getSigners()
 
-  const router = await uniswap.getRouter(routerAt)
-  const factory = await uniswap.getFactory(factoryAt)
-
   for (const i in pairInfo) {
     const { token0, token1, name } = pairInfo[i]
 
-    let pair = await factory.getPair(token0, token1)
+    const router = await uniswap.getRouter(routerAt)
+    const factory = await uniswap.getFactory(factoryAt)
+
+    let pair = await factory.getPair(token0.address, token1.address)
 
     if (pair === zerox) {
       console.log(`Attempting to provide ${name} liquidity to a Uniswap-like DEX`)
 
-      await erc20.approve(token0, routerAt, owner)
-      await erc20.approve(token1, routerAt, owner)
+      const t0d = await token0.decimals()
+      const t1d = await token1.decimals()
+
+      await erc20.approve(token0.address, routerAt, owner, ethers.BigNumber.from(ether(1000, parseInt(t0d))))
+      await erc20.approve(token1.address, routerAt, owner, ethers.BigNumber.from(ether(2000, parseInt(t1d))))
 
       const deadline = moment(new Date()).add(1, 'month').unix()
-
-      const tx = await router.addLiquidity(token0, token1, ether(1000), ether(2000), ether(1000), ether(2000), owner.address, deadline)
+      const tx = await router.addLiquidity(token0.address, token1.address, ether(1000, t0d), ether(2000, t1d), ether(1000, t0d), ether(2000, t1d), owner.address, deadline)
       await tx.wait()
     }
 
-    pair = await factory.getPair(token0, token1)
+    pair = await factory.getPair(token0.address, token1.address)
     console.info(name, 'pair:', pair)
 
     const instance = await uniswap.getPair(pair)
@@ -56,7 +58,7 @@ const deploySeveral = async (cache, pairInfo) => {
   for (const i in pairInfo) {
     const { token0, token1 } = pairInfo[i]
 
-    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0, token1)
+    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0.address, token1.address)
     pairInfo[i].pairInstance = contract
 
     contracts.push(contract)
@@ -74,13 +76,13 @@ const compose = async (cache, tokens) => {
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd } = tokens
 
   return deploySeveral(cache, [
-    { token0: npm.address, token1: dai.address, name: 'NPM/DAI' },
-    { token0: crpool.address, token1: dai.address, name: 'CRPOOL/DAI' },
-    { token0: hwt.address, token1: dai.address, name: 'HWT/DAI' },
-    { token0: obk.address, token1: dai.address, name: 'OBK/DAI' },
-    { token0: sabre.address, token1: dai.address, name: 'SABRE/DAI' },
-    { token0: bec.address, token1: dai.address, name: 'BEC/DAI' },
-    { token0: xd.address, token1: dai.address, name: 'XD/DAI' }
+    { token0: npm, token1: dai, name: 'NPM/DAI' },
+    { token0: crpool, token1: dai, name: 'CRPOOL/DAI' },
+    { token0: hwt, token1: dai, name: 'HWT/DAI' },
+    { token0: obk, token1: dai, name: 'OBK/DAI' },
+    { token0: sabre, token1: dai, name: 'SABRE/DAI' },
+    { token0: bec, token1: dai, name: 'BEC/DAI' },
+    { token0: xd, token1: dai, name: 'XD/DAI' }
   ])
 }
 

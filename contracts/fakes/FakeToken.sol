@@ -36,7 +36,7 @@ contract FakeToken is ERC20 {
   }
 
   function mint(uint256 amount) external {
-    if (amount > 2000 ether) {
+    if (amount > 2000 * (10**_decimals)) {
       require(minters[msg.sender], "Please specify a smaller value");
     }
 

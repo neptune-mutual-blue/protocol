@@ -21,7 +21,8 @@ const config = {
       url: 'https://matic-mumbai.chainstacklabs.com',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
-      gas: 'auto'
+      gas: 'auto',
+      explorer: 'https://mumbai.polygonscan.com'
     },
     fuji: {
       url: 'https://api.avax-test.network/ext/bc/C/rpc',
@@ -64,13 +65,11 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
+    apiKey: process.env.SNOWTRACE_API_KEY,
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
-      ropsten: process.env.ETHERSCAN_API_KEY,
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
-      bsc: process.env.BSCSCAN_API_KEY,
-      bscTestnet: process.env.BSCSCAN_API_KEY
+      mumbai: process.env.POLYGONSCAN_API_KEY,
+      fuji: process.env.SNOWTRACE_API_KEY
     }
   }
 }

@@ -7,23 +7,23 @@ const { ethers } = hre
 
 const supportedNetworks = [31337]
 
-const sendTransfers = async (contract) => {
+const sendTransfers = async (contract, decimals) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
-  await contract.connect(owner).mint(helper.ether(100_000_000_000_000_000_000_000_000))
+  await contract.connect(owner).mint(helper.ether(100_000_000_000, decimals))
 
-  await contract.transfer(alice.address, helper.ether(1_000_000_000))
-  await contract.transfer(bob.address, helper.ether(2_000_000_000))
-  await contract.transfer(chris.address, helper.ether(3_000_000_000))
-  await contract.transfer(david.address, helper.ether(2_000_000_000))
-  await contract.transfer(emily.address, helper.ether(2_000_000_000))
-  await contract.transfer(franklin.address, helper.ether(2_000_000_000))
-  await contract.transfer(george.address, helper.ether(2_000_000_000))
-  await contract.transfer(harry.address, helper.ether(2_000_000_000))
-  await contract.transfer(isabel.address, helper.ether(2_000_000_000))
-  await contract.transfer(john.address, helper.ether(2_000_000_000))
-  await contract.transfer(kimberly.address, helper.ether(2_000_000_000))
-  await contract.transfer(lewis.address, helper.ether(2_000_000_000))
+  await contract.transfer(alice.address, helper.ether(1_000_000_000, decimals))
+  await contract.transfer(bob.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(chris.address, helper.ether(3_000_000_000, decimals))
+  await contract.transfer(david.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(emily.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(franklin.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(george.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(harry.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(isabel.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(john.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(kimberly.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(lewis.address, helper.ether(2_000_000_000, decimals))
 }
 
 const deployOrGetFromConfig = async (cache, tokens) => {
@@ -52,8 +52,8 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       // throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
-    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000), decimals)
-    hre.network.name === 'hardhat' && sendTransfers(contract)
+    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000, decimals), decimals)
+    hre.network.name === 'hardhat' && sendTransfers(contract, decimals)
 
     contracts.push(contract)
   }

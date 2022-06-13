@@ -36,7 +36,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(10_000),
+    reassurance: ether(10_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -105,7 +105,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000),
+    reassurance: ether(20_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -178,7 +178,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(50_000),
+    reassurance: ether(50_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -212,7 +212,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000),
+    reassurance: ether(20_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -287,7 +287,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(20_000),
-    reassurance: ether(10_000),
+    reassurance: ether(10_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -361,7 +361,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(30_000),
+    reassurance: ether(30_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -394,7 +394,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000),
+    reassurance: ether(20_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -462,7 +462,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(150_000),
+    reassurance: ether(150_000, 6),
     reassuranceRate: percentage(25)
   },
   {
@@ -531,7 +531,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000),
+    reassurance: ether(20_000, 6),
     reassuranceRate: percentage(25)
   }
 ]

@@ -5,7 +5,7 @@ const faucet = require('../contract-helper/faucet')
 
 const add = async (coverKey, payload) => {
   const [owner] = await ethers.getSigners() // eslint-disable-line
-  const amount = ether(getRandomNumber(250_000, 5_000_000))
+  const amount = ether(getRandomNumber(250_000, 5_000_000), 6)
 
   const { dai, reassuranceContract } = payload
 
@@ -15,7 +15,7 @@ const add = async (coverKey, payload) => {
 
   await reassuranceContract.connect(owner).addReassurance(coverKey, owner.address, amount)
 
-  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI'))
+  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI', 6))
 }
 
 const addReassurance = async (payload) => {

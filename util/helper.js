@@ -9,9 +9,9 @@ const MULTIPLIER = 10_000
 const randomPrivateKey = () => `0x${crypto.randomBytes(32).toString('hex')}`
 const randomAddress = () => new ethers.Wallet(randomPrivateKey()).address
 const bn = (x) => BigNumber(x.toString()).toString()
-const ether = (x) => BigNumber((parseFloat(x.toString()) * 10 ** 18).toString()).toString()
+const ether = (x, decimals = 18) => BigNumber((parseFloat(x.toString()) * 10 ** decimals).toString()).toString()
 const percentage = (x) => BigNumber((x * MULTIPLIER).toString()).dividedBy(100).toString()
-const weiToEther = (x) => parseInt(x.toString()) / 10 ** 18
+const weiToEther = (x, decimals) => parseInt(x.toString()) / (10 ** decimals)
 const toPercentageString = (x) => (100 * parseInt(x.toString()) / MULTIPLIER).toFixed(2)
 const add = (x, y) => BigNumber(x.toString()).plus(y.toString()).toString()
 const zerox = '0x0000000000000000000000000000000000000000'
@@ -20,7 +20,7 @@ const emptyBytes32 = '0x00000000000000000000000000000000000000000000000000000000
 const sum = (x) => x.reduce((y, z) => y + z)
 const getRandomNumber = (min, max) => Math.ceil(Math.floor(Math.random() * (max - min + 1)) + min)
 const formatToken = (x, symbol) => Number(x).toLocaleString('en-US', { minimumFractionDigits: 4 }) + (` ${symbol}` || '')
-const weiAsToken = (x, symbol) => formatToken(weiToEther(x), symbol)
+const weiAsToken = (x, symbol, decimals = 18) => formatToken(weiToEther(x, decimals), symbol)
 const formatCurrency = (x, precision = 4) => Number(x).toLocaleString(undefined, { currency: 'USD', style: 'currency', minimumFractionDigits: precision })
 const stringToHex = (x) => '0x' + Array.from(x).map(c => c.charCodeAt(0) < 128 ? c.charCodeAt(0).toString(16) : encodeURIComponent(c).replace(/%/g, '').toLowerCase()).join('')
 
