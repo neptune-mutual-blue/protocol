@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-expressions */
+const moment = require('moment')
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, key } = require('../../../util')
-const composer = require('../../../util/composer')
+const { helper, key } = require('../../../../util')
+const composer = require('../../../../util/composer')
+const cxTokenUtil = require('../../../../util/cxToken')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
 
@@ -11,7 +13,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Governance: resolve', () => {
+describe('CoverReassurance: capitalizePool', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -60,89 +62,60 @@ describe('Governance: resolve', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
-  it('must resolve correctly', async () => {
+  it('correctly gets reassurance amount', async () => {
+    const [owner] = await ethers.getSigners()
+    const amountToCover = helper.ether(100_000)
+
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
+    const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
+    const cxToken = await cxTokenUtil.atAddress(at, {
+      accessControlLibV1: deployed.accessControlLibV1,
+      baseLibV1: deployed.baseLibV1,
+      governanceUtilV1: deployed.governanceUtilV1,
+      policyHelperV1: deployed.policyHelperV1,
+      protoUtilV1: deployed.protoUtilV1,
+      validationLibV1: deployed.validationLibV1
+    })
 
+    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+    const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()
+    const coverageLagPeriod = tomorrowEOD - block.timestamp
+
+    // Coverage lag + 1 second
+    await network.provider.send('evm_increaseTime', [coverageLagPeriod])
+    await network.provider.send('evm_increaseTime', [1])
+
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     // Reporting period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    const tx = await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
 
+    await cxToken.approve(deployed.claimsProcessor.address, amountToCover)
+    await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amountToCover)
+
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    const tx = await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate)
     const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'PoolCapitalized')
 
-    const event = events.find(x => x.event === 'Resolved')
     event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
-    event.args.emergency.should.equal(false)
-
-    // Cooldown period + 1 second
-    await network.provider.send('evm_increaseTime', [1 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    // Claim period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
+    event.args.productKey.should.equal(helper.emptyBytes32)
+    event.args.amount.should.equal(helper.ether(50_000)) // based on reassuranceRate defined above
 
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
-  })
-
-  it('reverts when accessed twice', async () => {
-    const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
-
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
-
-    // Reporting period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
-      .should.be.rejectedWith('Not reported nor disputed')
-
-    // Cooldown period + 1 second
-    await network.provider.send('evm_increaseTime', [1 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    // Claim period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-
-    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
-  })
-
-  it('reverts when accessed before reporting period', async () => {
-    const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
-
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
-
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
-      .should.be.rejectedWith('Reporting still active')
-
-    // Cleanup - resolve, finalize
-    // Reporting period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
-    // Cooldown period + 1 second
-    await network.provider.send('evm_increaseTime', [1 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-    // Claim period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-
-    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
-  })
-
-  it('reverts when invalid incident date is specified', async () => {
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, 0)
-      .should.be.rejectedWith('Please specify incident date')
   })
 })

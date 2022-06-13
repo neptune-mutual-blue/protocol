@@ -24,6 +24,7 @@ describe('Distributor Constructor', () => {
     distributor.address.should.not.equal(helper.zerox)
 
     ;(await distributor.store()).should.equal(deployed.store.address)
+    ;(await distributor.getClaimsProcessorContract()).should.equal(deployed.processor.address)
     ;(await distributor.treasury()).should.equal(treasury)
     ;(await distributor.feePercentage()).should.equal(feePercentage)
   })
