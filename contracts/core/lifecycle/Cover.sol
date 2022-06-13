@@ -18,6 +18,7 @@ contract Cover is CoverBase {
   using StoreKeyUtil for IStore;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -27,7 +28,7 @@ contract Cover is CoverBase {
 
   /**
    * @dev Updates the cover contract.
-   * This feature is accessible only to the cover owner or protocol owner (governance).
+   * This feature is accessible only to the cover manager and during withdrawal period.
    *
    * @param coverKey Enter the cover key
    * @param info Enter a new IPFS URL to update
@@ -35,7 +36,8 @@ contract Cover is CoverBase {
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.mustBeCoverManager();
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
 
@@ -122,7 +124,8 @@ contract Cover is CoverBase {
   ) external override {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.mustBeCoverManager();
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     s.updateProductInternal(coverKey, productKey, info, values);
     emit ProductUpdated(coverKey, productKey, info, values);
