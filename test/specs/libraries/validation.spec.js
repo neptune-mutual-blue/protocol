@@ -203,3 +203,115 @@ describe('ValidationLibV1: mustBeDisputed', () => {
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 })
+
+describe('ValidationLibV1: mustHaveNormalCoverProductStatus', () => {
+  let deployed, mockContract, coverKey, productKey
+
+  const stakeWithFee = helper.ether(10_000)
+  const initialReassuranceAmount = helper.ether(1_000_000)
+  const initialLiquidity = helper.ether(4_000_000)
+  const minReportingStake = helper.ether(250)
+  const reportingPeriod = 7 * DAYS
+  const cooldownPeriod = 1 * DAYS
+  const claimPeriod = 7 * DAYS
+  const floor = helper.percentage(7)
+  const ceiling = helper.percentage(45)
+  const reassuranceRate = helper.percentage(50)
+  const leverage = '1'
+
+  const requiresWhitelist = false
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
+
+  const info = key.toBytes32('info')
+
+  before(async () => {
+    const [owner] = await ethers.getSigners()
+    deployed = await deployDependencies()
+
+    coverKey = key.toBytes32('foo-bar')
+    productKey = key.toBytes32('test')
+
+    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+
+    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, values)
+    await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, [1, 10_000])
+
+    deployed.vault = await composer.vault.getVault({
+      store: deployed.store,
+      libs: {
+        accessControlLibV1: deployed.accessControlLibV1,
+        baseLibV1: deployed.baseLibV1,
+        transferLib: deployed.transferLib,
+        protoUtilV1: deployed.protoUtilV1,
+        registryLibV1: deployed.registryLibV1,
+        validationLibV1: deployed.validationLibV1
+      }
+    }, coverKey)
+
+    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.npm.approve(deployed.vault.address, minReportingStake)
+    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    mockContract = await deployer.deployWithLibraries(
+      cache,
+      'MockValidationLibUser',
+      { ValidationLibV1: deployed.validationLibV1.address },
+      deployed.store.address
+    )
+  })
+
+  it('must correctly check cover status', async () => {
+    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey)
+  })
+
+  it('reverts if cover does not exist', async () => {
+    const coverKey = key.toBytes32('invalid-cover')
+    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Cover does not exist')
+  })
+
+  it('reverts if cover does not support products', async () => {
+    const coverKey = key.toBytes32('cover-without-products')
+
+    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+
+    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Invalid product')
+  })
+
+  it('reverts if status is not normal', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+    const attestAmount = helper.ether(1200)
+    const disputeAmount = helper.ether(2000)
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, attestAmount)
+    await deployed.governance.report(coverKey, productKey, reportingInfo, attestAmount)
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, productKey)
+
+    const disputeInfo = key.toBytes32('dispute-info')
+    await deployed.npm.connect(bob).approve(deployed.governance.address, disputeAmount)
+    await deployed.governance.connect(bob).dispute(coverKey, productKey, incidentDate, disputeInfo, disputeAmount)
+
+    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Status not normal')
+
+    // Cleanup - resolve, finalize
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, productKey, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.finalize(coverKey, productKey, incidentDate)
+  })
+})

@@ -10,8 +10,8 @@ const deployDependencies = async () => {
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
-  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
-  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
+  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000), 18)
+  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000), 6)
   const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm.address, token1: dai.address }])
 
   const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
@@ -312,6 +312,17 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.GOVERNANCE_RESOLUTION, resolution.address)
 
+  const policy = await deployer.deployWithLibraries(cache, 'Policy', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address, '0')
+
+  await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
+
   return {
     npm,
     dai,
@@ -332,6 +343,7 @@ const deployDependencies = async () => {
     routineInvokerLibV1,
     cover,
     coverLibV1,
+    policy,
     policyHelperV1,
     stakingPoolLibV1,
     strategyLibV1,

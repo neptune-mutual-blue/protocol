@@ -30,6 +30,22 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.addUintByKey(testkey, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = helper.getRandomNumber(1, 100)
+
+      await mockContract.addUintByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
+    })
+  })
+
+  describe('StoreKeyUtil: deleteUintByKeys (2 keys)', () => {
+    it('must delete address correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+
+      await mockContract['deleteUintByKeys(bytes32,bytes32)'](testkey1, testkey2)
+    })
   })
 
   describe('StoreKeyUtil: countAddressArrayByKey', () => {
@@ -40,6 +56,12 @@ describe('StoreKeyUtil Library', () => {
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
       const result = await mockContract['countAddressArrayByKey(bytes32)'](testkey1)
       result.should.equal(1)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+
+      await mockContract['countAddressArrayByKey(bytes32)'](testkey1).should.be.rejectedWith('Invalid key')
     })
   })
 
@@ -112,6 +134,12 @@ describe('StoreKeyUtil Library', () => {
       await mockContract.setAddressByKey(testkey, testvalue)
       await mockContract.deleteAddressByKey(testkey)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.deleteAddressByKey(testkey).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: deleteAddressByKeys (3 keys)', () => {
@@ -132,6 +160,14 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.setAddressArrayByKey(testkey, testvalue)
       await mockContract.deleteAddressArrayByIndexByKey(testkey, testindex)
+    })
+
+    it('reverts when invalid value is passed as key', async () => {
+      const testkey = key.toBytes32('')
+      const testindex = 0
+
+      await mockContract.deleteAddressArrayByIndexByKey(testkey, testindex)
+        .should.be.rejectedWith('Invalid key')
     })
 
     it('reverts when invalid value is passed as index', async () => {
@@ -185,6 +221,13 @@ describe('StoreKeyUtil Library', () => {
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
       await mockContract['deleteAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+      const testvalue = helper.randomAddress()
+
+      await mockContract['deleteAddressArrayByKey(bytes32,address)'](testkey1, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: deleteAddressArrayByKeys (2 keys)', () => {
@@ -216,6 +259,12 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.deleteBoolByKey(testkey)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.deleteBoolByKey(testkey).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: deleteBytes32ByKey', () => {
@@ -223,6 +272,12 @@ describe('StoreKeyUtil Library', () => {
       const testkey = key.toBytes32('testkey')
 
       await mockContract.deleteBytes32ByKey(testkey)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.deleteBytes32ByKey(testkey).should.be.rejectedWith('Invalid key')
     })
   })
 
@@ -327,6 +382,12 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.deleteUintByKey(testkey)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+
+      await mockContract.deleteUintByKey(testkey).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: getAddressByKey', () => {
@@ -356,9 +417,30 @@ describe('StoreKeyUtil Library', () => {
       const result = await mockContract['getAddressBooleanByKey(bytes32,address)'](testkey1, account)
       result.should.equal(testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+      const account = helper.randomAddress()
+
+      await mockContract['getAddressBooleanByKey(bytes32,address)'](testkey1, account)
+        .should.be.rejectedWith('Invalid key')
+    })
   })
 
-  describe('StoreKeyUtil: getAddressBooleanByKeys', () => {
+  describe('StoreKeyUtil: getAddressBooleanByKeys (2 keys)', () => {
+    it('must get value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const account = helper.randomAddress()
+      const testvalue = true
+
+      await mockContract['setAddressBooleanByKeys(bytes32,bytes32,address,bool)'](testkey1, testkey2, account, testvalue)
+      const result = await mockContract['getAddressBooleanByKeys(bytes32,bytes32,address)'](testkey1, testkey2, account)
+      result.should.equal(testvalue)
+    })
+  })
+
+  describe('StoreKeyUtil: getAddressBooleanByKeys (3 keys)', () => {
     it('must get value correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
@@ -447,6 +529,13 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.setAddressByKey(testkey, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = helper.randomAddress()
+
+      await mockContract.setAddressByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: setAddressArrayByKeys', () => {
@@ -468,9 +557,28 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract['setAddressBooleanByKey(bytes32,address,bool)'](testkey1, account, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+      const account = helper.randomAddress()
+      const testvalue = true
+
+      await mockContract['setAddressBooleanByKey(bytes32,address,bool)'](testkey1, account, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
-  describe('StoreKeyUtil: setAddressBooleanByKeys', () => {
+  describe('StoreKeyUtil: setAddressBooleanByKeys (2 keys)', () => {
+    it('must set value correctly', async () => {
+      const testkey1 = key.toBytes32('testkey1')
+      const testkey2 = key.toBytes32('testkey2')
+      const account = helper.randomAddress()
+      const testvalue = true
+
+      await mockContract['setAddressBooleanByKeys(bytes32,bytes32,address,bool)'](testkey1, testkey2, account, testvalue)
+    })
+  })
+
+  describe('StoreKeyUtil: setAddressBooleanByKeys (3 keys)', () => {
     it('must set value correctly', async () => {
       const testkey1 = key.toBytes32('testkey1')
       const testkey2 = key.toBytes32('testkey2')
@@ -489,6 +597,13 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+      const testvalue = helper.randomAddress()
+
+      await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: setBoolByKey', () => {
@@ -497,6 +612,13 @@ describe('StoreKeyUtil Library', () => {
       const testvalue = true
 
       await mockContract.setBoolByKey(testkey, testvalue)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = true
+
+      await mockContract.setBoolByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
     })
   })
 
@@ -517,6 +639,13 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.setBytes32ByKey(testkey, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = key.toBytes32('testvalue')
+
+      await mockContract.setBytes32ByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: setStringByKey', () => {
@@ -526,6 +655,13 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.setStringByKey(testkey, testvalue)
     })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = 'testvalue'
+
+      await mockContract.setStringByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
+    })
   })
 
   describe('StoreKeyUtil: setUintByKey', () => {
@@ -534,6 +670,13 @@ describe('StoreKeyUtil Library', () => {
       const testvalue = helper.getRandomNumber(1, 100)
 
       await mockContract.setUintByKey(testkey, testvalue)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = helper.getRandomNumber(1, 100)
+
+      await mockContract.setUintByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
     })
   })
 
@@ -555,6 +698,13 @@ describe('StoreKeyUtil Library', () => {
 
       await mockContract.addUintByKey(testkey, testvalue)
       await mockContract.subtractUintByKey(testkey, testvalue)
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey = key.toBytes32('')
+      const testvalue = helper.getRandomNumber(1, 100)
+
+      await mockContract.subtractUintByKey(testkey, testvalue).should.be.rejectedWith('Invalid key')
     })
   })
 })
@@ -1004,6 +1154,12 @@ describe('StoreKeyUtil: getAddressArrayByKey & getAddressArrayByKeys', () => {
       await mockContract['setAddressArrayByKey(bytes32,address)'](testkey1, testvalue)
       const result = await mockContract['getAddressArrayByKey(bytes32)'](testkey1)
       result.should.deep.equal([testvalue])
+    })
+
+    it('reverts when invalid key is passed', async () => {
+      const testkey1 = key.toBytes32('')
+
+      await mockContract['getAddressArrayByKey(bytes32)'](testkey1).should.be.rejectedWith('Invalid key')
     })
   })
 

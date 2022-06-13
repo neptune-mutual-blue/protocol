@@ -15,7 +15,7 @@ describe('Compound Deposit', () => {
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000))
+    cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
     daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', deployed.dai.address, cDai.address)
 
     compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
@@ -64,7 +64,7 @@ describe('Compound Deposit: Faulty Pool', () => {
 
   before(async () => {
     deployed = await deployDependencies()
-    const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000))
+    const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
 
     daiDelegator = await deployer.deploy(cache, 'FaultyCompoundDaiDelegator', deployed.dai.address, cDai.address, '1')
 

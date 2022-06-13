@@ -25,7 +25,7 @@ describe('Bond Pool: Get Info', () => {
     bondPoolLibV1 = deployed.bondPoolLibV1
     priceLibV1 = deployed.priceLibV1
 
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
+    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000), 6)
     ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
 
     pool = await deployer.deployWithLibraries(cache, 'BondPool', {
