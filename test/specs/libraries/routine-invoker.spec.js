@@ -45,7 +45,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,

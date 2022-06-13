@@ -47,7 +47,7 @@ describe('Liquidity Engine: deleteStrategy', () => {
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 

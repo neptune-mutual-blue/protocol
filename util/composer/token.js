@@ -32,7 +32,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
   const network = await getNetworkInfo()
 
   for (const i in tokens) {
-    const { name, symbol, supply } = tokens[i]
+    const { name, symbol, supply, decimals } = tokens[i]
     const tokenAt = (network?.deployedTokens || {})[symbol]
 
     if (tokenAt) {
@@ -52,7 +52,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       // throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
-    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000))
+    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000), decimals)
     hre.network.name === 'hardhat' && sendTransfers(contract)
 
     contracts.push(contract)
@@ -68,16 +68,16 @@ const at = async (address) => {
 
 const compose = async (cache) => {
   const list = [
-    { name: 'Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Dai', symbol: 'DAI' },
-    { name: 'Crystalpool Token', symbol: 'CRPOOL' },
-    { name: 'Huobi-Wan Token', symbol: 'HWT' },
-    { name: 'Ob1-Ex', symbol: 'OBK' },
-    { name: 'Sabre Oracles', symbol: 'SABRE' },
-    { name: 'Bb8 Exchange', symbol: 'BEC' },
-    { name: 'XD Token', symbol: 'XD' },
-    { name: 'aToken', symbol: 'aToken' },
-    { name: 'cDai', symbol: 'cDai' }
+    { name: 'Neptune Mutual Token', symbol: 'NPM', decimals: 18 },
+    { name: 'Dai', symbol: 'DAI', decimals: 6 },
+    { name: 'Crystalpool Token', symbol: 'CRPOOL', decimals: 18 },
+    { name: 'Huobi-Wan Token', symbol: 'HWT', decimals: 18 },
+    { name: 'Ob1-Ex', symbol: 'OBK', decimals: 18 },
+    { name: 'Sabre Oracles', symbol: 'SABRE', decimals: 18 },
+    { name: 'Bb8 Exchange', symbol: 'BEC', decimals: 18 },
+    { name: 'XD Token', symbol: 'XD', decimals: 18 },
+    { name: 'aToken', symbol: 'aToken', decimals: 18 },
+    { name: 'cDai', symbol: 'cDai', decimals: 18 }
   ]
 
   const [npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai] = await deployOrGetFromConfig(cache, list)

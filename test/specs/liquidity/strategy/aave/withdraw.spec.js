@@ -15,7 +15,7 @@ describe('Aave Withdrawal', () => {
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
@@ -63,7 +63,7 @@ describe('Aave Deposit: Faulty Pool', () => {
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FaultyAaveLendingPool', aToken.address)
 
     await aToken.transfer(deployed.vault.address, helper.ether(1000))

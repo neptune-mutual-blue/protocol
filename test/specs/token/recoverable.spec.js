@@ -56,7 +56,7 @@ describe('Recoverable: Recover ERC-20 Tokens', () => {
     const [, timelockOrOwner] = await ethers.getSigners()
 
     npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
-    fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000))
+    fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000), 12)
   })
 
   it('must allow owner to recover ERC-20 tokens', async () => {

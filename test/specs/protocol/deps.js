@@ -6,7 +6,7 @@ const deployDependencies = async () => {
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
-  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000))
+  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(10000), 18)
 
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
