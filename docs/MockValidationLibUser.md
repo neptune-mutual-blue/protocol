@@ -20,6 +20,7 @@ contract IStore public s;
 - [senderMustBeClaimsProcessorContract()](#sendermustbeclaimsprocessorcontract)
 - [senderMustBeStrategyContract()](#sendermustbestrategycontract)
 - [mustBeDisputed(bytes32 coverKey, bytes32 productKey)](#mustbedisputed)
+- [mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey)](#musthavenormalcoverproductstatus)
 
 ### 
 
@@ -146,6 +147,29 @@ function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view
 ```javascript
 function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view {
     s.mustBeDisputed(coverKey, productKey);
+  }
+```
+</details>
+
+### mustHaveNormalCoverProductStatus
+
+```solidity
+function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustHaveNormalCoverProductStatus(coverKey, productKey);
   }
 ```
 </details>

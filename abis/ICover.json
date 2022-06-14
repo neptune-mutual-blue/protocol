@@ -13,6 +13,30 @@
         "internalType": "bytes32",
         "name": "info",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "tokenSymbol",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "bool",
+        "name": "supportsProducts",
+        "type": "bool"
+      },
+      {
+        "indexed": true,
+        "internalType": "bool",
+        "name": "requiresWhitelist",
+        "type": "bool"
       }
     ],
     "name": "CoverCreated",

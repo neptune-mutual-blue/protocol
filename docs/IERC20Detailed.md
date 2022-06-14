@@ -10,6 +10,7 @@ View Source: [contracts/interfaces/IERC20Detailed.sol](../contracts/interfaces/I
 
 - [name()](#name)
 - [symbol()](#symbol)
+- [decimals()](#decimals)
 - [mint(uint256 amount)](#mint)
 
 ### name
@@ -49,6 +50,26 @@ returns(string)
 
 ```javascript
 function symbol() external view returns (string memory);
+```
+</details>
+
+### decimals
+
+```solidity
+function decimals() external view
+returns(uint8)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function decimals() external view returns (uint8);
 ```
 </details>
 

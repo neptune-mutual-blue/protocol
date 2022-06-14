@@ -93,10 +93,11 @@ contract Cover is CoverBase {
 
     s.addCoverInternal(coverKey, supportsProducts, info, requiresWhitelist, values);
 
-    emit CoverCreated(coverKey, info);
+    emit CoverCreated(coverKey, info, tokenName, tokenSymbol, supportsProducts, requiresWhitelist);
 
     address vault = s.deployVaultInternal(coverKey, tokenName, tokenSymbol);
     emit VaultDeployed(coverKey, vault);
+
     return vault;
   }
 

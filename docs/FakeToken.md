@@ -10,8 +10,12 @@ View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
 **Constants & Variables**
 
 ```js
+//public members
 address public deployer;
 mapping(address => bool) public minters;
+
+//private members
+uint8 private _decimals;
 
 ```
 
@@ -33,7 +37,8 @@ modifier onlyDeployer() internal
 ## Functions
 
 - [addMinter(address account, bool flag)](#addminter)
-- [constructor(string name, string symbol, uint256 supply)](#)
+- [constructor(string name, string symbol, uint256 supply, uint8 decimalPlaces)](#)
+- [decimals()](#decimals)
 - [mint(uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 
@@ -63,7 +68,7 @@ function addMinter(address account, bool flag) public onlyDeployer {
 ### 
 
 ```solidity
-function (string name, string symbol, uint256 supply) public nonpayable ERC20 
+function (string name, string symbol, uint256 supply, uint8 decimalPlaces) public nonpayable ERC20 
 ```
 
 **Arguments**
@@ -73,6 +78,7 @@ function (string name, string symbol, uint256 supply) public nonpayable ERC20
 | name | string |  | 
 | symbol | string |  | 
 | supply | uint256 |  | 
+| decimalPlaces | uint8 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -81,11 +87,37 @@ function (string name, string symbol, uint256 supply) public nonpayable ERC20
 constructor(
     string memory name,
     string memory symbol,
-    uint256 supply
+    uint256 supply,
+    uint8 decimalPlaces
   ) ERC20(name, symbol) {
+    require(decimalPlaces > 0, "Invalid decimal places value");
+
     super._mint(msg.sender, supply);
     deployer = msg.sender;
     minters[msg.sender] = true;
+    _decimals = decimalPlaces;
+  }
+```
+</details>
+
+### decimals
+
+```solidity
+function decimals() public view
+returns(uint8)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function decimals() public view virtual override returns (uint8) {
+    return _decimals;
   }
 ```
 </details>
@@ -107,7 +139,7 @@ function mint(uint256 amount) external nonpayable
 
 ```javascript
 function mint(uint256 amount) external {
-    if (amount > 2000 ether) {
+    if (amount > 2000 * (10**_decimals)) {
       require(minters[msg.sender], "Please specify a smaller value");
     }
 

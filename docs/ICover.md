@@ -10,7 +10,7 @@ View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.so
 **Events**
 
 ```js
-event CoverCreated(bytes32 indexed coverKey, bytes32  info);
+event CoverCreated(bytes32 indexed coverKey, bytes32  info, string  tokenName, string  tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
 event ProductCreated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, bool  requiresWhitelist, uint256[]  values);
 event CoverUpdated(bytes32 indexed coverKey, bytes32  info);
 event ProductUpdated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, uint256[]  values);
