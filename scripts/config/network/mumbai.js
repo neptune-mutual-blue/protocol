@@ -82,7 +82,7 @@ const config = {
     },
     compound: {
       dai: {
-        delegator: '0x6A7B699e1a2d28489b939C9Bcb4dDEF02F792a67'
+        delegator: ''
       }
     }
   }
