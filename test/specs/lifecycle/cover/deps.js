@@ -2,6 +2,7 @@
 const { helper, deployer, key } = require('../../../../util')
 const pair = require('../../../../util/composer/uniswap-pair')
 
+const SECONDS = 1
 const DAYS = 86400
 const cache = null
 
@@ -135,7 +136,7 @@ const deployDependencies = async () => {
       helper.percentage(0.5), // Flash Loan Fee: 0.5%
       helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
       1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
+      1 * SECONDS, // state and liquidity update interval
       helper.percentage(5) // maximum lending ratio
     ]
   )
@@ -161,6 +162,7 @@ const deployDependencies = async () => {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       CoverLibV1: coverLibV1.address,
+      RoutineInvokerLibV1: routineInvokerLibV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address
     },
@@ -302,6 +304,27 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.GOVERNANCE_RESOLUTION, resolution.address)
 
+  const policy = await deployer.deployWithLibraries(cache, 'Policy', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
+    PolicyHelperV1: policyHelperV1.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address, '0')
+
+  await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
+
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address)
+
+  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
   return {
     npm,
     dai,
@@ -323,7 +346,9 @@ const deployDependencies = async () => {
     routineInvokerLibV1,
     cover,
     coverLibV1,
+    policy,
     policyHelperV1,
+    liquidityEngine,
     strategyLibV1,
     stakingContract,
     reassuranceContract,

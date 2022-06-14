@@ -36,7 +36,7 @@ const coverKey = key.toBytes32('Compound Finance Cover')
 let contracts = {}
 
 describe('Coverage Claim Stories', function () {
-  this.timeout(30000)
+  this.timeout(40000)
 
   before(async () => {
     contracts = await composer.initializer.initialize(true)

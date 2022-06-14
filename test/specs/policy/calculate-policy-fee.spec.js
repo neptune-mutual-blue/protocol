@@ -2,7 +2,7 @@
 const { ethers } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const moment = require('moment')
-const { helper, deployer, key, ipfs } = require('../../../util')
+const { helper, deployer, key } = require('../../../util')
 const { getCoverFee } = require('./util/calculator')
 const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
@@ -76,7 +76,7 @@ describe('Policy: getCoverFeeInfo', () => {
     const requiresWhitelist = false
     const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate, leverage]
 
-    const info = await ipfs.write([coverKey, ...values])
+    const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -105,7 +105,9 @@ describe('Policy: getCoverFeeInfo', () => {
     startTimestamp = block.timestamp
   })
 
-  it('must return correct fee', async () => {
+  it('must return correct fee', async function () {
+    this.timeout(60 * 1000)
+
     for (const amount of amounts) {
       for (const duration of durations) {
         const days = getDaysCovered(startTimestamp, duration)
