@@ -58,7 +58,7 @@ const deploySeveral = async (cache, pairInfo) => {
   for (const i in pairInfo) {
     const { token0, token1 } = pairInfo[i]
 
-    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0, token1)
+    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0.address, token1.address)
     pairInfo[i].pairInstance = contract
 
     contracts.push(contract)

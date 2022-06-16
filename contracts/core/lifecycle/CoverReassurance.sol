@@ -65,7 +65,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     AccessControlLibV1.mustBeLiquidityManager(s);
     s.mustBeValidCoverKey(coverKey);
 
-    require(weight > 0, "Please specify weight");
+    require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
 

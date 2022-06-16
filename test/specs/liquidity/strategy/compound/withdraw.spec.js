@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -34,7 +35,7 @@ describe('Compound Withdrawal', () => {
   })
 
   it('must correctly withdraw', async () => {
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     await compoundStrategy.deposit(deployed.coverKey, amount)
 
     const cDais = await cDai.balanceOf(deployed.vault.address)

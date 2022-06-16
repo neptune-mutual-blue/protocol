@@ -6,6 +6,7 @@ const { deployDependencies } = require('./deps')
 const cache = null
 const HOURS = 60 * 60
 const DAYS = HOURS * 24
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -24,7 +25,7 @@ describe('Distributor: `removeLiquidity` function', () => {
     distributor = await deployer.deploy(cache, 'NpmDistributor', deployed.store.address, treasury, feePercentage)
 
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
 
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
@@ -40,7 +41,7 @@ describe('Distributor: `removeLiquidity` function', () => {
   it('must correctly remove liquidity', async () => {
     const [owner] = await ethers.getSigners()
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(500)
     const exit = false
 
@@ -58,7 +59,7 @@ describe('Distributor: `removeLiquidity` function', () => {
 
   it('must correctly exit from the vault', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
 
     await deployed.vault.approve(distributor.address, amount)
@@ -71,7 +72,7 @@ describe('Distributor: `removeLiquidity` function', () => {
   })
 
   it('must reject if invalid cover key is supplied', async () => {
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
 
     await deployed.vault.approve(distributor.address, amount)
@@ -90,7 +91,7 @@ describe('Distributor: `removeLiquidity` function', () => {
 
   it('must reject if vault is missing', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(200)
 
     await deployed.vault.approve(distributor.address, amount)
@@ -109,7 +110,7 @@ describe('Distributor: `removeLiquidity` function', () => {
 
   it('must reject if DAI is missing', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(200)
 
     await deployed.vault.approve(distributor.address, amount)
@@ -128,7 +129,7 @@ describe('Distributor: `removeLiquidity` function', () => {
 
   it('must reject if NPM is missing', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(200)
 
     await deployed.vault.approve(distributor.address, amount)

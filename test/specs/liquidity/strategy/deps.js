@@ -5,6 +5,7 @@ const composer = require('../../../../util/composer')
 
 const DAYS = 86400
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 const deployDependencies = async () => {
   const [owner] = await ethers.getSigners()
@@ -12,8 +13,8 @@ const deployDependencies = async () => {
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
   const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000), 18)
-  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000), 6)
-  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm.address, token1: dai.address }])
+  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm, token1: dai }])
 
   const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
@@ -312,9 +313,9 @@ const deployDependencies = async () => {
   await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
   const coverKey = key.toBytes32('foo-bar')
+  const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+  const initialLiquidity = helper.ether(4_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const initialReassuranceAmount = helper.ether(1_000_000)
-  const initialLiquidity = helper.ether(4_000_000)
   const minReportingStake = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS

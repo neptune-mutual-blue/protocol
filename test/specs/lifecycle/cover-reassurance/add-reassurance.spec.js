@@ -5,6 +5,7 @@ const { helper, key } = require('../../../../util')
 const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -19,9 +20,9 @@ describe('CoverReassurance: addReassurance', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -64,7 +65,7 @@ describe('CoverReassurance: addReassurance', () => {
 
   it('correctly adds reassurance', async () => {
     const [owner] = await ethers.getSigners()
-    const amount = helper.ether(1)
+    const amount = helper.ether(1, PRECISION)
 
     await deployed.dai.approve(deployed.reassuranceContract.address, amount)
     const tx = await coverReassurance.addReassurance(coverKey, owner.address, amount)
@@ -77,7 +78,7 @@ describe('CoverReassurance: addReassurance', () => {
 
   it('reverts when protocol is paused', async () => {
     const [owner] = await ethers.getSigners()
-    const amount = helper.ether(1)
+    const amount = helper.ether(1, PRECISION)
     await deployed.protocol.pause()
     await coverReassurance.addReassurance(coverKey, owner.address, amount)
       .should.be.rejectedWith('Protocol is paused')
@@ -86,7 +87,7 @@ describe('CoverReassurance: addReassurance', () => {
 
   it('reverts when invalid value is passed as cover key', async () => {
     const [owner] = await ethers.getSigners()
-    const amount = helper.ether(1)
+    const amount = helper.ether(1, PRECISION)
     await coverReassurance.addReassurance(key.toBytes32('invalid-foo-bar'), owner.address, amount)
       .should.be.rejectedWith('Cover does not exist')
   })
@@ -101,7 +102,7 @@ describe('CoverReassurance: addReassurance', () => {
   it('reverts when not accessed by the liquidity manager', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    const amount = helper.ether(1)
+    const amount = helper.ether(1, PRECISION)
     await coverReassurance.connect(bob).addReassurance(coverKey, owner.address, amount)
       .should.be.rejectedWith('Forbidden')
   })

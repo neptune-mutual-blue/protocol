@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -34,7 +35,7 @@ describe('Compound Deposit', () => {
   })
 
   it('must correctly deposit', async () => {
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     const tx = await compoundStrategy.deposit(deployed.coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Deposited')
@@ -54,7 +55,7 @@ describe('Compound Deposit', () => {
   })
 
   it('must revert if deposit amount exceeds vault balance', async () => {
-    await compoundStrategy.deposit(deployed.coverKey, helper.ether(240_000_000))
+    await compoundStrategy.deposit(deployed.coverKey, helper.ether(240_000_000, PRECISION))
       .should.be.rejectedWith('Balance insufficient')
   })
 })
@@ -84,14 +85,14 @@ describe('Compound Deposit: Faulty Pool', () => {
   })
 
   it('must revert if dai delegator returns an error code', async () => {
-    await compoundStrategy.deposit(deployed.coverKey, helper.ether(10))
+    await compoundStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
       .should.be.rejectedWith('Compound delegator mint failed')
   })
 
   it('must revert if no certificate tokens were received', async () => {
     await daiDelegator.setReturnValue('0')
 
-    await compoundStrategy.deposit(deployed.coverKey, helper.ether(10))
+    await compoundStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
       .should.be.rejectedWith('Minting cDai failed')
   })
 })

@@ -5,6 +5,7 @@ const { helper, key } = require('../../../../util')
 const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -19,9 +20,9 @@ describe('CoverReassurance: setWeight', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -63,12 +64,12 @@ describe('CoverReassurance: setWeight', () => {
   })
 
   it('correctly sets weight', async () => {
-    const weight = helper.ether(1)
+    const weight = helper.percentage(100)
     await coverReassurance.setWeight(coverKey, weight)
   })
 
   it('reverts when protocol is paused', async () => {
-    const weight = helper.ether(1)
+    const weight = helper.percentage(100)
     await deployed.protocol.pause()
     await coverReassurance.setWeight(coverKey, weight)
       .should.be.rejectedWith('Protocol is paused')
@@ -76,7 +77,7 @@ describe('CoverReassurance: setWeight', () => {
   })
 
   it('reverts when invalid value is passed as cover key', async () => {
-    const weight = helper.ether(1)
+    const weight = helper.percentage(100)
     await coverReassurance.setWeight(key.toBytes32('invalid-foo-bar'), weight)
       .should.be.rejectedWith('Cover does not exist')
   })
@@ -90,7 +91,7 @@ describe('CoverReassurance: setWeight', () => {
   it('reverts when not accessed by the liquidity manager', async () => {
     const [, bob] = await ethers.getSigners()
 
-    const weight = helper.ether(1)
+    const weight = helper.percentage(100)
     await coverReassurance.connect(bob).setWeight(coverKey, weight)
       .should.be.rejectedWith('Forbidden')
   })

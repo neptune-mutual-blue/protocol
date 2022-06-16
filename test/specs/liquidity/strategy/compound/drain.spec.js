@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -36,7 +37,7 @@ describe('Compound Deposit: Drained', () => {
   it('must correctly drain', async () => {
     await deployed.dai.transfer(compoundStrategy.address, helper.ether(100))
 
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     const tx = await compoundStrategy.deposit(deployed.coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Drained')

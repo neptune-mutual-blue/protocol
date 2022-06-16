@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const { ethers, network } = require('hardhat')
 const composer = require('../../util/composer')
 const { helper, cxToken, key, ipfs, sample } = require('../../util')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -46,9 +47,9 @@ describe('Coverage Claim Stories', function () {
 
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
     const cooldownPeriod = 1 * constants.DAYS
@@ -79,7 +80,7 @@ describe('Coverage Claim Stories', function () {
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
     // Attacker purchases a cover
-    let args = [attacker.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.attacker)]
+    let args = [attacker.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.attacker, PRECISION)]
     let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
       ; (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken.should.equal(helper.zerox)
@@ -93,7 +94,7 @@ describe('Coverage Claim Stories', function () {
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Alice purchases a cover
-    args = [alice.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.alice)]
+    args = [alice.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.alice, PRECISION)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(alice).approve(contracts.policy.address, fee)
@@ -105,7 +106,7 @@ describe('Coverage Claim Stories', function () {
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Bob purchases a cover #1 (Valid)
-    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -118,7 +119,7 @@ describe('Coverage Claim Stories', function () {
 
     // Bob purchases a cover #2 (Invalid)
 
-    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -130,8 +131,7 @@ describe('Coverage Claim Stories', function () {
     await network.provider.send('evm_increaseTime', [12 * constants.HOURS])
 
     // Bob purchases a cover #3 (Invalid)
-
-    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob)]
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
@@ -177,7 +177,7 @@ describe('Coverage Claim Stories', function () {
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 
-    after.sub(before).toString().should.equal(helper.ether(constants.coverAmounts.alice * 0.935)) // 6.5% is platform fee
+    after.sub(before).toString().should.equal(helper.ether(constants.coverAmounts.alice * 0.935, PRECISION)) // 6.5% is platform fee
   })
 
   it('bob\'s payout was refused because of coverage lag', async () => {
@@ -195,7 +195,7 @@ describe('Coverage Claim Stories', function () {
   it('bob\'s partial claim was accepted', async () => {
     const [, ,, bob] = await ethers.getSigners()
 
-    const claimAmount = helper.ether(100)
+    const claimAmount = helper.ether(100, PRECISION)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, claimAmount)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)

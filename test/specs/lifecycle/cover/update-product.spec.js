@@ -6,6 +6,7 @@ const { deployDependencies } = require('./deps')
 const composer = require('../../../../util/composer')
 const DAYS = 86400
 const HOURS = 60 * 60
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -17,8 +18,8 @@ describe('Cover: updateProduct', () => {
 
   const coverKey = key.toBytes32('foo-bar')
   const productKey = key.toBytes32('test-product-key')
+  const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const initialReassuranceAmount = helper.ether(1_000_000)
   const minReportingStake = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS
@@ -47,7 +48,7 @@ describe('Cover: updateProduct', () => {
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, coverValues)
     await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, productValues)
 
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const lendingPeriod = 1 * HOURS
     const withdrawalWindow = 1 * HOURS
 

@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -27,9 +28,9 @@ describe('Policy Purchase Stories', () => {
 
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(24_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(24_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -56,9 +57,9 @@ describe('Policy Purchase Stories', () => {
     const result = await contracts.policy.getCoverPoolSummary(coverKey, helper.emptyBytes32)
     const [totalAmountInPool, totalCommitment, reassurance, reassuranceWeight, count, leverage, efficiency] = result
 
-    totalAmountInPool.toString().should.equal(helper.ether(24_000_000))
+    totalAmountInPool.toString().should.equal(helper.ether(24_000_000, PRECISION))
     totalCommitment.toString().should.equal('0')
-    reassurance.toString().should.equal(helper.ether(1_000_000))
+    reassurance.toString().should.equal(helper.ether(1_000_000, PRECISION))
     reassuranceWeight.toString().should.equal(helper.percentage(100))
     count.toString().should.equal('0')
     leverage.toString().should.equal('1')
@@ -68,7 +69,7 @@ describe('Policy Purchase Stories', () => {
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {
     const [owner] = await ethers.getSigners()
 
-    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(2_500_000)]
+    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(2_500_000, PRECISION)]
     const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])
 
    ;(await contracts.policy.getCxToken(args[1], args[2], args[3]))[0].should.equal(helper.zerox)
@@ -87,7 +88,7 @@ describe('Policy Purchase Stories', () => {
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
     const [owner] = await ethers.getSigners()
 
-    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(500_000)]
+    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(500_000, PRECISION)]
     const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])
 
    ;(await contracts.policy.getCxToken(args[1], args[2], args[3]))[0].should.not.equal(helper.zerox)
@@ -100,6 +101,6 @@ describe('Policy Purchase Stories', () => {
 
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(helper.ether(3_000_000))
+    cxDaiBalance.toString().should.equal(helper.ether(3_000_000, PRECISION))
   })
 })

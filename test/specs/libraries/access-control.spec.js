@@ -6,6 +6,7 @@ const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -234,8 +235,8 @@ describe('AccessControlLibV1: _deleteContract', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS

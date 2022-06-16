@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, helper, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -23,7 +24,7 @@ describe('Distributor: `drain` function', () => {
 
   it('must correctly drain the entire token balance', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 

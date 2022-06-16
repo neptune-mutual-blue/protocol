@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -34,7 +35,7 @@ describe('Aave Deposit', () => {
   })
 
   it('must correctly deposit', async () => {
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     const tx = await aaveStrategy.deposit(deployed.coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Deposited')
@@ -54,7 +55,7 @@ describe('Aave Deposit', () => {
   })
 
   it('must revert if deposit amount exceeds vault balance', async () => {
-    await aaveStrategy.deposit(deployed.coverKey, helper.ether(240_000_000))
+    await aaveStrategy.deposit(deployed.coverKey, helper.ether(240_000_000, PRECISION))
       .should.be.rejectedWith('Balance insufficient')
   })
 })
@@ -84,7 +85,7 @@ describe('Aave Deposit: Faulty Pool', () => {
   })
 
   it('must revert if no certificate tokens were received', async () => {
-    await aaveStrategy.deposit(deployed.coverKey, helper.ether(10))
+    await aaveStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
       .should.be.rejectedWith('Deposit to Aave failed')
   })
 })

@@ -1,5 +1,3 @@
-const { helper } = require('../../../../util')
-
 const getCoverFee = (data, amount, duration, days, debug = false) => {
   const truncate = (x, precision) => Math.trunc(x * Math.pow(10, precision)) / Math.pow(10, precision)
 

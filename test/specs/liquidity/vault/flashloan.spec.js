@@ -5,6 +5,7 @@ const { deployer, key, helper } = require('../../../../util')
 const { deployDependencies } = require('./deps')
 
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -38,7 +39,7 @@ describe('Flashloan', () => {
   })
 
   it('must revert when a vault has insufficient balance', async () => {
-    const amount = helper.ether(1_000_000_000)
+    const amount = helper.ether(1_000_000_000, PRECISION)
     await borrower.borrow(amount, 0)
       .should.be.rejectedWith('Amount insufficient')
   })
@@ -55,7 +56,7 @@ describe('Flashloan', () => {
   })
 
   it('must revert when an unknown token is being requested', async () => {
-    const amount = helper.ether(1)
+    const amount = helper.ether(1, PRECISION)
 
     await borrower.setStablecoin(deployed.npm.address)
 

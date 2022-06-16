@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, helper, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -26,7 +27,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const [owner] = await ethers.getSigners()
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
@@ -50,7 +51,7 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if an invalid cover key is specified', async () => {
     const coverKey = key.toBytes32('')
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
@@ -62,7 +63,7 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if an invalid duration is provided', async () => {
     const coverKey = deployed.coverKey
     const duration = '10'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
@@ -84,7 +85,7 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if an policy contract was not found', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
@@ -101,7 +102,7 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if DAI address is not registered on the protocol', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)

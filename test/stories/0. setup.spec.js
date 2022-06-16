@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -69,8 +70,8 @@ describe('Protocol Initialization Stories', () => {
 
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
+    const initialReassuranceAmount = helper.ether(1000000, PRECISION)
     const stakeWithFee = helper.ether(10000)
-    const initialReassuranceAmount = helper.ether(1000000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -94,7 +95,7 @@ describe('Protocol Initialization Stories', () => {
 
   it('corretness rule: DAI should be correctly added to the vault', async () => {
     const npmToStake = helper.ether(300)
-    const initialLiquidity = helper.ether(4000000)
+    const initialLiquidity = helper.ether(4000000, PRECISION)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
@@ -122,14 +123,14 @@ describe('Protocol Initialization Stories', () => {
   it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
     const balance = await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)
 
-    const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000))
+    const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000, PRECISION))
     balance.toString().should.equal(expected.toString())
 
     previous.reassuranceTokenBalance = expected
   })
 
   it('DAI liquidity was added again', async () => {
-    const liquidity = helper.ether(50000)
+    const liquidity = helper.ether(50000, PRECISION)
     const npmToStake = helper.ether(250)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
@@ -158,7 +159,7 @@ describe('Protocol Initialization Stories', () => {
 
   it('reassurance token allocation was increased', async () => {
     const [owner] = await ethers.getSigners()
-    const liquidity = helper.ether(20000)
+    const liquidity = helper.ether(20000, PRECISION)
 
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, liquidity)
     await contracts.reassuranceContract.addReassurance(coverKey, owner.address, liquidity)
@@ -173,7 +174,7 @@ describe('Protocol Initialization Stories', () => {
   })
 
   it('the vault generated a fictional income', async () => {
-    const liquidity = helper.ether(1)
+    const liquidity = helper.ether(1, PRECISION)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     // Directly transferring DAI to simulate an income earned from external source(s)
@@ -191,7 +192,7 @@ describe('Protocol Initialization Stories', () => {
   })
 
   it('DAI liquidity was added once again', async () => {
-    const liquidity = helper.ether(1000)
+    const liquidity = helper.ether(1000, PRECISION)
     const npmToStake = helper.ether(250)
 
     const vault = await composer.vault.getVault(contracts, coverKey)

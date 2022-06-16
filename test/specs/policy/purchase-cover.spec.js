@@ -6,6 +6,7 @@ const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -31,9 +32,9 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -75,7 +76,7 @@ describe('Policy: purchaseCover', () => {
   it('must succeed without any errors', async () => {
     const [owner] = await ethers.getSigners()
 
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
     await deployed.dai.approve(deployed.policy.address, amount)
     await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
 
@@ -152,8 +153,8 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -194,7 +195,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
   it('must succeed without any errors', async () => {
     const [owner] = await ethers.getSigners()
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
 
     await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
 
@@ -210,7 +211,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
   it('when accessed by a user who is not whitelisted', async () => {
     const [, bob] = await ethers.getSigners()
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
 
     await deployed.npm.transfer(bob.address, amount)
 

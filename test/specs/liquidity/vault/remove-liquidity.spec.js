@@ -4,6 +4,7 @@ const { ethers, network } = require('hardhat')
 const { helper, key } = require('../../../../util')
 const { deployDependencies } = require('./deps')
 const HOURS = 60 * 60
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -17,7 +18,7 @@ describe('Vault: removeLiquidity', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
-    const amount = helper.ether(10_000_000)
+    const amount = helper.ether(10_000_000, PRECISION)
     npmStake = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 

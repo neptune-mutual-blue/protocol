@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -34,14 +35,14 @@ describe('Aave Deposit: Drained', () => {
   })
 
   it('must correctly drain', async () => {
-    await deployed.dai.transfer(aaveStrategy.address, helper.ether(100))
+    await deployed.dai.transfer(aaveStrategy.address, helper.ether(100, PRECISION))
 
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     const tx = await aaveStrategy.deposit(deployed.coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Drained')
 
     event.args.asset.should.equal(deployed.dai.address)
-    event.args.amount.should.equal(helper.ether(100))
+    event.args.amount.should.equal(helper.ether(100, PRECISION))
   })
 })

@@ -6,6 +6,7 @@ const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -32,8 +33,8 @@ describe('CoverStake: increaseStake', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
     coverKey = key.toBytes32('foo-bar')
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -107,8 +108,8 @@ describe('CoverStake: increaseStake', () => {
 
   it('reverts when fee is less than amount', async () => {
     const [owner, alice] = await ethers.getSigners()
-    const amount = helper.ether(100)
-    const fee = helper.ether(1000)
+    const amount = helper.ether(100, PRECISION)
+    const fee = helper.ether(1000, PRECISION)
 
     await deployed.npm.transfer(alice.address, amount)
     await deployed.npm.approve(deployed.stakingContract.address, amount)

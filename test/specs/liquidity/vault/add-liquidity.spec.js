@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper, key } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -17,7 +18,7 @@ describe('Vault: addLiquidity', () => {
 
   it('correctly adds liquidity', async () => {
     const coverKey = key.toBytes32('foo-bar')
-    const amount = helper.ether(1_000)
+    const amount = helper.ether(1_000, PRECISION)
     const npmStake = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
@@ -46,7 +47,7 @@ describe('Vault: addLiquidity', () => {
 
   it('reverts when coverkey is invalid', async () => {
     const coverKey = key.toBytes32('foo-bar2')
-    const amount = helper.ether(1_000)
+    const amount = helper.ether(1_000, PRECISION)
     const npmStake = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
