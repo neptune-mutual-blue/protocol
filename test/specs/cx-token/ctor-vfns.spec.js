@@ -5,6 +5,7 @@ const { deployDependencies } = require('./deps')
 const composer = require('../../../util/composer')
 const cxTokenUtil = require('../../../util/cxToken')
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -19,10 +20,10 @@ describe('cxToken: Constructor', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
-    const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const minReportingStake = helper.ether(250)
+    const stakeWithFee = helper.ether(10_000)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
@@ -59,7 +60,7 @@ describe('cxToken: Constructor', () => {
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
-    const amountToCover = helper.ether(100_000)
+    const amountToCover = helper.ether(100_000, PRECISION)
 
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 

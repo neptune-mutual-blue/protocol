@@ -5,6 +5,7 @@ const { helper } = require('../../../../util')
 const { getCoverFee, getCoverFeeBn } = require('./calculator')
 const MULTIPLIER = 10_000
 const INCIDENT_SUPPORT_POOL_CAP_RATIO = 2500
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -22,9 +23,9 @@ const data = {
 }
 
 const payload = {
-  reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount)),
-  inVault: ethers.BigNumber.from(helper.ether(data.inVault)),
-  totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment)),
+  reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount, PRECISION)),
+  inVault: ethers.BigNumber.from(helper.ether(data.inVault, PRECISION)),
+  totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment, PRECISION)),
   floor: ethers.BigNumber.from(helper.percentage(7)),
   ceiling: ethers.BigNumber.from(helper.percentage(45)),
   MULTIPLIER,
@@ -54,11 +55,11 @@ describe('Policy Fee Calculation tests', () => {
     it(`compares policy fee of ${helper.formatCurrency(amount, 0)} for ${duration} month(s)`, async () => {
       const fee = getFee(amount, duration, days)
 
-      const amb = ethers.BigNumber.from(helper.ether(amount))
+      const amb = ethers.BigNumber.from(helper.ether(amount, PRECISION))
       const dub = ethers.BigNumber.from(duration)
       const dab = ethers.BigNumber.from(days)
 
-      const fb = helper.weiToEther(getFeeBn(amb, dub, dab))
+      const fb = helper.weiToEther(getFeeBn(amb, dub, dab), PRECISION)
 
       if (duration === 2 && amount === 500_000) {
         console.info('Duration %s. Amount: %s. Fee: %s', duration, amount, fee)

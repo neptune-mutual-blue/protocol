@@ -9,6 +9,8 @@ const { deployDependencies, PoolTypes } = require('./deps')
 const cache = null
 const { expect } = require('chai')
 
+const PRECISION = helper.STABLECOIN_DECIMALS
+
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
@@ -21,10 +23,10 @@ describe('Zero Rewards: when tokens run out of supply', () => {
     deployed = await deployDependencies()
 
     const [owner, bob] = await ethers.getSigners()
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000), 6)
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
+    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
     sabre = await deployer.deploy(cache, 'FakeToken', 'Sabre Oracles', 'SABRE', helper.ether(100_000_000), 18)
-    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre.address, token1: dai.address }])
+    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: dai }])
 
     pool = await deployer.deployWithLibraries(cache, 'StakingPools', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -95,10 +97,10 @@ describe('Zero Rewards: if the protocol is misconfigured', () => {
     deployed = await deployDependencies()
 
     const [owner, bob] = await ethers.getSigners()
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000), 6)
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
+    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
     sabre = await deployer.deploy(cache, 'FakeToken', 'Sabre Oracles', 'SABRE', helper.ether(100_000_000), 18)
-    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre.address, token1: dai.address }])
+    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: dai }])
 
     pool = await deployer.deployWithLibraries(cache, 'StakingPools', {
       AccessControlLibV1: deployed.accessControlLibV1.address,

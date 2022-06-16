@@ -7,6 +7,7 @@ const composer = require('../../../../util/composer')
 const cxTokenUtil = require('../../../../util/cxToken')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -21,9 +22,9 @@ describe('CoverReassurance: capitalizePool', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -62,9 +63,9 @@ describe('CoverReassurance: capitalizePool', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
   })
 
-  it('correctly gets reassurance amount', async () => {
+  it('correctly capitalizes reassurance amount', async () => {
     const [owner] = await ethers.getSigners()
-    const amountToCover = helper.ether(100_000)
+    const amountToCover = helper.ether(100_000, PRECISION)
 
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
@@ -72,6 +73,7 @@ describe('CoverReassurance: capitalizePool', () => {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
     await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
     const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
+
     const cxToken = await cxTokenUtil.atAddress(at, {
       accessControlLibV1: deployed.accessControlLibV1,
       baseLibV1: deployed.baseLibV1,
@@ -114,7 +116,7 @@ describe('CoverReassurance: capitalizePool', () => {
     event.args.coverKey.should.equal(coverKey)
     event.args.incidentDate.should.equal(incidentDate)
     event.args.productKey.should.equal(helper.emptyBytes32)
-    event.args.amount.should.equal(helper.ether(50_000)) // based on reassuranceRate defined above
+    event.args.amount.should.equal(helper.ether(50_000, PRECISION)) // based on reassuranceRate defined above
 
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })

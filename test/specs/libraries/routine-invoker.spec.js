@@ -7,6 +7,7 @@ const { deployDependencies } = require('./deps')
 const { expect } = require('chai')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -16,7 +17,7 @@ require('chai')
 describe('RoutineInvokerLibV1: _executeStrategy', () => {
   let deployed, coverKey, mockLiquidityEngineUser, aaveLendingPool, aToken, aaveStrategy
 
-  const initialLiquidity = helper.ether(1_000)
+  const initialLiquidity = helper.ether(1_000, PRECISION)
   const minReportingStake = helper.ether(250)
 
   before(async () => {
@@ -24,8 +25,8 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
@@ -47,6 +48,9 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
 
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
+
+    await deployed.dai.addMinter(aaveLendingPool.address, true)
+
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
       BaseLibV1: deployed.baseLibV1.address,

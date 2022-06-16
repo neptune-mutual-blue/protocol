@@ -5,6 +5,7 @@ const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -19,8 +20,8 @@ describe('Vault Library', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -81,9 +82,9 @@ describe('Vault Library', () => {
     })
 
     it('must revert when pod and liquidity mismatch', async () => {
-      await deployed.dai.transfer(deployed.vault.address, helper.ether(1))
+      await deployed.dai.transfer(deployed.vault.address, helper.ether(1, PRECISION))
 
-      await deployed.vault.calculatePods(helper.ether(1))
+      await deployed.vault.calculatePods(helper.ether(1, PRECISION))
         .should.be.rejectedWith('Liquidity/POD mismatch')
     })
   })

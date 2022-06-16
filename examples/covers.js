@@ -1,7 +1,8 @@
-const { ether, percentage } = require('../util/helper')
+const { ether, percentage, STABLECOIN_DECIMALS } = require('../util/helper')
 const { minutesToBlocks } = require('../util/block-time')
 
 const MINUTES = 60
+const PRECISION = STABLECOIN_DECIMALS
 
 const covers = [
   {
@@ -36,7 +37,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(10_000, 6),
+    reassurance: ether(10_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -105,7 +106,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000, 6),
+    reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -178,7 +179,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(50_000, 6),
+    reassurance: ether(50_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -212,7 +213,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000, 6),
+    reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -287,7 +288,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(20_000),
-    reassurance: ether(10_000, 6),
+    reassurance: ether(10_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -361,7 +362,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(30_000, 6),
+    reassurance: ether(30_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -394,7 +395,7 @@ const covers = [
       'https://twitter.com/neptunemutual'
     ],
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000, 6),
+    reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -462,7 +463,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(150_000, 6),
+    reassurance: ether(150_000, PRECISION),
     reassuranceRate: percentage(25)
   },
   {
@@ -531,7 +532,7 @@ const covers = [
       }
     },
     stakeWithFees: ether(50_000),
-    reassurance: ether(20_000, 6),
+    reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   }
 ]

@@ -9,6 +9,7 @@ const { deployDependencies } = require('./deps')
 const cache = null
 const DAYS = 86400
 const MULTIPLIER = 10_000
+const PRECISION = helper.STABLECOIN_DECIMALS
 const INCIDENT_SUPPORT_POOL_CAP_RATIO = MULTIPLIER
 
 require('chai')
@@ -30,9 +31,9 @@ const data = {
 }
 
 const payload = {
-  reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount)),
-  inVault: ethers.BigNumber.from(helper.ether(data.inVault)),
-  totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment)),
+  reassuranceAmount: ethers.BigNumber.from(helper.ether(data.reassuranceAmount, PRECISION)),
+  inVault: ethers.BigNumber.from(helper.ether(data.inVault, PRECISION)),
+  totalCommitment: ethers.BigNumber.from(helper.ether(data.totalCommitment, PRECISION)),
   floor: ethers.BigNumber.from(helper.percentage(7)),
   ceiling: ethers.BigNumber.from(helper.percentage(45)),
   reassuranceRate: helper.percentage(50),
@@ -114,9 +115,9 @@ describe('Policy: getCoverFeeInfo', () => {
         const expected = helper.formatCurrency(getFee(amount, duration, days), 4).trim()
 
         console.info(`Expected ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s). Days: ${days}`)
-        const fees = await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, duration.toString(), helper.ether(amount))
+        const [fees] = await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, duration.toString(), helper.ether(amount, PRECISION))
 
-        expected.should.equal(helper.formatCurrency(helper.weiToEther(fees), 4))
+        expected.should.equal(helper.formatCurrency(helper.weiToEther(fees, PRECISION), 4))
       }
     }
   })
@@ -127,7 +128,7 @@ describe('Policy: getCoverFeeInfo', () => {
   })
 
   it('must revert if invalid value is specified as the cover duration', async () => {
-    await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, '0', helper.ether(10000))
+    await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, '0', helper.ether(10000, PRECISION))
       .should.be.rejectedWith('Invalid duration')
   })
 })

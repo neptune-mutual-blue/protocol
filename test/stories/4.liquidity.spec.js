@@ -5,6 +5,7 @@ const BigNumber = require('bignumber.js')
 const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
 const { approve } = require('../../util/contract-helper/erc20')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -30,8 +31,8 @@ describe('Liquidity Stories', () => {
 
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -49,7 +50,7 @@ describe('Liquidity Stories', () => {
   })
 
   it('deployer added $4M to Bitmart cover pool', async () => {
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const minReportingStake = helper.ether(250)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
@@ -74,7 +75,7 @@ describe('Liquidity Stories', () => {
 
   it('deployer can not remove liquidity without interest accrual', async () => {
     const [owner] = await ethers.getSigners()
-    const toRedeem = helper.ether(3_000_000)
+    const toRedeem = helper.ether(3_000_000, PRECISION)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await network.provider.send('evm_increaseTime', [181 * DAYS])
@@ -85,7 +86,7 @@ describe('Liquidity Stories', () => {
 
   it('deployer removed $3M from Bitmart cover pool', async () => {
     const [owner] = await ethers.getSigners()
-    const toRedeem = helper.ether(3_000_000)
+    const toRedeem = helper.ether(3_000_000, PRECISION)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await vault.accrueInterest()

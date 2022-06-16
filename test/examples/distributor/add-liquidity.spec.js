@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, helper, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -25,7 +26,7 @@ describe('Distributor: `addLiquidity` function', () => {
   it('must correctly add liquidity', async () => {
     const [owner] = await ethers.getSigners()
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 
@@ -46,7 +47,7 @@ describe('Distributor: `addLiquidity` function', () => {
   it('must not need NPM stake for additional liquidity', async () => {
     const [, alice] = await ethers.getSigners()
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = '0'
     const referralCode = key.toBytes32('referral-code')
 
@@ -61,7 +62,7 @@ describe('Distributor: `addLiquidity` function', () => {
   })
 
   it('must reject if invalid cover key is specified', async () => {
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 
@@ -75,7 +76,7 @@ describe('Distributor: `addLiquidity` function', () => {
   it('must reject if the supplied amount is zero', async () => {
     const coverKey = deployed.coverKey
     const amount = '0'
-    const npmStake = helper.ether(1000)
+    const npmStake = helper.ether(1000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, npmStake)
@@ -86,7 +87,7 @@ describe('Distributor: `addLiquidity` function', () => {
 
   it('must reject if vault contract was not found', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 
@@ -107,7 +108,7 @@ describe('Distributor: `addLiquidity` function', () => {
 
   it('must reject if DAI was not found', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 
@@ -128,7 +129,7 @@ describe('Distributor: `addLiquidity` function', () => {
 
   it('must reject if NPM was not found', async () => {
     const coverKey = deployed.coverKey
-    const amount = helper.ether(5000)
+    const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 

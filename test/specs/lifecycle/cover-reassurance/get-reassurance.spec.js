@@ -5,6 +5,7 @@ const { helper, key } = require('../../../../util')
 const composer = require('../../../../util/composer')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -19,9 +20,9 @@ describe('CoverReassurance: getReassurance', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -62,6 +63,6 @@ describe('CoverReassurance: getReassurance', () => {
 
   it('correctly gets reassurance amount', async () => {
     const result = await deployed.reassuranceContract.getReassurance(coverKey)
-    result.should.equal(helper.ether(1_000_000))
+    result.should.equal(helper.ether(1_000_000, PRECISION))
   })
 })

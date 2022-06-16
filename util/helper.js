@@ -5,6 +5,7 @@ const BigNumber = require('bignumber.js')
 BigNumber.config({ EXPONENTIAL_AT: 99 })
 
 const MULTIPLIER = 10_000
+const STABLECOIN_DECIMALS = 6
 
 const randomPrivateKey = () => `0x${crypto.randomBytes(32).toString('hex')}`
 const randomAddress = () => new ethers.Wallet(randomPrivateKey()).address
@@ -68,5 +69,7 @@ module.exports = {
   formatCurrency,
   formatPercent,
   formatPercentBn,
-  stringToHex
+  stringToHex,
+  MULTIPLIER,
+  STABLECOIN_DECIMALS
 }

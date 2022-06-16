@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const PRECISION = helper.STABLECOIN_DECIMALS
 const cache = null
 
 require('chai')
@@ -32,7 +33,7 @@ describe('Vault Constructor and Views', () => {
 
   it('correctly deploys', async () => {
     const coverKey = key.toBytes32('test')
-    const liquidityToken = await deployer.deploy(cache, 'FakeToken', 'DAI Token', 'DAI', helper.ether(100_000_000), 6)
+    const liquidityToken = await deployer.deploy(cache, 'FakeToken', 'DAI Token', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
 
     const vault = await deployer.deployWithLibraries(cache, 'Vault', {
       AccessControlLibV1: accessControlLibV1.address,
