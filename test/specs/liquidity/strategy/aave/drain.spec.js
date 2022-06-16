@@ -35,6 +35,7 @@ describe('Aave Deposit: Drained', () => {
   })
 
   it('must correctly drain', async () => {
+    await deployed.dai.mint(helper.ether(100, PRECISION))
     await deployed.dai.transfer(aaveStrategy.address, helper.ether(100, PRECISION))
 
     const amount = helper.ether(10, PRECISION)

@@ -61,10 +61,6 @@ describe('Policy Fee Calculation tests', () => {
 
       const fb = helper.weiToEther(getFeeBn(amb, dub, dab), PRECISION)
 
-      if (duration === 2 && amount === 500_000) {
-        console.info('Duration %s. Amount: %s. Fee: %s', duration, amount, fee)
-      }
-
       helper.formatCurrency(fee).should.eq(helper.formatCurrency(fb))
     })
   }
