@@ -58,7 +58,7 @@ const deploySeveral = async (cache, pairInfo) => {
   for (const i in pairInfo) {
     const { token0, token1 } = pairInfo[i]
 
-    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0.address, token1.address)
+    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0, token1)
     pairInfo[i].pairInstance = contract
 
     contracts.push(contract)
@@ -76,13 +76,13 @@ const compose = async (cache, tokens) => {
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd } = tokens
 
   return deploySeveral(cache, [
-    { token0: npm, token1: dai, name: 'NPM/DAI' },
-    { token0: crpool, token1: dai, name: 'CRPOOL/DAI' },
-    { token0: hwt, token1: dai, name: 'HWT/DAI' },
-    { token0: obk, token1: dai, name: 'OBK/DAI' },
-    { token0: sabre, token1: dai, name: 'SABRE/DAI' },
-    { token0: bec, token1: dai, name: 'BEC/DAI' },
-    { token0: xd, token1: dai, name: 'XD/DAI' }
+    { token0: npm.address, token1: dai.address, name: 'NPM/DAI' },
+    { token0: crpool.address, token1: dai.address, name: 'CRPOOL/DAI' },
+    { token0: hwt.address, token1: dai.address, name: 'HWT/DAI' },
+    { token0: obk.address, token1: dai.address, name: 'OBK/DAI' },
+    { token0: sabre.address, token1: dai.address, name: 'SABRE/DAI' },
+    { token0: bec.address, token1: dai.address, name: 'BEC/DAI' },
+    { token0: xd.address, token1: dai.address, name: 'XD/DAI' }
   ])
 }
 

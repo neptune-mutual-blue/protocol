@@ -60,7 +60,6 @@ contract Policy is IPolicy, Recoverable {
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     // @todo: When the voucher system is replaced with NPM tokens in the future, uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
