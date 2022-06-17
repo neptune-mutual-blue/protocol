@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "../../dependencies/BokkyPooBahsDateTimeLibrary.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICxTokenFactory.sol";
 import "../../interfaces/ICxToken.sol";
@@ -10,7 +11,6 @@ import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/PolicyHelperV1.sol";
-import "../../libraries/BokkyPooBahsDateTimeLibrary.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/RoutineInvokerLibV1.sol";
 import "../Recoverable.sol";

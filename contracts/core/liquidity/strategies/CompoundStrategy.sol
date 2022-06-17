@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
-import "../../../interfaces/external/ICompoundERC20DelegatorLike.sol";
+import "../../../dependencies/compound/ICompoundERC20DelegatorLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
 import "hardhat/console.sol";

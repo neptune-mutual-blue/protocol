@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "../interfaces/external/IUniswapV2PairLike.sol";
+import "../dependencies/uniswap-v2/IUniswapV2PairLike.sol";
 
 contract FakeUniswapV2PairLike is IUniswapV2PairLike {
   address public override token0;
