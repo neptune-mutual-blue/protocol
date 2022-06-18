@@ -10,6 +10,8 @@ library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
   uint256 public constant MULTIPLIER = 10_000;
+  uint256 public constant CXTOKEN_PRECISION = 1 ether;
+  uint256 public constant POD_PRECISION = 1 ether;
 
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
@@ -78,7 +80,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
   bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
   bytes32 public constant NS_COVER_LEVERAGE_FACTOR = "ns:cover:leverage:factor";
-  bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
+  bytes32 public constant NS_COVER_CREATION_FEE_EARNING = "ns:cover:creation:fee:earning";
   bytes32 public constant NS_COVER_INFO = "ns:cover:info";
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
   bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS = "ns:cover:supports:products";

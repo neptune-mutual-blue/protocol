@@ -28,7 +28,7 @@ const config = {
       // }
     },
     mumbai: {
-      url: 'https://matic-mumbai.chainstacklabs.com',
+      url: 'https://rpc-mumbai.maticvigil.com',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
       gas: 'auto',

@@ -1,4 +1,4 @@
-const { covers } = require('../../examples/covers')
+const { covers } = require('../../examples/dedicated')
 const composer = require('../composer')
 const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { toBytes32 } = require('../key')

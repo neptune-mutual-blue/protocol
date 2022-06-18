@@ -82,7 +82,7 @@ describe('Policy Purchase Stories', () => {
 
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(args[4].toString())
+    cxDaiBalance.toString().should.equal(helper.ether(2_500_000))
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
@@ -101,6 +101,6 @@ describe('Policy Purchase Stories', () => {
 
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(helper.ether(3_000_000, PRECISION))
+    cxDaiBalance.toString().should.equal(helper.ether(3_000_000))
   })
 })

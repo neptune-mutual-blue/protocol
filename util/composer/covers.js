@@ -1,5 +1,5 @@
 const { ethers } = require('ethers')
-const { covers } = require('../../examples/covers')
+const { covers, products } = require('../../examples')
 const ipfs = require('../ipfs')
 const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
@@ -13,21 +13,23 @@ const createCovers = async (payload) => {
 
   for (const i in covers) {
     const info = covers[i]
-    await create(payload, info)
+    await addCover(payload, info)
     await rest(200)
+  }
+
+  for (const i in products) {
+    const info = products[i]
+    await addProduct(payload, info)
   }
 }
 
-const create = async (payload, info) => {
+const addCover = async (payload, info) => {
   const { intermediate, cache, contracts } = payload
   const { cover } = contracts
 
-  const { key } = info
+  const { key, leverage, supportsProducts } = info
   const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate, vault } = info
   const hashBytes32 = await ipfs.write(info)
-
-  const supportsProducts = false
-  const leverage = 1
 
   const values = [
     stakeWithFees.toString(),
@@ -44,6 +46,23 @@ const create = async (payload, info) => {
 
   await intermediate(cache, cover, 'addCover', key, hashBytes32, vault.name, vault.symbol, supportsProducts, requiresWhitelist, values)
   await rest(100)
+}
+
+const addProduct = async (payload, info) => {
+  const { intermediate, cache, contracts } = payload
+  const { cover } = contracts
+
+  const { coverKey, productKey, requiresWhitelist, capitalEfficiency } = info
+  const hashBytes32 = await ipfs.write(info)
+
+  const status = 1
+
+  const values = [
+    status,
+    capitalEfficiency
+  ]
+
+  await intermediate(cache, cover, 'addProduct', coverKey, productKey, hashBytes32, requiresWhitelist, values)
 }
 
 module.exports = { createCovers }

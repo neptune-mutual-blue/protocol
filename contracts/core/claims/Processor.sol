@@ -61,6 +61,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
+    uint256 stablecoinPrecision = 10**IERC20Detailed(s.getStablecoin()).decimals();
     validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
@@ -69,18 +70,20 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(coverKey);
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
-    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, amount);
+    uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
+
+    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, payout);
 
     // @suppress-division Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
-    uint256 platformFee = (amount * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 platformFee = (payout * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
     // @suppress-division Checked side effects. If the claim reporter commission is zero
     // or a very small number, reporterFee fee becomes zero due to data loss.
 
     // slither-disable-next-line divide-before-multiply
     uint256 reporterFee = (platformFee * s.getClaimReporterCommissionInternal()) / ProtoUtilV1.MULTIPLIER;
-    uint256 claimed = amount - platformFee;
+    uint256 claimed = payout - platformFee;
 
     vault.transferGovernance(coverKey, msg.sender, claimed);
 

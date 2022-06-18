@@ -273,6 +273,7 @@ const initialize = async (suite, deploymentId) => {
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
     PolicyHelperV1: libs.policyHelperV1.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
     StrategyLibV1: libs.strategyLibV1.address,
     ValidationLibV1: libs.validationLibV1.address
   }, store.address, '0')

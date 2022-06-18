@@ -105,7 +105,8 @@ contract Policy is IPolicy, Recoverable {
    * Gets the sum total of cover commitment that has not expired yet.
    */
   function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
+    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
   }
 
   /**

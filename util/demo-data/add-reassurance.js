@@ -1,4 +1,4 @@
-const { covers } = require('../../examples/covers')
+const { covers } = require('../../examples/dedicated')
 const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { approve } = require('../contract-helper/erc20')
 const faucet = require('../contract-helper/faucet')

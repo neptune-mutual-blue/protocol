@@ -4,6 +4,8 @@ const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../../../util')
 const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
+const cxTokenUtil = require('../../../util/cxToken')
+
 const cache = null
 const DAYS = 86400
 const PRECISION = helper.STABLECOIN_DECIMALS
@@ -25,6 +27,7 @@ describe('Policy: purchaseCover', () => {
       BaseLibV1: deployed.baseLibV1.address,
       CoverUtilV1: deployed.coverUtilV1.address,
       PolicyHelperV1: deployed.policyHelperV1.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address, '0')
@@ -78,13 +81,21 @@ describe('Policy: purchaseCover', () => {
 
     const amount = helper.ether(500_000, PRECISION)
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+
+    const tx = await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'CoverPurchased')
+
+    const cxToken = await cxTokenUtil.atAddress(event.args.cxToken, deployed)
+
+    const cxTokenBalance = await cxToken.balanceOf(owner.address)
+    cxTokenBalance.should.equal(helper.ether(500_000))
 
     const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
-    commitment.should.equal(amount)
+    commitment.should.equal(helper.ether(500_000, PRECISION))
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
-    available.should.be.gt(commitment)
+    available.should.be.gt(amount)
   })
 
   it('must revert if zero is sent as the amount to cover', async () => {
@@ -145,6 +156,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
       BaseLibV1: deployed.baseLibV1.address,
       CoverUtilV1: deployed.coverUtilV1.address,
       PolicyHelperV1: deployed.policyHelperV1.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address, '0')
@@ -206,7 +218,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     commitment.should.equal(amount)
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
-    available.should.be.gt(commitment)
+    available.should.be.gt(amount)
   })
 
   it('when accessed by a user who is not whitelisted', async () => {

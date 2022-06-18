@@ -98,22 +98,6 @@ interface ICover is IMember {
     bool[] calldata statuses
   ) external;
 
-  /**
-   * @dev Get info of a cover contract by key
-   * @param coverKey Enter the cover key
-   * @param coverOwner Returns the address of the cover creator
-   * @param info Gets the IPFS hash of the cover info
-   * @param values Array of uint256 values. See `CoverUtilV1.getCoverInfo`.
-   */
-  function getCover(bytes32 coverKey, bytes32 productKey)
-    external
-    view
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    );
-
   function stopCover(
     bytes32 coverKey,
     bytes32 productKey,

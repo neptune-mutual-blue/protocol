@@ -60,8 +60,8 @@ describe('Vault: removeLiquidity', () => {
     const event = events.find(x => x.event === 'PodsRedeemed')
 
     event.args.account.should.equal(owner.address)
-    event.args.redeemed.should.equal(pods)
-    event.args.liquidityReleased.should.equal(pods)
+    event.args.redeemed.should.equal(helper.ether(2000))
+    event.args.liquidityReleased.should.equal(helper.ether(2000, PRECISION))
   })
 
   it('successfully removes liquidity without NPM stake removal', async () => {

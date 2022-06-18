@@ -102,8 +102,9 @@ describe('CoverReassurance: capitalizePool', () => {
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    await cxToken.approve(deployed.claimsProcessor.address, amountToCover)
-    await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amountToCover)
+    const claimAmount = helper.ether(100_000)
+    await cxToken.approve(deployed.claimsProcessor.address, claimAmount)
+    await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, claimAmount)
 
     // Claim period + 1 second
     await network.provider.send('evm_increaseTime', [7 * DAYS])

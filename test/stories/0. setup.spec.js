@@ -117,7 +117,8 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.toString().should.equal(previous.daiBalance.toString())
+
+    helper.ether(helper.weiToEther(pods), PRECISION).toString().should.equal(previous.daiBalance.toString())
   })
 
   it('corretness rule: reassurance token should\'ve been correctly transferred to the reassurance vault', async () => {
@@ -154,7 +155,8 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    pods.should.be.lte(previous.daiBalance.toString())
+
+    parseInt(helper.ether(helper.weiToEther(pods), PRECISION)).should.be.lte(parseInt(previous.daiBalance))
   })
 
   it('reassurance token allocation was increased', async () => {
@@ -216,6 +218,6 @@ describe('Protocol Initialization Stories', () => {
     const [owner] = await ethers.getSigners()
 
     const pods = await pod.balanceOf(owner.address)
-    parseInt(pods.toString()).should.be.lessThan(parseInt(previous.daiBalance.toString()))
+    parseInt(helper.ether(helper.weiToEther(pods), PRECISION)).should.be.lessThan(parseInt(previous.daiBalance))
   })
 })

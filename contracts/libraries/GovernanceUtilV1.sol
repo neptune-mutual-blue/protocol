@@ -439,25 +439,14 @@ library GovernanceUtilV1 {
     s.addUintByKey(_getReassurancePayoutKey(coverKey, productKey, incidentDate), capitalized);
   }
 
-  function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    uint256 rate = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey);
-
-    if (rate > 0) {
-      return rate;
-    }
-
-    // Default: 25%
-    return 2500;
-  }
-
   function getReassuranceTransferrableInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (uint256) {
-    uint256 reassuranceRate = getReassuranceRateInternal(s, coverKey);
-    uint256 available = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    uint256 reassuranceRate = s.getReassuranceRateInternal(coverKey);
+    uint256 available = s.getReassuranceAmountInternal(coverKey);
     uint256 reassurancePaid = getReassurancePayoutInternal(s, coverKey, productKey, incidentDate);
 
     uint256 totalReassurance = available + reassurancePaid;

@@ -69,7 +69,7 @@ const at = async (address) => {
 const compose = async (cache) => {
   const list = [
     { name: 'Neptune Mutual Token', symbol: 'NPM', decimals: 18 },
-    { name: 'Dai', symbol: 'DAI', decimals: 6 },
+    { name: 'Dai', symbol: 'DAI', decimals: helper.STABLECOIN_DECIMALS },
     { name: 'Crystalpool Token', symbol: 'CRPOOL', decimals: 18 },
     { name: 'Huobi-Wan Token', symbol: 'HWT', decimals: 18 },
     { name: 'Ob1-Ex', symbol: 'OBK', decimals: 18 },
