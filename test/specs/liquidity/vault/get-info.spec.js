@@ -20,7 +20,7 @@ describe('Vault: getInfo', () => {
     const [owner] = await ethers.getSigners()
 
     const result = await deployed.vault.getInfo(owner.address)
-    result[0].should.equal(helper.ether(4_000_000, PRECISION))
+    result[0].should.equal(helper.ether(4_000_000))
     result[1].should.equal(helper.ether(4_000_000, PRECISION))
   })
 })

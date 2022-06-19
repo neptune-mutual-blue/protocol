@@ -14,12 +14,15 @@ const covers = [
       symbol: 'AB-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'NFT', 'Gaming'],
     about:
       'Animated Brands is a Thailand based gaming company, and a venture capitalist firm founded in 2017 by Jack D\'Souza. It was listed on Singapore Exchange (SGX) from 23rd May, 2019.',
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the project faced a vulnerability that resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.animatedbrands.com',
       twitter: 'https://twitter.com/animatedbrands',
@@ -49,12 +52,15 @@ const covers = [
       symbol: 'BEC-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'BB8 Exchange is a global cryptocurrency exchange that lets users from over 140 countries buy and sell over 1200 different digital currencies and tokens. BB8 Exchange offers a simple buy/sell crypto function for beginners as well as a variety of crypto-earning options, in addition to expert cryptocurrency spot and futures trading platforms. On this platform, both novice and expert traders may find what they\'re looking for.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the exchange was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.bb8exchange.com',
       documentation: 'https://support.bmx.fund/hc',
@@ -118,6 +124,8 @@ const covers = [
       symbol: 'CRPOOL-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'Borrowing', 'Lending'],
     about: 'The BSC ecosystem will be home to Crystalpool, the first decentralized marketplace for unsecured liquidity on the blockchain. Crystalpool Finance will integrate the full-stack scaling solution to give its customers more access and functionality, as well as its single-borrower liquidity pools, thematic pools, and tokenized credit solution, offering retail lenders more access to high-yielding loan options.',
     blockchains: [{
@@ -127,6 +135,7 @@ const covers = [
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the lending platform faced a vulnerability that resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://crstalpool.finance',
       documentation: 'https://docs.crstalpool.finance/resources/documents',
@@ -191,12 +200,15 @@ const covers = [
       symbol: 'HCF-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Wallet', 'Investing', 'Trading'],
     about: 'Hicif Bank, which was founded in 2017 and is based on the beautiful Portuguese island of Madeira, is one of the world\'s leading digital banks, aiming to deliver financial solutions to more countries than any other digital bank.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the OTC platform was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://otc.hicifbank.com',
       linkedin: 'https://www.linkedin.com/company/hicifbank',
@@ -225,12 +237,15 @@ const covers = [
       symbol: 'HWT-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Exchange', 'DeFi', 'Exchange'],
     about: 'HUOBI-WAN is a cryptocurrency exchange situated in the Canary Islands that offers secure, dependable, and convenient trading services for thousands of digital assets. Since its inception in 2019, HUOBI-WAN has enabled users to buy, sell, stake, and borrow a wide range of cryptocurrencies, providing an all-encompassing ecosystem for experienced crypto traders and investors. It distinguishes itself through cutting-edge technology, a diverse product offering, and a truly global presence that spans more than 80 countries.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the exchange was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.huobiwan.com/en-us',
       documentation:
@@ -300,12 +315,15 @@ const covers = [
       symbol: 'OBX-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'OB1-EX is a cutting-edge cryptocurrency exchange with advanced financial services that strives to provide you everything you need to make informed trading and investing decisions. OB1-EX is dedicated to serving hundred and thousands of users in over 30 countries with a diverse collection of opportunities connected to spot, margin, futures, options, DeFi, lending, and mining services, with over 500 digital assets and trading pairs.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the exchange was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.ob1ex.com',
       documentation: 'https://www.ob1ex.com/docs-v5/en',
@@ -374,12 +392,15 @@ const covers = [
       symbol: 'QNL-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Wallet', 'Investing', 'Trading'],
     about: 'Qanilia Capital is a cryptocurrency and digital asset platform that offers personal and institutional clients investment alternatives. Qanilia Capital was founded in 2019 and is headquartered in China, and is on course to deliver cutting-edge trading capabilities, creative goods, and individualized service that is fast, simple, and secure access to the decentralised financial sector.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the investment platform was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.qanilia-capital.com',
       documentation: 'https://qanilia-capital.zendesk.com/hc/en-us/sections/360005345933-Legal-Documents'
@@ -407,12 +428,15 @@ const covers = [
       symbol: 'SABRE-nDAI'
     },
     requiresWhitelist: false,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'DeFi', 'Oracle'],
     about: 'Sabre Oracles, founded in 2015, offers a non-exclusive, credibly neutral, and highly reliable oracle solution by bridging real-world data to automate, simplify, and secure smart contracts, with the goal of developing a blockchain network that uses real-time data from financial markets for a secure interface and DeFi platforms.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the oracle network was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://sabreoracles.com',
       twitter: 'https://twitter.com/SubreOracles',
@@ -475,12 +499,15 @@ const covers = [
       symbol: 'X2D2-nDAI'
     },
     requiresWhitelist: true,
+    supportsProducts: false,
+    leverage: '1',
     tags: ['Smart Contract', 'DeFi', 'Exchange'],
     about: 'X2D2-Exchange was established in 2020 and is based in Seychelles. X2D2-Exchange has active operation centers in Bangalore, Hong Kong, Japan, and other countries, and offers a comprehensive trading platform that supports 50+ high-quality currencies and 100 trading pairs, allowing users to access the safest, most efficient, and professional digital asset investment services.',
     blockchains: [],
     rules: `1. You must have maintained at least 1 NPM tokens in your wallet during your coverage period.
     2. During your coverage period, the exchange was exploited which resulted in user assets being stolen and the project was also unable to cover the loss themselves.
     3. This does not have to be your own loss.`,
+    exclusions: '',
     links: {
       website: 'https://www.x2d2.com',
       documentation: 'https://doc.x2d2.com',

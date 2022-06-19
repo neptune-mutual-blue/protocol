@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "hardhat compile",
-    "build": "hardhat compile",
-    "clean": "hardhat clean",
-    "compile:clean": "hardhat clean && hardhat compile",
+    "compile": "forge build",
+    "build": "forge build",
+    "clean": "forge clean",
+    "compile:clean": "forge clean && forge compile",
     "build:clean": "npm run compile:clean",
     "deploy": "hardhat run scripts/deploy.js --network hardhat",
     "deploy:fuji": "hardhat run scripts/deploy.js --network fuji 2>&1 | tee ./.ignored/fuji-deployment.md",
@@ -35,7 +35,6 @@
     "stories": "hardhat test ./test/stories/*.js",
     "bdd": "hardhat test ./test/bdd/*.js",
     "story": "npm run stories",
-    "count": "node util/count-lines/index.js",
     "walk": "node ./util/analyzers/chain-state | sed -r \"s/\\x1B\\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g\" > ./.todo/_Walker.sol && echo View file 👉 ./.todo/_Walker.sol"
   },
   "repository": {
@@ -77,6 +76,7 @@
     "hardhat": "^2.8.0",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-gas-reporter": "^1.0.6",
+    "hardhat-preprocessor": "^0.1.4",
     "ipfs-mini": "^1.1.5",
     "moment": "^2.29.1",
     "node-enumerable": "^6.0.0",

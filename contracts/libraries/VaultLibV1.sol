@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
 pragma solidity 0.8.0;
-import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 import "./ProtoUtilV1.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
-import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
+import "../interfaces/IERC20Detailed.sol";
 
 library VaultLibV1 {
   using ProtoUtilV1 for IStore;
@@ -36,6 +36,7 @@ library VaultLibV1 {
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
+    uint256 stablecoinPrecision = 10**IERC20Detailed(s.getStablecoin()).decimals();
 
     // This smart contract contains stablecoins without liquidity provider contribution.
     // This can happen if someone wants to create a nuisance by sending stablecoin
@@ -48,7 +49,7 @@ library VaultLibV1 {
       return (podSupply * liquidityToAdd) / balance;
     }
 
-    return liquidityToAdd;
+    return (liquidityToAdd * ProtoUtilV1.POD_PRECISION) / stablecoinPrecision;
   }
 
   /**
@@ -243,8 +244,10 @@ library VaultLibV1 {
 
     s.mustBeProtocolMember(pod);
 
+    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey);
+    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey, precision);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);

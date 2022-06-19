@@ -1,16 +1,17 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "../dependencies/BokkyPooBahsDateTimeLibrary.sol";
+import "../interfaces/IStore.sol";
 import "./ProtoUtilV1.sol";
 import "./AccessControlLibV1.sol";
-import "./BokkyPooBahsDateTimeLibrary.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
 import "./NTransferUtilV2.sol";
 import "./StrategyLibV1.sol";
 import "../interfaces/ICxToken.sol";
+import "../interfaces/IERC20Detailed.sol";
 
 library CoverUtilV1 {
   using RegistryLibV1 for IStore;
@@ -100,13 +101,46 @@ library CoverUtilV1 {
   ) external view returns (uint256[] memory _values) {
     _values = new uint256[](8);
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey);
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
-    _values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+
+    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
+    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
+    _values[2] = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
+    _values[3] = s.getUintByKey(getReassuranceWeightKey(coverKey));
     _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
     _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
+  }
+
+  /**
+   * @dev Gets the reassurance amount of the specified cover contract
+   * @param coverKey Enter the cover key
+   */
+  function getReassuranceAmountInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKey(getReassuranceKey(coverKey));
+  }
+
+  function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    uint256 rate = s.getUintByKey(getReassuranceRateKey(coverKey));
+
+    if (rate > 0) {
+      return rate;
+    }
+
+    // Default: 25%
+    return 2500;
+  }
+
+  function getReassuranceKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey));
+  }
+
+  function getReassuranceRateKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey));
+  }
+
+  function getReassuranceWeightKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
   }
 
   function getCoverStatusInternal(
@@ -193,27 +227,39 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, productKey, incidentDate));
   }
 
-  function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view returns (uint256 total) {
+  function getTotalLiquidityUnderProtection(
+    IStore s,
+    bytes32 coverKey,
+    uint256 precision
+  ) external view returns (uint256 total) {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getActiveLiquidityUnderProtection(s, coverKey, 0);
+      return getActiveLiquidityUnderProtection(s, coverKey, 0, precision);
     }
 
     bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
-      total += getActiveLiquidityUnderProtection(s, coverKey, products[i]);
+      total += getActiveLiquidityUnderProtection(s, coverKey, products[i], precision);
     }
   }
 
   function getActiveLiquidityUnderProtection(
     IStore s,
     bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
+    bytes32 productKey,
+    uint256 adjustPrecision
+  ) public view returns (uint256 total) {
     (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey, productKey);
-    return current + future;
+    total = current + future;
+
+    // @caution:
+    // Adjusting precision results in truncation and data loss.
+    //
+    // Can also open a can of worms if the protocol stablecoin
+    // address needs to be updated in the future.
+    total = (total * adjustPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
   }
 
   function _getLiquidityUnderProtectionInfo(
@@ -299,14 +345,6 @@ library CoverUtilV1 {
     if (incidentDate > 0) {
       s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
     }
-  }
-
-  /**
-   * @dev Gets the reassurance amount of the specified cover contract
-   * @param coverKey Enter the cover key
-   */
-  function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
   }
 
   /**

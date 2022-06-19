@@ -12,7 +12,7 @@ const randomAddress = () => new ethers.Wallet(randomPrivateKey()).address
 const bn = (x) => BigNumber(x.toString()).toString()
 const ether = (x, decimals = 18) => BigNumber((parseFloat(x.toString()) * 10 ** decimals).toString()).toString()
 const percentage = (x) => BigNumber((x * MULTIPLIER).toString()).dividedBy(100).toString()
-const weiToEther = (x, decimals) => parseInt(x.toString()) / (10 ** decimals)
+const weiToEther = (x, decimals = 18) => parseInt(x.toString()) / (10 ** decimals)
 const toPercentageString = (x) => (100 * parseInt(x.toString()) / MULTIPLIER).toFixed(2)
 const add = (x, y) => BigNumber(x.toString()).plus(y.toString()).toString()
 const zerox = '0x0000000000000000000000000000000000000000'

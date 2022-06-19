@@ -26,6 +26,7 @@ describe('CoverStake: stakeOf', () => {
       BaseLibV1: deployed.baseLibV1.address,
       CoverUtilV1: deployed.coverUtilV1.address,
       PolicyHelperV1: deployed.policyHelperV1.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address, '0')

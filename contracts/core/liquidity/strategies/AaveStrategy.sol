@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
-import "../../../interfaces/external/IAaveV2LendingPoolLike.sol";
+import "../../../dependencies/aave/IAaveV2LendingPoolLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
 import "hardhat/console.sol";

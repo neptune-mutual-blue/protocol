@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -17,6 +18,6 @@ describe('Vault: calculateLiquidity', () => {
 
   it('correctly calculates the liquidity', async () => {
     const result = await deployed.vault.calculateLiquidity(helper.ether(1_000))
-    result.should.equal(helper.ether(1_000))
+    result.should.equal(helper.ether(1_000, PRECISION))
   })
 })

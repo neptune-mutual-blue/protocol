@@ -25,30 +25,6 @@ library CoverLibV1 {
 
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
-  function getCoverInfo(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  )
-    external
-    view
-    returns (
-      address owner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    info = s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey);
-    owner = s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
-
-    values = new uint256[](5);
-
-    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
-    values[1] = s.getStake(coverKey);
-    values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getActiveLiquidityUnderProtection(coverKey, productKey);
-  }
-
   function initializeCoverInternal(
     IStore s,
     address liquidityToken,
@@ -149,7 +125,7 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, coverKey, fee);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
 

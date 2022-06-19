@@ -70,6 +70,7 @@ describe('Coverage Claim Stories', function () {
     // Create a new cover
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
+
     await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     // Add initial liquidity
@@ -195,7 +196,7 @@ describe('Coverage Claim Stories', function () {
   it('bob\'s partial claim was accepted', async () => {
     const [, ,, bob] = await ethers.getSigners()
 
-    const claimAmount = helper.ether(100, PRECISION)
+    const claimAmount = helper.ether(100)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, claimAmount)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)

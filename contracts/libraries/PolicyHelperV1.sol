@@ -8,6 +8,7 @@ import "./ValidationLibV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
+import "../interfaces/IERC20Detailed.sol";
 import "hardhat/console.sol";
 
 library PolicyHelperV1 {
@@ -246,7 +247,10 @@ library PolicyHelperV1 {
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
     IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
 
-    cxToken.mint(coverKey, productKey, onBehalfOf, amountToCover);
+    uint256 stablecoinPrecision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 toMint = (amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
+
+    cxToken.mint(coverKey, productKey, onBehalfOf, toMint);
 
     s.updateStateAndLiquidity(coverKey);
   }

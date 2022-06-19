@@ -64,7 +64,10 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     mockContract = await deployer.deployWithLibraries(
       cache,
       'MockCoverUtilUser',
-      { CoverUtilV1: deployed.coverUtilV1.address },
+      {
+        CoverUtilV1: deployed.coverUtilV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address
+      },
       deployed.store.address
     )
 

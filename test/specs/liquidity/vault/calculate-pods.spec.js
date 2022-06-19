@@ -2,6 +2,7 @@
 const BigNumber = require('bignumber.js')
 const { helper } = require('../../../../util')
 const { deployDependencies } = require('./deps')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -16,7 +17,7 @@ describe('Vault: calculatePods', () => {
   })
 
   it('correctly calculates amount of pods', async () => {
-    const result = await deployed.vault.calculatePods(helper.ether(1_000))
+    const result = await deployed.vault.calculatePods(helper.ether(1_000, PRECISION))
     result.should.equal(helper.ether(1_000))
   })
 })

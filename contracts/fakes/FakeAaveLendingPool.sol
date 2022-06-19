@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "../interfaces/external/IAaveV2LendingPoolLike.sol";
+import "../dependencies/aave/IAaveV2LendingPoolLike.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./FakeToken.sol";
 

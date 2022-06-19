@@ -51,7 +51,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
+    s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
     stablecoin.ensureTransferFrom(account, address(this), amount);
 
@@ -67,7 +67,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
+    s.setUintByKey(CoverUtilV1.getReassuranceWeightKey(coverKey), weight);
 
     s.updateStateAndLiquidity(coverKey);
 
@@ -97,7 +97,7 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
+    s.subtractUintByKey(CoverUtilV1.getReassuranceKey(coverKey), toTransfer);
     s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
 
     emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);

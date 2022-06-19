@@ -81,7 +81,6 @@ describe('cxToken: `mint` function', () => {
     const to = helper.randomAddress()
     const amount = '1'
 
-    // Make bob -> policy contract
     const previous = deployed.policy.address
     await deployed.protocol.upgradeContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address, bob.address)
 
