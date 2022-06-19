@@ -8,7 +8,6 @@ import "./AccessControlLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RegistryLibV1.sol";
 import "./StoreKeyUtil.sol";
-import "./NTransferUtilV2.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
 
@@ -21,19 +20,18 @@ library CoverLibV1 {
   using AccessControlLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using StrategyLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
   function initializeCoverInternal(
     IStore s,
-    address liquidityToken,
-    bytes32 liquidityName
+    address stablecoin,
+    bytes32 friendlyName
   ) external {
     // @suppress-initialization Can only be initialized once by a cover manager. Check caller.
-    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement. Check caller.
-    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
-    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
+    // @suppress-address-trust-issue stablecoin This instance of stablecoin can be trusted because of the ACL requirement. Check caller.
+    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, stablecoin);
+    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_STABLECOIN_NAME, friendlyName);
 
     s.updateStateAndLiquidity(0);
   }

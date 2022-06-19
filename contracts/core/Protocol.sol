@@ -30,7 +30,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[1] minCoverCreationStake
    * @param values[2] firstReportingStake
    * @param values[3] claimPeriod
-   * @param values[4] burnRate
+   * @param values[4] reportingBurnRate
    * @param values[5] governanceReporterCommission
    * @param values[6] claimPlatformFee
    * @param values[7] claimReporterCommission

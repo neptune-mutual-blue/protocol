@@ -9,7 +9,6 @@ pragma solidity 0.8.0;
 contract Vault is WithFlashLoan {
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   constructor(
     IStore store,

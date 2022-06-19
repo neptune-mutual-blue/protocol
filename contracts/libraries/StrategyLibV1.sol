@@ -7,12 +7,9 @@ import "../interfaces/IStore.sol";
 import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
-import "./NTransferUtilV2.sol";
 import "./RegistryLibV1.sol";
-import "hardhat/console.sol";
 
 library StrategyLibV1 {
-  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using RegistryLibV1 for IStore;
@@ -203,7 +200,6 @@ library StrategyLibV1 {
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
-    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 

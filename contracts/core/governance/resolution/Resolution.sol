@@ -18,7 +18,6 @@ contract Resolution is IResolution, Unstakable {
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
-  using NTransferUtilV2 for IERC20;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 

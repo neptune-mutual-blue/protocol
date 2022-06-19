@@ -20,7 +20,6 @@ abstract contract Resolvable is Finalization, IResolvable {
   using RoutineInvokerLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
-  using NTransferUtilV2 for IERC20;
 
   /**
    * @dev Marks as a cover as "resolved" after the reporting period.

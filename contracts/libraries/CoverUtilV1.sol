@@ -8,7 +8,6 @@ import "./ProtoUtilV1.sol";
 import "./AccessControlLibV1.sol";
 import "./StoreKeyUtil.sol";
 import "./RegistryLibV1.sol";
-import "./NTransferUtilV2.sol";
 import "./StrategyLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IERC20Detailed.sol";
@@ -18,7 +17,6 @@ library CoverUtilV1 {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using AccessControlLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
   using StrategyLibV1 for IStore;
 
   enum CoverStatus {

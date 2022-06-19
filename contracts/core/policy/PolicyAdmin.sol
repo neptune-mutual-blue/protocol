@@ -7,7 +7,6 @@ import "../../interfaces/IPolicyAdmin.sol";
 import "../../libraries/PolicyHelperV1.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**

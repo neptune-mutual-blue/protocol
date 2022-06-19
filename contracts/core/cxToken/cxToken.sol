@@ -6,7 +6,6 @@ import "../../interfaces/IStore.sol";
 import "../../interfaces/ICxToken.sol";
 import "../../libraries/GovernanceUtilV1.sol";
 import "../../libraries/PolicyHelperV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
 /**

@@ -7,7 +7,7 @@ import "../../../interfaces/ILendingStrategy.sol";
 import "../../../dependencies/compound/ICompoundERC20DelegatorLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
-import "hardhat/console.sol";
+import "../../../libraries/NTransferUtilV2.sol";
 
 contract CompoundStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -118,8 +118,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], amount, cDaiMinted);
-    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit LogDeposit(getName(), _counters[coverKey], amount, cDaiMinted, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Deposited(coverKey, address(vault), amount, cDaiMinted);
   }
 
@@ -167,8 +166,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed);
-    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, cDaiRedeemed);
   }
 

@@ -10,6 +10,7 @@ import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/VaultLibV1.sol";
 import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/StrategyLibV1.sol";
+import "../../libraries/NTransferUtilV2.sol";
 
 /**
  * Important: This contract is not intended to be accessed

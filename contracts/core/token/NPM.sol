@@ -65,6 +65,7 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     uint256 amount
   ) private {
     require(amount > 0, "Invalid amount");
+
     super._mint(mintTo, amount);
     emit Minted(key, mintTo, amount);
   }

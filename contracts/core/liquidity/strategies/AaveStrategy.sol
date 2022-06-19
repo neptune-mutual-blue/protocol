@@ -7,7 +7,7 @@ import "../../../interfaces/ILendingStrategy.sol";
 import "../../../dependencies/aave/IAaveV2LendingPoolLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
-import "hardhat/console.sol";
+import "../../../libraries/NTransferUtilV2.sol";
 
 contract AaveStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -116,9 +116,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], amount, aTokenReceived);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogDeposit(getName(), _counters[coverKey], amount, aTokenReceived, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Deposited(coverKey, address(vault), amount, aTokenReceived);
   }
 
@@ -165,9 +163,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, aTokenRedeemed);
   }
 

@@ -8,5 +8,5 @@
   "exclude_high": false,
   "disable_color": false,
   "legacy_ast": false,
-  "filter_paths": "./contracts/fakes|BokkyPooBahsDateTimeLibrary.sol|openzeppelin|Migrations.sol"
+  "filter_paths": "./contracts/fakes|BokkyPooBahsDateTimeLibrary.sol|openzeppelin|Migrations.sol|lib"
 }

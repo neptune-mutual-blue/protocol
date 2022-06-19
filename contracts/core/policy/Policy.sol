@@ -11,7 +11,6 @@ import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/RegistryLibV1.sol";
 import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/PolicyHelperV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/RoutineInvokerLibV1.sol";
 import "../Recoverable.sol";
 

@@ -4,6 +4,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../Recoverable.sol";
 import "../../interfaces/IVaultDelegate.sol";
 import "../../interfaces/IVault.sol";
+import "../../libraries/NTransferUtilV2.sol";
 
 pragma solidity 0.8.0;
 

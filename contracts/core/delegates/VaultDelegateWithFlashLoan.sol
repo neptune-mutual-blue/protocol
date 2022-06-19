@@ -14,7 +14,6 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using VaultLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
   using RoutineInvokerLibV1 for IStore;
 
   /**

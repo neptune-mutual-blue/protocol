@@ -9,7 +9,7 @@ import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IERC20Detailed.sol";
-import "hardhat/console.sol";
+import "../libraries/NTransferUtilV2.sol";
 
 library PolicyHelperV1 {
   using ProtoUtilV1 for IStore;
@@ -50,9 +50,6 @@ library PolicyHelperV1 {
     totalAvailableLiquidity = availableLiquidity + reassuranceFund;
     utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
 
-    console.log("[cp] s: %s p: %s u: %s", availableLiquidity, reassuranceFund, utilizationRatio);
-    console.log("[cp] c: %s a: %s t: %s", commitment, amountToCover, totalAvailableLiquidity);
-
     rate = utilizationRatio > floor ? utilizationRatio : floor;
 
     rate = rate + (coverDuration * 100);
@@ -63,8 +60,6 @@ library PolicyHelperV1 {
 
     uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
     uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(block.timestamp, expiryDate); // solhint-disable-line
-
-    console.log("[cp] r: %s e: %s d: %s", rate, expiryDate, daysCovered);
 
     fee = (amountToCover * rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
   }

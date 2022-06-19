@@ -16,7 +16,7 @@ library NTransferUtilV2 {
   ) external {
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
+    require(address(malicious) != address(0), "Can't approve to zero address");
     require(spender != address(0), "Invalid spender");
     require(amount > 0, "Invalid transfer amount");
 
@@ -30,7 +30,7 @@ library NTransferUtilV2 {
   ) external {
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
+    require(address(malicious) != address(0), "Invalid token address");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
@@ -52,7 +52,8 @@ library NTransferUtilV2 {
   ) external {
     // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
     // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
+    require(address(malicious) != address(0), "Invalid token address");
+    // @todo: require(sender != address(0), "Invalid sender");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 

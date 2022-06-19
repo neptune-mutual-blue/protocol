@@ -3,7 +3,6 @@
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
-import "hardhat/console.sol";
 
 contract MockFlashBorrower is IERC3156FlashBorrower {
   IERC20 private _stablecoin;

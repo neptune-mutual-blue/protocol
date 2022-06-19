@@ -29,6 +29,7 @@
     "slither:x": "slither . --print human-summary,vars-and-auth",
     "slither:save": "slither . > ./.todo/slither.log 2>&1",
     "slither:x:save": "slither . --print human-summary,vars-and-auth  > ./.todo/slither.x.log 2>&1",
+    "fuzz": "forge test -vvvv",
     "test": "hardhat test ./test/specs/**/**.js",
     "test:all": "hardhat test",
     "coverage": "npx hardhat clean && hardhat coverage --testfiles \"test/**/*.spec.js\"",

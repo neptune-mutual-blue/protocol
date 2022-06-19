@@ -95,7 +95,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE = "ns:cover:liquidity:min:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_STAKE = "ns:cover:liquidity:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
-  bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
+  bytes32 public constant NS_COVER_STABLECOIN_NAME = "ns:cover:stablecoin:name";
   bytes32 public constant NS_COVER_REQUIRES_WHITELIST = "ns:cover:requires:whitelist";
 
   bytes32 public constant NS_COVER_HAS_FLASH_LOAN = "ns:cover:has:fl";
