@@ -55,7 +55,7 @@ constructor(IStore store) CoverBase(store) {}
 ### updateCover
 
 Updates the cover contract.
- This feature is accessible only to the cover owner or protocol owner (governance).
+ This feature is accessible only to the cover manager and during withdrawal period.
 
 ```solidity
 function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReentrant 
@@ -75,7 +75,8 @@ function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReen
 function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.mustBeCoverManager();
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
 
@@ -211,7 +212,8 @@ function updateProduct(
   ) external override {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.mustBeCoverManager();
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     s.updateProductInternal(coverKey, productKey, info, values);
     emit ProductUpdated(coverKey, productKey, info, values);
@@ -388,7 +390,6 @@ function checkIfWhitelistedUser(
 * [BondPoolBase](docs/BondPoolBase.md)
 * [BondPoolLibV1](docs/BondPoolLibV1.md)
 * [CompoundStrategy](docs/CompoundStrategy.md)
-* [console](docs/console.md)
 * [Context](docs/Context.md)
 * [Cover](docs/Cover.md)
 * [CoverBase](docs/CoverBase.md)

@@ -1,19 +1,9 @@
-require('hardhat-preprocessor')
 require('hardhat-contract-sizer')
 require('@nomiclabs/hardhat-waffle')
 require('solidity-coverage')
 require('hardhat-gas-reporter')
 require('@nomiclabs/hardhat-etherscan')
 require('dotenv').config()
-const fs = require('fs')
-
-function getRemappings () {
-  return fs
-    .readFileSync('remappings.txt', 'utf8')
-    .split('\n')
-    .filter(Boolean) // remove empty lines
-    .map((line) => line.trim().split('='))
-}
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -75,24 +65,6 @@ const config = {
       mumbai: process.env.POLYGONSCAN_API_KEY,
       fuji: process.env.SNOWTRACE_API_KEY
     }
-  },
-  preprocess: {
-    eachLine: (hre) => ({
-      transform: (line) => {
-        if (line.match(/^\s*import /i)) {
-          getRemappings().forEach(([find, replace]) => {
-            if (find.startsWith('hardhat')) {
-              return find
-            }
-
-            if (line.match(find)) {
-              line = line.replace(find, replace)
-            }
-          })
-        }
-        return line
-      }
-    })
   },
   paths: {
     tests: './test',

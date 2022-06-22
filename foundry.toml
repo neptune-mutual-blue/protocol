@@ -10,7 +10,7 @@ remappings = []
 allow_paths = []
 libraries = []
 cache = true
-cache_path = 'cache'
+cache_path = 'cache_foundry'
 # Whether to ignore the cache
 force = false
 auto_detect_solc = false

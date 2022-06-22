@@ -118,7 +118,7 @@ library CoverUtilV1 {
     return s.getUintByKey(getReassuranceKey(coverKey));
   }
 
-  function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+  function getReassuranceRateInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 rate = s.getUintByKey(getReassuranceRateKey(coverKey));
 
     if (rate > 0) {
