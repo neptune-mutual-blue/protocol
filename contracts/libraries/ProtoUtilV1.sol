@@ -1,15 +1,17 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "../interfaces/IStore.sol";
-import "../interfaces/IProtocol.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./StoreKeyUtil.sol";
+import "../interfaces/IStore.sol";
+import "../interfaces/IProtocol.sol";
+import "../interfaces/IERC20Detailed.sol";
 
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
   uint256 public constant MULTIPLIER = 10_000;
+  uint256 public constant MAX_LIQUIDITY = 45_000_000_000;
   uint256 public constant CXTOKEN_PRECISION = 1 ether;
   uint256 public constant POD_PRECISION = 1 ether;
 
@@ -307,8 +309,12 @@ library ProtoUtilV1 {
     return s.getAddressByKey(CNS_TREASURY);
   }
 
-  function getStablecoin(IStore s) external view returns (address) {
+  function getStablecoin(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
+  }
+
+  function getStablecoinPrecision(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoin(s)).decimals();
   }
 
   function getBurnAddress(IStore s) external view returns (address) {

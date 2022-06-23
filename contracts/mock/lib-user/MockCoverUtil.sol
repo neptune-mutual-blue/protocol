@@ -19,7 +19,7 @@ contract MockCoverUtilUser {
   }
 
   function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
-    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 precision = s.getStablecoinPrecision();
     return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
   }
 }

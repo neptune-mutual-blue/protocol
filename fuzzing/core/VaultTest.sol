@@ -19,8 +19,8 @@ contract VaultTest is CoverSpec {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) public {
-    vm.assume(amount > 0 && amount < type(uint256).max / ProtoUtilV1.POD_PRECISION); // avoid “phantom overflow”
-    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < type(uint256).max / NPM_PRECISION); // avoid “phantom overflow”
+    vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
+    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
     _dai.mint(amount);
     _dai.approve(address(_vault), amount);
@@ -36,8 +36,8 @@ contract VaultTest is CoverSpec {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) public {
-    vm.assume(amount > 0 && amount < type(uint256).max / ProtoUtilV1.POD_PRECISION); // avoid “phantom overflow”
-    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < type(uint256).max / NPM_PRECISION); // avoid “phantom overflow”
+    vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
+    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
     _dai.mint(amount);
     _dai.approve(address(_vault), amount);
@@ -61,8 +61,8 @@ contract VaultTest is CoverSpec {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) public {
-    vm.assume(amount > 0 && amount < type(uint256).max / ProtoUtilV1.POD_PRECISION); // avoid “phantom overflow”
-    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < type(uint256).max / NPM_PRECISION); // avoid “phantom overflow”
+    vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
+    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
     _dai.mint(amount);
     _dai.approve(address(_vault), amount);
@@ -91,8 +91,8 @@ contract VaultTest is CoverSpec {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) public {
-    vm.assume(amount > 0 && amount < type(uint256).max / ProtoUtilV1.POD_PRECISION); // avoid “phantom overflow”
-    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < type(uint256).max / NPM_PRECISION); // avoid “phantom overflow”
+    vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
+    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
     _dai.mint(amount);
     _dai.approve(address(_vault), amount);
@@ -116,12 +116,13 @@ contract VaultTest is CoverSpec {
     _vault.removeLiquidity(_COVER_KEY, podBalance, npmStakeToAdd, true);
   }
 
-  function testRemoveLiquidityPasses() public {
-    // vm.assume(amount > 0 && amount < type(uint256).max / ProtoUtilV1.POD_PRECISION); // avoid “phantom overflow”
-    // vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < type(uint256).max / NPM_PRECISION); // avoid “phantom overflow”
-    uint256 amount = 1366162943935665063033896206164661659239220373909;
-    uint256 npmStakeToAdd = 1167243246090623276486907153326344530938113330980;
-    bytes32 referralCode = 0xfd6ebf89c639c91f1d861cc5bee26cac023759be298f6f0e009c79f48fcb3124;
+  function testRemoveLiquidityPasses(
+    uint256 amount,
+    uint256 npmStakeToAdd,
+    bytes32 referralCode
+  ) public {
+    vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
+    vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
     _dai.mint(amount);
     _dai.approve(address(_vault), amount);

@@ -226,6 +226,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
+    VaultLibV1.mustNotExceedStablecoinThreshold(s, amount);
+    VaultLibV1.mustNotExceedNpmThreshold(amount);
 
     address pod = msg.sender;
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);

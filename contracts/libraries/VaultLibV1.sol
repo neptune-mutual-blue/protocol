@@ -10,7 +10,6 @@ import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
-import "../interfaces/IERC20Detailed.sol";
 
 library VaultLibV1 {
   using ProtoUtilV1 for IStore;
@@ -36,7 +35,7 @@ library VaultLibV1 {
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
-    uint256 stablecoinPrecision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
 
     // This smart contract contains stablecoins without liquidity provider contribution.
     // This can happen if someone wants to create a nuisance by sending stablecoin
@@ -244,7 +243,7 @@ library VaultLibV1 {
 
     s.mustBeProtocolMember(pod);
 
-    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 precision = s.getStablecoinPrecision();
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey, precision);
@@ -269,6 +268,15 @@ library VaultLibV1 {
 
   function mustBeAccrued(IStore s, bytes32 coverKey) external view {
     require(s.isAccrualCompleteInternal(coverKey) == true, "Wait for accrual");
+  }
+
+  function mustNotExceedNpmThreshold(uint256 amount) external pure {
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * 1 ether, "Please specify a smaller amount");
+  }
+
+  function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
   }
 
   /**

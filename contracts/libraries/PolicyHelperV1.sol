@@ -242,7 +242,7 @@ library PolicyHelperV1 {
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
     IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
 
-    uint256 stablecoinPrecision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
     uint256 toMint = (amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
     cxToken.mint(coverKey, productKey, onBehalfOf, toMint);

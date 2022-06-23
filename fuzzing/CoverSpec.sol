@@ -29,11 +29,16 @@ contract BaseSpec is Test {
   FakeToken internal _dai;
 
   uint8 public constant DAI_DECIMALS = 6;
+  uint256 public immutable NPM_DEPOSIT_THRESHOLD;
+  uint256 public immutable DEPOSIT_THRESHOLD;
   uint256 public constant DAI_PRECISION = 10**DAI_DECIMALS;
 
   constructor() {
     _store = new Store();
     _deployTokens();
+
+    DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * (10**DAI_DECIMALS);
+    NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * 1 ether;
   }
 
   function _deployTokens() internal {

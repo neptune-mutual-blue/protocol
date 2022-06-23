@@ -99,7 +99,7 @@ library CoverUtilV1 {
   ) external view returns (uint256[] memory _values) {
     _values = new uint256[](8);
 
-    uint256 precision = 10**IERC20Detailed(s.getStablecoin()).decimals();
+    uint256 precision = s.getStablecoinPrecision();
 
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
