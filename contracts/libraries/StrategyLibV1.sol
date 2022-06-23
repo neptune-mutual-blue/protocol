@@ -14,6 +14,9 @@ library StrategyLibV1 {
   using StoreKeyUtil for IStore;
   using RegistryLibV1 for IStore;
 
+  uint256 public constant DEFAULT_LENDING_PERIOD = 180 days;
+  uint256 public constant DEFAULT_WITHDRAWAL_WINDOW = 7 days;
+
   event StrategyAdded(address indexed strategy);
   event LendingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
   event MaxLendingRatioSet(uint256 ratio);
@@ -53,6 +56,9 @@ library StrategyLibV1 {
       lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
       withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
+
+    lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
+    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : lendingPeriod;
   }
 
   function setLendingPeriodsInternal(

@@ -4,7 +4,10 @@ const write = async (contents) => {
   const { data } = await axios.put(process.env.NPM_IPFS_API_URL, contents)
   const { bytes32Hash, hash } = data
 
-  console.info(`https://ipfs.neptunedefi.com/ipfs/${hash}`)
+  // June 22 Security Review: use an entirely different domain for
+  // hosting IPFS server to avoid phishing attacks on the
+  // Neptune Mutual domain(s)
+  console.info(`https://ipfs.hicif.com/ipfs/${hash}`)
 
   return bytes32Hash
 }

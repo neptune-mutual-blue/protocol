@@ -39,12 +39,10 @@ library RoutineInvokerLibV1 {
     PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
+      _updateWithdrawalPeriod(s, coverKey);
       _invokeAssetManagement(s, coverKey);
+      s.setLastUpdatedOn(coverKey);
     }
-
-    s.setLastUpdatedOn(coverKey);
-
-    _updateWithdrawalPeriod(s, coverKey);
   }
 
   function _getUpdateInterval(IStore s) private view returns (uint256) {
@@ -135,8 +133,8 @@ library RoutineInvokerLibV1 {
     uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
     uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
-    require(block.timestamp >= start, "Withdrawal period has not started");
-    require(block.timestamp < end, "Withdrawal period has already ended");
+    require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
+    require(end > 0 && block.timestamp < end, "Withdrawal period has already ended");
   }
 
   function _executeAndGetAction(

@@ -59,7 +59,9 @@ contract ProtocolSpec is BaseSpec {
 
   // Needed so the test contract itself can receive ether
   // when withdrawing
-  receive() external payable {}
+  receive() external payable {
+    this;
+  }
 
   function _deployProtocol() internal {
     _protocol = new Protocol(_store);
