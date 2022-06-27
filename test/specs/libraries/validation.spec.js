@@ -205,7 +205,7 @@ describe('ValidationLibV1: mustBeDisputed', () => {
   })
 })
 
-describe('ValidationLibV1: mustHaveNormalCoverProductStatus', () => {
+describe('ValidationLibV1: mustHaveNormalProductStatus', () => {
   let deployed, mockContract, coverKey, productKey
 
   const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
@@ -264,23 +264,12 @@ describe('ValidationLibV1: mustHaveNormalCoverProductStatus', () => {
   })
 
   it('must correctly check cover status', async () => {
-    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey)
+    await mockContract.mustHaveNormalProductStatus(coverKey, productKey)
   })
 
   it('reverts if cover does not exist', async () => {
     const coverKey = key.toBytes32('invalid-cover')
-    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Cover does not exist')
-  })
-
-  it('reverts if cover does not support products', async () => {
-    const coverKey = key.toBytes32('cover-without-products')
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
-
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
-
-    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Invalid product')
+    await mockContract.mustHaveNormalProductStatus(coverKey, productKey).should.be.rejectedWith('Cover does not exist')
   })
 
   it('reverts if status is not normal', async () => {
@@ -300,7 +289,7 @@ describe('ValidationLibV1: mustHaveNormalCoverProductStatus', () => {
     await deployed.npm.connect(bob).approve(deployed.governance.address, disputeAmount)
     await deployed.governance.connect(bob).dispute(coverKey, productKey, incidentDate, disputeInfo, disputeAmount)
 
-    await mockContract.mustHaveNormalCoverProductStatus(coverKey, productKey).should.be.rejectedWith('Status not normal')
+    await mockContract.mustHaveNormalProductStatus(coverKey, productKey).should.be.rejectedWith('Status not normal')
 
     // Cleanup - resolve, finalize
     // Reporting period + 1 second

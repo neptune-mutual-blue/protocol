@@ -41,6 +41,47 @@ contract Policy is IPolicy, Recoverable {
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   *
+   * https://docs.neptunemutual.com/covers/purchasing-covers
+   *
+   * ## Payouts and Incident Date
+   *
+   * Please take note of the following key differences:
+   *
+   * **Event Date or Observed Date**
+   *
+   * The date and time the event took place in the real world.
+   * It is also referred to as the **event date**.
+   *
+   * **Incident Date**
+   *
+   * The incident date is the timestamp at which an event report is submitted.
+   * Only if the incident date falls within your coverage period
+   * and resolution is in your favor, will you receive a claims payout.
+   *
+   * **Claim Period**
+   *
+   * In contrast to most DeFi cover protocols, Neptune Mutual has no waiting period
+   * between submitting a claim and receiving payout. You can access the claims feature
+   * to immediately receive a payout if a cover is successfully resolved as Incident Happened.
+   *
+   * Please note that after an incident is resolved, there is usually a 7-day claim period.
+   * Any claim submitted after the claim period expiry is automatically denied.
+   *
+   * ## Warning
+   *
+   * Please thoroughly review the cover rules, cover exclusions,
+   * and standard exclusions before purchasing a cover.
+   *
+   * If the resolution does not go in your favour, you will not be able to
+   * submit a claim or receive a payout.
+   *
+   * By using the this function on our UI, directly via a smart contract call,
+   * through an explorer service such as Etherscan,
+   * through an SDK and/or API, or in any other way,
+   * you are fully aware, fully understand, and accept the risk
+   * of getting your claim(s) denied.
+   *
    * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.

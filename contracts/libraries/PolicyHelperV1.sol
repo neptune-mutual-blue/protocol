@@ -64,6 +64,19 @@ library PolicyHelperV1 {
     fee = (amountToCover * rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
   }
 
+  function getPolicyFeeInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 coverDuration,
+    uint256 amountToCover
+  ) public view returns (uint256 fee, uint256 platformFee) {
+    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+
+    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
+    platformFee = (fee * rate) / ProtoUtilV1.MULTIPLIER;
+  }
+
   function _getCoverPoolAmounts(
     IStore s,
     bytes32 coverKey,
@@ -101,19 +114,6 @@ library PolicyHelperV1 {
       // (stablecoinOwnedByVault * leverage * efficiency) / (count * multiplier)
       availableLiquidity = (values[0] * values[5] * values[6]) / (values[4] * ProtoUtilV1.MULTIPLIER);
     }
-  }
-
-  function getPolicyFeeInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover
-  ) public view returns (uint256 fee, uint256 platformFee) {
-    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
-
-    uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
-    platformFee = (fee * rate) / ProtoUtilV1.MULTIPLIER;
   }
 
   function getPolicyRatesInternal(IStore s, bytes32 coverKey) public view returns (uint256 floor, uint256 ceiling) {
@@ -232,8 +232,6 @@ library PolicyHelperV1 {
     require(fee > 0, "Insufficient fee");
     require(platformFee > 0, "Insufficient platform fee");
 
-    cxToken = getCxTokenOrDeployInternal(s, coverKey, productKey, coverDuration);
-
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
@@ -245,6 +243,7 @@ library PolicyHelperV1 {
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
     uint256 toMint = (amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
+    cxToken = getCxTokenOrDeployInternal(s, coverKey, productKey, coverDuration);
     cxToken.mint(coverKey, productKey, onBehalfOf, toMint);
 
     s.updateStateAndLiquidity(coverKey);

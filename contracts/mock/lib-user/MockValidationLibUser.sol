@@ -31,7 +31,7 @@ contract MockValidationLibUser {
     s.mustBeDisputed(coverKey, productKey);
   }
 
-  function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view {
-    s.mustHaveNormalCoverProductStatus(coverKey, productKey);
+  function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustHaveNormalProductStatus(coverKey, productKey);
   }
 }

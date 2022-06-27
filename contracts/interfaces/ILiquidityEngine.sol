@@ -25,8 +25,6 @@ interface ILiquidityEngine is IMember {
     uint256 withdrawalWindow
   ) external;
 
-  function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
-
   function getLendingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
 
   function setLiquidityStateUpdateInterval(uint256 value) external;

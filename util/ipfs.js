@@ -7,7 +7,7 @@ const write = async (contents) => {
   // June 22 Security Review: use an entirely different domain for
   // hosting IPFS server to avoid phishing attacks on the
   // Neptune Mutual domain(s)
-  console.info(`https://ipfs.hicif.com/ipfs/${hash}`)
+  console.info(process.env.IPFS_GATEWAY, hash)
 
   return bytes32Hash
 }

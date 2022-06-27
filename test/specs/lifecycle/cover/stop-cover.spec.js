@@ -36,6 +36,7 @@ describe('Cover: stopCover', () => {
 
   it('correctly stops cover', async () => {
     const [owner] = await ethers.getSigners()
+    const status = false // false --> stop, true --> resume
 
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -44,11 +45,12 @@ describe('Cover: stopCover', () => {
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    await deployed.cover.stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
+    await deployed.cover.updateProductState(coverKey, helper.emptyBytes32, status, 'reason: testing')
   })
 
   it('reverts when not accessed by GovernanceAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
+    const status = false // false --> stop, true --> resume
 
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -57,7 +59,7 @@ describe('Cover: stopCover', () => {
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    await deployed.cover.connect(bob).stopCover(coverKey, helper.emptyBytes32, 'reason: testing')
+    await deployed.cover.connect(bob).updateProductState(coverKey, helper.emptyBytes32, status, 'reason: testing')
       .should.be.rejectedWith('Forbidden')
   })
 })

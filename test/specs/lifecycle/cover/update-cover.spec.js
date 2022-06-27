@@ -36,6 +36,12 @@ describe('Cover: updateCover', () => {
     deployed = await deployDependencies()
   })
 
+  beforeEach(async () => {
+    const lendingPeriod = 1 * HOURS
+    const withdrawalWindow = 2 * HOURS
+    await deployed.liquidityEngine.setLendingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
+  })
+
   it('correctly updates cover', async () => {
     const [owner] = await ethers.getSigners()
 
@@ -47,8 +53,6 @@ describe('Cover: updateCover', () => {
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
-    const lendingPeriod = 1 * HOURS
-    const withdrawalWindow = 1 * HOURS
 
     const vault = await composer.vault.getVault({
       store: deployed.store,
@@ -61,10 +65,13 @@ describe('Cover: updateCover', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
-    await deployed.dai.approve(vault.address, initialLiquidity)
-    await deployed.npm.approve(vault.address, minReportingStake)
+
+    await deployed.dai.approve(vault.address, ethers.constants.MaxUint256)
+    await deployed.npm.approve(vault.address, ethers.constants.MaxUint256)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+
+    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
     const updatedInfo = key.toBytes32('updated-info')

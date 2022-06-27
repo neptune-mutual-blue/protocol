@@ -45,8 +45,6 @@ describe('Coverage Claim Stories', function () {
 
     const info = await ipfs.write(sample.info)
 
-    // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
-
     const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
@@ -80,13 +78,15 @@ describe('Coverage Claim Stories', function () {
     await contracts.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
+    // Create Approvals
+    await contracts.dai.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.dai.connect(alice).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.dai.connect(bob).approve(contracts.policy.address, ethers.constants.MaxUint256)
+
     // Attacker purchases a cover
     let args = [attacker.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.attacker, PRECISION)]
-    let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
-
       ; (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken.should.equal(helper.zerox)
 
-    await contracts.dai.connect(attacker).approve(contracts.policy.address, fee)
     await contracts.policy.connect(attacker).purchaseCover(...args, key.toBytes32(''))
 
     let at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
@@ -96,9 +96,6 @@ describe('Coverage Claim Stories', function () {
 
     // Alice purchases a cover
     args = [alice.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.alice, PRECISION)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
-
-    await contracts.dai.connect(alice).approve(contracts.policy.address, fee)
     await contracts.policy.connect(alice).purchaseCover(...args, key.toBytes32(''))
 
     at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
@@ -108,9 +105,6 @@ describe('Coverage Claim Stories', function () {
 
     // Bob purchases a cover #1 (Valid)
     args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
     at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
@@ -121,9 +115,6 @@ describe('Coverage Claim Stories', function () {
     // Bob purchases a cover #2 (Invalid)
 
     args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
     at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
@@ -133,9 +124,6 @@ describe('Coverage Claim Stories', function () {
 
     // Bob purchases a cover #3 (Invalid)
     args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
     at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken

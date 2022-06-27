@@ -18,17 +18,18 @@ describe('Vault: removeLiquidity', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+
+    const lendingPeriod = 1 * HOURS
+    const withdrawalWindow = 1 * HOURS
+
+    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+
     const amount = helper.ether(10_000_000, PRECISION)
     npmStake = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStake)
     await deployed.dai.approve(deployed.vault.address, amount)
-
-    const lendingPeriod = 1 * HOURS
-    const withdrawalWindow = 1 * HOURS
-
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
     await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
   })

@@ -58,7 +58,7 @@ library StrategyLibV1 {
     }
 
     lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
-    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : lendingPeriod;
+    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
   }
 
   function setLendingPeriodsInternal(

@@ -55,7 +55,8 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     stablecoin.ensureTransferFrom(account, address(this), amount);
 
-    s.updateStateAndLiquidity(coverKey);
+    // Do not update state during cover creation
+    // s.updateStateAndLiquidity(coverKey);
 
     emit ReassuranceAdded(coverKey, amount);
   }

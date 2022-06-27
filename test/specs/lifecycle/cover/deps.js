@@ -3,6 +3,7 @@ const { helper, deployer, key } = require('../../../../util')
 const pair = require('../../../../util/composer/uniswap-pair')
 
 const SECONDS = 1
+const HOURS = 60 * 60
 const DAYS = 86400
 const PRECISION = helper.STABLECOIN_DECIMALS
 const cache = null
@@ -326,6 +327,10 @@ const deployDependencies = async () => {
   }, store.address)
 
   await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
+  const lendingPeriod = 1 * HOURS
+  const withdrawalWindow = 1 * HOURS
+  await liquidityEngine.setLendingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
 
   return {
     npm,

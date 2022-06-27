@@ -3,11 +3,17 @@ const BigNumber = require('bignumber.js')
 const { deployer, key } = require('../../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const DAYS = 86400
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
+
+const fallback = {
+  lendingPeriod: 180 * DAYS,
+  withdrawalWindow: 7 * DAYS
+}
 
 describe('Liquidity Engine: `setLendingPeriods` function', () => {
   const coverkey = key.toBytes32('test')
@@ -43,8 +49,8 @@ describe('Liquidity Engine: `setLendingPeriods` function', () => {
 
   it('correct gets the lending period', async () => {
     const result = await liquidityEngine.getLendingPeriods(coverkey)
-    result[0].should.equal('0')
-    result[1].should.equal('0')
+    result[0].should.equal(fallback.lendingPeriod)
+    result[1].should.equal(fallback.withdrawalWindow)
   })
 
   it('correctly sets lending period', async () => {

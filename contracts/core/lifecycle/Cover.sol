@@ -133,22 +133,45 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Enables governance admin to stop a spam cover contract
+   * @dev Allows stopping and resuming a product or cover.
+   *
+   * This function enables governance admin to stop or resume a cover contract.
+   * A cover contract when stopped restricts new policy purchases
+   * and frees up liquidity as policies expires.
+   *
+   * 1. A cover can be stopped and later removed after policies expire and liquidity is withdrawn.
+   * 2. A cover can be stopped temporarily to allow liquidity providers a chance to exit.
+   *
+   * Note:
+   * 1. This function does not allow governance admin to chage the reporting
+   * status of the specified cover contract.
+   * 2. A stopped cover does not restrict adding and removing liquidity.
+   * 3. A stopped cover can still be reported if an incident is triggered.
+   *
    * @param coverKey Enter the cover key you want to stop
    * @param reason Provide a reason to stop this cover
    */
-  function stopCover(
+  function updateProductState(
     bytes32 coverKey,
     bytes32 productKey,
+    bool status,
     string calldata reason
   ) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    s.stopCoverInternal(coverKey, productKey);
-    emit CoverStopped(coverKey, productKey, msg.sender, reason);
+    if (status) {
+      // A cover can only be resumed if it is stopped
+      s.mustHaveStoppedProductStatus(coverKey, productKey);
+    } else {
+      // A cover can't be stopped at the middle of consensus
+      s.mustHaveNormalProductStatus(coverKey, productKey);
+    }
+
+    s.updateProductStateInternal(coverKey, productKey, status);
+
+    emit ProductStateUpdated(coverKey, productKey, msg.sender, status, reason);
   }
 
   /**

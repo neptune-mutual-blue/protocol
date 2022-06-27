@@ -61,7 +61,6 @@ contract Processor is IClaimsProcessor, Recoverable {
     // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
     validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
@@ -70,6 +69,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     IVault vault = s.getVault(coverKey);
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
     uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
 
     s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, payout);

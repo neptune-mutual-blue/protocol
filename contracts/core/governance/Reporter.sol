@@ -32,7 +32,9 @@ abstract contract Reporter is IReporter, Witness {
    * Check out the function `getFirstReportingStake(coverKey)` to
    * check the minimum amount needed to report this cover.
    *
-   * **Rewards:**
+   * https://docs.neptunemutual.com/covers/cover-reporting
+   *
+   * ## Rewards:
    *
    * If you get resolution in your favor, you will receive these rewards:
    *
@@ -40,21 +42,35 @@ abstract contract Reporter is IReporter, Witness {
    * - A 5% commission on the protocol earnings of all claim payouts in stablecoin.
    * - Your proportional share of the 60% pool of the invalid camp.
    *
-   * **Warning:**
+   * ## Incident Date and Payouts
    *
-   * Please carefully check the coverage rules and exclusions in detail
-   * before you submit this report. You entire stake will be forfeited
+   * Please note the differences between the following:
+   *
+   * **Observed Date**
+   * The date an time when incident occurred in the real world.
+   *
+   * **Incident Date**
+   * Instead of observed date or the real date and time of the trigger incident,
+   * the timestamp when this report is submitted is "the incident date".
+   *
+   * Payouts to policyholders is given only if the reported incident date
+   * falls within the coverage period.
+   *
+   *
+   * ## Warning
+   *
+   * Please carefully check the cover rules, cover exclusions, and standard exclusion
+   * in detail before you submit this report. You entire stake will be forfeited
    * if resolution does not go in your favor. You will be able to unstake
    * and receive back your NPM only if:
    *
-   *
-   * By using this function directly via a smart contract call,
-   * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
-   * you are completely aware, fully understand, and accept the risk that you may lose all of
-   * your stake.
-   *
    * - incident resolution is in your favor
    * - after reporting period ends
+   *
+   * **By using this function directly via a smart contract call,
+   * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+   * you are completely aware, fully understand, and accept the risk that you may lose all of
+   * your stake.**
    *
    * @param coverKey Enter the cover key you are reporting
    * @param productKey Enter the product key you are reporting
@@ -77,7 +93,7 @@ abstract contract Reporter is IReporter, Witness {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    productKey > 0 ? s.mustHaveNormalCoverProductStatus(coverKey, productKey) : s.mustHaveNormalCoverStatus(coverKey);
+    productKey > 0 ? s.mustHaveNormalProductStatus(coverKey, productKey) : s.mustHaveNormalCoverStatus(coverKey);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake > 0, "Stake insufficient");

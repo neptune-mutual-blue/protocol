@@ -231,12 +231,19 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
   }
 
-  function stopCoverInternal(
+  function updateProductStateInternal(
     IStore s,
     bytes32 coverKey,
-    bytes32 productKey
+    bytes32 productKey,
+    bool status
   ) external {
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
+    if (status) {
+      s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);
+      return;
+    }
+
     s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Stopped);
   }
 

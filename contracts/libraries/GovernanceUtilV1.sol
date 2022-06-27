@@ -69,7 +69,7 @@ library GovernanceUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (address) {
-    CoverUtilV1.CoverStatus status = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
+    CoverUtilV1.CoverStatus status = s.getProductStatusOf(coverKey, productKey, incidentDate);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened || status == CoverUtilV1.CoverStatus.Claimable;
     bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
@@ -173,7 +173,7 @@ library GovernanceUtilV1 {
     (uint256 yes, uint256 no) = getStakesInternal(s, coverKey, productKey, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOfInternal(s, account, coverKey, productKey, incidentDate);
 
-    CoverUtilV1.CoverStatus decision = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
+    CoverUtilV1.CoverStatus decision = s.getProductStatusOf(coverKey, productKey, incidentDate);
     bool incidentHappened = decision == CoverUtilV1.CoverStatus.IncidentHappened || decision == CoverUtilV1.CoverStatus.Claimable;
 
     totalStakeInWinningCamp = incidentHappened ? yes : no;

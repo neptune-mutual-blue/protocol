@@ -29,6 +29,9 @@ describe('Store: get uint values', () => {
     }
 
     const result = await store.getUintValues(keys)
-    result.should.deep.equal(values)
+
+    for (const i in result) {
+      result[i].should.equal(values[i])
+    }
   })
 })

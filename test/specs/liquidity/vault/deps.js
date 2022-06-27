@@ -191,6 +191,16 @@ const deployDependencies = async () => {
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_REASSURANCE, reassuranceContract.address)
 
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address)
+
+  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+
   const vaultFactoryLib = await deployer.deployWithLibraries(cache, 'VaultFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
@@ -332,15 +342,10 @@ const deployDependencies = async () => {
 
   await cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
-    AccessControlLibV1: accessControlLibV1.address,
-    BaseLibV1: baseLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address,
-    StrategyLibV1: strategyLibV1.address,
-    ValidationLibV1: validationLibV1.address
-  }, store.address)
+  const lendingPeriod = 1 * HOURS
+  const withdrawalWindow = 1 * HOURS
 
-  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+  await liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
   const vault = await composer.vault.getVault({
     store: store,

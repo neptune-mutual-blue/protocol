@@ -75,11 +75,8 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
       totalPurchased += amount
     }
 
-    // Minus protocol fees
-    const feeIncome = totalFee.mul(935).div(1000)
-
-    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome).should.not.be.rejected
-    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, feeIncome.add(1)).should.be.rejectedWith('Insufficient fund')
+    const info = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, '1')
+    await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, info.totalAvailableLiquidity.sub(totalPurchased).add(1)).should.be.rejectedWith('Insufficient fund')
   })
 
   it('allows reuse of liquidity as policies expire', async () => {

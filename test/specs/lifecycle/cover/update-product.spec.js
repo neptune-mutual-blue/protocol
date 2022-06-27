@@ -46,11 +46,10 @@ describe('Cover: updateProduct', () => {
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, coverValues)
+
     await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, productValues)
 
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
-    const lendingPeriod = 1 * HOURS
-    const withdrawalWindow = 1 * HOURS
 
     const vault = await composer.vault.getVault({
       store: deployed.store,
@@ -63,14 +62,16 @@ describe('Cover: updateProduct', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
-    await network.provider.send('evm_increaseTime', [1 * HOURS])
   })
 
   it('correctly update product when accessed by cover creator', async () => {
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
     await deployed.cover.updateProduct(coverKey, productKey, info, productValues)
   })
 

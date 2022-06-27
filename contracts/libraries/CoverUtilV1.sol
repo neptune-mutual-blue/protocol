@@ -164,10 +164,10 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
+    return s.getUintByKey(getProductStatusKey(coverKey, productKey));
   }
 
-  function getCoverProductStatusOf(
+  function getProductStatusOf(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -182,10 +182,10 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
+    return s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
   }
 
-  function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+  function getProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey));
   }
 
@@ -197,7 +197,7 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
   }
 
-  function getCoverProductStatusOfKey(
+  function getProductStatusOfKey(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
@@ -338,10 +338,10 @@ library CoverUtilV1 {
     CoverStatus status
   ) external {
     s.setUintByKey(getCoverStatusKey(coverKey), uint256(status)); // Entire cover
-    s.setUintByKey(getCoverProductStatusKey(coverKey, productKey), uint256(status)); // This product
+    s.setUintByKey(getProductStatusKey(coverKey, productKey), uint256(status)); // This product
 
     if (incidentDate > 0) {
-      s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
+      s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
     }
   }
 
