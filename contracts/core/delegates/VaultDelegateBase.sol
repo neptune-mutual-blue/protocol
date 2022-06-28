@@ -61,6 +61,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address, /*to*/
     uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
+    // @suppress-acl This function is only callable by the claims processor contract through the vault contract
     // @suppress-zero-value-check This function does not transfer any values
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
@@ -84,6 +85,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address, /*to*/
     uint256 /*amount*/
   ) external view override {
+    // @suppress-acl This function is only callable by the claims processor contract through the vault contract
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -115,6 +117,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-acl This function is only callable by a strategy contract through vault contract
     // @suppress-zero-value-check Checked
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
@@ -141,12 +144,13 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 /*amount*/
   ) external view override {
+    // @suppress-acl This function is only callable by a strategy contract through vault contract
+    // @suppress-reentrancy The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
-    // @suppress-reentrancy The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
     // @note: do not update state and liquidity since `transferToStrategy` itself is a part of the state update
   }
 
@@ -226,6 +230,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
+    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
@@ -251,6 +256,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256, /*amount*/
     uint256 /*npmStakeToAdd*/
   ) external override {
+    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
@@ -274,6 +280,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @param coverKey Provide your vault's cover key
    */
   function accrueInterestImplementation(address caller, bytes32 coverKey) external override {
+    // @suppress-acl This function is only accessible to the vault contract
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     AccessControlLibV1.callerMustBeLiquidityManager(s, caller);
@@ -306,6 +313,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
+    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
@@ -334,6 +342,9 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256, /*npmStakeToRemove*/
     bool /*exit*/
   ) external override {
+    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+    // @suppress-zero-value-check The uint values are not used and therefore not checked
+    s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.updateStateAndLiquidity(coverKey);

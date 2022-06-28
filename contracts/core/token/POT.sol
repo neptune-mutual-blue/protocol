@@ -45,6 +45,7 @@ contract POT is NPM {
   }
 
   function updateWhitelist(address[] calldata accounts, bool[] memory statuses) external onlyOwner {
+    // @suppress-pausable Risk tolerable
     require(accounts.length > 0, "No account");
     require(accounts.length == statuses.length, "Invalid args");
 

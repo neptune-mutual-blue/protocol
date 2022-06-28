@@ -10,7 +10,7 @@ const validate = async (code, _, name) => {
   const hasLogic = code.toLowerCase().indexOf('> ') > -1 || code.toLowerCase().indexOf('>= ') > -1 || code.toLowerCase().indexOf('< ') > -1 || code.toLowerCase().indexOf('<= ') > -1
 
   if (supressionMissing && hasLogic) {
-    return '\x1b[31m' + '* Warning: Ensure that either of these values are not unassigned or zero' + '\x1b[0m'
+    return '\x1b[31m' + '* Warning: Ensure that either of these values are not unassigned or accidentally zero' + '\x1b[0m'
   }
 
   return null

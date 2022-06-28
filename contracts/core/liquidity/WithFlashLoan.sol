@@ -17,6 +17,8 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
     uint256 amount,
     bytes calldata data
   ) external override nonReentrant returns (bool) {
+    // @suppress-acl Marking this as publicly accessilble
+    // @suppress-pausable Validated in `preFlashLoan` and `postFlashLoan`
     require(amount > 0, "Please specify amount");
 
     /******************************************************************************************

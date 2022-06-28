@@ -15,7 +15,7 @@ describe('Recoverable: Recover Ether', () => {
   before(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
 
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
     forceEther = await deployer.deploy(cache, 'ForceEther')
   })
 
@@ -55,7 +55,7 @@ describe('Recoverable: Recover ERC-20 Tokens', () => {
   before(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
 
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
     fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000), 12)
   })
 

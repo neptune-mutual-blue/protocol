@@ -36,7 +36,7 @@ contract Cover is CoverBase {
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
-    s.mustBeCoverManager();
+    AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
@@ -110,6 +110,8 @@ contract Cover is CoverBase {
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override {
+    // @suppress-acl This function can only be accessed by the cover owner or an admin
+    // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
@@ -123,9 +125,10 @@ contract Cover is CoverBase {
     bytes32 info,
     uint256[] calldata values
   ) external override {
+    // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustBeCoverManager();
+    AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
     s.updateProductInternal(coverKey, productKey, info, values);
@@ -201,6 +204,7 @@ contract Cover is CoverBase {
     address[] calldata accounts,
     bool[] calldata statuses
   ) external override nonReentrant {
+    // @suppress-acl This function is only accessilbe to the cover owner or admin
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);

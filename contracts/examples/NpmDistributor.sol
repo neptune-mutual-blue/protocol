@@ -8,6 +8,11 @@ import "../interfaces/IPolicy.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IClaimsProcessor.sol";
 
+// @title NPM Store Interface
+interface IStoreLike {
+  function getAddress(bytes32 k) external view returns (address);
+}
+
 /**
  * @title Neptune Mutual Distributor contract
  * @dev The distributor contract enables resellers to interact with
@@ -146,6 +151,8 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 protection,
     bytes32 referralCode
   ) external nonReentrant {
+    // @suppress-acl Marking this as publicly accessilbe
+    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(duration > 0 && duration < 4, "Invalid duration");
     require(protection > 0, "Invalid protection amount");
@@ -180,6 +187,8 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 npmStake,
     bytes32 referralCode
   ) external nonReentrant {
+    // @suppress-acl Marking this as publicly accessilbe
+    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(amount > 0, "Invalid amount");
 
@@ -223,6 +232,8 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 npmStake,
     bool exit
   ) external nonReentrant {
+    // @suppress-acl Marking this as publicly accessilbe
+    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(amount > 0, "Invalid amount");
 
@@ -263,9 +274,4 @@ contract NpmDistributor is ReentrancyGuard {
       emit Drained(token, treasury, balance);
     }
   }
-}
-
-// @title NPM Store Interface
-interface IStoreLike {
-  function getAddress(bytes32 k) external view returns (address);
 }

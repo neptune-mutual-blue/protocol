@@ -35,6 +35,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
     string calldata tokenName,
     string calldata tokenSymbol
   ) external override nonReentrant returns (address addr) {
+    // @suppress-acl This function is only accessilbe to the cover contract
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();

@@ -24,6 +24,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
   }
 
   function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+    require(value > 0, "Invalid value");
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 

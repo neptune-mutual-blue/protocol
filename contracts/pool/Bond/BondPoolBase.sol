@@ -49,6 +49,7 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
    * @param values[3] - NPM to Top Up Now
    */
   function setup(address[] calldata addresses, uint256[] calldata values) external override nonReentrant {
+    // @suppress-zero-value-check The uint values are checked in the function `setupBondPoolInternal`
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
 

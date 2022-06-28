@@ -40,6 +40,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
     address[] calldata addresses,
     uint256[] calldata values
   ) external override nonReentrant {
+    // @suppress-zero-value-check The uint values are checked in the function `addOrEditPoolInternal`
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
 

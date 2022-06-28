@@ -147,6 +147,7 @@ library StakingPoolCoreLibV1 {
     address[] calldata addresses,
     uint256[] calldata values
   ) external {
+    // @suppress-zero-value-check The uint values are checked in the function `validateAddOrEditPoolInternal`
     bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
 
     if (poolExists == false) {

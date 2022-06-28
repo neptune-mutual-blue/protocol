@@ -1,7 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IProtocol.sol";
 import "../libraries/ProtoUtilV1.sol";
@@ -52,7 +51,7 @@ contract Protocol is IProtocol, ProtoBase {
     require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     // require(addresses[3] != address(0), "Invalid NPM"); // @note: validation below
     require(addresses[4] != address(0), "Invalid Treasury");
-    // @todo: allow price oracle to be zero
+    // @suppress-accidental-zero @todo: allow price oracle to be zero
     // @check if uniswap v2 contracts can be zero
     require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
@@ -132,7 +131,7 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * @param member Enter an address to add as a protocol member
    */
-  function addMember(address member) external override nonReentrant {
+  function addMember(address member) external override nonReentrant whenNotPaused {
     // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -147,7 +146,7 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * @param member Enter an address to remove as a protocol member
    */
-  function removeMember(address member) external override nonReentrant {
+  function removeMember(address member) external override nonReentrant whenNotPaused {
     // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ProtoUtilV1.mustBeProtocolMember(s, member);
     s.mustNotBePaused();
@@ -161,6 +160,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Adds a contract to the protocol. See `addContractWithKey` for more info.
    */
   function addContract(bytes32 namespace, address contractAddress) external override {
+    // @suppress-acl @suppress-pausable This function is just an intermediate
     addContractWithKey(namespace, 0, contractAddress);
   }
 
@@ -192,10 +192,9 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 namespace,
     bytes32 key,
     address contractAddress
-  ) public override nonReentrant {
+  ) public override nonReentrant whenNotPaused {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     require(contractAddress != address(0), "Invalid contract");
-    require(Address.isContract(contractAddress), "Not a contract");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -215,6 +214,7 @@ contract Protocol is IProtocol, ProtoBase {
     address previous,
     address current
   ) external override {
+    // @suppress-acl @suppress-pausable  This function is just an intermediate
     upgradeContractWithKey(namespace, 0, previous, current);
   }
 
@@ -244,9 +244,8 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 key,
     address previous,
     address current
-  ) public override nonReentrant {
+  ) public override nonReentrant whenNotPaused {
     require(current != address(0), "Invalid contract");
-    require(Address.isContract(current), "Not a contract");
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     s.mustNotBePaused();
@@ -273,7 +272,7 @@ contract Protocol is IProtocol, ProtoBase {
    * when this function is invoked.
    *
    */
-  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant {
+  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
     // @suppress-zero-value-check Checked
     require(detail.length > 0, "Invalid args");
     AccessControlLibV1.mustBeAdmin(s);

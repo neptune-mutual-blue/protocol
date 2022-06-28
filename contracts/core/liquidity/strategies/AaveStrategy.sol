@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 
+import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
 import "../../../dependencies/aave/IAaveV2LendingPoolLike.sol";
@@ -77,6 +78,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * Ensure that you `approve` stablecoin before you call this function
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
+    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
@@ -125,8 +127,10 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * Ensure that you `approve` aToken before you call this function
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
+
     IVault vault = s.getVault(coverKey);
 
     // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.

@@ -12,6 +12,7 @@ abstract contract WithRecovery is Ownable {
    * @dev Recover all Ether held by the contract.
    */
   function recoverEther(address sendTo) external onlyOwner {
+    // @suppress-pausable Pausable not implemented, risk tolerable
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -22,6 +23,7 @@ abstract contract WithRecovery is Ownable {
    * @param sendTo The address that receives the recovered tokens
    */
   function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
+    // @suppress-pausable Pausable not implemented, risk tolerable
     malicious.safeTransfer(sendTo, malicious.balanceOf(address(this)));
   }
 }
