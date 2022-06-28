@@ -141,12 +141,12 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
   }
 
-  function getCoverStatusInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusInternal(s, coverKey, productKey));
+  function getCoverStatusInternal(IStore s, bytes32 coverKey) external view returns (CoverStatus) {
+    return CoverStatus(s.getUintByKey(getCoverStatusKey(coverKey)));
+  }
+
+  function getProductStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view returns (CoverStatus) {
+    return CoverStatus(s.getUintByKey(getProductStatusKey(coverKey, productKey)));
   }
 
   /**

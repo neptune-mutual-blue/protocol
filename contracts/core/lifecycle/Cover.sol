@@ -111,6 +111,7 @@ contract Cover is CoverBase {
     uint256[] calldata values
   ) external override {
     s.mustNotBePaused();
+    s.senderMustBeWhitelistedCoverCreator();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
