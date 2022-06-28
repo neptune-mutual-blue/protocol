@@ -61,6 +61,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address, /*to*/
     uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
+    // @suppress-zero-value-check This function does not transfer any values
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -114,6 +115,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-zero-value-check Checked
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -169,6 +171,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 /*amount*/
   ) external override nonReentrant {
+    // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -194,6 +197,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override returns (uint256 income, uint256 loss) {
+    // @suppress-zero-value-check This call does not perform any transfers
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -222,6 +226,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
+    // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
@@ -246,6 +251,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256, /*amount*/
     uint256 /*npmStakeToAdd*/
   ) external override {
+    // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
@@ -300,6 +306,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
+    // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);

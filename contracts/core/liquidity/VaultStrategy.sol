@@ -19,9 +19,13 @@ abstract contract VaultStrategy is VaultLiquidity {
     uint256 amount
   ) external override {
     // @suppress-reentrancy Custom reentrancy guard implemented
+    require(address(token) != address(0), "Invalid token to transfer");
     require(coverKey == key, "Forbidden");
-    require(_transferToStrategyEntry == 0, "Access is denied");
+    require(strategyName > 0, "Invalid strategy");
     require(amount > 0, "Please specify amount");
+
+    // Reentrancy check
+    require(_transferToStrategyEntry == 0, "Access is denied");
 
     _transferToStrategyEntry = 1;
 

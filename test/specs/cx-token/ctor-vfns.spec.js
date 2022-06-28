@@ -82,11 +82,6 @@ describe('cxToken: Constructor', () => {
   })
 
   it('must correctly store the storage variables', async () => {
-    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-    const day = moment.unix(block.timestamp).get('date')
-    const monthEOD = moment.unix(block.timestamp).utc().add(day >= 25 ? 1 : 0, 'month').endOf('month').unix()
-
-    ;(await cxToken.COVER_KEY()).should.equal(coverKey)
-    ;(await cxToken.expiresOn()).toNumber().should.equal(monthEOD)
+    (await cxToken.COVER_KEY()).should.equal(coverKey)
   })
 })

@@ -189,6 +189,8 @@ contract Processor is IClaimsProcessor, Recoverable {
     address[] calldata accounts,
     bool[] calldata statuses
   ) external override nonReentrant {
+    // @suppress-zero-value-check Checked
+    require(accounts.length > 0, "Invalid accounts");
     require(accounts.length == statuses.length, "Invalid args");
 
     s.mustNotBePaused();

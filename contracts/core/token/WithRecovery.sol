@@ -17,8 +17,8 @@ abstract contract WithRecovery is Ownable {
   }
 
   /**
-   * @dev Recover all IERC-20 compatible tokens sent to this address.
-   * @param malicious IERC-20 The address of the token contract
+   * @dev Recover an ERC-20 compatible token sent to this contract.
+   * @param malicious ERC-20 The address of the token contract
    * @param sendTo The address that receives the recovered tokens
    */
   function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {

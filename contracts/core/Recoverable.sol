@@ -6,6 +6,16 @@ import "../interfaces/IRecoverable.sol";
 import "../libraries/BaseLibV1.sol";
 import "../libraries/ValidationLibV1.sol";
 
+/**
+ *
+ * @title Recoverable Contract
+ * @dev The recoverable contract enables "Recovery Agents" to recover
+ * Ether and ERC-20 tokens sent to this address.
+ *
+ * To learn more about our recovery policy, please refer to the following doc:
+ * https://docs.neptunemutual.com/usage/recovering-cryptocurrencies
+ *
+ */
 abstract contract Recoverable is ReentrancyGuard, IRecoverable {
   using ValidationLibV1 for IStore;
   IStore public override s;
@@ -27,10 +37,10 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
   }
 
   /**
-   * @dev Recover all IERC-20 compatible tokens sent to this address.
+   * @dev Recover all ERC-20 compatible tokens sent to this address.
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
-   * @param token IERC-20 The address of the token contract
+   * @param token ERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external override nonReentrant {
     // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.

@@ -12,7 +12,15 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
 
   event Minted(bytes32 indexed key, address indexed account, uint256 amount);
 
-  constructor(address timelockOrOwner) Ownable() Pausable() ERC20("Neptune Mutual Token", "NPM") {
+  constructor(
+    address timelockOrOwner,
+    string memory tokenName,
+    string memory tokenSymbol
+  ) Ownable() Pausable() ERC20(tokenName, tokenSymbol) {
+    require(timelockOrOwner != address(0), "Invalid owner");
+    require(bytes(tokenName).length > 0, "Invalid token name");
+    require(bytes(tokenSymbol).length > 0, "Invalid token symbol");
+
     super._transferOwnership(timelockOrOwner);
   }
 
@@ -20,18 +28,8 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     address,
     address,
     uint256
-  ) internal view override whenNotPaused {
+  ) internal view virtual override whenNotPaused {
     // solhint-disable-previous-line
-  }
-
-  function issue(
-    bytes32 key,
-    address mintTo,
-    uint256 amount
-  ) external onlyOwner whenNotPaused {
-    _issue(key, mintTo, amount);
-    _issued += amount;
-    require(_issued <= _CAP, "Cap exceeded");
   }
 
   function issueMany(
