@@ -97,7 +97,7 @@ contract Policy is IPolicy, Recoverable {
   ) external override nonReentrant returns (address, uint256) {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustHaveNormalProductStatus(coverKey, productKey);
     s.mustNotHavePolicyDisabled(coverKey, productKey);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);

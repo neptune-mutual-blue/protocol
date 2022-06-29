@@ -43,7 +43,7 @@ library ValidationLibV1 {
    */
   function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+    require(s.isCoverNormalInternal(coverKey) == true, "Status not normal");
   }
 
   /**
