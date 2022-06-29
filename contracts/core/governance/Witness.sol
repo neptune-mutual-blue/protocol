@@ -113,7 +113,6 @@ abstract contract Witness is Recoverable, IWitness {
     uint256 stake
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
-
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveDispute(coverKey, productKey);
@@ -122,7 +121,7 @@ abstract contract Witness is Recoverable, IWitness {
 
     require(stake > 0, "Enter a stake");
 
-    s.addDisputeInternal(coverKey, productKey, msg.sender, incidentDate, stake);
+    s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 

@@ -1,15 +1,17 @@
-const oneInch = require('./1inch')
-const bancor = require('./bancor')
+const ens = require('./ens')
+const kyber = require('./kyber')
+const lido = require('./lido')
 const nexus = require('./nexus')
-const pancakeswap = require('./pancakeswap')
-const quickswap = require('./quickswap')
+const oneInch = require('./1inch')
 const sushi = require('./sushi')
+const synthetix = require('./synthetix')
 
 module.exports = [
+  ens,
+  kyber,
+  lido,
   oneInch,
-  bancor,
   nexus,
-  pancakeswap,
-  quickswap,
-  sushi
+  sushi,
+  synthetix
 ]

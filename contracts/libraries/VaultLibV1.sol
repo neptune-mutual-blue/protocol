@@ -10,6 +10,7 @@ import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
+import "./ValidationLibV1.sol";
 
 library VaultLibV1 {
   using ProtoUtilV1 for IStore;
@@ -205,6 +206,9 @@ library VaultLibV1 {
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
+    ValidationLibV1.mustNotExceedStablecoinThreshold(s, releaseAmount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToRemove);
+
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
       _unStakeNpm(s, account, coverKey, npmStakeToRemove, exit);
@@ -268,15 +272,6 @@ library VaultLibV1 {
 
   function mustBeAccrued(IStore s, bytes32 coverKey) external view {
     require(s.isAccrualCompleteInternal(coverKey) == true, "Wait for accrual");
-  }
-
-  function mustNotExceedNpmThreshold(uint256 amount) external pure {
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * 1 ether, "Please specify a smaller amount");
-  }
-
-  function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
   }
 
   /**

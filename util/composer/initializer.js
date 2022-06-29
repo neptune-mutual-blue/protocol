@@ -184,6 +184,7 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
+      GovernanceUtilV1: libs.governanceUtilV1.address,
       ProtoUtilV1: libs.protoUtilV1.address,
       RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,

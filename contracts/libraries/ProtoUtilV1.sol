@@ -12,6 +12,9 @@ library ProtoUtilV1 {
 
   uint256 public constant MULTIPLIER = 10_000;
   uint256 public constant MAX_LIQUIDITY = 45_000_000_000;
+  uint256 public constant MAX_PROPOSAL_AMOUNT = 45_000_000_000;
+  uint256 public constant MAX_NPM_STAKE = 10_000_000_000;
+  uint256 public constant NPM_PRECISION = 1 ether;
   uint256 public constant CXTOKEN_PRECISION = 1 ether;
   uint256 public constant POD_PRECISION = 1 ether;
 

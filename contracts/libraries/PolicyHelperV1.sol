@@ -20,6 +20,8 @@ library PolicyHelperV1 {
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
 
+  uint256 public constant COVER_LAG_FALLBACK_VALUE = 1 days;
+
   function calculatePolicyFeeInternal(
     IStore s,
     bytes32 coverKey,
@@ -250,18 +252,21 @@ library PolicyHelperV1 {
   }
 
   function getCoverageLagInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
     uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
 
+    // Custom means set for this exact cover
     if (custom > 0) {
       return custom;
     }
+
+    // Global means set for all covers (without specifying a cover key)
+    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
 
     if (global > 0) {
       return global;
     }
 
-    // fallback
-    return 1 days;
+    // Fallback means the default option
+    return COVER_LAG_FALLBACK_VALUE;
   }
 }

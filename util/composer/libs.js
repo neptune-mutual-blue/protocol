@@ -87,11 +87,13 @@ const deployAll = async (cache) => {
 
   const vaultLib = await deployer.deployWithLibraries(cache, 'VaultLibV1', {
     CoverUtilV1: coverUtilV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
-    StrategyLibV1: strategyLibV1.address
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
   })
 
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1')
