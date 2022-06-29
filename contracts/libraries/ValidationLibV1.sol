@@ -62,21 +62,6 @@ library ValidationLibV1 {
   }
 
   /**
-   * @dev Reverts if the key does not resolve in a stopped cover contract.
-   * @param coverKey Enter the cover key to check
-   * @param productKey Enter the product key to check
-   */
-  function mustHaveStoppedProductStatus(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) external view {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
-    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
-  }
-
-  /**
    * @dev Reverts if the key does not resolve in a valid cover contract.
    * @param coverKey Enter the cover key to check
    */
