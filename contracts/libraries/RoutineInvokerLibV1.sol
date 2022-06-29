@@ -143,7 +143,7 @@ library RoutineInvokerLibV1 {
     bytes32 coverKey
   ) private returns (Action) {
     // If the cover is undergoing reporting, withdraw everything
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, 0);
+    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey);
 
     if (status != CoverUtilV1.CoverStatus.Normal) {
       // Reset the withdrawal window

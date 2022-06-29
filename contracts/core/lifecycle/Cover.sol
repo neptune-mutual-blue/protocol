@@ -113,6 +113,7 @@ contract Cover is CoverBase {
     // @suppress-acl This function can only be accessed by the cover owner or an admin
     // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
+    s.senderMustBeWhitelistedCoverCreator();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
@@ -136,25 +137,21 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Allows stopping and resuming a product or cover.
+   * @dev Allows disabling and enabling the purchase of policy for a product or cover.
    *
-   * This function enables governance admin to stop or resume a cover contract.
+   * This function enables governance admin to disable or enable the purchase of policy for a product or cover.
    * A cover contract when stopped restricts new policy purchases
    * and frees up liquidity as policies expires.
    *
-   * 1. A cover can be stopped and later removed after policies expire and liquidity is withdrawn.
-   * 2. A cover can be stopped temporarily to allow liquidity providers a chance to exit.
+   * 1. The policy purchases can be disabled and later enabled after current policies expire and liquidity is withdrawn.
+   * 2. The policy purchases can be disabled temporarily to allow liquidity providers a chance to exit.
    *
-   * Note:
-   * 1. This function does not allow governance admin to chage the reporting
-   * status of the specified cover contract.
-   * 2. A stopped cover does not restrict adding and removing liquidity.
-   * 3. A stopped cover can still be reported if an incident is triggered.
-   *
-   * @param coverKey Enter the cover key you want to stop
-   * @param reason Provide a reason to stop this cover
+   * @param coverKey Enter the cover key you want to disable policy purchases
+   * @param productKey Enter the product key you want to disable policy purchases
+   * @param status Set this to true if you disable or false to enable policy purchases
+   * @param reason Provide a reason to disable the policy purchases
    */
-  function updateProductState(
+  function disablePolicy(
     bytes32 coverKey,
     bytes32 productKey,
     bool status,
@@ -164,15 +161,9 @@ contract Cover is CoverBase {
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    if (status) {
-      // A cover can only be resumed if it is stopped
-      s.mustHaveStoppedProductStatus(coverKey, productKey);
-    } else {
-      // A cover can't be stopped at the middle of consensus
-      s.mustHaveNormalProductStatus(coverKey, productKey);
-    }
+    require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled": "Already enabled");
 
-    s.updateProductStateInternal(coverKey, productKey, status);
+    s.disablePolicyInternal(coverKey, productKey, status);
 
     emit ProductStateUpdated(coverKey, productKey, msg.sender, status, reason);
   }

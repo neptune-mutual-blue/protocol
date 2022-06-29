@@ -36,7 +36,7 @@ describe('Cover: stopCover', () => {
 
   it('correctly stops cover', async () => {
     const [owner] = await ethers.getSigners()
-    const status = false // false --> stop, true --> resume
+    const status = true // false --> enable, true --> disable
 
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -45,12 +45,28 @@ describe('Cover: stopCover', () => {
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    await deployed.cover.updateProductState(coverKey, helper.emptyBytes32, status, 'reason: testing')
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, status, 'reason: testing')
+  })
+
+  it('reverts when tried to disable twice', async () => {
+    const [owner] = await ethers.getSigners()
+    const status = true // false --> enable, true --> disable
+
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+
+    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, status, 'reason: testing')
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, status, 'reason: testing')
+      .should.be.rejectedWith('Already disabled')
   })
 
   it('reverts when not accessed by GovernanceAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
-    const status = false // false --> stop, true --> resume
+    const status = true // false --> enable, true --> disable
 
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
@@ -59,7 +75,7 @@ describe('Cover: stopCover', () => {
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    await deployed.cover.connect(bob).updateProductState(coverKey, helper.emptyBytes32, status, 'reason: testing')
+    await deployed.cover.connect(bob).disablePolicy(coverKey, helper.emptyBytes32, status, 'reason: testing')
       .should.be.rejectedWith('Forbidden')
   })
 })

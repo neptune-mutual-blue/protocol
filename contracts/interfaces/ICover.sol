@@ -98,7 +98,7 @@ interface ICover is IMember {
     bool[] calldata statuses
   ) external;
 
-  function updateProductState(
+  function disablePolicy(
     bytes32 coverKey,
     bytes32 productKey,
     bool status,

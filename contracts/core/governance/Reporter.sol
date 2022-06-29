@@ -93,7 +93,7 @@ abstract contract Reporter is IReporter, Witness {
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    productKey > 0 ? s.mustHaveNormalProductStatus(coverKey, productKey) : s.mustHaveNormalCoverStatus(coverKey);
+    s.mustHaveNormalProductStatus(coverKey, productKey);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
     require(stake > 0, "Stake insufficient");

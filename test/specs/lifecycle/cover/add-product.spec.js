@@ -34,7 +34,7 @@ describe('Cover: addProduct', () => {
 
     deployed = await deployDependencies()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
@@ -50,6 +50,15 @@ describe('Cover: addProduct', () => {
   it('reverts when tried to added the same product key twice', async () => {
     await deployed.cover.addProduct(coverKey, key.toBytes32('test'), info, requiresWhitelist, [1, 10_000])
       .should.be.rejectedWith('Already exists')
+  })
+
+  it('reverts when the accessed by non-whitelisted cover creator', async () => {
+    const [owner] = await ethers.getSigners()
+
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, false)
+    await deployed.cover.addProduct(coverKey, key.toBytes32('test2'), info, requiresWhitelist, [1, 10_000])
+      .should.be.rejectedWith('Not whitelisted')
+    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
   })
 
   it('reverts when status is invalid', async () => {
@@ -92,8 +101,10 @@ describe('Cover: addProduct', () => {
   it('reverts when not accessed by cover creator', async () => {
     const [, bob] = await ethers.getSigners()
 
+    await deployed.cover.updateCoverCreatorWhitelist(bob.address, true)
     await deployed.cover.connect(bob).addProduct(coverKey, key.toBytes32(''), info, requiresWhitelist, [1, 100])
       .should.be.rejectedWith('Forbidden')
+    await deployed.cover.updateCoverCreatorWhitelist(bob.address, false)
   })
 
   it('reverts when protocol is paused', async () => {

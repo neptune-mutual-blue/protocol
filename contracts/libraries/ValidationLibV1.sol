@@ -43,7 +43,7 @@ library ValidationLibV1 {
    */
   function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey, 0) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+    require(s.getCoverStatusInternal(coverKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
   }
 
   /**
@@ -58,21 +58,7 @@ library ValidationLibV1 {
     bytes32 productKey
   ) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
-  }
-
-  /**
-   * @dev Reverts if the key does not resolve in a stopped cover contract.
-   * @param coverKey Enter the cover key to check
-   * @param productKey Enter the product key to check
-   */
-  function mustHaveStoppedProductStatus(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) external view {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
   }
 
   /**
@@ -227,7 +213,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 
   function mustBeDisputed(
@@ -235,7 +221,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 
   function mustBeClaimable(
@@ -243,7 +229,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) public view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
   }
 
   function mustBeClaimingOrDisputed(
@@ -251,7 +237,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
+    CoverUtilV1.CoverStatus status = s.getProductStatusInternal(coverKey, productKey);
 
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
@@ -264,7 +250,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
+    CoverUtilV1.CoverStatus status = s.getProductStatusInternal(coverKey, productKey);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
@@ -431,7 +417,7 @@ library ValidationLibV1 {
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable;
+    bool incidentHappened = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
@@ -499,5 +485,13 @@ library ValidationLibV1 {
       mustBeValidProduct(s, coverKey, productKey);
       mustBeActiveProduct(s, coverKey, productKey);
     }
+  }
+
+  function mustNotHavePolicyDisabled(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(!s.isPolicyDisabledInternal(coverKey, productKey), "Policy purchase disabled");
   }
 }
