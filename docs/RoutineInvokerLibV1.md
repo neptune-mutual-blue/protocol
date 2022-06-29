@@ -17,7 +17,7 @@ enum Action {
 ## Functions
 
 - [updateStateAndLiquidity(IStore s, bytes32 coverKey)](#updatestateandliquidity)
-- [_invoke(IStore s, bytes32 coverKey, address token)](#_invoke)
+- [_invoke(IStore s, bytes32 coverKey)](#_invoke)
 - [_getUpdateInterval(IStore s)](#_getupdateinterval)
 - [getWithdrawalInfoInternal(IStore s, bytes32 coverKey)](#getwithdrawalinfointernal)
 - [_isWithdrawalPeriod(IStore s, bytes32 coverKey)](#_iswithdrawalperiod)
@@ -35,7 +35,6 @@ enum Action {
 - [_depositToStrategy(ILendingStrategy strategy, bytes32 coverKey, uint256 amount)](#_deposittostrategy)
 - [_withdrawAllFromStrategy(ILendingStrategy strategy, address vault, bytes32 coverKey)](#_withdrawallfromstrategy)
 - [_withdrawFromDisabled(IStore s, bytes32 coverKey, address onBehalfOf)](#_withdrawfromdisabled)
-- [_updateKnownTokenPrices(IStore s, address token)](#_updateknowntokenprices)
 
 ### updateStateAndLiquidity
 
@@ -55,7 +54,7 @@ function updateStateAndLiquidity(IStore s, bytes32 coverKey) external nonpayable
 
 ```javascript
 function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
-    _invoke(s, coverKey, address(0));
+    _invoke(s, coverKey);
   }
 ```
 </details>
@@ -63,7 +62,7 @@ function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
 ### _invoke
 
 ```solidity
-function _invoke(IStore s, bytes32 coverKey, address token) private nonpayable
+function _invoke(IStore s, bytes32 coverKey) private nonpayable
 ```
 
 **Arguments**
@@ -72,29 +71,24 @@ function _invoke(IStore s, bytes32 coverKey, address token) private nonpayable
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
-| token | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _invoke(
-    IStore s,
-    bytes32 coverKey,
-    address token
-  ) private {
+function _invoke(IStore s, bytes32 coverKey) private {
     // solhint-disable-next-line
-    if (s.getLastUpdateOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
+    if (s.getLastUpdatedOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
       return;
     }
 
-    _updateKnownTokenPrices(s, token);
+    PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
       _invokeAssetManagement(s, coverKey);
     }
 
-    s.setLastUpdateOn(coverKey);
+    s.setLastUpdatedOn(coverKey);
 
     _updateWithdrawalPeriod(s, coverKey);
   }
@@ -412,7 +406,7 @@ function _executeAndGetAction(
     bytes32 coverKey
   ) private returns (Action) {
     // If the cover is undergoing reporting, withdraw everything
-    CoverUtilV1.CoverStatus status = s.getCoverStatus(coverKey);
+    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, 0);
 
     if (status != CoverUtilV1.CoverStatus.Normal) {
       // Reset the withdrawal window
@@ -654,35 +648,6 @@ function _withdrawFromDisabled(
 ```
 </details>
 
-### _updateKnownTokenPrices
-
-```solidity
-function _updateKnownTokenPrices(IStore s, address token) private nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| token | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _updateKnownTokenPrices(IStore s, address token) private {
-    address npm = s.getNpmTokenAddress();
-
-    if (token != address(0) && token != npm) {
-      PriceLibV1.setTokenPriceInStablecoinInternal(s, token);
-    }
-
-    PriceLibV1.setTokenPriceInStablecoinInternal(s, npm);
-  }
-```
-</details>
-
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -712,6 +677,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -750,7 +716,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -775,6 +741,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -785,7 +752,7 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -794,7 +761,6 @@ function _updateKnownTokenPrices(IStore s, address token) private {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

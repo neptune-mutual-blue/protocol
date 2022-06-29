@@ -24,6 +24,16 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
       }
     ],
     "name": "deploy",

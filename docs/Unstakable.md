@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Unstakable Contract (Unstakable.sol)
+# Unstakable Contract (Unstakable.sol)
 
 View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/core/governance/resolution/Unstakable.sol)
 
@@ -7,22 +7,25 @@ View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/
 
 **Unstakable**
 
-Enables tokenholders unstake their tokens after
+Enables voters to unstake their NPM tokens after
  resolution is achieved on any cover product.
 
 ## Functions
 
-- [unstake(bytes32 coverKey, uint256 incidentDate)](#unstake)
-- [unstakeWithClaim(bytes32 coverKey, uint256 incidentDate)](#unstakewithclaim)
-- [getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate)](#getunstakeinfofor)
+- [unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#unstake)
+- [unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#unstakewithclaim)
+- [getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getunstakeinfofor)
 
 ### unstake
 
-Reporters on the winning camp can unstake their tokens even after the claim period is over.
- Warning: during claim periods, you must use `unstakeWithClaim` instead of this to also receive reward.
+Reporters on the valid camp can unstake their tokens even after the claim period is over.
+ Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
+ use this function.
+ **Warning:**
+ You should instead use `unstakeWithClaim` throughout the claim period.
 
 ```solidity
-function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
+function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -30,42 +33,47 @@ function unstake(bytes32 coverKey, uint256 incidentDate) external nonpayable non
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstake(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+function unstake(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
-    s.validateUnstakeWithoutClaim(coverKey, incidentDate);
+    s.validateUnstakeWithoutClaim(coverKey, productKey, incidentDate);
 
-    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, incidentDate);
+    (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(msg.sender, myStakeInWinningCamp, 0);
+    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, 0);
   }
 ```
 </details>
 
 ### unstakeWithClaim
 
-Reporters on the winning camp can unstake their token with a `claim` to receive
- back their original stake with a certain portion of the losing camp's stake
+Reporters on the valid camp can unstake their token with a `claim` to receive
+ back their original stake with a portion of the invalid camp's stake
  as an additional reward.
  During each `unstake with claim` processing, the protocol distributes reward to
  the final reporter and also burns some NPM tokens, as described in the documentation.
 
 ```solidity
-function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
+function unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -73,26 +81,31 @@ function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external nonpa
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+function unstakeWithClaim(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     // @suppress-acl Marking this as publicly accessible
     // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
-    s.validateUnstakeWithClaim(coverKey, incidentDate);
+    s.validateUnstakeWithClaim(coverKey, productKey, incidentDate);
 
-    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, incidentDate);
+    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
     uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
 
@@ -108,19 +121,19 @@ function unstakeWithClaim(bytes32 coverKey, uint256 incidentDate) external overr
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(msg.sender, myStakeInWinningCamp, myReward);
-    emit ReporterRewardDistributed(msg.sender, finalReporter, myReward, toReporter);
-    emit GovernanceBurned(msg.sender, burner, myReward, toBurn);
+    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, myReward);
+    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, myReward, toReporter);
+    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, myReward, toBurn);
   }
 ```
 </details>
 
 ### getUnstakeInfoFor
 
-s Gets the unstake information for the supplied account
+Gets the unstake information for the supplied account
 
 ```solidity
-function getUnstakeInfoFor(address account, bytes32 coverKey, uint256 incidentDate) external view
+function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
 ```
 
@@ -130,6 +143,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 | ------------- |------------- | -----|
 | account | address | Enter account to get the unstake information of | 
 | coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
@@ -139,6 +153,7 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 function getUnstakeInfoFor(
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   )
     external
@@ -154,7 +169,7 @@ function getUnstakeInfoFor(
       uint256 unstaken
     )
   {
-    return s.getUnstakeInfoForInternal(account, coverKey, incidentDate);
+    return s.getUnstakeInfoForInternal(account, coverKey, productKey, incidentDate);
   }
 ```
 </details>
@@ -188,6 +203,7 @@ function getUnstakeInfoFor(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -226,7 +242,7 @@ function getUnstakeInfoFor(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -251,6 +267,7 @@ function getUnstakeInfoFor(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -261,7 +278,7 @@ function getUnstakeInfoFor(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -270,7 +287,6 @@ function getUnstakeInfoFor(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

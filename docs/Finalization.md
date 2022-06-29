@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Finalization Contract (Finalization.sol)
+# Finalization Contract (Finalization.sol)
 
 View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
 
@@ -15,40 +15,47 @@ This contract allows governance agents "finalize"
 
 ## Functions
 
-- [finalize(bytes32 coverKey, uint256 incidentDate)](#finalize)
-- [_finalize(bytes32 coverKey, uint256 incidentDate)](#_finalize)
+- [finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#finalize)
+- [_finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#_finalize)
 
 ### finalize
 
 ```solidity
-function finalize(bytes32 coverKey, uint256 incidentDate) external nonpayable nonReentrant 
+function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key you want to finalize | 
+| productKey | bytes32 | Enter the product key you want to finalize | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function finalize(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
+function finalize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
-    s.mustBeClaimingOrDisputed(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterResolutionDeadline(coverKey);
-    s.mustBeAfterClaimExpiry(coverKey);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
-    uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeClaimingOrDisputed(coverKey, productKey);
+    s.mustBeAfterResolutionDeadline(coverKey, productKey);
+    s.mustBeAfterClaimExpiry(coverKey, productKey);
+
+    uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
     require(transferable == 0, "Pool must be capitalized");
 
-    _finalize(coverKey, incidentDate);
+    _finalize(coverKey, productKey, incidentDate);
   }
 ```
 </details>
@@ -56,7 +63,7 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external override nonR
 ### _finalize
 
 ```solidity
-function _finalize(bytes32 coverKey, uint256 incidentDate) internal nonpayable
+function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
 ```
 
 **Arguments**
@@ -64,26 +71,31 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
+function _finalize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) private {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
+    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);
 
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
-    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey);
-    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey);
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
     // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
@@ -92,7 +104,7 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
 
     s.updateStateAndLiquidity(coverKey);
-    emit Finalized(coverKey, msg.sender, incidentDate);
+    emit Finalized(coverKey, productKey, msg.sender, incidentDate);
   }
 ```
 </details>
@@ -126,6 +138,7 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -164,7 +177,7 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -189,6 +202,7 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -199,7 +213,7 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -208,7 +222,6 @@ function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

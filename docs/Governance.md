@@ -1,4 +1,4 @@
-# Neptune Mutual Governance: Governance Contract (Governance.sol)
+# Governance Contract (Governance.sol)
 
 View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
 
@@ -7,9 +7,9 @@ View Source: [contracts/core/governance/Governance.sol](../contracts/core/govern
 **Governance**
 
 The governance contract allows any NPM tokenholder
- stake a given number of NPM tokens to submit a report.
+ stake a specific minimum number of NPM tokens to submit a report.
  The reporting process begins after an incident report is submitted
- and usually lasts for 7-days or higher.
+ and usually lasts for 7-days or higher based on a cover's configuration.
  It also allows follow-on reporters to submit their stakes to support
  the first reporter or add stakes to dispute the original report.
 
@@ -116,6 +116,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -154,7 +155,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -179,6 +180,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -189,7 +191,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -198,7 +200,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

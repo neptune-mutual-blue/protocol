@@ -22,7 +22,9 @@ mapping(bytes32 => bytes) public bytesStorage;
 mapping(bytes32 => bytes32) public bytes32Storage;
 mapping(bytes32 => bool) public boolStorage;
 mapping(bytes32 => address[]) public addressArrayStorage;
-mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositionMap;
+mapping(bytes32 => mapping(address => uint256)) public addressArrayPositionMap;
+mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
+mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
 
 //private members
 bytes32 private constant _NS_MEMBERS;
@@ -117,7 +119,8 @@ function recoverToken(address token, address sendTo) external onlyOwner {
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
-      erc20.transfer(sendTo, balance);
+      // slither-disable-next-line unchecked-transfer
+      erc20.safeTransfer(sendTo, balance);
     }
   }
 ```
@@ -261,6 +264,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -299,7 +303,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -324,6 +328,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -334,7 +339,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -343,7 +348,6 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -8,7 +8,6 @@ import "./AccessControlLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RegistryLibV1.sol";
 import "./StoreKeyUtil.sol";
-import "./NTransferUtilV2.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
 
@@ -21,39 +20,18 @@ library CoverLibV1 {
   using AccessControlLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using StrategyLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
-  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
-
-  function getCoverInfo(IStore s, bytes32 coverKey)
-    external
-    view
-    returns (
-      address owner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    info = s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey);
-    owner = s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
-
-    values = new uint256[](5);
-
-    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
-    values[1] = s.getStake(coverKey);
-    values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getActiveLiquidityUnderProtection(coverKey);
-  }
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
   function initializeCoverInternal(
     IStore s,
-    address liquidityToken,
-    bytes32 liquidityName
+    address stablecoin,
+    bytes32 friendlyName
   ) external {
     // @suppress-initialization Can only be initialized once by a cover manager. Check caller.
-    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement. Check caller.
-    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
-    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
+    // @suppress-address-trust-issue stablecoin This instance of stablecoin can be trusted because of the ACL requirement. Check caller.
+    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, stablecoin);
+    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_STABLECOIN_NAME, friendlyName);
 
     s.updateStateAndLiquidity(0);
   }
@@ -78,12 +56,6 @@ library CoverLibV1 {
    * @param s Provide store instance
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
@@ -98,18 +70,16 @@ library CoverLibV1 {
   function addCoverInternal(
     IStore s,
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
   ) external {
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version. Check caller.
-
     // First validate the information entered
     (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
 
     // Set the basic cover info
-    _addCover(s, coverKey, info, reassuranceToken, requiresWhitelist, values, fee);
+    _addCover(s, coverKey, supportsProducts, info, requiresWhitelist, values, fee);
 
     // Stake the supplied NPM tokens and burn the fees
     s.getStakingContract().increaseStake(coverKey, msg.sender, values[0], fee);
@@ -123,10 +93,10 @@ library CoverLibV1 {
   function _addCover(
     IStore s,
     bytes32 coverKey,
+    bool supportsProducts,
     bytes32 info,
-    address reassuranceToken,
     bool requiresWhitelist,
-    uint256[] memory values,
+    uint256[] calldata values,
     uint256 fee
   ) private {
     require(coverKey > 0, "Invalid cover key");
@@ -138,21 +108,27 @@ library CoverLibV1 {
     require(values[6] > 0, "Invalid floor rate");
     require(values[7] > 0, "Invalid ceiling rate");
     require(values[8] > 0, "Invalid reassurance rate");
+    require(values[9] > 0 && values[9] < 25, "Invalid leverage");
+
+    if (supportsProducts == false) {
+      // Standalone pools do not support any leverage
+      require(values[9] == 1, "Invalid leverage");
+    }
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
 
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
-
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, supportsProducts);
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey, msg.sender);
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_TOKEN, coverKey, reassuranceToken);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
 
     // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, coverKey, fee);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
+
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, values[2]);
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey, values[3]);
     s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, values[4]);
@@ -160,16 +136,70 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey, values[9]);
   }
 
-  function deployVaultInternal(IStore s, bytes32 coverKey) external returns (address) {
+  function addProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] calldata values
+  ) external {
+    s.mustBeValidCoverKey(coverKey);
+    s.mustSupportProducts(coverKey);
+
+    require(productKey > 0, "Invalid product key");
+    require(info > 0, "Invalid info");
+
+    // Product Status
+    // 0 --> Deleted
+    // 1 --> Active
+    // 2 --> Retired
+    require(values[0] == 1, "Status must be active");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == false, "Already exists");
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+    s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
+  }
+
+  function updateProductInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] calldata values
+  ) external {
+    require(values[0] <= 2, "Invalid product status");
+    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+
+    s.mustBeValidCoverKey(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
+    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+  }
+
+  function deployVaultInternal(
+    IStore s,
+    bytes32 coverKey,
+    string calldata tokenName,
+    string calldata tokenSymbol
+  ) external returns (address) {
     address vault = s.getProtocolContract(ProtoUtilV1.CNS_COVER_VAULT, coverKey);
     require(vault == address(0), "Vault already deployed");
 
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
-
     // Deploy cover liquidity contract
-    address deployed = s.getVaultFactoryContract().deploy(coverKey);
+    address deployed = s.getVaultFactoryContract().deploy(coverKey, tokenName, tokenSymbol);
 
     s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
     return deployed;
@@ -201,10 +231,6 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
   }
 
-  function stopCoverInternal(IStore s, bytes32 coverKey) external {
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Stopped);
-  }
-
   function updateCoverCreatorWhitelistInternal(
     IStore s,
     address account,
@@ -216,23 +242,25 @@ library CoverLibV1 {
   function _updateCoverUserWhitelistInternal(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address account,
     bool status
   ) private {
-    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account, status);
-    emit CoverUserWhitelistUpdated(coverKey, account, status);
+    s.setAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account, status);
+    emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
   }
 
   function updateCoverUsersWhitelistInternal(
     IStore s,
     bytes32 coverKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    bytes32 productKey,
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external {
     require(accounts.length == statuses.length, "Inconsistent array sizes");
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      _updateCoverUserWhitelistInternal(s, coverKey, accounts[i], statuses[i]);
+      _updateCoverUserWhitelistInternal(s, coverKey, productKey, accounts[i], statuses[i]);
     }
   }
 

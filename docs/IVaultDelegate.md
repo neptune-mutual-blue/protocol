@@ -33,7 +33,7 @@ View Source: [contracts/interfaces/IVaultDelegate.sol](../contracts/interfaces/I
 
 ```solidity
 function preAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint256 npmStake) external nonpayable
-returns(podsToMint uint256, previousNPMStake uint256)
+returns(podsToMint uint256, previousNpmStake uint256)
 ```
 
 **Arguments**
@@ -54,7 +54,7 @@ function preAddLiquidity(
     bytes32 coverKey,
     uint256 amount,
     uint256 npmStake
-  ) external returns (uint256 podsToMint, uint256 previousNPMStake);
+  ) external returns (uint256 podsToMint, uint256 previousNpmStake);
 ```
 </details>
 
@@ -589,6 +589,7 @@ function getMaxFlashLoan(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -627,7 +628,7 @@ function getMaxFlashLoan(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -652,6 +653,7 @@ function getMaxFlashLoan(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -662,7 +664,7 @@ function getMaxFlashLoan(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -671,7 +673,6 @@ function getMaxFlashLoan(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

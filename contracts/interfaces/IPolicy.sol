@@ -6,10 +6,11 @@ import "./IMember.sol";
 interface IPolicy is IMember {
   event CoverPurchased(
     bytes32 coverKey,
-    address indexed account,
+    bytes32 productKey,
     address onBehalfOf,
     address indexed cxToken,
     uint256 fee,
+    uint256 platformFee,
     uint256 amountToCover,
     uint256 expiresOn,
     bytes32 indexed referralCode,
@@ -30,6 +31,7 @@ interface IPolicy is IMember {
   function purchaseCover(
     address onBehalfOf,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
@@ -38,11 +40,13 @@ interface IPolicy is IMember {
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
    */
   function getCoverFeeInfo(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
   )
@@ -61,20 +65,30 @@ interface IPolicy is IMember {
    * @dev Returns the values of the given cover key
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
-   * @param _values[2] The total amount of reassurance tokens
-   * @param _values[3] Reassurance token price
-   * @param _values[4] Reassurance pool weight
+   * @param _values[2] Reassurance amount
+   * @param _values[3] Reassurance pool weight
+   * @param _values[4] Count of products under this cover
+   * @param _values[5] Leverage
+   * @param _values[6] Cover product efficiency weight
    */
-  function getCoverPoolSummary(bytes32 coverKey) external view returns (uint256[] memory _values);
+  function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view returns (uint256[] memory _values);
 
-  function getCxToken(bytes32 coverKey, uint256 coverDuration) external view returns (address cxToken, uint256 expiryDate);
+  function getCxToken(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 coverDuration
+  ) external view returns (address cxToken, uint256 expiryDate);
 
-  function getCxTokenByExpiryDate(bytes32 coverKey, uint256 expiryDate) external view returns (address cxToken);
+  function getCxTokenByExpiryDate(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 expiryDate
+  ) external view returns (address cxToken);
 
   /**
    * Gets the sum total of cover commitment that haven't expired yet.
    */
-  function getCommitment(bytes32 coverKey) external view returns (uint256);
+  function getCommitment(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
 
   /**
    * Gets the available liquidity in the pool.

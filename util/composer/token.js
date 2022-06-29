@@ -7,23 +7,23 @@ const { ethers } = hre
 
 const supportedNetworks = [31337]
 
-const sendTransfers = async (contract) => {
+const sendTransfers = async (contract, decimals) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
-  await contract.connect(owner).mint(helper.ether(100_000_000_000_000_000_000_000_000))
+  await contract.connect(owner).mint(helper.ether(100_000_000_000, decimals))
 
-  await contract.transfer(alice.address, helper.ether(1_000_000_000))
-  await contract.transfer(bob.address, helper.ether(2_000_000_000))
-  await contract.transfer(chris.address, helper.ether(3_000_000_000))
-  await contract.transfer(david.address, helper.ether(2_000_000_000))
-  await contract.transfer(emily.address, helper.ether(2_000_000_000))
-  await contract.transfer(franklin.address, helper.ether(2_000_000_000))
-  await contract.transfer(george.address, helper.ether(2_000_000_000))
-  await contract.transfer(harry.address, helper.ether(2_000_000_000))
-  await contract.transfer(isabel.address, helper.ether(2_000_000_000))
-  await contract.transfer(john.address, helper.ether(2_000_000_000))
-  await contract.transfer(kimberly.address, helper.ether(2_000_000_000))
-  await contract.transfer(lewis.address, helper.ether(2_000_000_000))
+  await contract.transfer(alice.address, helper.ether(1_000_000_000, decimals))
+  await contract.transfer(bob.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(chris.address, helper.ether(3_000_000_000, decimals))
+  await contract.transfer(david.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(emily.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(franklin.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(george.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(harry.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(isabel.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(john.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(kimberly.address, helper.ether(2_000_000_000, decimals))
+  await contract.transfer(lewis.address, helper.ether(2_000_000_000, decimals))
 }
 
 const deployOrGetFromConfig = async (cache, tokens) => {
@@ -32,7 +32,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
   const network = await getNetworkInfo()
 
   for (const i in tokens) {
-    const { name, symbol, supply } = tokens[i]
+    const { name, symbol, supply, decimals } = tokens[i]
     const tokenAt = (network?.deployedTokens || {})[symbol]
 
     if (tokenAt) {
@@ -52,8 +52,8 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       // throw new Error(`Can't deploy ${symbol} on this network.`)
     }
 
-    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000))
-    hre.network.name === 'hardhat' && sendTransfers(contract)
+    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000, decimals), decimals)
+    hre.network.name === 'hardhat' && sendTransfers(contract, decimals)
 
     contracts.push(contract)
   }
@@ -68,16 +68,16 @@ const at = async (address) => {
 
 const compose = async (cache) => {
   const list = [
-    { name: 'Neptune Mutual Token', symbol: 'NPM' },
-    { name: 'Dai', symbol: 'DAI' },
-    { name: 'Crystalpool Token', symbol: 'CRPOOL' },
-    { name: 'Huobi-Wan Token', symbol: 'HWT' },
-    { name: 'Ob1-Ex', symbol: 'OBK' },
-    { name: 'Sabre Oracles', symbol: 'SABRE' },
-    { name: 'Bb8 Exchange', symbol: 'BEC' },
-    { name: 'XD Token', symbol: 'XD' },
-    { name: 'aToken', symbol: 'aToken' },
-    { name: 'cDai', symbol: 'cDai' }
+    { name: 'Neptune Mutual Token', symbol: 'NPM', decimals: 18 },
+    { name: 'Dai', symbol: 'DAI', decimals: helper.STABLECOIN_DECIMALS },
+    { name: 'Crystalpool Token', symbol: 'CRPOOL', decimals: 18 },
+    { name: 'Huobi-Wan Token', symbol: 'HWT', decimals: 18 },
+    { name: 'Ob1-Ex', symbol: 'OBK', decimals: 18 },
+    { name: 'Sabre Oracles', symbol: 'SABRE', decimals: 18 },
+    { name: 'Bb8 Exchange', symbol: 'BEC', decimals: 18 },
+    { name: 'XD Token', symbol: 'XD', decimals: 18 },
+    { name: 'aToken', symbol: 'aToken', decimals: 18 },
+    { name: 'cDai', symbol: 'cDai', decimals: 18 }
   ]
 
   const [npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai] = await deployOrGetFromConfig(cache, list)

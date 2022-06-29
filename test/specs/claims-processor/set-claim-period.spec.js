@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-const { deployer, key } = require('../../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const attacher = require('../../../util/attach')
 const DAYS = 86400
@@ -29,8 +29,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
-    await store.initialize(coverKey, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -53,8 +53,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('')
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
-    await store.initialize(coverKey, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -68,8 +68,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
-    await store.initialize(coverKey, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -82,7 +82,7 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
     await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod).should.be.rejectedWith('Forbidden')
   })
 
@@ -91,8 +91,8 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const newClaimPeriod = 0 * DAYS
     const coverKey = key.toBytes32('test')
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, cxToken.address)
-    await store.initialize(coverKey, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 

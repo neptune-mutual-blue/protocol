@@ -1,15 +1,19 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
-import "../interfaces/IStore.sol";
-import "../interfaces/IProtocol.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./StoreKeyUtil.sol";
+import "../interfaces/IStore.sol";
+import "../interfaces/IProtocol.sol";
+import "../interfaces/IERC20Detailed.sol";
 
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
   uint256 public constant MULTIPLIER = 10_000;
+  uint256 public constant MAX_LIQUIDITY = 45_000_000_000;
+  uint256 public constant CXTOKEN_PRECISION = 1 ether;
+  uint256 public constant POD_PRECISION = 1 ether;
 
   /// @dev Protocol contract namespace
   bytes32 public constant CNS_CORE = "cns:core";
@@ -67,18 +71,21 @@ library ProtoUtilV1 {
 
   /// @dev Key prefix for creating a new cover product on chain
   bytes32 public constant NS_COVER = "ns:cover";
+  bytes32 public constant NS_COVER_PRODUCT = "ns:cover:product";
+  bytes32 public constant NS_COVER_PRODUCT_EFFICIENCY = "ns:cover:product:efficiency";
 
   bytes32 public constant NS_COVER_CREATION_DATE = "ns:cover:creation:date";
   bytes32 public constant NS_COVER_CREATION_FEE = "ns:cover:creation:fee";
   bytes32 public constant NS_COVER_CREATION_MIN_STAKE = "ns:cover:creation:min:stake";
   bytes32 public constant NS_COVER_REASSURANCE = "ns:cover:reassurance";
   bytes32 public constant NS_COVER_REASSURANCE_PAYOUT = "ns:cover:reassurance:payout";
-  bytes32 public constant NS_COVER_REASSURANCE_TOKEN = "ns:cover:reassurance:token";
   bytes32 public constant NS_COVER_REASSURANCE_WEIGHT = "ns:cover:reassurance:weight";
   bytes32 public constant NS_COVER_REASSURANCE_RATE = "ns:cover:reassurance:rate";
-  bytes32 public constant NS_COVER_FEE_EARNING = "ns:cover:fee:earning";
+  bytes32 public constant NS_COVER_LEVERAGE_FACTOR = "ns:cover:leverage:factor";
+  bytes32 public constant NS_COVER_CREATION_FEE_EARNING = "ns:cover:creation:fee:earning";
   bytes32 public constant NS_COVER_INFO = "ns:cover:info";
   bytes32 public constant NS_COVER_OWNER = "ns:cover:owner";
+  bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS = "ns:cover:supports:products";
 
   bytes32 public constant NS_VAULT_STRATEGY_OUT = "ns:vault:strategy:out";
   bytes32 public constant NS_VAULT_LENDING_INCOMES = "ns:vault:lending:incomes";
@@ -90,7 +97,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE = "ns:cover:liquidity:min:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_STAKE = "ns:cover:liquidity:stake";
   bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED = "ns:cover:liquidity:committed";
-  bytes32 public constant NS_COVER_LIQUIDITY_NAME = "ns:cover:liquidityName";
+  bytes32 public constant NS_COVER_STABLECOIN_NAME = "ns:cover:stablecoin:name";
   bytes32 public constant NS_COVER_REQUIRES_WHITELIST = "ns:cover:requires:whitelist";
 
   bytes32 public constant NS_COVER_HAS_FLASH_LOAN = "ns:cover:has:fl";
@@ -100,11 +107,14 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVERAGE_LAG = "ns:coverage:lag";
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
+  bytes32 public constant NS_POLICY_DISABLED = "ns:policy:disabled";
 
   bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
   bytes32 public constant NS_COVER_STATUS = "ns:cover:status";
   bytes32 public constant NS_COVER_CXTOKEN = "ns:cover:cxtoken";
+  bytes32 public constant NS_VAULT_TOKEN_NAME = "ns:vault:token:name";
+  bytes32 public constant NS_VAULT_TOKEN_SYMBOL = "ns:vault:token:symbol";
   bytes32 public constant NS_COVER_CREATOR_WHITELIST = "ns:cover:creator:whitelist";
   bytes32 public constant NS_COVER_USER_WHITELIST = "ns:cover:user:whitelist";
   bytes32 public constant NS_COVER_CLAIM_BLACKLIST = "ns:cover:claim:blacklist";
@@ -180,7 +190,7 @@ library ProtoUtilV1 {
 
   /// @dev The percentage rate (x MULTIPLIER) of amount deducted by the platform
   /// for each successful claims payout
-  bytes32 public constant NS_CLAIM_PLATFORM_FEE = "ns:claim:platform:fee";
+  bytes32 public constant NS_COVER_PLATFORM_FEE = "ns:cover:platform:fee";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount provided to the first reporter
   /// upon favorable incident resolution. This amount is a commission of the
@@ -300,8 +310,12 @@ library ProtoUtilV1 {
     return s.getAddressByKey(CNS_TREASURY);
   }
 
-  function getStablecoin(IStore s) external view returns (address) {
+  function getStablecoin(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
+  }
+
+  function getStablecoinPrecision(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoin(s)).decimals();
   }
 
   function getBurnAddress(IStore s) external view returns (address) {

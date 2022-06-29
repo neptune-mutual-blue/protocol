@@ -16,8 +16,8 @@ event StrategyReceipt(address indexed token, address indexed strategy, bytes32 i
 event PodsIssued(address indexed account, uint256  issued, uint256  liquidityAdded, bytes32 indexed referralCode);
 event PodsRedeemed(address indexed account, uint256  redeemed, uint256  liquidityReleased);
 event FlashLoanBorrowed(address indexed lender, address indexed borrower, address indexed stablecoin, uint256  amount, uint256  fee);
-event NPMStaken(address indexed account, uint256  amount);
-event NPMUnstaken(address indexed account, uint256  amount);
+event NpmStaken(address indexed account, uint256  amount);
+event NpmUnstaken(address indexed account, uint256  amount);
 event InterestAccrued(bytes32 indexed coverKey);
 event Entered(bytes32 indexed coverKey, address indexed account);
 event Exited(bytes32 indexed coverKey, address indexed account);
@@ -360,6 +360,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -398,7 +399,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -423,6 +424,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -433,7 +435,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -442,7 +444,6 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -12,13 +12,14 @@ View Source: [contracts/interfaces/ICoverReassurance.sol](../contracts/interface
 ```js
 event ReassuranceAdded(bytes32 indexed coverKey, uint256  amount);
 event WeightSet(bytes32 indexed coverKey, uint256  weight);
+event PoolCapitalized(bytes32 indexed coverKey, bytes32 indexed productKey, uint256 indexed incidentDate, uint256  amount);
 ```
 
 ## Functions
 
 - [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
-- [capitalizePool(bytes32 coverKey, uint256 incidentDate)](#capitalizepool)
+- [capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#capitalizepool)
 - [getReassurance(bytes32 coverKey)](#getreassurance)
 
 ### addReassurance
@@ -73,7 +74,7 @@ function setWeight(bytes32 coverKey, uint256 weight) external;
 ### capitalizePool
 
 ```solidity
-function capitalizePool(bytes32 coverKey, uint256 incidentDate) external nonpayable
+function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
@@ -81,13 +82,18 @@ function capitalizePool(bytes32 coverKey, uint256 incidentDate) external nonpaya
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function capitalizePool(bytes32 coverKey, uint256 incidentDate) external;
+function capitalizePool(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 ```
 </details>
 
@@ -143,6 +149,7 @@ function getReassurance(bytes32 coverKey) external view returns (uint256);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -181,7 +188,7 @@ function getReassurance(bytes32 coverKey) external view returns (uint256);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -206,6 +213,7 @@ function getReassurance(bytes32 coverKey) external view returns (uint256);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -216,7 +224,7 @@ function getReassurance(bytes32 coverKey) external view returns (uint256);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -225,7 +233,6 @@ function getReassurance(bytes32 coverKey) external view returns (uint256);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

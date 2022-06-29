@@ -44,6 +44,25 @@
         "type": "bytes32"
       }
     ],
+    "name": "countBytes32ArrayItems",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      }
+    ],
     "name": "deleteAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -120,6 +139,42 @@
       }
     ],
     "name": "deleteBytes32",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "v",
+        "type": "bytes32"
+      }
+    ],
+    "name": "deleteBytes32ArrayItem",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "i",
+        "type": "uint256"
+      }
+    ],
+    "name": "deleteBytes32ArrayItemByIndex",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -370,6 +425,73 @@
         "type": "bytes32"
       }
     ],
+    "name": "getBytes32Array",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "i",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBytes32ArrayItemByIndex",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "toFind",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getBytes32ArrayItemPosition",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      }
+    ],
     "name": "getInt",
     "outputs": [
       {
@@ -566,6 +688,24 @@
       }
     ],
     "name": "setBytes32",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "k",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "v",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setBytes32ArrayItem",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

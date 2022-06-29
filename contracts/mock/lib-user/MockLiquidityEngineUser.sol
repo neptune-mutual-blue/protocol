@@ -18,7 +18,7 @@ contract MockLiquidityEngineUser {
     s = store;
   }
 
-  function setMaxLendingRatioInternal(uint256 ratio) public {
+  function setMaxLendingRatioInternal(uint256 ratio) external {
     s.setMaxLendingRatioInternal(ratio);
   }
 }

@@ -1,10 +1,10 @@
-# NPM Distributor contract (NPMDistributor.sol)
+# Neptune Mutual Distributor contract (NpmDistributor.sol)
 
-View Source: [contracts/examples/NPMDistributor.sol](../contracts/examples/NPMDistributor.sol)
+View Source: [contracts/examples/NpmDistributor.sol](../contracts/examples/NpmDistributor.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
 
-**NPMDistributor**
+**NpmDistributor**
 
 The distributor contract enables resellers to interact with
  the Neptune Mutual protocol and offer policies to their users.
@@ -31,8 +31,7 @@ contract IStoreLike public store;
 **Events**
 
 ```js
-event PolicySold(bytes32 indexed coverKey, address indexed cxToken, address indexed account, uint256  duration, uint256  protection, bytes32  referralCode, uint256  fee, uint256  premium);
-event PolicyClaimed(bytes32 indexed coverKey, address indexed cxToken, address indexed account, uint256  incidentDate, uint256  amount, uint256  payout);
+event PolicySold(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed cxToken, address  account, uint256  duration, uint256  protection, bytes32  referralCode, uint256  fee, uint256  premium);
 event LiquidityAdded(bytes32 indexed coverKey, address indexed account, bytes32 indexed referralCode, uint256  amount, uint256  npmStake);
 event LiquidityRemoved(bytes32 indexed coverKey, address indexed account, uint256  amount, uint256  npmStake, bool  exit);
 event Drained(IERC20 indexed token, address indexed to, uint256  amount);
@@ -46,8 +45,8 @@ event Drained(IERC20 indexed token, address indexed to, uint256  amount);
 - [getPolicyContract()](#getpolicycontract)
 - [getVaultContract(bytes32 coverKey)](#getvaultcontract)
 - [getClaimsProcessorContract()](#getclaimsprocessorcontract)
-- [getPremium(bytes32 coverKey, uint256 duration, uint256 protection)](#getpremium)
-- [purchasePolicy(bytes32 coverKey, uint256 duration, uint256 protection, bytes32 referralCode)](#purchasepolicy)
+- [getPremium(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection)](#getpremium)
+- [purchasePolicy(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection, bytes32 referralCode)](#purchasepolicy)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [_drain(IERC20 token)](#_drain)
@@ -191,7 +190,7 @@ function getVaultContract(bytes32 coverKey) public view returns (IVault) {
 Returns the protocol claims processor contract instance.
 
 ```solidity
-function getClaimsProcessorContract() public view
+function getClaimsProcessorContract() external view
 returns(contract IClaimsProcessor)
 ```
 
@@ -204,7 +203,7 @@ returns(contract IClaimsProcessor)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimsProcessorContract() public view returns (IClaimsProcessor) {
+function getClaimsProcessorContract() external view returns (IClaimsProcessor) {
     return IClaimsProcessor(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_CLAIM_PROCESSOR))));
   }
 ```
@@ -215,7 +214,7 @@ function getClaimsProcessorContract() public view returns (IClaimsProcessor) {
 Calculates the premium required to purchase policy.
 
 ```solidity
-function getPremium(bytes32 coverKey, uint256 duration, uint256 protection) public view
+function getPremium(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection) public view
 returns(premium uint256, fee uint256)
 ```
 
@@ -224,6 +223,7 @@ returns(premium uint256, fee uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key for which you want to buy policy. | 
+| productKey | bytes32 |  | 
 | duration | uint256 | Enter the period of the protection in months. | 
 | protection | uint256 | Enter the stablecoin dollar amount you want to protect. | 
 
@@ -233,13 +233,14 @@ returns(premium uint256, fee uint256)
 ```javascript
 function getPremium(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 duration,
     uint256 protection
   ) public view returns (uint256 premium, uint256 fee) {
     IPolicy policy = getPolicyContract();
     require(address(policy) != address(0), "Fatal: Policy missing");
 
-    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, duration, protection);
+    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
 
     // Add your fee in addition to the protocol premium
     fee = (premium * feePercentage) / MULTIPLIER;
@@ -258,7 +259,7 @@ Purchases a new policy on behalf of your users.
  after the resolution of an incident.
 
 ```solidity
-function purchasePolicy(bytes32 coverKey, uint256 duration, uint256 protection, bytes32 referralCode) external nonpayable nonReentrant 
+function purchasePolicy(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection, bytes32 referralCode) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -266,6 +267,7 @@ function purchasePolicy(bytes32 coverKey, uint256 duration, uint256 protection, 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key for which you want to buy policy. | 
+| productKey | bytes32 |  | 
 | duration | uint256 | Enter the period of the protection in months. | 
 | protection | uint256 | Enter the stablecoin dollar amount you want to protect. | 
 | referralCode | bytes32 | Provide a referral code if applicable. | 
@@ -276,6 +278,7 @@ function purchasePolicy(bytes32 coverKey, uint256 duration, uint256 protection, 
 ```javascript
 function purchasePolicy(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 duration,
     uint256 protection,
     bytes32 referralCode
@@ -291,7 +294,7 @@ function purchasePolicy(
     require(address(dai) != address(0), "Fatal: DAI missing");
 
     // Get fee info
-    (uint256 premium, uint256 fee) = getPremium(coverKey, duration, protection);
+    (uint256 premium, uint256 fee) = getPremium(coverKey, productKey, duration, protection);
 
     // Transfer DAI to this contract
     dai.safeTransferFrom(msg.sender, address(this), premium + fee);
@@ -300,12 +303,12 @@ function purchasePolicy(
     dai.safeIncreaseAllowance(address(policy), premium);
 
     // Purchase protection for this user
-    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, duration, protection, referralCode);
+    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, productKey, duration, protection, referralCode);
 
     // Send your fee (+ any remaining DAI balance) to your treasury address
     dai.safeTransfer(treasury, dai.balanceOf(address(this)));
 
-    emit PolicySold(coverKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
+    emit PolicySold(coverKey, productKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
   }
 ```
 </details>
@@ -509,6 +512,7 @@ function getAddress(bytes32 k) external view returns (address);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -547,7 +551,7 @@ function getAddress(bytes32 k) external view returns (address);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -572,6 +576,7 @@ function getAddress(bytes32 k) external view returns (address);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -582,7 +587,7 @@ function getAddress(bytes32 k) external view returns (address);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -591,7 +596,6 @@ function getAddress(bytes32 k) external view returns (address);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

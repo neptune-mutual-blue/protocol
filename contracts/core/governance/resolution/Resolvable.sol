@@ -7,12 +7,11 @@ import "../../../interfaces/IResolvable.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 /**
- * @title Neptune Mutual Governance: Resolvable Contract
+ * @title Resolvable Contract
  * @dev Enables governance agents to resolve a contract undergoing reporting.
- * Provides a cool-down period of 24-hours during when governance admins
+ * Has a cool-down period of 24-hours (or as overridden) during when governance admins
  * can perform emergency resolution to defend against governance attacks.
  */
-
 abstract contract Resolvable is Finalization, IResolvable {
   using GovernanceUtilV1 for IStore;
   using ProtoUtilV1 for IStore;
@@ -21,25 +20,64 @@ abstract contract Resolvable is Finalization, IResolvable {
   using RoutineInvokerLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
-  using NTransferUtilV2 for IERC20;
 
-  function resolve(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  /**
+   * @dev Marks as a cover as "resolved" after the reporting period.
+   * A resolution has a (configurable) 24-hour cooldown period
+   * that enables governance admins to revese decision in case of
+   * attack or mistake.
+   *
+   * Note:
+   * An incident can be resolved:
+   *
+   * - by a governance agent
+   * - if it was reported
+   * - after the reporting period
+   * - if it wasn't resolved earlier
+   *
+   * @param coverKey Enter the cover key you want to resolve
+   * @param productKey Enter the product key you want to resolve
+   * @param incidentDate Enter the date of this incident reporting
+   */
+  function resolve(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAgent(s);
-    s.mustBeReportingOrDisputed(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterReportingPeriod(coverKey);
-    s.mustNotHaveResolutionDeadline(coverKey);
 
-    bool decision = s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.IncidentHappened;
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeReportingOrDisputed(coverKey, productKey);
+    s.mustBeAfterReportingPeriod(coverKey, productKey);
+    s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    _resolve(coverKey, incidentDate, decision, false);
+    bool decision = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.IncidentHappened;
+
+    _resolve(coverKey, productKey, incidentDate, decision, false);
   }
 
+  /**
+   * @dev Enables governance admins to perform emergency resolution.
+   *
+   * Note:
+   * An incident can undergo an emergency resolution:
+   *
+   * - by a governance admin
+   * - if it was reported
+   * - after the reporting period
+   * - before the resolution deadline
+   *
+   * @param coverKey Enter the cover key on which you want to perform emergency resolve
+   * @param productKey Enter the product key on which you want to perform emergency resolve
+   * @param incidentDate Enter the date of this incident reporting
+   */
   function emergencyResolve(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     bool decision
   ) external override nonReentrant {
@@ -47,15 +85,17 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterReportingPeriod(coverKey);
-    s.mustBeBeforeResolutionDeadline(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterReportingPeriod(coverKey, productKey);
+    s.mustBeBeforeResolutionDeadline(coverKey, productKey);
 
-    _resolve(coverKey, incidentDate, decision, true);
+    _resolve(coverKey, productKey, incidentDate, decision, true);
   }
 
   function _resolve(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     bool decision,
     bool emergency
@@ -68,7 +108,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     // to perform emergency resolution.
     // After this timestamp, the cover has to be claimable
     // or finalized
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
 
     // A cover, when being resolved, will either directly go to finalization or have a claim period.
     //
@@ -87,17 +127,17 @@ abstract contract Resolvable is Finalization, IResolvable {
     //    who staked for `Incident Happened` camp can withdraw the original stake + reward.
     // 4. After finalization, the NPM holders who staked for this camp will only be able to receive
     // back the original stake. No rewards.
-    CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
+    CoverUtilV1.ProductStatus status = decision ? CoverUtilV1.ProductStatus.Claimable : CoverUtilV1.ProductStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
-    s.setStatusInternal(coverKey, incidentDate, status);
+    s.setStatusInternal(coverKey, productKey, incidentDate, status);
 
     if (deadline == 0) {
       // Deadline can't be before claim begin date.
       // In other words, once a cover becomes claimable, emergency resolution
       // can not be performed any longer
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
-      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, deadline);
+      s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, deadline);
     }
 
     // Claim begins when deadline timestamp is passed
@@ -106,14 +146,21 @@ abstract contract Resolvable is Finalization, IResolvable {
     // Claim expires after the period specified by the cover creator.
     uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
 
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, claimBeginsFrom);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, claimExpiresAt);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey, claimBeginsFrom);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey, claimExpiresAt);
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Resolved(coverKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
+    emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }
 
+  /**
+   * @dev Allows a governance admin to add or update resolution cooldown period for a given cover.
+   *
+   * @param coverKey Provide a coverKey or leave it empty. If empty, the cooldown period is set as
+   * fallback value. Covers that do not have customized cooldown period will infer to the fallback value.
+   * @param period Enter the cooldown period duration
+   */
   function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeGovernanceAdmin(s);
@@ -129,11 +176,17 @@ abstract contract Resolvable is Finalization, IResolvable {
     emit CooldownPeriodConfigured(coverKey, period);
   }
 
+  /**
+   * @dev Gets the cooldown period of a given cover
+   */
   function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoolDownPeriodInternal(coverKey);
   }
 
-  function getResolutionDeadline(bytes32 coverKey) external view override returns (uint256) {
-    return s.getResolutionDeadlineInternal(coverKey);
+  /**
+   * @dev Gets the resolution deadline of a given cover
+   */
+  function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getResolutionDeadlineInternal(coverKey, productKey);
   }
 }

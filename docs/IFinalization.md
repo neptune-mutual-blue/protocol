@@ -9,17 +9,17 @@ View Source: [contracts/interfaces/IFinalization.sol](../contracts/interfaces/IF
 **Events**
 
 ```js
-event Finalized(bytes32 indexed coverKey, address indexed finalizer, uint256 indexed incidentDate);
+event Finalized(bytes32 indexed coverKey, bytes32 indexed productKey, address  finalizer, uint256 indexed incidentDate);
 ```
 
 ## Functions
 
-- [finalize(bytes32 coverKey, uint256 incidentDate)](#finalize)
+- [finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#finalize)
 
 ### finalize
 
 ```solidity
-function finalize(bytes32 coverKey, uint256 incidentDate) external nonpayable
+function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
 ```
 
 **Arguments**
@@ -27,13 +27,18 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function finalize(bytes32 coverKey, uint256 incidentDate) external;
+function finalize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 ```
 </details>
 
@@ -66,6 +71,7 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external;
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -104,7 +110,7 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external;
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -129,6 +135,7 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external;
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -139,7 +146,7 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external;
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -148,7 +155,6 @@ function finalize(bytes32 coverKey, uint256 incidentDate) external;
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

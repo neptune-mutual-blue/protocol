@@ -4,8 +4,11 @@ const BigNumber = require('bignumber.js')
 const { helper, deployer, key } = require('../../../util')
 const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
+const cxTokenUtil = require('../../../util/cxToken')
+
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -24,6 +27,7 @@ describe('Policy: purchaseCover', () => {
       BaseLibV1: deployed.baseLibV1.address,
       CoverUtilV1: deployed.coverUtilV1.address,
       PolicyHelperV1: deployed.policyHelperV1.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address, '0')
@@ -31,9 +35,9 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -41,9 +45,10 @@ describe('Policy: purchaseCover', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
+    const leverage = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
 
     const info = key.toBytes32('info')
 
@@ -52,8 +57,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     deployed.vault = await composer.vault.getVault({
       store: deployed.store,
@@ -75,15 +79,38 @@ describe('Policy: purchaseCover', () => {
   it('must succeed without any errors', async () => {
     const [owner] = await ethers.getSigners()
 
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
 
-    const commitment = await deployed.policy.getCommitment(coverKey)
-    commitment.should.equal(amount)
+    const tx = await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'CoverPurchased')
+
+    const cxToken = await cxTokenUtil.atAddress(event.args.cxToken, deployed)
+
+    const cxTokenBalance = await cxToken.balanceOf(owner.address)
+    cxTokenBalance.should.equal(helper.ether(500_000))
+
+    const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
+    commitment.should.equal(helper.ether(500_000, PRECISION))
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
-    available.should.be.gt(commitment)
+    available.should.be.gt(amount)
+  })
+
+  it('reverts when policy is disabled', async () => {
+    const [owner] = await ethers.getSigners()
+
+    const amount = helper.ether(500_000, PRECISION)
+    await deployed.dai.approve(deployed.policy.address, amount)
+
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, true, 'reason: testing')
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+      .should.be.rejectedWith('Policy purchase disabled')
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, false, 'reason: testing')
+
+    // Can purchase after re-enabled
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
   })
 
   it('must revert if zero is sent as the amount to cover', async () => {
@@ -91,7 +118,7 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', '0', key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', '0', key.toBytes32(''))
       .should.be.rejectedWith('Please specify amount')
   })
 
@@ -100,10 +127,10 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '0', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '0', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, '5', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '5', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Invalid cover duration')
   })
 
@@ -113,7 +140,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.pause()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
@@ -124,10 +151,10 @@ describe('Policy: purchaseCover', () => {
 
     const info = key.toBytes32('info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
-    await deployed.governance.report(coverKey, info, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
       .should.be.rejectedWith('Status not normal')
   })
 })
@@ -144,6 +171,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
       BaseLibV1: deployed.baseLibV1.address,
       CoverUtilV1: deployed.coverUtilV1.address,
       PolicyHelperV1: deployed.policyHelperV1.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address, '0')
@@ -152,8 +180,8 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
@@ -161,9 +189,10 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
+    const leverage = '1'
 
     const requiresWhitelist = true
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
 
     const info = key.toBytes32('info')
 
@@ -172,8 +201,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     deployed.vault = await composer.vault.getVault({
       store: deployed.store,
@@ -194,28 +222,28 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
   it('must succeed without any errors', async () => {
     const [owner] = await ethers.getSigners()
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
 
-    await deployed.cover.updateCoverUsersWhitelist(coverKey, [owner.address], [true])
+    await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
 
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
 
-    const commitment = await deployed.policy.getCommitment(coverKey)
+    const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal(amount)
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
-    available.should.be.gt(commitment)
+    available.should.be.gt(amount)
   })
 
   it('when accessed by a user who is not whitelisted', async () => {
     const [, bob] = await ethers.getSigners()
-    const amount = helper.ether(500_000)
+    const amount = helper.ether(500_000, PRECISION)
 
     await deployed.npm.transfer(bob.address, amount)
 
     await deployed.dai.connect(bob).approve(deployed.policy.address, amount)
-    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, '1', amount, key.toBytes32(''))
+    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
       .should.be.rejectedWith('You are not whitelisted')
   })
 })

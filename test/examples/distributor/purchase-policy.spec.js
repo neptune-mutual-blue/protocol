@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, helper, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -26,13 +27,13 @@ describe('Distributor: `purchasePolicy` function', () => {
     const [owner] = await ethers.getSigners()
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
-    const [premium, fee] = await distributor.getPremium(coverKey, duration, protection)
+    const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
 
     await deployed.dai.approve(distributor.address, premium.add(fee))
-    const tx = await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    const tx = await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PolicySold')
@@ -50,23 +51,23 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if an invalid cover key is specified', async () => {
     const coverKey = key.toBytes32('')
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid key')
   })
 
   it('must reject if an invalid duration is provided', async () => {
     const coverKey = deployed.coverKey
     const duration = '10'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid duration')
   })
 
@@ -77,14 +78,14 @@ describe('Distributor: `purchasePolicy` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Invalid protection amount')
   })
 
   it('must reject if an policy contract was not found', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
@@ -92,7 +93,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const storeKey = key.qualifyBytes32(key.toBytes32('cns:cover:policy'))
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)
@@ -101,7 +102,7 @@ describe('Distributor: `purchasePolicy` function', () => {
   it('must reject if DAI address is not registered on the protocol', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
@@ -109,7 +110,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const storeKey = key.toBytes32('cns:cover:sc')
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.purchasePolicy(coverKey, duration, protection, referralCode)
+    await distributor.purchasePolicy(coverKey, helper.emptyBytes32, duration, protection, referralCode)
       .should.be.rejectedWith('Fatal: DAI missing')
 
     await deployed.store.setAddress(storeKey, deployed.dai.address)

@@ -1,6 +1,6 @@
 const moment = require('moment')
 const BigNumber = require('bignumber.js')
-const { deployer, key } = require('../../../util')
+const { deployer, key, helper } = require('../../../util')
 const { deployDependencies } = require('./deps')
 
 const cache = null
@@ -52,9 +52,9 @@ describe('Claims Processor: `getClaimExpiryDate` function', () => {
 
     const coverKey = key.toBytes32('test')
 
-    await store.initialize(coverKey, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
 
-    const date = await processor.getClaimExpiryDate(coverKey)
+    const date = await processor.getClaimExpiryDate(coverKey, helper.emptyBytes32)
 
     date.toNumber().should.be.greaterThan(startedOn.add(100, 'd').unix())
     date.toNumber().should.be.lessThan(startedOn.add(101, 'd').unix())

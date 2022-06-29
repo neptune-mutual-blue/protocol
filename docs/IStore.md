@@ -20,6 +20,7 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 - [setInt(bytes32 k, int256 v)](#setint)
 - [setBytes32(bytes32 k, bytes32 v)](#setbytes32)
 - [setAddressArrayItem(bytes32 k, address v)](#setaddressarrayitem)
+- [setBytes32ArrayItem(bytes32 k, bytes32 v)](#setbytes32arrayitem)
 - [deleteAddress(bytes32 k)](#deleteaddress)
 - [deleteUint(bytes32 k)](#deleteuint)
 - [deleteUints(bytes32 k)](#deleteuints)
@@ -29,7 +30,9 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 - [deleteInt(bytes32 k)](#deleteint)
 - [deleteBytes32(bytes32 k)](#deletebytes32)
 - [deleteAddressArrayItem(bytes32 k, address v)](#deleteaddressarrayitem)
+- [deleteBytes32ArrayItem(bytes32 k, bytes32 v)](#deletebytes32arrayitem)
 - [deleteAddressArrayItemByIndex(bytes32 k, uint256 i)](#deleteaddressarrayitembyindex)
+- [deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#deletebytes32arrayitembyindex)
 - [getAddressValues(bytes32[] keys)](#getaddressvalues)
 - [getAddress(bytes32 k)](#getaddress)
 - [getAddressBoolean(bytes32 k, address a)](#getaddressboolean)
@@ -42,9 +45,13 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 - [getInt(bytes32 k)](#getint)
 - [getBytes32(bytes32 k)](#getbytes32)
 - [countAddressArrayItems(bytes32 k)](#countaddressarrayitems)
+- [countBytes32ArrayItems(bytes32 k)](#countbytes32arrayitems)
 - [getAddressArray(bytes32 k)](#getaddressarray)
+- [getBytes32Array(bytes32 k)](#getbytes32array)
 - [getAddressArrayItemPosition(bytes32 k, address toFind)](#getaddressarrayitemposition)
+- [getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind)](#getbytes32arrayitemposition)
 - [getAddressArrayItemByIndex(bytes32 k, uint256 i)](#getaddressarrayitembyindex)
+- [getBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#getbytes32arrayitembyindex)
 
 ### setAddress
 
@@ -173,7 +180,7 @@ function setUints(bytes32 k, uint256[] v) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setUints(bytes32 k, uint256[] memory v) external;
+function setUints(bytes32 k, uint256[] calldata v) external;
 ```
 </details>
 
@@ -300,6 +307,27 @@ function setAddressArrayItem(bytes32 k, address v) external nonpayable
 
 ```javascript
 function setAddressArrayItem(bytes32 k, address v) external;
+```
+</details>
+
+### setBytes32ArrayItem
+
+```solidity
+function setBytes32ArrayItem(bytes32 k, bytes32 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBytes32ArrayItem(bytes32 k, bytes32 v) external;
 ```
 </details>
 
@@ -484,6 +512,27 @@ function deleteAddressArrayItem(bytes32 k, address v) external;
 ```
 </details>
 
+### deleteBytes32ArrayItem
+
+```solidity
+function deleteBytes32ArrayItem(bytes32 k, bytes32 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayItem(bytes32 k, bytes32 v) external;
+```
+</details>
+
 ### deleteAddressArrayItemByIndex
 
 ```solidity
@@ -505,6 +554,27 @@ function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external;
 ```
 </details>
 
+### deleteBytes32ArrayItemByIndex
+
+```solidity
+function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| i | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external;
+```
+</details>
+
 ### getAddressValues
 
 ```solidity
@@ -522,7 +592,7 @@ returns(values address[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAddressValues(bytes32[] memory keys) external view returns (address[] memory values);
+function getAddressValues(bytes32[] calldata keys) external view returns (address[] memory values);
 ```
 </details>
 
@@ -586,7 +656,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getUintValues(bytes32[] memory keys) external view returns (uint256[] memory values);
+function getUintValues(bytes32[] calldata keys) external view returns (uint256[] memory values);
 ```
 </details>
 
@@ -758,6 +828,27 @@ function countAddressArrayItems(bytes32 k) external view returns (uint256);
 ```
 </details>
 
+### countBytes32ArrayItems
+
+```solidity
+function countBytes32ArrayItems(bytes32 k) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countBytes32ArrayItems(bytes32 k) external view returns (uint256);
+```
+</details>
+
 ### getAddressArray
 
 ```solidity
@@ -776,6 +867,27 @@ returns(address[])
 
 ```javascript
 function getAddressArray(bytes32 k) external view returns (address[] memory);
+```
+</details>
+
+### getBytes32Array
+
+```solidity
+function getBytes32Array(bytes32 k) external view
+returns(bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32Array(bytes32 k) external view returns (bytes32[] memory);
 ```
 </details>
 
@@ -801,6 +913,28 @@ function getAddressArrayItemPosition(bytes32 k, address toFind) external view re
 ```
 </details>
 
+### getBytes32ArrayItemPosition
+
+```solidity
+function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| toFind | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view returns (uint256);
+```
+</details>
+
 ### getAddressArrayItemByIndex
 
 ```solidity
@@ -820,6 +954,28 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns (address);
+```
+</details>
+
+### getBytes32ArrayItemByIndex
+
+```solidity
+function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| i | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view returns (bytes32);
 ```
 </details>
 
@@ -852,6 +1008,7 @@ function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -890,7 +1047,7 @@ function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -915,6 +1072,7 @@ function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -925,7 +1083,7 @@ function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -934,7 +1092,6 @@ function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

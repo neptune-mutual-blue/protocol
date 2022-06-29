@@ -8,7 +8,7 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 
 ## Functions
 
-- [constructor(IStore store, bytes32 coverKey, IERC20 liquidityToken)](#)
+- [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken)](#)
 - [getInfo(address you)](#getinfo)
 - [version()](#version)
 - [getName()](#getname)
@@ -16,7 +16,7 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 ### 
 
 ```solidity
-function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayable VaultBase 
+function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken) public nonpayable VaultBase 
 ```
 
 **Arguments**
@@ -25,6 +25,8 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayab
 | ------------- |------------- | -----|
 | store | IStore |  | 
 | coverKey | bytes32 |  | 
+| tokenName | string |  | 
+| tokenSymbol | string |  | 
 | liquidityToken | IERC20 |  | 
 
 <details>
@@ -34,8 +36,10 @@ function (IStore store, bytes32 coverKey, IERC20 liquidityToken) public nonpayab
 constructor(
     IStore store,
     bytes32 coverKey,
+    string memory tokenName,
+    string memory tokenSymbol,
     IERC20 liquidityToken
-  ) VaultBase(store, coverKey, liquidityToken) {}
+  ) VaultBase(store, coverKey, tokenName, tokenSymbol, liquidityToken) {}
 ```
 </details>
 
@@ -137,6 +141,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -175,7 +180,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -200,6 +205,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -210,7 +216,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -219,7 +225,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

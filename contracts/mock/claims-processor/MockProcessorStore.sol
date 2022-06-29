@@ -10,7 +10,8 @@ import "../../fakes/FakePriceOracle.sol";
 library MockProcessorStoreLib {
   function initialize(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     address cxToken
   ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
@@ -23,14 +24,14 @@ library MockProcessorStoreLib {
 
     s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
     s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
-    s.setUint(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, key, 1234);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey)), 1234);
 
     s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
-    s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", key, address(vault));
+    s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", coverKey, address(vault));
 
-    setCoverStatus(s, key, 4);
-    setClaimBeginTimestamp(s, key, block.timestamp - 100 days); // solhint-disable-line
-    setClaimExpiryTimestamp(s, key, block.timestamp + 100 days); // solhint-disable-line
+    setProductStatus(s, coverKey, productKey, 4);
+    setClaimBeginTimestamp(s, coverKey, productKey, block.timestamp - 100 days); // solhint-disable-line
+    setClaimExpiryTimestamp(s, coverKey, productKey, block.timestamp + 100 days); // solhint-disable-line
 
     values = new address[](2);
 
@@ -42,49 +43,68 @@ library MockProcessorStoreLib {
     s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
   }
 
-  function setCoverStatus(
+  function setProductStatus(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_COVER_STATUS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey)), value);
   }
 
   function setClaimBeginTimestamp(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_CLAIM_BEGIN_TS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey)), value);
   }
 
   function setClaimExpiryTimestamp(
     MockStore s,
-    bytes32 key,
+    bytes32 coverKey,
+    bytes32 productKey,
     uint256 value
   ) public {
-    s.setUint(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, key, value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey)), value);
   }
 }
 
 contract MockProcessorStore is MockStore {
-  function initialize(bytes32 key, address cxToken) external returns (address[] memory values) {
-    return MockProcessorStoreLib.initialize(this, key, cxToken);
+  function initialize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address cxToken
+  ) external returns (address[] memory values) {
+    return MockProcessorStoreLib.initialize(this, coverKey, productKey, cxToken);
   }
 
   function disassociateCxToken(address cxToken) external {
     MockProcessorStoreLib.disassociateCxToken(this, cxToken);
   }
 
-  function setCoverStatus(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setCoverStatus(this, key, value);
+  function setProductStatus(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setProductStatus(this, coverKey, productKey, value);
   }
 
-  function setClaimBeginTimestamp(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setClaimBeginTimestamp(this, key, value);
+  function setClaimBeginTimestamp(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setClaimBeginTimestamp(this, coverKey, productKey, value);
   }
 
-  function setClaimExpiryTimestamp(bytes32 key, uint256 value) external {
-    MockProcessorStoreLib.setClaimExpiryTimestamp(this, key, value);
+  function setClaimExpiryTimestamp(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 value
+  ) external {
+    MockProcessorStoreLib.setClaimExpiryTimestamp(this, coverKey, productKey, value);
   }
 }

@@ -6,6 +6,7 @@ import "./IMember.sol";
 interface ICoverReassurance is IMember {
   event ReassuranceAdded(bytes32 indexed coverKey, uint256 amount);
   event WeightSet(bytes32 indexed coverKey, uint256 weight);
+  event PoolCapitalized(bytes32 indexed coverKey, bytes32 indexed productKey, uint256 indexed incidentDate, uint256 amount);
 
   /**
    * @dev Adds reassurance to the specified cover contract
@@ -20,7 +21,11 @@ interface ICoverReassurance is IMember {
 
   function setWeight(bytes32 coverKey, uint256 weight) external;
 
-  function capitalizePool(bytes32 coverKey, uint256 incidentDate) external;
+  function capitalizePool(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
 
   /**
    * @dev Gets the reassurance amount of the specified cover contract

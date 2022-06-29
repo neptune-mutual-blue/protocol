@@ -5,20 +5,15 @@ pragma solidity 0.8.0;
 import "./VaultDelegateBase.sol";
 
 /**
- * @title With Flash Loan Contract
- * @dev WithFlashLoan contract implements `EIP-3156 Flash Loan`.
- * Using flash loans, you can borrow up to the total available amount of
- * the stablecoin liquidity available in this cover liquidity pool.
- * You need to return back the borrowed amount + fee in the same transaction.
- * The function `flashFee` enables you to check, in advance, fee that
- * you need to pay to take out the loan.
+ * @title With Flash Loan Delegate Contract
+ *
+ * @dev VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
  */
 abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using VaultLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
   using RoutineInvokerLibV1 for IStore;
 
   /**
@@ -51,6 +46,18 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     return s.getMaxFlashLoanInternal(coverKey, token);
   }
 
+  /**
+   * @dev This hook runs before `flashLoan` implementation on vault(s)
+   *
+   * Note:
+   *
+   * - msg.sender must be the correct vault contract
+   * - Cover status should be normal
+   *
+   * @param coverKey Enter the cover key
+   * @param token Enter the token you want to borrow
+   * @param amount Enter the flash loan amount to receive
+   */
   function preFlashLoan(
     address, /*caller*/
     bytes32 coverKey,
@@ -67,8 +74,10 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
       uint256 protocolFee
     )
   {
+    // @suppress-acl This function is only accessible to the vault contract
+    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.senderMustBeVaultContract(coverKey);
 
     stablecoin = IERC20(s.getStablecoin());
@@ -84,6 +93,16 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     require(protocolFee > 0, "Loan too small");
   }
 
+  /**
+   * @dev This hook runs after `flashLoan` implementation on vault(s)
+   *
+   * Note:
+   *
+   * - msg.sender must be the correct vault contract
+   * - Cover status should be normal
+   *
+   * @param coverKey Enter the cover key
+   */
   function postFlashLoan(
     address, /*caller*/
     bytes32 coverKey,
@@ -92,7 +111,11 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     uint256, /*amount*/
     bytes calldata /*data*/
   ) external override {
+    // @suppress-acl This function is only accessible to the vault contract
+    // @suppress-zero-value-check The `amount` value isn't used and therefore not checked
+    s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
     s.updateStateAndLiquidity(coverKey);

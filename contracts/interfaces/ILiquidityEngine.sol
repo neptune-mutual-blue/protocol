@@ -13,7 +13,7 @@ interface ILiquidityEngine is IMember {
   event LiquidityStateUpdateIntervalSet(uint256 duration);
   event MaxLendingRatioSet(uint256 ratio);
 
-  function addStrategies(address[] memory strategies) external;
+  function addStrategies(address[] calldata strategies) external;
 
   function disableStrategy(address strategy) external;
 
@@ -24,8 +24,6 @@ interface ILiquidityEngine is IMember {
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external;
-
-  function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
 
   function getLendingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
 

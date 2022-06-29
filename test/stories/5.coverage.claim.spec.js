@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const { ethers, network } = require('hardhat')
 const composer = require('../../util/composer')
 const { helper, cxToken, key, ipfs, sample } = require('../../util')
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -36,7 +37,7 @@ const coverKey = key.toBytes32('Compound Finance Cover')
 let contracts = {}
 
 describe('Coverage Claim Stories', function () {
-  this.timeout(30000)
+  this.timeout(40000)
 
   before(async () => {
     contracts = await composer.initializer.initialize(true)
@@ -44,11 +45,9 @@ describe('Coverage Claim Stories', function () {
 
     const info = await ipfs.write(sample.info)
 
-    // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
-
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
-    const initialLiquidity = helper.ether(4_000_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
     const cooldownPeriod = 1 * constants.DAYS
@@ -68,9 +67,9 @@ describe('Coverage Claim Stories', function () {
 
     // Create a new cover
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
-    await contracts.cover.addCover(coverKey, info, contracts.reassuranceToken.address, requiresWhitelist, values)
-    await contracts.cover.deployVault(coverKey)
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
+
+    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)
@@ -79,66 +78,55 @@ describe('Coverage Claim Stories', function () {
     await contracts.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
+    // Create Approvals
+    await contracts.dai.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.dai.connect(alice).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.dai.connect(bob).approve(contracts.policy.address, ethers.constants.MaxUint256)
+
     // Attacker purchases a cover
-    let args = [attacker.address, coverKey, 2, helper.ether(constants.coverAmounts.attacker)]
-    let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
+    let args = [attacker.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.attacker, PRECISION)]
+      ; (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken.should.equal(helper.zerox)
 
-      ; (await contracts.policy.getCxToken(args[1], args[2])).cxToken.should.equal(helper.zerox)
-
-    await contracts.dai.connect(attacker).approve(contracts.policy.address, fee)
     await contracts.policy.connect(attacker).purchaseCover(...args, key.toBytes32(''))
 
-    let at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
+    let at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.attacker = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Alice purchases a cover
-    args = [alice.address, coverKey, 2, helper.ether(constants.coverAmounts.alice)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
-
-    await contracts.dai.connect(alice).approve(contracts.policy.address, fee)
+    args = [alice.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.alice, PRECISION)]
     await contracts.policy.connect(alice).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.alice = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Bob purchases a cover #1 (Valid)
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.bob = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     // Bob purchases a cover #2 (Invalid)
 
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.bob = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [12 * constants.HOURS])
 
     // Bob purchases a cover #3 (Invalid)
-
-    args = [bob.address, coverKey, 3, helper.ether(constants.coverAmounts.bob)]
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3])).fee
-
-    await contracts.dai.connect(bob).approve(contracts.policy.address, fee)
+    args = [bob.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.bob, PRECISION)]
     await contracts.policy.connect(bob).purchaseCover(...args, key.toBytes32(''))
 
-    at = (await contracts.policy.getCxToken(args[1], args[2])).cxToken
+    at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.bob = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
@@ -149,15 +137,15 @@ describe('Coverage Claim Stories', function () {
 
     const info = await ipfs.write(constants.reportInfo)
     await contracts.npm.approve(contracts.governance.address, helper.ether(100_000))
-    await contracts.governance.report(coverKey, info, helper.ether(100_000))
+    await contracts.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(100_000))
 
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
     await network.provider.send('evm_increaseTime', [7 * constants.DAYS])
 
-    await contracts.resolution.resolve(coverKey, incidentDate)
+    await contracts.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
   })
@@ -168,28 +156,28 @@ describe('Coverage Claim Stories', function () {
     const balance = await constants.cxTokens.alice.balanceOf(alice.address)
     constants.cxTokens.alice.connect(alice).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
     const before = await contracts.dai.balanceOf(alice.address)
 
-    await contracts.claimsProcessor.connect(alice).claim(constants.cxTokens.alice.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(alice).claim(constants.cxTokens.alice.address, coverKey, helper.emptyBytes32, incidentDate, balance)
     const after = await contracts.dai.balanceOf(alice.address)
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 
-    after.sub(before).toString().should.equal(helper.ether(constants.coverAmounts.alice * 0.935)) // 6.5% is platform fee
+    after.sub(before).toString().should.equal(helper.ether(constants.coverAmounts.alice * 0.935, PRECISION)) // 6.5% is platform fee
   })
 
-  it('bob\'s payout was refused becuase of coverage lag', async () => {
+  it('bob\'s payout was refused because of coverage lag', async () => {
     const [, ,, bob] = await ethers.getSigners()
 
     const balance = await constants.cxTokens.bob.balanceOf(bob.address)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, helper.emptyBytes32, incidentDate, balance)
       .should.be.rejectedWith('Claim exceeds your coverage')
   })
 
@@ -199,16 +187,16 @@ describe('Coverage Claim Stories', function () {
     const claimAmount = helper.ether(100)
     constants.cxTokens.bob.connect(bob).approve(contracts.claimsProcessor.address, claimAmount)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, incidentDate, claimAmount)
+    await contracts.claimsProcessor.connect(bob).claim(constants.cxTokens.bob.address, coverKey, helper.emptyBytes32, incidentDate, claimAmount)
   })
 
   it('the attacker was blacklisted', async () => {
     const [, attacker] = await ethers.getSigners()
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.setBlacklist(coverKey, incidentDate, [attacker.address], [true])
+    await contracts.claimsProcessor.setBlacklist(coverKey, helper.emptyBytes32, incidentDate, [attacker.address], [true])
   })
 
   it('the attacker was unable to claim their coverage', async () => {
@@ -217,9 +205,9 @@ describe('Coverage Claim Stories', function () {
     const balance = await constants.cxTokens.bob.balanceOf(attacker.address)
     constants.cxTokens.attacker.connect(attacker).approve(contracts.claimsProcessor.address, balance)
 
-    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey)
+    const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.claimsProcessor.connect(attacker).claim(constants.cxTokens.attacker.address, coverKey, incidentDate, balance)
+    await contracts.claimsProcessor.connect(attacker).claim(constants.cxTokens.attacker.address, coverKey, helper.emptyBytes32, incidentDate, balance)
       .should.be.rejectedWith('Access denied')
   })
 })

@@ -16,7 +16,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
 
   constructor(IStore s) Recoverable(s) {} // solhint-disable-line
 
-  function addStrategies(address[] memory strategies) external override nonReentrant {
+  function addStrategies(address[] calldata strategies) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -24,6 +24,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
   }
 
   function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+    require(value > 0, "Invalid value");
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -63,15 +64,6 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
-  }
-
-  function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    require(withdrawalWindow > 0, "Please specify withdrawal window");
-
-    s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }
 
   function setMaxLendingRatio(uint256 ratio) external override nonReentrant {

@@ -30,12 +30,16 @@ contract VaultFactory is IVaultFactory, Recoverable {
    * @dev Deploys a new instance of Vault
    * @param coverKey Enter the cover key related to this Vault instance
    */
-  function deploy(bytes32 coverKey) external override nonReentrant returns (address addr) {
+  function deploy(
+    bytes32 coverKey,
+    string calldata tokenName,
+    string calldata tokenSymbol
+  ) external override nonReentrant returns (address addr) {
+    // @suppress-acl This function is only accessilbe to the cover contract
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, s.getStablecoin());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, tokenName, tokenSymbol, s.getStablecoin());
 
     // solhint-disable-next-line
     assembly {

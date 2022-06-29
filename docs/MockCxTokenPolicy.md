@@ -15,7 +15,7 @@ contract ICxToken public cxToken;
 ## Functions
 
 - [constructor(ICxToken _cxToken)](#)
-- [callMint(bytes32 key, address to, uint256 amount)](#callmint)
+- [callMint(bytes32 key, bytes32 productKey, address to, uint256 amount)](#callmint)
 
 ### 
 
@@ -42,7 +42,7 @@ constructor(ICxToken _cxToken) {
 ### callMint
 
 ```solidity
-function callMint(bytes32 key, address to, uint256 amount) external nonpayable
+function callMint(bytes32 key, bytes32 productKey, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -50,6 +50,7 @@ function callMint(bytes32 key, address to, uint256 amount) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | key | bytes32 |  | 
+| productKey | bytes32 |  | 
 | to | address |  | 
 | amount | uint256 |  | 
 
@@ -59,10 +60,11 @@ function callMint(bytes32 key, address to, uint256 amount) external nonpayable
 ```javascript
 function callMint(
     bytes32 key,
+    bytes32 productKey,
     address to,
     uint256 amount
   ) external {
-    cxToken.mint(key, to, amount);
+    cxToken.mint(key, productKey, to, amount);
   }
 ```
 </details>
@@ -96,6 +98,7 @@ function callMint(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -134,7 +137,7 @@ function callMint(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -159,6 +162,7 @@ function callMint(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -169,7 +173,7 @@ function callMint(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -178,7 +182,6 @@ function callMint(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

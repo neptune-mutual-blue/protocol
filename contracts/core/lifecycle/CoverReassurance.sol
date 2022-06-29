@@ -49,13 +49,14 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     require(amount > 0, "Provide valid amount");
 
     // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
-    IERC20 reassuranceToken = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
+    s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
-    reassuranceToken.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(account, address(this), amount);
 
-    s.updateStateAndLiquidity(coverKey);
+    // Do not update state during cover creation
+    // s.updateStateAndLiquidity(coverKey);
 
     emit ReassuranceAdded(coverKey, amount);
   }
@@ -65,36 +66,42 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
     AccessControlLibV1.mustBeLiquidityManager(s);
     s.mustBeValidCoverKey(coverKey);
 
-    require(weight > 0, "Please specify weight");
+    require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
+    s.setUintByKey(CoverUtilV1.getReassuranceWeightKey(coverKey), weight);
 
     s.updateStateAndLiquidity(coverKey);
 
     emit WeightSet(coverKey, weight);
   }
 
-  function capitalizePool(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
+  function capitalizePool(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
-
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterResolutionDeadline(coverKey);
-    s.mustBeClaimable(coverKey);
-    s.mustBeAfterClaimExpiry(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeAfterResolutionDeadline(coverKey, productKey);
+    s.mustBeClaimable(coverKey, productKey);
+    s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     IVault vault = s.getVault(coverKey);
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
 
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
-    s.addReassurancePayoutInternal(coverKey, incidentDate, toTransfer);
+    s.subtractUintByKey(CoverUtilV1.getReassuranceKey(coverKey), toTransfer);
+    s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
+
+    emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);
   }
 
   /**

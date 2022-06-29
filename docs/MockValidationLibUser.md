@@ -19,7 +19,8 @@ contract IStore public s;
 - [senderMustBeGovernanceContract()](#sendermustbegovernancecontract)
 - [senderMustBeClaimsProcessorContract()](#sendermustbeclaimsprocessorcontract)
 - [senderMustBeStrategyContract()](#sendermustbestrategycontract)
-- [mustBeDisputed(bytes32 coverKey)](#mustbedisputed)
+- [mustBeDisputed(bytes32 coverKey, bytes32 productKey)](#mustbedisputed)
+- [mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey)](#musthavenormalcoverproductstatus)
 
 ### 
 
@@ -130,7 +131,7 @@ function senderMustBeStrategyContract() external view {
 ### mustBeDisputed
 
 ```solidity
-function mustBeDisputed(bytes32 coverKey) external view
+function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -138,13 +139,37 @@ function mustBeDisputed(bytes32 coverKey) external view
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeDisputed(bytes32 coverKey) external view {
-    s.mustBeDisputed(coverKey);
+function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustBeDisputed(coverKey, productKey);
+  }
+```
+</details>
+
+### mustHaveNormalCoverProductStatus
+
+```solidity
+function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustHaveNormalCoverProductStatus(coverKey, productKey);
   }
 ```
 </details>
@@ -178,6 +203,7 @@ function mustBeDisputed(bytes32 coverKey) external view {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -216,7 +242,7 @@ function mustBeDisputed(bytes32 coverKey) external view {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -241,6 +267,7 @@ function mustBeDisputed(bytes32 coverKey) external view {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -251,7 +278,7 @@ function mustBeDisputed(bytes32 coverKey) external view {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -260,7 +287,6 @@ function mustBeDisputed(bytes32 coverKey) external view {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

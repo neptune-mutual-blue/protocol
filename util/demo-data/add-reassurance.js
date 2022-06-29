@@ -1,11 +1,12 @@
-const { covers } = require('../../examples/covers')
-const { ether, getRandomNumber, weiAsToken } = require('../helper')
+const { covers } = require('../../examples/dedicated')
+const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { approve } = require('../contract-helper/erc20')
 const faucet = require('../contract-helper/faucet')
+const PRECISION = STABLECOIN_DECIMALS
 
 const add = async (coverKey, payload) => {
   const [owner] = await ethers.getSigners() // eslint-disable-line
-  const amount = ether(getRandomNumber(250_000, 5_000_000))
+  const amount = ether(getRandomNumber(250_000, 5_000_000), PRECISION)
 
   const { dai, reassuranceContract } = payload
 
@@ -15,7 +16,7 @@ const add = async (coverKey, payload) => {
 
   await reassuranceContract.connect(owner).addReassurance(coverKey, owner.address, amount)
 
-  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI'))
+  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI', PRECISION))
 }
 
 const addReassurance = async (payload) => {

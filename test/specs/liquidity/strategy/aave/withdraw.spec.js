@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -15,7 +16,7 @@ describe('Aave Withdrawal', () => {
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
@@ -34,7 +35,7 @@ describe('Aave Withdrawal', () => {
   })
 
   it('must correctly withdraw', async () => {
-    const amount = helper.ether(10)
+    const amount = helper.ether(10, PRECISION)
     await aaveStrategy.deposit(deployed.coverKey, amount)
 
     const aTokens = await aToken.balanceOf(deployed.vault.address)
@@ -63,7 +64,7 @@ describe('Aave Deposit: Faulty Pool', () => {
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FaultyAaveLendingPool', aToken.address)
 
     await aToken.transfer(deployed.vault.address, helper.ether(1000))

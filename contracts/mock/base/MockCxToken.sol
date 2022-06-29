@@ -22,6 +22,13 @@ contract MockCxToken is ERC20 {
 
   // slither-disable-next-line naming-convention
   function COVER_KEY() external pure returns (bytes32) {
+    // solhint-disable-previous-line
     return "test";
+  }
+
+  // slither-disable-next-line naming-convention
+  function PRODUCT_KEY() external pure returns (bytes32) {
+    // solhint-disable-previous-line
+    return "";
   }
 }

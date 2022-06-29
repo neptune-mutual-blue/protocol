@@ -10,12 +10,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "witness",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -41,12 +47,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "reporter",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -70,6 +82,12 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
       {
         "indexed": false,
         "internalType": "uint256",
@@ -97,12 +115,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "witness",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -128,12 +152,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "reporter",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -206,6 +236,11 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -226,6 +261,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -255,6 +295,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getActiveIncidentDate",
@@ -273,6 +318,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -308,55 +358,8 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "who",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "incidentDate",
-        "type": "uint256"
       }
     ],
-    "name": "getDispute",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "myStake",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalStake",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "coverKey",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getFirstReportingStake",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getFirstReportingStake",
     "outputs": [
       {
@@ -389,6 +392,50 @@
         "type": "bytes32"
       },
       {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRefutation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "myStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStake",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -411,6 +458,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getResolutionTimestamp",
@@ -429,6 +481,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -458,6 +515,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -493,6 +555,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getStatus",
@@ -511,6 +578,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -538,6 +610,11 @@
       },
       {
         "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
         "name": "info",
         "type": "bytes32"
       },
@@ -554,6 +631,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
       {
         "internalType": "uint256",
         "name": "value",

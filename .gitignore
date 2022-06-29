@@ -4,7 +4,11 @@ yarn-error.log
 artifacts
 build
 _*.sol*
-cache
+cache*
 coverage
 coverage.json
 walk
+!.github
+out/
+
+

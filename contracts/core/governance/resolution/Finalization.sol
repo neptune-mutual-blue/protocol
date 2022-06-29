@@ -8,7 +8,7 @@ import "../../../libraries/ValidationLibV1.sol";
 import "../../../libraries/RoutineInvokerLibV1.sol";
 
 /**
- * @title Neptune Mutual Governance: Finalization Contract
+ * @title Finalization Contract
  * @dev This contract allows governance agents "finalize"
  * a resolved cover product after the claim period.
  *
@@ -25,36 +25,63 @@ abstract contract Finalization is Recoverable, IFinalization {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for bytes32;
 
-  function finalize(bytes32 coverKey, uint256 incidentDate) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
+  /**
+   * Finalizes a cover pool or a product contract.
+   * Once finalized, the cover resets back to the normal state.
+   *
+   * Note:
+   *
+   * An incident can be finalized:
+   *
+   * - by a governance agent
+   * - if it was reported and resolved
+   * - after claim period
+   * - after reassurance fund is capitalized back to the liquidity pool
+   *
+   * @param coverKey Enter the cover key you want to finalize
+   * @param productKey Enter the product key you want to finalize
+   * @param incidentDate Enter the date of this incident reporting
+   */
+  function finalize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
 
-    s.mustBeClaimingOrDisputed(coverKey);
-    s.mustBeValidIncidentDate(coverKey, incidentDate);
-    s.mustBeAfterResolutionDeadline(coverKey);
-    s.mustBeAfterClaimExpiry(coverKey);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAgent(s);
 
-    uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, incidentDate);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeClaimingOrDisputed(coverKey, productKey);
+    s.mustBeAfterResolutionDeadline(coverKey, productKey);
+    s.mustBeAfterClaimExpiry(coverKey, productKey);
+
+    uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
     require(transferable == 0, "Pool must be capitalized");
 
-    _finalize(coverKey, incidentDate);
+    _finalize(coverKey, productKey, incidentDate);
   }
 
-  function _finalize(bytes32 coverKey, uint256 incidentDate) internal {
+  function _finalize(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) private {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
-    s.setStatusInternal(coverKey, 0, CoverUtilV1.CoverStatus.Normal);
+    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.ProductStatus.Normal);
 
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
-    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey);
-    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+    s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey);
+    s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
     // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
@@ -63,6 +90,6 @@ abstract contract Finalization is Recoverable, IFinalization {
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
 
     s.updateStateAndLiquidity(coverKey);
-    emit Finalized(coverKey, msg.sender, incidentDate);
+    emit Finalized(coverKey, productKey, msg.sender, incidentDate);
   }
 }

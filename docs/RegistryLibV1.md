@@ -6,7 +6,6 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 
 ## Functions
 
-- [getPriceDiscoveryContract(IStore s)](#getpricediscoverycontract)
 - [getGovernanceContract(IStore s)](#getgovernancecontract)
 - [getResolutionContract(IStore s)](#getresolutioncontract)
 - [getStakingContract(IStore s)](#getstakingcontract)
@@ -23,29 +22,6 @@ View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/Regi
 - [getStakingPoolAddress(IStore s)](#getstakingpooladdress)
 - [getBondPoolAddress(IStore s)](#getbondpooladdress)
 - [getVaultFactoryContract(IStore s)](#getvaultfactorycontract)
-
-### getPriceDiscoveryContract
-
-```solidity
-function getPriceDiscoveryContract(IStore s) external view
-returns(contract IPriceDiscovery)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getPriceDiscoveryContract(IStore s) external view returns (IPriceDiscovery) {
-    return IPriceDiscovery(s.getContract(ProtoUtilV1.CNS_PRICE_DISCOVERY));
-  }
-```
-</details>
 
 ### getGovernanceContract
 
@@ -459,6 +435,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -497,7 +474,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -522,6 +499,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -532,7 +510,7 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -541,7 +519,6 @@ function getVaultFactoryContract(IStore s) external view returns (IVaultFactory)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

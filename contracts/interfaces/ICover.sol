@@ -4,13 +4,15 @@ pragma solidity 0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 indexed coverKey, bytes32 info, bool requiresWhitelist);
+  event CoverCreated(bytes32 indexed coverKey, bytes32 info, string tokenName, string tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
+  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values);
   event CoverUpdated(bytes32 indexed coverKey, bytes32 info);
-  event CoverStopped(bytes32 indexed coverKey, address indexed deletedBy, string reason);
+  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, uint256[] values);
+  event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed stoppedBy, bool status, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
-  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, address account, bool status);
+  event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
   event CoverFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
@@ -43,12 +45,6 @@ interface ICover is IMember {
    *
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
@@ -62,12 +58,27 @@ interface ICover is IMember {
   function addCover(
     bytes32 coverKey,
     bytes32 info,
-    address reassuranceToken,
+    string calldata tokenName,
+    string calldata tokenSymbol,
+    bool supportsProducts,
     bool requiresWhitelist,
-    uint256[] memory values
+    uint256[] calldata values
+  ) external returns (address);
+
+  function addProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] calldata values
   ) external;
 
-  function deployVault(bytes32 coverKey) external returns (address);
+  function updateProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] calldata values
+  ) external;
 
   /**
    * @dev Updates the cover contract.
@@ -82,31 +93,25 @@ interface ICover is IMember {
 
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    bytes32 productKey,
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external;
 
-  /**
-   * @dev Get info of a cover contract by key
-   * @param coverKey Enter the cover key
-   * @param coverOwner Returns the address of the cover creator
-   * @param info Gets the IPFS hash of the cover info
-   * @param values Array of uint256 values. See `CoverUtilV1.getCoverInfo`.
-   */
-  function getCover(bytes32 coverKey)
-    external
-    view
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    );
-
-  function stopCover(bytes32 coverKey, string memory reason) external;
+  function disablePolicy(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bool status,
+    string calldata reason
+  ) external;
 
   function checkIfWhitelistedCoverCreator(address account) external view returns (bool);
 
-  function checkIfWhitelistedUser(bytes32 coverKey, address account) external view returns (bool);
+  function checkIfWhitelistedUser(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address account
+  ) external view returns (bool);
 
   function setCoverFees(uint256 value) external;
 

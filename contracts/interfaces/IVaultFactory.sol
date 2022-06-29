@@ -7,5 +7,9 @@ import "./IMember.sol";
 interface IVaultFactory is IMember {
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
-  function deploy(bytes32 coverKey) external returns (address);
+  function deploy(
+    bytes32 coverKey,
+    string calldata name,
+    string calldata symbol
+  ) external returns (address);
 }

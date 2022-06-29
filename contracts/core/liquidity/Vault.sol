@@ -9,13 +9,14 @@ pragma solidity 0.8.0;
 contract Vault is WithFlashLoan {
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   constructor(
     IStore store,
     bytes32 coverKey,
+    string memory tokenName,
+    string memory tokenSymbol,
     IERC20 liquidityToken
-  ) VaultBase(store, coverKey, liquidityToken) {} // solhint-disable-line
+  ) VaultBase(store, coverKey, tokenName, tokenSymbol, liquidityToken) {} // solhint-disable-line
 
   /**
    * @dev For further details, check delegate contract's documentation.

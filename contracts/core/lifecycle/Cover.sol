@@ -14,9 +14,11 @@ import "../liquidity/Vault.sol";
 contract Cover is CoverBase {
   using AccessControlLibV1 for IStore;
   using CoverLibV1 for IStore;
+  using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -26,15 +28,16 @@ contract Cover is CoverBase {
 
   /**
    * @dev Updates the cover contract.
-   * This feature is accessible only to the cover owner or protocol owner (governance).
+   * This feature is accessible only to the cover manager and during withdrawal period.
    *
    * @param coverKey Enter the cover key
    * @param info Enter a new IPFS URL to update
    */
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
 
@@ -60,14 +63,8 @@ contract Cover is CoverBase {
    * https://docs.neptunemutual.com/covers/contract-creators
    *
    * @param coverKey Enter a unique key for this cover
+   * @param supportsProducts Indicates that this cover supports product(s)
    * @param info IPFS info of the cover contract
-   * @param reassuranceToken **Optional.** Token added as an reassurance of this cover. <br /><br />
-   *
-   * Reassurance tokens can be added by a project to demonstrate coverage support
-   * for their own project. This helps bring the cover fee down and enhances
-   * liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
-   * as a support to the liquidity providers when a cover incident occurs.
-   * @param requiresWhitelist If set to true, this cover will only support whitelisted addresses.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
@@ -78,51 +75,97 @@ contract Cover is CoverBase {
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
    * @param values[8] reassuranceRate Enter the reassurance rate.
+   * @param values[9] leverageFactor Leverage Factor
    */
   function addCover(
     bytes32 coverKey,
     bytes32 info,
-    address reassuranceToken,
+    string calldata tokenName,
+    string calldata tokenSymbol,
+    bool supportsProducts,
     bool requiresWhitelist,
-    uint256[] memory values
-  ) external override nonReentrant {
+    uint256[] calldata values
+  ) external override nonReentrant returns (address) {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
-    require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(coverKey, info, reassuranceToken, requiresWhitelist, values);
-    emit CoverCreated(coverKey, info, requiresWhitelist);
-  }
+    s.addCoverInternal(coverKey, supportsProducts, info, requiresWhitelist, values);
 
-  function deployVault(bytes32 coverKey) external override nonReentrant returns (address) {
-    s.mustNotBePaused();
-    s.mustHaveStoppedCoverStatus(coverKey);
+    emit CoverCreated(coverKey, info, tokenName, tokenSymbol, supportsProducts, requiresWhitelist);
 
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
-
-    address vault = s.deployVaultInternal(coverKey);
+    address vault = s.deployVaultInternal(coverKey, tokenName, tokenSymbol);
     emit VaultDeployed(coverKey, vault);
 
     return vault;
   }
 
-  /**
-   * @dev Enables governance admin to stop a spam cover contract
-   * @param coverKey Enter the cover key you want to stop
-   * @param reason Provide a reason to stop this cover
-   */
-  function stopCover(bytes32 coverKey, string memory reason) external override nonReentrant {
+  function addProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] calldata values
+  ) external override {
+    // @suppress-acl This function can only be accessed by the cover owner or an admin
+    // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.senderMustBeWhitelistedCoverCreator();
+    s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
-    s.stopCoverInternal(coverKey);
-    emit CoverStopped(coverKey, msg.sender, reason);
+    s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
+    emit ProductCreated(coverKey, productKey, info, requiresWhitelist, values);
+  }
+
+  function updateProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] calldata values
+  ) external override {
+    // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`
+    s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
+
+    s.updateProductInternal(coverKey, productKey, info, values);
+    emit ProductUpdated(coverKey, productKey, info, values);
+  }
+
+  /**
+   * @dev Allows disabling and enabling the purchase of policy for a product or cover.
+   *
+   * This function enables governance admin to disable or enable the purchase of policy for a product or cover.
+   * A cover contract when stopped restricts new policy purchases
+   * and frees up liquidity as policies expires.
+   *
+   * 1. The policy purchases can be disabled and later enabled after current policies expire and liquidity is withdrawn.
+   * 2. The policy purchases can be disabled temporarily to allow liquidity providers a chance to exit.
+   *
+   * @param coverKey Enter the cover key you want to disable policy purchases
+   * @param productKey Enter the product key you want to disable policy purchases
+   * @param status Set this to true if you disable or false to enable policy purchases
+   * @param reason Provide a reason to disable the policy purchases
+   */
+  function disablePolicy(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bool status,
+    string calldata reason
+  ) external override nonReentrant {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
+    require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled" : "Already enabled");
+
+    s.disablePolicyInternal(coverKey, productKey, status);
+
+    emit ProductStateUpdated(coverKey, productKey, msg.sender, status, reason);
   }
 
   /**
@@ -148,13 +191,16 @@ contract Cover is CoverBase {
    */
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    bytes32 productKey,
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external override nonReentrant {
+    // @suppress-acl This function is only accessilbe to the cover owner or admin
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
-    s.updateCoverUsersWhitelistInternal(coverKey, accounts, statuses);
+    s.updateCoverUsersWhitelistInternal(coverKey, productKey, accounts, statuses);
   }
 
   /**
@@ -167,7 +213,11 @@ contract Cover is CoverBase {
   /**
    * @dev Signifies if a given account is a whitelisted user
    */
-  function checkIfWhitelistedUser(bytes32 coverKey, address account) external view override returns (bool) {
-    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account);
+  function checkIfWhitelistedUser(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address account
+  ) external view override returns (bool) {
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
   }
 }

@@ -81,7 +81,7 @@ contract CoverStake is ICoverStake, Recoverable {
     // @suppress-acl Marking this function as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
 
     uint256 drawingPower = _getDrawingPower(coverKey, msg.sender);
     require(amount > 0, "Please specify amount");

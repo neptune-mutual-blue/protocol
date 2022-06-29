@@ -2,7 +2,7 @@
 
 View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
 
-**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICover](ICover.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [ILiquidityEngine](ILiquidityEngine.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IPriceDiscovery](IPriceDiscovery.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultDelegate](IVaultDelegate.md), [IVaultFactory](IVaultFactory.md)**
+**↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICover](ICover.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [ILiquidityEngine](ILiquidityEngine.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultDelegate](IVaultDelegate.md), [IVaultFactory](IVaultFactory.md)**
 
 **IMember**
 
@@ -84,6 +84,7 @@ function getName() external pure returns (bytes32);
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -122,7 +123,7 @@ function getName() external pure returns (bytes32);
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -147,6 +148,7 @@ function getName() external pure returns (bytes32);
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -157,7 +159,7 @@ function getName() external pure returns (bytes32);
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -166,7 +168,6 @@ function getName() external pure returns (bytes32);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -26,11 +26,11 @@ contract Protocol is IProtocol, ProtoBase {
    * @param addresses[3] npm
    * @param addresses[4] treasury
    * @param addresses[5] npm price oracle
-   * @param values[0] coverCreationFees
+   * @param values[0] coverCreationFee
    * @param values[1] minCoverCreationStake
    * @param values[2] firstReportingStake
    * @param values[3] claimPeriod
-   * @param values[4] burnRate
+   * @param values[4] reportingBurnRate
    * @param values[5] governanceReporterCommission
    * @param values[6] claimPlatformFee
    * @param values[7] claimReporterCommission
@@ -40,10 +40,35 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[11] state and liquidity update interval
    * @param values[12] max lending ratio
    */
-  function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
+  function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
     // @suppress-initialization Can only be initialized by the deployer or an admin
     // @suppress-acl Can only be called by the deployer or an admin
+    // @suppress-zero-value-check Some zero values are allowed
     s.mustBeProtocolMember(msg.sender);
+
+    require(addresses[0] != address(0), "Invalid Burner");
+    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    // require(addresses[3] != address(0), "Invalid NPM"); // @note: validation below
+    require(addresses[4] != address(0), "Invalid Treasury");
+    // @suppress-accidental-zero @todo: allow price oracle to be zero
+    // @check if uniswap v2 contracts can be zero
+    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+
+    // These checks are disabled as this function is only accessible to an admin
+    // require(values[0] > 0, "Invalid cover creation fee");
+    // require(values[1] > 0, "Invalid cover creation stake");
+    // require(values[2] > 0, "Invalid first reporting stake");
+    // require(values[3] > 0, "Invalid claim period");
+    // require(values[4] > 0, "Invalid reporting burn rate");
+    // require(values[5] > 0, "Invalid reporter income: NPM");
+    // require(values[6] > 0, "Invalid platform fee: claims");
+    // require(values[7] > 0, "Invalid reporter income: claims");
+    // require(values[8] > 0, "Invalid vault fee: flashloan");
+    // require(values[9] > 0, "Invalid platform fee: flashloan");
+    // require(values[10] >= 24 hours, "Invalid cooldown period");
+    // require(values[11] > 0, "Invalid state update interval");
+    // require(values[12] > 0, "Invalid max lending ratio");
 
     if (initialized == 1) {
       AccessControlLibV1.mustBeAdmin(s);
@@ -57,12 +82,10 @@ contract Protocol is IProtocol, ProtoBase {
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
     }
 
-    require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    require(addresses[4] != address(0), "Invalid Treasury");
-    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
-
+    // @note: burner isn't necessarily the zero address.
+    // The tokens to be burned are sent to an address,
+    // bridged back to the Ethereum mainnet (if on a different chain),
+    // and burned on a period but random basis.
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
@@ -76,7 +99,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, values[6]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
@@ -89,39 +112,90 @@ contract Protocol is IProtocol, ProtoBase {
     emit Initialized(addresses, values);
   }
 
-  function upgradeContract(
-    bytes32 namespace,
-    address previous,
-    address current
-  ) external override {
-    upgradeContractWithKey(namespace, 0, previous, current);
-  }
-
-  function upgradeContractWithKey(
-    bytes32 namespace,
-    bytes32 key,
-    address previous,
-    address current
-  ) public override nonReentrant {
-    ProtoUtilV1.mustBeProtocolMember(s, previous);
+  /**
+   * @dev Adds member to the protocol
+   *
+   * A member is a trusted EOA or a contract that was added to the protocol using `addContract`
+   * function. When a contract is removed using `upgradeContract` function, the membership of previous
+   * contract is also removed.
+   *
+   * Warning:
+   *
+   * This feature is only accessible to an upgrade agent.
+   * Since adding member to the protocol is a highy risky activity,
+   * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   *
+   * @param member Enter an address to add as a protocol member
+   */
+  function addMember(address member) external override nonReentrant whenNotPaused {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
-    AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
-    emit ContractUpgraded(namespace, key, previous, current);
+    AccessControlLibV1.addMemberInternal(s, member);
+    emit MemberAdded(member);
   }
 
+  /**
+   * @dev Removes a member from the protocol. This function is only accessible
+   * to an upgrade agent.
+   *
+   * @param member Enter an address to remove as a protocol member
+   */
+  function removeMember(address member) external override nonReentrant whenNotPaused {
+    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
+    ProtoUtilV1.mustBeProtocolMember(s, member);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    AccessControlLibV1.removeMemberInternal(s, member);
+    emit MemberRemoved(member);
+  }
+
+  /**
+   * @dev Adds a contract to the protocol. See `addContractWithKey` for more info.
+   */
   function addContract(bytes32 namespace, address contractAddress) external override {
+    // @suppress-acl @suppress-pausable This function is just an intermediate
     addContractWithKey(namespace, 0, contractAddress);
   }
 
+  /**
+   * @dev Adds a contract to the protocol using a namespace and key.
+   *
+   * The contracts that are added using this function are also added as protocol members.
+   * Each contract you add to the protocol needs to also specify the namespace and also
+   * key if applicable. The key is useful when multiple instances of a contract can
+   * be deployed. For example, multiple instances of cxTokens and Vaults can be deployed on demand.
+   *
+   * Tip: find out how the `getVaultFactoryContract().deploy` function is being used.
+   *
+   * Warning:
+   *
+   * This feature is only accessible to an upgrade agent.
+   * Since adding member to the protocol is a highy risky activity,
+   * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   * @param namespace Enter a unique namespace for this contract
+   * @param key Enter a key if this contract has siblings
+   * @param contractAddress Enter the contract address to add.
+   *
+   */
   function addContractWithKey(
     bytes32 namespace,
     bytes32 key,
     address contractAddress
-  ) public override nonReentrant {
+  ) public override nonReentrant whenNotPaused {
     // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
+    require(contractAddress != address(0), "Invalid contract");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
     address current = s.getProtocolContract(namespace);
@@ -132,26 +206,75 @@ contract Protocol is IProtocol, ProtoBase {
     emit ContractAdded(namespace, key, contractAddress);
   }
 
-  function removeMember(address member) external override nonReentrant {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
-    ProtoUtilV1.mustBeProtocolMember(s, member);
+  /**
+   * @dev Upgrades a contract at the given namespace. See `upgradeContractWithKey` for more info.
+   */
+  function upgradeContract(
+    bytes32 namespace,
+    address previous,
+    address current
+  ) external override {
+    // @suppress-acl @suppress-pausable  This function is just an intermediate
+    upgradeContractWithKey(namespace, 0, previous, current);
+  }
+
+  /**
+   * @dev Upgrades a contract at the given namespace and key.
+   *
+   * The previous contract's protocol membership is revoked and
+   * the current immediately starts assuming responsbility of
+   * whatever the contract needs to do at the supplied namespace and key.
+   *
+   * Warning:
+   *
+   * This feature is only accessible to an upgrade agent.
+   * Since adding member to the protocol is a highy risky activity,
+   * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   * @param namespace Enter a unique namespace for this contract
+   * @param key Enter a key if this contract has siblings
+   * @param previous Enter the existing contract address at this namespace and key.
+   * @param current Enter the contract address which will replace the previous contract.
+   */
+  function upgradeContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address previous,
+    address current
+  ) public override nonReentrant whenNotPaused {
+    require(current != address(0), "Invalid contract");
+
+    ProtoUtilV1.mustBeProtocolMember(s, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    AccessControlLibV1.removeMemberInternal(s, member);
-    emit MemberRemoved(member);
+    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
+    AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
+    emit ContractUpgraded(namespace, key, previous, current);
   }
 
-  function addMember(address member) external override nonReentrant {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeUpgradeAgent(s);
-
-    AccessControlLibV1.addMemberInternal(s, member);
-    emit MemberAdded(member);
-  }
-
-  function grantRoles(AccountWithRoles[] memory detail) external override nonReentrant {
+  /**
+   * @dev Grants roles to the protocol.
+   *
+   * Individual Neptune Mutual protocol contracts inherit roles
+   * defined to this contract. Meaning, the `AccessControl` logic
+   * here is used everywhere else.
+   *
+   *
+   * Warning:
+   *
+   * This feature is only accessible to an admin. Adding any kind of role to the protocol is immensely risky.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   */
+  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
+    // @suppress-zero-value-check Checked
+    require(detail.length > 0, "Invalid args");
     AccessControlLibV1.mustBeAdmin(s);
 
     for (uint256 i = 0; i < detail.length; i++) {

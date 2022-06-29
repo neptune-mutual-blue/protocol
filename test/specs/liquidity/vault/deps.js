@@ -7,6 +7,7 @@ const SECONDS = 1
 const MINUTES = 60 * SECONDS
 const HOURS = 60 * MINUTES
 const DAYS = 24 * HOURS
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 const cache = null
 
@@ -15,9 +16,9 @@ const deployDependencies = async () => {
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
-  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
-  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
-  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm.address, token1: dai.address }])
+  const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000), 18)
+  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm, token1: dai }])
 
   const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
@@ -43,6 +44,7 @@ const deployDependencies = async () => {
   })
 
   const coverUtilV1 = await deployer.deployWithLibraries(cache, 'CoverUtilV1', {
+    ProtoUtilV1: protoUtilV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     StrategyLibV1: strategyLibV1.address
   })
@@ -87,7 +89,6 @@ const deployDependencies = async () => {
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
-    StrategyLibV1: strategyLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   })
@@ -144,7 +145,7 @@ const deployDependencies = async () => {
     ]
   )
 
-  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
+  await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT, key.ACCESS_CONTROL.GOVERNANCE_ADMIN] }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
 
   const cover = await deployer.deployWithLibraries(cache, 'Cover',
@@ -152,7 +153,8 @@ const deployDependencies = async () => {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
       CoverLibV1: coverLibV1.address,
-      ProtoUtilV1: protoUtilV1.address,
+      CoverUtilV1: coverUtilV1.address,
+      RoutineInvokerLibV1: routineInvokerLibV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address
     },
@@ -189,6 +191,16 @@ const deployDependencies = async () => {
   }, store.address)
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_REASSURANCE, reassuranceContract.address)
+
+  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
+    AccessControlLibV1: accessControlLibV1.address,
+    BaseLibV1: baseLibV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
+  }, store.address)
+
+  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
   const vaultFactoryLib = await deployer.deployWithLibraries(cache, 'VaultFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
@@ -299,6 +311,7 @@ const deployDependencies = async () => {
     BaseLibV1: baseLibV1.address,
     CoverUtilV1: coverUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
+    ProtoUtilV1: protoUtilV1.address,
     StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLibV1.address
   }, store.address, '0')
@@ -306,9 +319,9 @@ const deployDependencies = async () => {
   await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
 
   const coverKey = key.toBytes32('foo-bar')
+  const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
+  const initialLiquidity = helper.ether(4_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const initialReassuranceAmount = helper.ether(1_000_000)
-  const initialLiquidity = helper.ether(4_000_000)
   const minReportingStake = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS
@@ -316,9 +329,10 @@ const deployDependencies = async () => {
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
+  const leverage = '1'
 
   const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate]
+  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
 
   const info = key.toBytes32('info')
 
@@ -327,18 +341,12 @@ const deployDependencies = async () => {
   await npm.approve(stakingContract.address, stakeWithFee)
   await dai.approve(reassuranceContract.address, initialReassuranceAmount)
 
-  await cover.addCover(coverKey, info, dai.address, requiresWhitelist, values)
-  await cover.deployVault(coverKey)
+  await cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-  const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
-    AccessControlLibV1: accessControlLibV1.address,
-    BaseLibV1: baseLibV1.address,
-    StoreKeyUtil: storeKeyUtil.address,
-    StrategyLibV1: strategyLibV1.address,
-    ValidationLibV1: validationLibV1.address
-  }, store.address)
+  const lendingPeriod = 1 * HOURS
+  const withdrawalWindow = 1 * HOURS
 
-  await protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
+  await liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
   const vault = await composer.vault.getVault({
     store: store,

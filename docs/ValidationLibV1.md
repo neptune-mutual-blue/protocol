@@ -8,8 +8,12 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 
 - [mustNotBePaused(IStore s)](#mustnotbepaused)
 - [mustHaveNormalCoverStatus(IStore s, bytes32 coverKey)](#musthavenormalcoverstatus)
+- [mustHaveNormalCoverProductStatus(IStore s, bytes32 coverKey, bytes32 productKey)](#musthavenormalcoverproductstatus)
 - [mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey)](#musthavestoppedcoverstatus)
 - [mustBeValidCoverKey(IStore s, bytes32 coverKey)](#mustbevalidcoverkey)
+- [mustSupportProducts(IStore s, bytes32 coverKey)](#mustsupportproducts)
+- [mustBeValidProduct(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbevalidproduct)
+- [mustBeActiveProduct(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeactiveproduct)
 - [mustBeCoverOwner(IStore s, bytes32 coverKey, address sender)](#mustbecoverowner)
 - [mustBeCoverOwnerOrCoverContract(IStore s, bytes32 coverKey, address sender)](#mustbecoverownerorcovercontract)
 - [senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 coverKey)](#sendermustbecoverowneroradmin)
@@ -22,31 +26,33 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [callerMustBeClaimsProcessorContract(IStore s, address caller)](#callermustbeclaimsprocessorcontract)
 - [senderMustBeStrategyContract(IStore s)](#sendermustbestrategycontract)
 - [callerMustBeStrategyContract(IStore s, address caller)](#callermustbestrategycontract)
-- [callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 )](#callermustbespecificstrategycontract)
+- [callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 strategyName)](#callermustbespecificstrategycontract)
 - [_getIsActiveStrategyKey(address strategyAddress)](#_getisactivestrategykey)
+- [_getIsDisabledStrategyKey(address strategyAddress)](#_getisdisabledstrategykey)
 - [senderMustBeProtocolMember(IStore s)](#sendermustbeprotocolmember)
-- [mustBeReporting(IStore s, bytes32 coverKey)](#mustbereporting)
-- [mustBeDisputed(IStore s, bytes32 coverKey)](#mustbedisputed)
-- [mustBeClaimable(IStore s, bytes32 coverKey)](#mustbeclaimable)
-- [mustBeClaimingOrDisputed(IStore s, bytes32 coverKey)](#mustbeclaimingordisputed)
-- [mustBeReportingOrDisputed(IStore s, bytes32 coverKey)](#mustbereportingordisputed)
-- [mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey)](#mustbebeforeresolutiondeadline)
-- [mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey)](#mustnothaveresolutiondeadline)
-- [mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey)](#mustbeafterresolutiondeadline)
-- [mustBeValidIncidentDate(IStore s, bytes32 coverKey, uint256 incidentDate)](#mustbevalidincidentdate)
-- [mustHaveDispute(IStore s, bytes32 coverKey)](#musthavedispute)
-- [mustNotHaveDispute(IStore s, bytes32 coverKey)](#mustnothavedispute)
-- [mustBeDuringReportingPeriod(IStore s, bytes32 coverKey)](#mustbeduringreportingperiod)
-- [mustBeAfterReportingPeriod(IStore s, bytes32 coverKey)](#mustbeafterreportingperiod)
-- [mustBeValidCxToken(IStore s, bytes32 coverKey, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
-- [mustBeValidClaim(IStore s, address account, bytes32 coverKey, address cxToken, uint256 incidentDate, uint256 amount)](#mustbevalidclaim)
-- [mustNotHaveUnstaken(IStore s, address account, bytes32 coverKey, uint256 incidentDate)](#mustnothaveunstaken)
-- [validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, uint256 incidentDate)](#validateunstakewithoutclaim)
-- [validateUnstakeWithClaim(IStore s, bytes32 coverKey, uint256 incidentDate)](#validateunstakewithclaim)
-- [mustBeDuringClaimPeriod(IStore s, bytes32 coverKey)](#mustbeduringclaimperiod)
-- [mustBeAfterClaimExpiry(IStore s, bytes32 coverKey)](#mustbeafterclaimexpiry)
+- [mustBeReporting(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbereporting)
+- [mustBeDisputed(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbedisputed)
+- [mustBeClaimable(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeclaimable)
+- [mustBeClaimingOrDisputed(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeclaimingordisputed)
+- [mustBeReportingOrDisputed(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbereportingordisputed)
+- [mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbebeforeresolutiondeadline)
+- [mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothaveresolutiondeadline)
+- [mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeafterresolutiondeadline)
+- [mustBeValidIncidentDate(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#mustbevalidincidentdate)
+- [mustHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey)](#musthavedispute)
+- [mustNotHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothavedispute)
+- [mustBeDuringReportingPeriod(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeduringreportingperiod)
+- [mustBeAfterReportingPeriod(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeafterreportingperiod)
+- [mustBeValidCxToken(IStore s, bytes32 coverKey, bytes32 productKey, address cxToken, uint256 incidentDate)](#mustbevalidcxtoken)
+- [mustBeValidClaim(IStore s, address account, bytes32 coverKey, bytes32 productKey, address cxToken, uint256 incidentDate, uint256 amount)](#mustbevalidclaim)
+- [mustNotHaveUnstaken(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#mustnothaveunstaken)
+- [validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#validateunstakewithoutclaim)
+- [validateUnstakeWithClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#validateunstakewithclaim)
+- [mustBeDuringClaimPeriod(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeduringclaimperiod)
+- [mustBeAfterClaimExpiry(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeafterclaimexpiry)
 - [senderMustBeWhitelistedCoverCreator(IStore s)](#sendermustbewhitelistedcovercreator)
-- [senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, address sender)](#sendermustbewhitelistedifrequired)
+- [senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, bytes32 productKey, address sender)](#sendermustbewhitelistedifrequired)
+- [mustBeSupportedProductOrEmpty(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbesupportedproductorempty)
 
 ### mustNotBePaused
 
@@ -95,7 +101,40 @@ function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view
 ```javascript
 function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+    require(s.getCoverStatusInternal(coverKey, 0) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+  }
+```
+</details>
+
+### mustHaveNormalCoverProductStatus
+
+Reverts if the key does not resolve in a valid cover contract
+ or if the cover is under governance.
+
+```solidity
+function mustHaveNormalCoverProductStatus(IStore s, bytes32 coverKey, bytes32 productKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 | Enter the cover key to check | 
+| productKey | bytes32 | Enter the product key to check | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustHaveNormalCoverProductStatus(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
+    require(s.supportsProductsInternal(coverKey), "Invalid product");
+    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
   }
 ```
 </details>
@@ -122,7 +161,7 @@ function mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey) external view
 ```javascript
 function mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
+    require(s.getCoverStatusInternal(coverKey, 0) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
   }
 ```
 </details>
@@ -148,6 +187,91 @@ function mustBeValidCoverKey(IStore s, bytes32 coverKey) external view
 ```javascript
 function mustBeValidCoverKey(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
+  }
+```
+</details>
+
+### mustSupportProducts
+
+Reverts if the cover does not support creating products.
+
+```solidity
+function mustSupportProducts(IStore s, bytes32 coverKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 | Enter the cover key to check | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustSupportProducts(IStore s, bytes32 coverKey) external view {
+    require(s.supportsProductsInternal(coverKey), "Does not have products");
+  }
+```
+</details>
+
+### mustBeValidProduct
+
+Reverts if the key does not resolve in a valid product of a cover contract.
+
+```solidity
+function mustBeValidProduct(IStore s, bytes32 coverKey, bytes32 productKey) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 | Enter the cover key to check | 
+| productKey | bytes32 | Enter the cover key to check | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeValidProduct(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(s.isValidProductInternal(coverKey, productKey), "Product does not exist");
+  }
+```
+</details>
+
+### mustBeActiveProduct
+
+Reverts if the key resolves in an expired product.
+
+```solidity
+function mustBeActiveProduct(IStore s, bytes32 coverKey, bytes32 productKey) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 | Enter the cover key to check | 
+| productKey | bytes32 | Enter the cover key to check | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeActiveProduct(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(s.isActiveProductInternal(coverKey, productKey), "Product retired or deleted");
   }
 ```
 </details>
@@ -424,7 +548,7 @@ function senderMustBeStrategyContract(IStore s) external view {
 ### callerMustBeStrategyContract
 
 ```solidity
-function callerMustBeStrategyContract(IStore s, address caller) external view
+function callerMustBeStrategyContract(IStore s, address caller) public view
 ```
 
 **Arguments**
@@ -438,9 +562,11 @@ function callerMustBeStrategyContract(IStore s, address caller) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function callerMustBeStrategyContract(IStore s, address caller) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
-    require(callerIsStrategyContract == true, "Not a strategy contract");
+function callerMustBeStrategyContract(IStore s, address caller) public view {
+    bool isActive = s.getBoolByKey(_getIsActiveStrategyKey(caller));
+    bool wasDisabled = s.getBoolByKey(_getIsDisabledStrategyKey(caller));
+
+    require(isActive == true || wasDisabled == true, "Not a strategy contract");
   }
 ```
 </details>
@@ -448,7 +574,7 @@ function callerMustBeStrategyContract(IStore s, address caller) external view {
 ### callerMustBeSpecificStrategyContract
 
 ```solidity
-function callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 ) external view
+function callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 strategyName) external view
 ```
 
 **Arguments**
@@ -457,7 +583,7 @@ function callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | caller | address |  | 
-|  | bytes32 |  | 
+| strategyName | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -466,10 +592,10 @@ function callerMustBeSpecificStrategyContract(IStore s, address caller, bytes32 
 function callerMustBeSpecificStrategyContract(
     IStore s,
     address caller,
-    bytes32 /*strategyName*/
+    bytes32 strategyName
   ) external view {
-    bool callerIsStrategyContract = s.getBoolByKey(_getIsActiveStrategyKey(caller));
-    require(callerIsStrategyContract == true, "Not a strategy contract");
+    callerMustBeStrategyContract(s, caller);
+    require(IMember(caller).getName() == strategyName, "Access denied");
   }
 ```
 </details>
@@ -493,6 +619,29 @@ returns(bytes32)
 ```javascript
 function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
+  }
+```
+</details>
+
+### _getIsDisabledStrategyKey
+
+```solidity
+function _getIsDisabledStrategyKey(address strategyAddress) private pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategyAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
 ```
 </details>
@@ -522,7 +671,7 @@ function senderMustBeProtocolMember(IStore s) external view {
 ### mustBeReporting
 
 ```solidity
-function mustBeReporting(IStore s, bytes32 coverKey) external view
+function mustBeReporting(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -531,13 +680,18 @@ function mustBeReporting(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeReporting(IStore s, bytes32 coverKey) external view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+function mustBeReporting(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
   }
 ```
 </details>
@@ -545,7 +699,7 @@ function mustBeReporting(IStore s, bytes32 coverKey) external view {
 ### mustBeDisputed
 
 ```solidity
-function mustBeDisputed(IStore s, bytes32 coverKey) external view
+function mustBeDisputed(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -554,13 +708,18 @@ function mustBeDisputed(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeDisputed(IStore s, bytes32 coverKey) external view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+function mustBeDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
   }
 ```
 </details>
@@ -568,7 +727,7 @@ function mustBeDisputed(IStore s, bytes32 coverKey) external view {
 ### mustBeClaimable
 
 ```solidity
-function mustBeClaimable(IStore s, bytes32 coverKey) public view
+function mustBeClaimable(IStore s, bytes32 coverKey, bytes32 productKey) public view
 ```
 
 **Arguments**
@@ -577,13 +736,18 @@ function mustBeClaimable(IStore s, bytes32 coverKey) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeClaimable(IStore s, bytes32 coverKey) public view {
-    require(s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
+function mustBeClaimable(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
   }
 ```
 </details>
@@ -591,7 +755,7 @@ function mustBeClaimable(IStore s, bytes32 coverKey) public view {
 ### mustBeClaimingOrDisputed
 
 ```solidity
-function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey) external view
+function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -600,13 +764,18 @@ function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatus(coverKey);
+function mustBeClaimingOrDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
 
     bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
@@ -619,7 +788,7 @@ function mustBeClaimingOrDisputed(IStore s, bytes32 coverKey) external view {
 ### mustBeReportingOrDisputed
 
 ```solidity
-function mustBeReportingOrDisputed(IStore s, bytes32 coverKey) external view
+function mustBeReportingOrDisputed(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -628,13 +797,18 @@ function mustBeReportingOrDisputed(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeReportingOrDisputed(IStore s, bytes32 coverKey) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatus(coverKey);
+function mustBeReportingOrDisputed(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
     bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
     bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
 
@@ -646,7 +820,7 @@ function mustBeReportingOrDisputed(IStore s, bytes32 coverKey) external view {
 ### mustBeBeforeResolutionDeadline
 
 ```solidity
-function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey) external view
+function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -655,13 +829,18 @@ function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey) external vie
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey) external view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+function mustBeBeforeResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
 
     if (deadline > 0) {
       require(block.timestamp < deadline, "Emergency resolution deadline over"); // solhint-disable-line
@@ -673,7 +852,7 @@ function mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey) external vie
 ### mustNotHaveResolutionDeadline
 
 ```solidity
-function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey) external view
+function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -682,13 +861,18 @@ function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey) external view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+function mustNotHaveResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
     require(deadline == 0, "Resolution already has deadline");
   }
 ```
@@ -697,7 +881,7 @@ function mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey) external view
 ### mustBeAfterResolutionDeadline
 
 ```solidity
-function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey) public view
+function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey) public view
 ```
 
 **Arguments**
@@ -706,13 +890,18 @@ function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey) public view {
-    uint256 deadline = s.getResolutionDeadlineInternal(coverKey);
+function mustBeAfterResolutionDeadline(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
     require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
   }
 ```
@@ -721,7 +910,7 @@ function mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey) public view {
 ### mustBeValidIncidentDate
 
 ```solidity
-function mustBeValidIncidentDate(IStore s, bytes32 coverKey, uint256 incidentDate) public view
+function mustBeValidIncidentDate(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 ```
 
 **Arguments**
@@ -730,6 +919,7 @@ function mustBeValidIncidentDate(IStore s, bytes32 coverKey, uint256 incidentDat
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -739,9 +929,10 @@ function mustBeValidIncidentDate(IStore s, bytes32 coverKey, uint256 incidentDat
 function mustBeValidIncidentDate(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDateInternal(coverKey) == incidentDate, "Invalid incident date");
+    require(s.getLatestIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
   }
 ```
 </details>
@@ -749,7 +940,7 @@ function mustBeValidIncidentDate(
 ### mustHaveDispute
 
 ```solidity
-function mustHaveDispute(IStore s, bytes32 coverKey) external view
+function mustHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -758,13 +949,18 @@ function mustHaveDispute(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustHaveDispute(IStore s, bytes32 coverKey) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+function mustHaveDispute(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
     require(hasDispute == true, "Not disputed");
   }
 ```
@@ -773,7 +969,7 @@ function mustHaveDispute(IStore s, bytes32 coverKey) external view {
 ### mustNotHaveDispute
 
 ```solidity
-function mustNotHaveDispute(IStore s, bytes32 coverKey) external view
+function mustNotHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -782,13 +978,18 @@ function mustNotHaveDispute(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustNotHaveDispute(IStore s, bytes32 coverKey) external view {
-    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey));
+function mustNotHaveDispute(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    bool hasDispute = s.getBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
     require(hasDispute == false, "Already disputed");
   }
 ```
@@ -797,7 +998,7 @@ function mustNotHaveDispute(IStore s, bytes32 coverKey) external view {
 ### mustBeDuringReportingPeriod
 
 ```solidity
-function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey) external view
+function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -806,13 +1007,18 @@ function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey) external view {
-    require(s.getResolutionTimestampInternal(coverKey) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
+function mustBeDuringReportingPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(s.getResolutionTimestampInternal(coverKey, productKey) >= block.timestamp, "Reporting window closed"); // solhint-disable-line
   }
 ```
 </details>
@@ -820,7 +1026,7 @@ function mustBeDuringReportingPeriod(IStore s, bytes32 coverKey) external view {
 ### mustBeAfterReportingPeriod
 
 ```solidity
-function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey) public view
+function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey, bytes32 productKey) public view
 ```
 
 **Arguments**
@@ -829,13 +1035,18 @@ function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey) public view {
-    require(block.timestamp > s.getResolutionTimestampInternal(coverKey), "Reporting still active"); // solhint-disable-line
+function mustBeAfterReportingPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    require(block.timestamp > s.getResolutionTimestampInternal(coverKey, productKey), "Reporting still active"); // solhint-disable-line
   }
 ```
 </details>
@@ -843,7 +1054,7 @@ function mustBeAfterReportingPeriod(IStore s, bytes32 coverKey) public view {
 ### mustBeValidCxToken
 
 ```solidity
-function mustBeValidCxToken(IStore s, bytes32 coverKey, address cxToken, uint256 incidentDate) public view
+function mustBeValidCxToken(IStore s, bytes32 coverKey, bytes32 productKey, address cxToken, uint256 incidentDate) public view
 ```
 
 **Arguments**
@@ -852,6 +1063,7 @@ function mustBeValidCxToken(IStore s, bytes32 coverKey, address cxToken, uint256
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | cxToken | address |  | 
 | incidentDate | uint256 |  | 
 
@@ -862,13 +1074,16 @@ function mustBeValidCxToken(IStore s, bytes32 coverKey, address cxToken, uint256
 function mustBeValidCxToken(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address cxToken,
     uint256 incidentDate
   ) public view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken) == true, "Unknown cxToken");
 
     bytes32 COVER_KEY = ICxToken(cxToken).COVER_KEY(); // solhint-disable-line
-    require(coverKey == COVER_KEY, "Invalid cxToken");
+    bytes32 PRODUCT_KEY = ICxToken(cxToken).PRODUCT_KEY(); // solhint-disable-line
+
+    require(coverKey == COVER_KEY && productKey == PRODUCT_KEY, "Invalid cxToken");
 
     uint256 expires = ICxToken(cxToken).expiresOn();
     require(expires > incidentDate, "Invalid or expired cxToken");
@@ -879,7 +1094,7 @@ function mustBeValidCxToken(
 ### mustBeValidClaim
 
 ```solidity
-function mustBeValidClaim(IStore s, address account, bytes32 coverKey, address cxToken, uint256 incidentDate, uint256 amount) external view
+function mustBeValidClaim(IStore s, address account, bytes32 coverKey, bytes32 productKey, address cxToken, uint256 incidentDate, uint256 amount) external view
 ```
 
 **Arguments**
@@ -889,6 +1104,7 @@ function mustBeValidClaim(IStore s, address account, bytes32 coverKey, address c
 | s | IStore |  | 
 | account | address |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | cxToken | address |  | 
 | incidentDate | uint256 |  | 
 | amount | uint256 |  | 
@@ -901,18 +1117,16 @@ function mustBeValidClaim(
     IStore s,
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     address cxToken,
     uint256 incidentDate,
     uint256 amount
   ) external view {
-    // @note: cxTokens are no longer protocol members
-    // as we will end up with way too many contracts
-    // s.mustBeProtocolMember(cxToken);
-    mustBeValidCxToken(s, coverKey, cxToken, incidentDate);
-    mustBeClaimable(s, coverKey);
-    mustBeValidIncidentDate(s, coverKey, incidentDate);
-    mustBeDuringClaimPeriod(s, coverKey);
-
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
+    mustBeValidCxToken(s, coverKey, productKey, cxToken, incidentDate);
+    mustBeClaimable(s, coverKey, productKey);
+    mustBeValidIncidentDate(s, coverKey, productKey, incidentDate);
+    mustBeDuringClaimPeriod(s, coverKey, productKey);
     require(ICxToken(cxToken).getClaimablePolicyOf(account) >= amount, "Claim exceeds your coverage");
   }
 ```
@@ -921,7 +1135,7 @@ function mustBeValidClaim(
 ### mustNotHaveUnstaken
 
 ```solidity
-function mustNotHaveUnstaken(IStore s, address account, bytes32 coverKey, uint256 incidentDate) public view
+function mustNotHaveUnstaken(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 ```
 
 **Arguments**
@@ -931,6 +1145,7 @@ function mustNotHaveUnstaken(IStore s, address account, bytes32 coverKey, uint25
 | s | IStore |  | 
 | account | address |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -941,9 +1156,10 @@ function mustNotHaveUnstaken(
     IStore s,
     address account,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, coverKey, incidentDate);
+    uint256 withdrawal = s.getReportingUnstakenAmountInternal(account, coverKey, productKey, incidentDate);
     require(withdrawal == 0, "Already unstaken");
   }
 ```
@@ -952,7 +1168,7 @@ function mustNotHaveUnstaken(
 ### validateUnstakeWithoutClaim
 
 ```solidity
-function validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, uint256 incidentDate) external view
+function validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 ```
 
 **Arguments**
@@ -961,6 +1177,7 @@ function validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, uint256 inciden
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -970,15 +1187,17 @@ function validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, uint256 inciden
 function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
-    mustNotHaveUnstaken(s, msg.sender, coverKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey);
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
+    mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
+    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey);
+    mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
     // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
     // The above code is not useful after finalization but it helps avoid
@@ -990,7 +1209,7 @@ function validateUnstakeWithoutClaim(
 ### validateUnstakeWithClaim
 
 ```solidity
-function validateUnstakeWithClaim(IStore s, bytes32 coverKey, uint256 incidentDate) external view
+function validateUnstakeWithClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 ```
 
 **Arguments**
@@ -999,6 +1218,7 @@ function validateUnstakeWithClaim(IStore s, bytes32 coverKey, uint256 incidentDa
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -1008,27 +1228,29 @@ function validateUnstakeWithClaim(IStore s, bytes32 coverKey, uint256 incidentDa
 function validateUnstakeWithClaim(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate
   ) external view {
     mustNotBePaused(s);
-    mustNotHaveUnstaken(s, msg.sender, coverKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey);
+    mustBeSupportedProductOrEmpty(s, coverKey, productKey);
+    mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
+    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
     // to access this feature. But they can still access `unstake` feature
     // to withdraw their stake.
-    mustBeValidIncidentDate(s, coverKey, incidentDate);
+    mustBeValidIncidentDate(s, coverKey, productKey, incidentDate);
 
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey);
+    mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getCoverStatus(coverKey) == CoverUtilV1.CoverStatus.Claimable;
+    bool incidentHappened = s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
-      mustBeDuringClaimPeriod(s, coverKey);
+      mustBeDuringClaimPeriod(s, coverKey, productKey);
       return;
     }
   }
@@ -1038,7 +1260,7 @@ function validateUnstakeWithClaim(
 ### mustBeDuringClaimPeriod
 
 ```solidity
-function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey) public view
+function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey, bytes32 productKey) public view
 ```
 
 **Arguments**
@@ -1047,14 +1269,19 @@ function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey) public view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey) public view {
-    uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey);
-    uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+function mustBeDuringClaimPeriod(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    uint256 beginsFrom = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
+    uint256 expiresAt = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
     require(beginsFrom > 0, "Invalid claim begin date");
     require(expiresAt > beginsFrom, "Invalid claim period");
@@ -1068,7 +1295,7 @@ function mustBeDuringClaimPeriod(IStore s, bytes32 coverKey) public view {
 ### mustBeAfterClaimExpiry
 
 ```solidity
-function mustBeAfterClaimExpiry(IStore s, bytes32 coverKey) external view
+function mustBeAfterClaimExpiry(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -1077,13 +1304,18 @@ function mustBeAfterClaimExpiry(IStore s, bytes32 coverKey) external view
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustBeAfterClaimExpiry(IStore s, bytes32 coverKey) external view {
-    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey), "Claim still active"); // solhint-disable-line
+function mustBeAfterClaimExpiry(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(block.timestamp > s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey), "Claim still active"); // solhint-disable-line
   }
 ```
 </details>
@@ -1115,7 +1347,7 @@ function senderMustBeWhitelistedCoverCreator(IStore s) external view {
 ### senderMustBeWhitelistedIfRequired
 
 ```solidity
-function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, address sender) external view
+function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, bytes32 productKey, address sender) external view
 ```
 
 **Arguments**
@@ -1124,6 +1356,7 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, address s
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | sender | address |  | 
 
 <details>
@@ -1133,15 +1366,52 @@ function senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, address s
 function senderMustBeWhitelistedIfRequired(
     IStore s,
     bytes32 coverKey,
+    bytes32 productKey,
     address sender
   ) external view {
-    bool required = s.checkIfRequiresWhitelist(coverKey);
+    bool supportsProducts = s.supportsProductsInternal(coverKey);
+    bool required = supportsProducts ? s.checkIfProductRequiresWhitelist(coverKey, productKey) : s.checkIfRequiresWhitelist(coverKey);
 
     if (required == false) {
       return;
     }
 
-    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, sender), "You are not whitelisted");
+    require(s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, sender), "You are not whitelisted");
+  }
+```
+</details>
+
+### mustBeSupportedProductOrEmpty
+
+```solidity
+function mustBeSupportedProductOrEmpty(IStore s, bytes32 coverKey, bytes32 productKey) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeSupportedProductOrEmpty(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view {
+    bool hasProducts = s.supportsProductsInternal(coverKey);
+
+    hasProducts ? require(productKey > 0, "Specify a product") : require(productKey == 0, "Invalid product");
+
+    if (hasProducts) {
+      mustBeValidProduct(s, coverKey, productKey);
+      mustBeActiveProduct(s, coverKey, productKey);
+    }
   }
 ```
 </details>
@@ -1175,6 +1445,7 @@ function senderMustBeWhitelistedIfRequired(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -1213,7 +1484,7 @@ function senderMustBeWhitelistedIfRequired(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -1238,6 +1509,7 @@ function senderMustBeWhitelistedIfRequired(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -1248,7 +1520,7 @@ function senderMustBeWhitelistedIfRequired(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -1257,7 +1529,6 @@ function senderMustBeWhitelistedIfRequired(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

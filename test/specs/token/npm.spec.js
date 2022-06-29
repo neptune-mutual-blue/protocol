@@ -14,7 +14,7 @@ describe('NPM Token: Constructor', () => {
 
   before(async () => {
     timelockOrOwner = helper.randomAddress()
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner, 'Neptune Mutual', 'NPM')
   })
 
   it('should deploy correctly', async () => {
@@ -40,7 +40,7 @@ describe('NPM Token: Issuances', () => {
 
   before(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
   })
 
   it('should issue correctly', async () => {
@@ -50,7 +50,7 @@ describe('NPM Token: Issuances', () => {
     const issueTo = owner.address
     const amount = helper.ether(100_000_000)
 
-    const tx = await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount)
+    const tx = await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount])
 
     const { events } = await tx.wait()
     const event = await events.find(x => x.event === 'Minted')
@@ -62,14 +62,14 @@ describe('NPM Token: Issuances', () => {
     const balance = await npm.balanceOf(owner.address)
     balance.should.equal(amount)
   })
-  it('should be reject if zero amount was specified', async () => {
+  it('should be rejected if zero amount was specified', async () => {
     const [owner, timelockOrOwner] = await ethers.getSigners()
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
     const issueTo = owner.address
     const amount = helper.ether(0)
 
-    await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount)
+    await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount])
       .should.be.rejectedWith('Invalid amount')
   })
 
@@ -80,7 +80,7 @@ describe('NPM Token: Issuances', () => {
     const issueTo = owner.address
     const amount = helper.ether(100_000_000)
 
-    await npm.issue(issuanceKey, issueTo, amount)
+    await npm.issueMany(issuanceKey, [issueTo], [amount])
       .should.be.rejectedWith('Ownable: caller is not the owner')
   })
 
@@ -89,9 +89,9 @@ describe('NPM Token: Issuances', () => {
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
     const issueTo = owner.address
-    const amount = ethers.BigNumber.from(helper.ether(900_000_000))
+    const amount = ethers.BigNumber.from(helper.ether(900_000_001))
 
-    await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount.add(1))
+    await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount.add(1)])
       .should.be.rejectedWith('Cap exceeded')
   })
 
@@ -104,7 +104,7 @@ describe('NPM Token: Issuances', () => {
 
     await npm.connect(timelockOrOwner).pause(true)
 
-    await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount)
+    await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount])
       .should.be.rejectedWith('Pausable: paused')
   })
 })
@@ -114,7 +114,7 @@ describe('NPM Token: Issue Many', () => {
 
   beforeEach(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
   })
 
   it('should issue to many accounts correctly', async () => {
@@ -194,7 +194,7 @@ describe('NPM Token: Transfers', () => {
 
   before(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
   })
 
   it('should transfer correctly', async () => {
@@ -204,7 +204,7 @@ describe('NPM Token: Transfers', () => {
     const issueTo = owner.address
     const amount = helper.ether(100)
 
-    await npm.connect(timelockOrOwner).issue(issuanceKey, issueTo, amount)
+    await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount])
 
     await npm.transfer(alice.address, helper.ether(2))
     const ownerBalance = await npm.balanceOf(owner.address)
@@ -233,10 +233,10 @@ describe('NPM Token: Transfer Many', () => {
 
   before(async () => {
     const [, timelockOrOwner] = await ethers.getSigners()
-    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address)
+    npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
-    await npm.connect(timelockOrOwner).issue(issuanceKey, timelockOrOwner.address, helper.ether(1_000_000))
+    await npm.connect(timelockOrOwner).issueMany(issuanceKey, [timelockOrOwner.address], [helper.ether(1_000_000)])
   })
 
   it('should transfer to many accounts correctly', async () => {
@@ -259,7 +259,7 @@ describe('NPM Token: Transfer Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await npm.connect(timelockOrOwner).issue(key.toBytes32('test'), george.address, helper.ether(1_000_000))
+    await npm.connect(timelockOrOwner).issueMany(key.toBytes32('test'), [george.address], [helper.ether(1_000_000)])
 
     await npm.connect(george).transferMany(receivers, amounts)
       .should.be.rejectedWith('Ownable: caller is not the owner')

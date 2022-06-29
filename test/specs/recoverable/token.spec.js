@@ -24,7 +24,7 @@ describe('Recoverable: Token', () => {
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address)
 
-    fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000))
+    fakeToken = await deployer.deploy(cache, 'FakeToken', 'FAKE', 'FAKE', helper.ether(100_000), 12)
   })
 
   it('must not allow non recovery agents to recover tokens', async () => {

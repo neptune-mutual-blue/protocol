@@ -1,4 +1,4 @@
-# With Flash Loan Contract (VaultDelegateWithFlashLoan.sol)
+# With Flash Loan Delegate Contract (VaultDelegateWithFlashLoan.sol)
 
 View Source: [contracts/core/delegates/VaultDelegateWithFlashLoan.sol](../contracts/core/delegates/VaultDelegateWithFlashLoan.sol)
 
@@ -7,12 +7,7 @@ View Source: [contracts/core/delegates/VaultDelegateWithFlashLoan.sol](../contra
 
 **VaultDelegateWithFlashLoan**
 
-WithFlashLoan contract implements `EIP-3156 Flash Loan`.
- Using flash loans, you can borrow up to the total available amount of
- the stablecoin liquidity available in this cover liquidity pool.
- You need to return back the borrowed amount + fee in the same transaction.
- The function `flashFee` enables you to check, in advance, fee that
- you need to pay to take out the loan.
+VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
 
 ## Functions
 
@@ -97,6 +92,11 @@ function getMaxFlashLoan(
 
 ### preFlashLoan
 
+This hook runs before `flashLoan` implementation on vault(s)
+ Note:
+ - msg.sender must be the correct vault contract
+ - Cover status should be normal
+
 ```solidity
 function preFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , address token, uint256 amount, bytes ) external nonpayable
 returns(stablecoin contract IERC20, fee uint256, protocolFee uint256)
@@ -106,12 +106,12 @@ returns(stablecoin contract IERC20, fee uint256, protocolFee uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-| coverKey | bytes32 |  | 
-|  | IERC3156FlashBorrower |  | 
-| token | address |  | 
-| amount | uint256 |  | 
-|  | bytes |  | 
+|  | address | coverKey Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
+|  | IERC3156FlashBorrower | coverKey Enter the cover key | 
+| token | address | Enter the token you want to borrow | 
+| amount | uint256 | Enter the flash loan amount to receive | 
+|  | bytes | coverKey Enter the cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -154,6 +154,11 @@ function preFlashLoan(
 
 ### postFlashLoan
 
+This hook runs after `flashLoan` implementation on vault(s)
+ Note:
+ - msg.sender must be the correct vault contract
+ - Cover status should be normal
+
 ```solidity
 function postFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , address , uint256 , bytes ) external nonpayable
 ```
@@ -162,12 +167,12 @@ function postFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , addre
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-| coverKey | bytes32 |  | 
-|  | IERC3156FlashBorrower |  | 
-|  | address |  | 
-|  | uint256 |  | 
-|  | bytes |  | 
+|  | address | coverKey Enter the cover key | 
+| coverKey | bytes32 | Enter the cover key | 
+|  | IERC3156FlashBorrower | coverKey Enter the cover key | 
+|  | address | coverKey Enter the cover key | 
+|  | uint256 | coverKey Enter the cover key | 
+|  | bytes | coverKey Enter the cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -182,6 +187,7 @@ function postFlashLoan(
     bytes calldata /*data*/
   ) external override {
     s.senderMustBeVaultContract(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
     s.updateStateAndLiquidity(coverKey);
@@ -218,6 +224,7 @@ function postFlashLoan(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -256,7 +263,7 @@ function postFlashLoan(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -281,6 +288,7 @@ function postFlashLoan(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -291,7 +299,7 @@ function postFlashLoan(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -300,7 +308,6 @@ function postFlashLoan(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

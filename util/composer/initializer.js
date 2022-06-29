@@ -248,7 +248,8 @@ const initialize = async (suite, deploymentId) => {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
       CoverLibV1: libs.coverLibV1.address,
-      ProtoUtilV1: libs.protoUtilV1.address,
+      CoverUtilV1: libs.coverUtilV1.address,
+      RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLibV1.address
     },
@@ -273,6 +274,7 @@ const initialize = async (suite, deploymentId) => {
     BaseLibV1: libs.baseLibV1.address,
     CoverUtilV1: libs.coverUtilV1.address,
     PolicyHelperV1: libs.policyHelperV1.address,
+    ProtoUtilV1: libs.protoUtilV1.address,
     StrategyLibV1: libs.strategyLibV1.address,
     ValidationLibV1: libs.validationLibV1.address
   }, store.address, '0')
@@ -283,6 +285,7 @@ const initialize = async (suite, deploymentId) => {
     {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
+      CoverUtilV1: libs.coverUtilV1.address,
       GovernanceUtilV1: libs.governanceUtilV1.address,
       RoutineInvokerLibV1: libs.routineInvokerLibV1.address,
       NTransferUtilV2: libs.transferLib.address,
@@ -323,18 +326,20 @@ const initialize = async (suite, deploymentId) => {
     await intermediate(cache, liquidityEngine, 'addStrategies', [aaveStrategy.address])
   }
 
-  const compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
-    AccessControlLibV1: libs.accessControlLibV1.address,
-    BaseLibV1: libs.baseLibV1.address,
-    NTransferUtilV2: libs.transferLib.address,
-    ProtoUtilV1: libs.protoUtilV1.address,
-    RegistryLibV1: libs.registryLibV1.address,
-    StoreKeyUtil: libs.storeKeyUtil.address,
-    ValidationLibV1: libs.validationLibV1.address
-  }, store.address, compoundDaiDelegator, cDai.address)
+  if (compoundDaiDelegator) {
+    const compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
+      AccessControlLibV1: libs.accessControlLibV1.address,
+      BaseLibV1: libs.baseLibV1.address,
+      NTransferUtilV2: libs.transferLib.address,
+      ProtoUtilV1: libs.protoUtilV1.address,
+      RegistryLibV1: libs.registryLibV1.address,
+      StoreKeyUtil: libs.storeKeyUtil.address,
+      ValidationLibV1: libs.validationLibV1.address
+    }, store.address, compoundDaiDelegator, cDai.address)
 
-  await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
-  await intermediate(cache, liquidityEngine, 'addStrategies', [compoundStrategy.address])
+    await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
+    await intermediate(cache, liquidityEngine, 'addStrategies', [compoundStrategy.address])
+  }
 
   const payload = [{
     account: cover.address,

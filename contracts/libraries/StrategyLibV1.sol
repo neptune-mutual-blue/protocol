@@ -7,14 +7,15 @@ import "../interfaces/IStore.sol";
 import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
 import "./ProtoUtilV1.sol";
-import "./NTransferUtilV2.sol";
-import "hardhat/console.sol";
+import "./RegistryLibV1.sol";
 
 library StrategyLibV1 {
-  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using RegistryLibV1 for IStore;
+
+  uint256 public constant DEFAULT_LENDING_PERIOD = 180 days;
+  uint256 public constant DEFAULT_WITHDRAWAL_WINDOW = 7 days;
 
   event StrategyAdded(address indexed strategy);
   event LendingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
@@ -40,7 +41,7 @@ library StrategyLibV1 {
     _deleteStrategy(s, toFind);
   }
 
-  function addStrategiesInternal(IStore s, address[] memory strategies) external {
+  function addStrategiesInternal(IStore s, address[] calldata strategies) external {
     for (uint256 i = 0; i < strategies.length; i++) {
       address strategy = strategies[i];
       _addStrategy(s, strategy);
@@ -55,6 +56,9 @@ library StrategyLibV1 {
       lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
       withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
+
+    lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
+    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
   }
 
   function setLendingPeriodsInternal(
@@ -175,9 +179,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 amount
   ) external {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return;
     }
 
@@ -192,9 +194,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    bool isStablecoin = s.getStablecoin() == address(token) ? true : false;
-
-    if (isStablecoin == false) {
+    if (s.getStablecoin() == address(token) == false) {
       return (income, loss);
     }
 
@@ -206,7 +206,6 @@ library StrategyLibV1 {
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
-    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 

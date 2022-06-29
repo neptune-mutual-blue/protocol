@@ -29,6 +29,7 @@ event Minted(bytes32 indexed key, address indexed account, uint256  amount);
 - [issueMany(bytes32 key, address[] receivers, uint256[] amounts)](#issuemany)
 - [transferMany(address[] receivers, uint256[] amounts)](#transfermany)
 - [_issue(bytes32 key, address mintTo, uint256 amount)](#_issue)
+- [_sumOf(uint256[] amounts)](#_sumof)
 
 ### 
 
@@ -104,6 +105,8 @@ function issue(
     uint256 amount
   ) external onlyOwner whenNotPaused {
     _issue(key, mintTo, amount);
+    _issued += amount;
+    require(_issued <= _CAP, "Cap exceeded");
   }
 ```
 </details>
@@ -128,11 +131,14 @@ function issueMany(bytes32 key, address[] receivers, uint256[] amounts) external
 ```javascript
 function issueMany(
     bytes32 key,
-    address[] memory receivers,
-    uint256[] memory amounts
+    address[] calldata receivers,
+    uint256[] calldata amounts
   ) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
+
+    _issued += _sumOf(amounts);
+    require(_issued <= _CAP, "Cap exceeded");
 
     for (uint256 i = 0; i < receivers.length; i++) {
       _issue(key, receivers[i], amounts[i]);
@@ -158,7 +164,7 @@ function transferMany(address[] receivers, uint256[] amounts) external nonpayabl
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function transferMany(address[] memory receivers, uint256[] memory amounts) external onlyOwner whenNotPaused {
+function transferMany(address[] calldata receivers, uint256[] calldata amounts) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
 
@@ -193,12 +199,33 @@ function _issue(
     uint256 amount
   ) private {
     require(amount > 0, "Invalid amount");
-
     super._mint(mintTo, amount);
-    _issued += amount;
-
-    require(_issued <= _CAP, "Cap exceeded");
     emit Minted(key, mintTo, amount);
+  }
+```
+</details>
+
+### _sumOf
+
+```solidity
+function _sumOf(uint256[] amounts) private pure
+returns(total uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amounts | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total) {
+    for (uint256 i = 0; i < amounts.length; i++) {
+      total += amounts[i];
+    }
   }
 ```
 </details>
@@ -232,6 +259,7 @@ function _issue(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -270,7 +298,7 @@ function _issue(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -295,6 +323,7 @@ function _issue(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -305,7 +334,7 @@ function _issue(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -314,7 +343,6 @@ function _issue(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -12,7 +12,15 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
 
   event Minted(bytes32 indexed key, address indexed account, uint256 amount);
 
-  constructor(address timelockOrOwner) Ownable() Pausable() ERC20("Neptune Mutual Token", "NPM") {
+  constructor(
+    address timelockOrOwner,
+    string memory tokenName,
+    string memory tokenSymbol
+  ) Ownable() Pausable() ERC20(tokenName, tokenSymbol) {
+    require(timelockOrOwner != address(0), "Invalid owner");
+    require(bytes(tokenName).length > 0, "Invalid token name");
+    require(bytes(tokenSymbol).length > 0, "Invalid token symbol");
+
     super._transferOwnership(timelockOrOwner);
   }
 
@@ -20,32 +28,27 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     address,
     address,
     uint256
-  ) internal view override whenNotPaused {
+  ) internal view virtual override whenNotPaused {
     // solhint-disable-previous-line
-  }
-
-  function issue(
-    bytes32 key,
-    address mintTo,
-    uint256 amount
-  ) external onlyOwner whenNotPaused {
-    _issue(key, mintTo, amount);
   }
 
   function issueMany(
     bytes32 key,
-    address[] memory receivers,
-    uint256[] memory amounts
+    address[] calldata receivers,
+    uint256[] calldata amounts
   ) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
+
+    _issued += _sumOf(amounts);
+    require(_issued <= _CAP, "Cap exceeded");
 
     for (uint256 i = 0; i < receivers.length; i++) {
       _issue(key, receivers[i], amounts[i]);
     }
   }
 
-  function transferMany(address[] memory receivers, uint256[] memory amounts) external onlyOwner whenNotPaused {
+  function transferMany(address[] calldata receivers, uint256[] calldata amounts) external onlyOwner whenNotPaused {
     require(receivers.length > 0, "No receiver");
     require(receivers.length == amounts.length, "Invalid args");
 
@@ -62,9 +65,12 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     require(amount > 0, "Invalid amount");
 
     super._mint(mintTo, amount);
-    _issued += amount;
-
-    require(_issued <= _CAP, "Cap exceeded");
     emit Minted(key, mintTo, amount);
+  }
+
+  function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total) {
+    for (uint256 i = 0; i < amounts.length; i++) {
+      total += amounts[i];
+    }
   }
 }

@@ -6,6 +6,7 @@ const pair = require('../../../../util/composer/uniswap-pair')
 const { ethers } = require('hardhat')
 const MINUTES = 60
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -25,8 +26,8 @@ describe('Bond Pool: Get Info', () => {
     bondPoolLibV1 = deployed.bondPoolLibV1
     priceLibV1 = deployed.priceLibV1
 
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000))
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm.address, token1: dai.address }])
+    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
 
     pool = await deployer.deployWithLibraries(cache, 'BondPool', {
       AccessControlLibV1: accessControlLibV1.address,

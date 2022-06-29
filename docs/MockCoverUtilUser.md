@@ -15,7 +15,7 @@ contract IStore public s;
 ## Functions
 
 - [constructor(IStore store)](#)
-- [getActiveLiquidityUnderProtection(bytes32 coverKey)](#getactiveliquidityunderprotection)
+- [getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey)](#getactiveliquidityunderprotection)
 
 ### 
 
@@ -42,7 +42,7 @@ constructor(IStore store) {
 ### getActiveLiquidityUnderProtection
 
 ```solidity
-function getActiveLiquidityUnderProtection(bytes32 coverKey) public view
+function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
 ```
 
@@ -51,13 +51,14 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey);
+function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
   }
 ```
 </details>
@@ -91,6 +92,7 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -129,7 +131,7 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -154,6 +156,7 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -164,7 +167,7 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -173,7 +176,6 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey) public view returns
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

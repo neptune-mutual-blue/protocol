@@ -21,7 +21,9 @@ mapping(bytes32 => bytes32) public bytes32Storage;
 mapping(bytes32 => bool) public boolStorage;
 mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
 mapping(bytes32 => address[]) public addressArrayStorage;
-mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositionMap;
+mapping(bytes32 => mapping(address => uint256)) public addressArrayPositionMap;
+mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
+mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
 
 ```
 
@@ -64,6 +66,13 @@ mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositi
 - [getAddressArrayItemPosition(bytes32 k, address toFind)](#getaddressarrayitemposition)
 - [getAddressArrayItemByIndex(bytes32 k, uint256 i)](#getaddressarrayitembyindex)
 - [countAddressArrayItems(bytes32 k)](#countaddressarrayitems)
+- [setBytes32ArrayItem(bytes32 k, bytes32 v)](#setbytes32arrayitem)
+- [deleteBytes32ArrayItem(bytes32 k, bytes32 v)](#deletebytes32arrayitem)
+- [deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#deletebytes32arrayitembyindex)
+- [getBytes32Array(bytes32 k)](#getbytes32array)
+- [getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind)](#getbytes32arrayitemposition)
+- [getBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#getbytes32arrayitembyindex)
+- [countBytes32ArrayItems(bytes32 k)](#countbytes32arrayitems)
 
 ### setAddress
 
@@ -204,7 +213,7 @@ function setUints(bytes32 k, uint256[] v) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setUints(bytes32 k, uint256[] memory v) external override {
+function setUints(bytes32 k, uint256[] calldata v) external override {
     uintsStorage[k] = v;
   }
 ```
@@ -345,9 +354,9 @@ function setAddressArrayItem(bytes32 k, address v) external nonpayable
 
 ```javascript
 function setAddressArrayItem(bytes32 k, address v) external override {
-    if (addressArrayAddressPositionMap[k][v] == 0) {
+    if (addressArrayPositionMap[k][v] == 0) {
       addressArrayStorage[k].push(v);
-      addressArrayAddressPositionMap[k][v] = addressArrayStorage[k].length;
+      addressArrayPositionMap[k][v] = addressArrayStorage[k].length;
     }
   }
 ```
@@ -547,19 +556,19 @@ function deleteAddressArrayItem(bytes32 k, address v) public nonpayable
 
 ```javascript
 function deleteAddressArrayItem(bytes32 k, address v) public override {
-    require(addressArrayAddressPositionMap[k][v] > 0, "Not found");
+    require(addressArrayPositionMap[k][v] > 0, "Not found");
 
-    uint256 i = addressArrayAddressPositionMap[k][v] - 1;
+    uint256 i = addressArrayPositionMap[k][v] - 1;
     uint256 count = addressArrayStorage[k].length;
 
     if (i + 1 != count) {
       addressArrayStorage[k][i] = addressArrayStorage[k][count - 1];
       address theThenLastAddress = addressArrayStorage[k][i];
-      addressArrayAddressPositionMap[k][theThenLastAddress] = i + 1;
+      addressArrayPositionMap[k][theThenLastAddress] = i + 1;
     }
 
     addressArrayStorage[k].pop();
-    delete addressArrayAddressPositionMap[k][v];
+    delete addressArrayPositionMap[k][v];
   }
 ```
 </details>
@@ -607,7 +616,7 @@ returns(values address[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+function getAddressValues(bytes32[] calldata keys) external view override returns (address[] memory values) {
     values = new address[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -681,7 +690,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+function getUintValues(bytes32[] calldata keys) external view override returns (uint256[] memory values) {
     values = new uint256[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -894,7 +903,7 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPosition(bytes32 k, address toFind) external view override returns (uint256) {
-    return addressArrayAddressPositionMap[k][toFind];
+    return addressArrayPositionMap[k][toFind];
   }
 ```
 </details>
@@ -947,6 +956,188 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 ```
 </details>
 
+### setBytes32ArrayItem
+
+```solidity
+function setBytes32ArrayItem(bytes32 k, bytes32 v) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBytes32ArrayItem(bytes32 k, bytes32 v) external override {
+    if (bytes32ArrayPositionMap[k][v] == 0) {
+      bytes32ArrayStorage[k].push(v);
+      bytes32ArrayPositionMap[k][v] = bytes32ArrayStorage[k].length;
+    }
+  }
+```
+</details>
+
+### deleteBytes32ArrayItem
+
+```solidity
+function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| v | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public override {
+    require(bytes32ArrayPositionMap[k][v] > 0, "Not found");
+
+    uint256 i = bytes32ArrayPositionMap[k][v] - 1;
+    uint256 count = bytes32ArrayStorage[k].length;
+
+    if (i + 1 != count) {
+      bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
+      bytes32 theThenLastbytes32 = bytes32ArrayStorage[k][i];
+      bytes32ArrayPositionMap[k][theThenLastbytes32] = i + 1;
+    }
+
+    bytes32ArrayStorage[k].pop();
+    delete bytes32ArrayPositionMap[k][v];
+  }
+```
+</details>
+
+### deleteBytes32ArrayItemByIndex
+
+```solidity
+function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| i | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external override {
+    require(i < bytes32ArrayStorage[k].length, "Invalid index");
+
+    bytes32 v = bytes32ArrayStorage[k][i];
+    deleteBytes32ArrayItem(k, v);
+  }
+```
+</details>
+
+### getBytes32Array
+
+```solidity
+function getBytes32Array(bytes32 k) external view
+returns(bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32Array(bytes32 k) external view override returns (bytes32[] memory) {
+    return bytes32ArrayStorage[k];
+  }
+```
+</details>
+
+### getBytes32ArrayItemPosition
+
+```solidity
+function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| toFind | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view override returns (uint256) {
+    return bytes32ArrayPositionMap[k][toFind];
+  }
+```
+</details>
+
+### getBytes32ArrayItemByIndex
+
+```solidity
+function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+| i | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view override returns (bytes32) {
+    require(bytes32ArrayStorage[k].length > i, "Invalid index");
+    return bytes32ArrayStorage[k][i];
+  }
+```
+</details>
+
+### countBytes32ArrayItems
+
+```solidity
+function countBytes32ArrayItems(bytes32 k) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countBytes32ArrayItems(bytes32 k) external view override returns (uint256) {
+    return bytes32ArrayStorage[k].length;
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -976,6 +1167,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -1014,7 +1206,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -1039,6 +1231,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -1049,7 +1242,7 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -1058,7 +1251,6 @@ function countAddressArrayItems(bytes32 k) external view override returns (uint2
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

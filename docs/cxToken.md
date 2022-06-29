@@ -9,12 +9,18 @@ View Source: [contracts/core/cxToken/cxToken.sol](../contracts/core/cxToken/cxTo
 cxTokens are minted when someone purchases a cover. <br /> <br />
  When a cover incident is successfully resolved, each unit of cxTokens can be redeemed at 1:1 ratio
  of 1 cxToken = 1 DAI/BUSD/USDC (minus platform fees).
+ Important:
+ cxTokens are not transferrable. You can use cxTokens only to submit a claim.
+ There is a lag period before your cxTokens starts its coverage.
+ After the next day's UTC EOD timestamp, cxTokens take effect and are valid until the expiration period.
+ Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
 
 ## Contract Members
 **Constants & Variables**
 
 ```js
 bytes32 public COVER_KEY;
+bytes32 public PRODUCT_KEY;
 uint256 public createdOn;
 uint256 public expiresOn;
 mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
@@ -23,45 +29,21 @@ mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
 
 ## Functions
 
-- [_getTokenName(bytes32 coverKey)](#_gettokenname)
-- [constructor(IStore store, bytes32 coverKey, uint256 expiry)](#)
+- [constructor(IStore store, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiry)](#)
 - [getCoverageStartsFrom(address account, uint256 date)](#getcoveragestartsfrom)
 - [_getExcludedCoverageOf(address account)](#_getexcludedcoverageof)
 - [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
-- [mint(bytes32 coverKey, address to, uint256 amount)](#mint)
+- [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
 - [_getEOD(uint256 date)](#_geteod)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address from, address to, uint256 )](#_beforetokentransfer)
-
-### _getTokenName
-
-```solidity
-function _getTokenName(bytes32 coverKey) private pure
-returns(string)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getTokenName(bytes32 coverKey) private pure returns (string memory) {
-    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), "-cxtoken"));
-  }
-```
-</details>
 
 ### 
 
 Constructs this contract
 
 ```solidity
-function (IStore store, bytes32 coverKey, uint256 expiry) public nonpayable ERC20 Recoverable 
+function (IStore store, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiry) public nonpayable ERC20 Recoverable 
 ```
 
 **Arguments**
@@ -69,8 +51,10 @@ function (IStore store, bytes32 coverKey, uint256 expiry) public nonpayable ERC2
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | store | IStore | Provide the store contract instance | 
-| coverKey | bytes32 | Enter the cover key or cover this cxToken instance points to | 
-| expiry | uint256 | Provide the cover expiry timestamp of this cxToken instance | 
+| coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
+| tokenName | string |  | 
+| expiry | uint256 | Provide the cover expiry timestamp | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -79,9 +63,12 @@ function (IStore store, bytes32 coverKey, uint256 expiry) public nonpayable ERC2
 constructor(
     IStore store,
     bytes32 coverKey,
+    bytes32 productKey,
+    string memory tokenName,
     uint256 expiry
-  ) ERC20(_getTokenName(coverKey), "cxUSD") Recoverable(store) {
+  ) ERC20(tokenName, "cxUSD") Recoverable(store) {
     COVER_KEY = coverKey;
+    PRODUCT_KEY = productKey;
     expiresOn = expiry;
   }
 ```
@@ -133,7 +120,7 @@ returns(exclusion uint256)
 
 ```javascript
 function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
-    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY);
+    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
     // Only the policies purchased before 24-48 hours (based on configuration) are considered valid.
     // Given the current codebase, the following loop looks redundant.
@@ -142,7 +129,7 @@ function _getExcludedCoverageOf(address account) private view returns (uint256 e
     for (uint256 i = 0; i < 14; i++) {
       uint256 date = _getEOD(incidentDate + (i * 1 days));
 
-      if (date > _getEOD(s.getResolutionTimestampInternal(COVER_KEY))) {
+      if (date > _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY))) {
         break;
       }
 
@@ -190,7 +177,7 @@ Mints cxTokens when a policy is purchased.
  This feature can only be accessed by the latest policy smart contract.
 
 ```solidity
-function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
+function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -198,6 +185,7 @@ function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key for which the cxTokens are being minted | 
+| productKey | bytes32 |  | 
 | to | address | Enter the address where the minted token will be sent | 
 | amount | uint256 | Specify the amount of cxTokens to mint | 
 
@@ -207,15 +195,18 @@ function mint(bytes32 coverKey, address to, uint256 amount) external nonpayable 
 ```javascript
 function mint(
     bytes32 coverKey,
+    bytes32 productKey,
     address to,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl Can only be called by the latest policy contract
-    s.mustNotBePaused();
-
     require(amount > 0, "Please specify amount");
     require(coverKey == COVER_KEY, "Invalid cover");
+    require(productKey == PRODUCT_KEY, "Invalid product");
+
+    // @suppress-acl Can only be called by the latest policy contract
+    s.mustNotBePaused();
     s.senderMustBePolicyContract();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
@@ -344,6 +335,7 @@ function _beforeTokenTransfer(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -382,7 +374,7 @@ function _beforeTokenTransfer(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -407,6 +399,7 @@ function _beforeTokenTransfer(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -417,7 +410,7 @@ function _beforeTokenTransfer(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -426,7 +419,6 @@ function _beforeTokenTransfer(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

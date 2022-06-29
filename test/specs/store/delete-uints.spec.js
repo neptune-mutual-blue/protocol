@@ -18,12 +18,15 @@ describe('Store: delete uints', () => {
 
   it('must correctly delete uints', async () => {
     const k = key.toBytes32('test:uint')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
 
-    await store.setUints(k, value)
+    await store.setUints(k, values)
 
     let result = await store.getUints(k)
-    result.should.deep.equal(value)
+
+    for (const i in result) {
+      result[i].should.equal(values[i])
+    }
 
     await store.deleteUints(k)
 
@@ -33,9 +36,9 @@ describe('Store: delete uints', () => {
 
   it('must revert if the store is paused', async () => {
     const k = key.toBytes32('test:uint')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
 
-    await store.setUints(k, value)
+    await store.setUints(k, values)
 
     await store.pause()
 
@@ -52,9 +55,9 @@ describe('Store: delete uints', () => {
     const [, bob] = await ethers.getSigners()
 
     const k = key.toBytes32('test:uint')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
 
-    await store.setUints(k, value)
+    await store.setUints(k, values)
 
     await store.connect(bob).deleteUints(k)
       .should.be.rejectedWith('Forbidden')

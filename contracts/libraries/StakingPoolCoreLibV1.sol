@@ -102,9 +102,9 @@ library StakingPoolCoreLibV1 {
   function validateAddOrEditPoolInternal(
     IStore s,
     bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
+    string calldata name,
+    address[] calldata addresses,
+    uint256[] calldata values
   ) public view returns (bool) {
     require(key > 0, "Invalid key");
 
@@ -143,10 +143,11 @@ library StakingPoolCoreLibV1 {
   function addOrEditPoolInternal(
     IStore s,
     bytes32 key,
-    string memory name,
-    address[] memory addresses,
-    uint256[] memory values
+    string calldata name,
+    address[] calldata addresses,
+    uint256[] calldata values
   ) external {
+    // @suppress-zero-value-check The uint values are checked in the function `validateAddOrEditPoolInternal`
     bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
 
     if (poolExists == false) {
@@ -183,7 +184,7 @@ library StakingPoolCoreLibV1 {
   function _updatePoolValues(
     IStore s,
     bytes32 key,
-    uint256[] memory values
+    uint256[] calldata values
   ) private {
     if (values[0] > 0) {
       s.setUintByKeys(NS_POOL_STAKING_TARGET, key, values[0]);
@@ -224,7 +225,7 @@ library StakingPoolCoreLibV1 {
   function _initializeNewPool(
     IStore s,
     bytes32 key,
-    address[] memory addresses
+    address[] calldata addresses
   ) private {
     s.setAddressByKeys(NS_POOL_STAKING_TOKEN, key, addresses[0]);
     s.setAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[1]);

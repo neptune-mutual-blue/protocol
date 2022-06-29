@@ -14,7 +14,9 @@ contract FakeStore is IStore {
   mapping(bytes32 => bool) public boolStorage;
   mapping(bytes32 => mapping(address => bool)) public addressBooleanStorage;
   mapping(bytes32 => address[]) public addressArrayStorage;
-  mapping(bytes32 => mapping(address => uint256)) public addressArrayAddressPositionMap;
+  mapping(bytes32 => mapping(address => uint256)) public addressArrayPositionMap;
+  mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
+  mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
 
   function setAddress(bytes32 k, address v) external override {
     addressStorage[k] = v;
@@ -42,7 +44,7 @@ contract FakeStore is IStore {
     uintStorage[k] = existing - v;
   }
 
-  function setUints(bytes32 k, uint256[] memory v) external override {
+  function setUints(bytes32 k, uint256[] calldata v) external override {
     uintsStorage[k] = v;
   }
 
@@ -69,9 +71,9 @@ contract FakeStore is IStore {
   }
 
   function setAddressArrayItem(bytes32 k, address v) external override {
-    if (addressArrayAddressPositionMap[k][v] == 0) {
+    if (addressArrayPositionMap[k][v] == 0) {
       addressArrayStorage[k].push(v);
-      addressArrayAddressPositionMap[k][v] = addressArrayStorage[k].length;
+      addressArrayPositionMap[k][v] = addressArrayStorage[k].length;
     }
   }
 
@@ -108,19 +110,19 @@ contract FakeStore is IStore {
   }
 
   function deleteAddressArrayItem(bytes32 k, address v) public override {
-    require(addressArrayAddressPositionMap[k][v] > 0, "Not found");
+    require(addressArrayPositionMap[k][v] > 0, "Not found");
 
-    uint256 i = addressArrayAddressPositionMap[k][v] - 1;
+    uint256 i = addressArrayPositionMap[k][v] - 1;
     uint256 count = addressArrayStorage[k].length;
 
     if (i + 1 != count) {
       addressArrayStorage[k][i] = addressArrayStorage[k][count - 1];
       address theThenLastAddress = addressArrayStorage[k][i];
-      addressArrayAddressPositionMap[k][theThenLastAddress] = i + 1;
+      addressArrayPositionMap[k][theThenLastAddress] = i + 1;
     }
 
     addressArrayStorage[k].pop();
-    delete addressArrayAddressPositionMap[k][v];
+    delete addressArrayPositionMap[k][v];
   }
 
   function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
@@ -130,7 +132,7 @@ contract FakeStore is IStore {
     deleteAddressArrayItem(k, v);
   }
 
-  function getAddressValues(bytes32[] memory keys) external view override returns (address[] memory values) {
+  function getAddressValues(bytes32[] calldata keys) external view override returns (address[] memory values) {
     values = new address[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -146,7 +148,7 @@ contract FakeStore is IStore {
     return addressBooleanStorage[k][a];
   }
 
-  function getUintValues(bytes32[] memory keys) external view override returns (uint256[] memory values) {
+  function getUintValues(bytes32[] calldata keys) external view override returns (uint256[] memory values) {
     values = new uint256[](keys.length + 1);
 
     for (uint256 i = 0; i < keys.length; i++) {
@@ -187,7 +189,7 @@ contract FakeStore is IStore {
   }
 
   function getAddressArrayItemPosition(bytes32 k, address toFind) external view override returns (uint256) {
-    return addressArrayAddressPositionMap[k][toFind];
+    return addressArrayPositionMap[k][toFind];
   }
 
   function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view override returns (address) {
@@ -197,5 +199,52 @@ contract FakeStore is IStore {
 
   function countAddressArrayItems(bytes32 k) external view override returns (uint256) {
     return addressArrayStorage[k].length;
+  }
+
+  function setBytes32ArrayItem(bytes32 k, bytes32 v) external override {
+    if (bytes32ArrayPositionMap[k][v] == 0) {
+      bytes32ArrayStorage[k].push(v);
+      bytes32ArrayPositionMap[k][v] = bytes32ArrayStorage[k].length;
+    }
+  }
+
+  function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public override {
+    require(bytes32ArrayPositionMap[k][v] > 0, "Not found");
+
+    uint256 i = bytes32ArrayPositionMap[k][v] - 1;
+    uint256 count = bytes32ArrayStorage[k].length;
+
+    if (i + 1 != count) {
+      bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
+      bytes32 theThenLastbytes32 = bytes32ArrayStorage[k][i];
+      bytes32ArrayPositionMap[k][theThenLastbytes32] = i + 1;
+    }
+
+    bytes32ArrayStorage[k].pop();
+    delete bytes32ArrayPositionMap[k][v];
+  }
+
+  function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external override {
+    require(i < bytes32ArrayStorage[k].length, "Invalid index");
+
+    bytes32 v = bytes32ArrayStorage[k][i];
+    deleteBytes32ArrayItem(k, v);
+  }
+
+  function getBytes32Array(bytes32 k) external view override returns (bytes32[] memory) {
+    return bytes32ArrayStorage[k];
+  }
+
+  function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view override returns (uint256) {
+    return bytes32ArrayPositionMap[k][toFind];
+  }
+
+  function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view override returns (bytes32) {
+    require(bytes32ArrayStorage[k].length > i, "Invalid index");
+    return bytes32ArrayStorage[k][i];
+  }
+
+  function countBytes32ArrayItems(bytes32 k) external view override returns (uint256) {
+    return bytes32ArrayStorage[k].length;
   }
 }

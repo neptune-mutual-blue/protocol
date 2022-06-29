@@ -47,10 +47,10 @@ interface IStakingPools is IMember {
    */
   function addOrEditPool(
     bytes32 coverKey,
-    string memory name,
+    string calldata name,
     StakingPoolType poolType,
-    address[] memory addresses,
-    uint256[] memory values
+    address[] calldata addresses,
+    uint256[] calldata values
   ) external;
 
   function closePool(bytes32 coverKey) external;

@@ -14,6 +14,8 @@ abstract contract VaultLiquidity is VaultBase {
     address to,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
+    // @suppress-pausable Validated in `preTransferGovernance` and `postTransferGovernace`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -48,6 +50,7 @@ abstract contract VaultLiquidity is VaultBase {
     bytes32 referralCode
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
+    // @suppress-pausable Validated in `preAddLiquidity` and `postAddLiquidity`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -99,6 +102,7 @@ abstract contract VaultLiquidity is VaultBase {
     bool exit
   ) external override nonReentrant {
     // @suppress-acl Marking this as publicly accessible
+    // @suppress-pausable Validated in `preRemoveLiquidity` and `postRemoveLiquidity`
     require(coverKey == key, "Forbidden");
     require(podsToRedeem > 0, "Please specify amount");
 
@@ -159,6 +163,8 @@ abstract contract VaultLiquidity is VaultBase {
   }
 
   function accrueInterest() external override nonReentrant {
+    // @suppress-acl Marking this function as publicly accessible
+    // @suppress-pausable Validated in `accrueInterestImplementation`
     delgate().accrueInterestImplementation(msg.sender, key);
     emit InterestAccrued(key);
   }

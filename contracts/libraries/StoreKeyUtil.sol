@@ -27,6 +27,16 @@ library StoreKeyUtil {
     IStore s,
     bytes32 key1,
     bytes32 key2,
+    bytes32 key3,
+    uint256 value
+  ) external {
+    return s.setUint(_getKey(key1, key2, key3), value);
+  }
+
+  function setUintByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
     address account,
     uint256 value
   ) external {
@@ -92,7 +102,7 @@ library StoreKeyUtil {
   function setStringByKey(
     IStore s,
     bytes32 key,
-    string memory value
+    string calldata value
   ) external {
     require(key > 0, "Invalid key");
     s.setString(key, value);
@@ -102,7 +112,7 @@ library StoreKeyUtil {
     IStore s,
     bytes32 key1,
     bytes32 key2,
-    string memory value
+    string calldata value
   ) external {
     return s.setString(_getKey(key1, key2), value);
   }
@@ -125,6 +135,16 @@ library StoreKeyUtil {
     return s.setBytes32(_getKey(key1, key2), value);
   }
 
+  function setBytes32ByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    return s.setBytes32(_getKey(key1, key2, key3), value);
+  }
+
   function setBoolByKey(
     IStore s,
     bytes32 key,
@@ -141,6 +161,16 @@ library StoreKeyUtil {
     bool value
   ) external {
     return s.setBool(_getKey(key1, key2), value);
+  }
+
+  function setBoolByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bool value
+  ) external {
+    return s.setBool(_getKey(key1, key2, key3), value);
   }
 
   function setBoolByKeys(
@@ -250,6 +280,15 @@ library StoreKeyUtil {
     bytes32 key2
   ) external {
     return s.deleteUint(_getKey(key1, key2));
+  }
+
+  function deleteUintByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external {
+    return s.deleteUint(_getKey(key1, key2, key3));
   }
 
   function deleteBytes32ByKey(IStore s, bytes32 key) external {
@@ -381,6 +420,15 @@ library StoreKeyUtil {
     IStore s,
     bytes32 key1,
     bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.getUint(_getKey(key1, key2, key3));
+  }
+
+  function getUintByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
     address account
   ) external view returns (uint256) {
     return s.getUint(_getKey(key1, key2, account));
@@ -415,6 +463,15 @@ library StoreKeyUtil {
   function getBoolByKey(IStore s, bytes32 key) external view returns (bool) {
     require(key > 0, "Invalid key");
     return s.getBool(key);
+  }
+
+  function getBoolByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (bool) {
+    return s.getBool(_getKey(key1, key2, key3));
   }
 
   function getBoolByKeys(
@@ -584,7 +641,6 @@ library StoreKeyUtil {
   }
 
   function _getKey(bytes32 key1, bytes32 key2) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0, "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2));
   }
 
@@ -593,12 +649,10 @@ library StoreKeyUtil {
     bytes32 key2,
     bytes32 key3
   ) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0 && key3 > 0, "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2, key3));
   }
 
   function _getKey(bytes32 key, address account) private pure returns (bytes32) {
-    require(key > 0 && account != address(0), "Invalid key(s)");
     return keccak256(abi.encodePacked(key, account));
   }
 
@@ -607,7 +661,190 @@ library StoreKeyUtil {
     bytes32 key2,
     address account
   ) private pure returns (bytes32) {
-    require(key1 > 0 && key2 > 0 && account != address(0), "Invalid key(s)");
     return keccak256(abi.encodePacked(key1, key2, account));
+  }
+
+  function setBytes32ArrayByKey(
+    IStore s,
+    bytes32 key,
+    bytes32 value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.setBytes32ArrayItem(key, value);
+  }
+
+  function setBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    return s.setBytes32ArrayItem(_getKey(key1, key2), value);
+  }
+
+  function setBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    return s.setBytes32ArrayItem(_getKey(key1, key2, key3), value);
+  }
+
+  function deleteBytes32ArrayByKey(
+    IStore s,
+    bytes32 key,
+    bytes32 value
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteBytes32ArrayItem(key, value);
+  }
+
+  function deleteBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    return s.deleteBytes32ArrayItem(_getKey(key1, key2), value);
+  }
+
+  function deleteBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    return s.deleteBytes32ArrayItem(_getKey(key1, key2, key3), value);
+  }
+
+  function deleteBytes32ArrayByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external {
+    require(key > 0, "Invalid key");
+    return s.deleteBytes32ArrayItemByIndex(key, index);
+  }
+
+  function deleteBytes32ArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external {
+    return s.deleteBytes32ArrayItemByIndex(_getKey(key1, key2), index);
+  }
+
+  function deleteBytes32ArrayByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external {
+    return s.deleteBytes32ArrayItemByIndex(_getKey(key1, key2, key3), index);
+  }
+
+  function countBytes32ArrayByKey(IStore s, bytes32 key) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.countBytes32ArrayItems(key);
+  }
+
+  function countBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (uint256) {
+    return s.countBytes32ArrayItems(_getKey(key1, key2));
+  }
+
+  function countBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.countBytes32ArrayItems(_getKey(key1, key2, key3));
+  }
+
+  function getBytes32ArrayByKey(IStore s, bytes32 key) external view returns (bytes32[] memory) {
+    require(key > 0, "Invalid key");
+    return s.getBytes32Array(key);
+  }
+
+  function getBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2
+  ) external view returns (bytes32[] memory) {
+    return s.getBytes32Array(_getKey(key1, key2));
+  }
+
+  function getBytes32ArrayByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (bytes32[] memory) {
+    return s.getBytes32Array(_getKey(key1, key2, key3));
+  }
+
+  function getBytes32ArrayItemPositionByKey(
+    IStore s,
+    bytes32 key,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    require(key > 0, "Invalid key");
+    return s.getBytes32ArrayItemPosition(key, bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPosition(_getKey(key1, key2), bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemPositionByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPosition(_getKey(key1, key2, key3), bytes32ToFind);
+  }
+
+  function getBytes32ArrayItemByIndexByKey(
+    IStore s,
+    bytes32 key,
+    uint256 index
+  ) external view returns (bytes32) {
+    require(key > 0, "Invalid key");
+    return s.getBytes32ArrayItemByIndex(key, index);
+  }
+
+  function getBytes32ArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndex(_getKey(key1, key2), index);
+  }
+
+  function getBytes32ArrayItemByIndexByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndex(_getKey(key1, key2, key3), index);
   }
 }

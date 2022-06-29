@@ -10,12 +10,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "witness",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -41,12 +47,18 @@
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "witness",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "incidentDate",
         "type": "uint256"
@@ -66,6 +78,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -89,6 +106,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -118,6 +140,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {
@@ -153,6 +180,11 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
       }
     ],
     "name": "getStatus",
@@ -171,6 +203,11 @@
       {
         "internalType": "bytes32",
         "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
         "type": "bytes32"
       },
       {

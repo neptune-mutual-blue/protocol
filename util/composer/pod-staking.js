@@ -1,7 +1,7 @@
 const hre = require('hardhat')
 const { percentage, zerox } = require('../helper')
 const { getVault } = require('./vault')
-const { covers } = require('../../examples/covers')
+const { covers } = require('../../examples/dedicated')
 const { addPools } = require('./add-pools')
 
 const getTokenAddress = (tokenInfo, addressOrObject) => {

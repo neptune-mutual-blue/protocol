@@ -23,6 +23,7 @@ contract BondPool is BondPoolBase {
     // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
+    // @suppress-zero-value-check The uint values are validated in the function `claimBondInternal`
     uint256[] memory values = s.claimBondInternal();
     emit BondClaimed(msg.sender, values[0]);
   }

@@ -6,20 +6,21 @@ View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Proc
 
 **Processor**
 
-Enables the policyholders to submit a claim and receive immediate payouts during claim period.
- The claims which are submitted after the claim expiry period are considered invalid
- and therefore receive no payouts.
+The claims processor contract allows policyholders to file a claim and get instant payouts during the claim period.
+ There is a lag period before a policy begins coverage.
+ After the next day's UTC EOD timestamp, policies take effect and are valid until the expiration period.
+ Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+ If a claim isn't made during the claim period, it isn't valid and there is no payout.
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount)](#claim)
-- [validate(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount)](#validate)
-- [getClaimExpiryDate(bytes32 coverKey)](#getclaimexpirydate)
+- [claim(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 amount)](#claim)
+- [validate(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 amount)](#validate)
+- [getClaimExpiryDate(bytes32 coverKey, bytes32 productKey)](#getclaimexpirydate)
 - [setClaimPeriod(bytes32 coverKey, uint256 value)](#setclaimperiod)
-- [setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts, bool[] statuses)](#setblacklist)
-- [_getBlacklistKey(bytes32 coverKey, uint256 incidentDate)](#_getblacklistkey)
-- [isBlacklisted(bytes32 coverKey, uint256 incidentDate, address account)](#isblacklisted)
+- [setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address[] accounts, bool[] statuses)](#setblacklist)
+- [isBlacklisted(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account)](#isblacklisted)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -47,11 +48,12 @@ constructor(IStore store) Recoverable(store) {}
 
 ### claim
 
-Enables policyholders to claim their cxTokens which results in a payout.
- The payout is provided only when the active cover is marked and resolved as "Incident Happened".
+Enables a policyholder to claim their cxTokens to receive a payout.
+ The payout is provided only when the active cover is marked as "Incident Happened"
+ and has "Claimable" status.
 
 ```solidity
-function claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
+function claim(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -60,6 +62,7 @@ function claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 
 | ------------- |------------- | -----|
 | cxToken | address | Provide the address of the claim token that you're using for this claim. | 
 | coverKey | bytes32 | Enter the key of the cover you're claiming | 
+| productKey | bytes32 | Enter the key of the product you're claiming | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 | amount | uint256 | Enter the amount of cxTokens you want to transfer | 
 
@@ -70,6 +73,7 @@ function claim(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 
 function claim(
     address cxToken,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
@@ -78,20 +82,19 @@ function claim(
     // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
     // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
 
-    validate(cxToken, coverKey, incidentDate, amount);
-    require(amount > 0, "Enter an amount");
+    validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(coverKey);
-    address finalReporter = s.getReporterInternal(coverKey, incidentDate);
+    address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
-    s.addClaimPayoutsInternal(coverKey, incidentDate, amount);
+    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, amount);
 
     // @suppress-division Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
-    uint256 platformFee = (amount * s.getClaimPlatformFeeInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 platformFee = (amount * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
     // @suppress-division Checked side effects. If the claim reporter commission is zero
     // or a very small number, reporterFee fee becomes zero due to data loss.
@@ -115,7 +118,7 @@ function claim(
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Claimed(cxToken, coverKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
+    emit Claimed(cxToken, coverKey, productKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
   }
 ```
 </details>
@@ -125,7 +128,7 @@ function claim(
 Validates a given claim
 
 ```solidity
-function validate(address cxToken, bytes32 coverKey, uint256 incidentDate, uint256 amount) public view
+function validate(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 amount) public view
 returns(bool)
 ```
 
@@ -135,6 +138,7 @@ returns(bool)
 | ------------- |------------- | -----|
 | cxToken | address | Provide the address of the claim token that you're using for this claim. | 
 | coverKey | bytes32 | Enter the key of the cover you're validating the claim for | 
+| productKey | bytes32 | Enter the key of the product you're validating the claim for | 
 | incidentDate | uint256 | Enter the active cover's date of incident | 
 | amount | uint256 |  | 
 
@@ -149,12 +153,14 @@ Returns true if the given claim is valid and can result in a successful payout
 function validate(
     address cxToken,
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     uint256 amount
   ) public view override returns (bool) {
     s.mustNotBePaused();
-    s.mustBeValidClaim(msg.sender, coverKey, cxToken, incidentDate, amount);
-    require(isBlacklisted(coverKey, incidentDate, msg.sender) == false, "Access denied");
+    s.mustBeValidClaim(msg.sender, coverKey, productKey, cxToken, incidentDate, amount);
+    require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
+    require(amount > 0, "Enter an amount");
 
     return true;
   }
@@ -163,11 +169,11 @@ function validate(
 
 ### getClaimExpiryDate
 
-Returns claim expiry date. A policy can not be claimed after the expiry date
- even when the policy was valid.
+Returns claim expiration date.
+ Even if the policy was valid, it cannot be claimed after the expiry date.
 
 ```solidity
-function getClaimExpiryDate(bytes32 coverKey) external view
+function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
 ```
 
@@ -176,20 +182,23 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the key of the cover you're checking | 
+| productKey | bytes32 | Enter the key of the product you're checking | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getClaimExpiryDate(bytes32 coverKey) external view override returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey);
+function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
   }
 ```
 </details>
 
 ### setClaimPeriod
 
-Set the claim period of a cover by its key.
+Sets the claim period of a cover by its key.
+ If you do not specify any cover key, the value specified here will be set as fallback.
+ Cover that do not have any specific claim period will default to the fallback value.
 
 ```solidity
 function setClaimPeriod(bytes32 coverKey, uint256 value) external nonpayable nonReentrant 
@@ -238,7 +247,7 @@ Blacklisted accounts are unable to claim their cxTokens.
  After performing KYC, we may be able to lift the blacklist.
 
 ```solidity
-function setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts, bool[] statuses) external nonpayable
+function setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -246,6 +255,7 @@ function setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date of the cover | 
 | accounts | address[] | Enter list of accounts you want to blacklist | 
 | statuses | bool[] | Enter true if you want to blacklist. False if you want to remove from the blacklist. | 
@@ -256,43 +266,21 @@ function setBlacklist(bytes32 coverKey, uint256 incidentDate, address[] accounts
 ```javascript
 function setBlacklist(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
-    address[] memory accounts,
-    bool[] memory statuses
-  ) external override {
+    address[] calldata accounts,
+    bool[] calldata statuses
+  ) external override nonReentrant {
     require(accounts.length == statuses.length, "Invalid args");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      s.setAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), accounts[i], statuses[i]);
-      emit BlacklistSet(coverKey, incidentDate, accounts[i], statuses[i]);
+      s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
+      emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
     }
-  }
-```
-</details>
-
-### _getBlacklistKey
-
-```solidity
-function _getBlacklistKey(bytes32 coverKey, uint256 incidentDate) private pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getBlacklistKey(bytes32 coverKey, uint256 incidentDate) private pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, incidentDate));
   }
 ```
 </details>
@@ -302,7 +290,7 @@ function _getBlacklistKey(bytes32 coverKey, uint256 incidentDate) private pure r
 Check if an account is blacklisted from claiming their cover.
 
 ```solidity
-function isBlacklisted(bytes32 coverKey, uint256 incidentDate, address account) public view
+function isBlacklisted(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account) public view
 returns(bool)
 ```
 
@@ -311,8 +299,9 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| incidentDate | uint256 | Enter the incident date of the cover | 
-| account | address | Enter the accounts you want to check if blacklisted | 
+| productKey | bytes32 |  | 
+| incidentDate | uint256 | Enter the incident date of this cover | 
+| account | address | Enter the account to see if it is blacklisted | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -320,10 +309,11 @@ returns(bool)
 ```javascript
 function isBlacklisted(
     bytes32 coverKey,
+    bytes32 productKey,
     uint256 incidentDate,
     address account
   ) public view override returns (bool) {
-    return s.getAddressBooleanByKey(_getBlacklistKey(coverKey, incidentDate), account);
+    return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), account);
   }
 ```
 </details>
@@ -405,6 +395,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -443,7 +434,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -468,6 +459,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -478,7 +470,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -487,7 +479,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

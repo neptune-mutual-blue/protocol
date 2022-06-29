@@ -12,6 +12,7 @@ View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/li
 - [addStrategies(address[] strategies)](#addstrategies)
 - [setLiquidityStateUpdateInterval(uint256 value)](#setliquiditystateupdateinterval)
 - [disableStrategy(address strategy)](#disablestrategy)
+- [deleteStrategy(address strategy)](#deletestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
 - [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
 - [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
@@ -58,7 +59,7 @@ function addStrategies(address[] strategies) external nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addStrategies(address[] memory strategies) external override nonReentrant {
+function addStrategies(address[] calldata strategies) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -117,6 +118,34 @@ function disableStrategy(address strategy) external override nonReentrant {
 
     s.disableStrategyInternal(strategy);
     emit StrategyDisabled(strategy);
+  }
+```
+</details>
+
+### deleteStrategy
+
+```solidity
+function deleteStrategy(address strategy) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategy | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteStrategy(address strategy) external override nonReentrant {
+    // @suppress-address-trust-issue The address strategy can be trusted
+    // because this function can only be invoked by a liquidity manager.
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.deleteStrategyInternal(strategy);
+    emit StrategyDeleted(strategy);
   }
 ```
 </details>
@@ -377,6 +406,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -415,7 +445,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -440,6 +470,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -450,7 +481,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -459,7 +490,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

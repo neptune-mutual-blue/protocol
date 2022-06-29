@@ -1,4 +1,4 @@
-# Vault POD (Proof of Deposit) (VaultDelegateBase.sol)
+# Vault Delegate Base Contract (VaultDelegateBase.sol)
 
 View Source: [contracts/core/delegates/VaultDelegateBase.sol](../contracts/core/delegates/VaultDelegateBase.sol)
 
@@ -7,21 +7,16 @@ View Source: [contracts/core/delegates/VaultDelegateBase.sol](../contracts/core/
 
 **VaultDelegateBase**
 
-The VaultPod has `_mintPods` and `_redeemPodCalculation` features which enables
- POD minting and burning on demand. <br /> <br />
- **How Does This Work?**
- When you add liquidity to the Vault,
- PODs are minted representing your proportional share of the pool.
- Similarly, when you redeem your PODs, you get your proportional
- share of the Vault liquidity back, burning the PODs.
+The vault delegate base contract includes pre and post hooks.
+ The hooks are accessible only to vault contracts.
 
 ## Functions
 
 - [constructor(IStore store)](#)
 - [preTransferGovernance(address caller, bytes32 coverKey, address , uint256 )](#pretransfergovernance)
-- [postTransferGovernance(address , bytes32 coverKey, address , uint256 )](#posttransfergovernance)
+- [postTransferGovernance(address caller, bytes32 coverKey, address , uint256 )](#posttransfergovernance)
 - [preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#pretransfertostrategy)
-- [postTransferToStrategy(address , IERC20 , bytes32 coverKey, bytes32 , uint256 )](#posttransfertostrategy)
+- [postTransferToStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 )](#posttransfertostrategy)
 - [preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 )](#prereceivefromstrategy)
 - [postReceiveFromStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#postreceivefromstrategy)
 - [preAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd)](#preaddliquidity)
@@ -29,7 +24,7 @@ The VaultPod has `_mintPods` and `_redeemPodCalculation` features which enables
 - [accrueInterestImplementation(address caller, bytes32 coverKey)](#accrueinterestimplementation)
 - [preRemoveLiquidity(address caller, bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#preremoveliquidity)
 - [postRemoveLiquidity(address , bytes32 coverKey, uint256 , uint256 , bool )](#postremoveliquidity)
-- [calculatePodsImplementation(bytes32 coverKey, uint256 forStablecoinUnits)](#calculatepodsimplementation)
+- [calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn)](#calculatepodsimplementation)
 - [calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn)](#calculateliquidityimplementation)
 - [getStablecoinBalanceOfImplementation(bytes32 coverKey)](#getstablecoinbalanceofimplementation)
 - [getInfoImplementation(bytes32 coverKey, address you)](#getinfoimplementation)
@@ -60,6 +55,11 @@ constructor(IStore store) Recoverable(store) {}
 
 ### preTransferGovernance
 
+This hook runs before `transferGovernance` implementation on vault(s).
+ Note:
+ - Governance transfers are allowed via claims processor contract only.
+ - This function's caller must be the vault of the specified coverKey.
+
 ```solidity
 function preTransferGovernance(address caller, bytes32 coverKey, address , uint256 ) external nonpayable nonReentrant 
 returns(stablecoin address)
@@ -69,10 +69,14 @@ returns(stablecoin address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
-| coverKey | bytes32 |  | 
-|  | address |  | 
-|  | uint256 |  | 
+| caller | address | Enter your msg.sender value. | 
+| coverKey | bytes32 | Provide your vault's cover key. | 
+|  | address | caller Enter your msg.sender value. | 
+|  | uint256 | caller Enter your msg.sender value. | 
+
+**Returns**
+
+stablecoin Returns address of the protocol stablecoin if the hook validation passes.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -85,6 +89,8 @@ function preTransferGovernance(
     uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
 
@@ -95,30 +101,37 @@ function preTransferGovernance(
 
 ### postTransferGovernance
 
+This hook runs after `transferGovernance` implementation on vault(s)
+ and performs cleanup and/or validation if needed.
+
 ```solidity
-function postTransferGovernance(address , bytes32 coverKey, address , uint256 ) external view
+function postTransferGovernance(address caller, bytes32 coverKey, address , uint256 ) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-| coverKey | bytes32 |  | 
-|  | address |  | 
-|  | uint256 |  | 
+| caller | address |  | 
+| coverKey | bytes32 | Provide your vault's cover key. | 
+|  | address | coverKey Provide your vault's cover key. | 
+|  | uint256 | coverKey Provide your vault's cover key. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function postTransferGovernance(
-    address, /*caller*/
+    address caller,
     bytes32 coverKey,
     address, /*to*/
     uint256 /*amount*/
   ) external view override {
+    s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
+    s.callerMustBeClaimsProcessorContract(caller);
     // @suppress-reentrancy The `postTransferGovernance` hook is executed under the same context of `preTransferGovernance`.
     // @note: do not update state and liquidity since `transferGovernance` is an internal contract-only function
   }
@@ -126,6 +139,11 @@ function postTransferGovernance(
 </details>
 
 ### preTransferToStrategy
+
+This hook runs before `transferToStrategy` implementation on vault(s)
+ Note:
+ - Transfers are allowed to exact strategy contracts only
+ where the strategy can perform lending.
 
 ```solidity
 function preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
@@ -135,11 +153,11 @@ function preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, b
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
+| caller | address | Enter your msg.sender value | 
+| token | IERC20 | Provide the ERC20 token you'd like to transfer to the given strategy | 
+| coverKey | bytes32 | Provide your vault's cover key | 
+| strategyName | bytes32 | Enter the strategy name | 
+| amount | uint256 | Enter the amount to transfer | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -153,6 +171,8 @@ function preTransferToStrategy(
     uint256 amount
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
@@ -163,32 +183,39 @@ function preTransferToStrategy(
 
 ### postTransferToStrategy
 
+This hook runs after `transferToStrategy` implementation on vault(s)
+ and performs cleanup and/or validation if needed.
+
 ```solidity
-function postTransferToStrategy(address , IERC20 , bytes32 coverKey, bytes32 , uint256 ) external view
+function postTransferToStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 ) external view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-|  | IERC20 |  | 
-| coverKey | bytes32 |  | 
-|  | bytes32 |  | 
-|  | uint256 |  | 
+| caller | address | Enter your msg.sender value | 
+|  | IERC20 | caller Enter your msg.sender value | 
+| coverKey | bytes32 | Enter the coverKey | 
+| strategyName | bytes32 | Enter the strategy name | 
+|  | uint256 | caller Enter your msg.sender value | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function postTransferToStrategy(
-    address, /*caller*/
+    address caller,
     IERC20, /*token*/
     bytes32 coverKey,
-    bytes32, /*strategyName*/
+    bytes32 strategyName,
     uint256 /*amount*/
   ) external view override {
+    s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
+    s.callerMustBeSpecificStrategyContract(caller, strategyName);
     // @suppress-reentrancy The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
     // @note: do not update state and liquidity since `transferToStrategy` itself is a part of the state update
   }
@@ -196,6 +223,12 @@ function postTransferToStrategy(
 </details>
 
 ### preReceiveFromStrategy
+
+This hook runs before `receiveFromStrategy` implementation on vault(s)
+ Note:
+ - Access is allowed to exact strategy contracts only
+ - The caller must be the strategy contract
+ - msg.sender must be the correct vault contract
 
 ```solidity
 function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 ) external nonpayable nonReentrant 
@@ -205,11 +238,11 @@ function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
-|  | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-|  | uint256 |  | 
+| caller | address | Enter your msg.sender value | 
+|  | IERC20 | caller Enter your msg.sender value | 
+| coverKey | bytes32 | Provide your vault's cover key | 
+| strategyName | bytes32 | Enter the strategy name | 
+|  | uint256 | caller Enter your msg.sender value | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -223,6 +256,8 @@ function preReceiveFromStrategy(
     uint256 /*amount*/
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
   }
@@ -230,6 +265,9 @@ function preReceiveFromStrategy(
 </details>
 
 ### postReceiveFromStrategy
+
+This hook runs after `receiveFromStrategy` implementation on vault(s)
+ and performs cleanup and/or validation if needed.
 
 ```solidity
 function postReceiveFromStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
@@ -240,11 +278,11 @@ returns(income uint256, loss uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
-| token | IERC20 |  | 
-| coverKey | bytes32 |  | 
-| strategyName | bytes32 |  | 
-| amount | uint256 |  | 
+| caller | address | Enter your msg.sender value | 
+| token | IERC20 | Enter the token your vault received from strategy | 
+| coverKey | bytes32 | Enter the coverKey | 
+| strategyName | bytes32 | Enter the strategy name | 
+| amount | uint256 | Enter the amount received | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -258,8 +296,10 @@ function postReceiveFromStrategy(
     uint256 amount
   ) external override returns (uint256 income, uint256 loss) {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(caller);
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.callerMustBeStrategyContract(caller);
+    s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
     (income, loss) = s.postReceiveFromStrategyInternal(token, coverKey, strategyName, amount);
     // @suppress-reentrancy The `postReceiveFromStrategy` hook is executed under the same context of `preReceiveFromStrategy`.
@@ -270,7 +310,9 @@ function postReceiveFromStrategy(
 
 ### preAddLiquidity
 
-Adds liquidity to the specified cover contract
+This hook runs before `addLiquidity` implementation on vault(s)
+ Note:
+ - msg.sender must be correct vault contract
 
 ```solidity
 function preAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) external nonpayable nonReentrant 
@@ -297,6 +339,7 @@ function preAddLiquidity(
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
 
@@ -308,6 +351,9 @@ function preAddLiquidity(
 
 ### postAddLiquidity
 
+This hook runs after `addLiquidity` implementation on vault(s)
+ and performs cleanup and/or validation if needed.
+
 ```solidity
 function postAddLiquidity(address , bytes32 coverKey, uint256 , uint256 ) external nonpayable
 ```
@@ -316,10 +362,10 @@ function postAddLiquidity(address , bytes32 coverKey, uint256 , uint256 ) extern
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-| coverKey | bytes32 |  | 
-|  | uint256 |  | 
-|  | uint256 |  | 
+|  | address | coverKey Enter the coverKey | 
+| coverKey | bytes32 | Enter the coverKey | 
+|  | uint256 | coverKey Enter the coverKey | 
+|  | uint256 | coverKey Enter the coverKey | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -331,7 +377,10 @@ function postAddLiquidity(
     uint256, /*amount*/
     uint256 /*npmStakeToAdd*/
   ) external override {
+    s.mustNotBePaused();
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
+    s.mustHaveNormalCoverStatus(coverKey);
     s.updateStateAndLiquidity(coverKey);
 
     // @suppress-reentrancy The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
@@ -341,6 +390,12 @@ function postAddLiquidity(
 
 ### accrueInterestImplementation
 
+This implemention enables liquidity manages to
+ accrue interests on a vault before withdrawals are allowed.
+ Note:
+ - Caller must be a liquidity manager
+ - msg.sender must the correct vault contract
+
 ```solidity
 function accrueInterestImplementation(address caller, bytes32 coverKey) external nonpayable
 ```
@@ -349,8 +404,8 @@ function accrueInterestImplementation(address caller, bytes32 coverKey) external
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
-| coverKey | bytes32 |  | 
+| caller | address | Enter your msg.sender value | 
+| coverKey | bytes32 | Provide your vault's cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -368,7 +423,14 @@ function accrueInterestImplementation(address caller, bytes32 coverKey) external
 
 ### preRemoveLiquidity
 
-Removes liquidity from the specified cover contract
+This hook runs before `removeLiquidity` implementation on vault(s)
+ Note:
+ - msg.sender must be the correct vault contract
+ - Must have at couple of block height offset following a deposit.
+ - Must be done during withdrawal period
+ - Must have no balance in strategies
+ - Cover status should be normal
+ - Interest should already be accrued
 
 ```solidity
 function preRemoveLiquidity(address caller, bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 
@@ -379,11 +441,11 @@ returns(stablecoin address, stablecoinToRelease uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
+| caller | address | Enter your msg.sender value | 
 | coverKey | bytes32 | Enter the cover key | 
 | podsToRedeem | uint256 | Enter the amount of pods to redeem | 
 | npmStakeToRemove | uint256 | Enter the amount of NPM stake to remove. | 
-| exit | bool |  | 
+| exit | bool | If this is set to true, LPs can remove their entire NPM stake during a withdrawal period. No restriction. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -397,7 +459,9 @@ function preRemoveLiquidity(
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
     s.mustNotBePaused();
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
+    s.mustMaintainBlockHeightOffset(coverKey);
     s.mustHaveNormalCoverStatus(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
     s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
@@ -411,6 +475,9 @@ function preRemoveLiquidity(
 
 ### postRemoveLiquidity
 
+This hook runs after `removeLiquidity` implementation on vault(s)
+ and performs cleanup and/or validation if needed.
+
 ```solidity
 function postRemoveLiquidity(address , bytes32 coverKey, uint256 , uint256 , bool ) external nonpayable
 ```
@@ -419,11 +486,11 @@ function postRemoveLiquidity(address , bytes32 coverKey, uint256 , uint256 , boo
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-|  | address |  | 
-| coverKey | bytes32 |  | 
-|  | uint256 |  | 
-|  | uint256 |  | 
-|  | bool |  | 
+|  | address | coverKey Enter the coverKey | 
+| coverKey | bytes32 | Enter the coverKey | 
+|  | uint256 | coverKey Enter the coverKey | 
+|  | uint256 | coverKey Enter the coverKey | 
+|  | bool | coverKey Enter the coverKey | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -436,20 +503,21 @@ function postRemoveLiquidity(
     uint256, /*npmStakeToRemove*/
     bool /*exit*/
   ) external override {
+    s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.updateStateAndLiquidity(coverKey);
 
-    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context of `preRemoveLiquidity`.
+    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
   }
 ```
 </details>
 
 ### calculatePodsImplementation
 
-Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+Calculates the amount of PODs to mint for the given amount of liquidity
 
 ```solidity
-function calculatePodsImplementation(bytes32 coverKey, uint256 forStablecoinUnits) external view
+function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) external view
 returns(uint256)
 ```
 
@@ -458,25 +526,25 @@ returns(uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
-| forStablecoinUnits | uint256 |  | 
+| stablecoinIn | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculatePodsImplementation(bytes32 coverKey, uint256 forStablecoinUnits) external view override returns (uint256) {
+function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
 
     address pod = msg.sender;
 
-    return s.calculatePodsInternal(coverKey, pod, forStablecoinUnits);
+    return s.calculatePodsInternal(coverKey, pod, stablecoinIn);
   }
 ```
 </details>
 
 ### calculateLiquidityImplementation
 
-Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
+Calculates the amount of stablecoins to receive for the given amount of PODs to redeem
 
 ```solidity
 function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view
@@ -505,7 +573,7 @@ function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) 
 ### getStablecoinBalanceOfImplementation
 
 Returns the stablecoin balance of this vault
- This also includes amounts lent out in lending strategies
+ This also includes amounts lent out in lending strategies by this vault
 
 ```solidity
 function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view
@@ -634,6 +702,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -672,7 +741,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -697,6 +766,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -707,7 +777,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -716,7 +786,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

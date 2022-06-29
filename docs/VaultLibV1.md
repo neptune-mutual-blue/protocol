@@ -4,16 +4,26 @@ View Source: [contracts/libraries/VaultLibV1.sol](../contracts/libraries/VaultLi
 
 **VaultLibV1**
 
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 public constant WITHDRAWAL_HEIGHT_OFFSET;
+
+```
+
 ## Functions
 
 - [calculatePodsInternal(IStore s, bytes32 coverKey, address pod, uint256 liquidityToAdd)](#calculatepodsinternal)
 - [calculateLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToBurn)](#calculateliquidityinternal)
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address you)](#getinfointernal)
 - [preAddLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 amount, uint256 npmStakeToAdd)](#preaddliquidityinternal)
+- [_updateLastBlock(IStore s, bytes32 coverKey)](#_updatelastblock)
 - [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
 - [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
 - [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
 - [mustHaveNoBalanceInStrategies(IStore s, bytes32 coverKey, address stablecoin)](#musthavenobalanceinstrategies)
+- [mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey)](#mustmaintainblockheightoffset)
 - [preRemoveLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#preremoveliquidityinternal)
 - [_unStakeNpm(IStore s, address account, bytes32 coverKey, uint256 amount, bool exit)](#_unstakenpm)
 - [_redeemPodCalculation(IStore s, bytes32 coverKey, address pod, uint256 podsToRedeem)](#_redeempodcalculation)
@@ -199,6 +209,31 @@ function preAddLiquidityInternal(
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
     podsToMint = calculatePodsInternal(s, coverKey, pod, amount);
+
+    _updateLastBlock(s, coverKey);
+  }
+```
+</details>
+
+### _updateLastBlock
+
+```solidity
+function _updateLastBlock(IStore s, bytes32 coverKey) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _updateLastBlock(IStore s, bytes32 coverKey) private {
+    s.setUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey), block.number);
   }
 ```
 </details>
@@ -323,6 +358,30 @@ function mustHaveNoBalanceInStrategies(
     address stablecoin
   ) external view {
     require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
+  }
+```
+</details>
+
+### mustMaintainBlockHeightOffset
+
+```solidity
+function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view {
+    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey));
+    require(block.number > lastDeposit + WITHDRAWAL_HEIGHT_OFFSET, "Please wait a few blocks");
   }
 ```
 </details>
@@ -452,7 +511,7 @@ function _redeemPodCalculation(
     s.mustBeProtocolMember(pod);
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getActiveLiquidityUnderProtection(coverKey);
+    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);
@@ -720,6 +779,7 @@ function getMaxFlashLoanInternal(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -758,7 +818,7 @@ function getMaxFlashLoanInternal(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -783,6 +843,7 @@ function getMaxFlashLoanInternal(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -793,7 +854,7 @@ function getMaxFlashLoanInternal(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -802,7 +863,6 @@ function getMaxFlashLoanInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

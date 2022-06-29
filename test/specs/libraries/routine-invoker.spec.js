@@ -7,6 +7,7 @@ const { deployDependencies } = require('./deps')
 const { expect } = require('chai')
 const cache = null
 const DAYS = 86400
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -16,7 +17,7 @@ require('chai')
 describe('RoutineInvokerLibV1: _executeStrategy', () => {
   let deployed, coverKey, mockLiquidityEngineUser, aaveLendingPool, aToken, aaveStrategy
 
-  const initialLiquidity = helper.ether(1_000)
+  const initialLiquidity = helper.ether(1_000, PRECISION)
   const minReportingStake = helper.ether(250)
 
   before(async () => {
@@ -24,16 +25,17 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     deployed = await deployDependencies()
 
     coverKey = key.toBytes32('foo-bar')
+    const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const initialReassuranceAmount = helper.ether(1_000_000)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
+    const leverage = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, 2500]
+    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, 2500, leverage]
 
     const info = key.toBytes32('info')
 
@@ -42,11 +44,13 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, deployed.dai.address, requiresWhitelist, values)
-    await deployed.cover.deployVault(coverKey)
+    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
-    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000))
+    aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
+
+    await deployed.dai.addMinter(aaveLendingPool.address, true)
+
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
       BaseLibV1: deployed.baseLibV1.address,

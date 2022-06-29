@@ -5,10 +5,10 @@ import "./Unstakable.sol";
 import "../../../interfaces/IResolution.sol";
 
 /**
- * @title Neptune Mutual Governance: Resolution Contract
+ * @title Resolution Contract
  * @dev This contract enables governance agents or admins to resolve
  * actively-reporting cover products. Once a resolution occurs, the
- * NPM token holders who voted for the winning camp can unstake
+ * NPM token holders who voted for the valid camp can unstake
  * their staking during the claim period with additional rewards.
  */
 contract Resolution is IResolution, Unstakable {
@@ -18,7 +18,6 @@ contract Resolution is IResolution, Unstakable {
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using ValidationLibV1 for bytes32;
-  using NTransferUtilV2 for IERC20;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 

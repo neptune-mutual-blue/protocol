@@ -12,6 +12,7 @@ View Source: [contracts/interfaces/ILiquidityEngine.sol](../contracts/interfaces
 ```js
 event StrategyAdded(address indexed strategy);
 event StrategyDisabled(address indexed strategy);
+event StrategyDeleted(address indexed strategy);
 event LendingPeriodSet(bytes32 indexed coverKey, uint256  lendingPeriod, uint256  withdrawalWindow);
 event LiquidityStateUpdateIntervalSet(uint256  duration);
 event MaxLendingRatioSet(uint256  ratio);
@@ -21,6 +22,7 @@ event MaxLendingRatioSet(uint256  ratio);
 
 - [addStrategies(address[] strategies)](#addstrategies)
 - [disableStrategy(address strategy)](#disablestrategy)
+- [deleteStrategy(address strategy)](#deletestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
 - [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
 - [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
@@ -46,7 +48,7 @@ function addStrategies(address[] strategies) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addStrategies(address[] memory strategies) external;
+function addStrategies(address[] calldata strategies) external;
 ```
 </details>
 
@@ -67,6 +69,26 @@ function disableStrategy(address strategy) external nonpayable
 
 ```javascript
 function disableStrategy(address strategy) external;
+```
+</details>
+
+### deleteStrategy
+
+```solidity
+function deleteStrategy(address strategy) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| strategy | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteStrategy(address strategy) external;
 ```
 </details>
 
@@ -267,6 +289,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -305,7 +328,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -330,6 +353,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -340,7 +364,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -349,7 +373,6 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

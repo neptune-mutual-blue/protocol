@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.0;
 
+import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
-import "../../../interfaces/external/IAaveV2LendingPoolLike.sol";
+import "../../../dependencies/aave/IAaveV2LendingPoolLike.sol";
 import "../../../libraries/ProtoUtilV1.sol";
 import "../../../libraries/StoreKeyUtil.sol";
-import "hardhat/console.sol";
+import "../../../libraries/NTransferUtilV2.sol";
 
 contract AaveStrategy is ILendingStrategy, Recoverable {
   using ProtoUtilV1 for IStore;
@@ -77,6 +78,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * Ensure that you `approve` stablecoin before you call this function
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
+    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
@@ -116,9 +118,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], amount, aTokenReceived);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogDeposit(getName(), _counters[coverKey], amount, aTokenReceived, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Deposited(coverKey, address(vault), amount, aTokenReceived);
   }
 
@@ -127,8 +127,10 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * Ensure that you `approve` aToken before you call this function
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
+
     IVault vault = s.getVault(coverKey);
 
     // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
@@ -165,9 +167,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, aTokenRedeemed);
   }
 

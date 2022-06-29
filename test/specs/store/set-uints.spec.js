@@ -18,25 +18,28 @@ describe('Store: set uints', () => {
 
   it('must correctly set uints', async () => {
     const k = key.toBytes32('test:uints')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
-    await store.setUints(k, value)
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    await store.setUints(k, values)
 
     const result = await store.getUints(k)
-    result.should.deep.equal(value)
+
+    for (const i in result) {
+      result[i].should.equal(values[i])
+    }
   })
 
   it('must revert if the store is paused', async () => {
     await store.pause()
 
     const k = key.toBytes32('test:uints')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
 
-    await store.setUints(k, value)
+    await store.setUints(k, values)
       .should.be.rejectedWith('Pausable: paused')
 
     await store.unpause()
 
-    await store.setUints(k, value)
+    await store.setUints(k, values)
       .should.not.be.rejected
   })
 
@@ -44,9 +47,9 @@ describe('Store: set uints', () => {
     const [, bob] = await ethers.getSigners()
 
     const k = key.toBytes32('test:uints')
-    const value = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
+    const values = [ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString()), ethers.BigNumber.from(helper.getRandomNumber(10000000, 100000000).toString())]
 
-    await store.connect(bob).setUints(k, value)
+    await store.connect(bob).setUints(k, values)
       .should.be.rejectedWith('Forbidden')
   })
 })

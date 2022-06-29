@@ -3,7 +3,6 @@
 pragma solidity 0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
-import "hardhat/console.sol";
 
 contract MockFlashBorrower is IERC3156FlashBorrower {
   IERC20 private _stablecoin;
@@ -28,7 +27,7 @@ contract MockFlashBorrower is IERC3156FlashBorrower {
     _createsApproval = value;
   }
 
-  function borrow(uint256 amount, bytes memory data) external {
+  function borrow(uint256 amount, bytes calldata data) external {
     uint256 allowance = _stablecoin.allowance(address(this), address(_provider));
     uint256 fee = _provider.flashFee(address(_stablecoin), amount);
     uint256 repayment = amount + fee;

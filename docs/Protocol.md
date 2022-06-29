@@ -67,7 +67,7 @@ function initialize(address[] addresses, uint256[] values) external nonpayable n
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address[] memory addresses, uint256[] memory values) external override nonReentrant whenNotPaused {
+function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
     // @suppress-initialization Can only be initialized by the deployer or an admin
     // @suppress-acl Can only be called by the deployer or an admin
     s.mustBeProtocolMember(msg.sender);
@@ -88,12 +88,14 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
     require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     require(addresses[4] != address(0), "Invalid Treasury");
+    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
     s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, addresses[5]);
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
@@ -101,7 +103,7 @@ function initialize(address[] memory addresses, uint256[] memory values) externa
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PLATFORM_FEE, values[6]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, values[6]);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
@@ -310,7 +312,7 @@ function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpaya
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function grantRoles(AccountWithRoles[] memory detail) external override nonReentrant {
+function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant {
     AccessControlLibV1.mustBeAdmin(s);
 
     for (uint256 i = 0; i < detail.length; i++) {
@@ -399,6 +401,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -437,7 +440,7 @@ function getName() external pure override returns (bytes32) {
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -462,6 +465,7 @@ function getName() external pure override returns (bytes32) {
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -472,7 +476,7 @@ function getName() external pure override returns (bytes32) {
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -481,7 +485,6 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

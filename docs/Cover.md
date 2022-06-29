@@ -12,13 +12,14 @@ The cover contract facilitates you create and update covers
 
 - [constructor(IStore store)](#)
 - [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
-- [addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values)](#addcover)
-- [deployVault(bytes32 coverKey)](#deployvault)
-- [stopCover(bytes32 coverKey, string reason)](#stopcover)
+- [addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values)](#addcover)
+- [addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproduct)
+- [updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values)](#updateproduct)
+- [stopCover(bytes32 coverKey, bytes32 productKey, string reason)](#stopcover)
 - [updateCoverCreatorWhitelist(address account, bool status)](#updatecovercreatorwhitelist)
-- [updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
+- [updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
 - [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
-- [checkIfWhitelistedUser(bytes32 coverKey, address account)](#checkifwhitelisteduser)
+- [checkIfWhitelistedUser(bytes32 coverKey, bytes32 productKey, address account)](#checkifwhitelisteduser)
 
 ### 
 
@@ -90,7 +91,8 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool requiresWhitelist, uint256[] values) external nonpayable nonReentrant 
+function addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values) external nonpayable nonReentrant 
+returns(address)
 ```
 
 **Arguments**
@@ -99,8 +101,10 @@ function addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS info of the cover contract | 
-| reassuranceToken | address | **Optional.** Token added as an reassurance of this cover. <br /><br />  Reassurance tokens can be added by a project to demonstrate coverage support  for their own project. This helps bring the cover fee down and enhances  liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded  as a support to the liquidity providers when a cover incident occurs. | 
-| requiresWhitelist | bool | If set to true, this cover will only support whitelisted addresses. | 
+| tokenName | string |  | 
+| tokenSymbol | string |  | 
+| supportsProducts | bool | Indicates that this cover supports product(s) | 
+| requiresWhitelist | bool |  | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
@@ -110,30 +114,35 @@ function addCover(bytes32 coverKey, bytes32 info, address reassuranceToken, bool
 function addCover(
     bytes32 coverKey,
     bytes32 info,
-    address reassuranceToken,
+    string calldata tokenName,
+    string calldata tokenSymbol,
+    bool supportsProducts,
     bool requiresWhitelist,
-    uint256[] memory values
-  ) external override nonReentrant {
+    uint256[] calldata values
+  ) external override nonReentrant returns (address) {
     // @suppress-acl Can only be called by a whitelisted address
     // @suppress-acl Marking this as publicly accessible
-    // @suppress-address-trust-issue The reassuranceToken can only be the stablecoin supported by the protocol for this version.
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
     require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
-    require(reassuranceToken == s.getStablecoin(), "Invalid reassurance token");
 
-    s.addCoverInternal(coverKey, info, reassuranceToken, requiresWhitelist, values);
-    emit CoverCreated(coverKey, info, requiresWhitelist);
+    s.addCoverInternal(coverKey, supportsProducts, info, requiresWhitelist, values);
+
+    emit CoverCreated(coverKey, info, tokenName, tokenSymbol, supportsProducts, requiresWhitelist);
+
+    address vault = s.deployVaultInternal(coverKey, tokenName, tokenSymbol);
+    emit VaultDeployed(coverKey, vault);
+
+    return vault;
   }
 ```
 </details>
 
-### deployVault
+### addProduct
 
 ```solidity
-function deployVault(bytes32 coverKey) external nonpayable nonReentrant 
-returns(address)
+function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
 ```
 
 **Arguments**
@@ -141,21 +150,62 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| info | bytes32 |  | 
+| requiresWhitelist | bool |  | 
+| values | uint256[] |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deployVault(bytes32 coverKey) external override nonReentrant returns (address) {
+function addProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    bool requiresWhitelist,
+    uint256[] calldata values
+  ) external override {
     s.mustNotBePaused();
-    s.mustHaveStoppedCoverStatus(coverKey);
-
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
-    address vault = s.deployVaultInternal(coverKey);
-    emit VaultDeployed(coverKey, vault);
+    s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
+    emit ProductCreated(coverKey, productKey, info, requiresWhitelist, values);
+  }
+```
+</details>
 
-    return vault;
+### updateProduct
+
+```solidity
+function updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| info | bytes32 |  | 
+| values | uint256[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateProduct(
+    bytes32 coverKey,
+    bytes32 productKey,
+    bytes32 info,
+    uint256[] calldata values
+  ) external override {
+    s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+
+    s.updateProductInternal(coverKey, productKey, info, values);
+    emit ProductUpdated(coverKey, productKey, info, values);
   }
 ```
 </details>
@@ -165,7 +215,7 @@ function deployVault(bytes32 coverKey) external override nonReentrant returns (a
 Enables governance admin to stop a spam cover contract
 
 ```solidity
-function stopCover(bytes32 coverKey, string reason) external nonpayable nonReentrant 
+function stopCover(bytes32 coverKey, bytes32 productKey, string reason) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -173,19 +223,25 @@ function stopCover(bytes32 coverKey, string reason) external nonpayable nonReent
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key you want to stop | 
+| productKey | bytes32 |  | 
 | reason | string | Provide a reason to stop this cover | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stopCover(bytes32 coverKey, string memory reason) external override nonReentrant {
+function stopCover(
+    bytes32 coverKey,
+    bytes32 productKey,
+    string calldata reason
+  ) external override nonReentrant {
     s.mustNotBePaused();
     s.mustHaveNormalCoverStatus(coverKey);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
-    s.stopCoverInternal(coverKey);
-    emit CoverStopped(coverKey, msg.sender, reason);
+    s.stopCoverInternal(coverKey, productKey);
+    emit CoverStopped(coverKey, productKey, msg.sender, reason);
   }
 ```
 </details>
@@ -224,7 +280,7 @@ function updateCoverCreatorWhitelist(address account, bool status) external over
 ### updateCoverUsersWhitelist
 
 ```solidity
-function updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
+function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -232,6 +288,7 @@ function updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | accounts | address[] |  | 
 | statuses | bool[] |  | 
 
@@ -241,13 +298,15 @@ function updateCoverUsersWhitelist(bytes32 coverKey, address[] accounts, bool[] 
 ```javascript
 function updateCoverUsersWhitelist(
     bytes32 coverKey,
-    address[] memory accounts,
-    bool[] memory statuses
+    bytes32 productKey,
+    address[] calldata accounts,
+    bool[] calldata statuses
   ) external override nonReentrant {
     s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
-    s.updateCoverUsersWhitelistInternal(coverKey, accounts, statuses);
+    s.updateCoverUsersWhitelistInternal(coverKey, productKey, accounts, statuses);
   }
 ```
 </details>
@@ -282,7 +341,7 @@ function checkIfWhitelistedCoverCreator(address account) external view override 
 Signifies if a given account is a whitelisted user
 
 ```solidity
-function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
+function checkIfWhitelistedUser(bytes32 coverKey, bytes32 productKey, address account) external view
 returns(bool)
 ```
 
@@ -291,14 +350,19 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
 | account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfWhitelistedUser(bytes32 coverKey, address account) external view override returns (bool) {
-    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, account);
+function checkIfWhitelistedUser(
+    bytes32 coverKey,
+    bytes32 productKey,
+    address account
+  ) external view override returns (bool) {
+    return s.getAddressBooleanByKeys(ProtoUtilV1.NS_COVER_USER_WHITELIST, coverKey, productKey, account);
   }
 ```
 </details>
@@ -332,6 +396,7 @@ function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -370,7 +435,7 @@ function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -395,6 +460,7 @@ function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -405,7 +471,7 @@ function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -414,7 +480,6 @@ function checkIfWhitelistedUser(bytes32 coverKey, address account) external view
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

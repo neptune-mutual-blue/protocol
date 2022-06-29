@@ -11,6 +11,7 @@
     "build:clean": "npm run compile:clean",
     "deploy": "hardhat run scripts/deploy.js --network hardhat",
     "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
+    "deploy:fuji": "hardhat run scripts/deploy.js --network fuji",
     "slither": "slither .",
     "fix": "standard --fix"
   },

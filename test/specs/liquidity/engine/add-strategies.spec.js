@@ -48,7 +48,7 @@ describe('Liquidity Engine: addStrategies', () => {
   })
 
   it('correctly adds strategies', async () => {
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
@@ -73,7 +73,7 @@ describe('Liquidity Engine: addStrategies', () => {
   })
 
   it('correctly get active strategies', async () => {
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
@@ -98,7 +98,7 @@ describe('Liquidity Engine: addStrategies', () => {
 
   it('reverts when not accessed by LiquidityManager', async () => {
     const [, bob] = await ethers.getSigners()
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
@@ -118,7 +118,7 @@ describe('Liquidity Engine: addStrategies', () => {
   })
 
   it('reverts when too much weight is specified', async () => {
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
@@ -137,7 +137,7 @@ describe('Liquidity Engine: addStrategies', () => {
   })
 
   it('reverts when protocol is paused', async () => {
-    const aToken = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000))
+    const aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
 
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 

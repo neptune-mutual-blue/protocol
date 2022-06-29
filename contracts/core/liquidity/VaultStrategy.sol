@@ -18,10 +18,16 @@ abstract contract VaultStrategy is VaultLiquidity {
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-acl This function is only callable by correct strategy contract as checked in `preTransferToStrategy` and `postTransferToStrategy`
+    // @suppress-pausable Validated in `preTransferToStrategy` and `postTransferToStrategy`
     // @suppress-reentrancy Custom reentrancy guard implemented
+    require(address(token) != address(0), "Invalid token to transfer");
     require(coverKey == key, "Forbidden");
-    require(_transferToStrategyEntry == 0, "Access is denied");
+    require(strategyName > 0, "Invalid strategy");
     require(amount > 0, "Please specify amount");
+
+    // Reentrancy check
+    require(_transferToStrategyEntry == 0, "Access is denied");
 
     _transferToStrategyEntry = 1;
 
@@ -51,6 +57,8 @@ abstract contract VaultStrategy is VaultLiquidity {
     bytes32 strategyName,
     uint256 amount
   ) external override {
+    // @suppress-acl This function is only callable by correct strategy contract as checked in `preReceiveFromStrategy` and `postReceiveFromStrategy`
+    // @suppress-pausable Validated in `preReceiveFromStrategy` and `postReceiveFromStrategy`
     // @suppress-reentrancy Custom reentrancy guard implemented
     require(coverKey == key, "Forbidden");
     require(_receiveFromStrategyEntry == 0, "Access is denied");

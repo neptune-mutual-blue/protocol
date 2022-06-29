@@ -27,8 +27,11 @@ contract MockValidationLibUser {
     s.senderMustBeStrategyContract();
   }
 
-  function mustBeDisputed(bytes32 coverKey) external view {
-    s.mustBeDisputed(coverKey);
+  function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustBeDisputed(coverKey, productKey);
   }
 
+  function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustHaveNormalProductStatus(coverKey, productKey);
+  }
 }

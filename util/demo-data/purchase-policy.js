@@ -1,12 +1,13 @@
-const { covers } = require('../../examples/covers')
+const { covers } = require('../../examples/dedicated')
 const composer = require('../composer')
-const { ether, getRandomNumber, weiAsToken } = require('../helper')
+const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { toBytes32 } = require('../key')
 const { approve } = require('../contract-helper/erc20')
+const PRECISION = STABLECOIN_DECIMALS
 
 const add = async (coverKey, payload) => {
   const [lp] = await ethers.getSigners() // eslint-disable-line
-  const amount = ether(getRandomNumber(250_000, 5_000_000))
+  const amount = ether(getRandomNumber(250_000, 5_000_000), PRECISION)
   const stake = ether(getRandomNumber(1000, 125_000))
 
   const { dai, npm } = payload

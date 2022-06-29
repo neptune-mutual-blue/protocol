@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, helper, key } = require('../../../util')
 const { deployDependencies } = require('./deps')
 const cache = null
+const PRECISION = helper.STABLECOIN_DECIMALS
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -24,9 +25,9 @@ describe('Distributor: `getPremium` function', () => {
   it('must correctly get premium', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
 
-    const [premium, fee] = await distributor.getPremium(coverKey, duration, protection)
+    const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
 
     premium.should.be.gt('0')
     fee.should.be.gt('0')
@@ -35,12 +36,12 @@ describe('Distributor: `getPremium` function', () => {
   it('must reject if DAI address is not registered on the protocol', async () => {
     const coverKey = deployed.coverKey
     const duration = '2'
-    const protection = helper.ether(10_000)
+    const protection = helper.ether(10_000, PRECISION)
 
     const storeKey = key.qualifyBytes32(key.toBytes32('cns:cover:policy'))
     await deployed.store.deleteAddress(storeKey)
 
-    await distributor.getPremium(coverKey, duration, protection)
+    await distributor.getPremium(coverKey, helper.emptyBytes32, duration, protection)
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)

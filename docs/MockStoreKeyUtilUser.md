@@ -44,6 +44,12 @@ contract IStore public s;
 - [deleteUintByKeys(bytes32 key1, bytes32 key2)](#deleteuintbykeys)
 - [deleteBytes32ByKey(bytes32 key)](#deletebytes32bykey)
 - [deleteBytes32ByKeys(bytes32 key1, bytes32 key2)](#deletebytes32bykeys)
+- [deleteBytes32ArrayByKey(bytes32 key, bytes32 value)](#deletebytes32arraybykey)
+- [deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value)](#deletebytes32arraybykeys)
+- [deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value)](#deletebytes32arraybykeys)
+- [deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index)](#deletebytes32arraybyindexbykey)
+- [deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, uint256 index)](#deletebytes32arraybyindexbykeys)
+- [deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key3, uint256 index)](#deletebytes32arraybyindexbykeys)
 - [deleteBoolByKey(bytes32 key)](#deleteboolbykey)
 - [deleteBoolByKeys(bytes32 key1, bytes32 key2)](#deleteboolbykeys)
 - [deleteBoolByKeys(bytes32 key, address account)](#deleteboolbykeys)
@@ -84,6 +90,21 @@ contract IStore public s;
 - [getAddressArrayItemByIndexByKey(bytes32 key, uint256 index)](#getaddressarrayitembyindexbykey)
 - [getAddressArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, uint256 index)](#getaddressarrayitembyindexbykeys)
 - [getAddressArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key3, uint256 index)](#getaddressarrayitembyindexbykeys)
+- [setBytes32ArrayByKey(bytes32 key, bytes32 value)](#setbytes32arraybykey)
+- [setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value)](#setbytes32arraybykeys)
+- [setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value)](#setbytes32arraybykeys)
+- [countBytes32ArrayByKey(bytes32 key)](#countbytes32arraybykey)
+- [countBytes32ArrayByKeys(bytes32 key1, bytes32 key2)](#countbytes32arraybykeys)
+- [countBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3)](#countbytes32arraybykeys)
+- [getBytes32ArrayByKey(bytes32 key)](#getbytes32arraybykey)
+- [getBytes32ArrayByKeys(bytes32 key1, bytes32 key2)](#getbytes32arraybykeys)
+- [getBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3)](#getbytes32arraybykeys)
+- [getBytes32ArrayItemPositionByKey(bytes32 key, bytes32 bytes32ToFind)](#getbytes32arrayitempositionbykey)
+- [getBytes32ArrayItemPositionByKeys(bytes32 key1, bytes32 key2, bytes32 bytes32ToFind)](#getbytes32arrayitempositionbykeys)
+- [getBytes32ArrayItemPositionByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 bytes32ToFind)](#getbytes32arrayitempositionbykeys)
+- [getBytes32ArrayItemByIndexByKey(bytes32 key, uint256 index)](#getbytes32arrayitembyindexbykey)
+- [getBytes32ArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, uint256 index)](#getbytes32arrayitembyindexbykeys)
+- [getBytes32ArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key3, uint256 index)](#getbytes32arrayitembyindexbykeys)
 
 ### 
 
@@ -367,7 +388,7 @@ function setStringByKey(bytes32 key, string value) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setStringByKey(bytes32 key, string memory value) external {
+function setStringByKey(bytes32 key, string calldata value) external {
     s.setStringByKey(key, value);
   }
 ```
@@ -394,7 +415,7 @@ function setStringByKeys(bytes32 key1, bytes32 key2, string value) external nonp
 function setStringByKeys(
     bytes32 key1,
     bytes32 key2,
-    string memory value
+    string calldata value
   ) external {
     s.setStringByKeys(key1, key2, value);
   }
@@ -869,6 +890,168 @@ function deleteBytes32ByKeys(bytes32 key1, bytes32 key2) external nonpayable
 ```javascript
 function deleteBytes32ByKeys(bytes32 key1, bytes32 key2) external {
     s.deleteBytes32ByKeys(key1, key2);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByKey
+
+```solidity
+function deleteBytes32ArrayByKey(bytes32 key, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+    s.deleteBytes32ArrayByKey(key, value);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByKeys
+
+```solidity
+function deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    s.deleteBytes32ArrayByKeys(key1, key2, value);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByKeys
+
+```solidity
+function deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    s.deleteBytes32ArrayByKeys(key1, key2, key3, value);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByIndexByKey
+
+```solidity
+function deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index) external {
+    s.deleteBytes32ArrayByIndexByKey(key, index);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByIndexByKeys
+
+```solidity
+function deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external {
+    s.deleteBytes32ArrayByIndexByKeys(key1, key2, index);
+  }
+```
+</details>
+
+### deleteBytes32ArrayByIndexByKeys
+
+```solidity
+function deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key3, uint256 index) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function deleteBytes32ArrayByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external {
+    s.deleteBytes32ArrayByIndexByKeys(key1, key2, key3, index);
   }
 ```
 </details>
@@ -1897,6 +2080,407 @@ function getAddressArrayItemByIndexByKeys(
 ```
 </details>
 
+### setBytes32ArrayByKey
+
+```solidity
+function setBytes32ArrayByKey(bytes32 key, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+    s.setBytes32ArrayByKey(key, value);
+  }
+```
+</details>
+
+### setBytes32ArrayByKeys
+
+```solidity
+function setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 value
+  ) external {
+    s.setBytes32ArrayByKeys(key1, key2, value);
+  }
+```
+</details>
+
+### setBytes32ArrayByKeys
+
+```solidity
+function setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 value
+  ) external {
+    s.setBytes32ArrayByKeys(key1, key2, key3, value);
+  }
+```
+</details>
+
+### countBytes32ArrayByKey
+
+```solidity
+function countBytes32ArrayByKey(bytes32 key) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countBytes32ArrayByKey(bytes32 key) external view returns (uint256) {
+    return s.countBytes32ArrayByKey(key);
+  }
+```
+</details>
+
+### countBytes32ArrayByKeys
+
+```solidity
+function countBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (uint256) {
+    return s.countBytes32ArrayByKeys(key1, key2);
+  }
+```
+</details>
+
+### countBytes32ArrayByKeys
+
+```solidity
+function countBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function countBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (uint256) {
+    return s.countBytes32ArrayByKeys(key1, key2, key3);
+  }
+```
+</details>
+
+### getBytes32ArrayByKey
+
+```solidity
+function getBytes32ArrayByKey(bytes32 key) external view
+returns(bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayByKey(bytes32 key) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKey(key);
+  }
+```
+</details>
+
+### getBytes32ArrayByKeys
+
+```solidity
+function getBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view
+returns(bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKeys(key1, key2);
+  }
+```
+</details>
+
+### getBytes32ArrayByKeys
+
+```solidity
+function getBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3) external view
+returns(bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3
+  ) external view returns (bytes32[] memory) {
+    return s.getBytes32ArrayByKeys(key1, key2, key3);
+  }
+```
+</details>
+
+### getBytes32ArrayItemPositionByKey
+
+```solidity
+function getBytes32ArrayItemPositionByKey(bytes32 key, bytes32 bytes32ToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| bytes32ToFind | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemPositionByKey(bytes32 key, bytes32 bytes32ToFind) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKey(key, bytes32ToFind);
+  }
+```
+</details>
+
+### getBytes32ArrayItemPositionByKeys
+
+```solidity
+function getBytes32ArrayItemPositionByKeys(bytes32 key1, bytes32 key2, bytes32 bytes32ToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| bytes32ToFind | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemPositionByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKeys(key1, key2, bytes32ToFind);
+  }
+```
+</details>
+
+### getBytes32ArrayItemPositionByKeys
+
+```solidity
+function getBytes32ArrayItemPositionByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32 bytes32ToFind) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| bytes32ToFind | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemPositionByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    bytes32 bytes32ToFind
+  ) external view returns (uint256) {
+    return s.getBytes32ArrayItemPositionByKeys(key1, key2, key3, bytes32ToFind);
+  }
+```
+</details>
+
+### getBytes32ArrayItemByIndexByKey
+
+```solidity
+function getBytes32ArrayItemByIndexByKey(bytes32 key, uint256 index) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemByIndexByKey(bytes32 key, uint256 index) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKey(key, index);
+  }
+```
+</details>
+
+### getBytes32ArrayItemByIndexByKeys
+
+```solidity
+function getBytes32ArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, uint256 index) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKeys(key1, key2, index);
+  }
+```
+</details>
+
+### getBytes32ArrayItemByIndexByKeys
+
+```solidity
+function getBytes32ArrayItemByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key3, uint256 index) external view
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| index | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getBytes32ArrayItemByIndexByKeys(
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    uint256 index
+  ) external view returns (bytes32) {
+    return s.getBytes32ArrayItemByIndexByKeys(key1, key2, key3, index);
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -1926,6 +2510,7 @@ function getAddressArrayItemByIndexByKeys(
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
 * [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
 * [FakeToken](FakeToken.md)
@@ -1964,7 +2549,7 @@ function getAddressArrayItemByIndexByKeys(
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
 * [IPolicyAdmin](IPolicyAdmin.md)
-* [IPriceDiscovery](IPriceDiscovery.md)
+* [IPriceOracle](IPriceOracle.md)
 * [IProtocol](IProtocol.md)
 * [IRecoverable](IRecoverable.md)
 * [IReporter](IReporter.md)
@@ -1989,6 +2574,7 @@ function getAddressArrayItemByIndexByKeys(
 * [MockCxTokenPolicy](MockCxTokenPolicy.md)
 * [MockCxTokenStore](MockCxTokenStore.md)
 * [MockFlashBorrower](MockFlashBorrower.md)
+* [MockLiquidityEngineUser](MockLiquidityEngineUser.md)
 * [MockProcessorStore](MockProcessorStore.md)
 * [MockProcessorStoreLib](MockProcessorStoreLib.md)
 * [MockProtocol](MockProtocol.md)
@@ -1999,7 +2585,7 @@ function getAddressArrayItemByIndexByKeys(
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
 * [NPM](NPM.md)
-* [NPMDistributor](NPMDistributor.md)
+* [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
 * [NTransferUtilV2Intermediate](NTransferUtilV2Intermediate.md)
 * [Ownable](Ownable.md)
@@ -2008,7 +2594,6 @@ function getAddressArrayItemByIndexByKeys(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
-* [PriceDiscovery](PriceDiscovery.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
