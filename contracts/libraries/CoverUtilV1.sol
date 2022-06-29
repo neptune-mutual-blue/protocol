@@ -436,4 +436,27 @@ library CoverUtilV1 {
   ) external view returns (bool) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == 1;
   }
+
+  function disablePolicyInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bool status
+  ) external {
+    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    s.setBoolByKey(key, status);
+  }
+
+  function isPolicyDisabledInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (bool) {
+    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    return s.getBoolByKey(key);
+  }
+
+  function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
+  }
 }

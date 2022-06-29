@@ -98,6 +98,21 @@ describe('Policy: purchaseCover', () => {
     available.should.be.gt(amount)
   })
 
+  it('reverts when policy is disabled', async () => {
+    const [owner] = await ethers.getSigners()
+
+    const amount = helper.ether(500_000, PRECISION)
+    await deployed.dai.approve(deployed.policy.address, amount)
+
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, true, 'reason: testing')
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+      .should.be.rejectedWith('Policy purchase disabled')
+    await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, false, 'reason: testing')
+
+    // Can purchase after re-enabled
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+  })
+
   it('must revert if zero is sent as the amount to cover', async () => {
     const [owner] = await ethers.getSigners()
 

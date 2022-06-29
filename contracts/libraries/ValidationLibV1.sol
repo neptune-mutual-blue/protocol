@@ -501,4 +501,12 @@ library ValidationLibV1 {
       mustBeActiveProduct(s, coverKey, productKey);
     }
   }
+
+  function mustNotHavePolicyDisabled(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(!s.isPolicyDisabledInternal(coverKey, productKey), "Policy purchase disabled");
+  }
 }

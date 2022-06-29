@@ -121,7 +121,7 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
   })
 })
 
-describe.only('Vault: removeLiquidity (Diversified Cover)', () => {
+describe('Vault: removeLiquidity (Diversified Cover)', () => {
   let deployed, vault
 
   const coverKey = key.toBytes32('foo-bar-2')
@@ -193,6 +193,29 @@ describe.only('Vault: removeLiquidity (Diversified Cover)', () => {
     await vault.approve(vault.address, pods)
 
     const tx = await vault.removeLiquidity(coverKey, pods, npmStake, true)
+    const { events } = await tx.wait()
+
+    const event = events.find(x => x.event === 'PodsRedeemed')
+
+    event.args.account.should.equal(owner.address)
+    event.args.redeemed.should.equal(helper.ether(2000))
+    event.args.liquidityReleased.should.equal(helper.ether(2000, PRECISION))
+
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+  })
+
+  it('successfully removes liquidity when policy is disabled', async () => {
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+    await vault.accrueInterest()
+
+    const [owner] = await ethers.getSigners()
+    const pods = helper.ether(2000)
+    await vault.approve(vault.address, pods)
+
+    await deployed.cover.disablePolicy(coverKey, productKey, true, 'testing liqiudity removal')
+    const tx = await vault.removeLiquidity(coverKey, pods, npmStake, true)
+    await deployed.cover.disablePolicy(coverKey, productKey, false, 'testing liqiudity removal')
+
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PodsRedeemed')
