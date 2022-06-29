@@ -71,7 +71,7 @@ abstract contract Finalization is Recoverable, IFinalization {
   ) private {
     // Reset to normal
     // @note: do not pass incident date as we need status by key and incident date for historical significance
-    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);
+    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.ProductStatus.Normal);
 
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);

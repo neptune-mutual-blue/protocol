@@ -85,7 +85,7 @@ describe('Claims Processor: `validate` function', () => {
     const incidentDate = '1234'
 
     await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
-    await store.setCoverStatus(coverKey, helper.emptyBytes32, 1)
+    await store.setProductStatus(coverKey, helper.emptyBytes32, 1)
 
     await cxToken.approve(processor.address, '1')
     await processor.validate(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, helper.ether(200)).should.be.rejectedWith('Not claimable')

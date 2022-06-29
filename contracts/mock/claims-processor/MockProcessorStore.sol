@@ -29,7 +29,7 @@ library MockProcessorStoreLib {
     s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
     s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", coverKey, address(vault));
 
-    setCoverStatus(s, coverKey, productKey, 4);
+    setProductStatus(s, coverKey, productKey, 4);
     setClaimBeginTimestamp(s, coverKey, productKey, block.timestamp - 100 days); // solhint-disable-line
     setClaimExpiryTimestamp(s, coverKey, productKey, block.timestamp + 100 days); // solhint-disable-line
 
@@ -43,7 +43,7 @@ library MockProcessorStoreLib {
     s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
   }
 
-  function setCoverStatus(
+  function setProductStatus(
     MockStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -84,12 +84,12 @@ contract MockProcessorStore is MockStore {
     MockProcessorStoreLib.disassociateCxToken(this, cxToken);
   }
 
-  function setCoverStatus(
+  function setProductStatus(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 value
   ) external {
-    MockProcessorStoreLib.setCoverStatus(this, coverKey, productKey, value);
+    MockProcessorStoreLib.setProductStatus(this, coverKey, productKey, value);
   }
 
   function setClaimBeginTimestamp(

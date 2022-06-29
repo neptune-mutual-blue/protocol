@@ -95,18 +95,20 @@ contract Policy is IPolicy, Recoverable {
     uint256 amountToCover,
     bytes32 referralCode
   ) external override nonReentrant returns (address, uint256) {
-    // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustHaveNormalProductStatus(coverKey, productKey);
-    s.mustNotHavePolicyDisabled(coverKey, productKey);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
-
-    // @todo: When the voucher system is replaced with NPM tokens in the future, uncomment the following line
+    // @todo: When the voucher system is replaced with NPM tokens in the future, upgrade this contract
+    // and uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
+    require(coverKey > 0, "Invalid cover key");
     require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(amountToCover > 0, "Please specify amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+
+    // @suppress-acl Marking this as publicly accessible
+    s.mustNotBePaused();
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustHaveNormalProductStatus(coverKey, productKey);
+    s.mustNotHavePolicyDisabled(coverKey, productKey);
+    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
 
     lastPolicyId += 1;
 

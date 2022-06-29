@@ -235,7 +235,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     VaultLibV1.mustNotExceedStablecoinThreshold(s, amount);
     VaultLibV1.mustNotExceedNpmThreshold(amount);
 
@@ -261,7 +261,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.updateStateAndLiquidity(coverKey);
 
     // @suppress-reentrancy The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
@@ -319,7 +319,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustMaintainBlockHeightOffset(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
     s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
     s.mustBeAccrued(coverKey);

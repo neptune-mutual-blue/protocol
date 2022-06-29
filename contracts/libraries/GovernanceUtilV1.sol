@@ -69,8 +69,8 @@ library GovernanceUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (address) {
-    CoverUtilV1.CoverStatus status = s.getProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened || status == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus status = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    bool incidentHappened = status == CoverUtilV1.ProductStatus.IncidentHappened || status == CoverUtilV1.ProductStatus.Claimable;
     bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
     return s.getAddressByKeys(prefix, coverKey, productKey);
@@ -173,8 +173,8 @@ library GovernanceUtilV1 {
     (uint256 yes, uint256 no) = getStakesInternal(s, coverKey, productKey, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOfInternal(s, account, coverKey, productKey, incidentDate);
 
-    CoverUtilV1.CoverStatus decision = s.getProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = decision == CoverUtilV1.CoverStatus.IncidentHappened || decision == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus decision = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    bool incidentHappened = decision == CoverUtilV1.ProductStatus.IncidentHappened || decision == CoverUtilV1.ProductStatus.Claimable;
 
     totalStakeInWinningCamp = incidentHappened ? yes : no;
     totalStakeInLosingCamp = incidentHappened ? no : yes;
@@ -289,7 +289,7 @@ library GovernanceUtilV1 {
     }
   }
 
-  function _updateCoverStatusBeforeResolutionInternal(
+  function _updateProductStatusBeforeResolutionInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -301,11 +301,11 @@ library GovernanceUtilV1 {
     uint256 no = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
 
     if (no > yes) {
-      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.FalseReporting);
+      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.FalseReporting);
       return;
     }
 
-    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.IncidentHappened);
+    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.IncidentHappened);
   }
 
   function addAttestationInternal(
@@ -329,7 +329,7 @@ library GovernanceUtilV1 {
     }
 
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }
@@ -366,7 +366,7 @@ library GovernanceUtilV1 {
     }
 
     s.addUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }

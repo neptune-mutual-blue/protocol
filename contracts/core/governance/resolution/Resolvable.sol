@@ -55,7 +55,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool decision = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }
@@ -127,7 +127,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     //    who staked for `Incident Happened` camp can withdraw the original stake + reward.
     // 4. After finalization, the NPM holders who staked for this camp will only be able to receive
     // back the original stake. No rewards.
-    CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
+    CoverUtilV1.ProductStatus status = decision ? CoverUtilV1.ProductStatus.Claimable : CoverUtilV1.ProductStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
     s.setStatusInternal(coverKey, productKey, incidentDate, status);

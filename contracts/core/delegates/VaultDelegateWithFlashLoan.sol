@@ -77,7 +77,7 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     // @suppress-acl This function is only accessible to the vault contract
     // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.senderMustBeVaultContract(coverKey);
 
     stablecoin = IERC20(s.getStablecoin());
@@ -115,7 +115,7 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     // @suppress-zero-value-check The `amount` value isn't used and therefore not checked
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
     s.updateStateAndLiquidity(coverKey);
