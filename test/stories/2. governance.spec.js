@@ -149,7 +149,7 @@ describe('Governance Stories', function () {
     incidentDate.toNumber().should.equal(0)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.normal)
+    status.toNumber().should.equal(helper.productStatus.normal)
   })
 
   it('alice submitted an incident with 250 stake', async () => {
@@ -186,7 +186,7 @@ describe('Governance Stories', function () {
     incidentDate.toNumber().should.be.greaterThan(0)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.incidentHappened)
+    status.toNumber().should.equal(helper.productStatus.incidentHappened)
   })
 
   it('alice is the reporter', async () => {
@@ -232,7 +232,7 @@ describe('Governance Stories', function () {
     reporter.should.equal(bob.address)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.falseReporting)
+    status.toNumber().should.equal(helper.productStatus.falseReporting)
   })
 
   it('david, franklin, and john refuted the incident reporting', async () => {
@@ -376,7 +376,7 @@ describe('Governance Stories', function () {
     await contracts.resolution.connect(alex).resolve(coverKey, helper.emptyBytes32, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.falseReporting)
+    status.toNumber().should.equal(helper.productStatus.falseReporting)
   })
 
   it('governance admin stops the attack', async () => {
@@ -390,7 +390,7 @@ describe('Governance Stories', function () {
     await contracts.resolution.emergencyResolve(coverKey, helper.emptyBytes32, incidentDate, decision)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.claimable)
+    status.toNumber().should.equal(helper.productStatus.claimable)
   })
 
   it('kimberly successfully received payout during the claim period', async () => {
@@ -444,6 +444,6 @@ describe('Governance Stories', function () {
     await contracts.resolution.connect(alex).finalize(coverKey, helper.emptyBytes32, incidentDate)
 
     const status = await contracts.governance.getStatus(coverKey, helper.emptyBytes32)
-    status.toNumber().should.equal(helper.coverStatus.normal)
+    status.toNumber().should.equal(helper.productStatus.normal)
   })
 })

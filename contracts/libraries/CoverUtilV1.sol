@@ -19,7 +19,7 @@ library CoverUtilV1 {
   using AccessControlLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
-  enum CoverStatus {
+  enum ProductStatus {
     Normal,
     Stopped,
     IncidentHappened,
@@ -141,12 +141,32 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
   }
 
-  function getCoverStatusInternal(IStore s, bytes32 coverKey) external view returns (CoverStatus) {
-    return CoverStatus(s.getUintByKey(getCoverStatusKey(coverKey)));
+  function isCoverNormalInternal(IStore s, bytes32 coverKey) external view returns (bool) {
+    bool supportsProducts = supportsProductsInternal(s, coverKey);
+
+    if (supportsProducts == false) {
+      return getProductStatusInternal(s, coverKey, 0) == ProductStatus.Normal;
+    }
+
+    bytes32[] memory products = _getProducts(s, coverKey);
+
+    for (uint256 i = 0; i < products.length; i++) {
+      bool isNormal = getProductStatusInternal(s, coverKey, products[i]) == ProductStatus.Normal;
+
+      if (!isNormal) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  function getProductStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view returns (CoverStatus) {
-    return CoverStatus(s.getUintByKey(getProductStatusKey(coverKey, productKey)));
+  function getProductStatusInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (ProductStatus) {
+    return ProductStatus(s.getUintByKey(getProductStatusKey(coverKey, productKey)));
   }
 
   /**
@@ -172,8 +192,8 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusOf(s, coverKey, productKey, incidentDate));
+  ) external view returns (ProductStatus) {
+    return ProductStatus(getStatusOf(s, coverKey, productKey, incidentDate));
   }
 
   function getStatusOf(
@@ -185,18 +205,18 @@ library CoverUtilV1 {
     return s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of the product status of the given cover and product
+   * to find out the current status. This gets reset during finalization.
+   */
   function getProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey));
   }
 
-  function getCoverStatusKey(bytes32 coverKey) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey));
-  }
-
-  function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
-  }
-
+  /**
+   * @dev Hash key of the product status of (the given cover, product, and incident date)
+   * for historical significance. This must not be reset during finalization.
+   */
   function getProductStatusOfKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -236,11 +256,15 @@ library CoverUtilV1 {
       return getActiveLiquidityUnderProtection(s, coverKey, 0, precision);
     }
 
-    bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+    bytes32[] memory products = _getProducts(s, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
       total += getActiveLiquidityUnderProtection(s, coverKey, products[i], precision);
     }
+  }
+
+  function _getProducts(IStore s, bytes32 coverKey) private view returns (bytes32[] memory products) {
+    return s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
   }
 
   function getActiveLiquidityUnderProtection(
@@ -335,10 +359,9 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    CoverStatus status
+    ProductStatus status
   ) external {
-    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status)); // Entire cover
-    s.setUintByKey(getProductStatusKey(coverKey, productKey), uint256(status)); // This product
+    s.setUintByKey(getProductStatusKey(coverKey, productKey), uint256(status));
 
     if (incidentDate > 0) {
       s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));

@@ -35,7 +35,7 @@ contract Cover is CoverBase {
    */
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
@@ -161,7 +161,7 @@ contract Cover is CoverBase {
     AccessControlLibV1.mustBeGovernanceAdmin(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled": "Already enabled");
+    require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled" : "Already enabled");
 
     s.disablePolicyInternal(coverKey, productKey, status);
 

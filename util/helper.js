@@ -42,7 +42,7 @@ const formatPercentBn = (x) => {
   return formatPercent(x.toNumber() / MULTIPLIER) + ' (BN)'
 }
 
-const coverStatus = {
+const productStatus = {
   normal: 0,
   stopped: 1, // Stopped
   incidentHappened: 2, // Reporting, incident happened
@@ -62,7 +62,7 @@ module.exports = {
   zerox,
   zero1,
   emptyBytes32,
-  coverStatus,
+  productStatus,
   sum,
   getRandomNumber,
   weiAsToken,

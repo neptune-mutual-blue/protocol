@@ -133,7 +133,7 @@ abstract contract Witness is Recoverable, IWitness {
    * @dev Gets the status of a given cover
    * @param coverKey Enter the key of the cover you'd like to check the status of
    * @return Returns the cover status as an integer.
-   * For more, check the enum `CoverStatus` on `CoverUtilV1` library.
+   * For more, check the enum `ProductStatus` on `CoverUtilV1` library.
    */
   function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getStatusInternal(coverKey, productKey);
