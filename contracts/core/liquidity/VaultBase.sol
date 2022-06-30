@@ -6,7 +6,7 @@ import "../../interfaces/IVaultDelegate.sol";
 import "../../interfaces/IVault.sol";
 import "../../libraries/NTransferUtilV2.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 abstract contract VaultBase is ERC20, Recoverable, IVault {
   using ProtoUtilV1 for IStore;

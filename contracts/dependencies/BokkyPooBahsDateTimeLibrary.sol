@@ -1,6 +1,6 @@
 /* solhint-disable var-name-mixedcase, private-vars-leading-underscore, reason-string */
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 // ----------------------------------------------------------------------------
 // BokkyPooBah's DateTime Library v1.01

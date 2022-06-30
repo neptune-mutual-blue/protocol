@@ -3,7 +3,7 @@
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./IMember.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 interface ILiquidityEngine is IMember {
   event StrategyAdded(address indexed strategy);

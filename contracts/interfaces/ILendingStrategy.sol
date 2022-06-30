@@ -3,7 +3,7 @@
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./IMember.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 interface ILendingStrategy is IMember {
   event LogDeposit(bytes32 indexed name, uint256 counter, uint256 amount, uint256 certificateReceived, uint256 depositTotal, uint256 withdrawalTotal);

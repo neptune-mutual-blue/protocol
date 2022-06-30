@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../Recoverable.sol";
 import "../../interfaces/IClaimsProcessor.sol";
 import "../../interfaces/ICxToken.sol";

@@ -8,7 +8,7 @@
   "solidity.formatter": "prettier",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
-  "solidity.compileUsingRemoteVersion": "0.8.0",
+  "solidity.compileUsingRemoteVersion": "0.8.15",
   "solidity.linter": "solhint",
   "solidity.validationDelay": 2,
   "standard.autoFixOnSave": true,

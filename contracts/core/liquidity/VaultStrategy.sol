@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 import "./VaultLiquidity.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 abstract contract VaultStrategy is VaultLiquidity {
   using ProtoUtilV1 for IStore;

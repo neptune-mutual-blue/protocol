@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 import "./WithFlashLoan.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 contract Vault is WithFlashLoan {
   using ProtoUtilV1 for IStore;
