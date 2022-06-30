@@ -316,6 +316,8 @@ library GovernanceUtilV1 {
     uint256 incidentDate,
     uint256 stake
   ) external {
+    mustNotExceedNpmThreshold(stake);
+
     // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
     // Add individual stake of the reporter
     s.addUintByKey(_getIndividualIncidentOccurredStakeKey(coverKey, productKey, incidentDate, who), stake);
@@ -345,7 +347,7 @@ library GovernanceUtilV1 {
     totalStake = s.getUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate));
   }
 
-  function addDisputeInternal(
+  function addRefutationInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -353,6 +355,8 @@ library GovernanceUtilV1 {
     uint256 incidentDate,
     uint256 stake
   ) external {
+    mustNotExceedNpmThreshold(stake);
+
     // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
 
     s.addUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, who), stake);
@@ -457,5 +461,9 @@ library GovernanceUtilV1 {
     uint256 transferAmount = (principal * reassuranceRate) / ProtoUtilV1.MULTIPLIER;
 
     return transferAmount - reassurancePaid;
+  }
+
+  function mustNotExceedNpmThreshold(uint256 amount) public pure {
+    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "Please specify a smaller amount");
   }
 }

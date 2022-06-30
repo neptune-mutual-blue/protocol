@@ -19,7 +19,8 @@ const upgradeContract = async () => {
   let libraries = {
     CoverUtilV1: current.coverUtilV1,
     RoutineInvokerLibV1: current.routineInvokerLibV1,
-    StoreKeyUtil: current.storeKeyUtil
+    StoreKeyUtil: current.storeKeyUtil,
+    ValidationLibV1: current.validationLibV1
   }
 
   const GovernanceUtilV1 = await deployer.deployWithLibraries(null, 'GovernanceUtilV1', libraries)

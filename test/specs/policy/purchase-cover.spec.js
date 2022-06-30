@@ -119,7 +119,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', '0', key.toBytes32(''))
-      .should.be.rejectedWith('Please specify amount')
+      .should.be.rejectedWith('Enter an amount')
   })
 
   it('must revert if invalid value is sent as the cover duration', async () => {
@@ -154,7 +154,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
+    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000, PRECISION), key.toBytes32(''))
       .should.be.rejectedWith('Status not normal')
   })
 })

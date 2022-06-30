@@ -18,11 +18,13 @@ const upgradeContract = async () => {
 
   let libraries = {
     CoverUtilV1: current.coverUtilV1,
+    GovernanceUtilV1: current.governanceUtilV1,
     RoutineInvokerLibV1: current.routineInvokerLibV1,
     ProtoUtilV1: current.protoUtilV1,
     RegistryLibV1: current.registryLibV1,
     StoreKeyUtil: current.storeKeyUtil,
-    StrategyLibV1: current.strategyLibV1
+    StrategyLibV1: current.strategyLibV1,
+    ValidationLibV1: current.validationLibV1
   }
 
   const VaultLibV1 = await deployer.deployWithLibraries(null, 'VaultLibV1', libraries)
@@ -40,6 +42,7 @@ const upgradeContract = async () => {
 
   libraries = {
     AccessControlLibV1: current.accessControlLibV1,
+    GovernanceUtilV1: current.governanceUtilV1,
     BaseLibV1: current.baseLibV1,
     ProtoUtilV1: current.protoUtilV1,
     RoutineInvokerLibV1: current.routineInvokerLibV1,

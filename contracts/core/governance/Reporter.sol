@@ -175,7 +175,7 @@ abstract contract Reporter is IReporter, Witness {
     require(stake > 0, "Stake insufficient");
     require(stake >= s.getMinReportingStakeInternal(coverKey), "Stake insufficient");
 
-    s.addDisputeInternal(coverKey, productKey, msg.sender, incidentDate, stake);
+    s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
