@@ -9,6 +9,7 @@ import "../Recoverable.sol";
 
 /**
  * @title Base Cover Contract
+ *
  */
 abstract contract CoverBase is ICover, Recoverable {
   using CoverLibV1 for IStore;
@@ -25,32 +26,48 @@ abstract contract CoverBase is ICover, Recoverable {
 
   /**
    * @dev Initializes this contract
-   * @param liquidityToken Provide the address of the token this cover will be quoted against.
-   * @param liquidityName Enter a description or ENS name of your liquidity token.
+   *
+   * @custom:warning Warning:
+   *
+   * This is a one-time setup. The stablecoin contract address can't be updated once set.
+   *
+   * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
+   * @custom:suppress-initialization Can only be initialized once by a cover manager
+   *
+   * @param stablecoin Provide the address of the token this cover will be quoted against.
+   * @param friendlyName Enter a description or ENS name of your liquidity token.
    *
    */
-  function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
-    // @suppress-initialization Can only be initialized once by a cover manager
-    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
+  function initialize(address stablecoin, bytes32 friendlyName) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     require(s.getAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN) == address(0), "Already initialized");
 
-    s.initializeCoverInternal(liquidityToken, liquidityName);
-    emit CoverInitialized(liquidityToken, liquidityName);
+    s.initializeCoverInternal(stablecoin, friendlyName);
+    emit CoverInitialized(stablecoin, friendlyName);
   }
 
-  function setCoverFees(uint256 value) external override nonReentrant {
+  /**
+   * @dev Sets the cover creation fee
+   *
+   * @param value Enter the cover creation fee in NPM token units
+   */
+  function setCoverCreationFee(uint256 value) external override nonReentrant {
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    uint256 previous = s.setCoverFeesInternal(value);
-    emit CoverFeeSet(previous, value);
+    uint256 previous = s.setCoverCreationFeeInternal(value);
+    emit CoverCreationFeeSet(previous, value);
   }
 
+  /**
+   * @dev Sets minimum stake to create a new cover
+   *
+   * @param value Enter the minimum cover creation stake in NPM token units
+   */
   function setMinCoverCreationStake(uint256 value) external override nonReentrant {
     require(value > 0, "Please specify value");
 
@@ -61,6 +78,15 @@ abstract contract CoverBase is ICover, Recoverable {
     emit MinCoverCreationStakeSet(previous, value);
   }
 
+  /**
+   * @dev Sets minimum stake to add liquidity
+   *
+   * @custom:note Please note that liquidity providers can remove 100% stake
+   * and exit their NPM stake position whenever they want to, provided they do it during
+   * a "withdrawal window".
+   *
+   * @param value Enter the minimum stake to add liquidity.
+   */
   function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
     require(value > 0, "Please specify value");
 

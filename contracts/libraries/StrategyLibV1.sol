@@ -29,15 +29,25 @@ library StrategyLibV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
 
+  /**
+   * @dev Disables a strategy
+   *
+   * @custom:suppress-address-trust-issue The address `toFind` can be trusted since we are not treating it like a contract.
+   *
+   */
   function disableStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
   }
 
+  /**
+   * @dev Deletes a strategy
+   *
+   * @custom:suppress-address-trust-issue The address `toFind` can be trusted since we are not treating it like a contract.
+   *
+   */
   function deleteStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _deleteStrategy(s, toFind);
   }
 

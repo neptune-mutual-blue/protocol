@@ -9,6 +9,12 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 
 ```js
 uint256 public constant MULTIPLIER;
+uint256 public constant MAX_LIQUIDITY;
+uint256 public constant MAX_PROPOSAL_AMOUNT;
+uint256 public constant MAX_NPM_STAKE;
+uint256 public constant NPM_PRECISION;
+uint256 public constant CXTOKEN_PRECISION;
+uint256 public constant POD_PRECISION;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -50,7 +56,7 @@ bytes32 public constant NS_COVER_REASSURANCE_PAYOUT;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_REASSURANCE_RATE;
 bytes32 public constant NS_COVER_LEVERAGE_FACTOR;
-bytes32 public constant NS_COVER_FEE_EARNING;
+bytes32 public constant NS_COVER_CREATION_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
 bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS;
@@ -64,7 +70,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
-bytes32 public constant NS_COVER_LIQUIDITY_NAME;
+bytes32 public constant NS_COVER_STABLECOIN_NAME;
 bytes32 public constant NS_COVER_REQUIRES_WHITELIST;
 bytes32 public constant NS_COVER_HAS_FLASH_LOAN;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
@@ -72,6 +78,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL;
 bytes32 public constant NS_COVERAGE_LAG;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
+bytes32 public constant NS_POLICY_DISABLED;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
@@ -153,6 +160,7 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getNpmPriceOracle(IStore s)](#getnpmpriceoracle)
 - [getTreasury(IStore s)](#gettreasury)
 - [getStablecoin(IStore s)](#getstablecoin)
+- [getStablecoinPrecision(IStore s)](#getstablecoinprecision)
 - [getBurnAddress(IStore s)](#getburnaddress)
 - [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
 - [_getContract(IStore s, bytes32 name)](#_getcontract)
@@ -505,7 +513,7 @@ function getTreasury(IStore s) external view returns (address) {
 ### getStablecoin
 
 ```solidity
-function getStablecoin(IStore s) external view
+function getStablecoin(IStore s) public view
 returns(address)
 ```
 
@@ -519,8 +527,31 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoin(IStore s) external view returns (address) {
+function getStablecoin(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
+  }
+```
+</details>
+
+### getStablecoinPrecision
+
+```solidity
+function getStablecoinPrecision(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinPrecision(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoin(s)).decimals();
   }
 ```
 </details>
@@ -608,7 +639,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -709,6 +739,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

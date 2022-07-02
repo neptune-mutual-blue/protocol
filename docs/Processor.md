@@ -7,9 +7,12 @@ View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Proc
 **Processor**
 
 The claims processor contract allows policyholders to file a claim and get instant payouts during the claim period.
+ <br /> <br />
  There is a lag period before a policy begins coverage.
  After the next day's UTC EOD timestamp, policies take effect and are valid until the expiration period.
- Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+ Check [ProtoUtilV1.NS_COVERAGE_LAG](ProtoUtilV1.md) and [PolicyAdmin.getCoverageLag](PolicyAdmin.md#getcoveragelag)
+ for more information on the lag configuration.
+ <br /> <br />
  If a claim isn't made during the claim period, it isn't valid and there is no payout.
 
 ## Functions
@@ -48,9 +51,9 @@ constructor(IStore store) Recoverable(store) {}
 
 ### claim
 
-Enables a policyholder to claim their cxTokens to receive a payout.
- The payout is provided only when the active cover is marked as "Incident Happened"
- and has "Claimable" status.
+Enables a policyholder to receive a payout redeeming cxTokens.
+ Only when the active cover is marked as "Incident Happened" and
+ has "Claimable" status is the payout made.
 
 ```solidity
 function claim(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 amount) external nonpayable nonReentrant 
@@ -77,11 +80,6 @@ function claim(
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already implemented in the function `validate`
-    // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
-    // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
-
     validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
@@ -90,20 +88,30 @@ function claim(
     IVault vault = s.getVault(coverKey);
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
-    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, amount);
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
 
-    // @suppress-division Checked side effects. If the claim platform fee is zero
+    require(payout > 0, "Invalid payout");
+
+    s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, payout);
+
+    // @suppress-zero-value-check Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
-    uint256 platformFee = (amount * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
+    uint256 platformFee = (payout * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-division Checked side effects. If the claim reporter commission is zero
+    // @suppress-zero-value-check Checked side effects. If the claim reporter commission rate is zero
     // or a very small number, reporterFee fee becomes zero due to data loss.
-
-    // slither-disable-next-line divide-before-multiply
     uint256 reporterFee = (platformFee * s.getClaimReporterCommissionInternal()) / ProtoUtilV1.MULTIPLIER;
-    uint256 claimed = amount - platformFee;
 
-    vault.transferGovernance(coverKey, msg.sender, claimed);
+    require(payout >= platformFee, "Invalid platform fee");
+
+    uint256 claimed = payout - platformFee;
+
+    // @suppress-zero-value-check If the platform fee rate was 100%,
+    // "claimed" can be zero
+    if (claimed > 0) {
+      vault.transferGovernance(coverKey, msg.sender, claimed);
+    }
 
     if (reporterFee > 0) {
       vault.transferGovernance(coverKey, finalReporter, reporterFee);
@@ -112,7 +120,6 @@ function claim(
     if (platformFee - reporterFee > 0) {
       // @suppress-subtraction The following (or above) subtraction can cause
       // an underflow if `getClaimReporterCommissionInternal` is greater than 100%.
-      // @check:  getClaimReporterCommissionInternal < ProtoUtilV1.MULTIPLIER
       vault.transferGovernance(coverKey, s.getTreasury(), platformFee - reporterFee);
     }
 
@@ -144,7 +151,7 @@ returns(bool)
 
 **Returns**
 
-Returns true if the given claim is valid and can result in a successful payout
+If the given claim is valid and can result in a successful payout, returns true.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -162,6 +169,9 @@ function validate(
     require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
     require(amount > 0, "Enter an amount");
 
+    require(s.getClaimReporterCommissionInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid claim reporter fee");
+    require(s.getPlatformCoverFeeRateInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid platform fee rate");
+
     return true;
   }
 ```
@@ -170,7 +180,7 @@ function validate(
 ### getClaimExpiryDate
 
 Returns claim expiration date.
- Even if the policy was valid, it cannot be claimed after the expiry date.
+ Even if the policy was still valid, it cannot be claimed after the claims expiry date.
 
 ```solidity
 function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view
@@ -196,9 +206,9 @@ function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view 
 
 ### setClaimPeriod
 
-Sets the claim period of a cover by its key.
- If you do not specify any cover key, the value specified here will be set as fallback.
- Cover that do not have any specific claim period will default to the fallback value.
+Sets the cover's claim period using its key.
+ If no cover key is specified, the value specified here will be used as a fallback.
+ Covers without a specified claim period default to the fallback value.
 
 ```solidity
 function setClaimPeriod(bytes32 coverKey, uint256 value) external nonpayable nonReentrant 
@@ -215,7 +225,7 @@ function setClaimPeriod(bytes32 coverKey, uint256 value) external nonpayable non
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReentrant {
+ction setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
@@ -235,16 +245,17 @@ function setClaimPeriod(bytes32 coverKey, uint256 value) external override nonRe
 
     emit ClaimPeriodSet(coverKey, previous, value);
   }
+
 ```
 </details>
 
 ### setBlacklist
 
-Blacklisted accounts are unable to claim their cxTokens.
- Cover managers can use the blacklist feature to prohibit
- an account from claiming their cover. This usually happens when
- we suspect a policyholder of being the attacker.
- After performing KYC, we may be able to lift the blacklist.
+Accounts that are on a blacklist can't claim their cxTokens.
+ Cover managers can stop an account from claiming their cover by putting it on the blacklist.
+ Usually, this happens when we suspect a policyholder is the attacker.
+ <br /> <br />
+ After performing KYC, we might be able to lift the blacklist.
 
 ```solidity
 function setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
@@ -264,13 +275,15 @@ function setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setBlacklist(
+ction setBlacklist(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
     address[] calldata accounts,
     bool[] calldata statuses
   ) external override nonReentrant {
+    // @suppress-zero-value-check Checked
+    require(accounts.length > 0, "Invalid accounts");
     require(accounts.length == statuses.length, "Invalid args");
 
     s.mustNotBePaused();
@@ -282,12 +295,13 @@ function setBlacklist(
       emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
     }
   }
+
 ```
 </details>
 
 ### isBlacklisted
 
-Check if an account is blacklisted from claiming their cover.
+Check to see if an account is blacklisted/banned from making a claim.
 
 ```solidity
 function isBlacklisted(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account) public view
@@ -307,7 +321,7 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isBlacklisted(
+ction isBlacklisted(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
@@ -315,6 +329,7 @@ function isBlacklisted(
   ) public view override returns (bool) {
     return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), account);
   }
+
 ```
 </details>
 
@@ -336,9 +351,10 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function version() external pure override returns (bytes32) {
+ction version() external pure override returns (bytes32) {
     return "v0.1";
   }
+
 ```
 </details>
 
@@ -360,9 +376,11 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getName() external pure override returns (bytes32) {
+ction getName() external pure override returns (bytes32) {
     return ProtoUtilV1.CNAME_CLAIMS_PROCESSOR;
   }
+}
+
 ```
 </details>
 
@@ -378,7 +396,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -479,6 +496,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

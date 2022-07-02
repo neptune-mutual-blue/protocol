@@ -20,7 +20,7 @@ contract IStore public s;
 - [senderMustBeClaimsProcessorContract()](#sendermustbeclaimsprocessorcontract)
 - [senderMustBeStrategyContract()](#sendermustbestrategycontract)
 - [mustBeDisputed(bytes32 coverKey, bytes32 productKey)](#mustbedisputed)
-- [mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey)](#musthavenormalcoverproductstatus)
+- [mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey)](#musthavenormalproductstatus)
 
 ### 
 
@@ -151,10 +151,10 @@ function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view {
 ```
 </details>
 
-### mustHaveNormalCoverProductStatus
+### mustHaveNormalProductStatus
 
 ```solidity
-function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view
+function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -168,8 +168,8 @@ function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) external view {
-    s.mustHaveNormalCoverProductStatus(coverKey, productKey);
+function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+    s.mustHaveNormalProductStatus(coverKey, productKey);
   }
 ```
 </details>
@@ -186,7 +186,6 @@ function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -287,6 +286,7 @@ function mustHaveNormalCoverProductStatus(bytes32 coverKey, bytes32 productKey) 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

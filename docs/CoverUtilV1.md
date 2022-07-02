@@ -5,16 +5,24 @@ View Source: [contracts/libraries/CoverUtilV1.sol](../contracts/libraries/CoverU
 **CoverUtilV1**
 
 **Enums**
-### CoverStatus
+### ProductStatus
 
 ```js
-enum CoverStatus {
+enum ProductStatus {
  Normal,
  Stopped,
  IncidentHappened,
  FalseReporting,
  Claimable
 }
+```
+
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE;
+
 ```
 
 ## Functions
@@ -27,26 +35,31 @@ enum CoverStatus {
 - [getMinStakeToAddLiquidity(IStore s)](#getminstaketoaddliquidity)
 - [getClaimPeriod(IStore s, bytes32 coverKey)](#getclaimperiod)
 - [getCoverPoolSummaryInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getcoverpoolsummaryinternal)
-- [getCoverStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getcoverstatusinternal)
+- [getReassuranceWeightInternal(IStore s, bytes32 coverKey)](#getreassuranceweightinternal)
+- [getReassuranceAmountInternal(IStore s, bytes32 coverKey)](#getreassuranceamountinternal)
+- [getReassuranceRateInternal(IStore s, bytes32 coverKey)](#getreassurancerateinternal)
+- [getReassuranceKey(bytes32 coverKey)](#getreassurancekey)
+- [getReassuranceRateKey(bytes32 coverKey)](#getreassuranceratekey)
+- [getReassuranceWeightKey(bytes32 coverKey)](#getreassuranceweightkey)
+- [isCoverNormalInternal(IStore s, bytes32 coverKey)](#iscovernormalinternal)
+- [getProductStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getproductstatusinternal)
 - [getStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getstatusinternal)
-- [getCoverProductStatusOf(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getcoverproductstatusof)
+- [getProductStatusOf(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getproductstatusof)
 - [getStatusOf(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstatusof)
-- [getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey)](#getcoverproductstatuskey)
-- [getCoverStatusKey(bytes32 coverKey)](#getcoverstatuskey)
-- [getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate)](#getcoverstatusofkey)
-- [getCoverProductStatusOfKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getcoverproductstatusofkey)
+- [getProductStatusKey(bytes32 coverKey, bytes32 productKey)](#getproductstatuskey)
+- [getProductStatusOfKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getproductstatusofkey)
 - [getCoverLiquidityStakeKey(bytes32 coverKey)](#getcoverliquiditystakekey)
 - [getLastDepositHeightKey(bytes32 coverKey)](#getlastdepositheightkey)
 - [getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account)](#getcoverliquiditystakeindividualkey)
 - [getBlacklistKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getblacklistkey)
-- [getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey)](#gettotalliquidityunderprotection)
-- [getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey, bytes32 productKey)](#getactiveliquidityunderprotection)
+- [getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey, uint256 precision)](#gettotalliquidityunderprotection)
+- [_getProducts(IStore s, bytes32 coverKey)](#_getproducts)
+- [getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey, bytes32 productKey, uint256 adjustPrecision)](#getactiveliquidityunderprotection)
 - [_getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey, bytes32 productKey)](#_getliquidityunderprotectioninfo)
 - [_getCurrentCommitment(IStore s, bytes32 coverKey, bytes32 productKey)](#_getcurrentcommitment)
 - [_getFutureCommitments(IStore s, bytes32 coverKey, bytes32 productKey, uint256 ignoredExpiryDate)](#_getfuturecommitments)
 - [getStake(IStore s, bytes32 coverKey)](#getstake)
-- [setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, enum CoverUtilV1.CoverStatus status)](#setstatusinternal)
-- [getReassuranceAmountInternal(IStore s, bytes32 coverKey)](#getreassuranceamountinternal)
+- [setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, enum CoverUtilV1.ProductStatus status)](#setstatusinternal)
 - [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
 - [_getNextMonthEndDate(uint256 date, uint256 monthsToAdd)](#_getnextmonthenddate)
 - [_getMonthEndDate(uint256 date)](#_getmonthenddate)
@@ -57,6 +70,9 @@ enum CoverStatus {
 - [supportsProductsInternal(IStore s, bytes32 coverKey)](#supportsproductsinternal)
 - [isValidProductInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#isvalidproductinternal)
 - [isActiveProductInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#isactiveproductinternal)
+- [disablePolicyInternal(IStore s, bytes32 coverKey, bytes32 productKey, bool status)](#disablepolicyinternal)
+- [isPolicyDisabledInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#ispolicydisabledinternal)
+- [getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey)](#getpolicydisabledkey)
 
 ### getCoverOwner
 
@@ -278,10 +294,12 @@ function getCoverPoolSummaryInternal(
   ) external view returns (uint256[] memory _values) {
     _values = new uint256[](8);
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey);
-    _values[2] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
-    _values[3] = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
+    uint256 precision = s.getStablecoinPrecision();
+
+    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
+    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
+    _values[2] = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
+    _values[3] = getReassuranceWeightInternal(s, coverKey);
     _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
     _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
@@ -289,11 +307,223 @@ function getCoverPoolSummaryInternal(
 ```
 </details>
 
-### getCoverStatusInternal
+### getReassuranceWeightInternal
+
+Gets the reassurance weight of a given cover key.
 
 ```solidity
-function getCoverStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view
-returns(enum CoverUtilV1.CoverStatus)
+function getReassuranceWeightInternal(IStore s, bytes32 coverKey) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore | Provide store instance | 
+| coverKey | bytes32 | Enter the cover for which you want to obtain the reassurance weight for. | 
+
+**Returns**
+
+If reassurance weight value wasn't set for the specified cover pool,
+ the global value will be returned.
+ If global value, too, isn't available, a fallback value of `REASSURANCE_WEIGHT_FALLBACK_VALUE`
+ is returned.
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceWeightInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    uint256 setForTheCoverPool = s.getUintByKey(getReassuranceWeightKey(coverKey));
+
+    if (setForTheCoverPool > 0) {
+      return setForTheCoverPool;
+    }
+
+    // Globally set value: not set for any specifical cover
+    uint256 setGlobally = s.getUintByKey(getReassuranceWeightKey(0));
+
+    if (setGlobally > 0) {
+      return setGlobally;
+    }
+
+    return REASSURANCE_WEIGHT_FALLBACK_VALUE;
+  }
+```
+</details>
+
+### getReassuranceAmountInternal
+
+Gets the reassurance amount of the specified cover contract
+
+```solidity
+function getReassuranceAmountInternal(IStore s, bytes32 coverKey) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 | Enter the cover key | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceAmountInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    return s.getUintByKey(getReassuranceKey(coverKey));
+  }
+```
+</details>
+
+### getReassuranceRateInternal
+
+```solidity
+function getReassuranceRateInternal(IStore s, bytes32 coverKey) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceRateInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+    uint256 rate = s.getUintByKey(getReassuranceRateKey(coverKey));
+
+    if (rate > 0) {
+      return rate;
+    }
+
+    // Default: 25%
+    return 2500;
+  }
+```
+</details>
+
+### getReassuranceKey
+
+```solidity
+function getReassuranceKey(bytes32 coverKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey));
+  }
+```
+</details>
+
+### getReassuranceRateKey
+
+```solidity
+function getReassuranceRateKey(bytes32 coverKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceRateKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey));
+  }
+```
+</details>
+
+### getReassuranceWeightKey
+
+```solidity
+function getReassuranceWeightKey(bytes32 coverKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getReassuranceWeightKey(bytes32 coverKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
+  }
+```
+</details>
+
+### isCoverNormalInternal
+
+```solidity
+function isCoverNormalInternal(IStore s, bytes32 coverKey) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isCoverNormalInternal(IStore s, bytes32 coverKey) external view returns (bool) {
+    bool supportsProducts = supportsProductsInternal(s, coverKey);
+
+    if (supportsProducts == false) {
+      return getProductStatusInternal(s, coverKey, 0) == ProductStatus.Normal;
+    }
+
+    bytes32[] memory products = _getProducts(s, coverKey);
+
+    for (uint256 i = 0; i < products.length; i++) {
+      bool isNormal = getProductStatusInternal(s, coverKey, products[i]) == ProductStatus.Normal;
+
+      if (!isNormal) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+```
+</details>
+
+### getProductStatusInternal
+
+```solidity
+function getProductStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey) public view
+returns(enum CoverUtilV1.ProductStatus)
 ```
 
 **Arguments**
@@ -308,12 +538,12 @@ returns(enum CoverUtilV1.CoverStatus)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverStatusInternal(
+function getProductStatusInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusInternal(s, coverKey, productKey));
+  ) public view returns (ProductStatus) {
+    return ProductStatus(s.getUintByKey(getProductStatusKey(coverKey, productKey)));
   }
 ```
 </details>
@@ -349,16 +579,16 @@ function getStatusInternal(
     bytes32 coverKey,
     bytes32 productKey
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusKey(coverKey, productKey));
+    return s.getUintByKey(getProductStatusKey(coverKey, productKey));
   }
 ```
 </details>
 
-### getCoverProductStatusOf
+### getProductStatusOf
 
 ```solidity
-function getCoverProductStatusOf(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(enum CoverUtilV1.CoverStatus)
+function getProductStatusOf(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
+returns(enum CoverUtilV1.ProductStatus)
 ```
 
 **Arguments**
@@ -374,13 +604,13 @@ returns(enum CoverUtilV1.CoverStatus)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverProductStatusOf(
+function getProductStatusOf(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  ) external view returns (CoverStatus) {
-    return CoverStatus(getStatusOf(s, coverKey, productKey, incidentDate));
+  ) external view returns (ProductStatus) {
+    return ProductStatus(getStatusOf(s, coverKey, productKey, incidentDate));
   }
 ```
 </details>
@@ -411,15 +641,18 @@ function getStatusOf(
     bytes32 productKey,
     uint256 incidentDate
   ) public view returns (uint256) {
-    return s.getUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate));
+    return s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
   }
 ```
 </details>
 
-### getCoverProductStatusKey
+### getProductStatusKey
+
+Hash key of the product status of the given cover and product
+ to find out the current status. This gets reset during finalization.
 
 ```solidity
-function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure
+function getProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure
 returns(bytes32)
 ```
 
@@ -434,63 +667,19 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+function getProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey));
   }
 ```
 </details>
 
-### getCoverStatusKey
+### getProductStatusOfKey
+
+Hash key of the product status of (the given cover, product, and incident date)
+ for historical significance. This must not be reset during finalization.
 
 ```solidity
-function getCoverStatusKey(bytes32 coverKey) public pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverStatusKey(bytes32 coverKey) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey));
-  }
-```
-</details>
-
-### getCoverStatusOfKey
-
-```solidity
-function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) external pure
-returns(bytes32)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverStatusOfKey(bytes32 coverKey, uint256 incidentDate) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, incidentDate));
-  }
-```
-</details>
-
-### getCoverProductStatusOfKey
-
-```solidity
-function getCoverProductStatusOfKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public pure
+function getProductStatusOfKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public pure
 returns(bytes32)
 ```
 
@@ -506,7 +695,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverProductStatusOfKey(
+function getProductStatusOfKey(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
@@ -618,7 +807,7 @@ function getBlacklistKey(
 ### getTotalLiquidityUnderProtection
 
 ```solidity
-function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view
+function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey, uint256 precision) external view
 returns(total uint256)
 ```
 
@@ -628,23 +817,52 @@ returns(total uint256)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
+| precision | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external view returns (uint256 total) {
+function getTotalLiquidityUnderProtection(
+    IStore s,
+    bytes32 coverKey,
+    uint256 precision
+  ) external view returns (uint256 total) {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getActiveLiquidityUnderProtection(s, coverKey, 0);
+      return getActiveLiquidityUnderProtection(s, coverKey, 0, precision);
     }
 
-    bytes32[] memory products = s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+    bytes32[] memory products = _getProducts(s, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
-      total += getActiveLiquidityUnderProtection(s, coverKey, products[i]);
+      total += getActiveLiquidityUnderProtection(s, coverKey, products[i], precision);
     }
+  }
+```
+</details>
+
+### _getProducts
+
+```solidity
+function _getProducts(IStore s, bytes32 coverKey) private view
+returns(products bytes32[])
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _getProducts(IStore s, bytes32 coverKey) private view returns (bytes32[] memory products) {
+    return s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
   }
 ```
 </details>
@@ -652,8 +870,8 @@ function getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey) external v
 ### getActiveLiquidityUnderProtection
 
 ```solidity
-function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey, bytes32 productKey) public view
-returns(uint256)
+function getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey, bytes32 productKey, uint256 adjustPrecision) public view
+returns(total uint256)
 ```
 
 **Arguments**
@@ -663,6 +881,7 @@ returns(uint256)
 | s | IStore |  | 
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
+| adjustPrecision | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -671,10 +890,18 @@ returns(uint256)
 function getActiveLiquidityUnderProtection(
     IStore s,
     bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
+    bytes32 productKey,
+    uint256 adjustPrecision
+  ) public view returns (uint256 total) {
     (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey, productKey);
-    return current + future;
+    total = current + future;
+
+    // @caution:
+    // Adjusting precision results in truncation and data loss.
+    //
+    // Can also open a can of worms if the protocol stablecoin
+    // address needs to be updated in the future.
+    total = (total * adjustPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
   }
 ```
 </details>
@@ -833,7 +1060,7 @@ Sets the current status of a given cover
  4 - claimable, claims accepted for payout
 
 ```solidity
-function setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, enum CoverUtilV1.CoverStatus status) external nonpayable
+function setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, enum CoverUtilV1.ProductStatus status) external nonpayable
 ```
 
 **Arguments**
@@ -844,7 +1071,7 @@ function setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint2
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
-| status | enum CoverUtilV1.CoverStatus |  | 
+| status | enum CoverUtilV1.ProductStatus |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -855,40 +1082,13 @@ function setStatusInternal(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    CoverStatus status
+    ProductStatus status
   ) external {
-    s.setUintByKey(getCoverStatusKey(coverKey), uint256(status)); // Entire cover
-    s.setUintByKey(getCoverProductStatusKey(coverKey, productKey), uint256(status)); // This product
+    s.setUintByKey(getProductStatusKey(coverKey, productKey), uint256(status));
 
     if (incidentDate > 0) {
-      s.setUintByKey(getCoverProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
+      s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
     }
-  }
-```
-</details>
-
-### getReassuranceAmountInternal
-
-Gets the reassurance amount of the specified cover contract
-
-```solidity
-function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 | Enter the cover key | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReassuranceAmountInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
   }
 ```
 </details>
@@ -1182,6 +1382,91 @@ function isActiveProductInternal(
 ```
 </details>
 
+### disablePolicyInternal
+
+```solidity
+function disablePolicyInternal(IStore s, bytes32 coverKey, bytes32 productKey, bool status) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| status | bool |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function disablePolicyInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    bool status
+  ) external {
+    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    s.setBoolByKey(key, status);
+  }
+```
+</details>
+
+### isPolicyDisabledInternal
+
+```solidity
+function isPolicyDisabledInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isPolicyDisabledInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view returns (bool) {
+    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    return s.getBoolByKey(key);
+  }
+```
+</details>
+
+### getPolicyDisabledKey
+
+```solidity
+function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -1194,7 +1479,6 @@ function isActiveProductInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1295,6 +1579,7 @@ function isActiveProductInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

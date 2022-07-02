@@ -6,17 +6,42 @@ import "./Witness.sol";
 
 /**
  * @title Reporter Contract
- * @dev This contract enables any NPM tokenholder to
- * report an incident or dispute a reported incident.
  *
- * The reporters can submit incidents and/or dispute them as well.
- * When a cover pool is reporting, other tokenholders can also join
- * the reporters to achieve a resolution.
+ * @dev This contract allows any NPM tokenholder to report a new incident
+ * or dispute a previously recorded incident.
  *
- * The reporter who first submits an incident is known as `First Reporter` whereas
- * the reporter who disputes the reported incident is called `Candidate Reporter`.
+ * <br /> <br />
  *
- * Valid reporter is the reporter getting resolution in their favor.
+ * When a cover pool is reporting, additional tokenholders may join in to reach a resolution.
+ * The `First Reporter` is the user who initially submits an incident,
+ * while `Candidate Reporter` is the user who challenges the submitted report.
+ *
+ * <br /> <br />
+ *
+ * Valid reporter is one of the aforementioned who receives a favourable decision
+ * when resolution is achieved.
+ *
+ * <br /> <br />
+ *
+ * **Warning:**
+ *
+ * <br /> <br />
+ *
+ * Please carefully check the cover rules, cover exclusions, and standard exclusion
+ * in detail before you interact with the Governace contract(s). You entire stake will be forfeited
+ * if resolution does not go in your favor. You will be able to unstake
+ * and receive back your NPM only if:
+ *
+ * - incident resolution is in your favor
+ * - after reporting period ends
+ *
+ * <br /> <br />
+ *
+ * **By using this contract directly via a smart contract call,
+ * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+ * you are completely aware, fully understand, and accept the risk that you may lose all of
+ * your stake.**
+ *
  */
 abstract contract Reporter is IReporter, Witness {
   using GovernanceUtilV1 for IStore;
@@ -28,28 +53,35 @@ abstract contract Reporter is IReporter, Witness {
   using NTransferUtilV2 for IERC20;
 
   /**
-   * @dev Stake a specified minimum NPM tokens to submit an incident.
-   * Check out the function `getFirstReportingStake(coverKey)` to
-   * check the minimum amount needed to report this cover.
+   * @dev Stake NPM tokens to file an incident report.
+   * Check the `[getFirstReportingStake(coverKey) method](#getfirstreportingstake)` to get
+   * the minimum amount required to report this cover.
    *
-   * https://docs.neptunemutual.com/covers/cover-reporting
+   * <br /> <br />
    *
-   * ## Rewards:
+   * For more info, check out the [documentation](https://docs.neptunemutual.com/covers/cover-reporting)
    *
-   * If you get resolution in your favor, you will receive these rewards:
+   * <br /> <br />
    *
-   * - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
-   * - A 5% commission on the protocol earnings of all claim payouts in stablecoin.
-   * - Your proportional share of the 60% pool of the invalid camp.
+   * **Rewards:**
    *
-   * ## Incident Date and Payouts
+   * <br />
    *
-   * Please note the differences between the following:
+   * If you obtain a favourable resolution, you will enjoy the following benefits:
+   *
+   * - A proportional commission in NPM tokens on all rewards earned by qualified camp voters (see [Unstakable.unstakeWithClaim](Unstakable.md#unstakewithclaim)).
+   * - A proportional commission on the protocol earnings of all stablecoin claim payouts.
+   * - Your share of the 60 percent pool of invalid camp participants.
+   *
+   *
+   * @custom:note Please note the differences between the following:
    *
    * **Observed Date**
+   *
    * The date an time when incident occurred in the real world.
    *
    * **Incident Date**
+   *
    * Instead of observed date or the real date and time of the trigger incident,
    * the timestamp when this report is submitted is "the incident date".
    *
@@ -57,7 +89,7 @@ abstract contract Reporter is IReporter, Witness {
    * falls within the coverage period.
    *
    *
-   * ## Warning
+   * @custom:warning **Warning:**
    *
    * Please carefully check the cover rules, cover exclusions, and standard exclusion
    * in detail before you submit this report. You entire stake will be forfeited
@@ -72,16 +104,22 @@ abstract contract Reporter is IReporter, Witness {
    * you are completely aware, fully understand, and accept the risk that you may lose all of
    * your stake.**
    *
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
    * @param coverKey Enter the cover key you are reporting
    * @param productKey Enter the product key you are reporting
    * @param info Enter IPFS hash of the incident in the following format:
-   * `{
-   *    incidentTitle: 'Animated Brands Exploit, August 2024',
-   *    observed: 1723484937,
-   *    proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',
-   *    description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',
-   *  }`
+   * <br />
+   * <pre>{
+   * <br />  incidentTitle: 'Animated Brands Exploit, August 2024',
+   * <br />  observed: 1723484937,
+   * <br />  proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',
+   * <br />  description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',
+   * <br />}
+   * </pre>
    * @param stake Enter the amount you would like to stake to submit this report
+   *
    */
   function report(
     bytes32 coverKey,
@@ -89,7 +127,6 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
@@ -116,11 +153,11 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   /**
-   * @dev If you believe that a reported incident is wrong, you can stake a specified
-   * minimum NPM tokens to refute an active incident.
+   * @dev If you believe that a reported incident is wrong, you can stake NPM tokens to dispute an incident report.
+   * Check the `[getFirstReportingStake(coverKey) method](#getfirstreportingstake)` to get
+   * the minimum amount required to report this cover.
    *
-   * Check out the function `getFirstReportingStake(coverKey)` to
-   * check the minimum amount needed to dispute this cover.
+   * <br /> <br />
    *
    * **Rewards:**
    *
@@ -129,7 +166,7 @@ abstract contract Reporter is IReporter, Witness {
    * - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
    * - Your proportional share of the 60% pool of the invalid camp.
    *
-   * **Warning:**
+   * @custom:warning **Warning:**
    *
    * Please carefully check the coverage rules and exclusions in detail
    * before you submit this report. You entire stake will be forfeited
@@ -145,6 +182,9 @@ abstract contract Reporter is IReporter, Witness {
    * - incident resolution is in your favor
    * - after reporting period ends
    *
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
    * @param coverKey Enter the cover key you are reporting
    * @param productKey Enter the product key you are reporting
    * @param info Enter IPFS hash of the incident in the following format:
@@ -155,6 +195,7 @@ abstract contract Reporter is IReporter, Witness {
    *    description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',
    *  }`
    * @param stake Enter the amount you would like to stake to submit this dispute
+   *
    */
   function dispute(
     bytes32 coverKey,
@@ -163,8 +204,6 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 info,
     uint256 stake
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustNotHaveDispute(coverKey, productKey);
@@ -190,6 +229,7 @@ abstract contract Reporter is IReporter, Witness {
    * @param coverKey Provide a coverKey or leave it empty. If empty, the stake is set as
    * fallback value. Covers that do not have customized first reporting stake will infer to the fallback value.
    * @param value Enter the first reporting stake in NPM units
+   *
    */
   function setFirstReportingStake(bytes32 coverKey, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
@@ -210,7 +250,9 @@ abstract contract Reporter is IReporter, Witness {
   /**
    * @dev Returns the minimum amount of NPM tokens required to `report` or `dispute`
    * a cover.
+   *
    * @param coverKey Specify the cover you want to get the minimum stake required value of.
+   *
    */
   function getFirstReportingStake(bytes32 coverKey) public view override returns (uint256) {
     return s.getMinReportingStakeInternal(coverKey);
@@ -221,9 +263,13 @@ abstract contract Reporter is IReporter, Witness {
    * The protocol forfeits all stakes of invalid camp voters. During `unstakeWithClaim`,
    * NPM tokens get proportionately burned as configured here.
    *
-   * The unclaimed and thus unburned NPM stakes will be manually pulled and burned on a periodic but not-so-frequent basis.
+   * <br /> <br />
+   *
+   * The unclaimed and thus unburned NPM stakes will be manually pulled
+   * and burned on a periodic but not-so-frequent basis.
    *
    * @param value Enter the burn rate in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
    */
   function setReportingBurnRate(uint256 value) external override nonReentrant {
     require(value > 0, "Please specify value");
@@ -242,9 +288,12 @@ abstract contract Reporter is IReporter, Witness {
    * The protocol forfeits all stakes of invalid camp voters. During `unstakeWithClaim`,
    * NPM tokens get proportionately transferred to the **valid reporter** as configured here.
    *
+   * <br /> <br />
+   *
    * The unclaimed and thus unrewarded NPM stakes will be manually pulled and burned on a periodic but not-so-frequent basis.
    *
    * @param value Enter the valid reporter comission in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
    */
   function setReporterCommission(uint256 value) external override nonReentrant {
     s.mustNotBePaused();
@@ -261,6 +310,7 @@ abstract contract Reporter is IReporter, Witness {
    * @dev Gets the latest incident date of a given cover and product
    * @param coverKey Enter the cover key you want to get the incident of
    * @param productKey Enter the product key you want to get the incident of
+   *
    */
   function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getActiveIncidentDateInternal(coverKey, productKey);
@@ -269,7 +319,7 @@ abstract contract Reporter is IReporter, Witness {
   /**
    * @dev Gets the reporter of a cover by its incident date
    *
-   * Please note that until resolution deadline is over, the returned
+   * @custom:note Please note that until resolution deadline is over, the returned
    * reporter might keep changing.
    *
    * @param coverKey Enter the cover key you would like to get the reporter of
@@ -288,6 +338,7 @@ abstract contract Reporter is IReporter, Witness {
    * @dev Retuns the resolution date of a given cover
    * @param coverKey Enter the cover key to get the resolution date of
    * @param productKey Enter the product key to get the resolution date of
+   *
    */
   function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getResolutionTimestampInternal(coverKey, productKey);
@@ -295,12 +346,13 @@ abstract contract Reporter is IReporter, Witness {
 
   /**
    * @dev Gets an account's attestation details. Please also check `getRefutation` since an account
-   * is not restricted to submit both `attestations` and `refutations`.
+   * can submit both `attestations` and `refutations` if they wish to.
    *
    * @param coverKey Enter the cover key you want to get attestation of
    * @param productKey Enter the product key you want to get attestation of
    * @param who Enter the account you want to get attestation of
    * @param who Enter the specified cover's indicent date for which attestation will be returned
+   *
    */
   function getAttestation(
     bytes32 coverKey,
@@ -313,12 +365,13 @@ abstract contract Reporter is IReporter, Witness {
 
   /**
    * @dev Gets an account's refutation details. Please also check `getAttestation` since an account
-   * is not restricted to submit both `attestations` and `refutations`.
+   * can submit both `attestations` and `refutations` if they wish to.
    *
    * @param coverKey Enter the cover key you want to get refutation of
    * @param productKey Enter the product key you want to get refutation of
    * @param who Enter the account you want to get refutation of
    * @param who Enter the specified cover's indicent date for which refutation will be returned
+   *
    */
   function getRefutation(
     bytes32 coverKey,

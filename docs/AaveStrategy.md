@@ -137,7 +137,6 @@ function _drain(IERC20 asset) private {
 
     if (amount > 0) {
       asset.ensureTransfer(s.getTreasury(), amount);
-
       emit Drained(asset, amount);
     }
   }
@@ -225,13 +224,12 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
       return 0;
     }
 
-    // @suppress-malicious-erc20 The variables `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
-    // This strategy should never have token balances
+    // This strategy should never have token balances without any exception, especially `aToken` and `DAI`
     _drain(aToken);
     _drain(stablecoin);
 
@@ -255,9 +253,7 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], amount, aTokenReceived);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogDeposit(getName(), _counters[coverKey], amount, aTokenReceived, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Deposited(coverKey, address(vault), amount, aTokenReceived);
   }
 ```
@@ -286,9 +282,9 @@ returns(stablecoinWithdrawn uint256)
 function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
+
     IVault vault = s.getVault(coverKey);
 
-    // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
@@ -322,9 +318,7 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    console.log("[av] c: %s, dai: %s. aDai: %s", _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed);
-    console.log("[av] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, aTokenRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, aTokenRedeemed);
   }
 ```
@@ -480,7 +474,6 @@ function getName() public pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -581,6 +574,7 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

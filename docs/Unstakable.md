@@ -21,8 +21,6 @@ Enables voters to unstake their NPM tokens after
 Reporters on the valid camp can unstake their tokens even after the claim period is over.
  Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
  use this function.
- **Warning:**
- You should instead use `unstakeWithClaim` throughout the claim period.
 
 ```solidity
 function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
@@ -46,9 +44,6 @@ function unstake(
     uint256 incidentDate
   ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
-
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already checked inside `validateUnstakeWithoutClaim`
     s.validateUnstakeWithoutClaim(coverKey, productKey, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
@@ -94,9 +89,6 @@ function unstakeWithClaim(
     uint256 incidentDate
   ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
-
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already checked inside `validateUnstakeWithClaim`
     s.validateUnstakeWithClaim(coverKey, productKey, incidentDate);
 
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
@@ -186,7 +178,6 @@ function getUnstakeInfoFor(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -287,6 +278,7 @@ function getUnstakeInfoFor(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

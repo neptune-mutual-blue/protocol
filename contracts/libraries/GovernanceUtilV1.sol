@@ -308,6 +308,12 @@ library GovernanceUtilV1 {
     s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.IncidentHappened);
   }
 
+  /**
+   * @dev Adds attestation to an incident report
+   *
+   * @custom:suppress-address-trust-issue The address `who` can be trusted here because we are not treating it like a contract.
+   *
+   */
   function addAttestationInternal(
     IStore s,
     bytes32 coverKey,
@@ -318,7 +324,6 @@ library GovernanceUtilV1 {
   ) external {
     mustNotExceedNpmThreshold(stake);
 
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
     // Add individual stake of the reporter
     s.addUintByKey(_getIndividualIncidentOccurredStakeKey(coverKey, productKey, incidentDate, who), stake);
 
@@ -347,6 +352,12 @@ library GovernanceUtilV1 {
     totalStake = s.getUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Adds refutation to an incident report
+   *
+   * @custom:suppress-address-trust-issue The address `who` can be trusted here because we are not treating it like a contract.
+   *
+   */
   function addRefutationInternal(
     IStore s,
     bytes32 coverKey,
@@ -356,8 +367,6 @@ library GovernanceUtilV1 {
     uint256 stake
   ) external {
     mustNotExceedNpmThreshold(stake);
-
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
 
     s.addUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, who), stake);
 

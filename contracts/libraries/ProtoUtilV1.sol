@@ -169,7 +169,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:rep:stake:owned:no";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake reward to burn.
-  /// Note that the reward comes from the losing camp after resolution is achieved.
+  /// @custom:note that the reward comes from the losing camp after resolution is achieved.
   bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:rep:burn:rate";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake

@@ -4,6 +4,15 @@ View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/Stra
 
 **StrategyLibV1**
 
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 public constant DEFAULT_LENDING_PERIOD;
+uint256 public constant DEFAULT_WITHDRAWAL_WINDOW;
+
+```
+
 **Events**
 
 ```js
@@ -92,6 +101,8 @@ function _getIsDisabledStrategyKey(address strategyAddress) private pure returns
 
 ### disableStrategyInternal
 
+Disables a strategy
+
 ```solidity
 function disableStrategyInternal(IStore s, address toFind) external nonpayable
 ```
@@ -108,7 +119,6 @@ function disableStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function disableStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
@@ -117,6 +127,8 @@ function disableStrategyInternal(IStore s, address toFind) external {
 </details>
 
 ### deleteStrategyInternal
+
+Deletes a strategy
 
 ```solidity
 function deleteStrategyInternal(IStore s, address toFind) external nonpayable
@@ -134,7 +146,6 @@ function deleteStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function deleteStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _deleteStrategy(s, toFind);
   }
 ```
@@ -192,6 +203,9 @@ function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view ret
       lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
       withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
+
+    lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
+    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
   }
 ```
 </details>
@@ -678,7 +692,6 @@ function postReceiveFromStrategyInternal(
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
-    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 ```
@@ -899,7 +912,6 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1000,6 +1012,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

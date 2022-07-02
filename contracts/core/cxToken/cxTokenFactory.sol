@@ -9,7 +9,9 @@ import "../Recoverable.sol";
 
 /**
  * @title cxToken Factory Contract
+ *
  * @dev Deploys new instances of cxTokens on demand.
+ *
  */
 // slither-disable-next-line naming-convention
 contract cxTokenFactory is ICxTokenFactory, Recoverable {
@@ -27,9 +29,13 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
 
   /**
    * @dev Deploys a new instance of cxTokens
+   *
+   * @custom:suppress-acl Can only be called by the latest policy contract
+   *
    * @param coverKey Enter the cover key related to this cxToken instance
    * @param productKey Enter the product key related to this cxToken instance
    * @param expiryDate Specify the expiry date of this cxToken instance
+   *
    */
   function deploy(
     bytes32 coverKey,
@@ -37,7 +43,6 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     string calldata tokenName,
     uint256 expiryDate
   ) external override nonReentrant returns (address deployed) {
-    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.senderMustBePolicyContract();
     s.mustBeValidCoverKey(coverKey);

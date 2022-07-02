@@ -111,6 +111,10 @@ library VaultLibV1 {
 
   /**
    * @dev Called before adding liquidity to the specified cover contract
+   *
+   * @custom:suppress-malicious-erc The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+   * @custom:suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+   *
    * @param coverKey Enter the cover key
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
@@ -124,8 +128,6 @@ library VaultLibV1 {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
-    // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
 
     // Update values
@@ -186,6 +188,12 @@ library VaultLibV1 {
 
   /**
    * @dev Removes liquidity from the specified cover contract
+   *
+   * @custom:suppress-malicious-erc The address `pod` although can only come from VaultBase,
+   * we still need to ensure if it is a protocol member. Check `_redeemPodCalculation` for more info.
+   * @custom:suppress-address-trust-issue The address `pod` can't be trusted and therefore needs to be checked
+   * if it is a protocol member.
+   *
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of liquidity token to remove.
    */
@@ -200,9 +208,6 @@ library VaultLibV1 {
   ) external returns (address stablecoin, uint256 releaseAmount) {
     stablecoin = s.getStablecoin();
 
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
-    // come from VaultBase, we still need to ensure if it is a protocol member.
-    // Check `_redeemPodCalculation` for more info.
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 

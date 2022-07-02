@@ -93,6 +93,6 @@ describe('Compound Deposit: Faulty Pool', () => {
     await daiDelegator.setReturnValue('0')
 
     await compoundStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
-      .should.be.rejectedWith('Minting cDai failed')
+      .should.be.rejectedWith('Minting cUS$ failed')
   })
 })

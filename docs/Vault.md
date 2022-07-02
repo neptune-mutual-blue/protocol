@@ -8,7 +8,7 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 
 ## Functions
 
-- [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken)](#)
+- [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin)](#)
 - [getInfo(address you)](#getinfo)
 - [version()](#version)
 - [getName()](#getname)
@@ -16,7 +16,7 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 ### 
 
 ```solidity
-function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 liquidityToken) public nonpayable VaultBase 
+function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) public nonpayable VaultBase 
 ```
 
 **Arguments**
@@ -27,7 +27,7 @@ function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, 
 | coverKey | bytes32 |  | 
 | tokenName | string |  | 
 | tokenSymbol | string |  | 
-| liquidityToken | IERC20 |  | 
+| stablecoin | IERC20 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -38,8 +38,8 @@ constructor(
     bytes32 coverKey,
     string memory tokenName,
     string memory tokenSymbol,
-    IERC20 liquidityToken
-  ) VaultBase(store, coverKey, tokenName, tokenSymbol, liquidityToken) {}
+    IERC20 stablecoin
+  ) VaultBase(store, coverKey, tokenName, tokenSymbol, stablecoin) {}
 ```
 </details>
 
@@ -124,7 +124,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -225,6 +224,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

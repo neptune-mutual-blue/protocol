@@ -27,7 +27,8 @@ abstract contract Resolvable is Finalization, IResolvable {
    * that enables governance admins to revese decision in case of
    * attack or mistake.
    *
-   * Note:
+   * @custom:note Please note the following:
+   *
    * An incident can be resolved:
    *
    * - by a governance agent
@@ -63,7 +64,8 @@ abstract contract Resolvable is Finalization, IResolvable {
   /**
    * @dev Enables governance admins to perform emergency resolution.
    *
-   * Note:
+   * @custom:note Please note the following:
+   *
    * An incident can undergo an emergency resolution:
    *
    * - by a governance admin

@@ -1,6 +1,6 @@
 # IUniswapV2PairLike.sol
 
-View Source: [contracts/interfaces/external/IUniswapV2PairLike.sol](../contracts/interfaces/external/IUniswapV2PairLike.sol)
+View Source: [contracts/dependencies/uniswap-v2/IUniswapV2PairLike.sol](../contracts/dependencies/uniswap-v2/IUniswapV2PairLike.sol)
 
 **↘ Derived Contracts: [FakeUniswapPair](FakeUniswapPair.md), [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)**
 
@@ -112,7 +112,6 @@ function getReserves()
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -213,6 +212,7 @@ function getReserves()
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

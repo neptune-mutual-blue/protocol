@@ -9,13 +9,18 @@ abstract contract VaultLiquidity is VaultBase {
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
+  /**
+   * @dev Transfers stablecoins to claims processor contracts for payout
+   *
+   * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
+   * @custom:suppress-pausable
+   *
+   */
   function transferGovernance(
     bytes32 coverKey,
     address to,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
-    // @suppress-pausable Validated in `preTransferGovernance` and `postTransferGovernace`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -39,6 +44,10 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Adds liquidity to the specified cover contract
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable
+   *
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
@@ -49,8 +58,6 @@ abstract contract VaultLiquidity is VaultBase {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Validated in `preAddLiquidity` and `postAddLiquidity`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -91,6 +98,10 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Removes liquidity from the specified cover contract
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable
+   *
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of pods to redeem
    * @param npmStakeToRemove Enter the amount of NPM stake to remove.
@@ -101,8 +112,6 @@ abstract contract VaultLiquidity is VaultBase {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Validated in `preRemoveLiquidity` and `postRemoveLiquidity`
     require(coverKey == key, "Forbidden");
     require(podsToRedeem > 0, "Please specify amount");
 
@@ -162,9 +171,14 @@ abstract contract VaultLiquidity is VaultBase {
     return delgate().getStablecoinBalanceOfImplementation(key);
   }
 
+  /**
+   * @dev Accrues interests from external straties
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable Validated in `accrueInterestImplementation`
+   *
+   */
   function accrueInterest() external override nonReentrant {
-    // @suppress-acl Marking this function as publicly accessible
-    // @suppress-pausable Validated in `accrueInterestImplementation`
     delgate().accrueInterestImplementation(msg.sender, key);
     emit InterestAccrued(key);
   }

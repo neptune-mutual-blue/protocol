@@ -7,7 +7,7 @@ const validate = async (code, _, name) => {
   }
 
   const hasUint = code.toLowerCase().indexOf('uint') > -1
-  const supressionMissing = code.toLowerCase().indexOf('@suppress-zero-value-check') === -1
+  const supressionMissing = code.toLowerCase().indexOf('@suppress-zero-value-check') === -1 && code.toLowerCase().indexOf('@custom:suppress-zero-value-check') === -1
   const hasCheck = code.toLowerCase().indexOf('> ') > -1 || code.toLowerCase().indexOf('>= ') > -1
 
   if (hasUint && supressionMissing && !hasCheck) {

@@ -26,10 +26,10 @@ abstract contract Finalization is Recoverable, IFinalization {
   using ValidationLibV1 for bytes32;
 
   /**
-   * Finalizes a cover pool or a product contract.
+   * @dev Finalizes a cover pool or a product contract.
    * Once finalized, the cover resets back to the normal state.
    *
-   * Note:
+   * @custom:note Please note the following:
    *
    * An incident can be finalized:
    *
@@ -64,13 +64,19 @@ abstract contract Finalization is Recoverable, IFinalization {
     _finalize(coverKey, productKey, incidentDate);
   }
 
+  /**
+   * @custom:note Do not pass incident date as we need status by key and incident date for historical significance
+   * @custom:warning Warning:
+   *
+   * Do not reset the first reporters **by incident date** as it is needed for historical signification.
+   *
+   */
   function _finalize(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
   ) private {
     // Reset to normal
-    // @note: do not pass incident date as we need status by key and incident date for historical significance
     s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.ProductStatus.Normal);
 
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
@@ -84,8 +90,6 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey);
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
 

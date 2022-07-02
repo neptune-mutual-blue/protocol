@@ -325,6 +325,8 @@ function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
 
 ### createBondInternal
 
+Create a new NPM/DAI LP token bond
+
 ```solidity
 function createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired) external nonpayable
 returns(values uint256[])
@@ -356,7 +358,6 @@ function createBondInternal(
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
     require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
-    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
@@ -429,6 +430,8 @@ function _getBondCommitment(IStore s) private view returns (uint256) {
 
 ### claimBondInternal
 
+Enables the caller to claim their bond after the lockup period.
+
 ```solidity
 function claimBondInternal(IStore s) external nonpayable
 returns(values uint256[])
@@ -466,7 +469,6 @@ function claimBondInternal(IStore s) external returns (uint256[] memory values) 
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
-    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 ```
@@ -518,7 +520,6 @@ function setupBondPoolInternal(
     }
 
     if (values[3] > 0) {
-      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }
@@ -538,7 +539,6 @@ function setupBondPoolInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -639,6 +639,7 @@ function setupBondPoolInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

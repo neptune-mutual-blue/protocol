@@ -10,8 +10,14 @@ contract StakingPools is StakingPoolInfo {
 
   constructor(IStore s) StakingPoolInfo(s) {} //solhint-disable-line
 
+  /**
+   * @dev Deposit your desired amount of tokens to the specified staking pool.
+   * When you deposit, you receive rewards if tokens are still available in the reward pool.
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   */
   function deposit(bytes32 key, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -23,8 +29,14 @@ contract StakingPools is StakingPoolInfo {
     }
   }
 
+  /**
+   * @dev Withdraw your desired amount of tokens from the staking pool.
+   * When you withdraw, you receive rewards if tokens are still available in the reward pool.
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   */
   function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 

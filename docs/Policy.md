@@ -60,6 +60,8 @@ Purchase cover for the specified amount. <br /> <br />
  You need the cxTokens to claim the cover when resolution occurs.
  Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+ https://docs.neptunemutual.com/covers/purchasing-covers
+ ## Payouts and Incident Date
 
 ```solidity
 function purchaseCover(address onBehalfOf, bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable nonReentrant 
@@ -74,7 +76,7 @@ returns(address, uint256)
 | coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | productKey | bytes32 |  | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
 | referralCode | bytes32 |  | 
 
 <details>
@@ -89,18 +91,20 @@ function purchaseCover(
     uint256 amountToCover,
     bytes32 referralCode
   ) external override nonReentrant returns (address, uint256) {
-    // @suppress-acl Marking this as publicly accessible
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-
-    // @todo: When the voucher system is replaced with NPM tokens in the future, uncomment the following line
+    // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
+    // and uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
+    require(coverKey > 0, "Invalid cover key");
     require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
-    require(amountToCover > 0, "Please specify amount");
+    require(amountToCover > 0, "Enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+
+    s.mustNotBePaused();
+    s.mustNotExceedProposalThreshold(amountToCover);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustHaveNormalProductStatus(coverKey, productKey);
+    s.mustNotHavePolicyDisabled(coverKey, productKey);
+    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
 
     lastPolicyId += 1;
 
@@ -215,7 +219,8 @@ returns(uint256)
 
 ```javascript
 function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
+    uint256 precision = s.getStablecoinPrecision();
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
   }
 ```
 </details>
@@ -259,7 +264,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 | coverKey | bytes32 | Enter the cover key | 
 | productKey | bytes32 |  | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -374,7 +379,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -475,6 +479,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

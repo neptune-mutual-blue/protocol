@@ -12,8 +12,7 @@ event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed produc
 
 ## Functions
 
-- [getCoverInfo(IStore s, bytes32 coverKey, bytes32 productKey)](#getcoverinfo)
-- [initializeCoverInternal(IStore s, address liquidityToken, bytes32 liquidityName)](#initializecoverinternal)
+- [initializeCoverInternal(IStore s, address stablecoin, bytes32 friendlyName)](#initializecoverinternal)
 - [addCoverInternal(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values)](#addcoverinternal)
 - [_addCover(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values, uint256 fee)](#_addcover)
 - [addProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproductinternal)
@@ -21,72 +20,26 @@ event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed produc
 - [deployVaultInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol)](#deployvaultinternal)
 - [_validateAndGetFee(IStore s, bytes32 coverKey, bytes32 info, uint256 stakeWithFee)](#_validateandgetfee)
 - [updateCoverInternal(IStore s, bytes32 coverKey, bytes32 info)](#updatecoverinternal)
-- [stopCoverInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#stopcoverinternal)
 - [updateCoverCreatorWhitelistInternal(IStore s, address account, bool status)](#updatecovercreatorwhitelistinternal)
 - [_updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address account, bool status)](#_updatecoveruserwhitelistinternal)
 - [updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelistinternal)
-- [setCoverFeesInternal(IStore s, uint256 value)](#setcoverfeesinternal)
+- [setCoverCreationFeeInternal(IStore s, uint256 value)](#setcovercreationfeeinternal)
 - [setMinCoverCreationStakeInternal(IStore s, uint256 value)](#setmincovercreationstakeinternal)
 - [setMinStakeToAddLiquidityInternal(IStore s, uint256 value)](#setminstaketoaddliquidityinternal)
-
-### getCoverInfo
-
-```solidity
-function getCoverInfo(IStore s, bytes32 coverKey, bytes32 productKey) external view
-returns(owner address, info bytes32, values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverInfo(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  )
-    external
-    view
-    returns (
-      address owner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    info = s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey);
-    owner = s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
-
-    values = new uint256[](5);
-
-    values[0] = s.getUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey);
-    values[1] = s.getStake(coverKey);
-    values[2] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[3] = s.getActiveLiquidityUnderProtection(coverKey, productKey);
-  }
-```
-</details>
 
 ### initializeCoverInternal
 
 ```solidity
-function initializeCoverInternal(IStore s, address liquidityToken, bytes32 liquidityName) external nonpayable
+function initializeCoverInternal(IStore s, address stablecoin, bytes32 friendlyName) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| liquidityToken | address |  | 
-| liquidityName | bytes32 |  | 
+| s | IStore | tablecoin Provide the address of the token this cover will be quoted against. | 
+| stablecoin | address | Provide the address of the token this cover will be quoted against. | 
+| friendlyName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -94,13 +47,11 @@ function initializeCoverInternal(IStore s, address liquidityToken, bytes32 liqui
 ```javascript
 function initializeCoverInternal(
     IStore s,
-    address liquidityToken,
-    bytes32 liquidityName
+    address stablecoin,
+    bytes32 friendlyName
   ) external {
-    // @suppress-initialization Can only be initialized once by a cover manager. Check caller.
-    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement. Check caller.
-    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, liquidityToken);
-    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_NAME, liquidityName);
+    s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, stablecoin);
+    s.setBytes32ByKey(ProtoUtilV1.NS_COVER_STABLECOIN_NAME, friendlyName);
 
     s.updateStateAndLiquidity(0);
   }
@@ -220,7 +171,7 @@ function _addCover(
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_FEE_EARNING, coverKey, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, coverKey, fee);
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
 
@@ -438,35 +389,6 @@ function updateCoverInternal(
 ```
 </details>
 
-### stopCoverInternal
-
-```solidity
-function stopCoverInternal(IStore s, bytes32 coverKey, bytes32 productKey) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function stopCoverInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) external {
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Stopped);
-  }
-```
-</details>
-
 ### updateCoverCreatorWhitelistInternal
 
 ```solidity
@@ -564,10 +486,10 @@ function updateCoverUsersWhitelistInternal(
 ```
 </details>
 
-### setCoverFeesInternal
+### setCoverCreationFeeInternal
 
 ```solidity
-function setCoverFeesInternal(IStore s, uint256 value) external nonpayable
+function setCoverCreationFeeInternal(IStore s, uint256 value) external nonpayable
 returns(previous uint256)
 ```
 
@@ -582,7 +504,7 @@ returns(previous uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverFeesInternal(IStore s, uint256 value) external returns (uint256 previous) {
+function setCoverCreationFeeInternal(IStore s, uint256 value) external returns (uint256 previous) {
     previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
 
@@ -663,7 +585,6 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -764,6 +685,7 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

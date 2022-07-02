@@ -24,7 +24,6 @@ event MaxLendingRatioSet(uint256  ratio);
 - [disableStrategy(address strategy)](#disablestrategy)
 - [deleteStrategy(address strategy)](#deletestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
-- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
 - [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
 - [setLiquidityStateUpdateInterval(uint256 value)](#setliquiditystateupdateinterval)
 - [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
@@ -115,27 +114,6 @@ function setLendingPeriods(
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external;
-```
-</details>
-
-### setLendingPeriodsDefault
-
-```solidity
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| lendingPeriod | uint256 |  | 
-| withdrawalWindow | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
 ```
 </details>
 
@@ -272,7 +250,6 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -373,6 +350,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

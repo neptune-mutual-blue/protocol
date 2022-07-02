@@ -23,13 +23,21 @@ library CoverLibV1 {
 
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
+  /**
+   * Initializes cover
+   *
+   * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
+   * @custom:suppress-initialization Can only be initialized once by a cover manager. Check caller.
+   *
+   * @param stablecoin Provide the address of the token this cover will be quoted against.
+   * @param friendlyName Enter a description or ENS name of your liquidity token.
+   *
+   */
   function initializeCoverInternal(
     IStore s,
     address stablecoin,
     bytes32 friendlyName
   ) external {
-    // @suppress-initialization Can only be initialized once by a cover manager. Check caller.
-    // @suppress-address-trust-issue stablecoin This instance of stablecoin can be trusted because of the ACL requirement. Check caller.
     s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, stablecoin);
     s.setBytes32ByKey(ProtoUtilV1.NS_COVER_STABLECOIN_NAME, friendlyName);
 
@@ -264,7 +272,7 @@ library CoverLibV1 {
     }
   }
 
-  function setCoverFeesInternal(IStore s, uint256 value) external returns (uint256 previous) {
+  function setCoverCreationFeeInternal(IStore s, uint256 value) external returns (uint256 previous) {
     previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
 

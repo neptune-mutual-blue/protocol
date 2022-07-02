@@ -361,6 +361,13 @@ library ValidationLibV1 {
     require(withdrawal == 0, "Already unstaken");
   }
 
+  /**
+   * @dev Validates your `unstakeWithoutClaim` arguments
+   *
+   * @custom:note This function is not intended be used and does not produce correct result
+   * during a claim period. Please use `validateUnstakeWithClaim` if you are accessing
+   * this function during claim period.
+   */
   function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 coverKey,
@@ -375,12 +382,15 @@ library ValidationLibV1 {
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
-    // The above code is not useful after finalization but it helps avoid
-    // people calling unstake before a decision is obtained
   }
 
+  /**
+   * @dev Validates your `unstakeWithClaim` arguments
+   *
+   * @custom:note This function is only intended be used during a claim period.
+   * Please use `validateUnstakeWithoutClaim` if you are accessing
+   * this function after claim period expiry.
+   */
   function validateUnstakeWithClaim(
     IStore s,
     bytes32 coverKey,

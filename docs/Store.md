@@ -674,8 +674,8 @@ function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public override {
 
     if (i + 1 != count) {
       bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
-      bytes32 theThenLastbytes32 = bytes32ArrayStorage[k][i];
-      bytes32ArrayPositionMap[k][theThenLastbytes32] = i + 1;
+      bytes32 theThenLastBytes32 = bytes32ArrayStorage[k][i];
+      bytes32ArrayPositionMap[k][theThenLastBytes32] = i + 1;
     }
 
     bytes32ArrayStorage[k].pop();
@@ -1206,7 +1206,6 @@ function countBytes32ArrayItems(bytes32 k) external view override returns (uint2
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1307,6 +1306,7 @@ function countBytes32ArrayItems(bytes32 k) external view override returns (uint2
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

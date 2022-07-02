@@ -7,7 +7,8 @@ View Source: [contracts/core/lifecycle/CoverStake.sol](../contracts/core/lifecyc
 **CoverStake**
 
 When you create a new cover, you have to specify the amount of
- NPM tokens you wish to stake as a cover creator. <br /> <br />
+ NPM tokens you wish to stake as a cover creator.
+ <br /> <br />
  To demonstrate support for a cover pool, anyone can add and remove
  NPM stakes (minimum required). The higher the sake, the more visibility
  the contract gets if there are multiple cover contracts with the same name
@@ -73,7 +74,6 @@ function increaseStake(
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
     s.senderMustBeCoverContract();
@@ -118,10 +118,9 @@ function decreaseStake(bytes32 coverKey, uint256 amount) external nonpayable non
 
 ```javascript
 function decreaseStake(bytes32 coverKey, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this function as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
 
     uint256 drawingPower = _getDrawingPower(coverKey, msg.sender);
     require(amount > 0, "Please specify amount");
@@ -267,7 +266,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -368,6 +366,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

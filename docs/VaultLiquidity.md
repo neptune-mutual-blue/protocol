@@ -19,6 +19,8 @@ View Source: [contracts/core/liquidity/VaultLiquidity.sol](../contracts/core/liq
 
 ### transferGovernance
 
+Transfers stablecoins to claims processor contracts for payout
+
 ```solidity
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
@@ -90,7 +92,6 @@ function addLiquidity(
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -158,7 +159,6 @@ function removeLiquidity(
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
     require(podsToRedeem > 0, "Please specify amount");
 
@@ -275,6 +275,8 @@ function getStablecoinBalanceOf() external view override returns (uint256) {
 
 ### accrueInterest
 
+Accrues interests from external straties
+
 ```solidity
 function accrueInterest() external nonpayable nonReentrant 
 ```
@@ -307,7 +309,6 @@ function accrueInterest() external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -408,6 +409,7 @@ function accrueInterest() external override nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

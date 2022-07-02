@@ -34,6 +34,8 @@ constructor(IStore s) BondPoolBase(s) {}
 
 ### createBond
 
+Create a new bond contract by supplying your LP tokens
+
 ```solidity
 function createBond(uint256 lpTokens, uint256 minNpmDesired) external nonpayable nonReentrant 
 ```
@@ -50,7 +52,6 @@ function createBond(uint256 lpTokens, uint256 minNpmDesired) external nonpayable
 
 ```javascript
 function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(lpTokens > 0, "Please specify `lpTokens`");
@@ -63,6 +64,8 @@ function createBond(uint256 lpTokens, uint256 minNpmDesired) external override n
 </details>
 
 ### claimBond
+
+Claim your bond and receive your NPM tokens after waiting period
 
 ```solidity
 function claimBond() external nonpayable nonReentrant 
@@ -78,9 +81,9 @@ function claimBond() external nonpayable nonReentrant
 
 ```javascript
 function claimBond() external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
+    // @suppress-zero-value-check The uint values are validated in the function `claimBondInternal`
     uint256[] memory values = s.claimBondInternal();
     emit BondClaimed(msg.sender, values[0]);
   }
@@ -99,7 +102,6 @@ function claimBond() external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -200,6 +202,7 @@ function claimBond() external override nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -1,68 +1,164 @@
-# NTransferUtilV2Intermediate.sol
+# Proof of Authority Tokens (POTs) (POT.sol)
 
-View Source: [contracts/fakes/NTransferUtilV2Intermediate.sol](../contracts/fakes/NTransferUtilV2Intermediate.sol)
+View Source: [contracts/core/token/POT.sol](../contracts/core/token/POT.sol)
 
-**NTransferUtilV2Intermediate**
+**↗ Extends: [NPM](NPM.md)**
+
+**POT**
+
+POTs can't be used outside of the protocol
+ for example in DEXes. Once NPM token is launched, it will replace POTs.
+ For now, Neptune Mutual team and a few others will have access to POTs.
+ POTs aren't conventional ERC-20 tokens; they can't be transferred freely;
+ they don't have any value, and therefore must not be purchased or sold.
+ Agan, POTs are distributed to individuals and companies
+ who particpate in our governance and dispute management portals.
+
+## Contract Members
+**Constants & Variables**
+
+```js
+contract IStore public s;
+mapping(address => bool) public whitelist;
+bytes32 public constant NS_MEMBERS;
+
+```
+
+**Events**
+
+```js
+event WhitelistUpdated(address indexed updatedBy, address[]  accounts, bool[]  statuses);
+```
 
 ## Functions
 
-- [iTransfer(IERC20 token, address recipient, uint256 amount)](#itransfer)
-- [iTransferFrom(IERC20 token, address sender, address recipient, uint256 amount)](#itransferfrom)
+- [constructor(address timelockOrOwner, IStore store)](#)
+- [_throwIfNotProtocolMember(address account)](#_throwifnotprotocolmember)
+- [updateWhitelist(address[] accounts, bool[] statuses)](#updatewhitelist)
+- [_beforeTokenTransfer(address from, address to, uint256 )](#_beforetokentransfer)
 
-### iTransfer
+### 
 
 ```solidity
-function iTransfer(IERC20 token, address recipient, uint256 amount) external nonpayable
+function (address timelockOrOwner, IStore store) public nonpayable NPM 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | IERC20 |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
+| timelockOrOwner | address |  | 
+| store | IStore |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function iTransfer(
-    IERC20 token,
-    address recipient,
-    uint256 amount
-  ) external {
-    token.ensureTransfer(recipient, amount);
+constructor(address timelockOrOwner, IStore store) NPM(timelockOrOwner, "Neptune Mutual POT", "POT") {
+    // require(timelockOrOwner != address(0), "Invalid owner"); // Already checked in `NPM`
+    require(address(store) != address(0), "Invalid store");
+
+    s = store;
+    whitelist[address(this)] = true;
+    whitelist[timelockOrOwner] = true;
   }
 ```
 </details>
 
-### iTransferFrom
+### _throwIfNotProtocolMember
 
 ```solidity
-function iTransferFrom(IERC20 token, address sender, address recipient, uint256 amount) external nonpayable
+function _throwIfNotProtocolMember(address account) private view
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | IERC20 |  | 
-| sender | address |  | 
-| recipient | address |  | 
-| amount | uint256 |  | 
+| account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function iTransferFrom(
-    IERC20 token,
-    address sender,
-    address recipient,
-    uint256 amount
-  ) external {
-    token.ensureTransferFrom(sender, recipient, amount);
+function _throwIfNotProtocolMember(address account) private view {
+    bytes32 key = keccak256(abi.encodePacked(NS_MEMBERS, account));
+    bool isMember = s.getBool(key);
+
+    // POTs can only be used within the Neptune Mutual protocol
+    require(isMember == true, "Access denied");
+  }
+```
+</details>
+
+### updateWhitelist
+
+Updates whitelisted addresses.
+ Provide a list of accounts and list of statuses to add or remove from the whitelist.
+
+```solidity
+function updateWhitelist(address[] accounts, bool[] statuses) external nonpayable onlyOwner 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateWhitelist(address[] calldata accounts, bool[] memory statuses) external onlyOwner {
+    require(accounts.length > 0, "No account");
+    require(accounts.length == statuses.length, "Invalid args");
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+      whitelist[accounts[i]] = statuses[i];
+    }
+
+    emit WhitelistUpdated(msg.sender, accounts, statuses);
+  }
+```
+</details>
+
+### _beforeTokenTransfer
+
+```solidity
+function _beforeTokenTransfer(address from, address to, uint256 ) internal view whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| from | address |  | 
+| to | address |  | 
+|  | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256
+  ) internal view override whenNotPaused {
+    // Token mints
+    if (from == address(0)) {
+      // aren't restricted
+      return;
+    }
+
+    // Someone not whitelisted
+    // ............................ can still transfer to a whitelisted address
+    if (whitelist[from] == false && whitelist[to] == false) {
+      // and to the Neptune Mutual Protocol contracts but nowhere else
+      _throwIfNotProtocolMember(to);
+    }
   }
 ```
 </details>

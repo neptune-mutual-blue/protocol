@@ -28,6 +28,9 @@ contract VaultFactory is IVaultFactory, Recoverable {
 
   /**
    * @dev Deploys a new instance of Vault
+   *
+   * @custom:suppress-acl This function is only accessilbe to the cover contract
+   *
    * @param coverKey Enter the cover key related to this Vault instance
    */
   function deploy(
@@ -35,7 +38,6 @@ contract VaultFactory is IVaultFactory, Recoverable {
     string calldata tokenName,
     string calldata tokenSymbol
   ) external override nonReentrant returns (address addr) {
-    // @suppress-acl This function is only accessilbe to the cover contract
     s.mustNotBePaused();
     s.senderMustBeCoverContract();
 

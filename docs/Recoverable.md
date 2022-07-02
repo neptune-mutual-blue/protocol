@@ -1,4 +1,4 @@
-# Recoverable.sol
+# Recoverable Contract (Recoverable.sol)
 
 View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 
@@ -6,6 +6,11 @@ View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
 **↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [CoverBase](CoverBase.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultDelegateBase](VaultDelegateBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
 
 **Recoverable**
+
+The recoverable contract enables "Recovery Agents" to recover
+ Ether and ERC-20 tokens sent to this address.
+ To learn more about our recovery policy, please refer to the following doc:
+ https://docs.neptunemutual.com/usage/recovering-cryptocurrencies
 
 ## Contract Members
 **Constants & Variables**
@@ -74,7 +79,7 @@ function recoverEther(address sendTo) external override nonReentrant {
 
 ### recoverToken
 
-Recover all IERC-20 compatible tokens sent to this address.
+Recover all ERC-20 compatible tokens sent to this address.
  On success, no event is emitted because the recovery feature does
  not have any significance in the SDK or the UI.
 
@@ -86,7 +91,7 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| token | address | IERC-20 The address of the token contract | 
+| token | address | ERC-20 The address of the token contract | 
 | sendTo | address |  | 
 
 <details>
@@ -94,7 +99,6 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 ```javascript
 function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
     BaseLibV1.recoverTokenInternal(token, sendTo);
@@ -114,7 +118,6 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -215,6 +218,7 @@ function recoverToken(address token, address sendTo) external override nonReentr
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

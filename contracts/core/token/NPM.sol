@@ -28,9 +28,7 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     address,
     address,
     uint256
-  ) internal view virtual override whenNotPaused {
-    // solhint-disable-previous-line
-  }
+  ) internal view virtual override whenNotPaused {} // solhint-disable-line
 
   function issueMany(
     bytes32 key,

@@ -67,6 +67,7 @@ function calculatePodsInternal(
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
 
     // This smart contract contains stablecoins without liquidity provider contribution.
     // This can happen if someone wants to create a nuisance by sending stablecoin
@@ -79,7 +80,7 @@ function calculatePodsInternal(
       return (podSupply * liquidityToAdd) / balance;
     }
 
-    return liquidityToAdd;
+    return (liquidityToAdd * ProtoUtilV1.POD_PRECISION) / stablecoinPrecision;
   }
 ```
 </details>
@@ -202,8 +203,6 @@ function preAddLiquidityInternal(
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
-    // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
 
     // Update values
@@ -422,11 +421,11 @@ function preRemoveLiquidityInternal(
   ) external returns (address stablecoin, uint256 releaseAmount) {
     stablecoin = s.getStablecoin();
 
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
-    // come from VaultBase, we still need to ensure if it is a protocol member.
-    // Check `_redeemPodCalculation` for more info.
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
+
+    ValidationLibV1.mustNotExceedStablecoinThreshold(s, releaseAmount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToRemove);
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
@@ -510,8 +509,10 @@ function _redeemPodCalculation(
 
     s.mustBeProtocolMember(pod);
 
+    uint256 precision = s.getStablecoinPrecision();
+
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey);
+    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey, precision);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);
@@ -762,7 +763,6 @@ function getMaxFlashLoanInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -863,6 +863,7 @@ function getMaxFlashLoanInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

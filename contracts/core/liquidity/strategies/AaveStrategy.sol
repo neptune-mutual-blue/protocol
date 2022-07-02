@@ -51,7 +51,6 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
 
     if (amount > 0) {
       asset.ensureTransfer(s.getTreasury(), amount);
-
       emit Drained(asset, amount);
     }
   }
@@ -76,9 +75,13 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   /**
    * @dev Lends stablecoin to the Aave protocol
    * Ensure that you `approve` stablecoin before you call this function
+   *
+   * @custom:suppress-acl This function is only accessible to protocol members
+   * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
+   * @custom:suppress-address-trust-issue The addresses `aToken` or `stablecoin` can't be manipulated via user input.
+   *
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
-    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
@@ -88,13 +91,12 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
-    // @suppress-malicious-erc20 The variables `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
-    // This strategy should never have token balances
+    // This strategy should never have token balances without any exception, especially `aToken` and `DAI`
     _drain(aToken);
     _drain(stablecoin);
 
@@ -125,15 +127,18 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   /**
    * @dev Redeems aToken from Aave to receive stablecoin
    * Ensure that you `approve` aToken before you call this function
+   *
+   * @custom:suppress-acl This function is only accessible to protocol members
+   * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
+   * @custom:suppress-address-trust-issue The addresses `aToken` or `stablecoin` can't be manipulated via user input.
+   *
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
-    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
     IVault vault = s.getVault(coverKey);
 
-    // @suppress-malicious-erc20 `stablecoin`, `aToken` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
     IERC20 aToken = getDepositCertificate();
 

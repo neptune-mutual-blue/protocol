@@ -19,6 +19,8 @@ library CoverUtilV1 {
   using AccessControlLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
+  uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE = 8000;
+
   enum ProductStatus {
     Normal,
     Stopped,
@@ -104,10 +106,39 @@ library CoverUtilV1 {
     _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
     _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
     _values[2] = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
-    _values[3] = s.getUintByKey(getReassuranceWeightKey(coverKey));
+    _values[3] = getReassuranceWeightInternal(s, coverKey);
     _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
     _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
     _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
+  }
+
+  /**
+   * @dev Gets the reassurance weight of a given cover key.
+   *
+   * @param s Provide store instance
+   * @param coverKey Enter the cover for which you want to obtain the reassurance weight for.
+   *
+   * @return If reassurance weight value wasn't set for the specified cover pool,
+   * the global value will be returned.
+   *
+   * If global value, too, isn't available, a fallback value of `REASSURANCE_WEIGHT_FALLBACK_VALUE`
+   * is returned.
+   */
+  function getReassuranceWeightInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
+    uint256 setForTheCoverPool = s.getUintByKey(getReassuranceWeightKey(coverKey));
+
+    if (setForTheCoverPool > 0) {
+      return setForTheCoverPool;
+    }
+
+    // Globally set value: not set for any specifical cover
+    uint256 setGlobally = s.getUintByKey(getReassuranceWeightKey(0));
+
+    if (setGlobally > 0) {
+      return setGlobally;
+    }
+
+    return REASSURANCE_WEIGHT_FALLBACK_VALUE;
   }
 
   /**

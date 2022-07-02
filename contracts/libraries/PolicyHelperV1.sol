@@ -163,7 +163,8 @@ library PolicyHelperV1 {
     ICxTokenFactory factory = s.getCxTokenFactory();
     cxToken = factory.deploy(coverKey, productKey, _getCxTokenName(coverKey, productKey, expiryDate), expiryDate);
 
-    // @note: cxTokens are no longer protocol members
+    // @warning: Do not uncomment the following line
+    // Reason: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
     // s.getProtocol().addMember(cxToken);
     return ICxToken(cxToken);
@@ -205,15 +206,20 @@ library PolicyHelperV1 {
   }
 
   /**
+   *
    * @dev Purchase cover for the specified amount. <br /> <br />
    * When you purchase covers, you receive equal amount of cxTokens back.
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   *
+   * @custom:suppress-malicious-erc The ERC-20 `stablecoin` can't be manipulated via user input.
+   *
    * @param onBehalfOf Enter the address where the claim tokens (cxTokens) should be sent.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
+   *
    */
   function purchaseCoverInternal(
     IStore s,
@@ -237,7 +243,6 @@ library PolicyHelperV1 {
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
-    // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
     IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);

@@ -9,7 +9,9 @@ const validate = async (code, _, name) => {
     return null
   }
 
-  if (code.indexOf('nonReentrant') === -1 && code.toLowerCase().indexOf('@suppress-reentrancy') === -1) {
+  const suppressionMissing = code.toLowerCase().indexOf('@suppress-reentrancy') === -1 && code.toLowerCase().indexOf('@custom:suppress-reentrancy') === -1
+
+  if (code.indexOf('nonReentrant') === -1 && suppressionMissing) {
     return '\x1b[31m' + '* Non Reentrancy logic not found. Are you sure this function should be publicly accessible?' + '\x1b[0m'
   }
 

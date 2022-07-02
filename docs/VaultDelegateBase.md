@@ -56,9 +56,6 @@ constructor(IStore store) Recoverable(store) {}
 ### preTransferGovernance
 
 This hook runs before `transferGovernance` implementation on vault(s).
- Note:
- - Governance transfers are allowed via claims processor contract only.
- - This function's caller must be the vault of the specified coverKey.
 
 ```solidity
 function preTransferGovernance(address caller, bytes32 coverKey, address , uint256 ) external nonpayable nonReentrant 
@@ -88,6 +85,7 @@ function preTransferGovernance(
     address, /*to*/
     uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
+    // @suppress-zero-value-check This function does not transfer any values
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -112,10 +110,10 @@ function postTransferGovernance(address caller, bytes32 coverKey, address , uint
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| caller | address |  | 
+| caller | address | Enter your msg.sender value. | 
 | coverKey | bytes32 | Provide your vault's cover key. | 
-|  | address | coverKey Provide your vault's cover key. | 
-|  | uint256 | coverKey Provide your vault's cover key. | 
+|  | address | caller Enter your msg.sender value. | 
+|  | uint256 | caller Enter your msg.sender value. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -132,8 +130,6 @@ function postTransferGovernance(
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
-    // @suppress-reentrancy The `postTransferGovernance` hook is executed under the same context of `preTransferGovernance`.
-    // @note: do not update state and liquidity since `transferGovernance` is an internal contract-only function
   }
 ```
 </details>
@@ -141,9 +137,6 @@ function postTransferGovernance(
 ### preTransferToStrategy
 
 This hook runs before `transferToStrategy` implementation on vault(s)
- Note:
- - Transfers are allowed to exact strategy contracts only
- where the strategy can perform lending.
 
 ```solidity
 function preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable nonReentrant 
@@ -170,6 +163,7 @@ function preTransferToStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
+    // @suppress-zero-value-check Checked
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -216,8 +210,6 @@ function postTransferToStrategy(
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
-    // @suppress-reentrancy The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
-    // @note: do not update state and liquidity since `transferToStrategy` itself is a part of the state update
   }
 ```
 </details>
@@ -225,10 +217,6 @@ function postTransferToStrategy(
 ### preReceiveFromStrategy
 
 This hook runs before `receiveFromStrategy` implementation on vault(s)
- Note:
- - Access is allowed to exact strategy contracts only
- - The caller must be the strategy contract
- - msg.sender must be the correct vault contract
 
 ```solidity
 function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes32 strategyName, uint256 ) external nonpayable nonReentrant 
@@ -255,6 +243,7 @@ function preReceiveFromStrategy(
     bytes32 strategyName,
     uint256 /*amount*/
   ) external override nonReentrant {
+    // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -295,6 +284,7 @@ function postReceiveFromStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override returns (uint256 income, uint256 loss) {
+    // @suppress-zero-value-check This call does not perform any transfers
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
@@ -302,8 +292,6 @@ function postReceiveFromStrategy(
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
     (income, loss) = s.postReceiveFromStrategyInternal(token, coverKey, strategyName, amount);
-    // @suppress-reentrancy The `postReceiveFromStrategy` hook is executed under the same context of `preReceiveFromStrategy`.
-    // @note: do not update state and liquidity since `receiveFromStrategy` itself is a part of the state update
   }
 ```
 </details>
@@ -311,8 +299,6 @@ function postReceiveFromStrategy(
 ### preAddLiquidity
 
 This hook runs before `addLiquidity` implementation on vault(s)
- Note:
- - msg.sender must be correct vault contract
 
 ```solidity
 function preAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd) external nonpayable nonReentrant 
@@ -338,10 +324,14 @@ function preAddLiquidity(
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
+    // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
+
+    ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(amount);
 
     address pod = msg.sender;
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
@@ -377,13 +367,12 @@ function postAddLiquidity(
     uint256, /*amount*/
     uint256 /*npmStakeToAdd*/
   ) external override {
+    // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.updateStateAndLiquidity(coverKey);
-
-    // @suppress-reentrancy The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
   }
 ```
 </details>
@@ -392,9 +381,6 @@ function postAddLiquidity(
 
 This implemention enables liquidity manages to
  accrue interests on a vault before withdrawals are allowed.
- Note:
- - Caller must be a liquidity manager
- - msg.sender must the correct vault contract
 
 ```solidity
 function accrueInterestImplementation(address caller, bytes32 coverKey) external nonpayable
@@ -424,13 +410,6 @@ function accrueInterestImplementation(address caller, bytes32 coverKey) external
 ### preRemoveLiquidity
 
 This hook runs before `removeLiquidity` implementation on vault(s)
- Note:
- - msg.sender must be the correct vault contract
- - Must have at couple of block height offset following a deposit.
- - Must be done during withdrawal period
- - Must have no balance in strategies
- - Cover status should be normal
- - Interest should already be accrued
 
 ```solidity
 function preRemoveLiquidity(address caller, bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 
@@ -458,11 +437,12 @@ function preRemoveLiquidity(
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
+    // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustMaintainBlockHeightOffset(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.mustBeDuringWithdrawalPeriod(coverKey);
     s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
     s.mustBeAccrued(coverKey);
@@ -503,18 +483,18 @@ function postRemoveLiquidity(
     uint256, /*npmStakeToRemove*/
     bool /*exit*/
   ) external override {
+    // @suppress-zero-value-check The uint values are not used and therefore not checked
+    s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.updateStateAndLiquidity(coverKey);
-
-    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
   }
 ```
 </details>
 
 ### calculatePodsImplementation
 
-Calculates the amount of PODs to mint for the given amount of liquidity
+Calculates the amount of PODs to mint for the given amount of stablecoin
 
 ```solidity
 function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) external view
@@ -525,8 +505,13 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| stablecoinIn | uint256 |  | 
+| coverKey | bytes32 | Enter the cover for which you want to calculate PODs | 
+| stablecoinIn | uint256 | Enter the amount in the stablecoin units | 
+
+**Returns**
+
+Returns the units of PODs to be minted if this stablecoin liquidity was supplied.
+ Be warned that this value may change based on the cover vault's usage.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -544,7 +529,7 @@ function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) ext
 
 ### calculateLiquidityImplementation
 
-Calculates the amount of stablecoins to receive for the given amount of PODs to redeem
+Calculates the amount of stablecoin units to receive for the given amount of PODs to redeem
 
 ```solidity
 function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view
@@ -555,8 +540,13 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| podsToBurn | uint256 |  | 
+| coverKey | bytes32 | Enter the cover for which you want to calculate PODs | 
+| podsToBurn | uint256 | Enter the amount in the POD units to redeem | 
+
+**Returns**
+
+Returns the units of stablecoins to redeem if the specified PODs were burned.
+ Be warned that this value may change based on the cover's vault usage.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -584,7 +574,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the cover for which you want to get the stablecoin balance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -610,7 +600,7 @@ returns(values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Specify cover key to obtain the info of. | 
+| coverKey | bytes32 | Specify cover key to obtain the info of | 
 | you | address | The address for which the info will be customized | 
 
 <details>
@@ -685,7 +675,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -786,6 +775,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

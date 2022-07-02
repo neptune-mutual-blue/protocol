@@ -85,12 +85,10 @@ function _invoke(IStore s, bytes32 coverKey) private {
     PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
+      _updateWithdrawalPeriod(s, coverKey);
       _invokeAssetManagement(s, coverKey);
+      s.setLastUpdatedOn(coverKey);
     }
-
-    s.setLastUpdatedOn(coverKey);
-
-    _updateWithdrawalPeriod(s, coverKey);
   }
 ```
 </details>
@@ -375,8 +373,8 @@ function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view 
     uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
     uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
-    require(block.timestamp >= start, "Withdrawal period has not started");
-    require(block.timestamp < end, "Withdrawal period has already ended");
+    require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
+    require(end > 0 && block.timestamp < end, "Withdrawal period has already ended");
   }
 ```
 </details>
@@ -406,9 +404,9 @@ function _executeAndGetAction(
     bytes32 coverKey
   ) private returns (Action) {
     // If the cover is undergoing reporting, withdraw everything
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, 0);
+    bool isNormal = s.isCoverNormalInternal(coverKey);
 
-    if (status != CoverUtilV1.CoverStatus.Normal) {
+    if (isNormal != true) {
       // Reset the withdrawal window
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), 0);
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), 0);
@@ -660,7 +658,6 @@ function _withdrawFromDisabled(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -761,6 +758,7 @@ function _withdrawFromDisabled(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

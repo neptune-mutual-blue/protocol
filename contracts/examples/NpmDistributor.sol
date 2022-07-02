@@ -139,6 +139,9 @@ contract NpmDistributor is ReentrancyGuard {
    * used in the future to reclaim cxTokens and receive payouts
    * after the resolution of an incident.
    *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable
+   *
    * @param coverKey Enter the cover key for which you want to buy policy.
    * @param duration Enter the period of the protection in months.
    * @param protection Enter the stablecoin dollar amount you want to protect.
@@ -151,8 +154,6 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 protection,
     bytes32 referralCode
   ) external nonReentrant {
-    // @suppress-acl Marking this as publicly accessilbe
-    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(duration > 0 && duration < 4, "Invalid duration");
     require(protection > 0, "Invalid protection amount");
@@ -187,8 +188,6 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 npmStake,
     bytes32 referralCode
   ) external nonReentrant {
-    // @suppress-acl Marking this as publicly accessilbe
-    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(amount > 0, "Invalid amount");
 
@@ -232,8 +231,6 @@ contract NpmDistributor is ReentrancyGuard {
     uint256 npmStake,
     bool exit
   ) external nonReentrant {
-    // @suppress-acl Marking this as publicly accessilbe
-    // @suppress-pausable Implement your own pausable logic
     require(coverKey > 0, "Invalid key");
     require(amount > 0, "Invalid amount");
 

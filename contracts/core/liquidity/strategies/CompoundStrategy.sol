@@ -31,9 +31,9 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   constructor(
     IStore _s,
     ICompoundERC20DelegatorLike _delegator,
-    address _cDai
+    address _compoundWrappedStablecoin
   ) Recoverable(_s) {
-    depositCertificate = _cDai;
+    depositCertificate = _compoundWrappedStablecoin;
     delegator = _delegator;
   }
 
@@ -75,9 +75,13 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   /**
    * @dev Deposits the tokens to Compound
    * Ensure that you `approve` stablecoin before you call this function
+   *
+   * @custom:suppress-acl This function is only accessible to protocol members
+   * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
+   * @custom:suppress-address-trust-issue The addresses `compoundWrappedStablecoin` or `stablecoin` can't be manipulated via user input.
+   *
    */
-  function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 cDaiMinted) {
-    // @suppress-acl This function is only accessible to protocol members
+  function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 compoundWrappedStablecoinMinted) {
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
@@ -87,17 +91,16 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
-    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
-    IERC20 cDai = getDepositCertificate();
+    IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
-    _drain(cDai);
+    _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    // Transfer DAI to this contract; then approve and send it to delegator to mint cDAI
+    // Transfer DAI to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
     stablecoin.ensureApproval(address(delegator), amount);
 
@@ -105,61 +108,64 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
 
     require(result == 0, "Compound delegator mint failed");
 
-    // Check how many cDAI we received
-    cDaiMinted = _getCertificateBalance();
+    // Check how many compoundWrappedStablecoin we received
+    compoundWrappedStablecoinMinted = _getCertificateBalance();
 
-    require(cDaiMinted > 0, "Minting cDai failed");
+    require(compoundWrappedStablecoinMinted > 0, "Minting cUS$ failed");
 
-    // Immediately send cDai to the original vault stablecoin came from
-    cDai.ensureApproval(address(vault), cDaiMinted);
-    vault.receiveFromStrategy(cDai, coverKey, getName(), cDaiMinted);
+    // Immediately send compoundWrappedStablecoin to the original vault stablecoin came from
+    compoundWrappedStablecoin.ensureApproval(address(vault), compoundWrappedStablecoinMinted);
+    vault.receiveFromStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinMinted);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    emit LogDeposit(getName(), _counters[coverKey], amount, cDaiMinted, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-    emit Deposited(coverKey, address(vault), amount, cDaiMinted);
+    emit LogDeposit(getName(), _counters[coverKey], amount, compoundWrappedStablecoinMinted, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Deposited(coverKey, address(vault), amount, compoundWrappedStablecoinMinted);
   }
 
   /**
-   * @dev Redeems cDai from Compound to receive stablecoin
-   * Ensure that you `approve` cDai before you call this function
+   * @dev Redeems compoundWrappedStablecoin from Compound to receive stablecoin
+   * Ensure that you `approve` compoundWrappedStablecoin before you call this function
+   *
+   * @custom:suppress-acl This function is only accessible to protocol members
+   * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
+   * @custom:suppress-address-trust-issue The addresses `compoundWrappedStablecoin` or `stablecoin` can't be manipulated via user input.
+   *
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
-    // @suppress-acl This function is only accessible to protocol members
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
-    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
-    IERC20 cDai = getDepositCertificate();
+    IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
-    // This strategy should never have token balances
-    _drain(cDai);
+    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `DAI`
+    _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    uint256 cDaiRedeemed = cDai.balanceOf(address(vault));
+    uint256 compoundWrappedStablecoinRedeemed = compoundWrappedStablecoin.balanceOf(address(vault));
 
-    if (cDaiRedeemed == 0) {
+    if (compoundWrappedStablecoinRedeemed == 0) {
       return 0;
     }
 
-    // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    vault.transferToStrategy(cDai, coverKey, getName(), cDaiRedeemed);
-    cDai.ensureApproval(address(delegator), cDaiRedeemed);
-    uint256 result = delegator.redeem(cDaiRedeemed);
+    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem DAI
+    vault.transferToStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinRedeemed);
+    compoundWrappedStablecoin.ensureApproval(address(delegator), compoundWrappedStablecoinRedeemed);
+    uint256 result = delegator.redeem(compoundWrappedStablecoinRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
-    require(stablecoinWithdrawn > 0, "Redeeming cDai failed");
+    require(stablecoinWithdrawn > 0, "Redeeming cUS$ failed");
 
-    // Immediately send DAI to the vault cDAI came from
+    // Immediately send DAI to the vault compoundWrappedStablecoin came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
@@ -168,8 +174,8 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, cDaiRedeemed);
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, compoundWrappedStablecoinRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, compoundWrappedStablecoinRedeemed);
   }
 
   function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {

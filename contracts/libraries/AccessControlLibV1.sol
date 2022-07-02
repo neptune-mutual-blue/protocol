@@ -179,6 +179,16 @@ library AccessControlLibV1 {
     return IAccessControl(protocol).hasRole(role, user);
   }
 
+  /**
+   * @dev Adds a protocol member contract
+   *
+   * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+   *
+   * @param s Enter the store instance
+   * @param namespace Enter the contract namespace
+   * @param key Enter the contract key
+   * @param contractAddress Enter the contract address
+   */
   function addContractInternal(
     IStore s,
     bytes32 namespace,
@@ -189,8 +199,6 @@ library AccessControlLibV1 {
     // but the contract using this library (and this function)
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
-
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addContract(s, namespace, key, contractAddress);
   }
 
@@ -222,6 +230,30 @@ library AccessControlLibV1 {
     _removeMember(s, contractAddress);
   }
 
+  /**
+   * @dev Upgrades a contract at the given namespace and key.
+   *
+   * The previous contract's protocol membership is revoked and
+   * the current immediately starts assuming responsbility of
+   * whatever the contract needs to do at the supplied namespace and key.
+   *
+   * @custom:warning Warning:
+   *
+   * This feature is only accessible to an upgrade agent.
+   * Since adding member to the protocol is a highy risky activity,
+   * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+   *
+   * @param s Provide store instance
+   * @param namespace Enter a unique namespace for this contract
+   * @param key Enter a key if this contract has siblings
+   * @param previous Enter the existing contract address at this namespace and key.
+   * @param current Enter the contract address which will replace the previous contract.
+   */
   function upgradeContractInternal(
     IStore s,
     bytes32 namespace,
@@ -234,7 +266,6 @@ library AccessControlLibV1 {
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     bool isMember = s.isProtocolMember(previous);
     require(isMember, "Not a protocol member");
 
@@ -242,23 +273,49 @@ library AccessControlLibV1 {
     _addContract(s, namespace, key, current);
   }
 
+  /**
+   * @dev Adds member to the protocol
+   *
+   * A member is a trusted EOA or a contract that was added to the protocol using `addContract`
+   * function. When a contract is removed using `upgradeContract` function, the membership of previous
+   * contract is also removed.
+   *
+   * @custom:warning Warning:
+   *
+   * This feature is only accessible to an upgrade agent.
+   * Since adding member to the protocol is a highy risky activity,
+   * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
+   *
+   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
+   * when this function is invoked.
+   *
+   * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+   *
+   * @param member Enter an address to add as a protocol member
+   */
   function addMemberInternal(IStore s, address member) external {
     // Not only the msg.sender needs to be an upgrade agent
     // but the contract using this library (and this function)
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addMember(s, member);
   }
 
+  /**
+   * @dev Removes a member from the protocol. This function is only accessible
+   * to an upgrade agent.
+   *
+   * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
+   *
+   * @param member Enter an address to remove as a protocol member
+   */
   function removeMemberInternal(IStore s, address member) external {
     // Not only the msg.sender needs to be an upgrade agent
     // but the contract using this library (and this function)
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _removeMember(s, member);
   }
 

@@ -29,10 +29,10 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getUnstakeInfoForInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getunstakeinfoforinternal)
 - [getReportingUnstakenAmountInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreportingunstakenamountinternal)
 - [updateUnstakeDetailsInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetailsinternal)
-- [_updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#_updatecoverstatusbeforeresolutioninternal)
+- [_updateProductStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#_updateproductstatusbeforeresolutioninternal)
 - [addAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addattestationinternal)
 - [getAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestationinternal)
-- [addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#adddisputeinternal)
+- [addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addrefutationinternal)
 - [getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey)](#gethasdisputekeyinternal)
 - [getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutationinternal)
 - [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownperiodinternal)
@@ -41,8 +41,8 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getclaimpayoutsinternal)
 - [getReassurancePayoutInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreassurancepayoutinternal)
 - [addReassurancePayoutInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 capitalized)](#addreassurancepayoutinternal)
-- [getReassuranceRateInternal(IStore s, bytes32 coverKey)](#getreassurancerateinternal)
 - [getReassuranceTransferrableInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreassurancetransferrableinternal)
+- [mustNotExceedNpmThreshold(uint256 amount)](#mustnotexceednpmthreshold)
 
 ### getReportingPeriodInternal
 
@@ -271,8 +271,8 @@ function getReporterInternal(
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (address) {
-    CoverUtilV1.CoverStatus status = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened || status == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus status = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    bool incidentHappened = status == CoverUtilV1.ProductStatus.IncidentHappened || status == CoverUtilV1.ProductStatus.Claimable;
     bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
     return s.getAddressByKeys(prefix, coverKey, productKey);
@@ -611,8 +611,8 @@ function getResolutionInfoForInternal(
     (uint256 yes, uint256 no) = getStakesInternal(s, coverKey, productKey, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOfInternal(s, account, coverKey, productKey, incidentDate);
 
-    CoverUtilV1.CoverStatus decision = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = decision == CoverUtilV1.CoverStatus.IncidentHappened || decision == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus decision = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    bool incidentHappened = decision == CoverUtilV1.ProductStatus.IncidentHappened || decision == CoverUtilV1.ProductStatus.Claimable;
 
     totalStakeInWinningCamp = incidentHappened ? yes : no;
     totalStakeInLosingCamp = incidentHappened ? no : yes;
@@ -801,10 +801,10 @@ function updateUnstakeDetailsInternal(
 ```
 </details>
 
-### _updateCoverStatusBeforeResolutionInternal
+### _updateProductStatusBeforeResolutionInternal
 
 ```solidity
-function _updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
+function _updateProductStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
 ```
 
 **Arguments**
@@ -820,7 +820,7 @@ function _updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _updateCoverStatusBeforeResolutionInternal(
+function _updateProductStatusBeforeResolutionInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -832,16 +832,18 @@ function _updateCoverStatusBeforeResolutionInternal(
     uint256 no = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
 
     if (no > yes) {
-      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.FalseReporting);
+      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.FalseReporting);
       return;
     }
 
-    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.IncidentHappened);
+    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.IncidentHappened);
   }
 ```
 </details>
 
 ### addAttestationInternal
+
+Adds attestation to an incident report
 
 ```solidity
 function addAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
@@ -870,7 +872,8 @@ function addAttestationInternal(
     uint256 incidentDate,
     uint256 stake
   ) external {
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
+    mustNotExceedNpmThreshold(stake);
+
     // Add individual stake of the reporter
     s.addUintByKey(_getIndividualIncidentOccurredStakeKey(coverKey, productKey, incidentDate, who), stake);
 
@@ -883,7 +886,7 @@ function addAttestationInternal(
     }
 
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }
@@ -924,10 +927,12 @@ function getAttestationInternal(
 ```
 </details>
 
-### addDisputeInternal
+### addRefutationInternal
+
+Adds refutation to an incident report
 
 ```solidity
-function addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
+function addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
 **Arguments**
@@ -945,7 +950,7 @@ function addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, addr
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addDisputeInternal(
+function addRefutationInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -953,7 +958,7 @@ function addDisputeInternal(
     uint256 incidentDate,
     uint256 stake
   ) external {
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
+    mustNotExceedNpmThreshold(stake);
 
     s.addUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, who), stake);
 
@@ -966,7 +971,7 @@ function addDisputeInternal(
     }
 
     s.addUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }
@@ -1213,37 +1218,6 @@ function addReassurancePayoutInternal(
 ```
 </details>
 
-### getReassuranceRateInternal
-
-```solidity
-function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    uint256 rate = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey);
-
-    if (rate > 0) {
-      return rate;
-    }
-
-    // Default: 25%
-    return 2500;
-  }
-```
-</details>
-
 ### getReassuranceTransferrableInternal
 
 ```solidity
@@ -1270,8 +1244,8 @@ function getReassuranceTransferrableInternal(
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (uint256) {
-    uint256 reassuranceRate = getReassuranceRateInternal(s, coverKey);
-    uint256 available = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    uint256 reassuranceRate = s.getReassuranceRateInternal(coverKey);
+    uint256 available = s.getReassuranceAmountInternal(coverKey);
     uint256 reassurancePaid = getReassurancePayoutInternal(s, coverKey, productKey, incidentDate);
 
     uint256 totalReassurance = available + reassurancePaid;
@@ -1282,6 +1256,28 @@ function getReassuranceTransferrableInternal(
     uint256 transferAmount = (principal * reassuranceRate) / ProtoUtilV1.MULTIPLIER;
 
     return transferAmount - reassurancePaid;
+  }
+```
+</details>
+
+### mustNotExceedNpmThreshold
+
+```solidity
+function mustNotExceedNpmThreshold(uint256 amount) public pure
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotExceedNpmThreshold(uint256 amount) public pure {
+    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "Please specify a smaller amount");
   }
 ```
 </details>
@@ -1298,7 +1294,6 @@ function getReassuranceTransferrableInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1399,6 +1394,7 @@ function getReassuranceTransferrableInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

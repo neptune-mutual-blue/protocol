@@ -26,7 +26,7 @@ interface IPolicy is IMember {
    * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
    */
   function purchaseCover(
     address onBehalfOf,
@@ -42,7 +42,7 @@ interface IPolicy is IMember {
    * @param coverKey Enter the cover key
    * @param productKey Enter the product key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
    */
   function getCoverFeeInfo(
     bytes32 coverKey,

@@ -6,16 +6,16 @@ View Source: [contracts/core/lifecycle/Cover.sol](../contracts/core/lifecycle/Co
 
 **Cover**
 
-The cover contract facilitates you create and update covers
+The cover contract enables you to manage onchain covers.
 
 ## Functions
 
 - [constructor(IStore store)](#)
-- [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
 - [addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values)](#addcover)
+- [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
 - [addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproduct)
 - [updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values)](#updateproduct)
-- [stopCover(bytes32 coverKey, bytes32 productKey, string reason)](#stopcover)
+- [disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string reason)](#disablepolicy)
 - [updateCoverCreatorWhitelist(address account, bool status)](#updatecovercreatorwhitelist)
 - [updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
 - [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
@@ -43,39 +43,6 @@ constructor(IStore store) CoverBase(store) {}
 ```
 </details>
 
-### updateCover
-
-Updates the cover contract.
- This feature is accessible only to the cover owner or protocol owner (governance).
-
-```solidity
-function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| info | bytes32 | Enter a new IPFS URL to update | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
-    s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
-
-    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
-
-    s.updateCoverInternal(coverKey, info);
-    emit CoverUpdated(coverKey, info);
-  }
-```
-</details>
-
 ### addCover
 
 Adds a new coverage pool or cover contract.
@@ -85,8 +52,6 @@ Adds a new coverage pool or cover contract.
  the full cover fee at a later date. <br /> <br />
  **Apply for Fee Redemption** <br />
  https://docs.neptunemutual.com/covers/cover-fee-redemption <br /><br />
- As the cover creator, you will earn a portion of all cover fees
- generated in this pool. <br /> <br />
  Read the documentation to learn more about the fees: <br />
  https://docs.neptunemutual.com/covers/contract-creators
 
@@ -120,8 +85,6 @@ function addCover(
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override nonReentrant returns (address) {
-    // @suppress-acl Can only be called by a whitelisted address
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
@@ -139,7 +102,43 @@ function addCover(
 ```
 </details>
 
+### updateCover
+
+Updates the cover contract.
+ This feature is accessible only to the cover manager and during withdrawal period.
+
+```solidity
+function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter the cover key | 
+| info | bytes32 | Enter a new IPFS URL to update | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
+    s.mustNotBePaused();
+    s.mustEnsureAllProductsAreNormal(coverKey);
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
+
+    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
+
+    s.updateCoverInternal(coverKey, info);
+    emit CoverUpdated(coverKey, info);
+  }
+```
+</details>
+
 ### addProduct
+
+Add a product under a diversified cover pool
 
 ```solidity
 function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
@@ -166,7 +165,9 @@ function addProduct(
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override {
+    // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
+    s.senderMustBeWhitelistedCoverCreator();
     s.senderMustBeCoverOwnerOrAdmin(coverKey);
 
     s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
@@ -200,9 +201,11 @@ function updateProduct(
     bytes32 info,
     uint256[] calldata values
   ) external override {
+    // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
 
     s.updateProductInternal(coverKey, productKey, info, values);
     emit ProductUpdated(coverKey, productKey, info, values);
@@ -210,38 +213,47 @@ function updateProduct(
 ```
 </details>
 
-### stopCover
+### disablePolicy
 
-Enables governance admin to stop a spam cover contract
+Allows disabling and enabling the purchase of policy for a product or cover.
+ This function enables governance admin to disable or enable the purchase of policy for a product or cover.
+ A cover contract when stopped restricts new policy purchases
+ and frees up liquidity as policies expires.
+ 1. The policy purchases can be disabled and later enabled after current policies expire and liquidity is withdrawn.
+ 2. The policy purchases can be disabled temporarily to allow liquidity providers a chance to exit.
 
 ```solidity
-function stopCover(bytes32 coverKey, bytes32 productKey, string reason) external nonpayable nonReentrant 
+function disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string reason) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key you want to stop | 
-| productKey | bytes32 |  | 
-| reason | string | Provide a reason to stop this cover | 
+| coverKey | bytes32 | Enter the cover key you want to disable policy purchases | 
+| productKey | bytes32 | Enter the product key you want to disable policy purchases | 
+| status | bool | Set this to true if you disable or false to enable policy purchases | 
+| reason | string | Provide a reason to disable the policy purchases | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stopCover(
+function disablePolicy(
     bytes32 coverKey,
     bytes32 productKey,
+    bool status,
     string calldata reason
   ) external override nonReentrant {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     AccessControlLibV1.mustBeGovernanceAdmin(s);
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    s.stopCoverInternal(coverKey, productKey);
-    emit CoverStopped(coverKey, productKey, msg.sender, reason);
+    require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled" : "Already enabled");
+
+    s.disablePolicyInternal(coverKey, productKey, status);
+
+    emit ProductStateUpdated(coverKey, productKey, msg.sender, status, reason);
   }
 ```
 </details>
@@ -379,7 +391,6 @@ function checkIfWhitelistedUser(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -480,6 +491,7 @@ function checkIfWhitelistedUser(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

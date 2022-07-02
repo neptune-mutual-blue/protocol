@@ -8,8 +8,9 @@ View Source: [contracts/core/delegates/VaultDelegate.sol](../contracts/core/dele
 
 Liquidity providers can earn fees by adding stablecoin liquidity
  to any cover contract. The cover pool is collectively owned by liquidity providers
- where fees automatically get accumulated and compounded. <br /> <br />
- **Fees** <br />
+ where fees automatically get accumulated and compounded.
+ <br /> <br />
+ **Fees:**
  - Cover fees paid in stablecoin get added to the liquidity pool.
  - The protocol supplies a small portion of idle assets to third-party lending protocols.
  - Flash loan interest also gets added back to the pool.
@@ -53,7 +54,6 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -154,6 +154,7 @@ constructor(IStore store) VaultDelegateBase(store) {}
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

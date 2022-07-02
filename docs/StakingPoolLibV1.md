@@ -366,6 +366,8 @@ function calculateRewardsInternal(
 
 ### withdrawRewardsInternal
 
+Withdraws the rewards of the caller (if any or if available).
+
 ```solidity
 function withdrawRewardsInternal(IStore s, bytes32 key, address account) public nonpayable
 returns(rewardToken address, rewards uint256, platformFee uint256)
@@ -395,6 +397,7 @@ function withdrawRewardsInternal(
       uint256 platformFee
     )
   {
+    require(s.getRewardPlatformFee(key) <= ProtoUtilV1.MULTIPLIER, "Invalid reward platform fee");
     rewards = calculateRewardsInternal(s, key, account);
 
     s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account, block.number);
@@ -416,10 +419,8 @@ function withdrawRewardsInternal(
     // or a very small number, platform fee becomes zero because of data loss
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-subtraction @note The following subtraction can cause
-    // an underflow if `getRewardPlatformFee` is greater than 100%.
+    // @suppress-subtraction If `getRewardPlatformFee` is 100%, the following can result in zero value.
     if (rewards - platformFee > 0) {
-      // @suppress-malicious-erc20 `rewardToken` can't be manipulated via user input.
       IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
     }
 
@@ -431,6 +432,8 @@ function withdrawRewardsInternal(
 </details>
 
 ### depositInternal
+
+Deposit the specified amount of staking token to the specified pool.
 
 ```solidity
 function depositInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
@@ -479,13 +482,14 @@ function depositInternal(
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key, amount);
 
-    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransferFrom(msg.sender, address(this), amount);
   }
 ```
 </details>
 
 ### withdrawInternal
+
+Withdraw the specified amount of staking token from the specified pool.
 
 ```solidity
 function withdrawInternal(IStore s, bytes32 key, uint256 amount) external nonpayable
@@ -535,7 +539,6 @@ function withdrawInternal(
     // Global state
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
 
-    // @suppress-malicious-erc20 `stakingToken` can't be manipulated via user input.
     IERC20(stakingToken).ensureTransfer(msg.sender, amount);
   }
 ```
@@ -553,7 +556,6 @@ function withdrawInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -654,6 +656,7 @@ function withdrawInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

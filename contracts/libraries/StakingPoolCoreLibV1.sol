@@ -127,6 +127,10 @@ library StakingPoolCoreLibV1 {
 
   /**
    * @dev Adds or edits the pool by key
+   *
+   * @custom:suppress-malicious-erc Risk tolerable. The ERC-20 `addresses[1]`, `addresses[2]`, and `addresses[3]` can be trusted
+   * as these can be supplied only by an admin.
+   *
    * @param key Enter the key of the pool you want to create or edit
    * @param name Enter a name for this pool
    * @param addresses[0] stakingToken The token which is staked in this pool
@@ -163,9 +167,6 @@ library StakingPoolCoreLibV1 {
     // If `values[5] --> rewardTokenDeposit` is specified, the contract
     // pulls the reward tokens to this contract address
     if (values[5] > 0) {
-      // @suppress-malicious-erc20 `addresses[2]` can be trusted
-      // because `StakingPoolBase.addOrEditPool` can only be called
-      // by an admin
       IERC20(addresses[2]).ensureTransferFrom(msg.sender, address(this), values[5]);
     }
   }
@@ -214,13 +215,16 @@ library StakingPoolCoreLibV1 {
 
   /**
    * @dev Initializes a new pool by the given key. Assumes that the pool does not exist.
-   * Warning: this feature should not be accessible outside of this library.
+   *
+   * @custom:warning This feature should not be accessible outside of this library.
+   *
    * @param s Provide an instance of the store
    * @param key Enter the key of the pool you want to create or edit
    * @param addresses[0] stakingToken The token which is staked in this pool
    * @param addresses[1] uniStakingTokenDollarPair Enter a Uniswap stablecoin pair address of the staking token
    * @param addresses[2] rewardToken The token which is rewarded in this pool
    * @param addresses[3] uniRewardTokenDollarPair Enter a Uniswap stablecoin pair address of the staking token
+   *
    */
   function _initializeNewPool(
     IStore s,

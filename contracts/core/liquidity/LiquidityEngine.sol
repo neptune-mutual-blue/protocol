@@ -32,8 +32,14 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     emit LiquidityStateUpdateIntervalSet(value);
   }
 
+  /**
+   * @dev Disables a strategy by address
+   *
+   * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
+   *
+   * @param strategy Enter the strategy contract address to disable
+   */
   function disableStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
     // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
@@ -42,9 +48,14 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     emit StrategyDisabled(strategy);
   }
 
+  /**
+   * @dev Deletes a strategy by address
+   *
+   * @custom:suppress-address-trust-issue This instance of strategy can be trusted because of the ACL requirement.
+   *
+   * @param strategy Enter the strategy contract address to delete
+   */
   function deleteStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
-    // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 

@@ -14,7 +14,6 @@ View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/li
 - [disableStrategy(address strategy)](#disablestrategy)
 - [deleteStrategy(address strategy)](#deletestrategy)
 - [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
-- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
 - [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
 - [getMaxLendingRatio()](#getmaxlendingratio)
 - [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
@@ -85,6 +84,7 @@ function setLiquidityStateUpdateInterval(uint256 value) external nonpayable nonR
 
 ```javascript
 function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+    require(value > 0, "Invalid value");
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -96,6 +96,8 @@ function setLiquidityStateUpdateInterval(uint256 value) external override nonRee
 
 ### disableStrategy
 
+Disables a strategy by address
+
 ```solidity
 function disableStrategy(address strategy) external nonpayable nonReentrant 
 ```
@@ -104,14 +106,13 @@ function disableStrategy(address strategy) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategy | address |  | 
+| strategy | address | Enter the strategy contract address to disable | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function disableStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
     // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
@@ -124,6 +125,8 @@ function disableStrategy(address strategy) external override nonReentrant {
 
 ### deleteStrategy
 
+Deletes a strategy by address
+
 ```solidity
 function deleteStrategy(address strategy) external nonpayable nonReentrant 
 ```
@@ -132,15 +135,13 @@ function deleteStrategy(address strategy) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategy | address |  | 
+| strategy | address | Enter the strategy contract address to delete | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function deleteStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
-    // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -180,34 +181,6 @@ function setLendingPeriods(
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
-  }
-```
-</details>
-
-### setLendingPeriodsDefault
-
-```solidity
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| lendingPeriod | uint256 |  | 
-| withdrawalWindow | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    require(withdrawalWindow > 0, "Please specify withdrawal window");
-
-    s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
@@ -389,7 +362,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -490,6 +462,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

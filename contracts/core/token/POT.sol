@@ -44,8 +44,14 @@ contract POT is NPM {
     require(isMember == true, "Access denied");
   }
 
+  /**
+   * @dev Updates whitelisted addresses.
+   * Provide a list of accounts and list of statuses to add or remove from the whitelist.
+   *
+   * @custom:suppress-pausable Risk tolerable
+   *
+   */
   function updateWhitelist(address[] calldata accounts, bool[] memory statuses) external onlyOwner {
-    // @suppress-pausable Risk tolerable
     require(accounts.length > 0, "No account");
     require(accounts.length == statuses.length, "Invalid args");
 

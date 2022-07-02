@@ -3,6 +3,7 @@
 View Source: [contracts/core/token/NPM.sol](../contracts/core/token/NPM.sol)
 
 **↗ Extends: [WithPausability](WithPausability.md), [WithRecovery](WithRecovery.md), [ERC20](ERC20.md)**
+**↘ Derived Contracts: [POT](POT.md)**
 
 **NPM**
 
@@ -23,9 +24,8 @@ event Minted(bytes32 indexed key, address indexed account, uint256  amount);
 
 ## Functions
 
-- [constructor(address timelockOrOwner)](#)
+- [constructor(address timelockOrOwner, string tokenName, string tokenSymbol)](#)
 - [_beforeTokenTransfer(address , address , uint256 )](#_beforetokentransfer)
-- [issue(bytes32 key, address mintTo, uint256 amount)](#issue)
 - [issueMany(bytes32 key, address[] receivers, uint256[] amounts)](#issuemany)
 - [transferMany(address[] receivers, uint256[] amounts)](#transfermany)
 - [_issue(bytes32 key, address mintTo, uint256 amount)](#_issue)
@@ -34,7 +34,7 @@ event Minted(bytes32 indexed key, address indexed account, uint256  amount);
 ### 
 
 ```solidity
-function (address timelockOrOwner) public nonpayable Ownable Pausable ERC20 
+function (address timelockOrOwner, string tokenName, string tokenSymbol) public nonpayable Ownable Pausable ERC20 
 ```
 
 **Arguments**
@@ -42,12 +42,22 @@ function (address timelockOrOwner) public nonpayable Ownable Pausable ERC20
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | timelockOrOwner | address |  | 
+| tokenName | string |  | 
+| tokenSymbol | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(address timelockOrOwner) Ownable() Pausable() ERC20("Neptune Mutual Token", "NPM") {
+constructor(
+    address timelockOrOwner,
+    string memory tokenName,
+    string memory tokenSymbol
+  ) Ownable() Pausable() ERC20(tokenName, tokenSymbol) {
+    require(timelockOrOwner != address(0), "Invalid owner");
+    require(bytes(tokenName).length > 0, "Invalid token name");
+    require(bytes(tokenSymbol).length > 0, "Invalid token symbol");
+
     super._transferOwnership(timelockOrOwner);
   }
 ```
@@ -75,39 +85,7 @@ function _beforeTokenTransfer(
     address,
     address,
     uint256
-  ) internal view override whenNotPaused {
-    // solhint-disable-previous-line
-  }
-```
-</details>
-
-### issue
-
-```solidity
-function issue(bytes32 key, address mintTo, uint256 amount) external nonpayable onlyOwner whenNotPaused 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| key | bytes32 |  | 
-| mintTo | address |  | 
-| amount | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function issue(
-    bytes32 key,
-    address mintTo,
-    uint256 amount
-  ) external onlyOwner whenNotPaused {
-    _issue(key, mintTo, amount);
-    _issued += amount;
-    require(_issued <= _CAP, "Cap exceeded");
-  }
+  ) internal view virtual override whenNotPaused {}
 ```
 </details>
 
@@ -199,6 +177,7 @@ function _issue(
     uint256 amount
   ) private {
     require(amount > 0, "Invalid amount");
+
     super._mint(mintTo, amount);
     emit Minted(key, mintTo, amount);
   }
@@ -242,7 +221,6 @@ function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -343,6 +321,7 @@ function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

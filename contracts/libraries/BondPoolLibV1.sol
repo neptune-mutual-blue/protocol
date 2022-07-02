@@ -111,6 +111,10 @@ library BondPoolLibV1 {
     return s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED);
   }
 
+  /**
+   * @dev Create a new NPM/DAI LP token bond
+   * @custom:suppress-malicious-erc The token `BondPoolLibV1.NS_BOND_LP_TOKEN` can't be manipulated via user input
+   */
   function createBondInternal(
     IStore s,
     uint256 lpTokens,
@@ -125,7 +129,6 @@ library BondPoolLibV1 {
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
     require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
-    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
@@ -156,6 +159,12 @@ library BondPoolLibV1 {
     return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }
 
+  /**
+   * @dev Enables the caller to claim their bond after the lockup period.
+   *
+   * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
+   *
+   */
   function claimBondInternal(IStore s) external returns (uint256[] memory values) {
     s.mustNotBePaused();
 
@@ -178,12 +187,14 @@ library BondPoolLibV1 {
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
-    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 
   /**
    * @dev Sets up the bond pool
+   *
+   * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
+   *
    * @param s Provide an instance of the store
    * @param addresses[0] - LP Token Address
    * @param addresses[1] - Treasury Address
@@ -218,7 +229,6 @@ library BondPoolLibV1 {
     }
 
     if (values[3] > 0) {
-      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }

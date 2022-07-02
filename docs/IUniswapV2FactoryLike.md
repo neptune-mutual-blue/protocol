@@ -1,6 +1,6 @@
 # IUniswapV2FactoryLike.sol
 
-View Source: [contracts/interfaces/external/IUniswapV2FactoryLike.sol](../contracts/interfaces/external/IUniswapV2FactoryLike.sol)
+View Source: [contracts/dependencies/uniswap-v2/IUniswapV2FactoryLike.sol](../contracts/dependencies/uniswap-v2/IUniswapV2FactoryLike.sol)
 
 **↘ Derived Contracts: [FakeUniswapV2FactoryLike](FakeUniswapV2FactoryLike.md)**
 
@@ -50,7 +50,6 @@ function getPair(address tokenA, address tokenB) external view returns (address 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -151,6 +150,7 @@ function getPair(address tokenA, address tokenB) external view returns (address 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

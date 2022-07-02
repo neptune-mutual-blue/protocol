@@ -23,6 +23,8 @@ uint256 private _receiveFromStrategyEntry;
 
 ### transferToStrategy
 
+Transfers tokens to strategy contract(s)
+
 ```solidity
 function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
 ```
@@ -46,10 +48,13 @@ function transferToStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override {
-    // @suppress-reentrancy Custom reentrancy guard implemented
+    require(address(token) != address(0), "Invalid token to transfer");
     require(coverKey == key, "Forbidden");
-    require(_transferToStrategyEntry == 0, "Access is denied");
+    require(strategyName > 0, "Invalid strategy");
     require(amount > 0, "Please specify amount");
+
+    // Reentrancy check
+    require(_transferToStrategyEntry == 0, "Access is denied");
 
     _transferToStrategyEntry = 1;
 
@@ -77,6 +82,8 @@ function transferToStrategy(
 
 ### receiveFromStrategy
 
+Receives tokens from strategy contracts
+
 ```solidity
 function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
 ```
@@ -100,7 +107,6 @@ function receiveFromStrategy(
     bytes32 strategyName,
     uint256 amount
   ) external override {
-    // @suppress-reentrancy Custom reentrancy guard implemented
     require(coverKey == key, "Forbidden");
     require(_receiveFromStrategyEntry == 0, "Access is denied");
     require(amount > 0, "Please specify amount");
@@ -141,7 +147,6 @@ function receiveFromStrategy(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -242,6 +247,7 @@ function receiveFromStrategy(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

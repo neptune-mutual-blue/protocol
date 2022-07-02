@@ -7,7 +7,7 @@ View Source: [contracts/core/delegates/VaultDelegateWithFlashLoan.sol](../contra
 
 **VaultDelegateWithFlashLoan**
 
-VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
+This contract implements [EIP-3156 Flash Loan](https://eips.ethereum.org/EIPS/eip-3156).
 
 ## Functions
 
@@ -93,9 +93,6 @@ function getMaxFlashLoan(
 ### preFlashLoan
 
 This hook runs before `flashLoan` implementation on vault(s)
- Note:
- - msg.sender must be the correct vault contract
- - Cover status should be normal
 
 ```solidity
 function preFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , address token, uint256 amount, bytes ) external nonpayable
@@ -134,7 +131,7 @@ function preFlashLoan(
     )
   {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
     s.senderMustBeVaultContract(coverKey);
 
     stablecoin = IERC20(s.getStablecoin());
@@ -155,9 +152,6 @@ function preFlashLoan(
 ### postFlashLoan
 
 This hook runs after `flashLoan` implementation on vault(s)
- Note:
- - msg.sender must be the correct vault contract
- - Cover status should be normal
 
 ```solidity
 function postFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , address , uint256 , bytes ) external nonpayable
@@ -186,8 +180,10 @@ function postFlashLoan(
     uint256, /*amount*/
     bytes calldata /*data*/
   ) external override {
+    // @suppress-zero-value-check The `amount` value isn't used and therefore not checked
+    s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
-    s.mustHaveNormalCoverStatus(coverKey);
+    s.mustEnsureAllProductsAreNormal(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
     s.updateStateAndLiquidity(coverKey);
@@ -207,7 +203,6 @@ function postFlashLoan(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -308,6 +303,7 @@ function postFlashLoan(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

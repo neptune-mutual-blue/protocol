@@ -13,18 +13,18 @@ interface ICover is IMember {
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
-  event CoverFeeSet(uint256 previous, uint256 current);
+  event CoverCreationFeeSet(uint256 previous, uint256 current);
   event MinCoverCreationStakeSet(uint256 previous, uint256 current);
   event MinStakeToAddLiquiditySet(uint256 previous, uint256 current);
   event CoverInitialized(address indexed stablecoin, bytes32 withName);
 
   /**
    * @dev Initializes this contract
-   * @param liquidityToken Provide the address of the token this cover will be quoted against.
-   * @param liquidityName Enter a description or ENS name of your liquidity token.
+   * @param stablecoin Provide the address of the token this cover will be quoted against.
+   * @param friendlyName Enter a description or ENS name of your liquidity token.
    *
    */
-  function initialize(address liquidityToken, bytes32 liquidityName) external;
+  function initialize(address stablecoin, bytes32 friendlyName) external;
 
   /**
    * @dev Adds a new coverage pool or cover contract.
@@ -113,7 +113,7 @@ interface ICover is IMember {
     address account
   ) external view returns (bool);
 
-  function setCoverFees(uint256 value) external;
+  function setCoverCreationFee(uint256 value) external;
 
   function setMinCoverCreationStake(uint256 value) external;
 

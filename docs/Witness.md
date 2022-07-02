@@ -9,15 +9,30 @@ View Source: [contracts/core/governance/Witness.sol](../contracts/core/governanc
 
 The witeness contract enables NPM tokenholders to
  participate in an active cover incident.
- <br />
+ <br /><br />
  The participants can choose to support an incident by `attesting`
  or they can also disagree by `refuting` the incident. In both cases,
  the tokenholders can choose to submit any amount of
  NEP stake during the (7 day, configurable) reporting period.
+ <br /><br />
  After the reporting period, whichever side loses, loses all their tokens.
  While each `witness` and `reporter` on the winning side will proportionately
  receive a portion of these tokens as a reward, some forfeited tokens are
  burned too.
+ <br /><br />
+ **Warning:**
+ <br /> <br />
+ Please carefully check the cover rules, cover exclusions, and standard exclusion
+ in detail before you interact with the Governace contract(s). You entire stake will be forfeited
+ if resolution does not go in your favor. You will be able to unstake
+ and receive back your NPM only if:
+ - incident resolution is in your favor
+ - after reporting period ends
+ <br /> <br />
+ **By using this contract directly via a smart contract call,
+ through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+ you are completely aware, fully understand, and accept the risk that you may lose all of
+ your stake.**
 
 ## Functions
 
@@ -30,17 +45,10 @@ The witeness contract enables NPM tokenholders to
 ### attest
 
 Support the reported incident by staking your NPM token.
- Your tokens will be locked until a full resolution is achieved.
- Ensure that you not only fully understand the rules of the cover
- but also you also can verify with all necessary evidence that
- the condition was met.
- <br /><strong>Warning</strong>
- Although you may believe that the incident did actually occur, you may still be wrong.
- Even when you are right, the governance participants could outcast you.
- By using this function directly via a smart contract call,
- through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
- you are completely aware, fully understand, and accept the risk that you may lose all of
- your stake.
+ Your tokens will be frozen until the incident is fully resolved.
+ <br /> <br />
+ Ensure that you not only thoroughly comprehend the terms, exclusion, standard exclusion, etc of the policy,
+ but that you also have all the necessary proof to verify that the requirement has been met.
 
 ```solidity
 function attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
@@ -65,7 +73,6 @@ function attest(
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeReportingOrDisputed(coverKey, productKey);
@@ -86,17 +93,10 @@ function attest(
 ### refute
 
 Reject the reported incident by staking your NPM token.
- Your tokens will be locked until a full resolution is achieved.
- Ensure that you not only fully understand the rules of the cover
- but also you also can verify with all necessary evidence that
- the condition was NOT met.
- <br /><strong>Warning</strong>
- Although you may believe that the incident did not occur, you may still be wrong.
- Even when you are right, the governance participants could outcast you.
- By using this function directly via a smart contract call,
- through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
- you are completely aware, fully understand, and accept the risk that you may lose all of
- your stake.
+ Your tokens will be frozen until the incident is fully resolved.
+ <br /> <br />
+ Ensure that you not only thoroughly comprehend the terms, exclusion, standard exclusion, etc of the policy,
+ but that you also have all the necessary proof to verify that the requirement has NOT been met.
 
 ```solidity
 function refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake) external nonpayable nonReentrant 
@@ -121,8 +121,6 @@ function refute(
     uint256 incidentDate,
     uint256 stake
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustHaveDispute(coverKey, productKey);
@@ -131,7 +129,7 @@ function refute(
 
     require(stake > 0, "Enter a stake");
 
-    s.addDisputeInternal(coverKey, productKey, msg.sender, incidentDate, stake);
+    s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
@@ -159,7 +157,7 @@ returns(uint256)
 **Returns**
 
 Returns the cover status as an integer.
- For more, check the enum `CoverStatus` on `CoverUtilV1` library.
+ For more, check the enum `ProductStatus` on `CoverUtilV1` library.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -255,7 +253,6 @@ function getStakesOf(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -356,6 +353,7 @@ function getStakesOf(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

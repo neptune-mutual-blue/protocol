@@ -13,8 +13,14 @@ abstract contract StakingPoolReward is StakingPoolBase {
     return s.calculateRewardsInternal(key, account);
   }
 
+  /**
+   * @dev Withdraw your staking reward. Ensure that you preiodically call this function
+   * or else you risk receiving no rewards as a result of token depletion in the reward pool.
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   */
   function withdrawRewards(bytes32 key) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 

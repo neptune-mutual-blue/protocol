@@ -45,7 +45,7 @@ returns(address, uint256)
 | coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
 | productKey | bytes32 |  | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
 | referralCode | bytes32 |  | 
 
 <details>
@@ -79,7 +79,7 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 | coverKey | bytes32 | Enter the cover key | 
 | productKey | bytes32 | Enter the product key | 
 | coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin `liquidityToken` to cover. | 
+| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -261,7 +261,6 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -362,6 +361,7 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure retur
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

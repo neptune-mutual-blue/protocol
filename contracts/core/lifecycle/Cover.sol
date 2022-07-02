@@ -9,7 +9,8 @@ import "../liquidity/Vault.sol";
 
 /**
  * @title Cover Contract
- * @dev The cover contract facilitates you create and update covers
+ * @dev The cover contract enables you to manage onchain covers.
+ *
  */
 contract Cover is CoverBase {
   using AccessControlLibV1 for IStore;
@@ -27,25 +28,6 @@ contract Cover is CoverBase {
   constructor(IStore store) CoverBase(store) {} // solhint-disable-line
 
   /**
-   * @dev Updates the cover contract.
-   * This feature is accessible only to the cover manager and during withdrawal period.
-   *
-   * @param coverKey Enter the cover key
-   * @param info Enter a new IPFS URL to update
-   */
-  function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
-    s.mustNotBePaused();
-    s.mustEnsureAllProductsAreNormal(coverKey);
-    AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeDuringWithdrawalPeriod(coverKey);
-
-    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
-
-    s.updateCoverInternal(coverKey, info);
-    emit CoverUpdated(coverKey, info);
-  }
-
-  /**
    * @dev Adds a new coverage pool or cover contract.
    * To add a new cover, you need to pay cover creation fee
    * and stake minimum amount of NPM in the Vault. <br /> <br />
@@ -56,11 +38,11 @@ contract Cover is CoverBase {
    * **Apply for Fee Redemption** <br />
    * https://docs.neptunemutual.com/covers/cover-fee-redemption <br /><br />
    *
-   * As the cover creator, you will earn a portion of all cover fees
-   * generated in this pool. <br /> <br />
-   *
    * Read the documentation to learn more about the fees: <br />
    * https://docs.neptunemutual.com/covers/contract-creators
+   *
+   *
+   * @custom:suppress-acl This is a publicly accessible feature. Can only be called by a whitelisted address.
    *
    * @param coverKey Enter a unique key for this cover
    * @param supportsProducts Indicates that this cover supports product(s)
@@ -86,8 +68,6 @@ contract Cover is CoverBase {
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override nonReentrant returns (address) {
-    // @suppress-acl Can only be called by a whitelisted address
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
@@ -103,6 +83,31 @@ contract Cover is CoverBase {
     return vault;
   }
 
+  /**
+   * @dev Updates the cover contract.
+   * This feature is accessible only to the cover manager and during withdrawal period.
+   *
+   * @param coverKey Enter the cover key
+   * @param info Enter a new IPFS URL to update
+   */
+  function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
+    s.mustNotBePaused();
+    s.mustEnsureAllProductsAreNormal(coverKey);
+    AccessControlLibV1.mustBeCoverManager(s);
+    s.mustBeDuringWithdrawalPeriod(coverKey);
+
+    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
+
+    s.updateCoverInternal(coverKey, info);
+    emit CoverUpdated(coverKey, info);
+  }
+
+  /**
+   * @dev Add a product under a diversified cover pool
+   *
+   * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
+   *
+   */
   function addProduct(
     bytes32 coverKey,
     bytes32 productKey,
@@ -110,7 +115,6 @@ contract Cover is CoverBase {
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override {
-    // @suppress-acl This function can only be accessed by the cover owner or an admin
     // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
@@ -186,6 +190,9 @@ contract Cover is CoverBase {
   /*
    * @dev Adds or removes an account to the cover user whitelist.
    * Whitelisting is an optional feature cover creators can enable.
+   *
+   * @custom:suppress-acl This function is only accessilbe to the cover owner or admin
+   *
    * @param accounts Enter a list of accounts you would like to update the whitelist statuses of.
    * @param statuses Enter respective statuses of the specified whitelisted accounts.
    */
@@ -195,7 +202,6 @@ contract Cover is CoverBase {
     address[] calldata accounts,
     bool[] calldata statuses
   ) external override nonReentrant {
-    // @suppress-acl This function is only accessilbe to the cover owner or admin
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.senderMustBeCoverOwnerOrAdmin(coverKey);

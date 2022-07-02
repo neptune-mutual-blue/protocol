@@ -6,10 +6,12 @@ View Source: [contracts/core/lifecycle/CoverReassurance.sol](../contracts/core/l
 
 **CoverReassurance**
 
-Reassurance tokens can be added by a covered project to demonstrate coverage support
- for their project. This helps bring the cover fee down and enhances
- liquidity provider confidence. Along with the NPM tokens, the reassurance tokens are rewarded
- as a support to the liquidity providers when a cover incident occurs.
+A covered project can add reassurance fund to exhibit coverage support for their project.
+ This reduces the cover fee and increases the confidence of liquidity providers.
+ A portion of the reassurance fund is awarded to liquidity providers in the event of a cover incident.
+ <br />
+ - [https://docs.neptunemutual.com/sdk/cover-assurance](https://docs.neptunemutual.com/sdk/cover-assurance)
+ - [https://docs.neptunemutual.com/definitions/cover-products](https://docs.neptunemutual.com/definitions/cover-products)
 
 ## Functions
 
@@ -54,7 +56,7 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| account | address |  | 
+| account | address | Specify the account from which the reassurance fund will be transferred. | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
 <details>
@@ -66,21 +68,20 @@ function addReassurance(
     address account,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl Reassurance can only be added by cover owner or latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
     s.mustBeCoverOwnerOrCoverContract(coverKey, msg.sender);
 
     require(amount > 0, "Provide valid amount");
 
-    // @suppress-malicious-erc20 This ERC-20 is a well-known address. Can only be set internally.
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
-    s.addUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, amount);
+    s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
     stablecoin.ensureTransferFrom(account, address(this), amount);
 
-    s.updateStateAndLiquidity(coverKey);
+    // Do not update state during cover creation
+    // s.updateStateAndLiquidity(coverKey);
 
     emit ReassuranceAdded(coverKey, amount);
   }
@@ -88,6 +89,8 @@ function addReassurance(
 </details>
 
 ### setWeight
+
+Sets the reassurance weight as a percentage value.
 
 ```solidity
 function setWeight(bytes32 coverKey, uint256 weight) external nonpayable nonReentrant 
@@ -97,8 +100,8 @@ function setWeight(bytes32 coverKey, uint256 weight) external nonpayable nonReen
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| weight | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key for which you want to set the weight. You can  provide `0x` as cover key if you want to set reassurance weight globally. | 
+| weight | uint256 | Enter the weight value as percentage (see ProtoUtilV1.MULTIPLIER).  You can't exceed 100%. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -109,9 +112,9 @@ function setWeight(bytes32 coverKey, uint256 weight) external override nonReentr
     AccessControlLibV1.mustBeLiquidityManager(s);
     s.mustBeValidCoverKey(coverKey);
 
-    require(weight > 0, "Please specify weight");
+    require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, weight);
+    s.setUintByKey(CoverUtilV1.getReassuranceWeightKey(coverKey), weight);
 
     s.updateStateAndLiquidity(coverKey);
 
@@ -122,6 +125,12 @@ function setWeight(bytes32 coverKey, uint256 weight) external override nonReentr
 
 ### capitalizePool
 
+Capitalizes the cover liquidity pool (or Vault) with whichever
+ is less between 25% of the suffered loss or 25% of the reassurance pool balance.
+ <br /> <br />
+ This function can only be invoked if the specified cover was "claimable"
+ and after "claim period" is over.
+
 ```solidity
 function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
@@ -130,9 +139,9 @@ function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDa
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key that has suffered capital depletion or loss. | 
+| productKey | bytes32 | Enter the product key that has suffered capital depletion or loss. | 
+| incidentDate | uint256 | Enter the date of the incident report. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -161,7 +170,7 @@ function capitalizePool(
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
-    s.subtractUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey, toTransfer);
+    s.subtractUintByKey(CoverUtilV1.getReassuranceKey(coverKey), toTransfer);
     s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
 
     emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);
@@ -254,7 +263,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -355,6 +363,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

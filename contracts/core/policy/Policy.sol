@@ -46,7 +46,7 @@ contract Policy is IPolicy, Recoverable {
    *
    * ## Payouts and Incident Date
    *
-   * Please take note of the following key differences:
+   * @custom:note Please take note of the following key differences:
    *
    * **Event Date or Observed Date**
    *
@@ -68,7 +68,7 @@ contract Policy is IPolicy, Recoverable {
    * Please note that after an incident is resolved, there is usually a 7-day claim period.
    * Any claim submitted after the claim period expiry is automatically denied.
    *
-   * ## Warning
+   * @custom:warning Warning:
    *
    * Please thoroughly review the cover rules, cover exclusions,
    * and standard exclusions before purchasing a cover.
@@ -82,10 +82,13 @@ contract Policy is IPolicy, Recoverable {
    * you are fully aware, fully understand, and accept the risk
    * of getting your claim(s) denied.
    *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   *
    * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
    */
   function purchaseCover(
     address onBehalfOf,
@@ -103,7 +106,6 @@ contract Policy is IPolicy, Recoverable {
     require(amountToCover > 0, "Enter an amount");
     require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
 
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.mustNotExceedProposalThreshold(amountToCover);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
@@ -163,7 +165,7 @@ contract Policy is IPolicy, Recoverable {
    * @dev Gets the cover fee info for the given cover key, duration, and amount
    * @param coverKey Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
    */
   function getCoverFeeInfo(
     bytes32 coverKey,

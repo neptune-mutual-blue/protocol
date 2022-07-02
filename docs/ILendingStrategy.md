@@ -10,7 +10,9 @@ View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces
 **Events**
 
 ```js
+event LogDeposit(bytes32 indexed name, uint256  counter, uint256  amount, uint256  certificateReceived, uint256  depositTotal, uint256  withdrawalTotal);
 event Deposited(bytes32 indexed key, address indexed onBehalfOf, uint256  stablecoinDeposited, uint256  certificateTokenIssued);
+event LogWithdrawal(bytes32 indexed name, uint256  counter, uint256  stablecoinWithdrawn, uint256  certificateRedeemed, uint256  depositTotal, uint256  withdrawalTotal);
 event Withdrawn(bytes32 indexed key, address indexed sendTo, uint256  stablecoinWithdrawn, uint256  certificateTokenRedeemed);
 event Drained(IERC20 indexed asset, uint256  amount);
 ```
@@ -183,7 +185,6 @@ function withdraw(bytes32 coverKey) external returns (uint256 stablecoinWithdraw
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -284,6 +285,7 @@ function withdraw(bytes32 coverKey) external returns (uint256 stablecoinWithdraw
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)
