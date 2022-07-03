@@ -10,7 +10,8 @@ abstract contract VaultLiquidity is VaultBase {
   using NTransferUtilV2 for IERC20;
 
   /**
-   * @dev Transfers stablecoins to claims processor contracts for payout
+   * @dev Transfers stablecoins to claims processor contracts for claims payout.
+   * Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
    *
    * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
    * @custom:suppress-pausable
@@ -43,7 +44,8 @@ abstract contract VaultLiquidity is VaultBase {
   }
 
   /**
-   * @dev Adds liquidity to the specified cover contract
+   * @dev Adds liquidity to the specified cover contract.
+   * Uses the hooks `preAddLiquidity` and `postAddLiquidity` on the vault delegate contract.
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable
@@ -51,6 +53,7 @@ abstract contract VaultLiquidity is VaultBase {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
+   *
    */
   function addLiquidity(
     bytes32 coverKey,
@@ -98,6 +101,7 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Removes liquidity from the specified cover contract
+   * Uses the hooks `preRemoveLiquidity` and `postRemoveLiquidity` on the vault delegate contract.
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable

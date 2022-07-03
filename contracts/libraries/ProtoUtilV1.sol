@@ -211,24 +211,24 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_PROTOCOL = "Neptune Mutual Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
-  bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
-  bytes32 public constant CNAME_POLICY_MANAGER = "PolicyManager";
+  bytes32 public constant CNAME_POLICY_ADMIN = "Policy Admin";
+  bytes32 public constant CNAME_POLICY_MANAGER = "Policy Manager";
   bytes32 public constant CNAME_BOND_POOL = "BondPool";
-  bytes32 public constant CNAME_STAKING_POOL = "StakingPool";
-  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStakingPool";
-  bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
+  bytes32 public constant CNAME_STAKING_POOL = "Staking Pool";
+  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStaking Pool";
+  bytes32 public constant CNAME_CLAIMS_PROCESSOR = "Claims Processor";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
-  bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
-  bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
-  bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
-  bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
+  bytes32 public constant CNAME_VAULT_FACTORY = "Vault Factory";
+  bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxToken Factory";
+  bytes32 public constant CNAME_COVER_STAKE = "Cover Stake";
+  bytes32 public constant CNAME_COVER_REASSURANCE = "Cover Reassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
-  bytes32 public constant CNAME_VAULT_DELEGATE = "VaultDelegate";
-  bytes32 public constant CNAME_LIQUIDITY_ENGINE = "LiquidityEngine";
-  bytes32 public constant CNAME_STRATEGY_AAVE = "AaveStrategy";
-  bytes32 public constant CNAME_STRATEGY_COMPOUND = "CompoundStrategy";
+  bytes32 public constant CNAME_VAULT_DELEGATE = "Vault Delegate";
+  bytes32 public constant CNAME_LIQUIDITY_ENGINE = "Liquidity Engine";
+  bytes32 public constant CNAME_STRATEGY_AAVE = "Aave Strategy";
+  bytes32 public constant CNAME_STRATEGY_COMPOUND = "Compound Strategy";
 
   function getProtocol(IStore s) external view returns (IProtocol) {
     return IProtocol(getProtocolAddress(s));

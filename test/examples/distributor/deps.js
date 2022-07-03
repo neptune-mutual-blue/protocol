@@ -250,7 +250,7 @@ const deployDependencies = async () => {
   const lendingPeriod = 1 * DAYS
   const withdrawalWindow = 30 * DAYS
 
-  await liquidityEngine.setLendingPeriods(key.toBytes32(''), lendingPeriod, withdrawalWindow)
+  await liquidityEngine.setRiskPoolingPeriods(key.toBytes32(''), lendingPeriod, withdrawalWindow)
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_VAULT_DELEGATE, vaultDelegate.address)
 

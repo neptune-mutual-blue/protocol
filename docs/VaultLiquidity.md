@@ -19,7 +19,8 @@ View Source: [contracts/core/liquidity/VaultLiquidity.sol](../contracts/core/liq
 
 ### transferGovernance
 
-Transfers stablecoins to claims processor contracts for payout
+Transfers stablecoins to claims processor contracts for claims payout.
+ Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
 
 ```solidity
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
@@ -67,7 +68,8 @@ function transferGovernance(
 
 ### addLiquidity
 
-Adds liquidity to the specified cover contract
+Adds liquidity to the specified cover contract.
+ Uses the hooks `preAddLiquidity` and `postAddLiquidity` on the vault delegate contract.
 
 ```solidity
 function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode) external nonpayable nonReentrant 
@@ -135,6 +137,7 @@ function addLiquidity(
 ### removeLiquidity
 
 Removes liquidity from the specified cover contract
+ Uses the hooks `preRemoveLiquidity` and `postRemoveLiquidity` on the vault delegate contract.
 
 ```solidity
 function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 

@@ -349,7 +349,7 @@ const deployDependencies = async () => {
   const lendingPeriod = 1 * HOURS
   const withdrawalWindow = 1 * HOURS
 
-  await liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+  await liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
   const vault = await composer.vault.getVault({
     store: store,

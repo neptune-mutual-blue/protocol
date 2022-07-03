@@ -18,7 +18,7 @@ library StrategyLibV1 {
   uint256 public constant DEFAULT_WITHDRAWAL_WINDOW = 7 days;
 
   event StrategyAdded(address indexed strategy);
-  event LendingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
+  event RiskPoolingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
   event MaxLendingRatioSet(uint256 ratio);
 
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
@@ -58,7 +58,7 @@ library StrategyLibV1 {
     }
   }
 
-  function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+  function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
     lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
     withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
@@ -71,7 +71,7 @@ library StrategyLibV1 {
     withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
   }
 
-  function setLendingPeriodsInternal(
+  function setRiskPoolingPeriodsInternal(
     IStore s,
     bytes32 coverKey,
     uint256 lendingPeriod,
@@ -80,7 +80,7 @@ library StrategyLibV1 {
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
-    emit LendingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
+    emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 
   function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {

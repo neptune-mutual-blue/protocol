@@ -8,6 +8,12 @@ import "../../libraries/StrategyLibV1.sol";
 import "../../interfaces/ILendingStrategy.sol";
 import "../../interfaces/ILiquidityEngine.sol";
 
+/**
+ * @title Liquidity Engine contract
+ * @dev The liquidity engine contract enables liquidity manager(s)
+ * to add, disable, remove, or manage lending or other income strategies.
+ *
+ */
 contract LiquidityEngine is ILiquidityEngine, Recoverable {
   using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
@@ -16,15 +22,30 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
 
   constructor(IStore s) Recoverable(s) {} // solhint-disable-line
 
+  /**
+   * @dev Adds an array of strategies to the liquidity engine.
+   * @param strategies Enter one or more strategies.
+   */
   function addStrategies(address[] calldata strategies) external override nonReentrant {
+    require(strategies.length > 0, "No strategy specified");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.addStrategiesInternal(strategies);
   }
 
+  /**
+   * @dev The liquidity state update interval allows the protocol
+   * to perform various activies such as NPM token price update,
+   * deposits or withdrawals to lending strategies, and more.
+   *
+   * @param value Specify the update interval value
+   *
+   */
   function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
     require(value > 0, "Invalid value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -33,7 +54,8 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
   }
 
   /**
-   * @dev Disables a strategy by address
+   * @dev Disables a strategy by address.
+   * When a strategy is disabled, it immediately withdraws and cannot lend any further.
    *
    * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
    *
@@ -49,7 +71,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
   }
 
   /**
-   * @dev Deletes a strategy by address
+   * @dev Permanently deletes a disabled strategy by address.
    *
    * @custom:suppress-address-trust-issue This instance of strategy can be trusted because of the ACL requirement.
    *
@@ -63,7 +85,23 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     emit StrategyDeleted(strategy);
   }
 
-  function setLendingPeriods(
+  /**
+   * @dev In order to pool risks collectively, liquidity providers
+   * may lend their stablecoins to a cover pool of their choosing during "lending periods"
+   * and withdraw them during "withdrawal windows." These periods are known as risk pooling periods.
+   *
+   * <br /> <br />
+   *
+   * The default lending period is six months, and the withdrawal window is seven days.
+   * Specify a cover key if you want to configure or override these periods for a cover.
+   * If no cover key is specified, the values entered will be set as global parameters.
+   *
+   * @param coverKey Enter a cover key to set the periods. Enter `0x` if you want to set the values globally.
+   * @param lendingPeriod Enter the lending duration. Example: 180 days.
+   * @param withdrawalWindow Enter the withdrawal duration. Example: 7 days.
+   *
+   */
+  function setRiskPoolingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,
     uint256 withdrawalWindow
@@ -74,9 +112,16 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+    s.setRiskPoolingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+    // event emitted in the above function
   }
 
+  /**
+   * @dev Specify the maximum lending ratio a strategy can utilize, not to exceed 100 percent.
+   *
+   * @param ratio. Enter the ratio as a percentage value. Use `ProtoUtilV1.MULTIPLIER` as your divisor.
+   *
+   */
   function setMaxLendingRatio(uint256 ratio) external override nonReentrant {
     require(ratio > 0, "Please specify lending ratio");
     require(ratio <= ProtoUtilV1.MULTIPLIER, "Invalid lending ratio");
@@ -87,18 +132,37 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
     s.setMaxLendingRatioInternal(ratio);
   }
 
+  /**
+   * @dev Gets the maximum lending ratio a strategy can utilize.
+   */
   function getMaxLendingRatio() external view override returns (uint256 ratio) {
     return s.getMaxLendingRatioInternal();
   }
 
-  function getLendingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
-    return s.getLendingPeriodsInternal(coverKey);
+  /**
+   * @dev Returns the risk pooling periods of a given cover key.
+   * Global values are returned if the risk pooling period for the given cover key was not defined.
+   * If global values are also undefined, fallback value of 180-day lending period
+   * and 7-day withdrawal window are returned.
+   *
+   * @param coverKey Enter the coverkey to retrieve the lending period of.
+   * Warning: this function doesn't check if the supplied cover key is a valid.
+   *
+   */
+  function getRiskPoolingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+    return s.getRiskPoolingPeriodsInternal(coverKey);
   }
 
+  /**
+   * @dev Returns a list of disabled strategies.
+   */
   function getDisabledStrategies() external view override returns (address[] memory strategies) {
     return s.getDisabledStrategiesInternal();
   }
 
+  /**
+   * @dev Returns a list of actively lending strategies.
+   */
   function getActiveStrategies() external view override returns (address[] memory strategies) {
     return s.getActiveStrategiesInternal();
   }

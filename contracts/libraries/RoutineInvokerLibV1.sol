@@ -60,7 +60,7 @@ library RoutineInvokerLibV1 {
       uint256 end
     )
   {
-    (lendingPeriod, withdrawalWindow) = s.getLendingPeriodsInternal(coverKey);
+    (lendingPeriod, withdrawalWindow) = s.getRiskPoolingPeriodsInternal(coverKey);
 
     // Get the withdrawal period of this cover liquidity
     start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));

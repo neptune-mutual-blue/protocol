@@ -24,9 +24,9 @@ returns(bool)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| receiver | IERC3156FlashBorrower |  | 
-| token | address |  | 
-| amount | uint256 |  | 
+| receiver | IERC3156FlashBorrower | Specify the contract that receives the flash loan. | 
+| token | address | Specify the token you want to borrow. | 
+| amount | uint256 | Enter the amount you would like to borrow. | 
 | data | bytes |  | 
 
 <details>
@@ -77,6 +77,8 @@ function flashLoan(
 
 ### flashFee
 
+Gets the fee required to borrow the spefied token and given amount of the loan.
+
 ```solidity
 function flashFee(address token, uint256 amount) external view
 returns(uint256)
@@ -100,6 +102,8 @@ function flashFee(address token, uint256 amount) external view override returns 
 </details>
 
 ### maxFlashLoan
+
+Gets maximum amount in the specified token units that can be borrowed.
 
 ```solidity
 function maxFlashLoan(address token) external view

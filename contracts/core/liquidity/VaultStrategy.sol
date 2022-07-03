@@ -13,7 +13,8 @@ abstract contract VaultStrategy is VaultLiquidity {
   uint256 private _receiveFromStrategyEntry = 0;
 
   /**
-   * @dev Transfers tokens to strategy contract(s)
+   * @dev Transfers tokens to strategy contract(s).
+   * Uses the hooks `preTransferToStrategy` and `postTransferToStrategy` on the vault delegate contract.
    *
    * @custom:suppress-acl This function is only callable by correct strategy contract as checked in `preTransferToStrategy` and `postTransferToStrategy`
    * @custom:suppress-reentrancy Custom reentrancy guard implemented
@@ -57,7 +58,8 @@ abstract contract VaultStrategy is VaultLiquidity {
   }
 
   /**
-   * @dev Receives tokens from strategy contracts
+   * @dev Receives tokens from strategy contract(s).
+   * Uses the hooks `preReceiveFromStrategy` and `postReceiveFromStrategy` on the vault delegate contract.
    *
    * @custom:suppress-acl This function is only callable by correct strategy contract as checked in `preReceiveFromStrategy` and `postReceiveFromStrategy`
    * @custom:suppress-reentrancy Custom reentrancy guard implemented

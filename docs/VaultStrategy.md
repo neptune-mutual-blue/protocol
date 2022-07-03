@@ -23,7 +23,8 @@ uint256 private _receiveFromStrategyEntry;
 
 ### transferToStrategy
 
-Transfers tokens to strategy contract(s)
+Transfers tokens to strategy contract(s).
+ Uses the hooks `preTransferToStrategy` and `postTransferToStrategy` on the vault delegate contract.
 
 ```solidity
 function transferToStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable
@@ -82,7 +83,8 @@ function transferToStrategy(
 
 ### receiveFromStrategy
 
-Receives tokens from strategy contracts
+Receives tokens from strategy contract(s).
+ Uses the hooks `preReceiveFromStrategy` and `postReceiveFromStrategy` on the vault delegate contract.
 
 ```solidity
 function receiveFromStrategy(IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount) external nonpayable

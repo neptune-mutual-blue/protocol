@@ -334,7 +334,7 @@ const deployDependencies = async () => {
 
   const lendingPeriod = 1 * HOURS
   const withdrawalWindow = 1 * HOURS
-  await liquidityEngine.setLendingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
+  await liquidityEngine.setRiskPoolingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
 
   return {
     npm,

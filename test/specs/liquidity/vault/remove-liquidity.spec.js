@@ -24,7 +24,7 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
     const lendingPeriod = 1 * HOURS
     const withdrawalWindow = 1 * HOURS
 
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+    await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
     const amount = helper.ether(10_000_000, PRECISION)
     npmStake = helper.ether(500)
@@ -173,7 +173,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
   })
 
   beforeEach(async () => {
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+    await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
     const amount = helper.ether(10_000_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')

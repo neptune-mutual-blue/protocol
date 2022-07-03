@@ -1,10 +1,41 @@
-# Vault.sol
+# Vault Contract (Vault.sol)
 
 View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Vault.sol)
 
 **↗ Extends: [WithFlashLoan](WithFlashLoan.md)**
 
 **Vault**
+
+When a cover is created, a corresponding liquidity pool is also constituted.
+ An instance of this contract represents the liquidity pool of a cover.
+ The vaults are denominated in a single stablecoin and may be less susceptible
+ to underwriting risks associated with cryptocurrency price volatility.
+ <br /> <br />
+ When requested by the Cover Contract, the VaultFactory contract deploys a vault.
+ Per cover, only one vault is permitted. Since the vault contract is not upgradable,
+ some of the validation logic of it is outsourced to the VaultDelegate contract.
+ <br /> <br />
+ The vault contract is also an ERC-20 token, commonly known as POD (or Proof of Deposit).
+ As there is always on-chain stablecoin liquidity available for withdrawal,
+ PODs are fully redeemable and also income or loss bearing certificates
+  (loss if the cover had an event that resulted in a claims payout).
+ Unlike [cxTokens](cxToken.md), PODs can be freely transferred, staked,
+ and exchanged on secondary marketplaces.
+ <br /> <br />
+ **Disclaimer:**
+ <br /> <br />
+ **The protocol does not provide any warranty, guarantee, or endorsement
+ for the peg of this stablecoin or any other stablecoin we may use on a different chain.**
+ <br /> <br />
+ Both risk poolers (underwriters) and policyholders
+ must agree to utilize the same stablecoin to interfact with the protocol.
+ Note that the Neptune Mutual protocol only covers risks related to smart contracts and,
+ to a certain extent, frontend attacks. We don't cover risks arising from
+ teams losing private keys because of gross misconduct or negligence.
+ We don't cover people who put their money at risk in trading activities
+ like margin calls, leverage trading, or liquidation.
+ We don't cover 51% attack or any other type of consensus attack.
+ We don't cover bridge hacks and a [whole variety of other exclusions](https://docs.neptunemutual.com/usage/standard-exclusions).
 
 ## Functions
 
@@ -15,6 +46,8 @@ View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Va
 
 ### 
 
+Contructs this contract
+
 ```solidity
 function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) public nonpayable VaultBase 
 ```
@@ -23,11 +56,11 @@ function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, 
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-| coverKey | bytes32 |  | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
-| stablecoin | IERC20 |  | 
+| store | IStore | Provide store instance | 
+| coverKey | bytes32 | Provide a cover key that doesn't have a vault deployed | 
+| tokenName | string | Enter the token name of the POD. Example: `Uniswap nDAI` or `Uniswap nUSDC` | 
+| tokenSymbol | string | Enter the token symbol of the POD. Example: UNI-NDAI or `UNI-NUSDC`. | 
+| stablecoin | IERC20 | Provide an instance of the stablecoin this vault supports. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -45,7 +78,7 @@ constructor(
 
 ### getInfo
 
-For further details, check delegate contract's documentation.
+Gets information of a given vault by the cover key
 
 ```solidity
 function getInfo(address you) external view
@@ -56,7 +89,7 @@ returns(values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| you | address |  | 
+| you | address | The address for which the info will be customized | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -69,6 +102,8 @@ function getInfo(address you) external view override returns (uint256[] memory v
 </details>
 
 ### version
+
+Version number of this contract
 
 ```solidity
 function version() external pure
@@ -91,6 +126,8 @@ function version() external pure override returns (bytes32) {
 </details>
 
 ### getName
+
+Name of this contract
 
 ```solidity
 function getName() external pure

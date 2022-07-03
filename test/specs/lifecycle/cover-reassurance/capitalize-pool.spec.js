@@ -98,6 +98,7 @@ describe('CoverReassurance: capitalizePool', () => {
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])

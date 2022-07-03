@@ -36,6 +36,7 @@ contract Cover is CoverBase {
    * the full cover fee at a later date. <br /> <br />
    *
    * **Apply for Fee Redemption** <br />
+   *
    * https://docs.neptunemutual.com/covers/cover-fee-redemption <br /><br />
    *
    * Read the documentation to learn more about the fees: <br />
@@ -45,8 +46,11 @@ contract Cover is CoverBase {
    * @custom:suppress-acl This is a publicly accessible feature. Can only be called by a whitelisted address.
    *
    * @param coverKey Enter a unique key for this cover
+   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * @param tokenName Enter the token name of the POD contract that will be deployed.
+   * @param tokenSymbol Enter the token name of the POD contract that will be deployed.
    * @param supportsProducts Indicates that this cover supports product(s)
-   * @param info IPFS info of the cover contract
+   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * reassurance tokens you'd like to add to this pool.
@@ -85,10 +89,10 @@ contract Cover is CoverBase {
 
   /**
    * @dev Updates the cover contract.
-   * This feature is accessible only to the cover manager and during withdrawal period.
+   * This feature is accessible only to the cover manager during withdrawal period.
    *
    * @param coverKey Enter the cover key
-   * @param info Enter a new IPFS URL to update
+   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
    */
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
@@ -103,9 +107,15 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Add a product under a diversified cover pool
+   * @dev Adds a product under a diversified cover pool
    *
    * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
+   *
+   * @param coverKey Enter a cover key
+   * @param productKey Enter the product key
+   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * @param values[0] Product status
+   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
    *
    */
   function addProduct(
@@ -124,6 +134,17 @@ contract Cover is CoverBase {
     emit ProductCreated(coverKey, productKey, info, requiresWhitelist, values);
   }
 
+  /**
+   * @dev Updates a cover product.
+   * This feature is accessible only to the cover manager during withdrawal period.
+   *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
+   * @param info Enter a new IPFS URL to update
+   * @param values[0] Product status
+   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
+   */
   function updateProduct(
     bytes32 coverKey,
     bytes32 productKey,
@@ -154,6 +175,7 @@ contract Cover is CoverBase {
    * @param productKey Enter the product key you want to disable policy purchases
    * @param status Set this to true if you disable or false to enable policy purchases
    * @param reason Provide a reason to disable the policy purchases
+   *
    */
   function disablePolicy(
     bytes32 coverKey,
@@ -178,6 +200,7 @@ contract Cover is CoverBase {
    * before they can call the `addCover` function.
    * @param account Enter the address of the cover creator
    * @param status Set this to true if you want to add to or false to remove from the whitelist
+   *
    */
   function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
@@ -187,7 +210,7 @@ contract Cover is CoverBase {
     emit CoverCreatorWhitelistUpdated(account, status);
   }
 
-  /*
+  /**
    * @dev Adds or removes an account to the cover user whitelist.
    * Whitelisting is an optional feature cover creators can enable.
    *
@@ -195,6 +218,7 @@ contract Cover is CoverBase {
    *
    * @param accounts Enter a list of accounts you would like to update the whitelist statuses of.
    * @param statuses Enter respective statuses of the specified whitelisted accounts.
+   *
    */
   function updateCoverUsersWhitelist(
     bytes32 coverKey,
@@ -210,14 +234,14 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Signifies if a given account is a whitelisted cover creator
+   * @dev Signifies if the given account is a whitelisted cover creator
    */
   function checkIfWhitelistedCoverCreator(address account) external view override returns (bool) {
     return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account);
   }
 
   /**
-   * @dev Signifies if a given account is a whitelisted user
+   * @dev Signifies if the given account is a whitelisted user
    */
   function checkIfWhitelistedUser(
     bytes32 coverKey,

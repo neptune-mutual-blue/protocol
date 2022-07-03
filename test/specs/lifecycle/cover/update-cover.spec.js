@@ -39,7 +39,7 @@ describe('Cover: updateCover', () => {
   beforeEach(async () => {
     const lendingPeriod = 1 * HOURS
     const withdrawalWindow = 2 * HOURS
-    await deployed.liquidityEngine.setLendingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
+    await deployed.liquidityEngine.setRiskPoolingPeriods(helper.emptyBytes32, lendingPeriod, withdrawalWindow)
   })
 
   it('correctly updates cover', async () => {
@@ -104,7 +104,7 @@ describe('Cover: updateCover', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+    await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
@@ -141,7 +141,7 @@ describe('Cover: updateCover', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
-    await deployed.liquidityEngine.setLendingPeriods(coverKey, lendingPeriod, withdrawalWindow)
+    await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minReportingStake)
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))

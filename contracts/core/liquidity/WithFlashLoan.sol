@@ -13,12 +13,16 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
 
   /**
    * Flash loan feature
+   * Uses the hooks `preFlashLoan` and `postFlashLoan` on the vault delegate contract.
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-malicious-erc This ERC-20 `s.getStablecoin()` is a well-known address.
    * @custom:suppress-pausable
    * @custom:suppress-address-trust-issue The address `stablecoin` can't be manipulated via user input.
    *
+   * @param receiver Specify the contract that receives the flash loan.
+   * @param token Specify the token you want to borrow.
+   * @param amount Enter the amount you would like to borrow.
    */
   function flashLoan(
     IERC3156FlashBorrower receiver,
@@ -60,10 +64,16 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
     return true;
   }
 
+  /**
+   * @dev Gets the fee required to borrow the spefied token and given amount of the loan.
+   */
   function flashFee(address token, uint256 amount) external view override returns (uint256) {
     return delgate().getFlashFee(msg.sender, key, token, amount);
   }
 
+  /**
+   * @dev Gets maximum amount in the specified token units that can be borrowed.
+   */
   function maxFlashLoan(address token) external view override returns (uint256) {
     return delgate().getMaxFlashLoan(msg.sender, key, token);
   }

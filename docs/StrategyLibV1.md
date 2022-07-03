@@ -17,7 +17,7 @@ uint256 public constant DEFAULT_WITHDRAWAL_WINDOW;
 
 ```js
 event StrategyAdded(address indexed strategy);
-event LendingPeriodSet(bytes32 indexed key, uint256  lendingPeriod, uint256  withdrawalWindow);
+event RiskPoolingPeriodSet(bytes32 indexed key, uint256  lendingPeriod, uint256  withdrawalWindow);
 event MaxLendingRatioSet(uint256  ratio);
 ```
 
@@ -28,8 +28,8 @@ event MaxLendingRatioSet(uint256  ratio);
 - [disableStrategyInternal(IStore s, address toFind)](#disablestrategyinternal)
 - [deleteStrategyInternal(IStore s, address toFind)](#deletestrategyinternal)
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
-- [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
-- [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
+- [getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey)](#getriskpoolingperiodsinternal)
+- [setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setriskpoolingperiodsinternal)
 - [getLendingPeriodKey(bytes32 coverKey)](#getlendingperiodkey)
 - [getMaxLendingRatioInternal(IStore s)](#getmaxlendingratiointernal)
 - [setMaxLendingRatioInternal(IStore s, uint256 ratio)](#setmaxlendingratiointernal)
@@ -177,10 +177,10 @@ function addStrategiesInternal(IStore s, address[] calldata strategies) external
 ```
 </details>
 
-### getLendingPeriodsInternal
+### getRiskPoolingPeriodsInternal
 
 ```solidity
-function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view
+function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view
 returns(lendingPeriod uint256, withdrawalWindow uint256)
 ```
 
@@ -195,7 +195,7 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
     lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
     withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
@@ -210,10 +210,10 @@ function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view ret
 ```
 </details>
 
-### setLendingPeriodsInternal
+### setRiskPoolingPeriodsInternal
 
 ```solidity
-function setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
+function setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
 ```
 
 **Arguments**
@@ -229,7 +229,7 @@ function setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPe
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLendingPeriodsInternal(
+function setRiskPoolingPeriodsInternal(
     IStore s,
     bytes32 coverKey,
     uint256 lendingPeriod,
@@ -238,7 +238,7 @@ function setLendingPeriodsInternal(
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
-    emit LendingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
+    emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>

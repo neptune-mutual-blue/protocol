@@ -310,7 +310,7 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
 
-  await intermediate(cache, liquidityEngine, 'setLendingPeriods', key.toBytes32(''), network.cover.lendingPeriod, network.cover.withdrawalWindow)
+  await intermediate(cache, liquidityEngine, 'setRiskPoolingPeriods', key.toBytes32(''), network.cover.lendingPeriod, network.cover.withdrawalWindow)
 
   if (aaveLendingPool) {
     const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {

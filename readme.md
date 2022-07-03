@@ -74,11 +74,11 @@ returns(address)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter a unique key for this cover | 
-| info | bytes32 | IPFS info of the cover contract | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
+| info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
+| tokenName | string | Enter the token name of the POD contract that will be deployed. | 
+| tokenSymbol | string | Enter the token name of the POD contract that will be deployed. | 
 | supportsProducts | bool | Indicates that this cover supports product(s) | 
-| requiresWhitelist | bool |  | 
+| requiresWhitelist | bool | Signifies if this cover only enables whitelisted addresses to purchase policies. | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
@@ -114,7 +114,7 @@ function addCover(
 ### updateCover
 
 Updates the cover contract.
- This feature is accessible only to the cover manager and during withdrawal period.
+ This feature is accessible only to the cover manager during withdrawal period.
 
 ```solidity
 function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReentrant 
@@ -125,7 +125,7 @@ function updateCover(bytes32 coverKey, bytes32 info) external nonpayable nonReen
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| info | bytes32 | Enter a new IPFS URL to update | 
+| info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -147,7 +147,7 @@ function updateCover(bytes32 coverKey, bytes32 info) external override nonReentr
 
 ### addProduct
 
-Add a product under a diversified cover pool
+Adds a product under a diversified cover pool
 
 ```solidity
 function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
@@ -157,11 +157,11 @@ function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool req
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
+| coverKey | bytes32 | Enter a cover key | 
+| productKey | bytes32 | Enter the product key | 
+| info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
 | requiresWhitelist | bool |  | 
-| values | uint256[] |  | 
+| values | uint256[] | [0] Product status | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -187,6 +187,9 @@ function addProduct(
 
 ### updateProduct
 
+Updates a cover product.
+ This feature is accessible only to the cover manager during withdrawal period.
+
 ```solidity
 function updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values) external nonpayable
 ```
@@ -195,10 +198,10 @@ function updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint2
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| values | uint256[] |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
+| info | bytes32 | Enter a new IPFS URL to update | 
+| values | uint256[] | [0] Product status | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -300,6 +303,9 @@ function updateCoverCreatorWhitelist(address account, bool status) external over
 
 ### updateCoverUsersWhitelist
 
+Adds or removes an account to the cover user whitelist.
+ Whitelisting is an optional feature cover creators can enable.
+
 ```solidity
 function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
 ```
@@ -310,8 +316,8 @@ function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
-| accounts | address[] |  | 
-| statuses | bool[] |  | 
+| accounts | address[] | Enter a list of accounts you would like to update the whitelist statuses of. | 
+| statuses | bool[] | Enter respective statuses of the specified whitelisted accounts. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -334,7 +340,7 @@ function updateCoverUsersWhitelist(
 
 ### checkIfWhitelistedCoverCreator
 
-Signifies if a given account is a whitelisted cover creator
+Signifies if the given account is a whitelisted cover creator
 
 ```solidity
 function checkIfWhitelistedCoverCreator(address account) external view
@@ -359,7 +365,7 @@ function checkIfWhitelistedCoverCreator(address account) external view override 
 
 ### checkIfWhitelistedUser
 
-Signifies if a given account is a whitelisted user
+Signifies if the given account is a whitelisted user
 
 ```solidity
 function checkIfWhitelistedUser(bytes32 coverKey, bytes32 productKey, address account) external view

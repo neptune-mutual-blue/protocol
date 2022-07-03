@@ -6,9 +6,8 @@ View Source: [contracts/core/liquidity/VaultFactory.sol](../contracts/core/liqui
 
 **VaultFactory**
 
-As and when required by the protocol,
- the VaultFactory contract creates new instances of
- Cover Vaults on demand.
+When a new cover is created, an associated liquidity pool or vault is also created.
+ The cover contract deploys new vaults on demand by utilizing the vault factory contract.
 
 ## Functions
 

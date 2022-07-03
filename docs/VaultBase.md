@@ -1,4 +1,4 @@
-# VaultBase.sol
+# Vault Base Contract (VaultBase.sol)
 
 View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidity/VaultBase.sol)
 
@@ -23,6 +23,8 @@ address public sc;
 
 ### 
 
+Contructs this contract
+
 ```solidity
 function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) internal nonpayable ERC20 Recoverable 
 ```
@@ -31,11 +33,11 @@ function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, 
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-| coverKey | bytes32 |  | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
-| stablecoin | IERC20 |  | 
+| store | IStore | Provide store instance | 
+| coverKey | bytes32 | Provide a cover key that doesn't have a vault deployed | 
+| tokenName | string | Enter the token name of the POD. Example: `Uniswap nDAI` or `Uniswap nUSDC` | 
+| tokenSymbol | string | Enter the token symbol of the POD. Example: UNI-NDAI or `UNI-NUSDC`. | 
+| stablecoin | IERC20 | Provide an instance of the stablecoin this vault supports. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -55,6 +57,8 @@ constructor(
 </details>
 
 ### delgate
+
+Returns the delegate contract instance
 
 ```solidity
 function delgate() public view
