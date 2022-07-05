@@ -284,6 +284,9 @@ function setAccrualCompleteInternal(
 
 ### getAccrualInvocationKey
 
+Hash key of the "accrual invocation status" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getAccrualInvocationKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -293,7 +296,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -307,6 +310,9 @@ function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32)
 
 ### getNextWithdrawalStartKey
 
+Hash key of the "next withdrawal start date" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getNextWithdrawalStartKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -316,7 +322,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -330,6 +336,9 @@ function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes3
 
 ### getNextWithdrawalEndKey
 
+Hash key of the "next withdrawal end date" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getNextWithdrawalEndKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -339,7 +348,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>

@@ -19,6 +19,7 @@ This contract implements [EIP-3156 Flash Loan](https://eips.ethereum.org/EIPS/ei
 ### getFlashFee
 
 The fee to be charged for a given loan.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getFlashFee(address , bytes32 coverKey, address token, uint256 amount) external view
@@ -57,6 +58,7 @@ function getFlashFee(
 ### getMaxFlashLoan
 
 The amount of currency available to be lent.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getMaxFlashLoan(address , bytes32 coverKey, address token) external view

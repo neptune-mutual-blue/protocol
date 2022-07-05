@@ -118,6 +118,7 @@ function getDepositCertificate() public view override returns (IERC20) {
 ### getInfo
 
 Gets info of this strategy by cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
@@ -328,6 +329,9 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
 
 ### _getDepositsKey
 
+Hash key of the Compound deposits for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function _getDepositsKey(bytes32 coverKey) private pure
 returns(bytes32)
@@ -337,7 +341,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -351,6 +355,9 @@ function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {
 
 ### _getWithdrawalsKey
 
+Hash key of the Compound withdrawal for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function _getWithdrawalsKey(bytes32 coverKey) private pure
 returns(bytes32)
@@ -360,7 +367,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>

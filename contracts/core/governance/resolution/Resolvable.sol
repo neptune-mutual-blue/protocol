@@ -56,7 +56,7 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.IncidentHappened;
+    bool decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }
@@ -180,13 +180,19 @@ abstract contract Resolvable is Finalization, IResolvable {
 
   /**
    * @dev Gets the cooldown period of a given cover
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoolDownPeriodInternal(coverKey);
   }
 
   /**
-   * @dev Gets the resolution deadline of a given cover
+   * @dev Gets the resolution deadline of a given cover product
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
    */
   function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getResolutionDeadlineInternal(coverKey, productKey);

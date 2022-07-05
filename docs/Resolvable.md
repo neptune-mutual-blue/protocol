@@ -59,7 +59,7 @@ function resolve(
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.IncidentHappened;
+    bool decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }
@@ -229,6 +229,7 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external over
 ### getCoolDownPeriod
 
 Gets the cooldown period of a given cover
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoolDownPeriod(bytes32 coverKey) external view
@@ -253,7 +254,8 @@ function getCoolDownPeriod(bytes32 coverKey) external view override returns (uin
 
 ### getResolutionDeadline
 
-Gets the resolution deadline of a given cover
+Gets the resolution deadline of a given cover product
+ Warning: this function does not validate the cover and product key supplied.
 
 ```solidity
 function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view

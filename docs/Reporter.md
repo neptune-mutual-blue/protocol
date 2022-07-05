@@ -206,8 +206,8 @@ function setFirstReportingStake(bytes32 coverKey, uint256 value) external overri
 
 ### getFirstReportingStake
 
-Returns the minimum amount of NPM tokens required to `report` or `dispute`
- a cover.
+Returns the minimum amount of NPM tokens required to `report` or `dispute` a cover.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getFirstReportingStake(bytes32 coverKey) public view
@@ -304,7 +304,8 @@ function setReporterCommission(uint256 value) external override nonReentrant {
 
 ### getActiveIncidentDate
 
-Gets the latest incident date of a given cover and product
+Gets the latest incident date of a given cover product
+ Warning: this function does not validate the cover and product key supplied.
 
 ```solidity
 function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external view
@@ -331,6 +332,7 @@ function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external vi
 ### getReporter
 
 Gets the reporter of a cover by its incident date
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getReporter(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
@@ -362,6 +364,7 @@ function getReporter(
 ### getResolutionTimestamp
 
 Retuns the resolution date of a given cover
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external view
@@ -389,6 +392,7 @@ function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external v
 
 Gets an account's attestation details. Please also check `getRefutation` since an account
  can submit both `attestations` and `refutations` if they wish to.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getAttestation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
@@ -423,6 +427,7 @@ function getAttestation(
 
 Gets an account's refutation details. Please also check `getAttestation` since an account
  can submit both `attestations` and `refutations` if they wish to.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view

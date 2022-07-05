@@ -267,6 +267,7 @@ Returns the risk pooling periods of a given cover key.
  Global values are returned if the risk pooling period for the given cover key was not defined.
  If global values are also undefined, fallback value of 180-day lending period
  and 7-day withdrawal window are returned.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getRiskPoolingPeriods(bytes32 coverKey) external view

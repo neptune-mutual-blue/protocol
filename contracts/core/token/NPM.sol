@@ -24,6 +24,7 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     super._transferOwnership(timelockOrOwner);
   }
 
+  // slither-disable-next-line dead-code
   function _beforeTokenTransfer(
     address,
     address,

@@ -248,8 +248,9 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   /**
-   * @dev Returns the minimum amount of NPM tokens required to `report` or `dispute`
-   * a cover.
+   * @dev Returns the minimum amount of NPM tokens required to `report` or `dispute` a cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
    *
    * @param coverKey Specify the cover you want to get the minimum stake required value of.
    *
@@ -307,7 +308,10 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   /**
-   * @dev Gets the latest incident date of a given cover and product
+   * @dev Gets the latest incident date of a given cover product
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
    * @param coverKey Enter the cover key you want to get the incident of
    * @param productKey Enter the product key you want to get the incident of
    *
@@ -318,6 +322,8 @@ abstract contract Reporter is IReporter, Witness {
 
   /**
    * @dev Gets the reporter of a cover by its incident date
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @custom:note Please note that until resolution deadline is over, the returned
    * reporter might keep changing.
@@ -336,6 +342,9 @@ abstract contract Reporter is IReporter, Witness {
 
   /**
    * @dev Retuns the resolution date of a given cover
+   *
+   * Warning: this function does not validate the input arguments.
+   *
    * @param coverKey Enter the cover key to get the resolution date of
    * @param productKey Enter the product key to get the resolution date of
    *
@@ -347,6 +356,8 @@ abstract contract Reporter is IReporter, Witness {
   /**
    * @dev Gets an account's attestation details. Please also check `getRefutation` since an account
    * can submit both `attestations` and `refutations` if they wish to.
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the cover key you want to get attestation of
    * @param productKey Enter the product key you want to get attestation of
@@ -366,6 +377,8 @@ abstract contract Reporter is IReporter, Witness {
   /**
    * @dev Gets an account's refutation details. Please also check `getAttestation` since an account
    * can submit both `attestations` and `refutations` if they wish to.
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the cover key you want to get refutation of
    * @param productKey Enter the product key you want to get refutation of

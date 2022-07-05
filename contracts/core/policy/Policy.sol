@@ -121,14 +121,36 @@ contract Policy is IPolicy, Recoverable {
     return (address(cxToken), lastPolicyId);
   }
 
+  /**
+   * @dev Gets cxToken and its expiry address by the supplied arguments.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the cover key
+   * @param coverDuration Enter the cover's policy duration. Valid values: 1-3.
+   *
+   */
   function getCxToken(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 coverDuration
   ) external view override returns (address cxToken, uint256 expiryDate) {
+    require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+
     return s.getCxTokenInternal(coverKey, productKey, coverDuration);
   }
 
+  /**
+   * @dev Returns cxToken address by the cover key, product key, and expiry date.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the cover key
+   * @param expiryDate Enter the cxToken's expiry date
+   *
+   */
   function getCxTokenByExpiryDate(
     bytes32 coverKey,
     bytes32 productKey,
@@ -141,13 +163,17 @@ contract Policy is IPolicy, Recoverable {
    * @dev Gets the expiry date based on cover duration
    * @param today Enter the current timestamp
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
+   *
    */
   function getExpiryDate(uint256 today, uint256 coverDuration) external pure override returns (uint256) {
     return CoverUtilV1.getExpiryDateInternal(today, coverDuration);
   }
 
   /**
-   * Gets the sum total of cover commitment that has not expired yet.
+   * @dev Gets the sum total of cover commitment that has not expired yet.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
    */
   function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     uint256 precision = s.getStablecoinPrecision();
@@ -155,7 +181,10 @@ contract Policy is IPolicy, Recoverable {
   }
 
   /**
-   * Gets the available liquidity in the pool.
+   * @dev Gets the available liquidity in the pool.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
     return s.getStablecoinOwnedByVaultInternal(coverKey);
@@ -163,9 +192,13 @@ contract Policy is IPolicy, Recoverable {
 
   /**
    * @dev Gets the cover fee info for the given cover key, duration, and amount
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the cover key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin to cover.
+   *
    */
   function getCoverFeeInfo(
     bytes32 coverKey,
@@ -190,6 +223,9 @@ contract Policy is IPolicy, Recoverable {
 
   /**
    * @dev Returns the values of the given cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
    * @param _values[2] Reassurance amount
@@ -197,6 +233,7 @@ contract Policy is IPolicy, Recoverable {
    * @param _values[4] Count of products under this cover
    * @param _values[5] Leverage
    * @param _values[6] Cover product efficiency weight
+   *
    */
   function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (uint256[] memory _values) {
     return s.getCoverPoolSummaryInternal(coverKey, productKey);

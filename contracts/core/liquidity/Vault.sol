@@ -77,6 +77,8 @@ contract Vault is WithFlashLoan {
   /**
    * @dev Gets information of a given vault by the cover key
    *
+   * Warning: this function does not validate the input argument.
+   *
    * @param you The address for which the info will be customized
    * @param values[0] totalPods --> Total PODs in existence
    * @param values[1] balance --> Stablecoins held in the vault

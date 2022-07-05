@@ -79,6 +79,7 @@ constructor(
 ### getInfo
 
 Gets information of a given vault by the cover key
+ Warning: this function does not validate the input argument.
 
 ```solidity
 function getInfo(address you) external view

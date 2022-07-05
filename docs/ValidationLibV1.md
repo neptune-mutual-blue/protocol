@@ -575,6 +575,9 @@ function callerMustBeSpecificStrategyContract(
 
 ### _getIsActiveStrategyKey
 
+Hash key of the "active strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsActiveStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -584,7 +587,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -598,6 +601,9 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 
 ### _getIsDisabledStrategyKey
 
+Hash key of the "disabled strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsDisabledStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -607,7 +613,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1219,7 +1225,7 @@ function validateUnstakeWithClaim(
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.Claimable;
+    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.

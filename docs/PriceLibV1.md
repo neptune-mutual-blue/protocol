@@ -134,6 +134,9 @@ function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
 
 ### getLastUpdateKey
 
+Hash key of the "last state update" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getLastUpdateKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -143,7 +146,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>

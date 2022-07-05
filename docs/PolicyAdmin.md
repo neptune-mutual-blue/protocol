@@ -168,6 +168,7 @@ function setCoverageLag(bytes32 coverKey, uint256 window) external override {
 ### getPolicyRates
 
 Gets the cover policy rates for the given cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getPolicyRates(bytes32 coverKey) external view
@@ -193,6 +194,7 @@ function getPolicyRates(bytes32 coverKey) external view override returns (uint25
 ### getCoverageLag
 
 Gets the policy lag for the given cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoverageLag(bytes32 coverKey) external view

@@ -106,6 +106,9 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Gets the cover policy rates for the given cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
     return s.getPolicyRatesInternal(coverKey);
@@ -113,6 +116,9 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Gets the policy lag for the given cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoverageLagInternal(coverKey);

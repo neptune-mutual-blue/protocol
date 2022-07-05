@@ -81,6 +81,7 @@ constructor(
 ### getCoverageStartsFrom
 
 Returns the value of the `coverageStartsFrom` mapping.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getCoverageStartsFrom(address account, uint256 date) external view
@@ -151,6 +152,7 @@ function _getExcludedCoverageOf(address account) private view returns (uint256 e
 ### getClaimablePolicyOf
 
 Gets the claimable policy of an account.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getClaimablePolicyOf(address account) external view

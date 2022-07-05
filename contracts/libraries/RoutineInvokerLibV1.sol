@@ -116,14 +116,38 @@ library RoutineInvokerLibV1 {
     s.setBoolByKey(getAccrualInvocationKey(coverKey), flag);
   }
 
+  /**
+   * @dev Hash key of the "accrual invocation status" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_ACCRUAL_INVOCATION, coverKey));
   }
 
+  /**
+   * @dev Hash key of the "next withdrawal start date" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_START, coverKey));
   }
 
+  /**
+   * @dev Hash key of the "next withdrawal end date" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getNextWithdrawalEndKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_END, coverKey));
   }

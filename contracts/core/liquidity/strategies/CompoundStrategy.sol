@@ -47,6 +47,9 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
 
   /**
    * @dev Gets info of this strategy by cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the cover key
    * @param values[0] deposits Total amount deposited
    * @param values[1] withdrawals Total amount withdrawn
@@ -178,10 +181,26 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, compoundWrappedStablecoinRedeemed);
   }
 
+  /**
+   * @dev Hash key of the Compound deposits for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(_KEY, coverKey, NS_DEPOSITS));
   }
 
+  /**
+   * @dev Hash key of the Compound withdrawal for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function _getWithdrawalsKey(bytes32 coverKey) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(_KEY, coverKey, NS_WITHDRAWALS));
   }

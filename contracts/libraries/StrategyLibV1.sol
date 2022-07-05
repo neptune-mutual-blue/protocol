@@ -21,10 +21,26 @@ library StrategyLibV1 {
   event RiskPoolingPeriodSet(bytes32 indexed key, uint256 lendingPeriod, uint256 withdrawalWindow);
   event MaxLendingRatioSet(uint256 ratio);
 
+  /**
+   * @dev Hash key of the "active strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
+  /**
+   * @dev Hash key of the "disabled strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
@@ -83,6 +99,14 @@ library StrategyLibV1 {
     emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 
+  /**
+   * @dev Hash key of the "lending period" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
@@ -101,10 +125,21 @@ library StrategyLibV1 {
     emit MaxLendingRatioSet(ratio);
   }
 
+  /**
+   * @dev Hash key of the "maximum lending ratio" for the given cover.
+   */
   function getMaxLendingRatioKey() public pure returns (bytes32) {
     return ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
   }
 
+  /**
+   * @dev Hash key of the "withdrawal window duration" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
@@ -151,10 +186,28 @@ library StrategyLibV1 {
     return s.getAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE);
   }
 
+  /**
+   * @dev Hash key of the "strategy outs" for the given cover and token.
+   *
+   * Warning: this function does not validate the cover key and token supplied.
+   *
+   * @param coverKey Enter cover key
+   * @param token Enter the token address
+   *
+   */
   function getStrategyOutKey(bytes32 coverKey, address token) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
   }
 
+  /**
+   * @dev Hash key of the "outs" to a specific strategy for the given cover and token.
+   *
+   * Warning: this function does not validate the cover key and token supplied.
+   *
+   * @param coverKey Enter cover key
+   * @param token Enter the token address
+   *
+   */
   function getSpecificStrategyOutKey(
     bytes32 coverKey,
     bytes32 strategyName,

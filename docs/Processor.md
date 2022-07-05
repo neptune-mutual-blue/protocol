@@ -181,6 +181,7 @@ function validate(
 
 Returns claim expiration date.
  Even if the policy was still valid, it cannot be claimed after the claims expiry date.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view
@@ -289,6 +290,7 @@ ction setBlacklist(
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
 
     for (uint256 i = 0; i < accounts.length; i++) {
       s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);

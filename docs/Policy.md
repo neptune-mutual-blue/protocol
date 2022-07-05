@@ -118,6 +118,9 @@ function purchaseCover(
 
 ### getCxToken
 
+Gets cxToken and its expiry address by the supplied arguments.
+ Warning: this function does not validate the cover and product key supplied.
+
 ```solidity
 function getCxToken(bytes32 coverKey, bytes32 productKey, uint256 coverDuration) external view
 returns(cxToken address, expiryDate uint256)
@@ -127,9 +130,9 @@ returns(cxToken address, expiryDate uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| coverDuration | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the cover key | 
+| coverDuration | uint256 | Enter the cover's policy duration. Valid values: 1-3. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -140,12 +143,17 @@ function getCxToken(
     bytes32 productKey,
     uint256 coverDuration
   ) external view override returns (address cxToken, uint256 expiryDate) {
+    require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+
     return s.getCxTokenInternal(coverKey, productKey, coverDuration);
   }
 ```
 </details>
 
 ### getCxTokenByExpiryDate
+
+Returns cxToken address by the cover key, product key, and expiry date.
+ Warning: this function does not validate the cover and product key supplied.
 
 ```solidity
 function getCxTokenByExpiryDate(bytes32 coverKey, bytes32 productKey, uint256 expiryDate) external view
@@ -156,9 +164,9 @@ returns(cxToken address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| expiryDate | uint256 |  | 
+| coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the cover key | 
+| expiryDate | uint256 | Enter the cxToken's expiry date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -202,6 +210,9 @@ function getExpiryDate(uint256 today, uint256 coverDuration) external pure overr
 
 ### getCommitment
 
+Gets the sum total of cover commitment that has not expired yet.
+ Warning: this function does not validate the cover and product key supplied.
+
 ```solidity
 function getCommitment(bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
@@ -227,6 +238,9 @@ function getCommitment(bytes32 coverKey, bytes32 productKey) external view overr
 
 ### getAvailableLiquidity
 
+Gets the available liquidity in the pool.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getAvailableLiquidity(bytes32 coverKey) external view
 returns(uint256)
@@ -251,6 +265,7 @@ function getAvailableLiquidity(bytes32 coverKey) external view override returns 
 ### getCoverFeeInfo
 
 Gets the cover fee info for the given cover key, duration, and amount
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoverFeeInfo(bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover) external view
@@ -296,6 +311,7 @@ function getCoverFeeInfo(
 ### getCoverPoolSummary
 
 Returns the values of the given cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view

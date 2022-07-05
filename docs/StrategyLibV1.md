@@ -55,6 +55,9 @@ event MaxLendingRatioSet(uint256  ratio);
 
 ### _getIsActiveStrategyKey
 
+Hash key of the "active strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsActiveStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -64,7 +67,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -78,6 +81,9 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 
 ### _getIsDisabledStrategyKey
 
+Hash key of the "disabled strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsDisabledStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -87,7 +93,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -245,6 +251,9 @@ function setRiskPoolingPeriodsInternal(
 
 ### getLendingPeriodKey
 
+Hash key of the "lending period" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getLendingPeriodKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -254,7 +263,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -320,6 +329,8 @@ function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
 
 ### getMaxLendingRatioKey
 
+Hash key of the "maximum lending ratio" for the given cover.
+
 ```solidity
 function getMaxLendingRatioKey() public pure
 returns(bytes32)
@@ -342,6 +353,9 @@ function getMaxLendingRatioKey() public pure returns (bytes32) {
 
 ### getWithdrawalWindowKey
 
+Hash key of the "withdrawal window duration" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getWithdrawalWindowKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -351,7 +365,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -502,6 +516,9 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 
 ### getStrategyOutKey
 
+Hash key of the "strategy outs" for the given cover and token.
+ Warning: this function does not validate the cover key and token supplied.
+
 ```solidity
 function getStrategyOutKey(bytes32 coverKey, address token) public pure
 returns(bytes32)
@@ -511,8 +528,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| token | address |  | 
+| coverKey | bytes32 | Enter cover key | 
+| token | address | Enter the token address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -526,6 +543,9 @@ function getStrategyOutKey(bytes32 coverKey, address token) public pure returns 
 
 ### getSpecificStrategyOutKey
 
+Hash key of the "outs" to a specific strategy for the given cover and token.
+ Warning: this function does not validate the cover key and token supplied.
+
 ```solidity
 function getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, address token) public pure
 returns(bytes32)
@@ -535,9 +555,9 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 | strategyName | bytes32 |  | 
-| token | address |  | 
+| token | address | Enter the token address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>

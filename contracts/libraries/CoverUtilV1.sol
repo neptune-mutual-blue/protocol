@@ -29,6 +29,15 @@ library CoverUtilV1 {
     Claimable
   }
 
+  /**
+   * @dev Returns the given cover's owner.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
     return _getCoverOwner(s, coverKey);
   }
@@ -37,6 +46,10 @@ library CoverUtilV1 {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 
+  /**
+   * @dev Returns cover creation fee information.
+   * @param s Specify store instance
+   */
   function getCoverCreationFeeInfo(IStore s)
     external
     view
@@ -51,6 +64,10 @@ library CoverUtilV1 {
     minStakeToAddLiquidity = getMinStakeToAddLiquidity(s);
   }
 
+  /**
+   * @dev Returns minimum NPM stake to create a new cover.
+   * @param s Specify store instance
+   */
   function getMinCoverCreationStake(IStore s) public view returns (uint256) {
     uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
 
@@ -62,10 +79,23 @@ library CoverUtilV1 {
     return value;
   }
 
+  /**
+   * @dev Returns a cover's creation date
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getCoverCreationDate(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
   }
 
+  /**
+   * @dev Returns minimum NPM stake to add liquidity.
+   * @param s Specify store instance
+   */
   function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
     uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
 
@@ -77,6 +107,15 @@ library CoverUtilV1 {
     return value;
   }
 
+  /**
+   * @dev Gets claim period/duration of the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getClaimPeriod(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey);
     uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
@@ -85,7 +124,10 @@ library CoverUtilV1 {
   }
 
   /**
-   * @dev Returns the values of the given cover key
+   * @dev Returns a summary of the given cover pool.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
    * @param _values[2] Reassurance amount
@@ -115,6 +157,8 @@ library CoverUtilV1 {
   /**
    * @dev Gets the reassurance weight of a given cover key.
    *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param s Provide store instance
    * @param coverKey Enter the cover for which you want to obtain the reassurance weight for.
    *
@@ -143,12 +187,30 @@ library CoverUtilV1 {
 
   /**
    * @dev Gets the reassurance amount of the specified cover contract
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the cover key
+   *
    */
   function getReassuranceAmountInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
     return s.getUintByKey(getReassuranceKey(coverKey));
   }
 
+  /**
+   * @dev Returns reassurance rate of the specified cover key.
+   * When a cover is finalized after claims payout, a portion
+   * of the reassurance fund (if available) is transferred to the cover liquidity pool.
+   *
+   * If the reassurance rate is 25%, either 25% of the reassurance pool
+   * or 25% of the suffered loss is transferred prior to finalization, whichever is less.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param s Specify store
+   * @param coverKey Enter cover key
+   *
+   */
   function getReassuranceRateInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 rate = s.getUintByKey(getReassuranceRateKey(coverKey));
 
@@ -160,29 +222,65 @@ library CoverUtilV1 {
     return 2500;
   }
 
+  /**
+   * @dev Hash key of the reassurance for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getReassuranceKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey));
   }
 
+  /**
+   * @dev Hash key of the reassurance rate for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getReassuranceRateKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey));
   }
 
+  /**
+   * @dev Hash key of the reassurance weight for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getReassuranceWeightKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
   }
 
+  /**
+   * @dev Indicates whether the specified cover and all associated products are "normal".
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @return Returns false if any associated product isn't normal.
+   *
+   */
   function isCoverNormalInternal(IStore s, bytes32 coverKey) external view returns (bool) {
+    uint256 incidentDate;
+
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getProductStatusInternal(s, coverKey, 0) == ProductStatus.Normal;
+      incidentDate = getActiveIncidentDateInternal(s, coverKey, 0);
+      return getProductStatusOfInternal(s, coverKey, 0, incidentDate) == ProductStatus.Normal;
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
-      bool isNormal = getProductStatusInternal(s, coverKey, products[i]) == ProductStatus.Normal;
+      incidentDate = getActiveIncidentDateInternal(s, coverKey, products[i]);
+      bool isNormal = getProductStatusOfInternal(s, coverKey, products[i], incidentDate) == ProductStatus.Normal;
 
       if (!isNormal) {
         return false;
@@ -192,16 +290,9 @@ library CoverUtilV1 {
     return true;
   }
 
-  function getProductStatusInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (ProductStatus) {
-    return ProductStatus(s.getUintByKey(getProductStatusKey(coverKey, productKey)));
-  }
-
   /**
-   * @dev Gets the current status of a given cover
+   * @dev Gets product status of the given cover product.
+   *
    *
    * 0 - normal
    * 1 - stopped, can not purchase covers or add liquidity
@@ -209,44 +300,52 @@ library CoverUtilV1 {
    * 3 - reporting, false reporting
    * 4 - claimable, claims accepted for payout
    *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
    */
-  function getStatusInternal(
+  function getProductStatusInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKey(getProductStatusKey(coverKey, productKey));
-  }
-
-  function getProductStatusOf(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 incidentDate
-  ) external view returns (ProductStatus) {
-    return ProductStatus(getStatusOf(s, coverKey, productKey, incidentDate));
-  }
-
-  function getStatusOf(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 incidentDate
-  ) public view returns (uint256) {
-    return s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
+  ) public view returns (ProductStatus) {
+    uint256 incidentDate = getActiveIncidentDateInternal(s, coverKey, productKey);
+    return getProductStatusOfInternal(s, coverKey, productKey, incidentDate);
   }
 
   /**
-   * @dev Hash key of the product status of the given cover and product
-   * to find out the current status. This gets reset during finalization.
+   * @dev Returns current status a given cover product as `ProductStatus`.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
    */
-  function getProductStatusKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey));
+  function getProductStatusOfInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public view returns (ProductStatus) {
+    uint256 value = s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
+    return ProductStatus(value);
   }
 
   /**
    * @dev Hash key of the product status of (the given cover, product, and incident date)
    * for historical significance. This must not be reset during finalization.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
    */
   function getProductStatusOfKey(
     bytes32 coverKey,
@@ -256,18 +355,56 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of the stakes (collectively added by liquidity providers) of the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey));
   }
 
+  /**
+   * @dev Hash key of the last stablecoin deposit of the given cover.
+   * There must be a couple of block heights as an offset
+   * before withdrawal can be performed (even during a withdrawal window).
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getLastDepositHeightKey(bytes32 coverKey) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_DEPOSIT_HEIGHTS, coverKey));
   }
 
+  /**
+   * @dev Hash key of the individual stake (added by an LP) for the given cover and account.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param account Enter the account to obtain the hash key
+   *
+   */
   function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
+  /**
+   * @dev Hash key of the blacklisted accounts for the given cover.
+   * Blacklisted accounts are forbidden to receive claims payout.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter the trigger incident date
+   *
+   */
   function getBlacklistKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -276,6 +413,21 @@ library CoverUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CLAIM_BLACKLIST, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Returns the total liquidity commited/under active protection.
+   * If the cover is a diversified pool, returns sum total of all products' commitments.
+   *
+   * Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
+   * Note that cxTokens can be precise to 18 decimal places.
+   * If the protocol's stablecoin has a different precision,
+   * you must tell this function explicitly when you call it.
+   *
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param precision Specify the protocol stablecoin precision.
+   *
+   */
   function getTotalLiquidityUnderProtection(
     IStore s,
     bytes32 coverKey,
@@ -298,6 +450,22 @@ library CoverUtilV1 {
     return s.getBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
   }
 
+  /**
+   * @dev Returns the total liquidity commited/under active protection.
+   * If the cover is a diversified pool, you must a provide product key.
+   *
+   * Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
+   * Note that cxTokens can be precise to 18 decimal places.
+   * If the protocol's stablecoin has a different precision,
+   * you must tell this function explicitly when you call it.
+   *
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param adjustPrecision Specify the protocol stablecoin precision.
+   *
+   */
   function getActiveLiquidityUnderProtection(
     IStore s,
     bytes32 coverKey,
@@ -371,6 +539,15 @@ library CoverUtilV1 {
     }
   }
 
+  /**
+   * @dev Returns the total amount staken to this cover (outside of governance).
+   * @custom:todo Check the documentation for accuracy
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   */
   function getStake(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey);
   }
@@ -392,7 +569,7 @@ library CoverUtilV1 {
     uint256 incidentDate,
     ProductStatus status
   ) external {
-    s.setUintByKey(getProductStatusKey(coverKey, productKey), uint256(status));
+    s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
 
     if (incidentDate > 0) {
       s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
@@ -441,6 +618,16 @@ library CoverUtilV1 {
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
   }
 
+  /**
+   * @dev Returns the given cover product's active incident date (if any).
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getActiveIncidentDateInternal(
     IStore s,
     bytes32 coverKey,
@@ -449,6 +636,17 @@ library CoverUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
+  /**
+   * @dev Returns the given cover product's cxToken by its expiry date (if available).
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param expiryDate Enter cxToken's expiry date
+   *
+   */
   function getCxTokenByExpiryDateInternal(
     IStore s,
     bytes32 coverKey,
@@ -510,6 +708,15 @@ library CoverUtilV1 {
     return s.getBoolByKey(key);
   }
 
+  /**
+   * @dev Hash key of the "disabled policy flag" for the given cover product.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
   }

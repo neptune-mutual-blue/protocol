@@ -398,6 +398,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev Returns the stablecoin balance of this vault
    * This also includes amounts lent out in lending strategies by this vault
    *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the cover for which you want to get the stablecoin balance
    */
   function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view override returns (uint256) {
@@ -407,6 +409,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
 
   /**
    * @dev Gets information of a given vault by the cover key
+   *
+   * Warning: this function does not validate the cover key and account supplied.
    *
    * @param coverKey Specify cover key to obtain the info of
    * @param you The address for which the info will be customized

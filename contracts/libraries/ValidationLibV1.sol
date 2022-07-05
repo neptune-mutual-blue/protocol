@@ -181,10 +181,26 @@ library ValidationLibV1 {
     require(IMember(caller).getName() == strategyName, "Access denied");
   }
 
+  /**
+   * @dev Hash key of the "active strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
+  /**
+   * @dev Hash key of the "disabled strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
@@ -412,7 +428,7 @@ library ValidationLibV1 {
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.Claimable;
+    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.

@@ -145,6 +145,8 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
    * If global values are also undefined, fallback value of 180-day lending period
    * and 7-day withdrawal window are returned.
    *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the coverkey to retrieve the lending period of.
    * Warning: this function doesn't check if the supplied cover key is a valid.
    *

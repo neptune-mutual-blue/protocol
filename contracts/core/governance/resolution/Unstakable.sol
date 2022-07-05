@@ -45,6 +45,12 @@ abstract contract Unstakable is Resolvable, IUnstakable {
     uint256 incidentDate
   ) external override nonReentrant {
     require(incidentDate > 0, "Please specify incident date");
+
+    // Incident date is reset (when cover is finalized) and
+    // therefore shouldn't be validated otherwise "valid" reporters
+    // will never be able to unstake
+
+    // s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.validateUnstakeWithoutClaim(coverKey, productKey, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
@@ -111,6 +117,8 @@ abstract contract Unstakable is Resolvable, IUnstakable {
 
   /**
    * @dev Gets the unstake information for the supplied account
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param account Enter account to get the unstake information of
    * @param coverKey Enter the cover key

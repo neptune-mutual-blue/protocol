@@ -49,10 +49,11 @@ describe('Claims Processor: `getClaimExpiryDate` function', () => {
   it('must correctly return the claim expiry date', async () => {
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const startedOn = moment.unix(block.timestamp)
+    const incidentDate = '1234'
 
     const coverKey = key.toBytes32('test')
 
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
 
     const date = await processor.getClaimExpiryDate(coverKey, helper.emptyBytes32)
 

@@ -23,6 +23,8 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   /**
    * @dev The fee to be charged for a given loan.
    *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param token The loan currency.
    * @param amount The amount of tokens lent.
    * @return The amount of `token` to be charged for the loan, on top of the returned principal.
@@ -40,6 +42,8 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
 
   /**
    * @dev The amount of currency available to be lent.
+   *
+   * Warning: this function does not validate the cover key supplied.
    *
    * @param token The loan currency.
    * @return The amount of `token` that can be borrowed.

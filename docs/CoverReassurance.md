@@ -181,6 +181,7 @@ function capitalizePool(
 ### getReassurance
 
 Gets the reassurance amount of the specified cover contract
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getReassurance(bytes32 coverKey) external view

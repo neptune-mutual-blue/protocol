@@ -20,26 +20,81 @@ library GovernanceUtilV1 {
   using ProtoUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
 
+  /**
+   * @dev Gets the reporting period for the given cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   *
+   */
   function getReportingPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey);
   }
 
+  /**
+   * @dev Gets the NPM stake burn rate (upon resolution) for the given cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   *
+   */
   function getReportingBurnRateInternal(IStore s) public view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
   }
 
+  /**
+   * @dev Gets the "valid" reporter's NPM commission rate
+   * (upon each unstake claim invoked by individual "valid" stakers)
+   * for the given cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   *
+   */
   function getGovernanceReporterCommissionInternal(IStore s) public view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
   }
 
+  /**
+   * @dev Gets the protocol's NPM commission rate
+   * (upon each unstake claim invoked by individual "valid" stakers)
+   * for the given cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   *
+   */
   function getPlatformCoverFeeRateInternal(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
   }
 
+  /**
+   * @dev Gets the "valid" reporter's stablecoin commission rate
+   * on protocol's earnings (upon each claim payout received by claimants)
+   * for the given cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   *
+   */
   function getClaimReporterCommissionInternal(IStore s) external view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION);
   }
 
+  /**
+   * @dev Gets the minimum units of NPM tokens required to report the supplied cover.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 fb = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE);
     uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
@@ -47,6 +102,16 @@ library GovernanceUtilV1 {
     return custom > 0 ? custom : fb;
   }
 
+  /**
+   * @dev Gets the latest and "active" incident date of a cover product.
+   * Note that after "resolve" is invoked, incident date is reset.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getLatestIncidentDateInternal(
     IStore s,
     bytes32 coverKey,
@@ -55,6 +120,16 @@ library GovernanceUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
+  /**
+   * @dev Gets a cover's resolution timestamp.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getResolutionTimestampInternal(
     IStore s,
     bytes32 coverKey,
@@ -63,19 +138,48 @@ library GovernanceUtilV1 {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
   }
 
+  /**
+   * @dev Gets the given cover incident's reporter.
+   * Note that this keeps changing between "first reporter"
+   * and "candidate reporter" until resolution is achieved.
+   *
+   * <br /> <br />
+   *
+   * [Read More](https://docs.neptunemutual.com/covers/cover-reporting)
+   *
+   * <br /> <br />
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getReporterInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (address) {
-    CoverUtilV1.ProductStatus status = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    CoverUtilV1.ProductStatus status = s.getProductStatusOfInternal(coverKey, productKey, incidentDate);
     bool incidentHappened = status == CoverUtilV1.ProductStatus.IncidentHappened || status == CoverUtilV1.ProductStatus.Claimable;
     bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
     return s.getAddressByKeys(prefix, coverKey, productKey);
   }
 
+  /**
+   * @dev Returns stakes of the given cover product's incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getStakesInternal(
     IStore s,
     bytes32 coverKey,
@@ -86,10 +190,28 @@ library GovernanceUtilV1 {
     no = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of the reporter for the given cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getReporterKey(bytes32 coverKey, bytes32 productKey) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey));
   }
 
+  /**
+   * @dev Hash key of the stakes added under `Incident Happened` camp for the given cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getIncidentOccurredStakesKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -98,6 +220,15 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of the claims payout given for the supplied cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getClaimPayoutsKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -106,6 +237,15 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_PAYOUTS, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of the reassurance payout granted for the supplied cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getReassurancePayoutKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -114,6 +254,15 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_PAYOUT, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of an individual's stakes added under `Incident Happened` camp for the given cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getIndividualIncidentOccurredStakeKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -123,10 +272,28 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES, coverKey, productKey, incidentDate, account));
   }
 
+  /**
+   * @dev Hash key of the "candidate reporter" for the supplied cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getDisputerKey(bytes32 coverKey, bytes32 productKey) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey));
   }
 
+  /**
+   * @dev Hash key of the stakes added under `False Reporting` camp for the given cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getFalseReportingStakesKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -135,6 +302,15 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Hash key of an individual's stakes added under `False Reporting` camp for the given cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function _getIndividualFalseReportingStakeKey(
     bytes32 coverKey,
     bytes32 productKey,
@@ -144,6 +320,18 @@ library GovernanceUtilV1 {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO, coverKey, productKey, incidentDate, account));
   }
 
+  /**
+   * @dev Returns stakes of the given account for a cover product's incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param account Specify the account to get stakes
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getStakesOfInternal(
     IStore s,
     address account,
@@ -155,6 +343,23 @@ library GovernanceUtilV1 {
     no = s.getUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, account));
   }
 
+  /**
+   * @dev Returns resolution info of the given account
+   * for a cover product's incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param account Specify the account to get stakes
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   * @param totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
+   * @param totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
+   * @param myStakeInWinningCamp Your NPM tokens in the "winning" camp.
+   *
+   */
   function getResolutionInfoForInternal(
     IStore s,
     address account,
@@ -173,7 +378,7 @@ library GovernanceUtilV1 {
     (uint256 yes, uint256 no) = getStakesInternal(s, coverKey, productKey, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOfInternal(s, account, coverKey, productKey, incidentDate);
 
-    CoverUtilV1.ProductStatus decision = s.getProductStatusOf(coverKey, productKey, incidentDate);
+    CoverUtilV1.ProductStatus decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate);
     bool incidentHappened = decision == CoverUtilV1.ProductStatus.IncidentHappened || decision == CoverUtilV1.ProductStatus.Claimable;
 
     totalStakeInWinningCamp = incidentHappened ? yes : no;
@@ -181,6 +386,27 @@ library GovernanceUtilV1 {
     myStakeInWinningCamp = incidentHappened ? myYes : myNo;
   }
 
+  /**
+   * @dev Returns unstake info of the given account
+   * for a cover product's incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param account Specify the account to get stakes
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   * @param totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
+   * @param totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
+   * @param myStakeInWinningCamp Your NPM tokens in the "winning" camp.
+   * @param toBurn The NPM stake to be burned if you unstake now.
+   * @param toReporter The NPM stake reward/commission to be sent to the "valid" reporter.
+   * @param myReward The NPM stake reward you will receive.
+   * @param unstaken The NPM stake you've already unstaken.
+   *
+   */
   function getUnstakeInfoForInternal(
     IStore s,
     address account,
@@ -222,6 +448,18 @@ library GovernanceUtilV1 {
     myReward = reward - toBurn - toReporter;
   }
 
+  /**
+   * @dev Returns NPM already unstaken by the specified account for a cover incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param account Specify the account to get stakes
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getReportingUnstakenAmountInternal(
     IStore s,
     address account,
@@ -341,6 +579,21 @@ library GovernanceUtilV1 {
     s.updateStateAndLiquidity(coverKey);
   }
 
+  /**
+   * @dev Returns sum total of NPM staken under `Incident Happened` camp.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param who Specify the account to get attestation info
+   * @param incidentDate Enter incident date
+   *
+   * @param myStake The total NPM amount (under incident happened or yes) you have staken for this trigger incident.
+   * @param totalStake The total NPM amount (under incident happened or yes) staken by all tokenholders.
+   *
+   */
   function getAttestationInternal(
     IStore s,
     bytes32 coverKey,
@@ -384,10 +637,34 @@ library GovernanceUtilV1 {
     s.updateStateAndLiquidity(coverKey);
   }
 
+  /**
+   * @dev Hash key of the "has dispute flag" for the specified cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE, coverKey, productKey));
   }
 
+  /**
+   * @dev Returns sum total of NPM staken under `False Reporting` camp.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param who Specify the account to get attestation info
+   * @param incidentDate Enter incident date
+   *
+   * @param myStake The total NPM amount (under false reporting or no) you have staken for this trigger incident.
+   * @param totalStake The total NPM amount (under false reporting or no) staken by all tokenholders.
+   *
+   */
   function getRefutationInternal(
     IStore s,
     bytes32 coverKey,
@@ -399,6 +676,16 @@ library GovernanceUtilV1 {
     totalStake = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Returns cooldown period. Cooldown period is a defense
+   * against [collusion and last-block attacks](https://docs.neptunemutual.com/covers/cover-reporting#collusion-and-last-block-attacks).
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   *
+   */
   function getCoolDownPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey);
     uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD);
@@ -406,6 +693,17 @@ library GovernanceUtilV1 {
     return fromKey > 0 ? fromKey : fallbackValue;
   }
 
+  /**
+   * @dev The date and time prior to which a governance administrator
+   * may still initiate a "emergency resolution."
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   */
   function getResolutionDeadlineInternal(
     IStore s,
     bytes32 coverKey,
@@ -424,6 +722,17 @@ library GovernanceUtilV1 {
     s.addUintByKey(_getClaimPayoutsKey(coverKey, productKey, incidentDate), claimed);
   }
 
+  /**
+   * @dev Returns the total amount of payouts awarded to claimants for this incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getClaimPayoutsInternal(
     IStore s,
     bytes32 coverKey,
@@ -433,6 +742,17 @@ library GovernanceUtilV1 {
     return s.getUintByKey(_getClaimPayoutsKey(coverKey, productKey, incidentDate));
   }
 
+  /**
+   * @dev Returns the total amount of reassurance granted to vault for this incident.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getReassurancePayoutInternal(
     IStore s,
     bytes32 coverKey,
@@ -452,6 +772,18 @@ library GovernanceUtilV1 {
     s.addUintByKey(_getReassurancePayoutKey(coverKey, productKey, incidentDate), capitalized);
   }
 
+  /**
+   * @dev Returns the remaining reassurance amount that can be transferred
+   * to the vault following the claim period but prior to finalisation.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
   function getReassuranceTransferrableInternal(
     IStore s,
     bytes32 coverKey,

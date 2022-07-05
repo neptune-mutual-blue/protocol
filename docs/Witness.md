@@ -141,6 +141,7 @@ function refute(
 ### getStatus
 
 Gets the status of a given cover
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getStatus(bytes32 coverKey, bytes32 productKey) external view
@@ -164,7 +165,7 @@ Returns the cover status as an integer.
 
 ```javascript
 function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    return s.getStatusInternal(coverKey, productKey);
+    return uint256(s.getProductStatusInternal(coverKey, productKey));
   }
 ```
 </details>
@@ -172,6 +173,7 @@ function getStatus(bytes32 coverKey, bytes32 productKey) external view override 
 ### getStakes
 
 Gets the stakes of each side of a given cover governance pool
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getStakes(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
@@ -207,6 +209,7 @@ function getStakes(
 ### getStakesOf
 
 Gets the stakes of each side of a given cover governance pool for the specified account.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getStakesOf(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account) external view

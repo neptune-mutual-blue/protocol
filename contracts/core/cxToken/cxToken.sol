@@ -72,6 +72,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
   /**
    * @dev Returns the value of the `coverageStartsFrom` mapping.
    *
+   * Warning: this function does not validate the input arguments.
+   *
    * @param account Enter an account to get the `coverageStartsFrom` value.
    * @param date Enter a date. Ensure that you supply a UTC EOD value.
    *
@@ -115,6 +117,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
   /**
    * @dev Gets the claimable policy of an account.
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param account Enter an account.
    *

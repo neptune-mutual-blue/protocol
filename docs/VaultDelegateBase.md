@@ -564,6 +564,7 @@ function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) 
 
 Returns the stablecoin balance of this vault
  This also includes amounts lent out in lending strategies by this vault
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view
@@ -590,6 +591,7 @@ function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view ov
 ### getInfoImplementation
 
 Gets information of a given vault by the cover key
+ Warning: this function does not validate the cover key and account supplied.
 
 ```solidity
 function getInfoImplementation(bytes32 coverKey, address you) external view

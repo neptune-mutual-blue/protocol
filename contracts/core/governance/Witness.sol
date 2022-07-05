@@ -166,17 +166,21 @@ abstract contract Witness is Recoverable, IWitness {
   /**
    * @dev Gets the status of a given cover
    *
+   * Warning: this function does not validate the input arguments.
+   *
    * @param coverKey Enter the key of the cover you'd like to check the status of
    * @return Returns the cover status as an integer.
    * For more, check the enum `ProductStatus` on `CoverUtilV1` library.
    *
    */
   function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    return s.getStatusInternal(coverKey, productKey);
+    return uint256(s.getProductStatusInternal(coverKey, productKey));
   }
 
   /**
    * @dev Gets the stakes of each side of a given cover governance pool
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the key of the cover you'd like to check the stakes of
    * @param incidentDate Enter the active cover's date of incident
@@ -193,6 +197,8 @@ abstract contract Witness is Recoverable, IWitness {
 
   /**
    * @dev Gets the stakes of each side of a given cover governance pool for the specified account.
+   *
+   * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the key of the cover you'd like to check the stakes of
    * @param incidentDate Enter the active cover's date of incident

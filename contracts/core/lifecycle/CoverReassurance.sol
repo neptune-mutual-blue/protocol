@@ -152,6 +152,9 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
   /**
    * @dev Gets the reassurance amount of the specified cover contract
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param coverKey Enter the cover key
    */
   function getReassurance(bytes32 coverKey) external view override returns (uint256) {
