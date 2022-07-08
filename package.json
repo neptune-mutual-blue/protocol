@@ -78,7 +78,7 @@
     "hardhat-contract-sizer": "2.1.1",
     "hardhat-gas-reporter": "1.0.6",
     "ipfs-mini": "1.1.5",
-    "moment": "2.29.1",
+    "moment": "2.29.4",
     "node-enumerable": "6.0.0",
     "openzeppelin-solidity": "4.4.1",
     "prettier": "2.5.1",
