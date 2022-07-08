@@ -239,7 +239,7 @@ library ProtoUtilV1 {
   }
 
   function getContract(IStore s, bytes32 name) external view returns (address) {
-    return _getContract(s, name);
+    return _getContract(s, name, 0);
   }
 
   function isProtocolMember(IStore s, address contractAddress) external view returns (bool) {
@@ -262,9 +262,10 @@ library ProtoUtilV1 {
   function mustBeExactContract(
     IStore s,
     bytes32 name,
+    bytes32 key,
     address sender
   ) public view {
-    address contractAddress = _getContract(s, name);
+    address contractAddress = _getContract(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 
@@ -285,7 +286,7 @@ library ProtoUtilV1 {
     bytes32 name,
     address caller
   ) public view {
-    return mustBeExactContract(s, name, caller);
+    return mustBeExactContract(s, name, 0, caller);
   }
 
   function npmToken(IStore s) external view returns (IERC20) {
@@ -329,7 +330,15 @@ library ProtoUtilV1 {
     return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 
-  function _getContract(IStore s, bytes32 name) private view returns (address) {
+  function _getContract(
+    IStore s,
+    bytes32 name,
+    bytes32 key
+  ) private view returns (address) {
+    if (key > 0) {
+      return s.getAddressByKeys(NS_CONTRACTS, name, key);
+    }
+
     return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 }

@@ -259,6 +259,7 @@ contract Protocol is IProtocol, ProtoBase {
     require(current != address(0), "Invalid contract");
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
+    ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
