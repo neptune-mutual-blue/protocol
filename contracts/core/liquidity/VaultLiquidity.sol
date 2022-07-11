@@ -117,7 +117,6 @@ abstract contract VaultLiquidity is VaultBase {
     bool exit
   ) external override nonReentrant {
     require(coverKey == key, "Forbidden");
-    require(podsToRedeem > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
