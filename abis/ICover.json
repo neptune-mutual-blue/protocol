@@ -242,7 +242,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "stoppedBy",
+        "name": "updatedBy",
         "type": "address"
       },
       {
