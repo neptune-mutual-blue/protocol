@@ -41,7 +41,7 @@ returns(contract IGovernance)
 
 ```javascript
 function getGovernanceContract(IStore s) external view returns (IGovernance) {
-    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE));
+    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -64,7 +64,7 @@ returns(contract IGovernance)
 
 ```javascript
 function getResolutionContract(IStore s) external view returns (IGovernance) {
-    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION));
+    return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -87,7 +87,7 @@ returns(contract ICoverStake)
 
 ```javascript
 function getStakingContract(IStore s) external view returns (ICoverStake) {
-    return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE));
+    return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -110,7 +110,7 @@ returns(contract ICxTokenFactory)
 
 ```javascript
 function getCxTokenFactory(IStore s) external view returns (ICxTokenFactory) {
-    return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY));
+    return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -133,7 +133,7 @@ returns(contract IPolicy)
 
 ```javascript
 function getPolicyContract(IStore s) external view returns (IPolicy) {
-    return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY));
+    return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -156,7 +156,7 @@ returns(contract ICoverReassurance)
 
 ```javascript
 function getReassuranceContract(IStore s) external view returns (ICoverReassurance) {
-    return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE));
+    return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
   }
 ```
 </details>
@@ -400,7 +400,7 @@ returns(contract IVaultFactory)
 
 ```javascript
 function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {
-    address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY);
+    address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY);
     return IVaultFactory(factory);
   }
 ```

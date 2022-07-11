@@ -28,7 +28,6 @@ uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE;
 ## Functions
 
 - [getCoverOwner(IStore s, bytes32 coverKey)](#getcoverowner)
-- [_getCoverOwner(IStore s, bytes32 coverKey)](#_getcoverowner)
 - [getCoverCreationFeeInfo(IStore s)](#getcovercreationfeeinfo)
 - [getMinCoverCreationStake(IStore s)](#getmincovercreationstake)
 - [getCoverCreationDate(IStore s, bytes32 coverKey)](#getcovercreationdate)
@@ -52,9 +51,8 @@ uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE;
 - [getTotalLiquidityUnderProtection(IStore s, bytes32 coverKey, uint256 precision)](#gettotalliquidityunderprotection)
 - [_getProducts(IStore s, bytes32 coverKey)](#_getproducts)
 - [getActiveLiquidityUnderProtection(IStore s, bytes32 coverKey, bytes32 productKey, uint256 adjustPrecision)](#getactiveliquidityunderprotection)
-- [_getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey, bytes32 productKey)](#_getliquidityunderprotectioninfo)
 - [_getCurrentCommitment(IStore s, bytes32 coverKey, bytes32 productKey)](#_getcurrentcommitment)
-- [_getFutureCommitments(IStore s, bytes32 coverKey, bytes32 productKey, uint256 ignoredExpiryDate)](#_getfuturecommitments)
+- [_getFutureCommitments(IStore s, bytes32 coverKey, bytes32 productKey, uint256 excludedExpiryDate)](#_getfuturecommitments)
 - [getStake(IStore s, bytes32 coverKey)](#getstake)
 - [setStatusInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, enum CoverUtilV1.ProductStatus status)](#setstatusinternal)
 - [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
@@ -93,30 +91,6 @@ returns(address)
 
 ```javascript
 function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
-    return _getCoverOwner(s, coverKey);
-  }
-```
-</details>
-
-### _getCoverOwner
-
-```solidity
-function _getCoverOwner(IStore s, bytes32 coverKey) private view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getCoverOwner(IStore s, bytes32 coverKey) private view returns (address) {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 ```
@@ -136,6 +110,10 @@ returns(fee uint256, minCoverCreationStake uint256, minStakeToAddLiquidity uint2
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore | Specify store instance | 
+
+**Returns**
+
+fee Returns the amount of NPM tokens you need to pay to create a new cover
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -540,8 +518,8 @@ function isCoverNormalInternal(IStore s, bytes32 coverKey) external view returns
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      incidentDate = getActiveIncidentDateInternal(s, coverKey, 0);
-      return getProductStatusOfInternal(s, coverKey, 0, incidentDate) == ProductStatus.Normal;
+      incidentDate = getActiveIncidentDateInternal(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY);
+      return getProductStatusOfInternal(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, incidentDate) == ProductStatus.Normal;
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
@@ -814,7 +792,7 @@ function getTotalLiquidityUnderProtection(
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getActiveLiquidityUnderProtection(s, coverKey, 0, precision);
+      return getActiveLiquidityUnderProtection(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, precision);
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
@@ -855,7 +833,7 @@ function _getProducts(IStore s, bytes32 coverKey) private view returns (bytes32[
 Returns the total liquidity commited/under active protection.
  If the cover is a diversified pool, you must a provide product key.
  Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
- Note that cxTokens can be precise to 18 decimal places.
+ Note that cxTokens are precise to 18 decimal places.
  If the protocol's stablecoin has a different precision,
  you must tell this function explicitly when you call it.
 
@@ -883,7 +861,9 @@ function getActiveLiquidityUnderProtection(
     bytes32 productKey,
     uint256 adjustPrecision
   ) public view returns (uint256 total) {
-    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey, productKey);
+    (uint256 current, uint256 expiryDate) = _getCurrentCommitment(s, coverKey, productKey);
+    uint256 future = _getFutureCommitments(s, coverKey, productKey, expiryDate);
+
     total = current + future;
 
     // @caution:
@@ -896,39 +876,11 @@ function getActiveLiquidityUnderProtection(
 ```
 </details>
 
-### _getLiquidityUnderProtectionInfo
-
-```solidity
-function _getLiquidityUnderProtectionInfo(IStore s, bytes32 coverKey, bytes32 productKey) private view
-returns(current uint256, future uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getLiquidityUnderProtectionInfo(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) private view returns (uint256 current, uint256 future) {
-    uint256 expiryDate = 0;
-
-    (current, expiryDate) = _getCurrentCommitment(s, coverKey, productKey);
-    future = _getFutureCommitments(s, coverKey, productKey, expiryDate);
-  }
-```
-</details>
-
 ### _getCurrentCommitment
+
+Gets current commitment of a given cover product.
+ <br /> <br />
+ If there is no incident, should return zero.
 
 ```solidity
 function _getCurrentCommitment(IStore s, bytes32 coverKey, bytes32 productKey) private view
@@ -939,9 +891,13 @@ returns(amount uint256, expiryDate uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+
+**Returns**
+
+amount The current commitment amount.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -972,8 +928,10 @@ function _getCurrentCommitment(
 
 ### _getFutureCommitments
 
+Gets future commitment of a given cover product.
+
 ```solidity
-function _getFutureCommitments(IStore s, bytes32 coverKey, bytes32 productKey, uint256 ignoredExpiryDate) private view
+function _getFutureCommitments(IStore s, bytes32 coverKey, bytes32 productKey, uint256 excludedExpiryDate) private view
 returns(sum uint256)
 ```
 
@@ -981,10 +939,14 @@ returns(sum uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| ignoredExpiryDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| excludedExpiryDate | uint256 | Enter expiry date (from current commitment) to exclude | 
+
+**Returns**
+
+sum The total commitment amount.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -994,14 +956,14 @@ function _getFutureCommitments(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    uint256 ignoredExpiryDate
+    uint256 excludedExpiryDate
   ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
 
     for (uint256 i = 0; i < maxMonthsToProtect; i++) {
       uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
 
-      if (expiryDate == ignoredExpiryDate || expiryDate <= block.timestamp) {
+      if (expiryDate == excludedExpiryDate || expiryDate <= block.timestamp) {
         // solhint-disable-previous-line
         continue;
       }

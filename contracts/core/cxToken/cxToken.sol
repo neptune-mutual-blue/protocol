@@ -215,7 +215,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
     // cxTokens can only be transferred to the claims processor contract
     if (from != address(0) && to != address(0)) {
-      s.mustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, 0, to);
+      s.mustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, to);
     }
   }
 }

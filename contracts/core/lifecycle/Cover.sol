@@ -93,6 +93,7 @@ contract Cover is CoverBase {
    *
    * @param coverKey Enter the cover key
    * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   *
    */
   function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
     s.mustNotBePaused();
@@ -114,6 +115,7 @@ contract Cover is CoverBase {
    * @param coverKey Enter a cover key
    * @param productKey Enter the product key
    * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * @param requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
    * @param values[0] Product status
    * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
    *
@@ -198,6 +200,7 @@ contract Cover is CoverBase {
    * @dev Adds or removes an account to the cover creator whitelist.
    * For the first version of the protocol, a cover creator has to be whitelisted
    * before they can call the `addCover` function.
+   *
    * @param account Enter the address of the cover creator
    * @param status Set this to true if you want to add to or false to remove from the whitelist
    *
@@ -211,11 +214,16 @@ contract Cover is CoverBase {
   }
 
   /**
-   * @dev Adds or removes an account to the cover user whitelist.
+   * @dev Adds or removes an account from the cover user whitelist.
    * Whitelisting is an optional feature cover creators can enable.
+   *
+   * When a cover requires whitelist, you must add accounts
+   * to the cover user whitelist before they are able to purchase policies.
    *
    * @custom:suppress-acl This function is only accessilbe to the cover owner or admin
    *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
    * @param accounts Enter a list of accounts you would like to update the whitelist statuses of.
    * @param statuses Enter respective statuses of the specified whitelisted accounts.
    *

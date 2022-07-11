@@ -217,7 +217,7 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external override {
-    addContractWithKey(namespace, 0, contractAddress);
+    addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
   }
 ```
 </details>
@@ -291,7 +291,7 @@ function upgradeContract(
     address previous,
     address current
   ) external override {
-    upgradeContractWithKey(namespace, 0, previous, current);
+    upgradeContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, previous, current);
   }
 ```
 </details>
@@ -329,6 +329,7 @@ function upgradeContractWithKey(
     require(current != address(0), "Invalid contract");
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
+    ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 

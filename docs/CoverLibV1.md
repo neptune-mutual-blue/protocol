@@ -82,9 +82,9 @@ function addCoverInternal(IStore s, bytes32 coverKey, bool supportsProducts, byt
 | ------------- |------------- | -----|
 | s | IStore | Provide store instance | 
 | coverKey | bytes32 | Enter a unique key for this cover | 
-| supportsProducts | bool |  | 
+| supportsProducts | bool | Indicates that this cover supports product(s) | 
 | info | bytes32 | IPFS info of the cover contract | 
-| requiresWhitelist | bool |  | 
+| requiresWhitelist | bool | Signifies if this cover only enables whitelisted addresses to purchase policies. | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 
 <details>
@@ -118,6 +118,8 @@ function addCoverInternal(
 
 ### _addCover
 
+Adds a new cover
+
 ```solidity
 function _addCover(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 info, bool requiresWhitelist, uint256[] values, uint256 fee) private nonpayable
 ```
@@ -126,12 +128,12 @@ function _addCover(IStore s, bytes32 coverKey, bool supportsProducts, bytes32 in
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| supportsProducts | bool |  | 
-| info | bytes32 |  | 
-| requiresWhitelist | bool |  | 
-| values | uint256[] |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| supportsProducts | bool | Indicates that this cover supports product(s) | 
+| info | bytes32 | IPFS info of the cover contract | 
+| requiresWhitelist | bool | Signifies if this cover only enables whitelisted addresses to purchase policies. | 
+| values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
 | fee | uint256 |  | 
 
 <details>
@@ -191,6 +193,8 @@ function _addCover(
 
 ### addProductInternal
 
+Adds a product under a diversified cover pool
+
 ```solidity
 function addProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
 ```
@@ -199,12 +203,12 @@ function addProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, byte
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| requiresWhitelist | bool |  | 
-| values | uint256[] |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter a cover key | 
+| productKey | bytes32 | Enter the product key | 
+| info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
+| requiresWhitelist | bool | Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies. | 
+| values | uint256[] | [0] Product status | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -246,6 +250,8 @@ function addProductInternal(
 
 ### updateProductInternal
 
+Updates a cover product.
+
 ```solidity
 function updateProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values) external nonpayable
 ```
@@ -254,11 +260,11 @@ function updateProductInternal(IStore s, bytes32 coverKey, bytes32 productKey, b
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| values | uint256[] |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter the cover key | 
+| productKey | bytes32 | Enter the product key | 
+| info | bytes32 | Enter a new IPFS URL to update | 
+| values | uint256[] | [0] Product status | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -286,6 +292,10 @@ function updateProductInternal(
 
 ### deployVaultInternal
 
+Deploys vault contract for the given cover key.
+ The vault contract is also an ERC-20-compatible contract.
+ Reverts if the vault was previously deployed.
+
 ```solidity
 function deployVaultInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol) external nonpayable
 returns(address)
@@ -295,10 +305,10 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| tokenName | string | Enter a name for the ERC-20 token | 
+| tokenSymbol | string | Enter a symbol for the ERC-20 token | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -363,6 +373,8 @@ function _validateAndGetFee(
 
 ### updateCoverInternal
 
+Updates the cover info.
+
 ```solidity
 function updateCoverInternal(IStore s, bytes32 coverKey, bytes32 info) external nonpayable
 ```
@@ -371,9 +383,9 @@ function updateCoverInternal(IStore s, bytes32 coverKey, bytes32 info) external 
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| info | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter the cover key | 
+| info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -391,6 +403,10 @@ function updateCoverInternal(
 
 ### updateCoverCreatorWhitelistInternal
 
+Adds or removes an account to the cover creator whitelist.
+ For the first version of the protocol, a cover creator has to be whitelisted
+ before they can call the `addCover` function.
+
 ```solidity
 function updateCoverCreatorWhitelistInternal(IStore s, address account, bool status) external nonpayable
 ```
@@ -399,9 +415,9 @@ function updateCoverCreatorWhitelistInternal(IStore s, address account, bool sta
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| status | bool |  | 
+| s | IStore | Specify store instance | 
+| account | address | Enter the address of the cover creator | 
+| status | bool | Set this to true if you want to add to or false to remove from the whitelist | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -419,6 +435,8 @@ function updateCoverCreatorWhitelistInternal(
 
 ### _updateCoverUserWhitelistInternal
 
+Adds or removes an account from the cover users whitelist
+
 ```solidity
 function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address account, bool status) private nonpayable
 ```
@@ -427,11 +445,11 @@ function _updateCoverUserWhitelistInternal(IStore s, bytes32 coverKey, bytes32 p
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| account | address |  | 
-| status | bool |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| account | address | Enter the account you would like to add or remove fom the whitelist | 
+| status | bool | Enter `true` to add or `false` to remove the specified account from the whitelist | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -452,6 +470,11 @@ function _updateCoverUserWhitelistInternal(
 
 ### updateCoverUsersWhitelistInternal
 
+Adds or removes an account from the cover user whitelist.
+ Whitelisting is an optional feature cover creators can enable.
+ When a cover requires whitelist, you must add accounts
+ to the cover user whitelist before they are able to purchase policies.
+
 ```solidity
 function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses) external nonpayable
 ```
@@ -460,11 +483,11 @@ function updateCoverUsersWhitelistInternal(IStore s, bytes32 coverKey, bytes32 p
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| accounts | address[] |  | 
-| statuses | bool[] |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| accounts | address[] | Enter a list of accounts you would like to update the whitelist statuses of. | 
+| statuses | bool[] | Enter respective statuses of the specified whitelisted accounts. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -488,6 +511,8 @@ function updateCoverUsersWhitelistInternal(
 
 ### setCoverCreationFeeInternal
 
+Sets cover creation fee in NPM token units
+
 ```solidity
 function setCoverCreationFeeInternal(IStore s, uint256 value) external nonpayable
 returns(previous uint256)
@@ -497,8 +522,12 @@ returns(previous uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| value | uint256 |  | 
+| s | IStore | Specify store instance | 
+| value | uint256 | Enter the amount of NPM tokens to be charged as the cover creation fee. | 
+
+**Returns**
+
+previous Returns the previous cover creation fee.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -515,6 +544,8 @@ function setCoverCreationFeeInternal(IStore s, uint256 value) external returns (
 
 ### setMinCoverCreationStakeInternal
 
+Sets the minimum amount of NPM stake required to create a new cover
+
 ```solidity
 function setMinCoverCreationStakeInternal(IStore s, uint256 value) external nonpayable
 returns(previous uint256)
@@ -524,8 +555,12 @@ returns(previous uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| value | uint256 |  | 
+| s | IStore | Specify store instance | 
+| value | uint256 | Enter the amount of NPM tokens to be staked when creating a new cover. | 
+
+**Returns**
+
+previous Returns the previous minimum cover creation stake.
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -545,6 +580,8 @@ function setMinCoverCreationStakeInternal(IStore s, uint256 value) external retu
 
 ### setMinStakeToAddLiquidityInternal
 
+Sets the minimum amount of NPM stake required to add liquidity
+
 ```solidity
 function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external nonpayable
 returns(previous uint256)
@@ -554,8 +591,12 @@ returns(previous uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| value | uint256 |  | 
+| s | IStore | Specify store instance | 
+| value | uint256 | Enter the amount of NPM tokens to be staked when adding liquidity. | 
+
+**Returns**
+
+previous Returns the previous minimum stake to add liquidity.
 
 <details>
 	<summary><strong>Source Code</strong></summary>

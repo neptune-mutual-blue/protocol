@@ -166,7 +166,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @custom:suppress-pausable This function is just an intermediate
    */
   function addContract(bytes32 namespace, address contractAddress) external override {
-    addContractWithKey(namespace, 0, contractAddress);
+    addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
   }
 
   /**
@@ -224,7 +224,7 @@ contract Protocol is IProtocol, ProtoBase {
     address previous,
     address current
   ) external override {
-    upgradeContractWithKey(namespace, 0, previous, current);
+    upgradeContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, previous, current);
   }
 
   /**

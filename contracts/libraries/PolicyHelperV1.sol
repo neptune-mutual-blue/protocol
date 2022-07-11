@@ -44,7 +44,7 @@ library PolicyHelperV1 {
     (uint256 availableLiquidity, uint256 commitment, uint256 reassuranceFund) = _getCoverPoolAmounts(s, coverKey, productKey);
 
     require(amountToCover > 0, "Please enter an amount");
-    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
+    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
     require(availableLiquidity - commitment > amountToCover, "Insufficient fund");

@@ -151,7 +151,7 @@ function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool req
 | coverKey | bytes32 | Enter a cover key | 
 | productKey | bytes32 | Enter the product key | 
 | info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
-| requiresWhitelist | bool |  | 
+| requiresWhitelist | bool | Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies. | 
 | values | uint256[] | [0] Product status | 
 
 <details>
@@ -294,8 +294,10 @@ function updateCoverCreatorWhitelist(address account, bool status) external over
 
 ### updateCoverUsersWhitelist
 
-Adds or removes an account to the cover user whitelist.
+Adds or removes an account from the cover user whitelist.
  Whitelisting is an optional feature cover creators can enable.
+ When a cover requires whitelist, you must add accounts
+ to the cover user whitelist before they are able to purchase policies.
 
 ```solidity
 function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses) external nonpayable nonReentrant 
@@ -305,8 +307,8 @@ function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | accounts | address[] | Enter a list of accounts you would like to update the whitelist statuses of. | 
 | statuses | bool[] | Enter respective statuses of the specified whitelisted accounts. | 
 

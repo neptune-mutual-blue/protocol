@@ -39,16 +39,17 @@ library CoverUtilV1 {
    *
    */
   function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
-    return _getCoverOwner(s, coverKey);
-  }
-
-  function _getCoverOwner(IStore s, bytes32 coverKey) private view returns (address) {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 
   /**
    * @dev Returns cover creation fee information.
    * @param s Specify store instance
+   *
+   * @return fee Returns the amount of NPM tokens you need to pay to create a new cover
+   * @return minCoverCreationStake Returns the amount of NPM tokens you need to stake to create a new cover
+   * @return minStakeToAddLiquidity Returns the amount of NPM tokens you need to stake to add liquidity
+   *
    */
   function getCoverCreationFeeInfo(IStore s)
     external
@@ -167,6 +168,7 @@ library CoverUtilV1 {
    *
    * If global value, too, isn't available, a fallback value of `REASSURANCE_WEIGHT_FALLBACK_VALUE`
    * is returned.
+   *
    */
   function getReassuranceWeightInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
     uint256 setForTheCoverPool = s.getUintByKey(getReassuranceWeightKey(coverKey));
@@ -272,8 +274,8 @@ library CoverUtilV1 {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      incidentDate = getActiveIncidentDateInternal(s, coverKey, 0);
-      return getProductStatusOfInternal(s, coverKey, 0, incidentDate) == ProductStatus.Normal;
+      incidentDate = getActiveIncidentDateInternal(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY);
+      return getProductStatusOfInternal(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, incidentDate) == ProductStatus.Normal;
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
@@ -436,7 +438,7 @@ library CoverUtilV1 {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getActiveLiquidityUnderProtection(s, coverKey, 0, precision);
+      return getActiveLiquidityUnderProtection(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, precision);
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
@@ -455,7 +457,7 @@ library CoverUtilV1 {
    * If the cover is a diversified pool, you must a provide product key.
    *
    * Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
-   * Note that cxTokens can be precise to 18 decimal places.
+   * Note that cxTokens are precise to 18 decimal places.
    * If the protocol's stablecoin has a different precision,
    * you must tell this function explicitly when you call it.
    *
@@ -472,7 +474,9 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 adjustPrecision
   ) public view returns (uint256 total) {
-    (uint256 current, uint256 future) = _getLiquidityUnderProtectionInfo(s, coverKey, productKey);
+    (uint256 current, uint256 expiryDate) = _getCurrentCommitment(s, coverKey, productKey);
+    uint256 future = _getFutureCommitments(s, coverKey, productKey, expiryDate);
+
     total = current + future;
 
     // @caution:
@@ -483,17 +487,21 @@ library CoverUtilV1 {
     total = (total * adjustPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
   }
 
-  function _getLiquidityUnderProtectionInfo(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) private view returns (uint256 current, uint256 future) {
-    uint256 expiryDate = 0;
-
-    (current, expiryDate) = _getCurrentCommitment(s, coverKey, productKey);
-    future = _getFutureCommitments(s, coverKey, productKey, expiryDate);
-  }
-
+  /**
+   * @dev Gets current commitment of a given cover product.
+   *
+   * <br /> <br />
+   *
+   * If there is no incident, should return zero.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
+   * @return amount The current commitment amount.
+   * @return expiryDate The time at which the commitment `amount` expires.
+   *
+   */
   function _getCurrentCommitment(
     IStore s,
     bytes32 coverKey,
@@ -515,18 +523,29 @@ library CoverUtilV1 {
     }
   }
 
+  /**
+   * @dev Gets future commitment of a given cover product.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param excludedExpiryDate Enter expiry date (from current commitment) to exclude
+   *
+   * @return sum The total commitment amount.
+   *
+   */
   function _getFutureCommitments(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    uint256 ignoredExpiryDate
+    uint256 excludedExpiryDate
   ) private view returns (uint256 sum) {
     uint256 maxMonthsToProtect = 3;
 
     for (uint256 i = 0; i < maxMonthsToProtect; i++) {
       uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
 
-      if (expiryDate == ignoredExpiryDate || expiryDate <= block.timestamp) {
+      if (expiryDate == excludedExpiryDate || expiryDate <= block.timestamp) {
         // solhint-disable-previous-line
         continue;
       }

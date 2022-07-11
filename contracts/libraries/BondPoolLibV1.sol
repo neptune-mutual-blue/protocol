@@ -29,6 +29,14 @@ library BondPoolLibV1 {
   bytes32 public constant NS_BOND_TOTAL_NPM_ALLOCATED = "ns:pool:bond:total:npm:alloc";
   bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED = "ns:pool:bond:total:npm:distrib";
 
+  /**
+   * @dev Calculates the discounted NPM token to be given
+   * for the NPM/Stablecoin Uniswap v2 LP token units.
+   *
+   * @param s Specify store instance
+   * @param lpTokens Enter the NPM/Stablecoin Uniswap v2 LP token units
+   *
+   */
   function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
     uint256 dollarValue = s.convertNpmLpUnitsToStabelcoin(lpTokens);
 
@@ -43,6 +51,7 @@ library BondPoolLibV1 {
 
   /**
    * @dev Gets the bond pool information
+   *
    * @param s Provide a store instance
    * @param addresses[0] lpToken -> Returns the LP token address
    * @param values[0] marketPrice -> Returns the market price of NPM token
@@ -55,6 +64,7 @@ library BondPoolLibV1 {
    * @param values[7] bondContribution --> total lp tokens contributed by you
    * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
    * @param values[9] unlockDate --> your vesting period end or "unlock date"
+   *
    */
   function getBondPoolInfoInternal(IStore s, address you) external view returns (address[] memory addresses, uint256[] memory values) {
     addresses = new address[](1);
@@ -75,45 +85,80 @@ library BondPoolLibV1 {
     values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
   }
 
+  /**
+   * @dev Gets the NPM/Stablecoin Uniswap v2 LP token address
+   */
   function _getLpTokenAddress(IStore s) private view returns (address) {
     return s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN);
   }
 
+  /**
+   * @dev Gets your unsettled bond contribution amount.
+   */
   function _getYourBondContribution(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you)));
   }
 
+  /**
+   * @dev Gets your claimable discounted NPM bond amount.
+   */
   function _getYourBondClaimable(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you)));
   }
 
+  /**
+   * @dev Returns the date when your discounted NPM token bond is unlocked
+   * for claim.
+   */
   function _getYourBondUnlockDate(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you)));
   }
 
+  /**
+   * @dev Returns the NPM token bond discount rate
+   */
   function _getDiscountRate(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_DISCOUNT_RATE);
   }
 
+  /**
+   * @dev Returns the bond vesting term
+   */
   function _getVestingTerm(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_VESTING_TERM);
   }
 
+  /**
+   * @dev Returns the maximum NPM token units that can be bonded at a time
+   */
   function _getMaxBondInUnit(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_MAX_UNIT);
   }
 
+  /**
+   * @dev Returns the total NPM tokens allocated for the bond
+   */
   function _getTotalNpmAllocated(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED);
   }
 
+  /**
+   * @dev Returns the total bonded NPM tokens distributed till date.
+   */
   function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED);
   }
 
   /**
    * @dev Create a new NPM/DAI LP token bond
+   *
    * @custom:suppress-malicious-erc The token `BondPoolLibV1.NS_BOND_LP_TOKEN` can't be manipulated via user input
+   *
+   * @param s Specify store instance
+   * @param lpTokens Enter the total units of NPM/DAI Uniswap v2 tokens to be bonded
+   * @param minNpmDesired Enter the minimum NPM tokens you desire for the given LP tokens.
+   * This transaction will revert if the final NPM bond is less than your specified value.
+   *
    */
   function createBondInternal(
     IStore s,
@@ -151,10 +196,22 @@ library BondPoolLibV1 {
     s.setUintByKey(k, values[1]);
   }
 
+  /**
+   * @dev Gets the NPM token balance of this contract.
+   *
+   * Please also see `_getBondCommitment` to check
+   * the total NPM tokens already allocated to the bonders
+   * to be claimed later.
+   *
+   * @param s Specify store instance
+   */
   function _getNpmBalance(IStore s) private view returns (uint256) {
     return IERC20(s.npmToken()).balanceOf(address(this));
   }
 
+  /**
+   * @dev Returns the bond commitment amount.
+   */
   function _getBondCommitment(IStore s) private view returns (uint256) {
     return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }

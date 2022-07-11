@@ -63,7 +63,9 @@ library CoverLibV1 {
    *
    * @param s Provide store instance
    * @param coverKey Enter a unique key for this cover
+   * @param supportsProducts Indicates that this cover supports product(s)
    * @param info IPFS info of the cover contract
+   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
@@ -74,6 +76,7 @@ library CoverLibV1 {
    * @param values[6] floor Enter the policy floor rate.
    * @param values[7] ceiling Enter the policy ceiling rate.
    * @param values[8] reassuranceRate Enter the reassurance rate.
+   *
    */
   function addCoverInternal(
     IStore s,
@@ -98,6 +101,26 @@ library CoverLibV1 {
     }
   }
 
+  /**
+   * @dev Adds a new cover
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param supportsProducts Indicates that this cover supports product(s)
+   * @param info IPFS info of the cover contract
+   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
+   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
+   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+   * @param values[3] reportingPeriod The period during when reporting happens.
+   * reassurance tokens you'd like to add to this pool.
+   * @param values[4] cooldownperiod Enter the cooldown period for governance.
+   * @param values[5] claimPeriod Enter the claim period.
+   * @param values[6] floor Enter the policy floor rate.
+   * @param values[7] ceiling Enter the policy ceiling rate.
+   * @param values[8] reassuranceRate Enter the reassurance rate.
+   *
+   */
   function _addCover(
     IStore s,
     bytes32 coverKey,
@@ -147,6 +170,20 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey, values[9]);
   }
 
+  /**
+   * @dev Adds a product under a diversified cover pool
+   *
+   * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter a cover key
+   * @param productKey Enter the product key
+   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * @param requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
+   * @param values[0] Product status
+   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
+   */
   function addProductInternal(
     IStore s,
     bytes32 coverKey,
@@ -179,6 +216,17 @@ library CoverLibV1 {
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
   }
 
+  /**
+   * @dev Updates a cover product.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
+   * @param info Enter a new IPFS URL to update
+   * @param values[0] Product status
+   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
+   */
   function updateProductInternal(
     IStore s,
     bytes32 coverKey,
@@ -197,6 +245,18 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
   }
 
+  /**
+   * @dev Deploys vault contract for the given cover key.
+   * The vault contract is also an ERC-20-compatible contract.
+   *
+   * Reverts if the vault was previously deployed.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param tokenName Enter a name for the ERC-20 token
+   * @param tokenSymbol Enter a symbol for the ERC-20 token
+   *
+   */
   function deployVaultInternal(
     IStore s,
     bytes32 coverKey,
@@ -231,6 +291,14 @@ library CoverLibV1 {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey) == false, "Already exists");
   }
 
+  /**
+   * @dev Updates the cover info.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter the cover key
+   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   *
+   */
   function updateCoverInternal(
     IStore s,
     bytes32 coverKey,
@@ -239,6 +307,16 @@ library CoverLibV1 {
     s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
   }
 
+  /**
+   * @dev Adds or removes an account to the cover creator whitelist.
+   * For the first version of the protocol, a cover creator has to be whitelisted
+   * before they can call the `addCover` function.
+   *
+   * @param s Specify store instance
+   * @param account Enter the address of the cover creator
+   * @param status Set this to true if you want to add to or false to remove from the whitelist
+   *
+   */
   function updateCoverCreatorWhitelistInternal(
     IStore s,
     address account,
@@ -247,6 +325,16 @@ library CoverLibV1 {
     s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account, status);
   }
 
+  /**
+   * @dev Adds or removes an account from the cover users whitelist
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param account Enter the account you would like to add or remove fom the whitelist
+   * @param status Enter `true` to add or `false` to remove the specified account from the whitelist
+   *
+   */
   function _updateCoverUserWhitelistInternal(
     IStore s,
     bytes32 coverKey,
@@ -258,6 +346,21 @@ library CoverLibV1 {
     emit CoverUserWhitelistUpdated(coverKey, productKey, account, status);
   }
 
+  /**
+   * @dev Adds or removes an account from the cover user whitelist.
+   * Whitelisting is an optional feature cover creators can enable.
+   *
+   * When a cover requires whitelist, you must add accounts
+   * to the cover user whitelist before they are able to purchase policies.
+   *
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param accounts Enter a list of accounts you would like to update the whitelist statuses of.
+   * @param statuses Enter respective statuses of the specified whitelisted accounts.
+   *
+   */
   function updateCoverUsersWhitelistInternal(
     IStore s,
     bytes32 coverKey,
@@ -272,6 +375,15 @@ library CoverLibV1 {
     }
   }
 
+  /**
+   * @dev Sets cover creation fee in NPM token units
+   *
+   * @param s Specify store instance
+   * @param value Enter the amount of NPM tokens to be charged as the cover creation fee.
+   *
+   * @return previous Returns the previous cover creation fee.
+   *
+   */
   function setCoverCreationFeeInternal(IStore s, uint256 value) external returns (uint256 previous) {
     previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
@@ -279,6 +391,15 @@ library CoverLibV1 {
     s.updateStateAndLiquidity(0);
   }
 
+  /**
+   * @dev Sets the minimum amount of NPM stake required to create a new cover
+   *
+   * @param s Specify store instance
+   * @param value Enter the amount of NPM tokens to be staked when creating a new cover.
+   *
+   * @return previous Returns the previous minimum cover creation stake.
+   *
+   */
   function setMinCoverCreationStakeInternal(IStore s, uint256 value) external returns (uint256 previous) {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
@@ -289,6 +410,15 @@ library CoverLibV1 {
     s.updateStateAndLiquidity(0);
   }
 
+  /**
+   * @dev Sets the minimum amount of NPM stake required to add liquidity
+   *
+   * @param s Specify store instance
+   * @param value Enter the amount of NPM tokens to be staked when adding liquidity.
+   *
+   * @return previous Returns the previous minimum stake to add liquidity.
+   *
+   */
   function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external returns (uint256 previous) {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);

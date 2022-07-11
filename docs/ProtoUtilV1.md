@@ -8,6 +8,9 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
+uint256 public constant MAX_POLICY_DURATION;
+bytes32 public constant KEY_INTENTIONALLY_EMPTY;
+bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY;
 uint256 public constant MULTIPLIER;
 uint256 public constant MAX_LIQUIDITY;
 uint256 public constant MAX_PROPOSAL_AMOUNT;
@@ -147,10 +150,10 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 
 - [getProtocol(IStore s)](#getprotocol)
 - [getProtocolAddress(IStore s)](#getprotocoladdress)
-- [getContract(IStore s, bytes32 name)](#getcontract)
+- [getContract(IStore s, bytes32 name, bytes32 key)](#getcontract)
 - [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
-- [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
+- [mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender)](#mustbeexactcontract)
 - [senderMustBeExactContract(IStore s, bytes32 name)](#sendermustbeexactcontract)
 - [callerMustBeExactContract(IStore s, bytes32 name, address caller)](#callermustbeexactcontract)
 - [npmToken(IStore s)](#npmtoken)
@@ -162,8 +165,6 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getStablecoin(IStore s)](#getstablecoin)
 - [getStablecoinPrecision(IStore s)](#getstablecoinprecision)
 - [getBurnAddress(IStore s)](#getburnaddress)
-- [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
-- [_getContract(IStore s, bytes32 name)](#_getcontract)
 
 ### getProtocol
 
@@ -214,7 +215,7 @@ function getProtocolAddress(IStore s) public view returns (address) {
 ### getContract
 
 ```solidity
-function getContract(IStore s, bytes32 name) external view
+function getContract(IStore s, bytes32 name, bytes32 key) public view
 returns(address)
 ```
 
@@ -224,13 +225,22 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | name | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getContract(IStore s, bytes32 name) external view returns (address) {
-    return _getContract(s, name);
+function getContract(
+    IStore s,
+    bytes32 name,
+    bytes32 key
+  ) public view returns (address) {
+    if (key > 0) {
+      return s.getAddressByKeys(NS_CONTRACTS, name, key);
+    }
+
+    return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 ```
 </details>
@@ -238,7 +248,7 @@ function getContract(IStore s, bytes32 name) external view returns (address) {
 ### isProtocolMember
 
 ```solidity
-function isProtocolMember(IStore s, address contractAddress) external view
+function isProtocolMember(IStore s, address contractAddress) public view
 returns(bool)
 ```
 
@@ -253,8 +263,8 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isProtocolMember(IStore s, address contractAddress) external view returns (bool) {
-    return _isProtocolMember(s, contractAddress);
+function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 ```
 </details>
@@ -279,7 +289,7 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view
 
 ```javascript
 function mustBeProtocolMember(IStore s, address contractAddress) external view {
-    bool isMember = _isProtocolMember(s, contractAddress);
+    bool isMember = isProtocolMember(s, contractAddress);
     require(isMember, "Not a protocol member");
   }
 ```
@@ -290,7 +300,7 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view {
 Ensures that the sender matches with the exact contract having the specified name.
 
 ```solidity
-function mustBeExactContract(IStore s, bytes32 name, address sender) public view
+function mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender) public view
 ```
 
 **Arguments**
@@ -299,6 +309,7 @@ function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 | ------------- |------------- | -----|
 | s | IStore | ender Enter the `msg.sender` value | 
 | name | bytes32 | Enter the name of the contract | 
+| key | bytes32 |  | 
 | sender | address | Enter the `msg.sender` value | 
 
 <details>
@@ -308,9 +319,10 @@ function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 function mustBeExactContract(
     IStore s,
     bytes32 name,
+    bytes32 key,
     address sender
   ) public view {
-    address contractAddress = _getContract(s, name);
+    address contractAddress = getContract(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 ```
@@ -366,7 +378,7 @@ function callerMustBeExactContract(
     bytes32 name,
     address caller
   ) public view {
-    return mustBeExactContract(s, name, caller);
+    return mustBeExactContract(s, name, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, caller);
   }
 ```
 </details>
@@ -575,54 +587,6 @@ returns(address)
 ```javascript
 function getBurnAddress(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_BURNER);
-  }
-```
-</details>
-
-### _isProtocolMember
-
-```solidity
-function _isProtocolMember(IStore s, address contractAddress) private view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _isProtocolMember(IStore s, address contractAddress) private view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
-  }
-```
-</details>
-
-### _getContract
-
-```solidity
-function _getContract(IStore s, bytes32 name) private view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| name | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getContract(IStore s, bytes32 name) private view returns (address) {
-    return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 ```
 </details>

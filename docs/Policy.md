@@ -97,7 +97,7 @@ function purchaseCover(
     require(coverKey > 0, "Invalid cover key");
     require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(amountToCover > 0, "Enter an amount");
-    require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     s.mustNotBePaused();
     s.mustNotExceedProposalThreshold(amountToCover);
@@ -143,7 +143,7 @@ function getCxToken(
     bytes32 productKey,
     uint256 coverDuration
   ) external view override returns (address cxToken, uint256 expiryDate) {
-    require(coverDuration > 0 && coverDuration <= 3, "Invalid cover duration");
+    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     return s.getCxTokenInternal(coverKey, productKey, coverDuration);
   }
