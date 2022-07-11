@@ -8,7 +8,7 @@ interface ICover is IMember {
   event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values);
   event CoverUpdated(bytes32 indexed coverKey, bytes32 info);
   event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, uint256[] values);
-  event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed stoppedBy, bool status, string reason);
+  event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool status, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
