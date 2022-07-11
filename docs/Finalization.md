@@ -55,6 +55,7 @@ function finalize(
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
+    // The reassurance capital (if available) needs to be transferred before this cover can be finalized.
     uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
     require(transferable == 0, "Pool must be capitalized");
 
@@ -86,9 +87,7 @@ function _finalize(
     bytes32 productKey,
     uint256 incidentDate
   ) private {
-    // Reset to normal
-    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.ProductStatus.Normal);
-
+    // Deleting latest incident date resets this product
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);

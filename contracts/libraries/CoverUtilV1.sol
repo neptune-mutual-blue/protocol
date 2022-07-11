@@ -589,10 +589,6 @@ library CoverUtilV1 {
     ProductStatus status
   ) external {
     s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
-
-    if (incidentDate > 0) {
-      s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
-    }
   }
 
   /**
@@ -635,24 +631,6 @@ library CoverUtilV1 {
 
     // Get the month end date
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
-  }
-
-  /**
-   * @dev Returns the given cover product's active incident date (if any).
-   *
-   * Warning: this function does not validate the cover and product key supplied.
-   *
-   * @param s Specify store instance
-   * @param coverKey Enter cover key
-   * @param productKey Enter product key
-   *
-   */
-  function getActiveIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 
   /**
@@ -738,5 +716,23 @@ library CoverUtilV1 {
    */
   function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
+  }
+
+  /**
+   * @dev Gets the latest and "active" incident date of a cover product.
+   * Note that after "resolve" is invoked, incident date is reset.
+   *
+   * Warning: this function does not validate the cover and product key supplied.
+   *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   */
+  function getActiveIncidentDateInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 }

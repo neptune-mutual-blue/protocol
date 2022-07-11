@@ -256,6 +256,7 @@ const deployDependencies = async () => {
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
     GovernanceUtilV1: governanceUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     ProtoUtilV1: protoUtilV1.address,

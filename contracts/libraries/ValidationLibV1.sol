@@ -294,7 +294,7 @@ library ValidationLibV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
+    require(s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
   }
 
   function mustHaveDispute(

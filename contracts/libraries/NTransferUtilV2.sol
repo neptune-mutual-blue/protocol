@@ -70,7 +70,7 @@ library NTransferUtilV2 {
     uint256 amount
   ) external {
     require(address(malicious) != address(0), "Invalid token address");
-    // @todo: require(sender != address(0), "Invalid sender");
+    require(sender != address(0), "Invalid sender");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 

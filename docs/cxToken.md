@@ -132,7 +132,7 @@ returns(exclusion uint256)
 
 ```javascript
 function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
-    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
+    uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
     uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
 

@@ -32,10 +32,11 @@ import "../Recoverable.sol";
 // slither-disable-next-line naming-convention
 contract cxToken is ICxToken, Recoverable, ERC20 {
   // solhint-disable-previous-line
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
-  using PolicyHelperV1 for IStore;
+  using CoverUtilV1 for IStore;
   using GovernanceUtilV1 for IStore;
+  using ProtoUtilV1 for IStore;
+  using PolicyHelperV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   // slither-disable-next-line naming-convention
   bytes32 public immutable override COVER_KEY; // solhint-disable-line
@@ -100,7 +101,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    *
    */
   function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
-    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
+    uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
     uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
 

@@ -74,14 +74,7 @@ describe('CoverReassurance: capitalizePool', () => {
     await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
     const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
 
-    const cxToken = await cxTokenUtil.atAddress(at, {
-      accessControlLibV1: deployed.accessControlLibV1,
-      baseLibV1: deployed.baseLibV1,
-      governanceUtilV1: deployed.governanceUtilV1,
-      policyHelperV1: deployed.policyHelperV1,
-      protoUtilV1: deployed.protoUtilV1,
-      validationLibV1: deployed.validationLibV1
-    })
+    const cxToken = await cxTokenUtil.atAddress(at, deployed)
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()

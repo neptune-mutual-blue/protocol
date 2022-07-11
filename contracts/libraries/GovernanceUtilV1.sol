@@ -103,24 +103,6 @@ library GovernanceUtilV1 {
   }
 
   /**
-   * @dev Gets the latest and "active" incident date of a cover product.
-   * Note that after "resolve" is invoked, incident date is reset.
-   *
-   * Warning: this function does not validate the cover and product key supplied.
-   *
-   * @param s Specify store instance
-   * @param coverKey Enter cover key
-   *
-   */
-  function getLatestIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
-  }
-
-  /**
    * @dev Gets a cover's resolution timestamp.
    *
    * Warning: this function does not validate the cover and product key supplied.
@@ -438,7 +420,7 @@ library GovernanceUtilV1 {
     // Incident dates are reset when a reporting is finalized.
     // This check ensures only the people who come to unstake
     // before the finalization will receive rewards
-    if (getLatestIncidentDateInternal(s, coverKey, productKey) == incidentDate) {
+    if (s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
       reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }

@@ -12,7 +12,6 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getPlatformCoverFeeRateInternal(IStore s)](#getplatformcoverfeerateinternal)
 - [getClaimReporterCommissionInternal(IStore s)](#getclaimreportercommissioninternal)
 - [getMinReportingStakeInternal(IStore s, bytes32 coverKey)](#getminreportingstakeinternal)
-- [getLatestIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getlatestincidentdateinternal)
 - [getResolutionTimestampInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getresolutiontimestampinternal)
 - [getReporterInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreporterinternal)
 - [getStakesInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstakesinternal)
@@ -207,39 +206,6 @@ function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view 
     uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
 
     return custom > 0 ? custom : fb;
-  }
-```
-</details>
-
-### getLatestIncidentDateInternal
-
-Gets the latest and "active" incident date of a cover product.
- Note that after "resolve" is invoked, incident date is reset.
- Warning: this function does not validate the cover and product key supplied.
-
-```solidity
-function getLatestIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Specify store instance | 
-| coverKey | bytes32 | Enter cover key | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getLatestIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 ```
 </details>
@@ -750,7 +716,7 @@ function getUnstakeInfoForInternal(
     // Incident dates are reset when a reporting is finalized.
     // This check ensures only the people who come to unstake
     // before the finalization will receive rewards
-    if (getLatestIncidentDateInternal(s, coverKey, productKey) == incidentDate) {
+    if (s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
       reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }

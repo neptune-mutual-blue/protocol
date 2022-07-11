@@ -58,7 +58,6 @@ uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE;
 - [getExpiryDateInternal(uint256 today, uint256 coverDuration)](#getexpirydateinternal)
 - [_getNextMonthEndDate(uint256 date, uint256 monthsToAdd)](#_getnextmonthenddate)
 - [_getMonthEndDate(uint256 date)](#_getmonthenddate)
-- [getActiveIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getactiveincidentdateinternal)
 - [getCxTokenByExpiryDateInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 expiryDate)](#getcxtokenbyexpirydateinternal)
 - [checkIfProductRequiresWhitelist(IStore s, bytes32 coverKey, bytes32 productKey)](#checkifproductrequireswhitelist)
 - [checkIfRequiresWhitelist(IStore s, bytes32 coverKey)](#checkifrequireswhitelist)
@@ -68,6 +67,7 @@ uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE;
 - [disablePolicyInternal(IStore s, bytes32 coverKey, bytes32 productKey, bool status)](#disablepolicyinternal)
 - [isPolicyDisabledInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#ispolicydisabledinternal)
 - [getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey)](#getpolicydisabledkey)
+- [getActiveIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getactiveincidentdateinternal)
 
 ### getCoverOwner
 
@@ -1039,10 +1039,6 @@ function setStatusInternal(
     ProductStatus status
   ) external {
     s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
-
-    if (incidentDate > 0) {
-      s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
-    }
   }
 ```
 </details>
@@ -1136,38 +1132,6 @@ function _getMonthEndDate(uint256 date) private pure returns (uint256) {
 
     // Get the month end date
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, daysInMonth, 23, 59, 59);
-  }
-```
-</details>
-
-### getActiveIncidentDateInternal
-
-Returns the given cover product's active incident date (if any).
- Warning: this function does not validate the cover and product key supplied.
-
-```solidity
-function getActiveIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore | Specify store instance | 
-| coverKey | bytes32 | Enter cover key | 
-| productKey | bytes32 | Enter product key | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getActiveIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 ```
 </details>
@@ -1426,6 +1390,39 @@ returns(bytes32)
 ```javascript
 function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
+  }
+```
+</details>
+
+### getActiveIncidentDateInternal
+
+Gets the latest and "active" incident date of a cover product.
+ Note that after "resolve" is invoked, incident date is reset.
+ Warning: this function does not validate the cover and product key supplied.
+
+```solidity
+function getActiveIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey) public view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getActiveIncidentDateInternal(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) public view returns (uint256) {
+    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
   }
 ```
 </details>
