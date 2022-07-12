@@ -95,7 +95,7 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
     const pods = helper.ether(0)
     await deployed.vault.approve(deployed.vault.address, pods)
 
-    await deployed.vault.removeLiquidity(coverKey, pods, npmStake, false)
+    await deployed.vault.removeLiquidity(coverKey, pods, 0, false)
       .should.be.rejectedWith('Please specify amount')
   })
 
@@ -227,7 +227,30 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     await network.provider.send('evm_increaseTime', [1 * HOURS])
   })
 
-  it('successfully removes liquidity second time', async () => {
+  it('successfully removes liquidity when podsToRedeem is zero', async () => {
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+    await vault.accrueInterest()
+
+    const [owner] = await ethers.getSigners()
+    const pods = helper.ether(2000)
+    await vault.approve(vault.address, pods)
+
+    await deployed.cover.disablePolicy(coverKey, productKey, true, 'testing liqiudity removal')
+    const tx = await vault.removeLiquidity(coverKey, 0, npmStake, true)
+    await deployed.cover.disablePolicy(coverKey, productKey, false, 'testing liqiudity removal')
+
+    const { events } = await tx.wait()
+
+    const event = events.find(x => x.event === 'PodsRedeemed')
+
+    event.args.account.should.equal(owner.address)
+    event.args.redeemed.should.equal(helper.ether(0))
+    event.args.liquidityReleased.should.equal(helper.ether(0, PRECISION))
+
+    await network.provider.send('evm_increaseTime', [1 * HOURS])
+  })
+
+  it('reverts when status is not normal', async () => {
     await network.provider.send('evm_increaseTime', [1 * HOURS])
     await vault.accrueInterest()
 

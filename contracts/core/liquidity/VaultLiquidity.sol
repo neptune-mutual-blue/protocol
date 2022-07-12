@@ -117,7 +117,7 @@ abstract contract VaultLiquidity is VaultBase {
     bool exit
   ) external override nonReentrant {
     require(coverKey == key, "Forbidden");
-    require(podsToRedeem > 0 || npmStakeToRemove > 0, "Please specify pod amount or npm stake amount");
+    require(podsToRedeem > 0 || npmStakeToRemove > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -127,8 +127,10 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
-    IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    if(podsToRedeem > 0) {
+      IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
+      IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    }
 
     super._burn(address(this), podsToRedeem);
 
