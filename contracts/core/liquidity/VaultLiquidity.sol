@@ -127,10 +127,14 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
-    IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    if(podsToRedeem > 0) {
+      IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
+      super._burn(address(this), podsToRedeem);
+    }
 
-    super._burn(address(this), podsToRedeem);
+    if(stablecoinToRelease > 0) {
+      IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    }
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
