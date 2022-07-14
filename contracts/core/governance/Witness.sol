@@ -178,6 +178,17 @@ abstract contract Witness is Recoverable, IWitness {
   }
 
   /**
+   * @dev Gets the status of products in a given cover
+   *
+   * @param coverKey Enter the key of the cover you'd like to check the status of
+   * @return Returns the cover status as an bool.
+   *
+   */
+  function isCoverNormal(bytes32 coverKey) external view returns (bool) {
+    return s.isCoverNormalInternal(coverKey);
+  }
+
+  /**
    * @dev Gets the stakes of each side of a given cover governance pool
    *
    * Warning: this function does not validate the input arguments.

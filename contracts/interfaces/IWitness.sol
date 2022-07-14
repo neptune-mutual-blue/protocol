@@ -22,6 +22,8 @@ interface IWitness {
 
   function getStatus(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
 
+  function isCoverNormal(bytes32 coverKey) external view returns (bool);
+
   function getStakes(
     bytes32 coverKey,
     bytes32 productKey,
