@@ -48,7 +48,7 @@ contract Cover is CoverBase {
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
    * @param tokenName Enter the token name of the POD contract that will be deployed.
-   * @param tokenSymbol Enter the token name of the POD contract that will be deployed.
+   * @param tokenSymbol Enter the token symbol of the POD contract that will be deployed.
    * @param supportsProducts Indicates that this cover supports product(s)
    * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
