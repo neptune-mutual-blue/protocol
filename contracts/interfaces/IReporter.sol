@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 interface IReporter {
   event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, bytes32 info, uint256 initialStake, uint256 resolutionTimestamp);

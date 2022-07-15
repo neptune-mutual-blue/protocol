@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "./BondPoolBase.sol";
 
 contract BondPool is BondPoolBase {
@@ -8,8 +8,13 @@ contract BondPool is BondPoolBase {
 
   constructor(IStore s) BondPoolBase(s) {} //solhint-disable-line
 
+  /**
+   * @dev Create a new bond contract by supplying your LP tokens
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   */
   function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     require(lpTokens > 0, "Please specify `lpTokens`");
@@ -19,8 +24,13 @@ contract BondPool is BondPoolBase {
     emit BondCreated(msg.sender, lpTokens, values[0], values[1]);
   }
 
+  /**
+   * @dev Claim your bond and receive your NPM tokens after waiting period
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
+   */
   function claimBond() external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
 
     // @suppress-zero-value-check The uint values are validated in the function `claimBondInternal`

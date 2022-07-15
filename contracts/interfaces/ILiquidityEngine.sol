@@ -3,13 +3,13 @@
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./IMember.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 interface ILiquidityEngine is IMember {
   event StrategyAdded(address indexed strategy);
   event StrategyDisabled(address indexed strategy);
   event StrategyDeleted(address indexed strategy);
-  event LendingPeriodSet(bytes32 indexed coverKey, uint256 lendingPeriod, uint256 withdrawalWindow);
+  event RiskPoolingPeriodSet(bytes32 indexed coverKey, uint256 lendingPeriod, uint256 withdrawalWindow);
   event LiquidityStateUpdateIntervalSet(uint256 duration);
   event MaxLendingRatioSet(uint256 ratio);
 
@@ -19,13 +19,13 @@ interface ILiquidityEngine is IMember {
 
   function deleteStrategy(address strategy) external;
 
-  function setLendingPeriods(
+  function setRiskPoolingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external;
 
-  function getLendingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
+  function getRiskPoolingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
 
   function setLiquidityStateUpdateInterval(uint256 value) external;
 

@@ -59,6 +59,9 @@ function calculateRewards(bytes32 key, address account) external view override r
 
 ### withdrawRewards
 
+Withdraw your staking reward. Ensure that you preiodically call this function
+ or else you risk receiving no rewards as a result of token depletion in the reward pool.
+
 ```solidity
 function withdrawRewards(bytes32 key) external nonpayable nonReentrant 
 ```
@@ -74,7 +77,6 @@ function withdrawRewards(bytes32 key) external nonpayable nonReentrant
 
 ```javascript
 function withdrawRewards(bytes32 key) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -99,7 +101,6 @@ function withdrawRewards(bytes32 key) external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -200,6 +201,7 @@ function withdrawRewards(bytes32 key) external override nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

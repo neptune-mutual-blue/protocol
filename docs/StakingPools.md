@@ -34,6 +34,9 @@ constructor(IStore s) StakingPoolInfo(s) {}
 
 ### deposit
 
+Deposit your desired amount of tokens to the specified staking pool.
+ When you deposit, you receive rewards if tokens are still available in the reward pool.
+
 ```solidity
 function deposit(bytes32 key, uint256 amount) external nonpayable nonReentrant 
 ```
@@ -50,7 +53,6 @@ function deposit(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function deposit(bytes32 key, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -65,6 +67,9 @@ function deposit(bytes32 key, uint256 amount) external override nonReentrant {
 </details>
 
 ### withdraw
+
+Withdraw your desired amount of tokens from the staking pool.
+ When you withdraw, you receive rewards if tokens are still available in the reward pool.
 
 ```solidity
 function withdraw(bytes32 key, uint256 amount) external nonpayable nonReentrant 
@@ -82,7 +87,6 @@ function withdraw(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     s.mustNotBePaused();
     s.ensureValidStakingPool(key);
 
@@ -108,7 +112,6 @@ function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -209,6 +212,7 @@ function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

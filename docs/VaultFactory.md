@@ -6,9 +6,8 @@ View Source: [contracts/core/liquidity/VaultFactory.sol](../contracts/core/liqui
 
 **VaultFactory**
 
-As and when required by the protocol,
- the VaultFactory contract creates new instances of
- Cover Vaults on demand.
+When a new cover is created, an associated liquidity pool or vault is also created.
+ The cover contract deploys new vaults on demand by utilizing the vault factory contract.
 
 ## Functions
 
@@ -66,7 +65,6 @@ function deploy(
     string calldata tokenSymbol
   ) external override nonReentrant returns (address addr) {
     s.mustNotBePaused();
-    s.mustHaveNormalCoverStatus(coverKey);
     s.senderMustBeCoverContract();
 
     (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, tokenName, tokenSymbol, s.getStablecoin());
@@ -152,7 +150,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -253,6 +250,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

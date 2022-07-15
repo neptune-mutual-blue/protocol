@@ -42,6 +42,9 @@ bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED;
 
 ### calculateTokensForLpInternal
 
+Calculates the discounted NPM token to be given
+ for the NPM/Stablecoin Uniswap v2 LP token units.
+
 ```solidity
 function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view
 returns(uint256)
@@ -51,8 +54,8 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| lpTokens | uint256 |  | 
+| s | IStore | Specify store instance | 
+| lpTokens | uint256 | Enter the NPM/Stablecoin Uniswap v2 LP token units | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -115,6 +118,8 @@ function getBondPoolInfoInternal(IStore s, address you) external view returns (a
 
 ### _getLpTokenAddress
 
+Gets the NPM/Stablecoin Uniswap v2 LP token address
+
 ```solidity
 function _getLpTokenAddress(IStore s) private view
 returns(address)
@@ -137,6 +142,8 @@ function _getLpTokenAddress(IStore s) private view returns (address) {
 </details>
 
 ### _getYourBondContribution
+
+Gets your unsettled bond contribution amount.
 
 ```solidity
 function _getYourBondContribution(IStore s, address you) private view
@@ -162,6 +169,8 @@ function _getYourBondContribution(IStore s, address you) private view returns (u
 
 ### _getYourBondClaimable
 
+Gets your claimable discounted NPM bond amount.
+
 ```solidity
 function _getYourBondClaimable(IStore s, address you) private view
 returns(uint256)
@@ -185,6 +194,9 @@ function _getYourBondClaimable(IStore s, address you) private view returns (uint
 </details>
 
 ### _getYourBondUnlockDate
+
+Returns the date when your discounted NPM token bond is unlocked
+ for claim.
 
 ```solidity
 function _getYourBondUnlockDate(IStore s, address you) private view
@@ -210,6 +222,8 @@ function _getYourBondUnlockDate(IStore s, address you) private view returns (uin
 
 ### _getDiscountRate
 
+Returns the NPM token bond discount rate
+
 ```solidity
 function _getDiscountRate(IStore s) private view
 returns(uint256)
@@ -232,6 +246,8 @@ function _getDiscountRate(IStore s) private view returns (uint256) {
 </details>
 
 ### _getVestingTerm
+
+Returns the bond vesting term
 
 ```solidity
 function _getVestingTerm(IStore s) private view
@@ -256,6 +272,8 @@ function _getVestingTerm(IStore s) private view returns (uint256) {
 
 ### _getMaxBondInUnit
 
+Returns the maximum NPM token units that can be bonded at a time
+
 ```solidity
 function _getMaxBondInUnit(IStore s) private view
 returns(uint256)
@@ -278,6 +296,8 @@ function _getMaxBondInUnit(IStore s) private view returns (uint256) {
 </details>
 
 ### _getTotalNpmAllocated
+
+Returns the total NPM tokens allocated for the bond
 
 ```solidity
 function _getTotalNpmAllocated(IStore s) private view
@@ -302,6 +322,8 @@ function _getTotalNpmAllocated(IStore s) private view returns (uint256) {
 
 ### _getTotalNpmDistributed
 
+Returns the total bonded NPM tokens distributed till date.
+
 ```solidity
 function _getTotalNpmDistributed(IStore s) private view
 returns(uint256)
@@ -325,6 +347,8 @@ function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
 
 ### createBondInternal
 
+Create a new NPM/DAI LP token bond
+
 ```solidity
 function createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired) external nonpayable
 returns(values uint256[])
@@ -334,9 +358,9 @@ returns(values uint256[])
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| lpTokens | uint256 |  | 
-| minNpmDesired | uint256 |  | 
+| s | IStore | Specify store instance | 
+| lpTokens | uint256 | Enter the total units of NPM/DAI Uniswap v2 tokens to be bonded | 
+| minNpmDesired | uint256 | Enter the minimum NPM tokens you desire for the given LP tokens.  This transaction will revert if the final NPM bond is less than your specified value. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -356,7 +380,6 @@ function createBondInternal(
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
     require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
-    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
@@ -383,6 +406,11 @@ function createBondInternal(
 
 ### _getNpmBalance
 
+Gets the NPM token balance of this contract.
+ Please also see `_getBondCommitment` to check
+ the total NPM tokens already allocated to the bonders
+ to be claimed later.
+
 ```solidity
 function _getNpmBalance(IStore s) private view
 returns(uint256)
@@ -392,7 +420,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -405,6 +433,8 @@ function _getNpmBalance(IStore s) private view returns (uint256) {
 </details>
 
 ### _getBondCommitment
+
+Returns the bond commitment amount.
 
 ```solidity
 function _getBondCommitment(IStore s) private view
@@ -428,6 +458,8 @@ function _getBondCommitment(IStore s) private view returns (uint256) {
 </details>
 
 ### claimBondInternal
+
+Enables the caller to claim their bond after the lockup period.
 
 ```solidity
 function claimBondInternal(IStore s) external nonpayable
@@ -466,7 +498,6 @@ function claimBondInternal(IStore s) external returns (uint256[] memory values) 
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
-    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 ```
@@ -518,7 +549,6 @@ function setupBondPoolInternal(
     }
 
     if (values[3] > 0) {
-      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }
@@ -538,7 +568,6 @@ function setupBondPoolInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -639,6 +668,7 @@ function setupBondPoolInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

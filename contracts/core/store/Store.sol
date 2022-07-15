@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "./StoreBase.sol";
 
 contract Store is StoreBase {
@@ -197,8 +197,8 @@ contract Store is StoreBase {
 
     if (i + 1 != count) {
       bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
-      bytes32 theThenLastbytes32 = bytes32ArrayStorage[k][i];
-      bytes32ArrayPositionMap[k][theThenLastbytes32] = i + 1;
+      bytes32 theThenLastBytes32 = bytes32ArrayStorage[k][i];
+      bytes32ArrayPositionMap[k][theThenLastBytes32] = i + 1;
     }
 
     bytes32ArrayStorage[k].pop();

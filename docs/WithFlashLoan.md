@@ -24,9 +24,9 @@ returns(bool)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| receiver | IERC3156FlashBorrower |  | 
-| token | address |  | 
-| amount | uint256 |  | 
+| receiver | IERC3156FlashBorrower | Specify the contract that receives the flash loan. | 
+| token | address | Specify the token you want to borrow. | 
+| amount | uint256 | Enter the amount you would like to borrow. | 
 | data | bytes |  | 
 
 <details>
@@ -49,7 +49,6 @@ function flashLoan(
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     uint256 previousBalance = stablecoin.balanceOf(address(this));
     // require(previousBalance >= amount, "Balance insufficient"); <-- already checked in `preFlashLoan` --> `getFlashFeesInternal`
 
@@ -78,6 +77,8 @@ function flashLoan(
 
 ### flashFee
 
+Gets the fee required to borrow the spefied token and given amount of the loan.
+
 ```solidity
 function flashFee(address token, uint256 amount) external view
 returns(uint256)
@@ -101,6 +102,8 @@ function flashFee(address token, uint256 amount) external view override returns 
 </details>
 
 ### maxFlashLoan
+
+Gets maximum amount in the specified token units that can be borrowed.
 
 ```solidity
 function maxFlashLoan(address token) external view
@@ -135,7 +138,6 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -236,6 +238,7 @@ function maxFlashLoan(address token) external view override returns (uint256) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./ValidationLibV1.sol";
 import "./NTransferUtilV2.sol";
@@ -29,6 +29,14 @@ library BondPoolLibV1 {
   bytes32 public constant NS_BOND_TOTAL_NPM_ALLOCATED = "ns:pool:bond:total:npm:alloc";
   bytes32 public constant NS_BOND_TOTAL_NPM_DISTRIBUTED = "ns:pool:bond:total:npm:distrib";
 
+  /**
+   * @dev Calculates the discounted NPM token to be given
+   * for the NPM/Stablecoin Uniswap v2 LP token units.
+   *
+   * @param s Specify store instance
+   * @param lpTokens Enter the NPM/Stablecoin Uniswap v2 LP token units
+   *
+   */
   function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
     uint256 dollarValue = s.convertNpmLpUnitsToStabelcoin(lpTokens);
 
@@ -43,6 +51,7 @@ library BondPoolLibV1 {
 
   /**
    * @dev Gets the bond pool information
+   *
    * @param s Provide a store instance
    * @param addresses[0] lpToken -> Returns the LP token address
    * @param values[0] marketPrice -> Returns the market price of NPM token
@@ -55,6 +64,7 @@ library BondPoolLibV1 {
    * @param values[7] bondContribution --> total lp tokens contributed by you
    * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
    * @param values[9] unlockDate --> your vesting period end or "unlock date"
+   *
    */
   function getBondPoolInfoInternal(IStore s, address you) external view returns (address[] memory addresses, uint256[] memory values) {
     addresses = new address[](1);
@@ -75,42 +85,81 @@ library BondPoolLibV1 {
     values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
   }
 
+  /**
+   * @dev Gets the NPM/Stablecoin Uniswap v2 LP token address
+   */
   function _getLpTokenAddress(IStore s) private view returns (address) {
     return s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN);
   }
 
+  /**
+   * @dev Gets your unsettled bond contribution amount.
+   */
   function _getYourBondContribution(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, you)));
   }
 
+  /**
+   * @dev Gets your claimable discounted NPM bond amount.
+   */
   function _getYourBondClaimable(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, you)));
   }
 
+  /**
+   * @dev Returns the date when your discounted NPM token bond is unlocked
+   * for claim.
+   */
   function _getYourBondUnlockDate(IStore s, address you) private view returns (uint256) {
     return s.getUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, you)));
   }
 
+  /**
+   * @dev Returns the NPM token bond discount rate
+   */
   function _getDiscountRate(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_DISCOUNT_RATE);
   }
 
+  /**
+   * @dev Returns the bond vesting term
+   */
   function _getVestingTerm(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_VESTING_TERM);
   }
 
+  /**
+   * @dev Returns the maximum NPM token units that can be bonded at a time
+   */
   function _getMaxBondInUnit(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_MAX_UNIT);
   }
 
+  /**
+   * @dev Returns the total NPM tokens allocated for the bond
+   */
   function _getTotalNpmAllocated(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_TOTAL_NPM_ALLOCATED);
   }
 
+  /**
+   * @dev Returns the total bonded NPM tokens distributed till date.
+   */
   function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
     return s.getUintByKey(NS_BOND_TOTAL_NPM_DISTRIBUTED);
   }
 
+  /**
+   * @dev Create a new NPM/DAI LP token bond
+   *
+   * @custom:suppress-malicious-erc The token `BondPoolLibV1.NS_BOND_LP_TOKEN` can't be manipulated via user input
+   *
+   * @param s Specify store instance
+   * @param lpTokens Enter the total units of NPM/DAI Uniswap v2 tokens to be bonded
+   * @param minNpmDesired Enter the minimum NPM tokens you desire for the given LP tokens.
+   * This transaction will revert if the final NPM bond is less than your specified value.
+   *
+   */
   function createBondInternal(
     IStore s,
     uint256 lpTokens,
@@ -125,7 +174,6 @@ library BondPoolLibV1 {
     require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
     require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
 
-    // @suppress-malicious-erc20 `bondLpToken` can't be manipulated via user input.
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
@@ -148,14 +196,32 @@ library BondPoolLibV1 {
     s.setUintByKey(k, values[1]);
   }
 
+  /**
+   * @dev Gets the NPM token balance of this contract.
+   *
+   * Please also see `_getBondCommitment` to check
+   * the total NPM tokens already allocated to the bonders
+   * to be claimed later.
+   *
+   * @param s Specify store instance
+   */
   function _getNpmBalance(IStore s) private view returns (uint256) {
     return IERC20(s.npmToken()).balanceOf(address(this));
   }
 
+  /**
+   * @dev Returns the bond commitment amount.
+   */
   function _getBondCommitment(IStore s) private view returns (uint256) {
     return s.getUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM);
   }
 
+  /**
+   * @dev Enables the caller to claim their bond after the lockup period.
+   *
+   * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
+   *
+   */
   function claimBondInternal(IStore s) external returns (uint256[] memory values) {
     s.mustNotBePaused();
 
@@ -178,12 +244,14 @@ library BondPoolLibV1 {
     require(values[0] > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
-    // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
     IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
   }
 
   /**
    * @dev Sets up the bond pool
+   *
+   * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
+   *
    * @param s Provide an instance of the store
    * @param addresses[0] - LP Token Address
    * @param addresses[1] - Treasury Address
@@ -218,7 +286,6 @@ library BondPoolLibV1 {
     }
 
     if (values[3] > 0) {
-      // @suppress-malicious-erc20 `npm` can't be manipulated via user input.
       IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
     }

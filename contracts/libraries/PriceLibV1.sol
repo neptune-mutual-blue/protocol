@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IPriceOracle.sol";
@@ -37,6 +37,14 @@ library PriceLibV1 {
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
+  /**
+   * @dev Hash key of the "last state update" for the given cover.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter cover key
+   *
+   */
   function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
   }

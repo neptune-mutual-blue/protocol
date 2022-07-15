@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "../core/cxToken/cxToken.sol";
 
@@ -9,9 +9,13 @@ library cxTokenFactoryLibV1 {
   // solhint-disable-previous-line
   /**
    * @dev Gets the bytecode of the `cxToken` contract
+   *
+   * Warning: this function does not validate the input arguments.
+   *
    * @param s Provide the store instance
    * @param coverKey Provide the cover key
    * @param expiryDate Specify the expiry date of this cxToken instance
+   *
    */
   function getByteCode(
     IStore s,

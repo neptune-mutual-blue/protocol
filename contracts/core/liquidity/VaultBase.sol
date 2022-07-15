@@ -6,8 +6,11 @@ import "../../interfaces/IVaultDelegate.sol";
 import "../../interfaces/IVault.sol";
 import "../../libraries/NTransferUtilV2.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
+/**
+ * @title Vault Base Contract
+ */
 abstract contract VaultBase is ERC20, Recoverable, IVault {
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
@@ -16,6 +19,16 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
   bytes32 public override key;
   address public override sc;
 
+  /**
+   * @dev Contructs this contract
+   *
+   * @param store Provide store instance
+   * @param coverKey Provide a cover key that doesn't have a vault deployed
+   * @param tokenName Enter the token name of the POD. Example: `Uniswap nDAI` or `Uniswap nUSDC`
+   * @param tokenSymbol Enter the token symbol of the POD. Example: UNI-NDAI or `UNI-NUSDC`.
+   * @param stablecoin Provide an instance of the stablecoin this vault supports.
+   *
+   */
   constructor(
     IStore store,
     bytes32 coverKey,
@@ -27,6 +40,9 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
     sc = address(stablecoin);
   }
 
+  /**
+   * @dev Returns the delegate contract instance
+   */
   function delgate() public view returns (IVaultDelegate) {
     address delegate = s.getVaultDelegate();
     return IVaultDelegate(delegate);

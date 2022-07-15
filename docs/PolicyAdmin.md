@@ -168,6 +168,7 @@ function setCoverageLag(bytes32 coverKey, uint256 window) external override {
 ### getPolicyRates
 
 Gets the cover policy rates for the given cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getPolicyRates(bytes32 coverKey) external view
@@ -193,6 +194,7 @@ function getPolicyRates(bytes32 coverKey) external view override returns (uint25
 ### getCoverageLag
 
 Gets the policy lag for the given cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoverageLag(bytes32 coverKey) external view
@@ -275,7 +277,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -376,6 +377,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

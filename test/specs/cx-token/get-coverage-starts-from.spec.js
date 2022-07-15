@@ -66,15 +66,9 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
     await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
+
     const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
-    cxToken = await cxTokenUtil.atAddress(at, {
-      accessControlLibV1: deployed.accessControlLibV1,
-      baseLibV1: deployed.baseLibV1,
-      governanceUtilV1: deployed.governanceUtilV1,
-      policyHelperV1: deployed.policyHelperV1,
-      protoUtilV1: deployed.protoUtilV1,
-      validationLibV1: deployed.validationLibV1
-    })
+    cxToken = await cxTokenUtil.atAddress(at, deployed)
   })
 
   it('must correctly give the coverage starts from amount', async () => {

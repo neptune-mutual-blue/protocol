@@ -7,9 +7,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 ## Functions
 
 - [mustNotBePaused(IStore s)](#mustnotbepaused)
-- [mustHaveNormalCoverStatus(IStore s, bytes32 coverKey)](#musthavenormalcoverstatus)
-- [mustHaveNormalCoverProductStatus(IStore s, bytes32 coverKey, bytes32 productKey)](#musthavenormalcoverproductstatus)
-- [mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey)](#musthavestoppedcoverstatus)
+- [mustEnsureAllProductsAreNormal(IStore s, bytes32 coverKey)](#mustensureallproductsarenormal)
+- [mustHaveNormalProductStatus(IStore s, bytes32 coverKey, bytes32 productKey)](#musthavenormalproductstatus)
 - [mustBeValidCoverKey(IStore s, bytes32 coverKey)](#mustbevalidcoverkey)
 - [mustSupportProducts(IStore s, bytes32 coverKey)](#mustsupportproducts)
 - [mustBeValidProduct(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbevalidproduct)
@@ -53,6 +52,9 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [senderMustBeWhitelistedCoverCreator(IStore s)](#sendermustbewhitelistedcovercreator)
 - [senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, bytes32 productKey, address sender)](#sendermustbewhitelistedifrequired)
 - [mustBeSupportedProductOrEmpty(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbesupportedproductorempty)
+- [mustNotHavePolicyDisabled(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothavepolicydisabled)
+- [mustNotExceedStablecoinThreshold(IStore s, uint256 amount)](#mustnotexceedstablecointhreshold)
+- [mustNotExceedProposalThreshold(IStore s, uint256 amount)](#mustnotexceedproposalthreshold)
 
 ### mustNotBePaused
 
@@ -79,13 +81,12 @@ function mustNotBePaused(IStore s) public view {
 ```
 </details>
 
-### mustHaveNormalCoverStatus
+### mustEnsureAllProductsAreNormal
 
-Reverts if the key does not resolve in a valid cover contract
- or if the cover is under governance.
+Reverts if the cover or any of the cover's product is not normal.
 
 ```solidity
-function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view
+function mustEnsureAllProductsAreNormal(IStore s, bytes32 coverKey) external view
 ```
 
 **Arguments**
@@ -99,20 +100,20 @@ function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustHaveNormalCoverStatus(IStore s, bytes32 coverKey) external view {
+function mustEnsureAllProductsAreNormal(IStore s, bytes32 coverKey) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey, 0) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
+    require(s.isCoverNormalInternal(coverKey) == true, "Status not normal");
   }
 ```
 </details>
 
-### mustHaveNormalCoverProductStatus
+### mustHaveNormalProductStatus
 
 Reverts if the key does not resolve in a valid cover contract
  or if the cover is under governance.
 
 ```solidity
-function mustHaveNormalCoverProductStatus(IStore s, bytes32 coverKey, bytes32 productKey) external view
+function mustHaveNormalProductStatus(IStore s, bytes32 coverKey, bytes32 productKey) external view
 ```
 
 **Arguments**
@@ -127,41 +128,13 @@ function mustHaveNormalCoverProductStatus(IStore s, bytes32 coverKey, bytes32 pr
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustHaveNormalCoverProductStatus(
+function mustHaveNormalProductStatus(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.supportsProductsInternal(coverKey), "Invalid product");
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Normal, "Status not normal");
-  }
-```
-</details>
-
-### mustHaveStoppedCoverStatus
-
-Reverts if the key does not resolve in a valid cover contract
- or if the cover is under governance.
-
-```solidity
-function mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey) external view
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 | Enter the cover key to check | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function mustHaveStoppedCoverStatus(IStore s, bytes32 coverKey) external view {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER, coverKey), "Cover does not exist");
-    require(s.getCoverStatusInternal(coverKey, 0) == CoverUtilV1.CoverStatus.Stopped, "Cover isn't stopped");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.Normal, "Status not normal");
   }
 ```
 </details>
@@ -602,6 +575,9 @@ function callerMustBeSpecificStrategyContract(
 
 ### _getIsActiveStrategyKey
 
+Hash key of the "active strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsActiveStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -611,7 +587,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -625,6 +601,9 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 
 ### _getIsDisabledStrategyKey
 
+Hash key of the "disabled strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsDisabledStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -634,7 +613,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -691,7 +670,7 @@ function mustBeReporting(
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened, "Not reporting");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.IncidentHappened, "Not reporting");
   }
 ```
 </details>
@@ -719,7 +698,7 @@ function mustBeDisputed(
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.FalseReporting, "Not disputed");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.FalseReporting, "Not disputed");
   }
 ```
 </details>
@@ -747,7 +726,7 @@ function mustBeClaimable(
     bytes32 coverKey,
     bytes32 productKey
   ) public view {
-    require(s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable, "Not claimable");
+    require(s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.Claimable, "Not claimable");
   }
 ```
 </details>
@@ -775,10 +754,10 @@ function mustBeClaimingOrDisputed(
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
+    CoverUtilV1.ProductStatus status = s.getProductStatusInternal(coverKey, productKey);
 
-    bool claiming = status == CoverUtilV1.CoverStatus.Claimable;
-    bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
+    bool claiming = status == CoverUtilV1.ProductStatus.Claimable;
+    bool falseReporting = status == CoverUtilV1.ProductStatus.FalseReporting;
 
     require(claiming || falseReporting, "Not claimable nor disputed");
   }
@@ -808,9 +787,9 @@ function mustBeReportingOrDisputed(
     bytes32 coverKey,
     bytes32 productKey
   ) external view {
-    CoverUtilV1.CoverStatus status = s.getCoverStatusInternal(coverKey, productKey);
-    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened;
-    bool falseReporting = status == CoverUtilV1.CoverStatus.FalseReporting;
+    CoverUtilV1.ProductStatus status = s.getProductStatusInternal(coverKey, productKey);
+    bool incidentHappened = status == CoverUtilV1.ProductStatus.IncidentHappened;
+    bool falseReporting = status == CoverUtilV1.ProductStatus.FalseReporting;
 
     require(incidentHappened || falseReporting, "Not reported nor disputed");
   }
@@ -932,7 +911,7 @@ function mustBeValidIncidentDate(
     bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
+    require(s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
   }
 ```
 </details>
@@ -1167,6 +1146,8 @@ function mustNotHaveUnstaken(
 
 ### validateUnstakeWithoutClaim
 
+Validates your `unstakeWithoutClaim` arguments
+
 ```solidity
 function validateUnstakeWithoutClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 ```
@@ -1198,15 +1179,13 @@ function validateUnstakeWithoutClaim(
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
-    // The above code is not useful after finalization but it helps avoid
-    // people calling unstake before a decision is obtained
   }
 ```
 </details>
 
 ### validateUnstakeWithClaim
+
+Validates your `unstakeWithClaim` arguments
 
 ```solidity
 function validateUnstakeWithClaim(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
@@ -1246,7 +1225,7 @@ function validateUnstakeWithClaim(
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.Claimable;
+    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
@@ -1416,6 +1395,82 @@ function mustBeSupportedProductOrEmpty(
 ```
 </details>
 
+### mustNotHavePolicyDisabled
+
+```solidity
+function mustNotHavePolicyDisabled(IStore s, bytes32 coverKey, bytes32 productKey) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotHavePolicyDisabled(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey
+  ) external view {
+    require(!s.isPolicyDisabledInternal(coverKey, productKey), "Policy purchase disabled");
+  }
+```
+</details>
+
+### mustNotExceedStablecoinThreshold
+
+```solidity
+function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
+  }
+```
+</details>
+
+### mustNotExceedProposalThreshold
+
+```solidity
+function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Please specify a smaller amount");
+  }
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -1428,7 +1483,6 @@ function mustBeSupportedProductOrEmpty(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1529,6 +1583,7 @@ function mustBeSupportedProductOrEmpty(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

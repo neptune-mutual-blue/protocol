@@ -14,11 +14,11 @@ event CoverCreated(bytes32 indexed coverKey, bytes32  info, string  tokenName, s
 event ProductCreated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, bool  requiresWhitelist, uint256[]  values);
 event CoverUpdated(bytes32 indexed coverKey, bytes32  info);
 event ProductUpdated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, uint256[]  values);
-event CoverStopped(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed stoppedBy, string  reason);
+event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool  status, string  reason);
 event VaultDeployed(bytes32 indexed coverKey, address  vault);
 event CoverCreatorWhitelistUpdated(address  account, bool  status);
 event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool  status);
-event CoverFeeSet(uint256  previous, uint256  current);
+event CoverCreationFeeSet(uint256  previous, uint256  current);
 event MinCoverCreationStakeSet(uint256  previous, uint256  current);
 event MinStakeToAddLiquiditySet(uint256  previous, uint256  current);
 event CoverInitialized(address indexed stablecoin, bytes32  withName);
@@ -26,18 +26,17 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 
 ## Functions
 
-- [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
+- [initialize(address stablecoin, bytes32 friendlyName)](#initialize)
 - [addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values)](#addcover)
 - [addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproduct)
 - [updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values)](#updateproduct)
 - [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
 - [updateCoverCreatorWhitelist(address account, bool whitelisted)](#updatecovercreatorwhitelist)
 - [updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
-- [getCover(bytes32 coverKey, bytes32 productKey)](#getcover)
-- [stopCover(bytes32 coverKey, bytes32 productKey, string reason)](#stopcover)
+- [disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string reason)](#disablepolicy)
 - [checkIfWhitelistedCoverCreator(address account)](#checkifwhitelistedcovercreator)
 - [checkIfWhitelistedUser(bytes32 coverKey, bytes32 productKey, address account)](#checkifwhitelisteduser)
-- [setCoverFees(uint256 value)](#setcoverfees)
+- [setCoverCreationFee(uint256 value)](#setcovercreationfee)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 - [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
 
@@ -46,21 +45,21 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 Initializes this contract
 
 ```solidity
-function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable
+function initialize(address stablecoin, bytes32 friendlyName) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
-| liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
+| stablecoin | address | Provide the address of the token this cover will be quoted against. | 
+| friendlyName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address liquidityToken, bytes32 liquidityName) external;
+function initialize(address stablecoin, bytes32 friendlyName) external;
 ```
 </details>
 
@@ -242,41 +241,10 @@ function updateCoverUsersWhitelist(
 ```
 </details>
 
-### getCover
-
-Get info of a cover contract by key
+### disablePolicy
 
 ```solidity
-function getCover(bytes32 coverKey, bytes32 productKey) external view
-returns(coverOwner address, info bytes32, values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCover(bytes32 coverKey, bytes32 productKey)
-    external
-    view
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    );
-```
-</details>
-
-### stopCover
-
-```solidity
-function stopCover(bytes32 coverKey, bytes32 productKey, string reason) external nonpayable
+function disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string reason) external nonpayable
 ```
 
 **Arguments**
@@ -285,15 +253,17 @@ function stopCover(bytes32 coverKey, bytes32 productKey, string reason) external
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
+| status | bool |  | 
 | reason | string |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function stopCover(
+function disablePolicy(
     bytes32 coverKey,
     bytes32 productKey,
+    bool status,
     string calldata reason
   ) external;
 ```
@@ -347,10 +317,10 @@ function checkIfWhitelistedUser(
 ```
 </details>
 
-### setCoverFees
+### setCoverCreationFee
 
 ```solidity
-function setCoverFees(uint256 value) external nonpayable
+function setCoverCreationFee(uint256 value) external nonpayable
 ```
 
 **Arguments**
@@ -363,7 +333,7 @@ function setCoverFees(uint256 value) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverFees(uint256 value) external;
+function setCoverCreationFee(uint256 value) external;
 ```
 </details>
 
@@ -419,7 +389,6 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -520,6 +489,7 @@ function setMinStakeToAddLiquidity(uint256 value) external;
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

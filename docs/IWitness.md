@@ -18,6 +18,7 @@ event Refuted(bytes32 indexed coverKey, bytes32 indexed productKey, address  wit
 - [attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#attest)
 - [refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#refute)
 - [getStatus(bytes32 coverKey, bytes32 productKey)](#getstatus)
+- [isCoverNormal(bytes32 coverKey)](#iscovernormal)
 - [getStakes(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstakes)
 - [getStakesOf(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account)](#getstakesof)
 
@@ -99,6 +100,27 @@ function getStatus(bytes32 coverKey, bytes32 productKey) external view returns (
 ```
 </details>
 
+### isCoverNormal
+
+```solidity
+function isCoverNormal(bytes32 coverKey) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isCoverNormal(bytes32 coverKey) external view returns (bool);
+```
+</details>
+
 ### getStakes
 
 ```solidity
@@ -167,7 +189,6 @@ function getStakesOf(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -268,6 +289,7 @@ function getStakesOf(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

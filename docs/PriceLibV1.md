@@ -134,6 +134,9 @@ function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
 
 ### getLastUpdateKey
 
+Hash key of the "last state update" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getLastUpdateKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -143,7 +146,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -191,7 +194,6 @@ function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -292,6 +294,7 @@ function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

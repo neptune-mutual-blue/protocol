@@ -12,7 +12,6 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getPlatformCoverFeeRateInternal(IStore s)](#getplatformcoverfeerateinternal)
 - [getClaimReporterCommissionInternal(IStore s)](#getclaimreportercommissioninternal)
 - [getMinReportingStakeInternal(IStore s, bytes32 coverKey)](#getminreportingstakeinternal)
-- [getLatestIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getlatestincidentdateinternal)
 - [getResolutionTimestampInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getresolutiontimestampinternal)
 - [getReporterInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreporterinternal)
 - [getStakesInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstakesinternal)
@@ -29,10 +28,10 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getUnstakeInfoForInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getunstakeinfoforinternal)
 - [getReportingUnstakenAmountInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreportingunstakenamountinternal)
 - [updateUnstakeDetailsInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 originalStake, uint256 reward, uint256 burned, uint256 reporterFee)](#updateunstakedetailsinternal)
-- [_updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#_updatecoverstatusbeforeresolutioninternal)
+- [_updateProductStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#_updateproductstatusbeforeresolutioninternal)
 - [addAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addattestationinternal)
 - [getAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestationinternal)
-- [addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#adddisputeinternal)
+- [addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addrefutationinternal)
 - [getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey)](#gethasdisputekeyinternal)
 - [getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutationinternal)
 - [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownperiodinternal)
@@ -41,10 +40,13 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getclaimpayoutsinternal)
 - [getReassurancePayoutInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreassurancepayoutinternal)
 - [addReassurancePayoutInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 capitalized)](#addreassurancepayoutinternal)
-- [getReassuranceRateInternal(IStore s, bytes32 coverKey)](#getreassurancerateinternal)
 - [getReassuranceTransferrableInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getreassurancetransferrableinternal)
+- [mustNotExceedNpmThreshold(uint256 amount)](#mustnotexceednpmthreshold)
 
 ### getReportingPeriodInternal
+
+Gets the reporting period for the given cover.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getReportingPeriodInternal(IStore s, bytes32 coverKey) external view
@@ -55,7 +57,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 | coverKey | bytes32 |  | 
 
 <details>
@@ -70,6 +72,9 @@ function getReportingPeriodInternal(IStore s, bytes32 coverKey) external view re
 
 ### getReportingBurnRateInternal
 
+Gets the NPM stake burn rate (upon resolution) for the given cover.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getReportingBurnRateInternal(IStore s) public view
 returns(uint256)
@@ -79,7 +84,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -93,6 +98,11 @@ function getReportingBurnRateInternal(IStore s) public view returns (uint256) {
 
 ### getGovernanceReporterCommissionInternal
 
+Gets the "valid" reporter's NPM commission rate
+ (upon each unstake claim invoked by individual "valid" stakers)
+ for the given cover.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getGovernanceReporterCommissionInternal(IStore s) public view
 returns(uint256)
@@ -102,7 +112,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -116,6 +126,11 @@ function getGovernanceReporterCommissionInternal(IStore s) public view returns (
 
 ### getPlatformCoverFeeRateInternal
 
+Gets the protocol's NPM commission rate
+ (upon each unstake claim invoked by individual "valid" stakers)
+ for the given cover.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getPlatformCoverFeeRateInternal(IStore s) external view
 returns(uint256)
@@ -125,7 +140,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -139,6 +154,11 @@ function getPlatformCoverFeeRateInternal(IStore s) external view returns (uint25
 
 ### getClaimReporterCommissionInternal
 
+Gets the "valid" reporter's stablecoin commission rate
+ on protocol's earnings (upon each claim payout received by claimants)
+ for the given cover.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getClaimReporterCommissionInternal(IStore s) external view
 returns(uint256)
@@ -148,7 +168,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
+| s | IStore | Specify store instance | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -162,6 +182,9 @@ function getClaimReporterCommissionInternal(IStore s) external view returns (uin
 
 ### getMinReportingStakeInternal
 
+Gets the minimum units of NPM tokens required to report the supplied cover.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view
 returns(uint256)
@@ -171,8 +194,8 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -187,36 +210,10 @@ function getMinReportingStakeInternal(IStore s, bytes32 coverKey) external view 
 ```
 </details>
 
-### getLatestIncidentDateInternal
-
-```solidity
-function getLatestIncidentDateInternal(IStore s, bytes32 coverKey, bytes32 productKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getLatestIncidentDateInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey
-  ) public view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
-  }
-```
-</details>
-
 ### getResolutionTimestampInternal
+
+Gets a cover's resolution timestamp.
+ Warning: this function does not validate the cover and product key supplied.
 
 ```solidity
 function getResolutionTimestampInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view
@@ -227,9 +224,9 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -247,6 +244,14 @@ function getResolutionTimestampInternal(
 
 ### getReporterInternal
 
+Gets the given cover incident's reporter.
+ Note that this keeps changing between "first reporter"
+ and "candidate reporter" until resolution is achieved.
+ <br /> <br />
+ [Read More](https://docs.neptunemutual.com/covers/cover-reporting)
+ <br /> <br />
+ Warning: this function does not validate the cover and product key supplied.
+
 ```solidity
 function getReporterInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 returns(address)
@@ -256,9 +261,9 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -271,8 +276,8 @@ function getReporterInternal(
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (address) {
-    CoverUtilV1.CoverStatus status = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = status == CoverUtilV1.CoverStatus.IncidentHappened || status == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus status = s.getProductStatusOfInternal(coverKey, productKey, incidentDate);
+    bool incidentHappened = status == CoverUtilV1.ProductStatus.IncidentHappened || status == CoverUtilV1.ProductStatus.Claimable;
     bytes32 prefix = incidentHappened ? ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES : ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO;
 
     return s.getAddressByKeys(prefix, coverKey, productKey);
@@ -281,6 +286,9 @@ function getReporterInternal(
 </details>
 
 ### getStakesInternal
+
+Returns stakes of the given cover product's incident.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getStakesInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
@@ -291,10 +299,10 @@ returns(yes uint256, no uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -314,6 +322,9 @@ function getStakesInternal(
 
 ### _getReporterKey
 
+Hash key of the reporter for the given cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getReporterKey(bytes32 coverKey, bytes32 productKey) private pure
 returns(bytes32)
@@ -323,8 +334,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -338,6 +349,9 @@ function _getReporterKey(bytes32 coverKey, bytes32 productKey) private pure retu
 
 ### _getIncidentOccurredStakesKey
 
+Hash key of the stakes added under `Incident Happened` camp for the given cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIncidentOccurredStakesKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private pure
 returns(bytes32)
@@ -347,8 +361,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -367,6 +381,9 @@ function _getIncidentOccurredStakesKey(
 
 ### _getClaimPayoutsKey
 
+Hash key of the claims payout given for the supplied cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getClaimPayoutsKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private pure
 returns(bytes32)
@@ -376,8 +393,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -396,6 +413,9 @@ function _getClaimPayoutsKey(
 
 ### _getReassurancePayoutKey
 
+Hash key of the reassurance payout granted for the supplied cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getReassurancePayoutKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private pure
 returns(bytes32)
@@ -405,8 +425,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -425,6 +445,9 @@ function _getReassurancePayoutKey(
 
 ### _getIndividualIncidentOccurredStakeKey
 
+Hash key of an individual's stakes added under `Incident Happened` camp for the given cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIndividualIncidentOccurredStakeKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account) private pure
 returns(bytes32)
@@ -434,8 +457,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 | account | address |  | 
 
@@ -456,6 +479,9 @@ function _getIndividualIncidentOccurredStakeKey(
 
 ### _getDisputerKey
 
+Hash key of the "candidate reporter" for the supplied cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getDisputerKey(bytes32 coverKey, bytes32 productKey) private pure
 returns(bytes32)
@@ -465,8 +491,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -480,6 +506,9 @@ function _getDisputerKey(bytes32 coverKey, bytes32 productKey) private pure retu
 
 ### _getFalseReportingStakesKey
 
+Hash key of the stakes added under `False Reporting` camp for the given cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getFalseReportingStakesKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private pure
 returns(bytes32)
@@ -489,8 +518,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 
 <details>
@@ -509,6 +538,9 @@ function _getFalseReportingStakesKey(
 
 ### _getIndividualFalseReportingStakeKey
 
+Hash key of an individual's stakes added under `False Reporting` camp for the given cover product.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIndividualFalseReportingStakeKey(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account) private pure
 returns(bytes32)
@@ -518,8 +550,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 | incidentDate | uint256 |  | 
 | account | address |  | 
 
@@ -540,6 +572,9 @@ function _getIndividualFalseReportingStakeKey(
 
 ### getStakesOfInternal
 
+Returns stakes of the given account for a cover product's incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getStakesOfInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 returns(yes uint256, no uint256)
@@ -549,11 +584,11 @@ returns(yes uint256, no uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| account | address | Specify the account to get stakes | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -574,6 +609,10 @@ function getStakesOfInternal(
 
 ### getResolutionInfoForInternal
 
+Returns resolution info of the given account
+ for a cover product's incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getResolutionInfoForInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256)
@@ -583,11 +622,11 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| account | address | Specify the account to get stakes | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -611,8 +650,8 @@ function getResolutionInfoForInternal(
     (uint256 yes, uint256 no) = getStakesInternal(s, coverKey, productKey, incidentDate);
     (uint256 myYes, uint256 myNo) = getStakesOfInternal(s, account, coverKey, productKey, incidentDate);
 
-    CoverUtilV1.CoverStatus decision = s.getCoverProductStatusOf(coverKey, productKey, incidentDate);
-    bool incidentHappened = decision == CoverUtilV1.CoverStatus.IncidentHappened || decision == CoverUtilV1.CoverStatus.Claimable;
+    CoverUtilV1.ProductStatus decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate);
+    bool incidentHappened = decision == CoverUtilV1.ProductStatus.IncidentHappened || decision == CoverUtilV1.ProductStatus.Claimable;
 
     totalStakeInWinningCamp = incidentHappened ? yes : no;
     totalStakeInLosingCamp = incidentHappened ? no : yes;
@@ -623,6 +662,10 @@ function getResolutionInfoForInternal(
 
 ### getUnstakeInfoForInternal
 
+Returns unstake info of the given account
+ for a cover product's incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getUnstakeInfoForInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
 returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
@@ -632,11 +675,11 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| account | address | Specify the account to get stakes | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -673,7 +716,7 @@ function getUnstakeInfoForInternal(
     // Incident dates are reset when a reporting is finalized.
     // This check ensures only the people who come to unstake
     // before the finalization will receive rewards
-    if (getLatestIncidentDateInternal(s, coverKey, productKey) == incidentDate) {
+    if (s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
       reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
@@ -687,6 +730,9 @@ function getUnstakeInfoForInternal(
 
 ### getReportingUnstakenAmountInternal
 
+Returns NPM already unstaken by the specified account for a cover incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getReportingUnstakenAmountInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 returns(uint256)
@@ -696,11 +742,11 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| account | address |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| account | address | Specify the account to get stakes | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -801,10 +847,10 @@ function updateUnstakeDetailsInternal(
 ```
 </details>
 
-### _updateCoverStatusBeforeResolutionInternal
+### _updateProductStatusBeforeResolutionInternal
 
 ```solidity
-function _updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
+function _updateProductStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
 ```
 
 **Arguments**
@@ -820,7 +866,7 @@ function _updateCoverStatusBeforeResolutionInternal(IStore s, bytes32 coverKey, 
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _updateCoverStatusBeforeResolutionInternal(
+function _updateProductStatusBeforeResolutionInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -832,16 +878,18 @@ function _updateCoverStatusBeforeResolutionInternal(
     uint256 no = s.getUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate));
 
     if (no > yes) {
-      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.FalseReporting);
+      s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.FalseReporting);
       return;
     }
 
-    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.CoverStatus.IncidentHappened);
+    s.setStatusInternal(coverKey, productKey, incidentDate, CoverUtilV1.ProductStatus.IncidentHappened);
   }
 ```
 </details>
 
 ### addAttestationInternal
+
+Adds attestation to an incident report
 
 ```solidity
 function addAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
@@ -870,7 +918,8 @@ function addAttestationInternal(
     uint256 incidentDate,
     uint256 stake
   ) external {
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
+    mustNotExceedNpmThreshold(stake);
+
     // Add individual stake of the reporter
     s.addUintByKey(_getIndividualIncidentOccurredStakeKey(coverKey, productKey, incidentDate, who), stake);
 
@@ -883,7 +932,7 @@ function addAttestationInternal(
     }
 
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }
@@ -891,6 +940,9 @@ function addAttestationInternal(
 </details>
 
 ### getAttestationInternal
+
+Returns sum total of NPM staken under `Incident Happened` camp.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
@@ -901,11 +953,11 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| who | address |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| who | address | Specify the account to get attestation info | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -924,10 +976,12 @@ function getAttestationInternal(
 ```
 </details>
 
-### addDisputeInternal
+### addRefutationInternal
+
+Adds refutation to an incident report
 
 ```solidity
-function addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
+function addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake) external nonpayable
 ```
 
 **Arguments**
@@ -945,7 +999,7 @@ function addDisputeInternal(IStore s, bytes32 coverKey, bytes32 productKey, addr
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addDisputeInternal(
+function addRefutationInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -953,7 +1007,7 @@ function addDisputeInternal(
     uint256 incidentDate,
     uint256 stake
   ) external {
-    // @suppress-address-trust-issue The address `who` can be trusted here because we are not performing any direct calls to it.
+    mustNotExceedNpmThreshold(stake);
 
     s.addUintByKey(_getIndividualFalseReportingStakeKey(coverKey, productKey, incidentDate, who), stake);
 
@@ -966,7 +1020,7 @@ function addDisputeInternal(
     }
 
     s.addUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate), stake);
-    _updateCoverStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
+    _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
     s.updateStateAndLiquidity(coverKey);
   }
@@ -974,6 +1028,9 @@ function addDisputeInternal(
 </details>
 
 ### getHasDisputeKeyInternal
+
+Hash key of the "has dispute flag" for the specified cover product.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey) public pure
@@ -984,8 +1041,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -999,6 +1056,9 @@ function getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey) public p
 
 ### getRefutationInternal
 
+Returns sum total of NPM staken under `False Reporting` camp.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate) external view
 returns(myStake uint256, totalStake uint256)
@@ -1008,11 +1068,11 @@ returns(myStake uint256, totalStake uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| who | address |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| who | address | Specify the account to get attestation info | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1033,6 +1093,10 @@ function getRefutationInternal(
 
 ### getCoolDownPeriodInternal
 
+Returns cooldown period. Cooldown period is a defense
+ against [collusion and last-block attacks](https://docs.neptunemutual.com/covers/cover-reporting#collusion-and-last-block-attacks).
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getCoolDownPeriodInternal(IStore s, bytes32 coverKey) external view
 returns(uint256)
@@ -1042,8 +1106,8 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1060,6 +1124,10 @@ function getCoolDownPeriodInternal(IStore s, bytes32 coverKey) external view ret
 
 ### getResolutionDeadlineInternal
 
+The date and time prior to which a governance administrator
+ may still initiate a "emergency resolution."
+ Warning: this function does not validate the cover and product key supplied.
+
 ```solidity
 function getResolutionDeadlineInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view
 returns(uint256)
@@ -1069,9 +1137,9 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1121,6 +1189,9 @@ function addClaimPayoutsInternal(
 
 ### getClaimPayoutsInternal
 
+Returns the total amount of payouts awarded to claimants for this incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 returns(uint256)
@@ -1130,10 +1201,10 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1152,6 +1223,9 @@ function getClaimPayoutsInternal(
 
 ### getReassurancePayoutInternal
 
+Returns the total amount of reassurance granted to vault for this incident.
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function getReassurancePayoutInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
 returns(uint256)
@@ -1161,10 +1235,10 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1213,38 +1287,11 @@ function addReassurancePayoutInternal(
 ```
 </details>
 
-### getReassuranceRateInternal
-
-```solidity
-function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getReassuranceRateInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    uint256 rate = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey);
-
-    if (rate > 0) {
-      return rate;
-    }
-
-    // Default: 25%
-    return 2500;
-  }
-```
-</details>
-
 ### getReassuranceTransferrableInternal
+
+Returns the remaining reassurance amount that can be transferred
+ to the vault following the claim period but prior to finalisation.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getReassuranceTransferrableInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
@@ -1255,10 +1302,10 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| incidentDate | uint256 |  | 
+| s | IStore | Specify store instance | 
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -1270,8 +1317,8 @@ function getReassuranceTransferrableInternal(
     bytes32 productKey,
     uint256 incidentDate
   ) external view returns (uint256) {
-    uint256 reassuranceRate = getReassuranceRateInternal(s, coverKey);
-    uint256 available = s.getUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey);
+    uint256 reassuranceRate = s.getReassuranceRateInternal(coverKey);
+    uint256 available = s.getReassuranceAmountInternal(coverKey);
     uint256 reassurancePaid = getReassurancePayoutInternal(s, coverKey, productKey, incidentDate);
 
     uint256 totalReassurance = available + reassurancePaid;
@@ -1282,6 +1329,28 @@ function getReassuranceTransferrableInternal(
     uint256 transferAmount = (principal * reassuranceRate) / ProtoUtilV1.MULTIPLIER;
 
     return transferAmount - reassurancePaid;
+  }
+```
+</details>
+
+### mustNotExceedNpmThreshold
+
+```solidity
+function mustNotExceedNpmThreshold(uint256 amount) public pure
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| amount | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustNotExceedNpmThreshold(uint256 amount) public pure {
+    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "Please specify a smaller amount");
   }
 ```
 </details>
@@ -1298,7 +1367,6 @@ function getReassuranceTransferrableInternal(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1399,6 +1467,7 @@ function getReassuranceTransferrableInternal(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

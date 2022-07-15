@@ -6,14 +6,14 @@ View Source: [contracts/libraries/VaultFactoryLibV1.sol](../contracts/libraries/
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address liquidityToken)](#getbytecode)
+- [getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin)](#getbytecode)
 
 ### getByteCode
 
 Gets the bytecode of the `Vault` contract
 
 ```solidity
-function getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address liquidityToken) external pure
+function getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin) external pure
 returns(bytecode bytes, salt bytes32)
 ```
 
@@ -25,7 +25,7 @@ returns(bytecode bytes, salt bytes32)
 | coverKey | bytes32 | Provide the cover key | 
 | tokenName | string |  | 
 | tokenSymbol | string |  | 
-| liquidityToken | address | Specify the liquidity token for this Vault | 
+| stablecoin | address | Specify the liquidity token for this Vault | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -36,12 +36,12 @@ function getByteCode(
     bytes32 coverKey,
     string calldata tokenName,
     string calldata tokenSymbol,
-    address liquidityToken
+    address stablecoin
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_VAULT, coverKey));
 
     //slither-disable-next-line too-many-digits
-    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, coverKey, tokenName, tokenSymbol, liquidityToken));
+    bytecode = abi.encodePacked(type(Vault).creationCode, abi.encode(s, coverKey, tokenName, tokenSymbol, stablecoin));
   }
 ```
 </details>
@@ -58,7 +58,6 @@ function getByteCode(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -159,6 +158,7 @@ function getByteCode(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../Recoverable.sol";
 import "../../interfaces/IClaimsProcessor.sol";
 import "../../interfaces/ICxToken.sol";
@@ -14,12 +14,20 @@ import "../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Claims Processor Contract
+ *
  * @dev The claims processor contract allows policyholders to file a claim and get instant payouts during the claim period.
+ *
+ * <br /> <br />
  *
  * There is a lag period before a policy begins coverage.
  * After the next day's UTC EOD timestamp, policies take effect and are valid until the expiration period.
- * Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+ * Check [ProtoUtilV1.NS_COVERAGE_LAG](ProtoUtilV1.md) and [PolicyAdmin.getCoverageLag](PolicyAdmin.md#getcoveragelag)
+ * for more information on the lag configuration.
+ *
+ * <br /> <br />
+ *
  * If a claim isn't made during the claim period, it isn't valid and there is no payout.
+ *
  */
 contract Processor is IClaimsProcessor, Recoverable {
   using GovernanceUtilV1 for IStore;
@@ -39,15 +47,21 @@ contract Processor is IClaimsProcessor, Recoverable {
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
-   * @dev Enables a policyholder to claim their cxTokens to receive a payout.
-   * The payout is provided only when the active cover is marked as "Incident Happened"
-   * and has "Claimable" status.
+   * @dev Enables a policyholder to receive a payout redeeming cxTokens.
+   * Only when the active cover is marked as "Incident Happened" and
+   * has "Claimable" status is the payout made.
    *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable Pausable logic is implemented inside the `validate` call
+   * @custom:suppress-address-trust-issue The `cxToken` address is checked in the `validate` call
+   * @custom:suppress-malicious-erc The malicious ERC-20 `cxToken` should only be invoked via `NTransferUtil`
    * @param cxToken Provide the address of the claim token that you're using for this claim.
+   *
    * @param coverKey Enter the key of the cover you're claiming
    * @param productKey Enter the key of the product you're claiming
    * @param incidentDate Enter the active cover's date of incident
    * @param amount Enter the amount of cxTokens you want to transfer
+   *
    */
   function claim(
     address cxToken,
@@ -56,11 +70,6 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 incidentDate,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Already implemented in the function `validate`
-    // @suppress-address-trust-issue The `cxToken` address can be trusted because it is being checked in the function `validate`.
-    // @suppress-malicious-erc20 The function `NTransferUtilV2.ensureTransferFrom` checks if `cxToken` acts funny.
-
     validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
@@ -72,20 +81,27 @@ contract Processor is IClaimsProcessor, Recoverable {
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
     uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
 
+    require(payout > 0, "Invalid payout");
+
     s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, payout);
 
-    // @suppress-division Checked side effects. If the claim platform fee is zero
+    // @suppress-zero-value-check Checked side effects. If the claim platform fee is zero
     // or a very small number, platform fee becomes zero due to data loss.
     uint256 platformFee = (payout * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-division Checked side effects. If the claim reporter commission is zero
+    // @suppress-zero-value-check Checked side effects. If the claim reporter commission rate is zero
     // or a very small number, reporterFee fee becomes zero due to data loss.
-
-    // slither-disable-next-line divide-before-multiply
     uint256 reporterFee = (platformFee * s.getClaimReporterCommissionInternal()) / ProtoUtilV1.MULTIPLIER;
+
+    require(payout >= platformFee, "Invalid platform fee");
+
     uint256 claimed = payout - platformFee;
 
-    vault.transferGovernance(coverKey, msg.sender, claimed);
+    // @suppress-zero-value-check If the platform fee rate was 100%,
+    // "claimed" can be zero
+    if (claimed > 0) {
+      vault.transferGovernance(coverKey, msg.sender, claimed);
+    }
 
     if (reporterFee > 0) {
       vault.transferGovernance(coverKey, finalReporter, reporterFee);
@@ -94,7 +110,6 @@ contract Processor is IClaimsProcessor, Recoverable {
     if (platformFee - reporterFee > 0) {
       // @suppress-subtraction The following (or above) subtraction can cause
       // an underflow if `getClaimReporterCommissionInternal` is greater than 100%.
-      // @check:  getClaimReporterCommissionInternal < ProtoUtilV1.MULTIPLIER
       vault.transferGovernance(coverKey, s.getTreasury(), platformFee - reporterFee);
     }
 
@@ -110,7 +125,9 @@ contract Processor is IClaimsProcessor, Recoverable {
    * @param coverKey Enter the key of the cover you're validating the claim for
    * @param productKey Enter the key of the product you're validating the claim for
    * @param incidentDate Enter the active cover's date of incident
-   * @return Returns true if the given claim is valid and can result in a successful payout
+   *
+   * @return If the given claim is valid and can result in a successful payout, returns true.
+   *
    */
   function validate(
     address cxToken,
@@ -124,27 +141,34 @@ contract Processor is IClaimsProcessor, Recoverable {
     require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
     require(amount > 0, "Enter an amount");
 
+    require(s.getClaimReporterCommissionInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid claim reporter fee");
+    require(s.getPlatformCoverFeeRateInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid platform fee rate");
+
     return true;
   }
 
   /**
    * @dev Returns claim expiration date.
-   * Even if the policy was valid, it cannot be claimed after the expiry date.
+   * Even if the policy was still valid, it cannot be claimed after the claims expiry date.
+   *
+   * Warning: this function does not validate the cover key supplied.
    *
    * @param coverKey Enter the key of the cover you're checking
    * @param productKey Enter the key of the product you're checking
+   *
    */
   function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
   }
 
   /**
-   * @dev Sets the claim period of a cover by its key.
-   * If you do not specify any cover key, the value specified here will be set as fallback.
-   * Cover that do not have any specific claim period will default to the fallback value.
+   * @dev Sets the cover's claim period using its key.
+   * If no cover key is specified, the value specified here will be used as a fallback.
+   * Covers without a specified claim period default to the fallback value.
    *
    * @param coverKey Enter the coverKey you want to set the claim period for
    * @param value Enter a claim period you want to set
+   *
    */
   function setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReentrant {
     s.mustNotBePaused();
@@ -168,13 +192,13 @@ contract Processor is IClaimsProcessor, Recoverable {
   }
 
   /**
-   * @dev Blacklisted accounts are unable to claim their cxTokens.
+   * @dev Accounts that are on a blacklist can't claim their cxTokens.
+   * Cover managers can stop an account from claiming their cover by putting it on the blacklist.
+   * Usually, this happens when we suspect a policyholder is the attacker.
    *
-   * Cover managers can use the blacklist feature to prohibit
-   * an account from claiming their cover. This usually happens when
-   * we suspect a policyholder of being the attacker.
+   * <br /> <br />
    *
-   * After performing KYC, we may be able to lift the blacklist.
+   * After performing KYC, we might be able to lift the blacklist.
    *
    * @param coverKey Enter the cover key
    * @param productKey Enter the product key
@@ -196,6 +220,7 @@ contract Processor is IClaimsProcessor, Recoverable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
 
     for (uint256 i = 0; i < accounts.length; i++) {
       s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
@@ -204,11 +229,13 @@ contract Processor is IClaimsProcessor, Recoverable {
   }
 
   /**
-   * @dev Check if an account is blacklisted from claiming their cover.
+   * @dev Check to see if an account is blacklisted/banned from making a claim.
+   *
    * @param coverKey Enter the cover key
    * @param coverKey Enter the product key
    * @param incidentDate Enter the incident date of this cover
    * @param account Enter the account to see if it is blacklisted
+   *
    */
   function isBlacklisted(
     bytes32 coverKey,

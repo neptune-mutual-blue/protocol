@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/IVaultFactory.sol";
 import "../../libraries/VaultFactoryLibV1.sol";
@@ -9,11 +9,11 @@ import "../Recoverable.sol";
 
 /**
  * @title Vault Factory Contract
- * @dev As and when required by the protocol,
- * the VaultFactory contract creates new instances of
- * Cover Vaults on demand.
+ *
+ * @dev When a new cover is created, an associated liquidity pool or vault is also created.
+ * The cover contract deploys new vaults on demand by utilizing the vault factory contract.
+ *
  */
-
 contract VaultFactory is IVaultFactory, Recoverable {
   using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
@@ -28,6 +28,9 @@ contract VaultFactory is IVaultFactory, Recoverable {
 
   /**
    * @dev Deploys a new instance of Vault
+   *
+   * @custom:suppress-acl This function is only accessilbe to the cover contract
+   *
    * @param coverKey Enter the cover key related to this Vault instance
    */
   function deploy(
@@ -35,7 +38,6 @@ contract VaultFactory is IVaultFactory, Recoverable {
     string calldata tokenName,
     string calldata tokenSymbol
   ) external override nonReentrant returns (address addr) {
-    // @suppress-acl This function is only accessilbe to the cover contract
     s.mustNotBePaused();
     s.senderMustBeCoverContract();
 

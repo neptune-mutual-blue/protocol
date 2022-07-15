@@ -1,6 +1,6 @@
 # IAaveV2LendingPoolLike.sol
 
-View Source: [contracts/interfaces/external/IAaveV2LendingPoolLike.sol](../contracts/interfaces/external/IAaveV2LendingPoolLike.sol)
+View Source: [contracts/dependencies/aave/IAaveV2LendingPoolLike.sol](../contracts/dependencies/aave/IAaveV2LendingPoolLike.sol)
 
 **↘ Derived Contracts: [FakeAaveLendingPool](FakeAaveLendingPool.md), [FaultyAaveLendingPool](FaultyAaveLendingPool.md)**
 
@@ -88,7 +88,6 @@ function withdraw(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -189,6 +188,7 @@ function withdraw(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

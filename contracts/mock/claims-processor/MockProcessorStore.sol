@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../base/MockStore.sol";
 import "../base/MockProtocol.sol";
 import "./MockVault.sol";
@@ -12,7 +12,8 @@ library MockProcessorStoreLib {
     MockStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    address cxToken
+    address cxToken,
+    uint256 incidentDate
   ) external returns (address[] memory values) {
     MockProtocol protocol = new MockProtocol();
     MockVault vault = new MockVault();
@@ -24,12 +25,12 @@ library MockProcessorStoreLib {
 
     s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
     s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
-    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey)), 1234);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey)), incidentDate);
 
     s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
     s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", coverKey, address(vault));
 
-    setProductStatus(s, coverKey, productKey, 4);
+    setProductStatus(s, coverKey, productKey, incidentDate, 4);
     setClaimBeginTimestamp(s, coverKey, productKey, block.timestamp - 100 days); // solhint-disable-line
     setClaimExpiryTimestamp(s, coverKey, productKey, block.timestamp + 100 days); // solhint-disable-line
 
@@ -47,9 +48,10 @@ library MockProcessorStoreLib {
     MockStore s,
     bytes32 coverKey,
     bytes32 productKey,
+    uint256 incidentDate,
     uint256 value
   ) public {
-    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey)), value);
+    s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey, incidentDate)), value);
   }
 
   function setClaimBeginTimestamp(
@@ -75,9 +77,10 @@ contract MockProcessorStore is MockStore {
   function initialize(
     bytes32 coverKey,
     bytes32 productKey,
-    address cxToken
+    address cxToken,
+    uint256 incidentDate
   ) external returns (address[] memory values) {
-    return MockProcessorStoreLib.initialize(this, coverKey, productKey, cxToken);
+    return MockProcessorStoreLib.initialize(this, coverKey, productKey, cxToken, incidentDate);
   }
 
   function disassociateCxToken(address cxToken) external {
@@ -87,9 +90,10 @@ contract MockProcessorStore is MockStore {
   function setProductStatus(
     bytes32 coverKey,
     bytes32 productKey,
+    uint256 incidentDate,
     uint256 value
   ) external {
-    MockProcessorStoreLib.setProductStatus(this, coverKey, productKey, value);
+    MockProcessorStoreLib.setProductStatus(this, coverKey, productKey, incidentDate, value);
   }
 
   function setClaimBeginTimestamp(

@@ -4,11 +4,20 @@ View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/Stra
 
 **StrategyLibV1**
 
+## Contract Members
+**Constants & Variables**
+
+```js
+uint256 public constant DEFAULT_LENDING_PERIOD;
+uint256 public constant DEFAULT_WITHDRAWAL_WINDOW;
+
+```
+
 **Events**
 
 ```js
 event StrategyAdded(address indexed strategy);
-event LendingPeriodSet(bytes32 indexed key, uint256  lendingPeriod, uint256  withdrawalWindow);
+event RiskPoolingPeriodSet(bytes32 indexed key, uint256  lendingPeriod, uint256  withdrawalWindow);
 event MaxLendingRatioSet(uint256  ratio);
 ```
 
@@ -19,8 +28,8 @@ event MaxLendingRatioSet(uint256  ratio);
 - [disableStrategyInternal(IStore s, address toFind)](#disablestrategyinternal)
 - [deleteStrategyInternal(IStore s, address toFind)](#deletestrategyinternal)
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
-- [getLendingPeriodsInternal(IStore s, bytes32 coverKey)](#getlendingperiodsinternal)
-- [setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsinternal)
+- [getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey)](#getriskpoolingperiodsinternal)
+- [setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setriskpoolingperiodsinternal)
 - [getLendingPeriodKey(bytes32 coverKey)](#getlendingperiodkey)
 - [getMaxLendingRatioInternal(IStore s)](#getmaxlendingratiointernal)
 - [setMaxLendingRatioInternal(IStore s, uint256 ratio)](#setmaxlendingratiointernal)
@@ -46,6 +55,9 @@ event MaxLendingRatioSet(uint256  ratio);
 
 ### _getIsActiveStrategyKey
 
+Hash key of the "active strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsActiveStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -55,7 +67,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -69,6 +81,9 @@ function _getIsActiveStrategyKey(address strategyAddress) private pure returns (
 
 ### _getIsDisabledStrategyKey
 
+Hash key of the "disabled strategy flag".
+ Warning: this function does not validate the input arguments.
+
 ```solidity
 function _getIsDisabledStrategyKey(address strategyAddress) private pure
 returns(bytes32)
@@ -78,7 +93,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategyAddress | address |  | 
+| strategyAddress | address | Enter a strategy address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -91,6 +106,8 @@ function _getIsDisabledStrategyKey(address strategyAddress) private pure returns
 </details>
 
 ### disableStrategyInternal
+
+Disables a strategy
 
 ```solidity
 function disableStrategyInternal(IStore s, address toFind) external nonpayable
@@ -108,7 +125,6 @@ function disableStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function disableStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
@@ -117,6 +133,8 @@ function disableStrategyInternal(IStore s, address toFind) external {
 </details>
 
 ### deleteStrategyInternal
+
+Deletes a strategy
 
 ```solidity
 function deleteStrategyInternal(IStore s, address toFind) external nonpayable
@@ -134,7 +152,6 @@ function deleteStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function deleteStrategyInternal(IStore s, address toFind) external {
-    // @suppress-address-trust-issue Check caller.
     _deleteStrategy(s, toFind);
   }
 ```
@@ -166,10 +183,10 @@ function addStrategiesInternal(IStore s, address[] calldata strategies) external
 ```
 </details>
 
-### getLendingPeriodsInternal
+### getRiskPoolingPeriodsInternal
 
 ```solidity
-function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view
+function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view
 returns(lendingPeriod uint256, withdrawalWindow uint256)
 ```
 
@@ -184,7 +201,7 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
     lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
     withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
@@ -192,14 +209,17 @@ function getLendingPeriodsInternal(IStore s, bytes32 coverKey) external view ret
       lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
       withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
     }
+
+    lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
+    withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
   }
 ```
 </details>
 
-### setLendingPeriodsInternal
+### setRiskPoolingPeriodsInternal
 
 ```solidity
-function setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
+function setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
 ```
 
 **Arguments**
@@ -215,7 +235,7 @@ function setLendingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPe
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLendingPeriodsInternal(
+function setRiskPoolingPeriodsInternal(
     IStore s,
     bytes32 coverKey,
     uint256 lendingPeriod,
@@ -224,12 +244,15 @@ function setLendingPeriodsInternal(
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
-    emit LendingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
+    emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
 
 ### getLendingPeriodKey
+
+Hash key of the "lending period" for the given cover.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getLendingPeriodKey(bytes32 coverKey) public pure
@@ -240,7 +263,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -306,6 +329,8 @@ function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
 
 ### getMaxLendingRatioKey
 
+Hash key of the "maximum lending ratio" for the given cover.
+
 ```solidity
 function getMaxLendingRatioKey() public pure
 returns(bytes32)
@@ -328,6 +353,9 @@ function getMaxLendingRatioKey() public pure returns (bytes32) {
 
 ### getWithdrawalWindowKey
 
+Hash key of the "withdrawal window duration" for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function getWithdrawalWindowKey(bytes32 coverKey) public pure
 returns(bytes32)
@@ -337,7 +365,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -488,6 +516,9 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 
 ### getStrategyOutKey
 
+Hash key of the "strategy outs" for the given cover and token.
+ Warning: this function does not validate the cover key and token supplied.
+
 ```solidity
 function getStrategyOutKey(bytes32 coverKey, address token) public pure
 returns(bytes32)
@@ -497,8 +528,8 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| token | address |  | 
+| coverKey | bytes32 | Enter cover key | 
+| token | address | Enter the token address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -512,6 +543,9 @@ function getStrategyOutKey(bytes32 coverKey, address token) public pure returns 
 
 ### getSpecificStrategyOutKey
 
+Hash key of the "outs" to a specific strategy for the given cover and token.
+ Warning: this function does not validate the cover key and token supplied.
+
 ```solidity
 function getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, address token) public pure
 returns(bytes32)
@@ -521,9 +555,9 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 | strategyName | bytes32 |  | 
-| token | address |  | 
+| token | address | Enter the token address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -678,7 +712,6 @@ function postReceiveFromStrategyInternal(
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
-    console.log("[stg] ais: %s, rec: %s", amountInThisStrategy, received);
     _logIncomes(s, coverKey, strategyName, income, loss);
   }
 ```
@@ -899,7 +932,6 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -1000,6 +1032,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

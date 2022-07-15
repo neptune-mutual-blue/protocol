@@ -8,5 +8,5 @@ module.exports = {
   constantOptimizer: false,
   yul: false,
   configureYulOptimizer: true,
-  skipFiles: ['fakes', 'mock', 'libraries/BokkyPooBahsDateTimeLibrary.sol']
+  skipFiles: ['fakes', 'mock', 'dependencies']
 }

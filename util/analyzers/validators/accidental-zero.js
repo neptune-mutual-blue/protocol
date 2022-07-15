@@ -6,7 +6,7 @@ const validate = async (code, _, name) => {
     return null
   }
 
-  const supressionMissing = code.toLowerCase().indexOf('@suppress-accidental-zero') === -1
+  const supressionMissing = code.toLowerCase().indexOf('@suppress-accidental-zero') === -1 && code.toLowerCase().indexOf('@custom:suppress-accidental-zero') === -1
   const hasLogic = code.toLowerCase().indexOf('> ') > -1 || code.toLowerCase().indexOf('>= ') > -1 || code.toLowerCase().indexOf('< ') > -1 || code.toLowerCase().indexOf('<= ') > -1
 
   if (supressionMissing && hasLogic) {

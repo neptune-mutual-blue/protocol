@@ -91,6 +91,6 @@ describe('Compound Withdrawal: Faulty Pool', () => {
     await daiDelegator.setReturnValue('0')
 
     await compoundStrategy.withdraw(deployed.coverKey)
-      .should.be.rejectedWith('Redeeming cDai failed')
+      .should.be.rejectedWith('Redeeming cUS$ failed')
   })
 })

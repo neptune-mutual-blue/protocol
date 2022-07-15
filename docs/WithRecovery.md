@@ -39,7 +39,7 @@ function recoverEther(address sendTo) external onlyOwner {
 
 ### recoverToken
 
-Recover all IERC-20 compatible tokens sent to this address.
+Recover an ERC-20 compatible token sent to this contract.
 
 ```solidity
 function recoverToken(IERC20 malicious, address sendTo) external nonpayable onlyOwner 
@@ -49,7 +49,7 @@ function recoverToken(IERC20 malicious, address sendTo) external nonpayable only
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| malicious | IERC20 | IERC-20 The address of the token contract | 
+| malicious | IERC20 | ERC-20 The address of the token contract | 
 | sendTo | address | The address that receives the recovered tokens | 
 
 <details>
@@ -74,7 +74,6 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -175,6 +174,7 @@ function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

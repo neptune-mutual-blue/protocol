@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "./ProtoUtilV1.sol";
 import "./CoverUtilV1.sol";
@@ -19,6 +19,8 @@ library PolicyHelperV1 {
   using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
+
+  uint256 public constant COVER_LAG_FALLBACK_VALUE = 1 days;
 
   function calculatePolicyFeeInternal(
     IStore s,
@@ -42,7 +44,7 @@ library PolicyHelperV1 {
     (uint256 availableLiquidity, uint256 commitment, uint256 reassuranceFund) = _getCoverPoolAmounts(s, coverKey, productKey);
 
     require(amountToCover > 0, "Please enter an amount");
-    require(coverDuration > 0 && coverDuration <= 3, "Invalid duration");
+    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid duration");
     require(floor > 0 && ceiling > floor, "Policy rate config error");
 
     require(availableLiquidity - commitment > amountToCover, "Insufficient fund");
@@ -161,7 +163,8 @@ library PolicyHelperV1 {
     ICxTokenFactory factory = s.getCxTokenFactory();
     cxToken = factory.deploy(coverKey, productKey, _getCxTokenName(coverKey, productKey, expiryDate), expiryDate);
 
-    // @note: cxTokens are no longer protocol members
+    // @warning: Do not uncomment the following line
+    // Reason: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
     // s.getProtocol().addMember(cxToken);
     return ICxToken(cxToken);
@@ -203,15 +206,20 @@ library PolicyHelperV1 {
   }
 
   /**
+   *
    * @dev Purchase cover for the specified amount. <br /> <br />
    * When you purchase covers, you receive equal amount of cxTokens back.
    * You need the cxTokens to claim the cover when resolution occurs.
    * Each unit of cxTokens are fully redeemable at 1:1 ratio to the given
    * stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
+   *
+   * @custom:suppress-malicious-erc The ERC-20 `stablecoin` can't be manipulated via user input.
+   *
    * @param onBehalfOf Enter the address where the claim tokens (cxTokens) should be sent.
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin `liquidityToken` to cover.
+   * @param amountToCover Enter the amount of the stablecoin to cover.
+   *
    */
   function purchaseCoverInternal(
     IStore s,
@@ -235,7 +243,6 @@ library PolicyHelperV1 {
     address stablecoin = s.getStablecoin();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
-    // @suppress-malicious-erc20 `stablecoin` can't be manipulated via user input.
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
     IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
@@ -250,18 +257,21 @@ library PolicyHelperV1 {
   }
 
   function getCoverageLagInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
     uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
 
+    // Custom means set for this exact cover
     if (custom > 0) {
       return custom;
     }
+
+    // Global means set for all covers (without specifying a cover key)
+    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
 
     if (global > 0) {
       return global;
     }
 
-    // fallback
-    return 1 days;
+    // Fallback means the default option
+    return COVER_LAG_FALLBACK_VALUE;
   }
 }

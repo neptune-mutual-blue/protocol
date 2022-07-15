@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./StoreKeyUtil.sol";
 import "../interfaces/IStore.sol";
@@ -10,8 +10,15 @@ import "../interfaces/IERC20Detailed.sol";
 library ProtoUtilV1 {
   using StoreKeyUtil for IStore;
 
+  // Magic numbers
+  uint256 public constant MAX_POLICY_DURATION = 3;
+  bytes32 public constant KEY_INTENTIONALLY_EMPTY = 0;
+  bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY = 0;
   uint256 public constant MULTIPLIER = 10_000;
-  uint256 public constant MAX_LIQUIDITY = 45_000_000_000;
+  uint256 public constant MAX_LIQUIDITY = 10_000_000_000;
+  uint256 public constant MAX_PROPOSAL_AMOUNT = 10_000_000_000;
+  uint256 public constant MAX_NPM_STAKE = 10_000_000_000;
+  uint256 public constant NPM_PRECISION = 1 ether;
   uint256 public constant CXTOKEN_PRECISION = 1 ether;
   uint256 public constant POD_PRECISION = 1 ether;
 
@@ -166,7 +173,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO = "ns:gov:rep:stake:owned:no";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake reward to burn.
-  /// Note that the reward comes from the losing camp after resolution is achieved.
+  /// @custom:note that the reward comes from the losing camp after resolution is achieved.
   bytes32 public constant NS_GOVERNANCE_REPORTING_BURN_RATE = "ns:gov:rep:burn:rate";
 
   /// @dev The percentage rate (x MULTIPLIER) of amount of reporting/unstake
@@ -208,24 +215,24 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_PROTOCOL = "Neptune Mutual Protocol";
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
-  bytes32 public constant CNAME_POLICY_ADMIN = "PolicyAdmin";
-  bytes32 public constant CNAME_POLICY_MANAGER = "PolicyManager";
+  bytes32 public constant CNAME_POLICY_ADMIN = "Policy Admin";
+  bytes32 public constant CNAME_POLICY_MANAGER = "Policy Manager";
   bytes32 public constant CNAME_BOND_POOL = "BondPool";
-  bytes32 public constant CNAME_STAKING_POOL = "StakingPool";
-  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStakingPool";
-  bytes32 public constant CNAME_CLAIMS_PROCESSOR = "ClaimsProcessor";
+  bytes32 public constant CNAME_STAKING_POOL = "Staking Pool";
+  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStaking Pool";
+  bytes32 public constant CNAME_CLAIMS_PROCESSOR = "Claims Processor";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
   bytes32 public constant CNAME_RESOLUTION = "Resolution";
-  bytes32 public constant CNAME_VAULT_FACTORY = "VaultFactory";
-  bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxTokenFactory";
-  bytes32 public constant CNAME_COVER_STAKE = "CoverStake";
-  bytes32 public constant CNAME_COVER_REASSURANCE = "CoverReassurance";
+  bytes32 public constant CNAME_VAULT_FACTORY = "Vault Factory";
+  bytes32 public constant CNAME_CXTOKEN_FACTORY = "cxToken Factory";
+  bytes32 public constant CNAME_COVER_STAKE = "Cover Stake";
+  bytes32 public constant CNAME_COVER_REASSURANCE = "Cover Reassurance";
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
-  bytes32 public constant CNAME_VAULT_DELEGATE = "VaultDelegate";
-  bytes32 public constant CNAME_LIQUIDITY_ENGINE = "LiquidityEngine";
-  bytes32 public constant CNAME_STRATEGY_AAVE = "AaveStrategy";
-  bytes32 public constant CNAME_STRATEGY_COMPOUND = "CompoundStrategy";
+  bytes32 public constant CNAME_VAULT_DELEGATE = "Vault Delegate";
+  bytes32 public constant CNAME_LIQUIDITY_ENGINE = "Liquidity Engine";
+  bytes32 public constant CNAME_STRATEGY_AAVE = "Aave Strategy";
+  bytes32 public constant CNAME_STRATEGY_COMPOUND = "Compound Strategy";
 
   function getProtocol(IStore s) external view returns (IProtocol) {
     return IProtocol(getProtocolAddress(s));
@@ -235,19 +242,27 @@ library ProtoUtilV1 {
     return s.getAddressByKey(CNS_CORE);
   }
 
-  function getContract(IStore s, bytes32 name) external view returns (address) {
-    return _getContract(s, name);
+  function getContract(
+    IStore s,
+    bytes32 name,
+    bytes32 key
+  ) public view returns (address) {
+    if (key > 0) {
+      return s.getAddressByKeys(NS_CONTRACTS, name, key);
+    }
+
+    return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 
-  function isProtocolMember(IStore s, address contractAddress) external view returns (bool) {
-    return _isProtocolMember(s, contractAddress);
+  function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 
   /**
    * @dev Reverts if the caller is one of the protocol members.
    */
   function mustBeProtocolMember(IStore s, address contractAddress) external view {
-    bool isMember = _isProtocolMember(s, contractAddress);
+    bool isMember = isProtocolMember(s, contractAddress);
     require(isMember, "Not a protocol member");
   }
 
@@ -259,9 +274,10 @@ library ProtoUtilV1 {
   function mustBeExactContract(
     IStore s,
     bytes32 name,
+    bytes32 key,
     address sender
   ) public view {
-    address contractAddress = _getContract(s, name);
+    address contractAddress = getContract(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 
@@ -282,7 +298,7 @@ library ProtoUtilV1 {
     bytes32 name,
     address caller
   ) public view {
-    return mustBeExactContract(s, name, caller);
+    return mustBeExactContract(s, name, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, caller);
   }
 
   function npmToken(IStore s) external view returns (IERC20) {
@@ -320,13 +336,5 @@ library ProtoUtilV1 {
 
   function getBurnAddress(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_BURNER);
-  }
-
-  function _isProtocolMember(IStore s, address contractAddress) private view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
-  }
-
-  function _getContract(IStore s, bytes32 name) private view returns (address) {
-    return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 }

@@ -83,8 +83,6 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 
 ```javascript
 function recoverEther(address sendTo) external onlyOwner {
-    // @suppress-pausable Can only be called by the owner
-    // @suppress-reentrancy Can only be called by the owner
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
@@ -111,9 +109,6 @@ function recoverToken(address token, address sendTo) external nonpayable onlyOwn
 
 ```javascript
 function recoverToken(address token, address sendTo) external onlyOwner {
-    // @suppress-pausable Can only be called by the owner
-    // @suppress-reentrancy Can only be called by the owner
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
@@ -127,6 +122,8 @@ function recoverToken(address token, address sendTo) external onlyOwner {
 </details>
 
 ### pause
+
+Pauses the store
 
 ```solidity
 function pause() external nonpayable onlyOwner 
@@ -142,13 +139,14 @@ function pause() external nonpayable onlyOwner
 
 ```javascript
 function pause() external onlyOwner {
-    // @suppress-reentrancy Can only be called by the owner
     super._pause();
   }
 ```
 </details>
 
 ### unpause
+
+Unpauses the store
 
 ```solidity
 function unpause() external nonpayable onlyOwner 
@@ -164,7 +162,6 @@ function unpause() external nonpayable onlyOwner
 
 ```javascript
 function unpause() external onlyOwner {
-    // @suppress-reentrancy Can only be called by the owner
     super._unpause();
   }
 ```
@@ -247,7 +244,6 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -348,6 +344,7 @@ function _throwIfSenderNotProtocolMember() internal view {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

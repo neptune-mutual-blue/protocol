@@ -11,6 +11,7 @@ View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/librarie
 ### getByteCode
 
 Gets the bytecode of the `cxToken` contract
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getByteCode(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external pure
@@ -59,7 +60,6 @@ function getByteCode(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -160,6 +160,7 @@ function getByteCode(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

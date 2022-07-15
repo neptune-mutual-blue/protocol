@@ -212,17 +212,20 @@ const deployDependencies = async () => {
 
   const vaultLib = await deployer.deployWithLibraries(cache, 'VaultLibV1', {
     CoverUtilV1: coverUtilV1.address,
+    GovernanceUtilV1: governanceUtilV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
-    StrategyLibV1: strategyLibV1.address
+    StrategyLibV1: strategyLibV1.address,
+    ValidationLibV1: validationLibV1.address
   })
 
   const vaultDelegate = await deployer.deployWithLibraries(cache, 'VaultDelegate',
     {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
+      GovernanceUtilV1: governanceUtilV1.address,
       ProtoUtilV1: protoUtilV1.address,
       RoutineInvokerLibV1: routineInvokerLibV1.address,
       StoreKeyUtil: storeKeyUtil.address,
@@ -238,6 +241,7 @@ const deployDependencies = async () => {
   const cxTokenFactoryLib = await deployer.deployWithLibraries(cache, 'cxTokenFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    CoverUtilV1: coverUtilV1.address,
     GovernanceUtilV1: governanceUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     ProtoUtilV1: protoUtilV1.address,

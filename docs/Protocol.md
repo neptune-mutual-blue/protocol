@@ -10,7 +10,7 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 **Constants & Variables**
 
 ```js
-uint256 public initialized;
+bool public initialized;
 
 ```
 
@@ -18,12 +18,12 @@ uint256 public initialized;
 
 - [constructor(IStore store)](#)
 - [initialize(address[] addresses, uint256[] values)](#initialize)
-- [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
-- [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
+- [addMember(address member)](#addmember)
+- [removeMember(address member)](#removemember)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
-- [removeMember(address member)](#removemember)
-- [addMember(address member)](#addmember)
+- [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
+- [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
 - [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
 - [version()](#version)
 - [getName()](#getname)
@@ -50,7 +50,8 @@ constructor(IStore store) ProtoBase(store) {}
 
 ### initialize
 
-Initializes the protocol
+Initializes the protocol once. There is only one instance of the protocol
+ that can function.
 
 ```solidity
 function initialize(address[] addresses, uint256[] values) external nonpayable nonReentrant whenNotPaused 
@@ -61,18 +62,39 @@ function initialize(address[] addresses, uint256[] values) external nonpayable n
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | addresses | address[] | [0] burner | 
-| values | uint256[] | [0] coverCreationFees | 
+| values | uint256[] | [0] coverCreationFee | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
-    // @suppress-initialization Can only be initialized by the deployer or an admin
-    // @suppress-acl Can only be called by the deployer or an admin
     s.mustBeProtocolMember(msg.sender);
 
-    if (initialized == 1) {
+    require(addresses[0] != address(0), "Invalid Burner");
+    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
+    require(addresses[4] != address(0), "Invalid Treasury");
+    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+
+    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
+    // These checks are disabled as this function is only accessible to an admin
+    // require(values[0] > 0, "Invalid cover creation fee");
+    // require(values[1] > 0, "Invalid cover creation stake");
+    // require(values[2] > 0, "Invalid first reporting stake");
+    // require(values[3] > 0, "Invalid claim period");
+    // require(values[4] > 0, "Invalid reporting burn rate");
+    // require(values[5] > 0, "Invalid reporter income: NPM");
+    // require(values[6] > 0, "Invalid platform fee: claims");
+    // require(values[7] > 0, "Invalid reporter income: claims");
+    // require(values[8] > 0, "Invalid vault fee: flashloan");
+    // require(values[9] > 0, "Invalid platform fee: flashloan");
+    // require(values[10] >= 24 hours, "Invalid cooldown period");
+    // require(values[11] > 0, "Invalid state update interval");
+    // require(values[12] > 0, "Invalid max lending ratio");
+
+    if (initialized == true) {
       AccessControlLibV1.mustBeAdmin(s);
       require(addresses[3] == address(0), "Can't change NPM");
     } else {
@@ -83,12 +105,6 @@ function initialize(address[] calldata addresses, uint256[] calldata values) ext
 
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
     }
-
-    require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    require(addresses[4] != address(0), "Invalid Treasury");
-    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
@@ -112,13 +128,145 @@ function initialize(address[] calldata addresses, uint256[] calldata values) ext
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
-    initialized = 1;
+    initialized = true;
     emit Initialized(addresses, values);
   }
 ```
 </details>
 
+### addMember
+
+Adds member to the protocol
+ A member is a trusted EOA or a contract that was added to the protocol using `addContract`
+ function. When a contract is removed using `upgradeContract` function, the membership of previous
+ contract is also removed.
+
+```solidity
+function addMember(address member) external nonpayable nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| member | address | Enter an address to add as a protocol member | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addMember(address member) external override nonReentrant whenNotPaused {
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    AccessControlLibV1.addMemberInternal(s, member);
+    emit MemberAdded(member);
+  }
+```
+</details>
+
+### removeMember
+
+Removes a member from the protocol. This function is only accessible
+ to an upgrade agent.
+
+```solidity
+function removeMember(address member) external nonpayable nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| member | address | Enter an address to remove as a protocol member | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function removeMember(address member) external override nonReentrant whenNotPaused {
+    ProtoUtilV1.mustBeProtocolMember(s, member);
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+
+    AccessControlLibV1.removeMemberInternal(s, member);
+    emit MemberRemoved(member);
+  }
+```
+</details>
+
+### addContract
+
+Adds a contract to the protocol. See `addContractWithKey` for more info.
+
+```solidity
+function addContract(bytes32 namespace, address contractAddress) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 |  | 
+| contractAddress | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContract(bytes32 namespace, address contractAddress) external override {
+    addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
+  }
+```
+</details>
+
+### addContractWithKey
+
+Adds a contract to the protocol using a namespace and key.
+ The contracts that are added using this function are also added as protocol members.
+ Each contract you add to the protocol needs to also specify the namespace and also
+ key if applicable. The key is useful when multiple instances of a contract can
+ be deployed. For example, multiple instances of cxTokens and Vaults can be deployed on demand.
+ Tip: find out how the `getVaultFactoryContract().deploy` function is being used.
+
+```solidity
+function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress) public nonpayable nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespace | bytes32 | Enter a unique namespace for this contract | 
+| key | bytes32 | Enter a key if this contract has siblings | 
+| contractAddress | address | Enter the contract address to add. | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContractWithKey(
+    bytes32 namespace,
+    bytes32 key,
+    address contractAddress
+  ) public override nonReentrant whenNotPaused {
+    require(contractAddress != address(0), "Invalid contract");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeUpgradeAgent(s);
+    address current = s.getProtocolContract(namespace);
+
+    require(current == address(0), "Please upgrade contract");
+
+    AccessControlLibV1.addContractInternal(s, namespace, key, contractAddress);
+    emit ContractAdded(namespace, key, contractAddress);
+  }
+```
+</details>
+
 ### upgradeContract
+
+Upgrades a contract at the given namespace. See `upgradeContractWithKey` for more info.
 
 ```solidity
 function upgradeContract(bytes32 namespace, address previous, address current) external nonpayable
@@ -141,25 +289,30 @@ function upgradeContract(
     address previous,
     address current
   ) external override {
-    upgradeContractWithKey(namespace, 0, previous, current);
+    upgradeContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, previous, current);
   }
 ```
 </details>
 
 ### upgradeContractWithKey
 
+Upgrades a contract at the given namespace and key.
+ The previous contract's protocol membership is revoked and
+ the current immediately starts assuming responsbility of
+ whatever the contract needs to do at the supplied namespace and key.
+
 ```solidity
-function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current) public nonpayable nonReentrant 
+function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current) public nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| namespace | bytes32 |  | 
-| key | bytes32 |  | 
-| previous | address |  | 
-| current | address |  | 
+| namespace | bytes32 | Enter a unique namespace for this contract | 
+| key | bytes32 | Enter a key if this contract has siblings | 
+| previous | address | Enter the existing contract address at this namespace and key. | 
+| current | address | Enter the contract address which will replace the previous contract. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -170,136 +323,29 @@ function upgradeContractWithKey(
     bytes32 key,
     address previous,
     address current
-  ) public override nonReentrant {
+  ) public override nonReentrant whenNotPaused {
+    require(current != address(0), "Invalid contract");
+
     ProtoUtilV1.mustBeProtocolMember(s, previous);
+    ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
     emit ContractUpgraded(namespace, key, previous, current);
   }
 ```
 </details>
 
-### addContract
-
-```solidity
-function addContract(bytes32 namespace, address contractAddress) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| namespace | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addContract(bytes32 namespace, address contractAddress) external override {
-    addContractWithKey(namespace, 0, contractAddress);
-  }
-```
-</details>
-
-### addContractWithKey
-
-```solidity
-function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress) public nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| namespace | bytes32 |  | 
-| key | bytes32 |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addContractWithKey(
-    bytes32 namespace,
-    bytes32 key,
-    address contractAddress
-  ) public override nonReentrant {
-    // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeUpgradeAgent(s);
-    address current = s.getProtocolContract(namespace);
-
-    require(current == address(0), "Please upgrade contract");
-
-    AccessControlLibV1.addContractInternal(s, namespace, key, contractAddress);
-    emit ContractAdded(namespace, key, contractAddress);
-  }
-```
-</details>
-
-### removeMember
-
-```solidity
-function removeMember(address member) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function removeMember(address member) external override nonReentrant {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
-    ProtoUtilV1.mustBeProtocolMember(s, member);
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeUpgradeAgent(s);
-
-    AccessControlLibV1.removeMemberInternal(s, member);
-    emit MemberRemoved(member);
-  }
-```
-</details>
-
-### addMember
-
-```solidity
-function addMember(address member) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| member | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function addMember(address member) external override nonReentrant {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeUpgradeAgent(s);
-
-    AccessControlLibV1.addMemberInternal(s, member);
-    emit MemberAdded(member);
-  }
-```
-</details>
-
 ### grantRoles
 
+Grants roles to the protocol.
+ Individual Neptune Mutual protocol contracts inherit roles
+ defined to this contract. Meaning, the `AccessControl` logic
+ here is used everywhere else.
+
 ```solidity
-function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable nonReentrant 
+function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -312,7 +358,9 @@ function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpaya
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant {
+function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
+    // @suppress-zero-value-check Checked
+    require(detail.length > 0, "Invalid args");
     AccessControlLibV1.mustBeAdmin(s);
 
     for (uint256 i = 0; i < detail.length; i++) {
@@ -384,7 +432,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -485,6 +532,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

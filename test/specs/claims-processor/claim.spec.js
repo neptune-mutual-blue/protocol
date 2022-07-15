@@ -26,7 +26,7 @@ describe('Claims Processor: `claim` function', () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
     await cxToken.approve(processor.address, '1')
 
     await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, '1')
@@ -38,7 +38,7 @@ describe('Claims Processor: `claim` function', () => {
     const incidentDate = '1234'
     const amount = '1'
 
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
     await cxToken.approve(processor.address, '1')
 
     const tx = await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, amount)
@@ -60,7 +60,7 @@ describe('Claims Processor: `claim` function', () => {
     const coverKey = key.toBytes32('test')
     const incidentDate = '1234'
 
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
     await cxToken.approve(processor.address, '1')
 
     await processor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, '0')

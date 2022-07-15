@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IRecoverable.sol";
 import "../libraries/BaseLibV1.sol";
@@ -40,10 +40,13 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * @dev Recover all ERC-20 compatible tokens sent to this address.
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
+   *
+   * @custom:suppress-malicious-erc The malicious ERC-20 `token` should only be invoked via `NTransferUtil`.
+   * @custom:suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
+   *
    * @param token ERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external override nonReentrant {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the recovery agent has to check the token code manually.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeRecoveryAgent(s);
     BaseLibV1.recoverTokenInternal(token, sendTo);

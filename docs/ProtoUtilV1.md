@@ -8,7 +8,16 @@ View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoU
 **Constants & Variables**
 
 ```js
+uint256 public constant MAX_POLICY_DURATION;
+bytes32 public constant KEY_INTENTIONALLY_EMPTY;
+bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY;
 uint256 public constant MULTIPLIER;
+uint256 public constant MAX_LIQUIDITY;
+uint256 public constant MAX_PROPOSAL_AMOUNT;
+uint256 public constant MAX_NPM_STAKE;
+uint256 public constant NPM_PRECISION;
+uint256 public constant CXTOKEN_PRECISION;
+uint256 public constant POD_PRECISION;
 bytes32 public constant CNS_CORE;
 bytes32 public constant CNS_NPM;
 bytes32 public constant CNS_COVER;
@@ -50,7 +59,7 @@ bytes32 public constant NS_COVER_REASSURANCE_PAYOUT;
 bytes32 public constant NS_COVER_REASSURANCE_WEIGHT;
 bytes32 public constant NS_COVER_REASSURANCE_RATE;
 bytes32 public constant NS_COVER_LEVERAGE_FACTOR;
-bytes32 public constant NS_COVER_FEE_EARNING;
+bytes32 public constant NS_COVER_CREATION_FEE_EARNING;
 bytes32 public constant NS_COVER_INFO;
 bytes32 public constant NS_COVER_OWNER;
 bytes32 public constant NS_COVER_SUPPORTS_PRODUCTS;
@@ -64,7 +73,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
 bytes32 public constant NS_COVER_LIQUIDITY_MIN_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_STAKE;
 bytes32 public constant NS_COVER_LIQUIDITY_COMMITTED;
-bytes32 public constant NS_COVER_LIQUIDITY_NAME;
+bytes32 public constant NS_COVER_STABLECOIN_NAME;
 bytes32 public constant NS_COVER_REQUIRES_WHITELIST;
 bytes32 public constant NS_COVER_HAS_FLASH_LOAN;
 bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE;
@@ -72,6 +81,7 @@ bytes32 public constant NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL;
 bytes32 public constant NS_COVERAGE_LAG;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
+bytes32 public constant NS_POLICY_DISABLED;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
@@ -140,10 +150,10 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 
 - [getProtocol(IStore s)](#getprotocol)
 - [getProtocolAddress(IStore s)](#getprotocoladdress)
-- [getContract(IStore s, bytes32 name)](#getcontract)
+- [getContract(IStore s, bytes32 name, bytes32 key)](#getcontract)
 - [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
-- [mustBeExactContract(IStore s, bytes32 name, address sender)](#mustbeexactcontract)
+- [mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender)](#mustbeexactcontract)
 - [senderMustBeExactContract(IStore s, bytes32 name)](#sendermustbeexactcontract)
 - [callerMustBeExactContract(IStore s, bytes32 name, address caller)](#callermustbeexactcontract)
 - [npmToken(IStore s)](#npmtoken)
@@ -153,9 +163,8 @@ bytes32 public constant CNAME_STRATEGY_COMPOUND;
 - [getNpmPriceOracle(IStore s)](#getnpmpriceoracle)
 - [getTreasury(IStore s)](#gettreasury)
 - [getStablecoin(IStore s)](#getstablecoin)
+- [getStablecoinPrecision(IStore s)](#getstablecoinprecision)
 - [getBurnAddress(IStore s)](#getburnaddress)
-- [_isProtocolMember(IStore s, address contractAddress)](#_isprotocolmember)
-- [_getContract(IStore s, bytes32 name)](#_getcontract)
 
 ### getProtocol
 
@@ -206,7 +215,7 @@ function getProtocolAddress(IStore s) public view returns (address) {
 ### getContract
 
 ```solidity
-function getContract(IStore s, bytes32 name) external view
+function getContract(IStore s, bytes32 name, bytes32 key) public view
 returns(address)
 ```
 
@@ -216,13 +225,22 @@ returns(address)
 | ------------- |------------- | -----|
 | s | IStore |  | 
 | name | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getContract(IStore s, bytes32 name) external view returns (address) {
-    return _getContract(s, name);
+function getContract(
+    IStore s,
+    bytes32 name,
+    bytes32 key
+  ) public view returns (address) {
+    if (key > 0) {
+      return s.getAddressByKeys(NS_CONTRACTS, name, key);
+    }
+
+    return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 ```
 </details>
@@ -230,7 +248,7 @@ function getContract(IStore s, bytes32 name) external view returns (address) {
 ### isProtocolMember
 
 ```solidity
-function isProtocolMember(IStore s, address contractAddress) external view
+function isProtocolMember(IStore s, address contractAddress) public view
 returns(bool)
 ```
 
@@ -245,8 +263,8 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isProtocolMember(IStore s, address contractAddress) external view returns (bool) {
-    return _isProtocolMember(s, contractAddress);
+function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 ```
 </details>
@@ -271,7 +289,7 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view
 
 ```javascript
 function mustBeProtocolMember(IStore s, address contractAddress) external view {
-    bool isMember = _isProtocolMember(s, contractAddress);
+    bool isMember = isProtocolMember(s, contractAddress);
     require(isMember, "Not a protocol member");
   }
 ```
@@ -282,7 +300,7 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view {
 Ensures that the sender matches with the exact contract having the specified name.
 
 ```solidity
-function mustBeExactContract(IStore s, bytes32 name, address sender) public view
+function mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender) public view
 ```
 
 **Arguments**
@@ -291,6 +309,7 @@ function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 | ------------- |------------- | -----|
 | s | IStore | ender Enter the `msg.sender` value | 
 | name | bytes32 | Enter the name of the contract | 
+| key | bytes32 |  | 
 | sender | address | Enter the `msg.sender` value | 
 
 <details>
@@ -300,9 +319,10 @@ function mustBeExactContract(IStore s, bytes32 name, address sender) public view
 function mustBeExactContract(
     IStore s,
     bytes32 name,
+    bytes32 key,
     address sender
   ) public view {
-    address contractAddress = _getContract(s, name);
+    address contractAddress = getContract(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 ```
@@ -358,7 +378,7 @@ function callerMustBeExactContract(
     bytes32 name,
     address caller
   ) public view {
-    return mustBeExactContract(s, name, caller);
+    return mustBeExactContract(s, name, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, caller);
   }
 ```
 </details>
@@ -505,7 +525,7 @@ function getTreasury(IStore s) external view returns (address) {
 ### getStablecoin
 
 ```solidity
-function getStablecoin(IStore s) external view
+function getStablecoin(IStore s) public view
 returns(address)
 ```
 
@@ -519,8 +539,31 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoin(IStore s) external view returns (address) {
+function getStablecoin(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
+  }
+```
+</details>
+
+### getStablecoinPrecision
+
+```solidity
+function getStablecoinPrecision(IStore s) external view
+returns(uint256)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getStablecoinPrecision(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoin(s)).decimals();
   }
 ```
 </details>
@@ -548,54 +591,6 @@ function getBurnAddress(IStore s) external view returns (address) {
 ```
 </details>
 
-### _isProtocolMember
-
-```solidity
-function _isProtocolMember(IStore s, address contractAddress) private view
-returns(bool)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| contractAddress | address |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _isProtocolMember(IStore s, address contractAddress) private view returns (bool) {
-    return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
-  }
-```
-</details>
-
-### _getContract
-
-```solidity
-function _getContract(IStore s, bytes32 name) private view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| name | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getContract(IStore s, bytes32 name) private view returns (address) {
-    return s.getAddressByKeys(NS_CONTRACTS, name);
-  }
-```
-</details>
-
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -608,7 +603,6 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -709,6 +703,7 @@ function _getContract(IStore s, bytes32 name) private view returns (address) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

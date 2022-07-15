@@ -28,9 +28,10 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const [owner] = await ethers.getSigners()
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
+    const incidentDate = '1234'
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -52,9 +53,10 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const [owner] = await ethers.getSigners()
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('')
+    const incidentDate = '1234'
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -67,9 +69,10 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
   it('must reject if the protocol is paused', async () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
+    const incidentDate = '1234'
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 
@@ -81,8 +84,9 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
   it('must reject if accessed by anyone else but cover manager', async () => {
     const newClaimPeriod = 7 * DAYS
     const coverKey = key.toBytes32('test')
+    const incidentDate = '1234'
 
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
     await processor.setClaimPeriod(key.toBytes32(''), newClaimPeriod).should.be.rejectedWith('Forbidden')
   })
 
@@ -90,9 +94,10 @@ describe('Claims Processor: `setClaimPeriod` function', () => {
     const [owner] = await ethers.getSigners()
     const newClaimPeriod = 0 * DAYS
     const coverKey = key.toBytes32('test')
+    const incidentDate = '1234'
 
-    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address)
-    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address)
+    const [protocolAddress] = await store.callStatic.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
+    await store.initialize(coverKey, helper.emptyBytes32, cxToken.address, incidentDate)
 
     const protocol = await attacher.protocol.attach(protocolAddress, libraries.all)
 

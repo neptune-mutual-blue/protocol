@@ -1,10 +1,13 @@
-# LiquidityEngine.sol
+# Liquidity Engine contract (LiquidityEngine.sol)
 
 View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/liquidity/LiquidityEngine.sol)
 
 **↗ Extends: [ILiquidityEngine](ILiquidityEngine.md), [Recoverable](Recoverable.md)**
 
 **LiquidityEngine**
+
+The liquidity engine contract enables liquidity manager(s)
+ to add, disable, remove, or manage lending or other income strategies.
 
 ## Functions
 
@@ -13,11 +16,10 @@ View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/li
 - [setLiquidityStateUpdateInterval(uint256 value)](#setliquiditystateupdateinterval)
 - [disableStrategy(address strategy)](#disablestrategy)
 - [deleteStrategy(address strategy)](#deletestrategy)
-- [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
-- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
+- [setRiskPoolingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setriskpoolingperiods)
 - [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
 - [getMaxLendingRatio()](#getmaxlendingratio)
-- [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
+- [getRiskPoolingPeriods(bytes32 coverKey)](#getriskpoolingperiods)
 - [getDisabledStrategies()](#getdisabledstrategies)
 - [getActiveStrategies()](#getactivestrategies)
 - [version()](#version)
@@ -45,6 +47,8 @@ constructor(IStore s) Recoverable(s) {}
 
 ### addStrategies
 
+Adds an array of strategies to the liquidity engine.
+
 ```solidity
 function addStrategies(address[] strategies) external nonpayable nonReentrant 
 ```
@@ -53,13 +57,15 @@ function addStrategies(address[] strategies) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategies | address[] |  | 
+| strategies | address[] | Enter one or more strategies. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function addStrategies(address[] calldata strategies) external override nonReentrant {
+    require(strategies.length > 0, "No strategy specified");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -70,6 +76,10 @@ function addStrategies(address[] calldata strategies) external override nonReent
 
 ### setLiquidityStateUpdateInterval
 
+The liquidity state update interval allows the protocol
+ to perform various activies such as NPM token price update,
+ deposits or withdrawals to lending strategies, and more.
+
 ```solidity
 function setLiquidityStateUpdateInterval(uint256 value) external nonpayable nonReentrant 
 ```
@@ -78,13 +88,15 @@ function setLiquidityStateUpdateInterval(uint256 value) external nonpayable nonR
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Specify the update interval value | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+    require(value > 0, "Invalid value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -96,6 +108,9 @@ function setLiquidityStateUpdateInterval(uint256 value) external override nonRee
 
 ### disableStrategy
 
+Disables a strategy by address.
+ When a strategy is disabled, it immediately withdraws and cannot lend any further.
+
 ```solidity
 function disableStrategy(address strategy) external nonpayable nonReentrant 
 ```
@@ -104,14 +119,13 @@ function disableStrategy(address strategy) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategy | address |  | 
+| strategy | address | Enter the strategy contract address to disable | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function disableStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
     // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
@@ -124,6 +138,8 @@ function disableStrategy(address strategy) external override nonReentrant {
 
 ### deleteStrategy
 
+Permanently deletes a disabled strategy by address.
+
 ```solidity
 function deleteStrategy(address strategy) external nonpayable nonReentrant 
 ```
@@ -132,15 +148,13 @@ function deleteStrategy(address strategy) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| strategy | address |  | 
+| strategy | address | Enter the strategy contract address to delete | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
 function deleteStrategy(address strategy) external override nonReentrant {
-    // @suppress-address-trust-issue The address strategy can be trusted
-    // because this function can only be invoked by a liquidity manager.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
@@ -150,25 +164,33 @@ function deleteStrategy(address strategy) external override nonReentrant {
 ```
 </details>
 
-### setLendingPeriods
+### setRiskPoolingPeriods
+
+In order to pool risks collectively, liquidity providers
+ may lend their stablecoins to a cover pool of their choosing during "lending periods"
+ and withdraw them during "withdrawal windows." These periods are known as risk pooling periods.
+ <br /> <br />
+ The default lending period is six months, and the withdrawal window is seven days.
+ Specify a cover key if you want to configure or override these periods for a cover.
+ If no cover key is specified, the values entered will be set as global parameters.
 
 ```solidity
-function setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
+function setRiskPoolingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| lendingPeriod | uint256 |  | 
-| withdrawalWindow | uint256 |  | 
+| coverKey | bytes32 | Enter a cover key to set the periods. Enter `0x` if you want to set the values globally. | 
+| lendingPeriod | uint256 | Enter the lending duration. Example: 180 days. | 
+| withdrawalWindow | uint256 | Enter the withdrawal duration. Example: 7 days. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLendingPeriods(
+function setRiskPoolingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,
     uint256 withdrawalWindow
@@ -179,40 +201,15 @@ function setLendingPeriods(
     s.mustNotBePaused();
     AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.setLendingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
-  }
-```
-</details>
-
-### setLendingPeriodsDefault
-
-```solidity
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| lendingPeriod | uint256 |  | 
-| withdrawalWindow | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeLiquidityManager(s);
-
-    require(withdrawalWindow > 0, "Please specify withdrawal window");
-
-    s.setLendingPeriodsInternal(0, lendingPeriod, withdrawalWindow);
+    s.setRiskPoolingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+    // event emitted in the above function
   }
 ```
 </details>
 
 ### setMaxLendingRatio
+
+Specify the maximum lending ratio a strategy can utilize, not to exceed 100 percent.
 
 ```solidity
 function setMaxLendingRatio(uint256 ratio) external nonpayable nonReentrant 
@@ -222,7 +219,7 @@ function setMaxLendingRatio(uint256 ratio) external nonpayable nonReentrant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| ratio | uint256 |  | 
+| ratio | uint256 | . Enter the ratio as a percentage value. Use `ProtoUtilV1.MULTIPLIER` as your divisor. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -241,6 +238,8 @@ function setMaxLendingRatio(uint256 ratio) external override nonReentrant {
 </details>
 
 ### getMaxLendingRatio
+
+Gets the maximum lending ratio a strategy can utilize.
 
 ```solidity
 function getMaxLendingRatio() external view
@@ -262,10 +261,16 @@ function getMaxLendingRatio() external view override returns (uint256 ratio) {
 ```
 </details>
 
-### getLendingPeriods
+### getRiskPoolingPeriods
+
+Returns the risk pooling periods of a given cover key.
+ Global values are returned if the risk pooling period for the given cover key was not defined.
+ If global values are also undefined, fallback value of 180-day lending period
+ and 7-day withdrawal window are returned.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
-function getLendingPeriods(bytes32 coverKey) external view
+function getRiskPoolingPeriods(bytes32 coverKey) external view
 returns(lendingPeriod uint256, withdrawalWindow uint256)
 ```
 
@@ -273,19 +278,21 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter the coverkey to retrieve the lending period of.  Warning: this function doesn't check if the supplied cover key is a valid. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
-    return s.getLendingPeriodsInternal(coverKey);
+function getRiskPoolingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+    return s.getRiskPoolingPeriodsInternal(coverKey);
   }
 ```
 </details>
 
 ### getDisabledStrategies
+
+Returns a list of disabled strategies.
 
 ```solidity
 function getDisabledStrategies() external view
@@ -308,6 +315,8 @@ function getDisabledStrategies() external view override returns (address[] memor
 </details>
 
 ### getActiveStrategies
+
+Returns a list of actively lending strategies.
 
 ```solidity
 function getActiveStrategies() external view
@@ -389,7 +398,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -490,6 +498,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

@@ -1,19 +1,42 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "./Reporter.sol";
 import "../../interfaces/IGovernance.sol";
 
 /**
  * @title Governance Contract
- * @dev The governance contract allows any NPM tokenholder
- * stake a specific minimum number of NPM tokens to submit a report.
  *
- * The reporting process begins after an incident report is submitted
- * and usually lasts for 7-days or higher based on a cover's configuration.
+ * @dev The governance contract permits any NPM tokenholder to submit a report
+ * by staking a minimum number of NPM tokens as set in the cover pool.
  *
- * It also allows follow-on reporters to submit their stakes to support
- * the first reporter or add stakes to dispute the original report.
+ * <br /> <br />
+ *
+ * The reporting procedure begins when an incident report is received and often takes seven days or longer,
+ * depending on the configuration of a cover. It also allows subsequent reporters to submit their stakes
+ * in support of the initial report or to add stakes to dispute it.
+ *
+ * <br /> <br />
+ *
+ * **Warning:**
+ *
+ * <br /> <br />
+ *
+ * Please carefully check the cover rules, cover exclusions, and standard exclusion
+ * in detail before you interact with the Governace contract(s). You entire stake will be forfeited
+ * if resolution does not go in your favor. You will be able to unstake
+ * and receive back your NPM only if:
+ *
+ * - incident resolution is in your favor
+ * - after reporting period ends
+ *
+ * <br /> <br />
+ *
+ * **By using this contract directly via a smart contract call,
+ * through an explorer service such as Etherscan, using an SDK and/or API, or in any other way,
+ * you are completely aware, fully understand, and accept the risk that you may lose all of
+ * your stake.**
+ *
  */
 contract Governance is IGovernance, Reporter {
   using GovernanceUtilV1 for IStore;

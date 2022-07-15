@@ -1,6 +1,6 @@
 # IUniswapV2RouterLike.sol
 
-View Source: [contracts/interfaces/external/IUniswapV2RouterLike.sol](../contracts/interfaces/external/IUniswapV2RouterLike.sol)
+View Source: [contracts/dependencies/uniswap-v2/IUniswapV2RouterLike.sol](../contracts/dependencies/uniswap-v2/IUniswapV2RouterLike.sol)
 
 **↘ Derived Contracts: [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)**
 
@@ -216,7 +216,6 @@ function addLiquidity(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -317,6 +316,7 @@ function addLiquidity(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

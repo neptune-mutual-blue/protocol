@@ -20,6 +20,9 @@ This contract allows governance agents "finalize"
 
 ### finalize
 
+Finalizes a cover pool or a product contract.
+ Once finalized, the cover resets back to the normal state.
+
 ```solidity
 function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
 ```
@@ -52,6 +55,7 @@ function finalize(
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
+    // The reassurance capital (if available) needs to be transferred before this cover can be finalized.
     uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
     require(transferable == 0, "Pool must be capitalized");
 
@@ -83,10 +87,7 @@ function _finalize(
     bytes32 productKey,
     uint256 incidentDate
   ) private {
-    // Reset to normal
-    // @note: do not pass incident date as we need status by key and incident date for historical significance
-    s.setStatusInternal(coverKey, productKey, 0, CoverUtilV1.CoverStatus.Normal);
-
+    // Deleting latest incident date resets this product
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
@@ -98,8 +99,6 @@ function _finalize(
     s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey);
-    // s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey);
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
     // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
 
@@ -121,7 +120,6 @@ function _finalize(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -222,6 +220,7 @@ function _finalize(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

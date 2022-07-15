@@ -6,14 +6,18 @@ View Source: [contracts/core/cxToken/cxToken.sol](../contracts/core/cxToken/cxTo
 
 **cxToken**
 
-cxTokens are minted when someone purchases a cover. <br /> <br />
- When a cover incident is successfully resolved, each unit of cxTokens can be redeemed at 1:1 ratio
- of 1 cxToken = 1 DAI/BUSD/USDC (minus platform fees).
- Important:
- cxTokens are not transferrable. You can use cxTokens only to submit a claim.
- There is a lag period before your cxTokens starts its coverage.
- After the next day's UTC EOD timestamp, cxTokens take effect and are valid until the expiration period.
- Check 'ProtoUtilV1.NS COVERAGE LAG' for more information on the lag configuration.
+cxTokens are minted when someone purchases a cover.
+ <br /> <br />
+ The cxTokens can be exchanged for a USD stablecoin at a 1:1 exchange rate
+ after a cover incident is successfully resolved (minus platform fees).
+  <br /> <br />
+ **Restrictions:**
+ - cxTokens cannot be transferred from one person to another.
+ - Only claims can be submitted with cxTokens
+ - There is a lag period before your cxTokens starts its coverage.
+ cxTokens start coverage the next day (or longer) at the UTC EOD timestamp and remain valid until the expiration date.
+ - The lag configuration can be found in [ProtoUtilV1.NS_COVERAGE_LAG](ProtoUtilV1.md)
+ and [PolicyAdmin.getCoverageLag](PolicyAdmin.md#getcoveragelag) function.
 
 ## Contract Members
 **Constants & Variables**
@@ -40,7 +44,7 @@ mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
 
 ### 
 
-Constructs this contract
+Constructs this contract.
 
 ```solidity
 function (IStore store, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiry) public nonpayable ERC20 Recoverable 
@@ -53,7 +57,7 @@ function (IStore store, bytes32 coverKey, bytes32 productKey, string tokenName, 
 | store | IStore | Provide the store contract instance | 
 | coverKey | bytes32 | Enter the cover key | 
 | productKey | bytes32 | Enter the product key | 
-| tokenName | string |  | 
+| tokenName | string | Enter token name for this ERC-20 contract. The token symbol will be `cxUSD`. | 
 | expiry | uint256 | Provide the cover expiry timestamp | 
 
 <details>
@@ -77,6 +81,7 @@ constructor(
 ### getCoverageStartsFrom
 
 Returns the value of the `coverageStartsFrom` mapping.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getCoverageStartsFrom(address account, uint256 date) external view
@@ -87,7 +92,7 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| account | address | Enter an account to get the `coverageStartsFrom` value | 
+| account | address | Enter an account to get the `coverageStartsFrom` value. | 
 | date | uint256 | Enter a date. Ensure that you supply a UTC EOD value. | 
 
 <details>
@@ -102,7 +107,14 @@ function getCoverageStartsFrom(address account, uint256 date) external view over
 
 ### _getExcludedCoverageOf
 
-Gets sum of the lagged and hence excluded policy of a given account.
+Gets sum of the lagged and, therefore, excluded policy of a given account.
+ <br /><br />
+ Only policies purchased within 24-48 hours (or longer depending on this cover's configuration) are valid.
+ Given the present codebase, the loop that follows may appear pointless and invalid.
+ <br /><br />
+ Since the protocol is upgradable but not cxTokens,
+ erroneous code could be introduced in the future,
+ which is why we go all the way until the resolution deadline.
 
 ```solidity
 function _getExcludedCoverageOf(address account) private view
@@ -120,16 +132,14 @@ returns(exclusion uint256)
 
 ```javascript
 function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
-    uint256 incidentDate = s.getLatestIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
+    uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
-    // Only the policies purchased before 24-48 hours (based on configuration) are considered valid.
-    // Given the current codebase, the following loop looks redundant.
-    // The reason why we go all the way till the resolution deadline
-    // is because since the protocol is upgradable, erroneous code can be introduced in the future.
+    uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
+
     for (uint256 i = 0; i < 14; i++) {
       uint256 date = _getEOD(incidentDate + (i * 1 days));
 
-      if (date > _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY))) {
+      if (date > resolutionEOD) {
         break;
       }
 
@@ -142,6 +152,7 @@ function _getExcludedCoverageOf(address account) private view returns (uint256 e
 ### getClaimablePolicyOf
 
 Gets the claimable policy of an account.
+ Warning: this function does not validate the input arguments.
 
 ```solidity
 function getClaimablePolicyOf(address account) external view
@@ -203,7 +214,6 @@ function mint(
     require(coverKey == COVER_KEY, "Invalid cover");
     require(productKey == PRODUCT_KEY, "Invalid product");
 
-    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.senderMustBePolicyContract();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
@@ -218,7 +228,7 @@ function mint(
 
 ### _getEOD
 
-Gets the end of day time
+Gets the EOD (End of Day) time
 
 ```solidity
 function _getEOD(uint256 date) private pure
@@ -244,7 +254,7 @@ function _getEOD(uint256 date) private pure returns (uint256) {
 
 ### burn
 
-Burns the tokens held by the sender
+Burns the tokens held by the sender.
 
 ```solidity
 function burn(uint256 amount) external nonpayable nonReentrant 
@@ -261,7 +271,6 @@ function burn(uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function burn(uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
@@ -272,6 +281,13 @@ function burn(uint256 amount) external override nonReentrant {
 
 ### _beforeTokenTransfer
 
+Overrides Openzeppelin ERC-20 contract's `_beforeTokenTransfer` hook.
+ This is called during `transfer`, `transferFrom`, `mint`, and `burn` function invocation.
+ <br /><br/>
+ **cxToken Restrictions:**
+ - An expired cxToken can't be transferred.
+ - cxTokens can only be transferred to the claims processor contract.
+
 ```solidity
 function _beforeTokenTransfer(address from, address to, uint256 ) internal view
 ```
@@ -280,9 +296,9 @@ function _beforeTokenTransfer(address from, address to, uint256 ) internal view
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| from | address |  | 
-| to | address |  | 
-|  | uint256 |  | 
+| from | address | The account sending the cxTokens | 
+| to | address | The account receiving the cxTokens | 
+|  | uint256 | from The account sending the cxTokens | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -300,7 +316,7 @@ function _beforeTokenTransfer(
 
     // cxTokens can only be transferred to the claims processor contract
     if (from != address(0) && to != address(0)) {
-      s.mustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, to);
+      s.mustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, to);
     }
   }
 ```
@@ -318,7 +334,6 @@ function _beforeTokenTransfer(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -419,6 +434,7 @@ function _beforeTokenTransfer(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

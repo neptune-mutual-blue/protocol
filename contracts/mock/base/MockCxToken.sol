@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 contract MockCxToken is ERC20 {

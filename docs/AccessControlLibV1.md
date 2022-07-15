@@ -567,6 +567,8 @@ function hasAccess(
 
 ### addContractInternal
 
+Adds a protocol member contract
+
 ```solidity
 function addContractInternal(IStore s, bytes32 namespace, bytes32 key, address contractAddress) external nonpayable
 ```
@@ -575,10 +577,10 @@ function addContractInternal(IStore s, bytes32 namespace, bytes32 key, address c
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| key | bytes32 |  | 
-| contractAddress | address |  | 
+| s | IStore | Enter the store instance | 
+| namespace | bytes32 | Enter the contract namespace | 
+| key | bytes32 | Enter the contract key | 
+| contractAddress | address | Enter the contract address | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -594,8 +596,6 @@ function addContractInternal(
     // but the contract using this library (and this function)
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
-
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addContract(s, namespace, key, contractAddress);
   }
 ```
@@ -673,6 +673,11 @@ function _deleteContract(
 
 ### upgradeContractInternal
 
+Upgrades a contract at the given namespace and key.
+ The previous contract's protocol membership is revoked and
+ the current immediately starts assuming responsbility of
+ whatever the contract needs to do at the supplied namespace and key.
+
 ```solidity
 function upgradeContractInternal(IStore s, bytes32 namespace, bytes32 key, address previous, address current) external nonpayable
 ```
@@ -681,11 +686,11 @@ function upgradeContractInternal(IStore s, bytes32 namespace, bytes32 key, addre
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| s | IStore |  | 
-| namespace | bytes32 |  | 
-| key | bytes32 |  | 
-| previous | address |  | 
-| current | address |  | 
+| s | IStore | Provide store instance | 
+| namespace | bytes32 | Enter a unique namespace for this contract | 
+| key | bytes32 | Enter a key if this contract has siblings | 
+| previous | address | Enter the existing contract address at this namespace and key. | 
+| current | address | Enter the contract address which will replace the previous contract. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -703,7 +708,6 @@ function upgradeContractInternal(
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     bool isMember = s.isProtocolMember(previous);
     require(isMember, "Not a protocol member");
 
@@ -715,6 +719,11 @@ function upgradeContractInternal(
 
 ### addMemberInternal
 
+Adds member to the protocol
+ A member is a trusted EOA or a contract that was added to the protocol using `addContract`
+ function. When a contract is removed using `upgradeContract` function, the membership of previous
+ contract is also removed.
+
 ```solidity
 function addMemberInternal(IStore s, address member) external nonpayable
 ```
@@ -724,7 +733,7 @@ function addMemberInternal(IStore s, address member) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| member | address |  | 
+| member | address | Enter an address to add as a protocol member | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -736,13 +745,15 @@ function addMemberInternal(IStore s, address member) external {
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _addMember(s, member);
   }
 ```
 </details>
 
 ### removeMemberInternal
+
+Removes a member from the protocol. This function is only accessible
+ to an upgrade agent.
 
 ```solidity
 function removeMemberInternal(IStore s, address member) external nonpayable
@@ -753,7 +764,7 @@ function removeMemberInternal(IStore s, address member) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| member | address |  | 
+| member | address | Enter an address to remove as a protocol member | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -765,7 +776,6 @@ function removeMemberInternal(IStore s, address member) external {
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    // @suppress-address-trust-issue This feature can only be accessed internally within the protocol.
     _removeMember(s, member);
   }
 ```
@@ -830,7 +840,6 @@ function _removeMember(IStore s, address member) private {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -931,6 +940,7 @@ function _removeMember(IStore s, address member) private {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

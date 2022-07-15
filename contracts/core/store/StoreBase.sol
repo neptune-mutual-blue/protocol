@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/security/Pausable.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
@@ -33,22 +33,25 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
 
   /**
    * @dev Recover all Ether held by the contract.
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   * @custom:suppress-pausable Risk tolerable. Can only be called by the owner.
    */
   function recoverEther(address sendTo) external onlyOwner {
-    // @suppress-pausable Can only be called by the owner
-    // @suppress-reentrancy Can only be called by the owner
     // slither-disable-next-line arbitrary-send
     payable(sendTo).transfer(address(this).balance);
   }
 
   /**
    * @dev Recover all IERC-20 compatible tokens sent to this address.
+   *
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   * @custom:suppress-pausable Risk tolerable. Can only be called by the owner.
+   * @custom:suppress-malicious-erc Risk tolerable. Although the token can't be trusted, the owner has to check the token code manually.
+   * @custom:suppress-address-trust-issue Risk tolerable. Although the token can't be trusted, the owner has to check the token code manually.
+   *
    * @param token IERC-20 The address of the token contract
    */
   function recoverToken(address token, address sendTo) external onlyOwner {
-    // @suppress-pausable Can only be called by the owner
-    // @suppress-reentrancy Can only be called by the owner
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 Although the token can't be trusted, the owner has to check the token code manually.
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
@@ -59,13 +62,23 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     }
   }
 
+  /**
+   * @dev Pauses the store
+   *
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   *
+   */
   function pause() external onlyOwner {
-    // @suppress-reentrancy Can only be called by the owner
     super._pause();
   }
 
+  /**
+   * @dev Unpauses the store
+   *
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   *
+   */
   function unpause() external onlyOwner {
-    // @suppress-reentrancy Can only be called by the owner
     super._unpause();
   }
 

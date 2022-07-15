@@ -1,13 +1,17 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "./VaultDelegateBase.sol";
 
 /**
+ * Important: This contract is not intended to be accessed
+ * by anyone/anything except individual vault contracts.
+ *
  * @title With Flash Loan Delegate Contract
  *
- * @dev VaultDelegateWithFlashLoan contract implements `EIP-3156 Flash Loan`.
+ * @dev This contract implements [EIP-3156 Flash Loan](https://eips.ethereum.org/EIPS/eip-3156).
+ *
  */
 abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   using ProtoUtilV1 for IStore;
@@ -18,9 +22,13 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
 
   /**
    * @dev The fee to be charged for a given loan.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param token The loan currency.
    * @param amount The amount of tokens lent.
    * @return The amount of `token` to be charged for the loan, on top of the returned principal.
+   *
    */
   function getFlashFee(
     address, /*caller*/
@@ -34,8 +42,12 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
 
   /**
    * @dev The amount of currency available to be lent.
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    * @param token The loan currency.
    * @return The amount of `token` that can be borrowed.
+   *
    */
   function getMaxFlashLoan(
     address, /*caller*/
@@ -49,7 +61,8 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   /**
    * @dev This hook runs before `flashLoan` implementation on vault(s)
    *
-   * Note:
+   * @custom:suppress-acl This function is only accessible to the vault contract
+   * @custom:note Please note the following:
    *
    * - msg.sender must be the correct vault contract
    * - Cover status should be normal
@@ -57,6 +70,7 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
    * @param coverKey Enter the cover key
    * @param token Enter the token you want to borrow
    * @param amount Enter the flash loan amount to receive
+   *
    */
   function preFlashLoan(
     address, /*caller*/
@@ -74,8 +88,6 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
       uint256 protocolFee
     )
   {
-    // @suppress-acl This function is only accessible to the vault contract
-    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     s.mustNotBePaused();
     s.mustEnsureAllProductsAreNormal(coverKey);
     s.senderMustBeVaultContract(coverKey);
@@ -96,12 +108,14 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   /**
    * @dev This hook runs after `flashLoan` implementation on vault(s)
    *
-   * Note:
+   * @custom:suppress-acl This function is only accessible to the vault contract
+   * @custom:note Please note the following:
    *
    * - msg.sender must be the correct vault contract
    * - Cover status should be normal
    *
    * @param coverKey Enter the cover key
+   *
    */
   function postFlashLoan(
     address, /*caller*/
@@ -111,7 +125,6 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
     uint256, /*amount*/
     bytes calldata /*data*/
   ) external override {
-    // @suppress-acl This function is only accessible to the vault contract
     // @suppress-zero-value-check The `amount` value isn't used and therefore not checked
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);

@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../Recoverable.sol";
@@ -22,7 +22,6 @@ import "../../libraries/NTransferUtilV2.sol";
  * @dev The vault delegate base contract includes pre and post hooks.
  * The hooks are accessible only to vault contracts.
  *
- *
  */
 abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   using ProtoUtilV1 for bytes;
@@ -37,6 +36,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
 
   /**
    * @dev Constructs this contract
+   *
    * @param store Provide the store contract instance
    */
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
@@ -44,8 +44,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev This hook runs before `transferGovernance` implementation on vault(s).
    *
-   *
-   * Note:
+   * @custom:suppress-acl This function is only callable by the claims processor contract through the vault contract
+   * @custom:note Please note the following:
    *
    * - Governance transfers are allowed via claims processor contract only.
    * - This function's caller must be the vault of the specified coverKey.
@@ -54,6 +54,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @param coverKey Provide your vault's cover key.
    *
    * @return stablecoin Returns address of the protocol stablecoin if the hook validation passes.
+   *
    */
   function preTransferGovernance(
     address caller,
@@ -61,7 +62,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address, /*to*/
     uint256 /*amount*/
   ) external override nonReentrant returns (address stablecoin) {
-    // @suppress-acl This function is only callable by the claims processor contract through the vault contract
     // @suppress-zero-value-check This function does not transfer any values
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
@@ -76,6 +76,11 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `transferGovernance` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
+   * @custom:suppress-acl This function is only callable by the claims processor contract through the vault contract
+   * @custom:note do not update state and liquidity since `transferGovernance` is an internal contract-only function
+   * @custom:suppress-reentrancy The `postTransferGovernance` hook is executed under the same context of `preTransferGovernance`.
+   *
+   * @param caller Enter your msg.sender value.
    * @param coverKey Provide your vault's cover key.
    *
    */
@@ -85,20 +90,18 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     address, /*to*/
     uint256 /*amount*/
   ) external view override {
-    // @suppress-acl This function is only callable by the claims processor contract through the vault contract
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
-    // @suppress-reentrancy The `postTransferGovernance` hook is executed under the same context of `preTransferGovernance`.
-    // @note: do not update state and liquidity since `transferGovernance` is an internal contract-only function
   }
 
   /**
    * @dev This hook runs before `transferToStrategy` implementation on vault(s)
    *
-   * Note:
+   * @custom:suppress-acl This function is only callable by a strategy contract through vault contract
+   * @custom:note Please note the following:
    *
    * - Transfers are allowed to exact strategy contracts only
    * where the strategy can perform lending.
@@ -117,7 +120,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl This function is only callable by a strategy contract through vault contract
     // @suppress-zero-value-check Checked
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
@@ -132,6 +134,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `transferToStrategy` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
+   * @custom:suppress-acl This function is only callable by a strategy contract through vault contract
+   * @custom:suppress-reentrancy Not required. The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
+   * @custom:note Do not update state and liquidity since `transferToStrategy` itself is a part of the state update
+   *
    * @param caller Enter your msg.sender value
    * @param coverKey Enter the coverKey
    * @param strategyName Enter the strategy name
@@ -144,20 +150,17 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     bytes32 strategyName,
     uint256 /*amount*/
   ) external view override {
-    // @suppress-acl This function is only callable by a strategy contract through vault contract
-    // @suppress-reentrancy The `postTransferToStrategy` hook is executed under the same context of `preTransferToStrategy`.
     s.mustNotBePaused();
     s.mustBeProtocolMember(caller);
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
-    // @note: do not update state and liquidity since `transferToStrategy` itself is a part of the state update
   }
 
   /**
    * @dev This hook runs before `receiveFromStrategy` implementation on vault(s)
    *
-   * Note:
+   * @custom:note Please note the following:
    *
    * - Access is allowed to exact strategy contracts only
    * - The caller must be the strategy contract
@@ -187,6 +190,9 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `receiveFromStrategy` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
+   * @custom:note Do not update state and liquidity since `receiveFromStrategy` itself is a part of the state update
+   * @custom:suppress-reentrancy Not required. The `postReceiveFromStrategy` hook is executed under the same context of `preReceiveFromStrategy`.
+   *
    * @param caller Enter your msg.sender value
    * @param token Enter the token your vault received from strategy
    * @param coverKey Enter the coverKey
@@ -209,20 +215,20 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
     (income, loss) = s.postReceiveFromStrategyInternal(token, coverKey, strategyName, amount);
-    // @suppress-reentrancy The `postReceiveFromStrategy` hook is executed under the same context of `preReceiveFromStrategy`.
-    // @note: do not update state and liquidity since `receiveFromStrategy` itself is a part of the state update
   }
 
   /**
    * @dev This hook runs before `addLiquidity` implementation on vault(s)
    *
-   * Note:
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:note Please note the following:
    *
    * - msg.sender must be correct vault contract
    *
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
+   *
    */
   function preAddLiquidity(
     address caller,
@@ -230,14 +236,14 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
-    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
-    VaultLibV1.mustNotExceedStablecoinThreshold(s, amount);
-    VaultLibV1.mustNotExceedNpmThreshold(amount);
+
+    ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(amount);
 
     address pod = msg.sender;
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
@@ -246,6 +252,9 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev This hook runs after `addLiquidity` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
+   *
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:suppress-reentrancy Not required. The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
    *
    * @param coverKey Enter the coverKey
    *
@@ -256,31 +265,29 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256, /*amount*/
     uint256 /*npmStakeToAdd*/
   ) external override {
-    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This function does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
     s.updateStateAndLiquidity(coverKey);
-
-    // @suppress-reentrancy The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
   }
 
   /**
    * @dev This implemention enables liquidity manages to
    * accrue interests on a vault before withdrawals are allowed.
    *
-   * Note:
+   * @custom:suppress-acl This function is only accessible to the vault contract
+   * @custom:note Please note the following:
    *
    * - Caller must be a liquidity manager
    * - msg.sender must the correct vault contract
    *
    * @param caller Enter your msg.sender value
    * @param coverKey Provide your vault's cover key
+   *
    */
   function accrueInterestImplementation(address caller, bytes32 coverKey) external override {
-    // @suppress-acl This function is only accessible to the vault contract
     s.mustNotBePaused();
     s.senderMustBeVaultContract(coverKey);
     AccessControlLibV1.callerMustBeLiquidityManager(s, caller);
@@ -291,7 +298,8 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev This hook runs before `removeLiquidity` implementation on vault(s)
    *
-   * Note:
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:note Please note the following:
    *
    * - msg.sender must be the correct vault contract
    * - Must have at couple of block height offset following a deposit.
@@ -305,6 +313,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @param podsToRedeem Enter the amount of pods to redeem
    * @param npmStakeToRemove Enter the amount of NPM stake to remove.
    * @param exit If this is set to true, LPs can remove their entire NPM stake during a withdrawal period. No restriction.
+   *
    */
   function preRemoveLiquidity(
     address caller,
@@ -313,7 +322,6 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
-    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check This call does not transfer any tokens
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
@@ -332,6 +340,9 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `removeLiquidity` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:suppress-reentrancy Not required. The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
+   *
    * @param coverKey Enter the coverKey
    *
    */
@@ -342,18 +353,22 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     uint256, /*npmStakeToRemove*/
     bool /*exit*/
   ) external override {
-    // @suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
     // @suppress-zero-value-check The uint values are not used and therefore not checked
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.updateStateAndLiquidity(coverKey);
-
-    // @suppress-reentrancy The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
   }
 
   /**
-   * @dev Calculates the amount of PODs to mint for the given amount of liquidity
+   * @dev Calculates the amount of PODs to mint for the given amount of stablecoin
+   *
+   * @param coverKey Enter the cover for which you want to calculate PODs
+   * @param stablecoinIn Enter the amount in the stablecoin units
+   *
+   * @return Returns the units of PODs to be minted if this stablecoin liquidity was supplied.
+   * Be warned that this value may change based on the cover vault's usage.
+   *
    */
   function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
@@ -364,7 +379,14 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   }
 
   /**
-   * @dev Calculates the amount of stablecoins to receive for the given amount of PODs to redeem
+   * @dev Calculates the amount of stablecoin units to receive for the given amount of PODs to redeem
+   *
+   * @param coverKey Enter the cover for which you want to calculate PODs
+   * @param podsToBurn Enter the amount in the POD units to redeem
+   *
+   * @return Returns the units of stablecoins to redeem if the specified PODs were burned.
+   * Be warned that this value may change based on the cover's vault usage.
+   *
    */
   function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
@@ -375,6 +397,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev Returns the stablecoin balance of this vault
    * This also includes amounts lent out in lending strategies by this vault
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter the cover for which you want to get the stablecoin balance
    */
   function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
@@ -383,7 +409,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
 
   /**
    * @dev Gets information of a given vault by the cover key
-   * @param coverKey Specify cover key to obtain the info of.
+   *
+   * Warning: this function does not validate the cover key and account supplied.
+   *
+   * @param coverKey Specify cover key to obtain the info of
    * @param you The address for which the info will be customized
    * @param values[0] totalPods --> Total PODs in existence
    * @param values[1] balance --> Stablecoins held in the vault
@@ -393,6 +422,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @param values[5] myShare --> My share of the liquidity pool (in stablecoin)
    * @param values[6] withdrawalOpen --> The timestamp when withdrawals are opened
    * @param values[7] withdrawalClose --> The timestamp when withdrawals are closed again
+   *
    */
   function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
     s.senderMustBeVaultContract(coverKey);

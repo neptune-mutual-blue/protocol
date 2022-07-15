@@ -26,12 +26,6 @@ Marks as a cover as "resolved" after the reporting period.
  A resolution has a (configurable) 24-hour cooldown period
  that enables governance admins to revese decision in case of
  attack or mistake.
- Note:
- An incident can be resolved:
- - by a governance agent
- - if it was reported
- - after the reporting period
- - if it wasn't resolved earlier
 
 ```solidity
 function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
@@ -65,7 +59,7 @@ function resolve(
     s.mustBeAfterReportingPeriod(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
-    bool decision = s.getCoverStatusInternal(coverKey, productKey) == CoverUtilV1.CoverStatus.IncidentHappened;
+    bool decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
   }
@@ -75,12 +69,6 @@ function resolve(
 ### emergencyResolve
 
 Enables governance admins to perform emergency resolution.
- Note:
- An incident can undergo an emergency resolution:
- - by a governance admin
- - if it was reported
- - after the reporting period
- - before the resolution deadline
 
 ```solidity
 function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision) external nonpayable nonReentrant 
@@ -173,7 +161,7 @@ function _resolve(
     //    who staked for `Incident Happened` camp can withdraw the original stake + reward.
     // 4. After finalization, the NPM holders who staked for this camp will only be able to receive
     // back the original stake. No rewards.
-    CoverUtilV1.CoverStatus status = decision ? CoverUtilV1.CoverStatus.Claimable : CoverUtilV1.CoverStatus.FalseReporting;
+    CoverUtilV1.ProductStatus status = decision ? CoverUtilV1.ProductStatus.Claimable : CoverUtilV1.ProductStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
     s.setStatusInternal(coverKey, productKey, incidentDate, status);
@@ -241,6 +229,7 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external over
 ### getCoolDownPeriod
 
 Gets the cooldown period of a given cover
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoolDownPeriod(bytes32 coverKey) external view
@@ -265,7 +254,8 @@ function getCoolDownPeriod(bytes32 coverKey) external view override returns (uin
 
 ### getResolutionDeadline
 
-Gets the resolution deadline of a given cover
+Gets the resolution deadline of a given cover product
+ Warning: this function does not validate the cover and product key supplied.
 
 ```solidity
 function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view
@@ -301,7 +291,6 @@ function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external vi
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -402,6 +391,7 @@ function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external vi
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

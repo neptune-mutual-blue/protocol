@@ -7,7 +7,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Cover: setCoverFees', () => {
+describe('Cover: setCoverCreationFee', () => {
   let deployed
 
   beforeEach(async () => {
@@ -17,10 +17,10 @@ describe('Cover: setCoverFees', () => {
   it('correctly sets cover fees', async () => {
     const fees = '1'
 
-    const tx = await deployed.cover.setCoverFees(fees)
+    const tx = await deployed.cover.setCoverCreationFee(fees)
     const { events } = await tx.wait()
 
-    const event = events.find(x => x.event === 'CoverFeeSet')
+    const event = events.find(x => x.event === 'CoverCreationFeeSet')
     event.args.previous.should.equal('0')
     event.args.current.should.equal(fees)
   })
@@ -28,7 +28,7 @@ describe('Cover: setCoverFees', () => {
   it('reverts when invalid value is passed as cover fees', async () => {
     const fees = '0'
 
-    await deployed.cover.setCoverFees(fees)
+    await deployed.cover.setCoverCreationFee(fees)
       .should.be.rejectedWith('Please specify value')
   })
 
@@ -36,7 +36,7 @@ describe('Cover: setCoverFees', () => {
     const fees = '1'
 
     await deployed.protocol.pause()
-    await deployed.cover.setCoverFees(fees)
+    await deployed.cover.setCoverCreationFee(fees)
       .should.be.rejectedWith('Protocol is paused')
     await deployed.protocol.unpause()
   })
@@ -45,7 +45,7 @@ describe('Cover: setCoverFees', () => {
     const [, bob] = await ethers.getSigners()
     const fees = '1'
 
-    await deployed.cover.connect(bob).setCoverFees(fees)
+    await deployed.cover.connect(bob).setCoverCreationFee(fees)
       .should.be.rejectedWith('Forbidden')
   })
 })

@@ -12,6 +12,8 @@ View Source: [contracts/libraries/NTransferUtilV2.sol](../contracts/libraries/NT
 
 ### ensureApproval
 
+Ensures approval of ERC20-like token
+
 ```solidity
 function ensureApproval(IERC20 malicious, address spender, uint256 amount) external nonpayable
 ```
@@ -33,9 +35,7 @@ function ensureApproval(
     address spender,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
-    // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
+    require(address(malicious) != address(0), "Invalid token address");
     require(spender != address(0), "Invalid spender");
     require(amount > 0, "Invalid transfer amount");
 
@@ -45,6 +45,8 @@ function ensureApproval(
 </details>
 
 ### ensureTransfer
+
+Ensures transfer of ERC20-like token
 
 ```solidity
 function ensureTransfer(IERC20 malicious, address recipient, uint256 amount) external nonpayable
@@ -67,10 +69,8 @@ function ensureTransfer(
     address recipient,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
-    // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
-    require(recipient != address(0), "Invalid recipient");
+    require(address(malicious) != address(0), "Invalid token address");
+    require(recipient != address(0), "Spender can't be zero");
     require(amount > 0, "Invalid transfer amount");
 
     uint256 balanceBeforeTransfer = malicious.balanceOf(recipient);
@@ -86,6 +86,8 @@ function ensureTransfer(
 </details>
 
 ### ensureTransferFrom
+
+Ensures transferFrom of ERC20-like token
 
 ```solidity
 function ensureTransferFrom(IERC20 malicious, address sender, address recipient, uint256 amount) external nonpayable
@@ -110,9 +112,8 @@ function ensureTransferFrom(
     address recipient,
     uint256 amount
   ) external {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `malicious` can't be trusted and therefore we are ensuring that it does not act funny.
-    // @suppress-address-trust-issue The address `recipient` can be trusted as we're not treating (or calling) it as a contract.
-    require(address(malicious) != address(0), "Invalid address");
+    require(address(malicious) != address(0), "Invalid token address");
+    require(sender != address(0), "Invalid sender");
     require(recipient != address(0), "Invalid recipient");
     require(amount > 0, "Invalid transfer amount");
 
@@ -140,7 +141,6 @@ function ensureTransferFrom(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -241,6 +241,7 @@ function ensureTransferFrom(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

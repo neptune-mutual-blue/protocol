@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "../interfaces/IStore.sol";
 import "../interfaces/IProtocol.sol";
 import "../libraries/ProtoUtilV1.sol";
@@ -14,12 +14,20 @@ contract Protocol is IProtocol, ProtoBase {
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  uint256 public initialized = 0;
+  bool public initialized = false;
 
   constructor(IStore store) ProtoBase(store) {} // solhint-disable-line
 
   /**
-   * @dev Initializes the protocol
+   * @dev Initializes the protocol once. There is only one instance of the protocol
+   * that can function.
+   *
+   * @custom:suppress-acl Can only be called by the deployer or an admin
+   * @custom:suppress-initialization Can only be initialized by the deployer or an admin
+   * @custom:note Burner isn't necessarily the zero address. The tokens to be burned are sent to an address,
+   * bridged back to the Ethereum mainnet (if on a different chain), and burned on a period but random basis.
+   *
+   *
    * @param addresses[0] burner
    * @param addresses[1] uniswapV2RouterLike
    * @param addresses[2] uniswapV2FactoryLike
@@ -41,20 +49,16 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[12] max lending ratio
    */
   function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
-    // @suppress-initialization Can only be initialized by the deployer or an admin
-    // @suppress-acl Can only be called by the deployer or an admin
-    // @suppress-zero-value-check Some zero values are allowed
     s.mustBeProtocolMember(msg.sender);
 
     require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    // require(addresses[3] != address(0), "Invalid NPM"); // @note: validation below
+    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
     require(addresses[4] != address(0), "Invalid Treasury");
-    // @suppress-accidental-zero @todo: allow price oracle to be zero
-    // @check if uniswap v2 contracts can be zero
-    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
+    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
     // These checks are disabled as this function is only accessible to an admin
     // require(values[0] > 0, "Invalid cover creation fee");
     // require(values[1] > 0, "Invalid cover creation stake");
@@ -70,7 +74,7 @@ contract Protocol is IProtocol, ProtoBase {
     // require(values[11] > 0, "Invalid state update interval");
     // require(values[12] > 0, "Invalid max lending ratio");
 
-    if (initialized == 1) {
+    if (initialized == true) {
       AccessControlLibV1.mustBeAdmin(s);
       require(addresses[3] == address(0), "Can't change NPM");
     } else {
@@ -82,10 +86,6 @@ contract Protocol is IProtocol, ProtoBase {
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
     }
 
-    // @note: burner isn't necessarily the zero address.
-    // The tokens to be burned are sent to an address,
-    // bridged back to the Ethereum mainnet (if on a different chain),
-    // and burned on a period but random basis.
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
@@ -108,7 +108,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
-    initialized = 1;
+    initialized = true;
     emit Initialized(addresses, values);
   }
 
@@ -119,7 +119,7 @@ contract Protocol is IProtocol, ProtoBase {
    * function. When a contract is removed using `upgradeContract` function, the membership of previous
    * contract is also removed.
    *
-   * Warning:
+   * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
    * Since adding member to the protocol is a highy risky activity,
@@ -128,11 +128,11 @@ contract Protocol is IProtocol, ProtoBase {
    * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
    * when this function is invoked.
    *
+   * @custom:suppress-address-trust-issue The address `member` can be trusted because this can only come from upgrade agents.
    *
    * @param member Enter an address to add as a protocol member
    */
   function addMember(address member) external override nonReentrant whenNotPaused {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
@@ -144,10 +144,11 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Removes a member from the protocol. This function is only accessible
    * to an upgrade agent.
    *
+   * @custom:suppress-address-trust-issue The address `member` can be trusted because of the ACL requirement.
+   *
    * @param member Enter an address to remove as a protocol member
    */
   function removeMember(address member) external override nonReentrant whenNotPaused {
-    // @suppress-address-trust-issue Can be trusted because this can only come from upgrade agents.
     ProtoUtilV1.mustBeProtocolMember(s, member);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
@@ -158,10 +159,11 @@ contract Protocol is IProtocol, ProtoBase {
 
   /**
    * @dev Adds a contract to the protocol. See `addContractWithKey` for more info.
+   * @custom:suppress-acl This function is just an intermediate
+   * @custom:suppress-pausable This function is just an intermediate
    */
   function addContract(bytes32 namespace, address contractAddress) external override {
-    // @suppress-acl @suppress-pausable This function is just an intermediate
-    addContractWithKey(namespace, 0, contractAddress);
+    addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
   }
 
   /**
@@ -174,7 +176,7 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * Tip: find out how the `getVaultFactoryContract().deploy` function is being used.
    *
-   * Warning:
+   * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
    * Since adding member to the protocol is a highy risky activity,
@@ -182,6 +184,9 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
    * when this function is invoked.
+   *
+   * @custom:suppress-address-trust-issue Although the `contractAddress` can't be trusted,
+   * an upgrade admin has to check the contract code manually.
    *
    * @param namespace Enter a unique namespace for this contract
    * @param key Enter a key if this contract has siblings
@@ -193,7 +198,6 @@ contract Protocol is IProtocol, ProtoBase {
     bytes32 key,
     address contractAddress
   ) public override nonReentrant whenNotPaused {
-    // @suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
     require(contractAddress != address(0), "Invalid contract");
 
     s.mustNotBePaused();
@@ -208,14 +212,17 @@ contract Protocol is IProtocol, ProtoBase {
 
   /**
    * @dev Upgrades a contract at the given namespace. See `upgradeContractWithKey` for more info.
+   *
+   * @custom:suppress-acl This function is just an intermediate
+   * @custom:suppress-pausable This function is just an intermediate
+   *
    */
   function upgradeContract(
     bytes32 namespace,
     address previous,
     address current
   ) external override {
-    // @suppress-acl @suppress-pausable  This function is just an intermediate
-    upgradeContractWithKey(namespace, 0, previous, current);
+    upgradeContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, previous, current);
   }
 
   /**
@@ -225,7 +232,7 @@ contract Protocol is IProtocol, ProtoBase {
    * the current immediately starts assuming responsbility of
    * whatever the contract needs to do at the supplied namespace and key.
    *
-   * Warning:
+   * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
    * Since adding member to the protocol is a highy risky activity,
@@ -233,6 +240,8 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
    * when this function is invoked.
+   *
+   * @custom:suppress-address-trust-issue Can only be invoked by an upgrade agent.
    *
    * @param namespace Enter a unique namespace for this contract
    * @param key Enter a key if this contract has siblings
@@ -248,10 +257,10 @@ contract Protocol is IProtocol, ProtoBase {
     require(current != address(0), "Invalid contract");
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
+    ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
     s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
-    // @suppress-address-trust-issue Checked. Can only be assigned by an upgrade agent.
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
     emit ContractUpgraded(namespace, key, previous, current);
   }
@@ -263,8 +272,7 @@ contract Protocol is IProtocol, ProtoBase {
    * defined to this contract. Meaning, the `AccessControl` logic
    * here is used everywhere else.
    *
-   *
-   * Warning:
+   * @custom:warning Warning:
    *
    * This feature is only accessible to an admin. Adding any kind of role to the protocol is immensely risky.
    *

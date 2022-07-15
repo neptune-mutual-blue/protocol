@@ -58,7 +58,8 @@ returns(uint256)
 
 ```javascript
 function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
-    return s.getActiveLiquidityUnderProtection(coverKey, productKey);
+    uint256 precision = s.getStablecoinPrecision();
+    return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
   }
 ```
 </details>
@@ -75,7 +76,6 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey)
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -176,6 +176,7 @@ function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey)
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

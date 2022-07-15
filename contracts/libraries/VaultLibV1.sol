@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 import "./ProtoUtilV1.sol";
@@ -10,6 +10,7 @@ import "./RegistryLibV1.sol";
 import "./CoverUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
+import "./ValidationLibV1.sol";
 
 library VaultLibV1 {
   using ProtoUtilV1 for IStore;
@@ -110,6 +111,10 @@ library VaultLibV1 {
 
   /**
    * @dev Called before adding liquidity to the specified cover contract
+   *
+   * @custom:suppress-malicious-erc The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+   * @custom:suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
+   *
    * @param coverKey Enter the cover key
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
@@ -123,8 +128,6 @@ library VaultLibV1 {
     uint256 amount,
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
-    // @suppress-address-trust-issue The address `account` can be trusted here because we are not treating it as a contract (even it were).
     require(account != address(0), "Invalid account");
 
     // Update values
@@ -185,6 +188,12 @@ library VaultLibV1 {
 
   /**
    * @dev Removes liquidity from the specified cover contract
+   *
+   * @custom:suppress-malicious-erc The address `pod` although can only come from VaultBase,
+   * we still need to ensure if it is a protocol member. Check `_redeemPodCalculation` for more info.
+   * @custom:suppress-address-trust-issue The address `pod` can't be trusted and therefore needs to be checked
+   * if it is a protocol member.
+   *
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of liquidity token to remove.
    */
@@ -199,11 +208,11 @@ library VaultLibV1 {
   ) external returns (address stablecoin, uint256 releaseAmount) {
     stablecoin = s.getStablecoin();
 
-    // @suppress-address-trust-issue, @suppress-malicious-erc20 The address `pod` although can only
-    // come from VaultBase, we still need to ensure if it is a protocol member.
-    // Check `_redeemPodCalculation` for more info.
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
+
+    ValidationLibV1.mustNotExceedStablecoinThreshold(s, releaseAmount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToRemove);
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
@@ -268,15 +277,6 @@ library VaultLibV1 {
 
   function mustBeAccrued(IStore s, bytes32 coverKey) external view {
     require(s.isAccrualCompleteInternal(coverKey) == true, "Wait for accrual");
-  }
-
-  function mustNotExceedNpmThreshold(uint256 amount) external pure {
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * 1 ether, "Please specify a smaller amount");
-  }
-
-  function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
   }
 
   /**

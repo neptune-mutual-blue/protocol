@@ -27,7 +27,7 @@ mapping(uint256 => bool) public supportedChains;
 
 ## Functions
 
-- [constructor(IStore _s, ICompoundERC20DelegatorLike _delegator, address _cDai)](#)
+- [constructor(IStore _s, ICompoundERC20DelegatorLike _delegator, address _compoundWrappedStablecoin)](#)
 - [getDepositAsset()](#getdepositasset)
 - [getDepositCertificate()](#getdepositcertificate)
 - [getInfo(bytes32 coverKey)](#getinfo)
@@ -45,7 +45,7 @@ mapping(uint256 => bool) public supportedChains;
 ### 
 
 ```solidity
-function (IStore _s, ICompoundERC20DelegatorLike _delegator, address _cDai) public nonpayable Recoverable 
+function (IStore _s, ICompoundERC20DelegatorLike _delegator, address _compoundWrappedStablecoin) public nonpayable Recoverable 
 ```
 
 **Arguments**
@@ -54,7 +54,7 @@ function (IStore _s, ICompoundERC20DelegatorLike _delegator, address _cDai) publ
 | ------------- |------------- | -----|
 | _s | IStore |  | 
 | _delegator | ICompoundERC20DelegatorLike |  | 
-| _cDai | address |  | 
+| _compoundWrappedStablecoin | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -63,9 +63,9 @@ function (IStore _s, ICompoundERC20DelegatorLike _delegator, address _cDai) publ
 constructor(
     IStore _s,
     ICompoundERC20DelegatorLike _delegator,
-    address _cDai
+    address _compoundWrappedStablecoin
   ) Recoverable(_s) {
-    depositCertificate = _cDai;
+    depositCertificate = _compoundWrappedStablecoin;
     delegator = _delegator;
   }
 ```
@@ -118,6 +118,7 @@ function getDepositCertificate() public view override returns (IERC20) {
 ### getInfo
 
 Gets info of this strategy by cover key
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
@@ -200,7 +201,7 @@ Deposits the tokens to Compound
 
 ```solidity
 function deposit(bytes32 coverKey, uint256 amount) external nonpayable nonReentrant 
-returns(cDaiMinted uint256)
+returns(compoundWrappedStablecoinMinted uint256)
 ```
 
 **Arguments**
@@ -214,7 +215,7 @@ returns(cDaiMinted uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 cDaiMinted) {
+function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 compoundWrappedStablecoinMinted) {
     s.mustNotBePaused();
     s.senderMustBeProtocolMember();
 
@@ -224,17 +225,16 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
       return 0;
     }
 
-    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
-    IERC20 cDai = getDepositCertificate();
+    IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
-    _drain(cDai);
+    _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    // Transfer DAI to this contract; then approve and send it to delegator to mint cDAI
+    // Transfer DAI to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
     stablecoin.ensureApproval(address(delegator), amount);
 
@@ -242,31 +242,30 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
 
     require(result == 0, "Compound delegator mint failed");
 
-    // Check how many cDAI we received
-    cDaiMinted = _getCertificateBalance();
+    // Check how many compoundWrappedStablecoin we received
+    compoundWrappedStablecoinMinted = _getCertificateBalance();
 
-    require(cDaiMinted > 0, "Minting cDai failed");
+    require(compoundWrappedStablecoinMinted > 0, "Minting cUS$ failed");
 
-    // Immediately send cDai to the original vault stablecoin came from
-    cDai.ensureApproval(address(vault), cDaiMinted);
-    vault.receiveFromStrategy(cDai, coverKey, getName(), cDaiMinted);
+    // Immediately send compoundWrappedStablecoin to the original vault stablecoin came from
+    compoundWrappedStablecoin.ensureApproval(address(vault), compoundWrappedStablecoinMinted);
+    vault.receiveFromStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinMinted);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
     _counters[coverKey] += 1;
     _depositTotal[coverKey] += amount;
 
-    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], amount, cDaiMinted);
-    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-    emit Deposited(coverKey, address(vault), amount, cDaiMinted);
+    emit LogDeposit(getName(), _counters[coverKey], amount, compoundWrappedStablecoinMinted, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Deposited(coverKey, address(vault), amount, compoundWrappedStablecoinMinted);
   }
 ```
 </details>
 
 ### withdraw
 
-Redeems cDai from Compound to receive stablecoin
- Ensure that you `approve` cDai before you call this function
+Redeems compoundWrappedStablecoin from Compound to receive stablecoin
+ Ensure that you `approve` compoundWrappedStablecoin before you call this function
 
 ```solidity
 function withdraw(bytes32 coverKey) external nonpayable nonReentrant 
@@ -288,33 +287,32 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     s.senderMustBeProtocolMember();
     IVault vault = s.getVault(coverKey);
 
-    // @suppress-malicious-erc20 `stablecoin`, `cDai` can't be manipulated via user input.
     IERC20 stablecoin = getDepositAsset();
-    IERC20 cDai = getDepositCertificate();
+    IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
-    // This strategy should never have token balances
-    _drain(cDai);
+    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `DAI`
+    _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    uint256 cDaiRedeemed = cDai.balanceOf(address(vault));
+    uint256 compoundWrappedStablecoinRedeemed = compoundWrappedStablecoin.balanceOf(address(vault));
 
-    if (cDaiRedeemed == 0) {
+    if (compoundWrappedStablecoinRedeemed == 0) {
       return 0;
     }
 
-    // Transfer cDai to this contract; then approve and send it to delegator to redeem DAI
-    vault.transferToStrategy(cDai, coverKey, getName(), cDaiRedeemed);
-    cDai.ensureApproval(address(delegator), cDaiRedeemed);
-    uint256 result = delegator.redeem(cDaiRedeemed);
+    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem DAI
+    vault.transferToStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinRedeemed);
+    compoundWrappedStablecoin.ensureApproval(address(delegator), compoundWrappedStablecoinRedeemed);
+    uint256 result = delegator.redeem(compoundWrappedStablecoinRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
     // Check how many DAI we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
-    require(stablecoinWithdrawn > 0, "Redeeming cDai failed");
+    require(stablecoinWithdrawn > 0, "Redeeming cUS$ failed");
 
-    // Immediately send DAI to the vault cDAI came from
+    // Immediately send DAI to the vault compoundWrappedStablecoin came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
@@ -323,14 +321,16 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     _counters[coverKey] += 1;
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
-    console.log("[cmp] c: %s, dai: %s. cdai: %s", _counters[coverKey], stablecoinWithdrawn, cDaiRedeemed);
-    console.log("[cmp] in: %s, out: %s", _depositTotal[coverKey], _withdrawalTotal[coverKey]);
-    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, cDaiRedeemed);
+    emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, compoundWrappedStablecoinRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+    emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, compoundWrappedStablecoinRedeemed);
   }
 ```
 </details>
 
 ### _getDepositsKey
+
+Hash key of the Compound deposits for the given cover.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function _getDepositsKey(bytes32 coverKey) private pure
@@ -341,7 +341,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -355,6 +355,9 @@ function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {
 
 ### _getWithdrawalsKey
 
+Hash key of the Compound withdrawal for the given cover.
+ Warning: this function does not validate the cover key supplied.
+
 ```solidity
 function _getWithdrawalsKey(bytes32 coverKey) private pure
 returns(bytes32)
@@ -364,7 +367,7 @@ returns(bytes32)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| coverKey | bytes32 | Enter cover key | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -480,7 +483,6 @@ function getName() public pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -581,6 +583,7 @@ function getName() public pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

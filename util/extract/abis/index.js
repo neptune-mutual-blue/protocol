@@ -7,6 +7,11 @@ const getFiles = async () => {
   const all = files.map(x => `${x.replace('.dbg', '')}`)
 
   all.push('./artifacts/openzeppelin-solidity/contracts/token/ERC20/IERC20.sol/IERC20.json')
+  all.push('./artifacts/contracts/dependencies/aave/IAaveV2LendingPoolLike.sol/IAaveV2LendingPoolLike.json')
+  all.push('./artifacts/contracts/dependencies/compound/ICompoundERC20DelegatorLike.sol/ICompoundERC20DelegatorLike.json')
+  all.push('./artifacts/contracts/dependencies/uniswap-v2/IUniswapV2FactoryLike.sol/IUniswapV2FactoryLike.json')
+  all.push('./artifacts/contracts/dependencies/uniswap-v2/IUniswapV2PairLike.sol/IUniswapV2PairLike.json')
+  all.push('./artifacts/contracts/dependencies/uniswap-v2/IUniswapV2RouterLike.sol/IUniswapV2RouterLike.json')
 
   return [...new Set(all)]
 }

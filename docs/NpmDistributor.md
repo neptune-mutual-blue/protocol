@@ -1,15 +1,10 @@
-# Neptune Mutual Distributor contract (NpmDistributor.sol)
+# NpmDistributor.sol
 
 View Source: [contracts/examples/NpmDistributor.sol](../contracts/examples/NpmDistributor.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
 
 **NpmDistributor**
-
-The distributor contract enables resellers to interact with
- the Neptune Mutual protocol and offer policies to their users.
- This contract demonstrates how a distributor may charge an extra fee
- and deposit the proceeds in their own treasury account.
 
 ## Contract Members
 **Constants & Variables**
@@ -39,6 +34,7 @@ event Drained(IERC20 indexed token, address indexed to, uint256  amount);
 
 ## Functions
 
+- [getAddress(bytes32 k)](#getaddress)
 - [constructor(IStoreLike _store, address _treasury, uint256 _feePercentage)](#)
 - [getStablecoin()](#getstablecoin)
 - [getNpm()](#getnpm)
@@ -50,7 +46,27 @@ event Drained(IERC20 indexed token, address indexed to, uint256  amount);
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [_drain(IERC20 token)](#_drain)
-- [getAddress(bytes32 k)](#getaddress)
+
+### getAddress
+
+```solidity
+function getAddress(bytes32 k) external view
+returns(address)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| k | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getAddress(bytes32 k) external view returns (address);
+```
+</details>
 
 ### 
 
@@ -462,27 +478,6 @@ function _drain(IERC20 token) private {
 ```
 </details>
 
-### getAddress
-
-```solidity
-function getAddress(bytes32 k) external view
-returns(address)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| k | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getAddress(bytes32 k) external view returns (address);
-```
-</details>
-
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -495,7 +490,6 @@ function getAddress(bytes32 k) external view returns (address);
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -596,6 +590,7 @@ function getAddress(bytes32 k) external view returns (address);
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

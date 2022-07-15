@@ -13,7 +13,7 @@ View Source: [contracts/interfaces/ILiquidityEngine.sol](../contracts/interfaces
 event StrategyAdded(address indexed strategy);
 event StrategyDisabled(address indexed strategy);
 event StrategyDeleted(address indexed strategy);
-event LendingPeriodSet(bytes32 indexed coverKey, uint256  lendingPeriod, uint256  withdrawalWindow);
+event RiskPoolingPeriodSet(bytes32 indexed coverKey, uint256  lendingPeriod, uint256  withdrawalWindow);
 event LiquidityStateUpdateIntervalSet(uint256  duration);
 event MaxLendingRatioSet(uint256  ratio);
 ```
@@ -23,9 +23,8 @@ event MaxLendingRatioSet(uint256  ratio);
 - [addStrategies(address[] strategies)](#addstrategies)
 - [disableStrategy(address strategy)](#disablestrategy)
 - [deleteStrategy(address strategy)](#deletestrategy)
-- [setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiods)
-- [setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow)](#setlendingperiodsdefault)
-- [getLendingPeriods(bytes32 coverKey)](#getlendingperiods)
+- [setRiskPoolingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setriskpoolingperiods)
+- [getRiskPoolingPeriods(bytes32 coverKey)](#getriskpoolingperiods)
 - [setLiquidityStateUpdateInterval(uint256 value)](#setliquiditystateupdateinterval)
 - [setMaxLendingRatio(uint256 ratio)](#setmaxlendingratio)
 - [getMaxLendingRatio()](#getmaxlendingratio)
@@ -92,10 +91,10 @@ function deleteStrategy(address strategy) external;
 ```
 </details>
 
-### setLendingPeriods
+### setRiskPoolingPeriods
 
 ```solidity
-function setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
+function setRiskPoolingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
 ```
 
 **Arguments**
@@ -110,7 +109,7 @@ function setLendingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 with
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLendingPeriods(
+function setRiskPoolingPeriods(
     bytes32 coverKey,
     uint256 lendingPeriod,
     uint256 withdrawalWindow
@@ -118,31 +117,10 @@ function setLendingPeriods(
 ```
 </details>
 
-### setLendingPeriodsDefault
+### getRiskPoolingPeriods
 
 ```solidity
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| lendingPeriod | uint256 |  | 
-| withdrawalWindow | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setLendingPeriodsDefault(uint256 lendingPeriod, uint256 withdrawalWindow) external;
-```
-</details>
-
-### getLendingPeriods
-
-```solidity
-function getLendingPeriods(bytes32 coverKey) external view
+function getRiskPoolingPeriods(bytes32 coverKey) external view
 returns(lendingPeriod uint256, withdrawalWindow uint256)
 ```
 
@@ -156,7 +134,7 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
+function getRiskPoolingPeriods(bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow);
 ```
 </details>
 
@@ -272,7 +250,6 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -373,6 +350,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

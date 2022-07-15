@@ -474,6 +474,7 @@ function addOrEditPoolInternal(
     address[] calldata addresses,
     uint256[] calldata values
   ) external {
+    // @suppress-zero-value-check The uint values are checked in the function `validateAddOrEditPoolInternal`
     bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
 
     if (poolExists == false) {
@@ -489,9 +490,6 @@ function addOrEditPoolInternal(
     // If `values[5] --> rewardTokenDeposit` is specified, the contract
     // pulls the reward tokens to this contract address
     if (values[5] > 0) {
-      // @suppress-malicious-erc20 `addresses[2]` can be trusted
-      // because `StakingPoolBase.addOrEditPool` can only be called
-      // by an admin
       IERC20(addresses[2]).ensureTransferFrom(msg.sender, address(this), values[5]);
     }
   }
@@ -554,7 +552,6 @@ function _updatePoolValues(
 ### _initializeNewPool
 
 Initializes a new pool by the given key. Assumes that the pool does not exist.
- Warning: this feature should not be accessible outside of this library.
 
 ```solidity
 function _initializeNewPool(IStore s, bytes32 key, address[] addresses) private nonpayable
@@ -599,7 +596,6 @@ function _initializeNewPool(
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -700,6 +696,7 @@ function _initializeNewPool(
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

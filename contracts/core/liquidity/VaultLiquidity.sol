@@ -2,20 +2,26 @@
 // SPDX-License-Identifier: BUSL-1.1
 import "./VaultBase.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 abstract contract VaultLiquidity is VaultBase {
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
+  /**
+   * @dev Transfers stablecoins to claims processor contracts for claims payout.
+   * Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
+   *
+   * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
+   * @custom:suppress-pausable
+   *
+   */
   function transferGovernance(
     bytes32 coverKey,
     address to,
     uint256 amount
   ) external override nonReentrant {
-    // @suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
-    // @suppress-pausable Validated in `preTransferGovernance` and `postTransferGovernace`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -38,10 +44,16 @@ abstract contract VaultLiquidity is VaultBase {
   }
 
   /**
-   * @dev Adds liquidity to the specified cover contract
+   * @dev Adds liquidity to the specified cover contract.
+   * Uses the hooks `preAddLiquidity` and `postAddLiquidity` on the vault delegate contract.
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable
+   *
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
+   *
    */
   function addLiquidity(
     bytes32 coverKey,
@@ -49,8 +61,6 @@ abstract contract VaultLiquidity is VaultBase {
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Validated in `preAddLiquidity` and `postAddLiquidity`
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -91,6 +101,11 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Removes liquidity from the specified cover contract
+   * Uses the hooks `preRemoveLiquidity` and `postRemoveLiquidity` on the vault delegate contract.
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable
+   *
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of pods to redeem
    * @param npmStakeToRemove Enter the amount of NPM stake to remove.
@@ -101,10 +116,8 @@ abstract contract VaultLiquidity is VaultBase {
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
-    // @suppress-pausable Validated in `preRemoveLiquidity` and `postRemoveLiquidity`
     require(coverKey == key, "Forbidden");
-    require(podsToRedeem > 0, "Please specify amount");
+    require(podsToRedeem > 0 || npmStakeToRemove > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -114,8 +127,10 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
-    IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    if(podsToRedeem > 0) {
+      IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
+      IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    }
 
     super._burn(address(this), podsToRedeem);
 
@@ -162,9 +177,14 @@ abstract contract VaultLiquidity is VaultBase {
     return delgate().getStablecoinBalanceOfImplementation(key);
   }
 
+  /**
+   * @dev Accrues interests from external straties
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   * @custom:suppress-pausable Validated in `accrueInterestImplementation`
+   *
+   */
   function accrueInterest() external override nonReentrant {
-    // @suppress-acl Marking this function as publicly accessible
-    // @suppress-pausable Validated in `accrueInterestImplementation`
     delgate().accrueInterestImplementation(msg.sender, key);
     emit InterestAccrued(key);
   }

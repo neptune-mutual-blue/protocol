@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/IPolicyAdmin.sol";
@@ -106,6 +106,9 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Gets the cover policy rates for the given cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
     return s.getPolicyRatesInternal(coverKey);
@@ -113,6 +116,9 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Gets the policy lag for the given cover key
+   *
+   * Warning: this function does not validate the cover key supplied.
+   *
    */
   function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoverageLagInternal(coverKey);

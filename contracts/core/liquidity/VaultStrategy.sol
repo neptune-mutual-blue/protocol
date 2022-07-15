@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 import "./VaultLiquidity.sol";
 
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 abstract contract VaultStrategy is VaultLiquidity {
   using ProtoUtilV1 for IStore;
@@ -12,15 +12,21 @@ abstract contract VaultStrategy is VaultLiquidity {
   uint256 private _transferToStrategyEntry = 0;
   uint256 private _receiveFromStrategyEntry = 0;
 
+  /**
+   * @dev Transfers tokens to strategy contract(s).
+   * Uses the hooks `preTransferToStrategy` and `postTransferToStrategy` on the vault delegate contract.
+   *
+   * @custom:suppress-acl This function is only callable by correct strategy contract as checked in `preTransferToStrategy` and `postTransferToStrategy`
+   * @custom:suppress-reentrancy Custom reentrancy guard implemented
+   * @custom:suppress-pausable
+   *
+   */
   function transferToStrategy(
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
   ) external override {
-    // @suppress-acl This function is only callable by correct strategy contract as checked in `preTransferToStrategy` and `postTransferToStrategy`
-    // @suppress-pausable Validated in `preTransferToStrategy` and `postTransferToStrategy`
-    // @suppress-reentrancy Custom reentrancy guard implemented
     require(address(token) != address(0), "Invalid token to transfer");
     require(coverKey == key, "Forbidden");
     require(strategyName > 0, "Invalid strategy");
@@ -51,15 +57,21 @@ abstract contract VaultStrategy is VaultLiquidity {
     _transferToStrategyEntry = 0;
   }
 
+  /**
+   * @dev Receives tokens from strategy contract(s).
+   * Uses the hooks `preReceiveFromStrategy` and `postReceiveFromStrategy` on the vault delegate contract.
+   *
+   * @custom:suppress-acl This function is only callable by correct strategy contract as checked in `preReceiveFromStrategy` and `postReceiveFromStrategy`
+   * @custom:suppress-reentrancy Custom reentrancy guard implemented
+   * @custom:suppress-pausable Validated in `preReceiveFromStrategy` and `postReceiveFromStrategy`
+   *
+   */
   function receiveFromStrategy(
     IERC20 token,
     bytes32 coverKey,
     bytes32 strategyName,
     uint256 amount
   ) external override {
-    // @suppress-acl This function is only callable by correct strategy contract as checked in `preReceiveFromStrategy` and `postReceiveFromStrategy`
-    // @suppress-pausable Validated in `preReceiveFromStrategy` and `postReceiveFromStrategy`
-    // @suppress-reentrancy Custom reentrancy guard implemented
     require(coverKey == key, "Forbidden");
     require(_receiveFromStrategyEntry == 0, "Access is denied");
     require(amount > 0, "Please specify amount");

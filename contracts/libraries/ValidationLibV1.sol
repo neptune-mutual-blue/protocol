@@ -1,7 +1,7 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 /* solhint-disable ordering  */
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/access/IAccessControl.sol";
 import "./ProtoUtilV1.sol";
@@ -181,10 +181,26 @@ library ValidationLibV1 {
     require(IMember(caller).getName() == strategyName, "Access denied");
   }
 
+  /**
+   * @dev Hash key of the "active strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
   }
 
+  /**
+   * @dev Hash key of the "disabled strategy flag".
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param strategyAddress Enter a strategy address
+   *
+   */
   function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
   }
@@ -278,7 +294,7 @@ library ValidationLibV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view {
-    require(s.getLatestIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
+    require(s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate, "Invalid incident date");
   }
 
   function mustHaveDispute(
@@ -361,6 +377,13 @@ library ValidationLibV1 {
     require(withdrawal == 0, "Already unstaken");
   }
 
+  /**
+   * @dev Validates your `unstakeWithoutClaim` arguments
+   *
+   * @custom:note This function is not intended be used and does not produce correct result
+   * during a claim period. Please use `validateUnstakeWithClaim` if you are accessing
+   * this function during claim period.
+   */
   function validateUnstakeWithoutClaim(
     IStore s,
     bytes32 coverKey,
@@ -375,12 +398,15 @@ library ValidationLibV1 {
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    // @note: when this reporting gets finalized, the emergency resolution deadline resets to 0
-    // The above code is not useful after finalization but it helps avoid
-    // people calling unstake before a decision is obtained
   }
 
+  /**
+   * @dev Validates your `unstakeWithClaim` arguments
+   *
+   * @custom:note This function is only intended be used during a claim period.
+   * Please use `validateUnstakeWithoutClaim` if you are accessing
+   * this function after claim period expiry.
+   */
   function validateUnstakeWithClaim(
     IStore s,
     bytes32 coverKey,
@@ -402,7 +428,7 @@ library ValidationLibV1 {
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
 
-    bool incidentHappened = s.getProductStatusInternal(coverKey, productKey) == CoverUtilV1.ProductStatus.Claimable;
+    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
 
     if (incidentHappened) {
       // Incident occurred. Must unstake with claim during the claim period.
@@ -478,5 +504,15 @@ library ValidationLibV1 {
     bytes32 productKey
   ) external view {
     require(!s.isPolicyDisabledInternal(coverKey, productKey), "Policy purchase disabled");
+  }
+
+  function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
+  }
+
+  function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Please specify a smaller amount");
   }
 }

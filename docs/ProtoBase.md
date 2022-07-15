@@ -106,10 +106,19 @@ function setupRole(
 ### pause
 
 Pauses this contract.
- Can only be called by "Pause Agents".
+ Individual protocol contracts infer to the protocol's "paused state".
+ So, if the protocol is paused, all other contracts are automatically
+ paused without having to do anything special.
+ In Neptune Mutual Protocol, `pause` and `unpause` features are
+ considered to have different risk exposures.
+ The pauser role is considered to be low-risk role while
+ the unpauser is believed to be highly critical.
+ In other words, pausing the protocol is believed to be less riskier than unpausing it.
+ The only (private) key that is ever allowed to be programmatically used is the
+ pause agents.
 
 ```solidity
-function pause() external nonpayable nonReentrant 
+function pause() external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
@@ -121,7 +130,7 @@ function pause() external nonpayable nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function pause() external nonReentrant {
+function pause() external nonReentrant whenNotPaused {
     AccessControlLibV1.mustBePauseAgent(s);
     super._pause();
   }
@@ -130,11 +139,20 @@ function pause() external nonReentrant {
 
 ### unpause
 
-Unpauses this contract.
- Can only be called by "Unpause Agents".
+Unpauses or resumes this contract.
+ Individual protocol contracts infer to the protocol's "paused state".
+ So, if the protocol is paused, all other contracts are automatically
+ paused without having to do anything special.
+ In Neptune Mutual Protocol, `pause` and `unpause` features are
+ considered to have different risk exposures.
+ The pauser role is considered to be low-risk role while
+ the unpauser is believed to be highly critical.
+ In other words, pausing the protocol is believed to be less riskier than unpausing it.
+ The only (private) key that is ever allowed to be programmatically used is the
+ pause agents.
 
 ```solidity
-function unpause() external nonpayable whenPaused nonReentrant 
+function unpause() external nonpayable whenPaused nonReentrant whenPaused 
 ```
 
 **Arguments**
@@ -146,7 +164,7 @@ function unpause() external nonpayable whenPaused nonReentrant
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unpause() external whenPaused nonReentrant {
+function unpause() external whenPaused nonReentrant whenPaused {
     AccessControlLibV1.mustBeUnpauseAgent(s);
     super._unpause();
   }
@@ -165,7 +183,6 @@ function unpause() external whenPaused nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -266,6 +283,7 @@ function unpause() external whenPaused nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

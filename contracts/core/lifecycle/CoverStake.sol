@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "../../interfaces/ICoverStake.sol";
 import "../../libraries/ProtoUtilV1.sol";
@@ -13,13 +13,16 @@ import "../Recoverable.sol";
 /**
  * @title Cover Stake
  * @dev When you create a new cover, you have to specify the amount of
- * NPM tokens you wish to stake as a cover creator. <br /> <br />
+ * NPM tokens you wish to stake as a cover creator.
+ *
+ * <br /> <br />
  *
  * To demonstrate support for a cover pool, anyone can add and remove
  * NPM stakes (minimum required). The higher the sake, the more visibility
  * the contract gets if there are multiple cover contracts with the same name
  * or similar terms. Even when there are no duplicate contract, a higher stake
  * would normally imply a better cover pool commitment.
+ *
  */
 contract CoverStake is ICoverStake, Recoverable {
   using ProtoUtilV1 for bytes;
@@ -38,10 +41,14 @@ contract CoverStake is ICoverStake, Recoverable {
 
   /**
    * @dev Increase the stake of the given cover pool
+   *
+   * @custom:suppress-acl Can only be accessed by the latest cover contract
+   *
    * @param coverKey Enter the cover key
    * @param account Enter the account from where the NPM tokens will be transferred
    * @param amount Enter the amount of stake
    * @param fee Enter the fee amount. Note: do not enter the fee if you are directly calling this function.
+   *
    */
   function increaseStake(
     bytes32 coverKey,
@@ -49,7 +56,6 @@ contract CoverStake is ICoverStake, Recoverable {
     uint256 amount,
     uint256 fee
   ) external override nonReentrant {
-    // @suppress-acl Can only be accessed by the latest cover contract
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
     s.senderMustBeCoverContract();
@@ -74,11 +80,14 @@ contract CoverStake is ICoverStake, Recoverable {
   /**
    * @dev Decreases the stake from the given cover pool.
    * A cover creator can withdraw their full stake after 365 days
+   *
+   * @custom:suppress-acl This is a publicly accessible feature
+   *
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of stake to decrease
+   *
    */
   function decreaseStake(bytes32 coverKey, uint256 amount) external override nonReentrant {
-    // @suppress-acl Marking this function as publicly accessible
     s.mustNotBePaused();
     s.mustBeValidCoverKey(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
@@ -103,6 +112,7 @@ contract CoverStake is ICoverStake, Recoverable {
    * @param coverKey Enter the cover key
    * @param account Specify the account to obtain the stake of
    * @return Returns the total stake of the specified account on the given cover key
+   *
    */
   function stakeOf(bytes32 coverKey, address account) public view override returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account);
@@ -114,6 +124,7 @@ contract CoverStake is ICoverStake, Recoverable {
    * @param coverKey Enter the cover key
    * @param account Specify the account to obtain the drawing power of
    * @return Returns the drawing power of the specified account on the given cover key
+   *
    */
   function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
     uint256 createdAt = s.getCoverCreationDate(coverKey);

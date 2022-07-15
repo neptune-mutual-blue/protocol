@@ -19,6 +19,9 @@ View Source: [contracts/core/liquidity/VaultLiquidity.sol](../contracts/core/liq
 
 ### transferGovernance
 
+Transfers stablecoins to claims processor contracts for claims payout.
+ Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
+
 ```solidity
 function transferGovernance(bytes32 coverKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
@@ -65,7 +68,8 @@ function transferGovernance(
 
 ### addLiquidity
 
-Adds liquidity to the specified cover contract
+Adds liquidity to the specified cover contract.
+ Uses the hooks `preAddLiquidity` and `postAddLiquidity` on the vault delegate contract.
 
 ```solidity
 function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode) external nonpayable nonReentrant 
@@ -90,7 +94,6 @@ function addLiquidity(
     uint256 npmStakeToAdd,
     bytes32 referralCode
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
     require(amount > 0, "Please specify amount");
 
@@ -134,6 +137,7 @@ function addLiquidity(
 ### removeLiquidity
 
 Removes liquidity from the specified cover contract
+ Uses the hooks `preRemoveLiquidity` and `postRemoveLiquidity` on the vault delegate contract.
 
 ```solidity
 function removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit) external nonpayable nonReentrant 
@@ -158,9 +162,8 @@ function removeLiquidity(
     uint256 npmStakeToRemove,
     bool exit
   ) external override nonReentrant {
-    // @suppress-acl Marking this as publicly accessible
     require(coverKey == key, "Forbidden");
-    require(podsToRedeem > 0, "Please specify amount");
+    require(podsToRedeem > 0 || npmStakeToRemove > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
@@ -170,8 +173,10 @@ function removeLiquidity(
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
-    IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    if(podsToRedeem > 0) {
+      IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
+      IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
+    }
 
     super._burn(address(this), podsToRedeem);
 
@@ -275,6 +280,8 @@ function getStablecoinBalanceOf() external view override returns (uint256) {
 
 ### accrueInterest
 
+Accrues interests from external straties
+
 ```solidity
 function accrueInterest() external nonpayable nonReentrant 
 ```
@@ -307,7 +314,6 @@ function accrueInterest() external override nonReentrant {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -408,6 +414,7 @@ function accrueInterest() external override nonReentrant {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

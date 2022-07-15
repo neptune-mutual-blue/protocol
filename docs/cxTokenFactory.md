@@ -65,7 +65,6 @@ function deploy(
     string calldata tokenName,
     uint256 expiryDate
   ) external override nonReentrant returns (address deployed) {
-    // @suppress-acl Can only be called by the latest policy contract
     s.mustNotBePaused();
     s.senderMustBePolicyContract();
     s.mustBeValidCoverKey(coverKey);
@@ -162,7 +161,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -263,6 +261,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

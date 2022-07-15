@@ -579,6 +579,25 @@
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"
+      }
+    ],
+    "name": "isCoverNormal",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes32",

@@ -10,11 +10,10 @@ View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycl
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address liquidityToken, bytes32 liquidityName)](#initialize)
-- [setCoverFees(uint256 value)](#setcoverfees)
+- [initialize(address stablecoin, bytes32 friendlyName)](#initialize)
+- [setCoverCreationFee(uint256 value)](#setcovercreationfee)
 - [setMinCoverCreationStake(uint256 value)](#setmincovercreationstake)
 - [setMinStakeToAddLiquidity(uint256 value)](#setminstaketoaddliquidity)
-- [getCover(bytes32 coverKey, bytes32 productKey)](#getcover)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -45,63 +44,65 @@ constructor(IStore store) Recoverable(store) {}
 Initializes this contract
 
 ```solidity
-function initialize(address liquidityToken, bytes32 liquidityName) external nonpayable nonReentrant 
+function initialize(address stablecoin, bytes32 friendlyName) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| liquidityToken | address | Provide the address of the token this cover will be quoted against. | 
-| liquidityName | bytes32 | Enter a description or ENS name of your liquidity token. | 
+| stablecoin | address | Provide the address of the token this cover will be quoted against. | 
+| friendlyName | bytes32 | Enter a description or ENS name of your liquidity token. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address liquidityToken, bytes32 liquidityName) external override nonReentrant {
-    // @suppress-initialization Can only be initialized once by a cover manager
-    // @suppress-address-trust-issue liquidityToken This instance of liquidityToken can be trusted because of the ACL requirement.
+function initialize(address stablecoin, bytes32 friendlyName) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
     require(s.getAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN) == address(0), "Already initialized");
 
-    s.initializeCoverInternal(liquidityToken, liquidityName);
-    emit CoverInitialized(liquidityToken, liquidityName);
+    s.initializeCoverInternal(stablecoin, friendlyName);
+    emit CoverInitialized(stablecoin, friendlyName);
   }
 ```
 </details>
 
-### setCoverFees
+### setCoverCreationFee
+
+Sets the cover creation fee
 
 ```solidity
-function setCoverFees(uint256 value) external nonpayable nonReentrant 
+function setCoverCreationFee(uint256 value) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Enter the cover creation fee in NPM token units | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setCoverFees(uint256 value) external override nonReentrant {
+function setCoverCreationFee(uint256 value) external override nonReentrant {
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    uint256 previous = s.setCoverFeesInternal(value);
-    emit CoverFeeSet(previous, value);
+    uint256 previous = s.setCoverCreationFeeInternal(value);
+    emit CoverCreationFeeSet(previous, value);
   }
 ```
 </details>
 
 ### setMinCoverCreationStake
+
+Sets minimum stake to create a new cover
 
 ```solidity
 function setMinCoverCreationStake(uint256 value) external nonpayable nonReentrant 
@@ -111,7 +112,7 @@ function setMinCoverCreationStake(uint256 value) external nonpayable nonReentran
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Enter the minimum cover creation stake in NPM token units | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -131,6 +132,8 @@ function setMinCoverCreationStake(uint256 value) external override nonReentrant 
 
 ### setMinStakeToAddLiquidity
 
+Sets minimum stake to add liquidity
+
 ```solidity
 function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentrant 
 ```
@@ -139,7 +142,7 @@ function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentra
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| value | uint256 |  | 
+| value | uint256 | Enter the minimum stake to add liquidity. | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
@@ -153,41 +156,6 @@ function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant
 
     uint256 previous = s.setMinStakeToAddLiquidityInternal(value);
     emit MinStakeToAddLiquiditySet(previous, value);
-  }
-```
-</details>
-
-### getCover
-
-Get more information about this cover contract
-
-```solidity
-function getCover(bytes32 coverKey, bytes32 productKey) external view
-returns(coverOwner address, info bytes32, values uint256[])
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| productKey | bytes32 | Enter the product key | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCover(bytes32 coverKey, bytes32 productKey)
-    external
-    view
-    override
-    returns (
-      address coverOwner,
-      bytes32 info,
-      uint256[] memory values
-    )
-  {
-    return s.getCoverInfo(coverKey, productKey);
   }
 ```
 </details>
@@ -252,7 +220,6 @@ function getName() external pure override returns (bytes32) {
 * [BondPoolBase](BondPoolBase.md)
 * [BondPoolLibV1](BondPoolLibV1.md)
 * [CompoundStrategy](CompoundStrategy.md)
-* [console](console.md)
 * [Context](Context.md)
 * [Cover](Cover.md)
 * [CoverBase](CoverBase.md)
@@ -353,6 +320,7 @@ function getName() external pure override returns (bytes32) {
 * [PolicyAdmin](PolicyAdmin.md)
 * [PolicyHelperV1](PolicyHelperV1.md)
 * [PoorMansERC20](PoorMansERC20.md)
+* [POT](POT.md)
 * [PriceLibV1](PriceLibV1.md)
 * [Processor](Processor.md)
 * [ProtoBase](ProtoBase.md)

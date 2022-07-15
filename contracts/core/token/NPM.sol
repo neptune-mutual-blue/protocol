@@ -1,6 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./WithRecovery.sol";
@@ -24,13 +24,12 @@ contract NPM is WithPausability, WithRecovery, ERC20 {
     super._transferOwnership(timelockOrOwner);
   }
 
+  // slither-disable-next-line dead-code
   function _beforeTokenTransfer(
     address,
     address,
     uint256
-  ) internal view virtual override whenNotPaused {
-    // solhint-disable-previous-line
-  }
+  ) internal view virtual override whenNotPaused {} // solhint-disable-line
 
   function issueMany(
     bytes32 key,
