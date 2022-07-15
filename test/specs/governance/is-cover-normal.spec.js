@@ -17,9 +17,8 @@ describe("Get all products in a cover is normal", ()=>{
    let deployed, coverKey
 
   before(async () => {
-    const [bob] = await ethers.getSigners()
     deployed = await deployDependencies()
-      coverKey = key.toBytes32('defi')
+    coverKey = key.toBytes32('defi')
   })
 
   it("must return true if all products are normal", async () => {
