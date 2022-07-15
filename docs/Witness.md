@@ -39,6 +39,7 @@ The witeness contract enables NPM tokenholders to
 - [attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#attest)
 - [refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#refute)
 - [getStatus(bytes32 coverKey, bytes32 productKey)](#getstatus)
+- [isCoverNormal(bytes32 coverKey)](#iscovernormal)
 - [getStakes(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstakes)
 - [getStakesOf(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account)](#getstakesof)
 
@@ -166,6 +167,35 @@ Returns the cover status as an integer.
 ```javascript
 function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return uint256(s.getProductStatusInternal(coverKey, productKey));
+  }
+```
+</details>
+
+### isCoverNormal
+
+Gets the status of products in a given cover
+
+```solidity
+function isCoverNormal(bytes32 coverKey) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter the key of the cover you'd like to check the status of | 
+
+**Returns**
+
+Returns the cover status as an bool.
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isCoverNormal(bytes32 coverKey) external view returns (bool) {
+    return s.isCoverNormalInternal(coverKey);
   }
 ```
 </details>

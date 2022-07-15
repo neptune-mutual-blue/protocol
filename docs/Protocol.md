@@ -10,7 +10,7 @@ View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
 **Constants & Variables**
 
 ```js
-uint256 public initialized;
+bool public initialized;
 
 ```
 
@@ -72,15 +72,13 @@ function initialize(address[] calldata addresses, uint256[] calldata values) ext
     s.mustBeProtocolMember(msg.sender);
 
     require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
     require(addresses[4] != address(0), "Invalid Treasury");
-    // @suppress-accidental-zero
-    // @check if uniswap v2 contracts can be zero
-    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
-    // @suppress-zero-value-check Some zero values are allowed
+    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
     // These checks are disabled as this function is only accessible to an admin
     // require(values[0] > 0, "Invalid cover creation fee");
     // require(values[1] > 0, "Invalid cover creation stake");
@@ -96,7 +94,7 @@ function initialize(address[] calldata addresses, uint256[] calldata values) ext
     // require(values[11] > 0, "Invalid state update interval");
     // require(values[12] > 0, "Invalid max lending ratio");
 
-    if (initialized == 1) {
+    if (initialized == true) {
       AccessControlLibV1.mustBeAdmin(s);
       require(addresses[3] == address(0), "Can't change NPM");
     } else {
@@ -130,7 +128,7 @@ function initialize(address[] calldata addresses, uint256[] calldata values) ext
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
-    initialized = 1;
+    initialized = true;
     emit Initialized(addresses, values);
   }
 ```

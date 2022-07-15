@@ -14,7 +14,7 @@ contract Protocol is IProtocol, ProtoBase {
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
 
-  uint256 public initialized = 0;
+  bool public initialized = false;
 
   constructor(IStore store) ProtoBase(store) {} // solhint-disable-line
 
@@ -24,7 +24,6 @@ contract Protocol is IProtocol, ProtoBase {
    *
    * @custom:suppress-acl Can only be called by the deployer or an admin
    * @custom:suppress-initialization Can only be initialized by the deployer or an admin
-   * @custom:todo Allow price oracle to be zero
    * @custom:note Burner isn't necessarily the zero address. The tokens to be burned are sent to an address,
    * bridged back to the Ethereum mainnet (if on a different chain), and burned on a period but random basis.
    *
@@ -53,15 +52,13 @@ contract Protocol is IProtocol, ProtoBase {
     s.mustBeProtocolMember(msg.sender);
 
     require(addresses[0] != address(0), "Invalid Burner");
-    require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
+    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
+    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
     // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
     require(addresses[4] != address(0), "Invalid Treasury");
-    // @suppress-accidental-zero
-    // @check if uniswap v2 contracts can be zero
-    require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
 
-    // @suppress-zero-value-check Some zero values are allowed
+    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
     // These checks are disabled as this function is only accessible to an admin
     // require(values[0] > 0, "Invalid cover creation fee");
     // require(values[1] > 0, "Invalid cover creation stake");
@@ -77,7 +74,7 @@ contract Protocol is IProtocol, ProtoBase {
     // require(values[11] > 0, "Invalid state update interval");
     // require(values[12] > 0, "Invalid max lending ratio");
 
-    if (initialized == 1) {
+    if (initialized == true) {
       AccessControlLibV1.mustBeAdmin(s);
       require(addresses[3] == address(0), "Can't change NPM");
     } else {
@@ -111,7 +108,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
-    initialized = 1;
+    initialized = true;
     emit Initialized(addresses, values);
   }
 
@@ -147,7 +144,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Removes a member from the protocol. This function is only accessible
    * to an upgrade agent.
    *
-   * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
+   * @custom:suppress-address-trust-issue The address `member` can be trusted because of the ACL requirement.
    *
    * @param member Enter an address to remove as a protocol member
    */
@@ -188,7 +185,8 @@ contract Protocol is IProtocol, ProtoBase {
    * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
    * when this function is invoked.
    *
-   * @custom:suppress-address-trust-issue Although the `contractAddress` can't be trusted, the upgrade admin has to check the contract code manually.
+   * @custom:suppress-address-trust-issue Although the `contractAddress` can't be trusted,
+   * an upgrade admin has to check the contract code manually.
    *
    * @param namespace Enter a unique namespace for this contract
    * @param key Enter a key if this contract has siblings

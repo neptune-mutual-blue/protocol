@@ -57,7 +57,7 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
    * @dev Disables a strategy by address.
    * When a strategy is disabled, it immediately withdraws and cannot lend any further.
    *
-   * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
+   * @custom:suppress-address-trust-issue The address `strategy` can be trusted because of the ACL requirement.
    *
    * @param strategy Enter the strategy contract address to disable
    */

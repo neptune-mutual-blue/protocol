@@ -559,8 +559,8 @@ library CoverUtilV1 {
   }
 
   /**
-   * @dev Returns the total amount staken to this cover (outside of governance).
-   * @custom:todo Check the documentation for accuracy
+   * @dev Gets the total amount of NPM stakes added for the specified cover.
+   *
    *
    * Warning: this function does not validate the cover key supplied.
    *

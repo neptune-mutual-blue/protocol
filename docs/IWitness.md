@@ -18,6 +18,7 @@ event Refuted(bytes32 indexed coverKey, bytes32 indexed productKey, address  wit
 - [attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#attest)
 - [refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 stake)](#refute)
 - [getStatus(bytes32 coverKey, bytes32 productKey)](#getstatus)
+- [isCoverNormal(bytes32 coverKey)](#iscovernormal)
 - [getStakes(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getstakes)
 - [getStakesOf(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, address account)](#getstakesof)
 
@@ -96,6 +97,27 @@ returns(uint256)
 
 ```javascript
 function getStatus(bytes32 coverKey, bytes32 productKey) external view returns (uint256);
+```
+</details>
+
+### isCoverNormal
+
+```solidity
+function isCoverNormal(bytes32 coverKey) external view
+returns(bool)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function isCoverNormal(bytes32 coverKey) external view returns (bool);
 ```
 </details>
 

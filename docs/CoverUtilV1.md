@@ -980,7 +980,8 @@ function _getFutureCommitments(
 
 ### getStake
 
-Returns the total amount staken to this cover (outside of governance).
+Gets the total amount of NPM stakes added for the specified cover.
+ Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getStake(IStore s, bytes32 coverKey) external view

@@ -18,7 +18,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-malicious-erc This ERC-20 `s.getStablecoin()` is a well-known address.
    * @custom:suppress-pausable
-   * @custom:suppress-address-trust-issue The address `stablecoin` can't be manipulated via user input.
+   * @custom:suppress-address-trust-issue The address `token` can't be manipulated via user input.
    *
    * @param receiver Specify the contract that receives the flash loan.
    * @param token Specify the token you want to borrow.

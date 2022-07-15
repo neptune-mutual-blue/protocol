@@ -76,7 +76,7 @@ returns(address)
 | coverKey | bytes32 | Enter a unique key for this cover | 
 | info | bytes32 | IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info. | 
 | tokenName | string | Enter the token name of the POD contract that will be deployed. | 
-| tokenSymbol | string | Enter the token name of the POD contract that will be deployed. | 
+| tokenSymbol | string | Enter the token symbol of the POD contract that will be deployed. | 
 | supportsProducts | bool | Indicates that this cover supports product(s) | 
 | requiresWhitelist | bool | Signifies if this cover only enables whitelisted addresses to purchase policies. | 
 | values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
