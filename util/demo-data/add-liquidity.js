@@ -1,5 +1,5 @@
 const { ethers } = require('hardhat')
-const { covers } = require('../../examples/dedicated')
+const { covers } = require("../../examples")
 const composer = require('../composer')
 const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { toBytes32 } = require('../key')
