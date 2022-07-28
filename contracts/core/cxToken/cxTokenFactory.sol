@@ -34,6 +34,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
    *
    * @param coverKey Enter the cover key related to this cxToken instance
    * @param productKey Enter the product key related to this cxToken instance
+   * @param tokenName Enter the token name of this cxToken instance
    * @param expiryDate Specify the expiry date of this cxToken instance
    *
    */

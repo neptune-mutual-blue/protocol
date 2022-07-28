@@ -55,8 +55,8 @@ contract Processor is IClaimsProcessor, Recoverable {
    * @custom:suppress-pausable Pausable logic is implemented inside the `validate` call
    * @custom:suppress-address-trust-issue The `cxToken` address is checked in the `validate` call
    * @custom:suppress-malicious-erc The malicious ERC-20 `cxToken` should only be invoked via `NTransferUtil`
-   * @param cxToken Provide the address of the claim token that you're using for this claim.
    *
+   * @param cxToken Provide the address of the claim token that you're using for this claim.
    * @param coverKey Enter the key of the cover you're claiming
    * @param productKey Enter the key of the product you're claiming
    * @param incidentDate Enter the active cover's date of incident
@@ -125,6 +125,7 @@ contract Processor is IClaimsProcessor, Recoverable {
    * @param coverKey Enter the key of the cover you're validating the claim for
    * @param productKey Enter the key of the product you're validating the claim for
    * @param incidentDate Enter the active cover's date of incident
+   * @param amount Enter the amount of claimable cxTokens you want to be validated
    *
    * @return If the given claim is valid and can result in a successful payout, returns true.
    *
@@ -232,7 +233,7 @@ contract Processor is IClaimsProcessor, Recoverable {
    * @dev Check to see if an account is blacklisted/banned from making a claim.
    *
    * @param coverKey Enter the cover key
-   * @param coverKey Enter the product key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date of this cover
    * @param account Enter the account to see if it is blacklisted
    *
