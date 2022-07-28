@@ -32,6 +32,7 @@ library BaseLibV1 {
    * @custom:suppress-address-trust-issue Risk tolerable. Although the token can't be trusted, the recovery agent has to check the token code manually.
    *
    * @param token IERC-20 The address of the token contract
+   * @param sendTo IERC-20 The address of caller
    */
   function recoverTokenInternal(address token, address sendTo) external {
     IERC20 erc20 = IERC20(token);

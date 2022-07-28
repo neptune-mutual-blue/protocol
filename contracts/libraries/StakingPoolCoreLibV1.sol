@@ -131,6 +131,7 @@ library StakingPoolCoreLibV1 {
    * @custom:suppress-malicious-erc Risk tolerable. The ERC-20 `addresses[1]`, `addresses[2]`, and `addresses[3]` can be trusted
    * as these can be supplied only by an admin.
    *
+   * @param s Specify store instance
    * @param key Enter the key of the pool you want to create or edit
    * @param name Enter a name for this pool
    * @param addresses[0] stakingToken The token which is staked in this pool

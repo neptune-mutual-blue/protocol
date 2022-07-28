@@ -26,6 +26,7 @@ library GovernanceUtilV1 {
    * Warning: this function does not validate the input arguments.
    *
    * @param s Specify store instance
+   * @param coverKey Enter cover key
    *
    */
   function getReportingPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
@@ -136,6 +137,7 @@ library GovernanceUtilV1 {
    * @param s Specify store instance
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
    *
    */
   function getReporterInternal(
@@ -192,6 +194,7 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
    *
    */
   function _getIncidentOccurredStakesKey(
@@ -209,6 +212,7 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
    *
    */
   function _getClaimPayoutsKey(
@@ -226,6 +230,7 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
    *
    */
   function _getReassurancePayoutKey(
@@ -243,6 +248,8 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
+   * @param account Enter account address
    *
    */
   function _getIndividualIncidentOccurredStakeKey(
@@ -274,6 +281,7 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
    *
    */
   function _getFalseReportingStakesKey(
@@ -291,6 +299,8 @@ library GovernanceUtilV1 {
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter Incident Date
+   * @param account Enter account address
    *
    */
   function _getIndividualFalseReportingStakeKey(
@@ -337,9 +347,9 @@ library GovernanceUtilV1 {
    * @param productKey Enter product key
    * @param incidentDate Enter incident date
    *
-   * @param totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
-   * @param totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
-   * @param myStakeInWinningCamp Your NPM tokens in the "winning" camp.
+   * @return totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
+   * @return totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
+   * @return myStakeInWinningCamp Your NPM tokens in the "winning" camp.
    *
    */
   function getResolutionInfoForInternal(
@@ -380,13 +390,13 @@ library GovernanceUtilV1 {
    * @param productKey Enter product key
    * @param incidentDate Enter incident date
    *
-   * @param totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
-   * @param totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
-   * @param myStakeInWinningCamp Your NPM tokens in the "winning" camp.
-   * @param toBurn The NPM stake to be burned if you unstake now.
-   * @param toReporter The NPM stake reward/commission to be sent to the "valid" reporter.
-   * @param myReward The NPM stake reward you will receive.
-   * @param unstaken The NPM stake you've already unstaken.
+   * @return totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
+   * @return totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
+   * @return myStakeInWinningCamp Your NPM tokens in the "winning" camp.
+   * @return toBurn The NPM stake to be burned if you unstake now.
+   * @return toReporter The NPM stake reward/commission to be sent to the "valid" reporter.
+   * @return myReward The NPM stake reward you will receive.
+   * @return unstaken The NPM stake you've already unstaken.
    *
    */
   function getUnstakeInfoForInternal(
@@ -572,8 +582,8 @@ library GovernanceUtilV1 {
    * @param who Specify the account to get attestation info
    * @param incidentDate Enter incident date
    *
-   * @param myStake The total NPM amount (under incident happened or yes) you have staken for this trigger incident.
-   * @param totalStake The total NPM amount (under incident happened or yes) staken by all tokenholders.
+   * @return myStake The total NPM amount (under incident happened or yes) you have staken for this trigger incident.
+   * @return totalStake The total NPM amount (under incident happened or yes) staken by all tokenholders.
    *
    */
   function getAttestationInternal(
@@ -643,8 +653,8 @@ library GovernanceUtilV1 {
    * @param who Specify the account to get attestation info
    * @param incidentDate Enter incident date
    *
-   * @param myStake The total NPM amount (under false reporting or no) you have staken for this trigger incident.
-   * @param totalStake The total NPM amount (under false reporting or no) staken by all tokenholders.
+   * @return myStake The total NPM amount (under false reporting or no) you have staken for this trigger incident.
+   * @return totalStake The total NPM amount (under false reporting or no) staken by all tokenholders.
    *
    */
   function getRefutationInternal(

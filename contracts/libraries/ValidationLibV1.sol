@@ -31,6 +31,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the cover or any of the cover's product is not normal.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    */
   function mustEnsureAllProductsAreNormal(IStore s, bytes32 coverKey) external view {
@@ -41,6 +42,7 @@ library ValidationLibV1 {
   /**
    * @dev Reverts if the key does not resolve in a valid cover contract
    * or if the cover is under governance.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    * @param productKey Enter the product key to check
    */
@@ -55,6 +57,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the key does not resolve in a valid cover contract.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    */
   function mustBeValidCoverKey(IStore s, bytes32 coverKey) external view {
@@ -63,6 +66,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the cover does not support creating products.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    */
   function mustSupportProducts(IStore s, bytes32 coverKey) external view {
@@ -71,6 +75,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the key does not resolve in a valid product of a cover contract.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    * @param productKey Enter the cover key to check
    */
@@ -84,6 +89,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the key resolves in an expired product.
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    * @param productKey Enter the cover key to check
    */
@@ -96,6 +102,7 @@ library ValidationLibV1 {
   }
 
   /**
+   * @param s Specify store instance
    * @dev Reverts if the sender is not the cover owner
    * @param coverKey Enter the cover key to check
    * @param sender The `msg.sender` value
@@ -111,6 +118,7 @@ library ValidationLibV1 {
 
   /**
    * @dev Reverts if the sender is not the cover owner or the cover contract
+   * @param s Specify store instance
    * @param coverKey Enter the cover key to check
    * @param sender The `msg.sender` value
    */

@@ -29,6 +29,7 @@ library CoverLibV1 {
    * @custom:suppress-address-trust-issue This instance of stablecoin can be trusted because of the ACL requirement.
    * @custom:suppress-initialization Can only be initialized once by a cover manager. Check caller.
    *
+   * @param s Specify store instance
    * @param stablecoin Provide the address of the token this cover will be quoted against.
    * @param friendlyName Enter a description or ENS name of your liquidity token.
    *

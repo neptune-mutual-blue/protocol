@@ -115,7 +115,9 @@ library VaultLibV1 {
    * @custom:suppress-malicious-erc The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
    * @custom:suppress-address-trust-issue The address `stablecoin` can be trusted here because we are ensuring it matches with the protocol stablecoin address.
    *
+   * @param s Specify store instance
    * @param coverKey Enter the cover key
+   * @param pod Provide the address of the POD
    * @param account Specify the account on behalf of which the liquidity is being added.
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
@@ -194,8 +196,12 @@ library VaultLibV1 {
    * @custom:suppress-address-trust-issue The address `pod` can't be trusted and therefore needs to be checked
    * if it is a protocol member.
    *
+   * @param s Specify store instance
    * @param coverKey Enter the cover key
+   * @param pod Provide the address of the POD
+   * @param account Specify the account on behalf of which the liquidity is being added.
    * @param podsToRedeem Enter the amount of liquidity token to remove.
+   * @param npmStakeToRemove Enter the amount of npm token to remove.
    */
   function preRemoveLiquidityInternal(
     IStore s,
@@ -282,10 +288,11 @@ library VaultLibV1 {
   /**
    * @dev The fee to be charged for a given loan.
    * @param s Provide an instance of the store
+   * @param coverKey Enter cover key
    * @param token The loan currency.
    * @param amount The amount of tokens lent.
-   * @param fee The amount of `token` to be charged for the loan, on top of the returned principal.
-   * @param protocolFee The fee received by the protocol
+   * @return fee The amount of `token` to be charged for the loan, on top of the returned principal.
+   * @return protocolFee The fee received by the protocol
    */
   function getFlashFeesInternal(
     IStore s,
@@ -332,6 +339,8 @@ library VaultLibV1 {
 
   /**
    * @dev The amount of currency available to be lent.
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
    * @param token The loan currency.
    * @return The amount of `token` that can be borrowed.
    */

@@ -145,7 +145,9 @@ library PolicyHelperV1 {
 
   /**
    * @dev Gets the instance of cxToken or deploys a new one based on the cover expiry timestamp
+   * @param s Specify store instance
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    */
   function getCxTokenOrDeployInternal(
@@ -215,8 +217,10 @@ library PolicyHelperV1 {
    *
    * @custom:suppress-malicious-erc The ERC-20 `stablecoin` can't be manipulated via user input.
    *
+   * @param s Specify Store Instance
    * @param onBehalfOf Enter the address where the claim tokens (cxTokens) should be sent.
    * @param coverKey Enter the cover key you wish to purchase the policy for
+   * @param productKey Enter the product key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin to cover.
    *
