@@ -14,6 +14,8 @@ library cxTokenFactoryLibV1 {
    *
    * @param s Provide the store instance
    * @param coverKey Provide the cover key
+   * @param productKey Provide the product key
+   * @param tokenName Provide the token name
    * @param expiryDate Specify the expiry date of this cxToken instance
    *
    */

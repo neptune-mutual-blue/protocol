@@ -205,6 +205,7 @@ library StrategyLibV1 {
    * Warning: this function does not validate the cover key and token supplied.
    *
    * @param coverKey Enter cover key
+   * @param strategyName Provide strategy name
    * @param token Enter the token address
    *
    */

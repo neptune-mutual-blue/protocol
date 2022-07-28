@@ -268,7 +268,9 @@ library ProtoUtilV1 {
 
   /**
    * @dev Ensures that the sender matches with the exact contract having the specified name.
+   * @param s Specify store instance
    * @param name Enter the name of the contract
+   * @param key Enter the key
    * @param sender Enter the `msg.sender` value
    */
   function mustBeExactContract(
@@ -291,7 +293,9 @@ library ProtoUtilV1 {
 
   /**
    * @dev Ensures that the sender matches with the exact contract having the specified name.
+   * @param s Specify store instance
    * @param name Enter the name of the contract
+   * @param caller Specify the address of the caller
    */
   function callerMustBeExactContract(
     IStore s,
