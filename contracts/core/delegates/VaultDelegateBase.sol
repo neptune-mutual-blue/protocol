@@ -48,7 +48,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @custom:note Please note the following:
    *
    * - Governance transfers are allowed via claims processor contract only.
-   * - This function's caller must be the vault of the specified coverKey.
+   * - This function's caller must be the vault of the specified cover key.
    *
    * @param caller Enter your msg.sender value.
    * @param coverKey Provide your vault's cover key.
@@ -139,7 +139,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @custom:note Do not update state and liquidity since `transferToStrategy` itself is a part of the state update
    *
    * @param caller Enter your msg.sender value
-   * @param coverKey Enter the coverKey
+   * @param coverKey Enter the cover key
    * @param strategyName Enter the strategy name
    *
    */
@@ -167,7 +167,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * - msg.sender must be the correct vault contract
    *
    * @param caller Enter your msg.sender value
-   * @param coverKey Provide your vault's cover key
+   * @param coverKey Provide your vault's coverKey
    * @param strategyName Enter the strategy name
    *
    */
@@ -195,7 +195,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    *
    * @param caller Enter your msg.sender value
    * @param token Enter the token your vault received from strategy
-   * @param coverKey Enter the coverKey
+   * @param coverKey Enter the cover key
    * @param strategyName Enter the strategy name
    * @param amount Enter the amount received
    *
@@ -225,6 +225,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    *
    * - msg.sender must be correct vault contract
    *
+   * @param caller Enter your msg.sender value
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
@@ -253,10 +254,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `addLiquidity` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
-   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the cover key
    * @custom:suppress-reentrancy Not required. The `postAddLiquidity` hook is executed under the same context of `preAddLiquidity`.
    *
-   * @param coverKey Enter the coverKey
+   * @param coverKey Enter the cover key
    *
    */
   function postAddLiquidity(
@@ -298,7 +299,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev This hook runs before `removeLiquidity` implementation on vault(s)
    *
-   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the cover key
    * @custom:note Please note the following:
    *
    * - msg.sender must be the correct vault contract
@@ -340,10 +341,10 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    * @dev This hook runs after `removeLiquidity` implementation on vault(s)
    * and performs cleanup and/or validation if needed.
    *
-   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the coverKey
+   * @custom:suppress-acl No need to define ACL as this function is only accessible to associated vault contract of the cover key
    * @custom:suppress-reentrancy Not required. The `postRemoveLiquidity` hook is executed under the same context as `preRemoveLiquidity`.
    *
-   * @param coverKey Enter the coverKey
+   * @param coverKey Enter the cover key
    *
    */
   function postRemoveLiquidity(
@@ -363,7 +364,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev Calculates the amount of PODs to mint for the given amount of stablecoin
    *
-   * @param coverKey Enter the cover for which you want to calculate PODs
+   * @param coverKey Enter the cover key for which you want to calculate PODs
    * @param stablecoinIn Enter the amount in the stablecoin units
    *
    * @return Returns the units of PODs to be minted if this stablecoin liquidity was supplied.
@@ -381,7 +382,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
   /**
    * @dev Calculates the amount of stablecoin units to receive for the given amount of PODs to redeem
    *
-   * @param coverKey Enter the cover for which you want to calculate PODs
+   * @param coverKey Enter the cover key for which you want to calculate PODs
    * @param podsToBurn Enter the amount in the POD units to redeem
    *
    * @return Returns the units of stablecoins to redeem if the specified PODs were burned.
@@ -400,7 +401,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    *
    * Warning: this function does not validate the cover key supplied.
    *
-   * @param coverKey Enter the cover for which you want to get the stablecoin balance
+   * @param coverKey Enter the cover key for which you want to get the stablecoin balance
    */
   function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view override returns (uint256) {
     s.senderMustBeVaultContract(coverKey);
