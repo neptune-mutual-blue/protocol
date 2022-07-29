@@ -45,7 +45,9 @@ abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param coverKey Enter cover key
    * @param token The loan currency.
+   *
    * @return The amount of `token` that can be borrowed.
    *
    */
