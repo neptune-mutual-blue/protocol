@@ -29,6 +29,8 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * @dev Recover all Ether held by the contract.
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
+   *
+   * @param sendTo Wallet address where we send the recovered ether 
    */
   function recoverEther(address sendTo) external override nonReentrant {
     s.mustNotBePaused();
@@ -45,6 +47,7 @@ abstract contract Recoverable is ReentrancyGuard, IRecoverable {
    * @custom:suppress-address-trust-issue Although the token can't be trusted, the recovery agent has to check the token code manually.
    *
    * @param token ERC-20 The address of the token contract
+   * @param sendTo Wallet address where we send the recovered token
    */
   function recoverToken(address token, address sendTo) external override nonReentrant {
     s.mustNotBePaused();

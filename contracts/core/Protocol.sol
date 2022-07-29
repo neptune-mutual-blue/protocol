@@ -161,6 +161,9 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Adds a contract to the protocol. See `addContractWithKey` for more info.
    * @custom:suppress-acl This function is just an intermediate
    * @custom:suppress-pausable This function is just an intermediate
+   *
+   * @param namespace Enter a unique namespace for this contract
+   * @param contractAddress Enter the contract address to add.
    */
   function addContract(bytes32 namespace, address contractAddress) external override {
     addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
@@ -216,6 +219,9 @@ contract Protocol is IProtocol, ProtoBase {
    * @custom:suppress-acl This function is just an intermediate
    * @custom:suppress-pausable This function is just an intermediate
    *
+   * @param namespace Enter a unique namespace for this contract
+   * @param previous Enter the existing contract address at this namespace and key.
+   * @param current Enter the contract address which will replace the previous contract.
    */
   function upgradeContract(
     bytes32 namespace,
@@ -279,6 +285,7 @@ contract Protocol is IProtocol, ProtoBase {
    * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
    * when this function is invoked.
    *
+   * @param detail Account with roles
    */
   function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
     // @suppress-zero-value-check Checked
