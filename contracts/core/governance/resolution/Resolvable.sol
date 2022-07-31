@@ -76,6 +76,7 @@ abstract contract Resolvable is Finalization, IResolvable {
    * @param coverKey Enter the cover key on which you want to perform emergency resolve
    * @param productKey Enter the product key on which you want to perform emergency resolve
    * @param incidentDate Enter the date of this incident reporting
+   * @param decision Decision wether true/false the incident happened
    */
   function emergencyResolve(
     bytes32 coverKey,
@@ -183,6 +184,7 @@ abstract contract Resolvable is Finalization, IResolvable {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param coverKey Provide cover key
    */
   function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
     return s.getCoolDownPeriodInternal(coverKey);
@@ -193,6 +195,8 @@ abstract contract Resolvable is Finalization, IResolvable {
    *
    * Warning: this function does not validate the cover and product key supplied.
    *
+   * @param coverKey Provide cover key
+   * @param productKey Provide product key
    */
   function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     return s.getResolutionDeadlineInternal(coverKey, productKey);

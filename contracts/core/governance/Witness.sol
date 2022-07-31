@@ -89,7 +89,8 @@ abstract contract Witness is Recoverable, IWitness {
    *
    *
    * @param coverKey Enter the key of the active cover
-   * @param incidentDate Enter the active cover's date of incident
+   * @param productKey Enter the key of the active product
+   * @param incidentDate Enter the active cover/product's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.
    * Note that you cannot unstake this amount if the decision was not in your favor.
    */
@@ -138,7 +139,8 @@ abstract contract Witness is Recoverable, IWitness {
    *
    *
    * @param coverKey Enter the key of the active cover
-   * @param incidentDate Enter the active cover's date of incident
+   * @param productKey Enter the key of the active product
+   * @param incidentDate Enter the active cover/product's date of incident
    * @param stake Enter the amount of NPM tokens you wish to stake.
    * Note that you cannot unstake this amount if the decision was not in your favor.
    */
@@ -169,7 +171,9 @@ abstract contract Witness is Recoverable, IWitness {
    * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the key of the cover you'd like to check the status of
-   * @return Returns the cover status as an integer.
+   * @param productKey Enter the key of the product you'd like to check the status of
+   *
+   * @return Returns the cover/product status as an integer.
    * For more, check the enum `ProductStatus` on `CoverUtilV1` library.
    *
    */
@@ -181,6 +185,7 @@ abstract contract Witness is Recoverable, IWitness {
    * @dev Gets the status of products in a given cover
    *
    * @param coverKey Enter the key of the cover you'd like to check the status of
+   *
    * @return Returns the cover status as an bool.
    *
    */
@@ -194,7 +199,9 @@ abstract contract Witness is Recoverable, IWitness {
    * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the key of the cover you'd like to check the stakes of
-   * @param incidentDate Enter the active cover's date of incident
+   * @param productKey Enter the key of the product you'd like to check the stakes of
+   * @param incidentDate Enter the active cover/product's date of incident
+   *
    * @return Returns an array of integers --> [yes, no]
    *
    */
@@ -212,8 +219,10 @@ abstract contract Witness is Recoverable, IWitness {
    * Warning: this function does not validate the input arguments.
    *
    * @param coverKey Enter the key of the cover you'd like to check the stakes of
-   * @param incidentDate Enter the active cover's date of incident
+   * @param productKey Enter the key of the product you'd like to check the stakes of
+   * @param incidentDate Enter the active cover/product's date of incident
    * @param account Enter the account you'd like to get the stakes of
+   *
    * @return Returns an array of integers --> [yes, no]
    *
    */

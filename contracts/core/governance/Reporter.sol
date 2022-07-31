@@ -187,6 +187,7 @@ abstract contract Reporter is IReporter, Witness {
    *
    * @param coverKey Enter the cover key you are reporting
    * @param productKey Enter the product key you are reporting
+   * @param incidentDate Enter the active cover/product's date of incident
    * @param info Enter IPFS hash of the incident in the following format:
    * `{
    *    incidentTitle: 'Wrong Incident Reporting',
@@ -330,7 +331,7 @@ abstract contract Reporter is IReporter, Witness {
    *
    * @param coverKey Enter the cover key you would like to get the reporter of
    * @param productKey Enter the product key you would like to get the reporter of
-   * @param productKey Enter the cover's incident date you would like to get the reporter of
+   * @param incidentDate Enter the cover/product's incident date you would like to get the reporter of
    */
   function getReporter(
     bytes32 coverKey,
@@ -362,7 +363,7 @@ abstract contract Reporter is IReporter, Witness {
    * @param coverKey Enter the cover key you want to get attestation of
    * @param productKey Enter the product key you want to get attestation of
    * @param who Enter the account you want to get attestation of
-   * @param who Enter the specified cover's indicent date for which attestation will be returned
+   * @param incidentDate Enter the specified cover/product's incident date for which attestation will be returned
    *
    */
   function getAttestation(
@@ -383,7 +384,7 @@ abstract contract Reporter is IReporter, Witness {
    * @param coverKey Enter the cover key you want to get refutation of
    * @param productKey Enter the product key you want to get refutation of
    * @param who Enter the account you want to get refutation of
-   * @param who Enter the specified cover's indicent date for which refutation will be returned
+   * @param incidentDate Enter the specified cover/product's incident date for which refutation will be returned
    *
    */
   function getRefutation(

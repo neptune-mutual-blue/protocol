@@ -122,6 +122,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    *
    * @param account Enter account to get the unstake information of
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date
    * @param totalStakeInWinningCamp Returns the sum total of the stakes contributed by the winning camp
    * @param totalStakeInLosingCamp Returns the sum total of the stakes contributed by the losing camp
