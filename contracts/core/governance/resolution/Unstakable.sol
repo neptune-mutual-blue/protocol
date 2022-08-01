@@ -130,6 +130,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param toBurn Returns the amount of tokens that will be booked as protocol revenue and immediately burned
    * @param toReporter Returns the amount of tokens that will be sent to the final reporter as the `first reporter` reward
    * @param myReward Returns the amount of tokens that the supplied account will receive as `reporting reward`
+   * @param unstaken Return the amount of NPM the account has unstaken
    */
   function getUnstakeInfoFor(
     address account,
