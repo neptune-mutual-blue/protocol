@@ -32,6 +32,8 @@ contract VaultFactory is IVaultFactory, Recoverable {
    * @custom:suppress-acl This function is only accessilbe to the cover contract
    *
    * @param coverKey Enter the cover key related to this Vault instance
+   * @param tokenName Enter token name to deploy.
+   * @param tokenSymbol Enter corresponding token symbol.
    */
   function deploy(
     bytes32 coverKey,

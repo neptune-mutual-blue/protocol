@@ -17,6 +17,7 @@ interface IPolicyAdmin is IMember {
 
   /**
    * @dev Sets policy rates for the given cover key. This feature is only accessible by owner or protocol owner.
+   * @param coverKey Enter cover key for which to setthe policy rates
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
    */

@@ -53,6 +53,7 @@ abstract contract VaultLiquidity is VaultBase {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStakeToAdd Enter the amount of NPM token to stake.
+   * @param referralCode Provide a referral code if applicable.
    *
    */
   function addLiquidity(
@@ -109,6 +110,7 @@ abstract contract VaultLiquidity is VaultBase {
    * @param coverKey Enter the cover key
    * @param podsToRedeem Enter the amount of pods to redeem
    * @param npmStakeToRemove Enter the amount of NPM stake to remove.
+   * @param exit Indicates NPM stake exit.
    */
   function removeLiquidity(
     bytes32 coverKey,

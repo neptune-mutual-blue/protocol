@@ -52,6 +52,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Sets policy rates for the given cover key. This feature is only accessible by cover manager.
+   * @param coverKey Enter the cover key
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
    */
