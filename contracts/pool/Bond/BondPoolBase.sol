@@ -23,6 +23,7 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
 
   /**
    * @dev Gets the bond pool information
+   * @param forAccount Enter account for which to get info
    * @param addresses[0] lpToken -> Returns the LP token address
    * @param values[0] marketPrice -> Returns the market price of NPM token
    * @param values[1] discountRate -> Returns the discount rate for bonding

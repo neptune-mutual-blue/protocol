@@ -27,6 +27,7 @@ interface IPolicy is IMember {
    * @param coverKey Enter the cover key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin to cover.
+   * @param referralCode Provide a referral code if applicable.
    */
   function purchaseCover(
     address onBehalfOf,

@@ -26,6 +26,7 @@ interface IVault is IMember, IERC20 {
    * @param coverKey Enter the cover key
    * @param amount Enter the amount of liquidity token to supply.
    * @param npmStake Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period.
+   * @param referralCode Enter the referral code if available.
    */
   function addLiquidity(
     bytes32 coverKey,
@@ -64,6 +65,7 @@ interface IVault is IMember, IERC20 {
 
   /**
    * @dev Transfers liquidity to strategy contract.
+   * @param token Provide the ERC20 token you'd like to transfer to the given strategy
    * @param coverKey Enter the cover key
    * @param strategyName Enter the strategy's name
    * @param amount Enter the amount of liquidity token to transfer.
@@ -77,6 +79,7 @@ interface IVault is IMember, IERC20 {
 
   /**
    * @dev Receives from strategy contract.
+   * @param token Provide the ERC20 token you'd like to receive from the given strategy
    * @param coverKey Enter the cover key
    * @param strategyName Enter the strategy's name
    * @param amount Enter the amount of liquidity token to transfer.

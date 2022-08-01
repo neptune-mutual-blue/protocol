@@ -45,6 +45,10 @@ interface ICover is IMember {
    *
    * @param coverKey Enter a unique key for this cover
    * @param info IPFS info of the cover contract
+   * @param tokenName Enter token name of a cover token
+   * @param tokenSymbol Enter corresponding token symbol
+   * @param supportsProducts Enter true if the cover is diversified and contains products, otherwise false
+   * @param requiresWhitelist  Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
    * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
    * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
    * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports

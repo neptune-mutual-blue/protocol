@@ -11,6 +11,7 @@ interface ICoverReassurance is IMember {
   /**
    * @dev Adds reassurance to the specified cover contract
    * @param coverKey Enter the cover key
+   * @param account Enter the account address
    * @param amount Enter the amount you would like to supply
    */
   function addReassurance(
