@@ -14,6 +14,7 @@ interface IResolvable {
     uint256 claimExpiresAt
   );
   event CooldownPeriodConfigured(bytes32 indexed coverKey, uint256 period);
+  event ReportClosed(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed closedBy, uint256 incidentDate);
 
   function resolve(
     bytes32 coverKey,

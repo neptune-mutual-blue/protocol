@@ -218,6 +218,8 @@ abstract contract Resolvable is Finalization, IResolvable {
 
     _resolve(coverKey, productKey, incidentDate, false, true);
     _finalize(coverKey, productKey, incidentDate);
+
+    emit ReportClosed(coverKey, productKey, msg.sender, incidentDate);
   }
 
   /**

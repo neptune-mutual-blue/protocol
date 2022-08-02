@@ -62,7 +62,7 @@ describe('Governance: closeReport', () => {
   })
 
   it('must close the report correctly', async () => {
-    const [, bob] = await ethers.getSigners()
+    const [owner, bob] = await ethers.getSigners()
 
     await deployed.npm.transfer(bob.address, helper.ether(2000))
     const amount = helper.ether(1000)
@@ -90,6 +90,12 @@ describe('Governance: closeReport', () => {
 
     event = events.find(x => x.event === 'Finalized')
     event.args.coverKey.should.equal(coverKey)
+    event.args.incidentDate.should.equal(incidentDate)
+
+    event = events.find(x => x.event === 'ReportClosed')
+    event.args.coverKey.should.equal(coverKey)
+    event.args.productKey.should.equal(helper.emptyBytes32)
+    event.args.closedBy.should.equal(owner.address)
     event.args.incidentDate.should.equal(incidentDate)
   })
 
