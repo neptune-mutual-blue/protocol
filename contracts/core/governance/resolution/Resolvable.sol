@@ -179,6 +179,48 @@ abstract contract Resolvable is Finalization, IResolvable {
   }
 
   /**
+   * @dev Enables governance admins to perform a emergency resolution to close a report.
+   * The status is set to `False Reporting` and the cover is made available to be finalized
+   *
+   * @custom:note Please note the following:
+   *
+   * An incident report can be closed:
+   *
+   * - by a governance admin
+   * - during the reporting period
+   * - if it was a false reporting
+   *
+   * @param coverKey Enter the cover key you want to resolve
+   * @param productKey Enter the product key you want to resolve
+   * @param incidentDate Enter the date of this incident reporting
+   */
+  function closeReport(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey, productKey);
+    s.mustBeDisputed(coverKey, productKey);
+    s.mustNotHaveResolutionDeadline(coverKey, productKey);
+
+    // solhint-disable-next-line not-rely-on-time
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey, block.timestamp);
+
+    // solhint-disable-next-line not-rely-on-time
+    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, block.timestamp);
+
+    _resolve(coverKey, productKey, incidentDate, false, true);
+    _finalize(coverKey, productKey, incidentDate);
+  }
+
+  /**
    * @dev Gets the cooldown period of a given cover
    *
    * Warning: this function does not validate the cover key supplied.

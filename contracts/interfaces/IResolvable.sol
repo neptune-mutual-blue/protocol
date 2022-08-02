@@ -28,6 +28,12 @@ interface IResolvable {
     bool decision
   ) external;
 
+  function closeReport(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external;
+
   function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external;
 
   function getCoolDownPeriod(bytes32 coverKey) external view returns (uint256);
