@@ -24,11 +24,31 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
   mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
 
+  mapping(address => bool) public pausers;
+
   bytes32 private constant _NS_MEMBERS = "ns:members";
 
   constructor() {
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, msg.sender))] = true;
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, address(this)))] = true;
+  }
+
+  /**
+   *
+   * @dev Accepts a list of accounts and their respective statuses for addition or removal as pausers.
+   *
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   * @custom:suppress-address-trust-issue Risk tolerable.
+   */
+  function setPausers(address[] calldata accounts, bool[] calldata statuses) external override onlyOwner whenNotPaused {
+    require(accounts.length > 0, "No pauser specified");
+    require(accounts.length == statuses.length, "Invalid args");
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+      pausers[accounts[i]] = statuses[i];
+    }
+
+    emit PausersSet(msg.sender, accounts, statuses);
   }
 
   /**
@@ -65,10 +85,11 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   /**
    * @dev Pauses the store
    *
-   * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
+   * @custom:suppress-reentrancy Risk tolerable. Can only be called by a pauser.
    *
    */
-  function pause() external onlyOwner {
+  function pause() external {
+    require(pausers[msg.sender], "Forbidden");
     super._pause();
   }
 
@@ -87,7 +108,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   }
 
   function _throwIfPaused() internal view {
-    require(!super.paused(), "Pausable: paused");
+    require(super.paused() == false, "Pausable: paused");
   }
 
   function _throwIfSenderNotProtocolMember() internal view {

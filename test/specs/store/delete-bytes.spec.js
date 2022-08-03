@@ -37,6 +37,8 @@ describe('Store: delete bytes', () => {
 
     await store.setBytes(k, value)
 
+    const [owner] = await ethers.getSigners()
+    await store.setPausers([owner.address], [true])
     await store.pause()
 
     await store.deleteBytes(k)

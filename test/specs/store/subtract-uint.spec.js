@@ -52,6 +52,8 @@ describe('Store: subtract uint', () => {
   })
 
   it('must revert if the store is paused', async () => {
+    const [owner] = await ethers.getSigners()
+    await store.setPausers([owner.address], [true])
     await store.pause()
 
     const k = key.toBytes32('test:uint')
