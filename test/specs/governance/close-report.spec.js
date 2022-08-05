@@ -99,31 +99,6 @@ describe('Governance: closeReport', () => {
     event.args.incidentDate.should.equal(incidentDate)
   })
 
-  it('revert when the status is not false reporting', async () => {
-    const [, bob] = await ethers.getSigners()
-
-    await deployed.npm.transfer(bob.address, helper.ether(2000))
-    const amount = helper.ether(1000)
-
-    const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, amount)
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, amount)
-
-    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
-
-    const disputeInfo = key.toBytes32('dispute-info')
-    await deployed.npm.connect(bob).approve(deployed.governance.address, amount)
-    await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, amount)
-
-    await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.closeReport(coverKey, helper.emptyBytes32, incidentDate)
-      .should.be.rejectedWith('Not disputed')
-
-    await deployed.npm.connect(bob).approve(deployed.governance.address, 1)
-    await deployed.governance.connect(bob).refute(coverKey, helper.emptyBytes32, incidentDate, 1)
-    await deployed.resolution.closeReport(coverKey, helper.emptyBytes32, incidentDate)
-  })
-
   it('revert when accessed after reporting period', async () => {
     const [, bob] = await ethers.getSigners()
 

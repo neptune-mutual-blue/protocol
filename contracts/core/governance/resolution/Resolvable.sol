@@ -207,7 +207,6 @@ abstract contract Resolvable is Finalization, IResolvable {
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
     s.mustBeDuringReportingPeriod(coverKey, productKey);
-    s.mustBeDisputed(coverKey, productKey);
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
     // solhint-disable-next-line not-rely-on-time
