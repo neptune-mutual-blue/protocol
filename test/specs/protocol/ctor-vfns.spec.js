@@ -14,7 +14,7 @@ describe('Protocol Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
   let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1
 
-  before(async () => {
+  beforeEach(async () => {
     const deployed = await deployDependencies()
 
     npm = deployed.npm

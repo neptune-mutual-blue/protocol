@@ -81,7 +81,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
       { StrategyLibV1: deployed.strategyLibV1.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockLiquidityEngineUser.address), true)
+    await deployed.protocol.addMember(mockLiquidityEngineUser.address)
   })
 
   it('must deposit all the balance when max lending ratio is greater than 1', async () => {

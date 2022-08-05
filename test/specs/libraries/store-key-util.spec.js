@@ -20,7 +20,7 @@ describe('StoreKeyUtil Library', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   describe('StoreKeyUtil: addUintByKey', () => {
@@ -720,7 +720,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKey', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -745,7 +745,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKeys (2 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -771,7 +771,7 @@ describe('StoreKeyUtil: getAddressArrayItemPositionByKeys (3 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -798,7 +798,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKey', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -832,7 +832,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKeys (2 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -868,7 +868,7 @@ describe('StoreKeyUtil: getAddressArrayItemByIndexByKeys (3 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -906,7 +906,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemPositionByKey', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -931,7 +931,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemPositionByKeys (2 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -957,7 +957,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemPositionByKeys (3 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -984,7 +984,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKey', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -1018,7 +1018,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKeys (2 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -1054,7 +1054,7 @@ describe('StoreKeyUtil: getBytes32ArrayItemByIndexByKeys (3 keys)', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   it('must get value correctly', async () => {
@@ -1092,7 +1092,7 @@ describe('StoreKeyUtil: getBytes32ArrayByKey & getBytes32ArrayByKeys', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   describe('StoreKeyUtil: getBytes32ArrayByKey', () => {
@@ -1143,7 +1143,7 @@ describe('StoreKeyUtil: getAddressArrayByKey & getAddressArrayByKeys', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   describe('StoreKeyUtil: getAddressArrayByKey', () => {

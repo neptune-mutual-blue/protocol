@@ -206,7 +206,7 @@ describe('AccessControlLibV1: hasAccess', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockStoreUser.address), true)
+    await deployed.protocol.addMember(mockStoreUser.address)
   })
 
   it('must return false when protocol address is zero', async () => {
