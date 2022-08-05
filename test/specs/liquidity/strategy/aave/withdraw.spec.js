@@ -14,7 +14,10 @@ describe('Aave Withdrawal', () => {
   let deployed, aaveLendingPool, aToken, aaveStrategy
 
   beforeEach(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
 
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
@@ -62,7 +65,10 @@ describe('Aave Deposit: Faulty Pool', () => {
   let deployed, aaveLendingPool, aToken, aaveStrategy
 
   beforeEach(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
 
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FaultyAaveLendingPool', aToken.address)

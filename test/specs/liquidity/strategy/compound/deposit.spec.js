@@ -14,7 +14,10 @@ describe('Compound Deposit', () => {
   let deployed, daiDelegator, cDai, compoundStrategy
 
   beforeEach(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
 
     cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
     daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', deployed.dai.address, cDai.address)
@@ -64,7 +67,10 @@ describe('Compound Deposit: Faulty Pool', () => {
   let deployed, daiDelegator, compoundStrategy
 
   before(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
     const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
 
     daiDelegator = await deployer.deploy(cache, 'FaultyCompoundDaiDelegator', deployed.dai.address, cDai.address, '1')
