@@ -77,7 +77,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     const info = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, '1')
     await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, info.totalAvailableLiquidity.sub(totalPurchased).add(1)).should.be.rejectedWith('Insufficient fund')
-  }).timeout(40_000)
+  }).timeout(100_000)
 
   it('allows reuse of liquidity as policies expire', async () => {
     const [owner] = await ethers.getSigners()
