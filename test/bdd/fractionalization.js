@@ -77,7 +77,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     const info = await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, '1')
     await contracts.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, 2, info.totalAvailableLiquidity.sub(totalPurchased).add(1)).should.be.rejectedWith('Insufficient fund')
-  })
+  }).timeout(40_000)
 
   it('allows reuse of liquidity as policies expire', async () => {
     const [owner] = await ethers.getSigners()
@@ -99,7 +99,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
       totalPurchased += amount
       await network.provider.send('evm_increaseTime', [7 * DAYS])
     }
-  })
+  }).timeout(40_000)
 
   it('commitments expire over time', async () => {
     const [owner] = await ethers.getSigners()
@@ -122,5 +122,5 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     const commitment = await contracts.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal('0')
-  })
+  }).timeout(40_000)
 })

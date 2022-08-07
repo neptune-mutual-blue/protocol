@@ -12,8 +12,11 @@ require('chai')
 describe('Vault: transferToStrategy', () => {
   let deployed
 
-  before(async () => {
+  beforeEach(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
   })
 
   it('reverts when amount is invalid', async () => {
