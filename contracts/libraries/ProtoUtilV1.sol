@@ -259,7 +259,7 @@ library ProtoUtilV1 {
   }
 
   /**
-   * @dev Reverts if the caller is one of the protocol members.
+   * @dev Reverts if the caller is not one of the protocol members.
    */
   function mustBeProtocolMember(IStore s, address contractAddress) external view {
     bool isMember = isProtocolMember(s, contractAddress);
