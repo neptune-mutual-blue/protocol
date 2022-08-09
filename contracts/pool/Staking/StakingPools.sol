@@ -16,6 +16,9 @@ contract StakingPools is StakingPoolInfo {
    *
    * @custom:suppress-acl This is a publicly accessible feature
    *
+   * @param key Enter staking pool key
+   * @param amount Enter amount to deposit
+   * 
    */
   function deposit(bytes32 key, uint256 amount) external override nonReentrant {
     s.mustNotBePaused();
@@ -35,6 +38,9 @@ contract StakingPools is StakingPoolInfo {
    *
    * @custom:suppress-acl This is a publicly accessible feature
    *
+   * @param key Enter staking pool key
+   * @param amount Enter amount to withdraw
+   * 
    */
   function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
     s.mustNotBePaused();

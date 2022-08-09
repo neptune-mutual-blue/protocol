@@ -82,7 +82,9 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * @custom:suppress-acl This function is only accessible to protocol members
    * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
    * @custom:suppress-address-trust-issue The addresses `compoundWrappedStablecoin` or `stablecoin` can't be manipulated via user input.
-   *
+   * 
+   * @param coverKey Enter cover key to deposit
+   * @param amount Enter amount to deposit
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 compoundWrappedStablecoinMinted) {
     s.mustNotBePaused();
@@ -136,7 +138,8 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * @custom:suppress-acl This function is only accessible to protocol members
    * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
    * @custom:suppress-address-trust-issue The addresses `compoundWrappedStablecoin` or `stablecoin` can't be manipulated via user input.
-   *
+   * 
+   * @param coverKey Enter cover key to withdraw
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();

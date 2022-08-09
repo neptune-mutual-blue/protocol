@@ -20,6 +20,10 @@ abstract contract VaultStrategy is VaultLiquidity {
    * @custom:suppress-reentrancy Custom reentrancy guard implemented
    * @custom:suppress-pausable
    *
+   * @param token Provide the ERC20 token you'd like to transfer to the given strategy
+   * @param coverKey Provide your vault's cover key
+   * @param strategyName Enter the strategy name
+   * @param amount Enter the amount to transfer
    */
   function transferToStrategy(
     IERC20 token,
@@ -64,6 +68,11 @@ abstract contract VaultStrategy is VaultLiquidity {
    * @custom:suppress-acl This function is only callable by correct strategy contract as checked in `preReceiveFromStrategy` and `postReceiveFromStrategy`
    * @custom:suppress-reentrancy Custom reentrancy guard implemented
    * @custom:suppress-pausable Validated in `preReceiveFromStrategy` and `postReceiveFromStrategy`
+   *   
+   * @param token Provide the ERC20 token you'd like to receive from the given strategy
+   * @param coverKey Provide your vault's cover key
+   * @param strategyName Enter the strategy name
+   * @param amount Enter the amount to transfer
    *
    */
   function receiveFromStrategy(

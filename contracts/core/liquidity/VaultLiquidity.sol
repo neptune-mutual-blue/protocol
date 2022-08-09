@@ -16,6 +16,10 @@ abstract contract VaultLiquidity is VaultBase {
    * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
    * @custom:suppress-pausable
    *
+   * @param coverKey Provide your vault's cover key.
+   * @param to Enter the destination account
+   * @param amount Enter the amount of liquidity token to transfer.
+   * 
    */
   function transferGovernance(
     bytes32 coverKey,
@@ -159,6 +163,7 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
+   * @param forStablecoinUnits Enter the amount in the stablecoin units
    */
   function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
     return delgate().calculatePodsImplementation(key, forStablecoinUnits);
@@ -166,6 +171,7 @@ abstract contract VaultLiquidity is VaultBase {
 
   /**
    * @dev Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
+   * @param podsToBurn Enter the amount in the POD units to redeem
    */
   function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
     return delgate().calculateLiquidityImplementation(key, podsToBurn);

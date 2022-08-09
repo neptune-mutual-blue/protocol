@@ -35,6 +35,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    * @dev Recover all Ether held by the contract.
    * @custom:suppress-reentrancy Risk tolerable. Can only be called by the owner.
    * @custom:suppress-pausable Risk tolerable. Can only be called by the owner.
+   * @param sendTo The address that receives the recovered ethers
    */
   function recoverEther(address sendTo) external onlyOwner {
     // slither-disable-next-line arbitrary-send

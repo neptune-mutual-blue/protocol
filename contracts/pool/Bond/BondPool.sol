@@ -13,6 +13,9 @@ contract BondPool is BondPoolBase {
    *
    * @custom:suppress-acl This is a publicly accessible feature
    *
+   * @param lpTokens Enter liquidity pair token amount 
+   * @param minNpmDesired Enter NPM amount you will get
+   *
    */
   function createBond(uint256 lpTokens, uint256 minNpmDesired) external override nonReentrant {
     s.mustNotBePaused();

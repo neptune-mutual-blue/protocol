@@ -17,6 +17,7 @@ library BaseLibV1 {
    * @dev Recover all Ether held by the contract.
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
+   * @param sendTo The address that receives the recovered Ether
    */
   function recoverEtherInternal(address sendTo) external {
     // slither-disable-next-line arbitrary-send

@@ -176,6 +176,8 @@ contract Policy is IPolicy, Recoverable {
    *
    * Warning: this function does not validate the cover and product key supplied.
    *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the cover key
    */
   function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     uint256 precision = s.getStablecoinPrecision();
@@ -187,6 +189,8 @@ contract Policy is IPolicy, Recoverable {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param coverKey Enter the cover key
+   * 
    */
   function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
     return s.getStablecoinOwnedByVaultInternal(coverKey);

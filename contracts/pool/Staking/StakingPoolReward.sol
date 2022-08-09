@@ -18,6 +18,8 @@ abstract contract StakingPoolReward is StakingPoolBase {
    * or else you risk receiving no rewards as a result of token depletion in the reward pool.
    *
    * @custom:suppress-acl This is a publicly accessible feature
+   * 
+   * @param key Enter staking pool key of which to withdraw rewards
    *
    */
   function withdrawRewards(bytes32 key) external override nonReentrant {

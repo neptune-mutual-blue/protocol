@@ -13,6 +13,8 @@ abstract contract WithRecovery is Ownable {
    *
    * @custom:suppress-pausable Risk tolerable because of the ACL
    *
+   * @param sendTo The address that receives the recovered ether
+   *
    */
   function recoverEther(address sendTo) external onlyOwner {
     // slither-disable-next-line arbitrary-send
