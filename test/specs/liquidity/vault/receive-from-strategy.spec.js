@@ -12,7 +12,7 @@ require('chai')
 describe('Vault: receiveFromStrategy', () => {
   let deployed
 
-  beforeEach(async () => {
+  before(async () => {
     const [owner] = await ethers.getSigners()
 
     deployed = await deployDependencies()
