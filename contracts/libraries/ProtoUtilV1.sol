@@ -161,6 +161,9 @@ library ProtoUtilV1 {
   /// @dev Used as key to flag if a cover was disputed. Cleared when a cover is finalized.
   bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE = "ns:gov:rep:has:dispute";
 
+  /// @dev Used as key to flag if a incident was finalized.
+  bytes32 public constant NS_GOVERNANCE_REPORTING_FINALIZATION = "ns:gov:rep:has:finalized";
+
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting
   /// 2. For address --> The address of the first disputing reporter (disputer / candidate reporter)

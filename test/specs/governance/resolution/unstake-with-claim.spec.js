@@ -174,6 +174,8 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
+    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
+      .should.be.rejectedWith('Incident not finalized')
     await deployed.resolution.unstakeWithClaim(coverKey, helper.emptyBytes32, incidentDate)
       .should.be.rejectedWith('Claim period has expired')
 

@@ -633,6 +633,20 @@ library GovernanceUtilV1 {
   }
 
   /**
+   * @dev Hash key of the "has finalized flag" for the specified cover product.
+   *
+   * Warning: this function does not validate the input arguments.
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param incidentDate Enter incident date
+   *
+   */
+  function getHasFinalizedKeyInternal(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_FINALIZATION, coverKey, productKey, incidentDate));
+  }
+
+  /**
    * @dev Returns sum total of NPM staken under `False Reporting` camp.
    *
    * Warning: this function does not validate the input arguments.
