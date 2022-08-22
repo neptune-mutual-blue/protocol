@@ -421,7 +421,6 @@ library ValidationLibV1 {
     mustNotBePaused(s);
     mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
@@ -432,14 +431,6 @@ library ValidationLibV1 {
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
-
-    if (incidentHappened) {
-      // Incident occurred. Must unstake with claim during the claim period.
-      mustBeDuringClaimPeriod(s, coverKey, productKey);
-      return;
-    }
   }
 
   function mustBeDuringClaimPeriod(

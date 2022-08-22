@@ -154,7 +154,9 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
 
-  it('must reverts when accessed after claim period', async () => {
+  it('must succeed when accessed after claim period before finalization', async () => {
+    const [owner] = await ethers.getSigners()
+
     const reportingInfo = key.toBytes32('reporting-info')
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
     await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
@@ -174,10 +176,25 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    await deployed.resolution.unstake(coverKey, helper.emptyBytes32, incidentDate)
-      .should.be.rejectedWith('Incident not finalized')
-    await deployed.resolution.unstakeWithClaim(coverKey, helper.emptyBytes32, incidentDate)
-      .should.be.rejectedWith('Claim period has expired')
+    const tx = await deployed.resolution.unstakeWithClaim(coverKey, helper.emptyBytes32, incidentDate)
+    const { events } = await tx.wait()
+
+    const unstakenEvent = events.find(x => x.event === 'Unstaken')
+    unstakenEvent.args.caller.should.equal(owner.address)
+    unstakenEvent.args.originalStake.should.equal(helper.ether(1000))
+    unstakenEvent.args.reward.should.equal(helper.ether(0))
+
+    const reporterRewardDistributedEvent = events.find(x => x.event === 'ReporterRewardDistributed')
+    reporterRewardDistributedEvent.args.caller.should.equal(owner.address)
+    reporterRewardDistributedEvent.args.reporter.should.equal(owner.address)
+    reporterRewardDistributedEvent.args.originalReward.should.equal(helper.ether(0))
+    reporterRewardDistributedEvent.args.reporterReward.should.equal(helper.ether(0))
+
+    const governanceBurnedEvent = events.find(x => x.event === 'GovernanceBurned')
+    governanceBurnedEvent.args.caller.should.equal(owner.address)
+    governanceBurnedEvent.args.burner.should.equal(helper.zero1)
+    governanceBurnedEvent.args.originalReward.should.equal(helper.ether(0))
+    governanceBurnedEvent.args.burnedAmount.should.equal(helper.ether(0))
 
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
   })
@@ -212,6 +229,37 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
+  })
+
+  it('reverts when accessed after finalization', async () => {
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
+
+    await deployed.resolution.unstakeWithClaim(coverKey, helper.emptyBytes32, incidentDate)
+      .should.be.rejectedWith('Invalid incident date')
   })
 
   it('reverts when accessed after resolved and before emergency resolution deadline', async () => {
@@ -440,6 +488,39 @@ describe('Resolution: unstakeWithClaim (false reporting)', () => {
     governanceBurnedEvent.args.burnedAmount.should.equal(helper.ether(300))
 
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
+  })
+
+  it('reverts when accessed after finalization', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
+
+    const disputeInfo = key.toBytes32('dispute-info')
+    await deployed.npm.transfer(bob.address, helper.ether(5000))
+    await deployed.npm.connect(bob).approve(deployed.governance.address, helper.ether(5000))
+    await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, helper.ether(5000))
+
+    // Reporting period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+
+    // Cooldown period + 1 second
+    await network.provider.send('evm_increaseTime', [1 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    // Claim period + 1 second
+    await network.provider.send('evm_increaseTime', [7 * DAYS])
+    await network.provider.send('evm_increaseTime', [1])
+
+    await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
+
+    await deployed.resolution.connect(bob).unstakeWithClaim(coverKey, helper.emptyBytes32, incidentDate)
+      .should.be.rejectedWith('Invalid incident date')
   })
 
   it('reverts when accessed before resolved', async () => {
