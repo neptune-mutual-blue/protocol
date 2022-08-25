@@ -68,7 +68,7 @@ describe('Vault Library', () => {
       },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockContract.address), true)
+    await deployed.protocol.addMember(mockContract.address)
   })
 
   describe('VaultLibV1: calculatePodsInternal', () => {

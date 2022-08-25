@@ -13,7 +13,10 @@ describe('Vault: receiveFromStrategy', () => {
   let deployed
 
   before(async () => {
+    const [owner] = await ethers.getSigners()
+
     deployed = await deployDependencies()
+    await deployed.protocol.addMember(owner.address)
   })
 
   it('reverts when amount is invalid', async () => {

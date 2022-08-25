@@ -86,6 +86,9 @@ describe('Distributor: `addLiquidity` function', () => {
   })
 
   it('must reject if vault contract was not found', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
@@ -104,9 +107,14 @@ describe('Distributor: `addLiquidity` function', () => {
 
     await distributor.addLiquidity(coverKey, amount, npmStake, referralCode)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 
   it('must reject if DAI was not found', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
@@ -125,9 +133,14 @@ describe('Distributor: `addLiquidity` function', () => {
 
     await distributor.addLiquidity(coverKey, amount, npmStake, referralCode)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 
   it('must reject if NPM was not found', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000, PRECISION)
     const npmStake = helper.ether(1000)
@@ -146,5 +159,7 @@ describe('Distributor: `addLiquidity` function', () => {
 
     await distributor.addLiquidity(coverKey, amount, npmStake, referralCode)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 })

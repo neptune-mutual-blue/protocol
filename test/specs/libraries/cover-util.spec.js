@@ -77,7 +77,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
       { StoreKeyUtil: deployed.storeKeyUtil.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockStoreUser.address), true)
+    await deployed.protocol.addMember(mockStoreUser.address)
   })
 
   it('must return zero when active incident is zero', async () => {
