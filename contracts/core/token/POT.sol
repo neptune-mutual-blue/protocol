@@ -50,6 +50,8 @@ contract POT is NPM {
    *
    * @custom:suppress-pausable Risk tolerable
    *
+   * @param accounts enter accounts for which you want to update whitellist
+   * @param statuses enter corresponding status to update to true or false,
    */
   function updateWhitelist(address[] calldata accounts, bool[] memory statuses) external onlyOwner {
     require(accounts.length > 0, "No account");

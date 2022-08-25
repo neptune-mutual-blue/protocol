@@ -83,6 +83,8 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
    * @custom:suppress-address-trust-issue The addresses `aToken` or `stablecoin` can't be manipulated via user input.
    *
+   * @param coverKey Enter cover key to deposit
+   * @param amount Enter amount to deposit
    */
   function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 aTokenReceived) {
     s.mustNotBePaused();
@@ -135,6 +137,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * @custom:suppress-malicious-erc This tokens `aToken` and `stablecoin` are well-known addresses.
    * @custom:suppress-address-trust-issue The addresses `aToken` or `stablecoin` can't be manipulated via user input.
    *
+   * @param coverKey Enter cover key to withdraw
    */
   function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
     s.mustNotBePaused();

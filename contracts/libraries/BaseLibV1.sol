@@ -17,6 +17,7 @@ library BaseLibV1 {
    * @dev Recover all Ether held by the contract.
    * On success, no event is emitted because the recovery feature does
    * not have any significance in the SDK or the UI.
+   * @param sendTo The address that receives the recovered Ether
    */
   function recoverEtherInternal(address sendTo) external {
     // slither-disable-next-line arbitrary-send
@@ -32,6 +33,7 @@ library BaseLibV1 {
    * @custom:suppress-address-trust-issue Risk tolerable. Although the token can't be trusted, the recovery agent has to check the token code manually.
    *
    * @param token IERC-20 The address of the token contract
+   * @param sendTo IERC-20 The address of caller
    */
   function recoverTokenInternal(address token, address sendTo) external {
     IERC20 erc20 = IERC20(token);

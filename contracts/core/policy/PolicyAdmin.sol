@@ -52,6 +52,7 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
 
   /**
    * @dev Sets policy rates for the given cover key. This feature is only accessible by cover manager.
+   * @param coverKey Enter the cover key
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
    */
@@ -85,6 +86,9 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * This allows us to defend against time-based opportunistic attacks,
    * which occur when an attacker purchases coverage after
    * an incident has occurred but before the incident has been reported.
+   *
+   * @param coverKey Enter the cover key
+   * @param window Enter the time period to delay the start of coverage
    */
   function setCoverageLag(bytes32 coverKey, uint256 window) external override {
     require(window >= 1 days, "Enter at least 1 day");
@@ -109,6 +113,8 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param coverKey Enter the cover key
+   *
    */
   function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
     return s.getPolicyRatesInternal(coverKey);
@@ -118,6 +124,8 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
    * @dev Gets the policy lag for the given cover key
    *
    * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter the cover key
    *
    */
   function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {

@@ -159,6 +159,7 @@ library AccessControlLibV1 {
 
   /**
    * @dev Checks if a given user has access to the given role
+   * @param s Specify store instance
    * @param role Specify the role name
    * @param user Enter the user account
    * @return Returns true if the user is a member of the specified role
@@ -175,7 +176,7 @@ library AccessControlLibV1 {
       return false;
     }
 
-    // You must have the same role in the protocol contract if you're don't have this role here
+    // You must have the same role in the protocol contract if you don't have this role here
     return IAccessControl(protocol).hasRole(role, user);
   }
 
@@ -291,6 +292,7 @@ library AccessControlLibV1 {
    *
    * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
    *
+   * @param s Specify store instance
    * @param member Enter an address to add as a protocol member
    */
   function addMemberInternal(IStore s, address member) external {
@@ -308,6 +310,7 @@ library AccessControlLibV1 {
    *
    * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
    *
+   * @param s Specify store instance
    * @param member Enter an address to remove as a protocol member
    */
   function removeMemberInternal(IStore s, address member) external {

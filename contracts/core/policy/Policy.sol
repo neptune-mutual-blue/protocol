@@ -87,8 +87,10 @@ contract Policy is IPolicy, Recoverable {
    *
    * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
    * @param coverKey Enter the cover key you wish to purchase the policy for
+   * @param productKey Enter the product key you wish to purchase the policy for
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin to cover.
+   * @param referralCode Enter referral code if apllicable
    */
   function purchaseCover(
     address onBehalfOf,
@@ -174,6 +176,8 @@ contract Policy is IPolicy, Recoverable {
    *
    * Warning: this function does not validate the cover and product key supplied.
    *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the cover key
    */
   function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
     uint256 precision = s.getStablecoinPrecision();
@@ -185,6 +189,8 @@ contract Policy is IPolicy, Recoverable {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param coverKey Enter the cover key
+   * 
    */
   function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
     return s.getStablecoinOwnedByVaultInternal(coverKey);
@@ -196,6 +202,7 @@ contract Policy is IPolicy, Recoverable {
    * Warning: this function does not validate the cover key supplied.
    *
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
    * @param amountToCover Enter the amount of the stablecoin to cover.
    *
@@ -225,6 +232,9 @@ contract Policy is IPolicy, Recoverable {
    * @dev Returns the values of the given cover key
    *
    * Warning: this function does not validate the cover key supplied.
+   *
+   * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    *
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount

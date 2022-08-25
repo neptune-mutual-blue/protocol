@@ -129,6 +129,10 @@ library CoverUtilV1 {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param s Specify store instance
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   *
    * @param _values[0] The total amount in the cover pool
    * @param _values[1] The total commitment amount
    * @param _values[2] Reassurance amount
@@ -192,6 +196,7 @@ library CoverUtilV1 {
    *
    * Warning: this function does not validate the cover key supplied.
    *
+   * @param s Specify store instance
    * @param coverKey Enter the cover key
    *
    */
@@ -326,6 +331,7 @@ library CoverUtilV1 {
    * @param s Specify store instance
    * @param coverKey Enter cover key
    * @param productKey Enter product key
+   * @param incidentDate Enter timestamp when incident occurred
    *
    */
   function getProductStatusOfInternal(
