@@ -142,6 +142,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    * @custom:suppress-acl Can only be called by the latest policy contract
    *
    * @param coverKey Enter the cover key for which the cxTokens are being minted
+   * @param productKey Enter the product key for which the cxTokens are being minted
    * @param to Enter the address where the minted token will be sent
    * @param amount Specify the amount of cxTokens to mint
    *
@@ -168,6 +169,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
   /**
    * @dev Gets the EOD (End of Day) time
+   *
+   * @param date Enter a date. Ensure that you supply a UTC value.
    */
   function _getEOD(uint256 date) private pure returns (uint256) {
     (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);

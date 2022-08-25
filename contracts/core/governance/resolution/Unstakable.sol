@@ -122,6 +122,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    *
    * @param account Enter account to get the unstake information of
    * @param coverKey Enter the cover key
+   * @param productKey Enter the product key
    * @param incidentDate Enter the incident date
    * @param totalStakeInWinningCamp Returns the sum total of the stakes contributed by the winning camp
    * @param totalStakeInLosingCamp Returns the sum total of the stakes contributed by the losing camp
@@ -129,6 +130,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    * @param toBurn Returns the amount of tokens that will be booked as protocol revenue and immediately burned
    * @param toReporter Returns the amount of tokens that will be sent to the final reporter as the `first reporter` reward
    * @param myReward Returns the amount of tokens that the supplied account will receive as `reporting reward`
+   * @param unstaken Return the amount of NPM the account has unstaken
    */
   function getUnstakeInfoFor(
     address account,

@@ -243,6 +243,8 @@ contract Cover is CoverBase {
 
   /**
    * @dev Signifies if the given account is a whitelisted cover creator
+   *
+   * @param account Enter the account you would like to check if its a white listed cover creator.
    */
   function checkIfWhitelistedCoverCreator(address account) external view override returns (bool) {
     return s.getAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, account);
@@ -250,6 +252,10 @@ contract Cover is CoverBase {
 
   /**
    * @dev Signifies if the given account is a whitelisted user
+   *
+   * @param coverKey Enter cover key
+   * @param productKey Enter product key
+   * @param account Enter the account you would like to check if its a whitelisted user.
    */
   function checkIfWhitelistedUser(
     bytes32 coverKey,
