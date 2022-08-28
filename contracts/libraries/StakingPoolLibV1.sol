@@ -151,13 +151,6 @@ library StakingPoolLibV1 {
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account);
   }
 
-  function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
-    IERC20 rewardToken = IERC20(s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key));
-    address stakingPool = s.getStakingPoolAddress();
-
-    return rewardToken.balanceOf(stakingPool);
-  }
-
   function calculateRewardsInternal(
     IStore s,
     bytes32 key,
@@ -173,7 +166,7 @@ library StakingPoolLibV1 {
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
     uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
 
-    uint256 poolBalance = getStakingPoolRewardTokenBalance(s, key);
+    uint256 poolBalance = s.getRewardTokenBalance(key);
 
     return rewards > poolBalance ? poolBalance : rewards;
   }
