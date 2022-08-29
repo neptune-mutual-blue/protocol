@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-const { ethers } = require('hardhat')
+const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../util')
 const composer = require('../../../util/composer')
@@ -115,5 +115,29 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
 
     const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
     result.should.equal(coverageAmount)
+  })
+
+  it.only('must return correct active protection when active incident is greater than zero and policies purchased', async () => {
+    await network.provider.send('evm_increaseTime', [100 * DAYS]) // pass time so that previous policies expire
+    const [owner] = await ethers.getSigners()
+    let totalCoverageAmount = helper.ether(0, PRECISION)
+
+    // Purchase policy so that cxToken is created
+    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+
+    while (true) {
+      const coverageAmount = helper.ether(10_000, PRECISION)
+      await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '3', helper.ether(10_000, PRECISION), key.toBytes32(''))
+      totalCoverageAmount = helper.add(totalCoverageAmount, coverageAmount)
+      await network.provider.send('evm_increaseTime', [1 * DAYS])
+
+      const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+      if (new Date(block.timestamp * 1000).getUTCDate() === 27) {
+        break
+      }
+    }
+
+    const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
+    result.should.equal(totalCoverageAmount)
   })
 })
