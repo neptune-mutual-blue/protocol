@@ -82,6 +82,7 @@ const deployDependencies = async () => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
@@ -339,7 +340,7 @@ const deployDependencies = async () => {
   cover.updateCoverCreatorWhitelist(owner.address, true)
 
   await npm.approve(stakingContract.address, stakeWithFee)
-  await dai.approve(reassuranceContract.address, initialReassuranceAmount)
+  await dai.approve(cover.address, initialReassuranceAmount)
 
   await cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 

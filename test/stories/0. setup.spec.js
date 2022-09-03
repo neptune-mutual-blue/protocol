@@ -81,7 +81,7 @@ describe('Protocol Initialization Stories', () => {
     const reassuranceRate = helper.percentage(50)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     previous = {
       daiBalance: '0',
@@ -160,11 +160,10 @@ describe('Protocol Initialization Stories', () => {
   })
 
   it('reassurance token allocation was increased', async () => {
-    const [owner] = await ethers.getSigners()
     const liquidity = helper.ether(20000, PRECISION)
 
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, liquidity)
-    await contracts.reassuranceContract.addReassurance(coverKey, owner.address, liquidity)
+    await contracts.reassuranceContract.addReassurance(coverKey, liquidity)
 
     const expected = helper.add(previous.reassuranceTokenBalance, liquidity)
 

@@ -152,7 +152,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, values)

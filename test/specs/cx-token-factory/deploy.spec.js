@@ -51,7 +51,7 @@ describe('cxTokenFactory: Deploy', () => {
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, reassuranceAmount)
+    await deployed.dai.approve(deployed.cover.address, reassuranceAmount)
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
   })
