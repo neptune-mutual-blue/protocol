@@ -186,7 +186,7 @@ contract Cover is CoverBase {
     string calldata reason
   ) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled" : "Already enabled");
@@ -207,7 +207,7 @@ contract Cover is CoverBase {
    */
   function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
+    AccessControlLibV1.mustBeCoverManager(s);
 
     s.updateCoverCreatorWhitelistInternal(account, status);
     emit CoverCreatorWhitelistUpdated(account, status);
