@@ -540,9 +540,7 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 excludedExpiryDate
   ) private view returns (uint256 sum) {
-    uint256 maxMonthsToProtect = 3;
-
-    for (uint256 i = 0; i < maxMonthsToProtect; i++) {
+    for (uint256 i = 0; i <= ProtoUtilV1.MAX_POLICY_DURATION; i++) {
       uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
 
       if (expiryDate == excludedExpiryDate || expiryDate <= block.timestamp) {
