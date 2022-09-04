@@ -5,10 +5,9 @@ const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
 const createCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
-  const { dai, npm, reassuranceContract, stakingContract, cover } = contracts
+  const { npm, stakingContract, cover } = contracts
 
   await intermediate(cache, npm, 'approve', cover.address, ethers.constants.MaxUint256)
-  await intermediate(cache, dai, 'approve', reassuranceContract.address, ethers.constants.MaxUint256)
   await intermediate(cache, npm, 'approve', stakingContract.address, ethers.constants.MaxUint256)
 
   for (const i in covers) {

@@ -84,6 +84,7 @@ const deployDependencies = async () => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,

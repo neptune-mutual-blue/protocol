@@ -4,18 +4,19 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface ICoverReassurance is IMember {
-  event ReassuranceAdded(bytes32 indexed coverKey, uint256 amount);
+  event ReassuranceAdded(bytes32 indexed coverKey, address indexed onBehalfOf, uint256 amount);
   event WeightSet(bytes32 indexed coverKey, uint256 weight);
   event PoolCapitalized(bytes32 indexed coverKey, bytes32 indexed productKey, uint256 indexed incidentDate, uint256 amount);
 
   /**
    * @dev Adds reassurance to the specified cover contract
    * @param coverKey Enter the cover key
+   * @param onBehalfOf Enter the account on behalf of which you are adding reassurance.
    * @param amount Enter the amount you would like to supply
    */
   function addReassurance(
     bytes32 coverKey,
-    address account,
+    address onBehalfOf,
     uint256 amount
   ) external;
 

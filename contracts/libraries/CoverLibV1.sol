@@ -10,6 +10,7 @@ import "./RegistryLibV1.sol";
 import "./StoreKeyUtil.sol";
 import "./RoutineInvokerLibV1.sol";
 import "./StrategyLibV1.sol";
+import "./NTransferUtilV2.sol";
 
 library CoverLibV1 {
   using CoverUtilV1 for IStore;
@@ -20,6 +21,7 @@ library CoverLibV1 {
   using AccessControlLibV1 for IStore;
   using ValidationLibV1 for IStore;
   using StrategyLibV1 for IStore;
+  using NTransferUtilV2 for IERC20;
 
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
@@ -97,7 +99,13 @@ library CoverLibV1 {
 
     // Add cover reassurance
     if (values[1] > 0) {
-      s.getReassuranceContract().addReassurance(coverKey, msg.sender, values[1]);
+      IERC20 stablecoin = IERC20(s.getStablecoin());
+      ICoverReassurance reassurance = s.getReassuranceContract();
+
+      stablecoin.ensureTransferFrom(msg.sender, address(this), values[1]);
+      stablecoin.ensureApproval(address(reassurance), values[1]);
+
+      reassurance.addReassurance(coverKey, msg.sender, values[1]);
     }
   }
 

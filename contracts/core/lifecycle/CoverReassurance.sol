@@ -44,13 +44,13 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
    * @custom:suppress-malicious-erc This ERC-20 `s.getStablecoin()` is a well-known address.
    *
    * @param coverKey Enter the cover key
-   * @param account Specify the account from which the reassurance fund will be transferred.
+   * @param onBehalfOf Enter the account on behalf of which you are adding reassurance.
    * @param amount Enter the amount you would like to supply
    *
    */
   function addReassurance(
     bytes32 coverKey,
-    address account,
+    address onBehalfOf,
     uint256 amount
   ) external override nonReentrant {
     s.mustNotBePaused();
@@ -63,12 +63,12 @@ contract CoverReassurance is ICoverReassurance, Recoverable {
 
     s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
-    stablecoin.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(msg.sender, address(this), amount);
 
     // Do not update state during cover creation
     // s.updateStateAndLiquidity(coverKey);
 
-    emit ReassuranceAdded(coverKey, amount);
+    emit ReassuranceAdded(coverKey, onBehalfOf, amount);
   }
 
   /**

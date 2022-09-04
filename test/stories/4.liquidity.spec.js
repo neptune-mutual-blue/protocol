@@ -42,7 +42,7 @@ describe('Liquidity Stories', () => {
     const reassuranceRate = helper.percentage(50)
 
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     const requiresWhitelist = false
     const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']

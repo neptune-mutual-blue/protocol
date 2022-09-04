@@ -40,7 +40,7 @@ describe('CoverReassurance: addReassurance', () => {
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
 
@@ -64,11 +64,10 @@ describe('CoverReassurance: addReassurance', () => {
   })
 
   it('correctly adds reassurance', async () => {
-    const [owner] = await ethers.getSigners()
     const amount = helper.ether(1, PRECISION)
 
     await deployed.dai.approve(deployed.reassuranceContract.address, amount)
-    const tx = await coverReassurance.addReassurance(coverKey, owner.address, amount)
+    const tx = await coverReassurance.addReassurance(coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'ReassuranceAdded')
 
@@ -77,33 +76,30 @@ describe('CoverReassurance: addReassurance', () => {
   })
 
   it('reverts when protocol is paused', async () => {
-    const [owner] = await ethers.getSigners()
     const amount = helper.ether(1, PRECISION)
     await deployed.protocol.pause()
-    await coverReassurance.addReassurance(coverKey, owner.address, amount)
+    await coverReassurance.addReassurance(coverKey, amount)
       .should.be.rejectedWith('Protocol is paused')
     await deployed.protocol.unpause()
   })
 
   it('reverts when invalid value is passed as cover key', async () => {
-    const [owner] = await ethers.getSigners()
     const amount = helper.ether(1, PRECISION)
-    await coverReassurance.addReassurance(key.toBytes32('invalid-foo-bar'), owner.address, amount)
+    await coverReassurance.addReassurance(key.toBytes32('invalid-foo-bar'), amount)
       .should.be.rejectedWith('Cover does not exist')
   })
 
   it('reverts when invalid value is passed as amount', async () => {
-    const [owner] = await ethers.getSigners()
     const amount = '0'
-    await coverReassurance.addReassurance(coverKey, owner.address, amount)
+    await coverReassurance.addReassurance(coverKey, amount)
       .should.be.rejectedWith('Provide valid amount')
   })
 
   it('reverts when not accessed by the liquidity manager', async () => {
-    const [owner, bob] = await ethers.getSigners()
+    const [, bob] = await ethers.getSigners()
 
     const amount = helper.ether(1, PRECISION)
-    await coverReassurance.connect(bob).addReassurance(coverKey, owner.address, amount)
+    await coverReassurance.connect(bob).addReassurance(coverKey, amount)
       .should.be.rejectedWith('Forbidden')
   })
 })

@@ -91,7 +91,7 @@ describe('Governance Stories', function () {
 
     // Submit approvals
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
-    await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, initialReassuranceAmount)
+    await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
