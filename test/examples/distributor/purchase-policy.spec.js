@@ -83,6 +83,9 @@ describe('Distributor: `purchasePolicy` function', () => {
   })
 
   it('must reject if an policy contract was not found', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const duration = '2'
     const protection = helper.ether(10_000, PRECISION)
@@ -97,9 +100,14 @@ describe('Distributor: `purchasePolicy` function', () => {
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)
+
+    await deployed.protocol.removeMember(owner.address)
   })
 
   it('must reject if DAI address is not registered on the protocol', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const duration = '2'
     const protection = helper.ether(10_000, PRECISION)
@@ -114,5 +122,7 @@ describe('Distributor: `purchasePolicy` function', () => {
       .should.be.rejectedWith('Fatal: DAI missing')
 
     await deployed.store.setAddress(storeKey, deployed.dai.address)
+
+    await deployed.protocol.removeMember(owner.address)
   })
 })

@@ -50,8 +50,6 @@ contract Protocol is IProtocol, ProtoBase {
    */
   // solhint-disable-next-line function-max-lines
   function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
-    s.mustBeProtocolMember(msg.sender);
-
     require(addresses[0] != address(0), "Invalid Burner");
     // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
     // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
@@ -79,12 +77,16 @@ contract Protocol is IProtocol, ProtoBase {
       AccessControlLibV1.mustBeAdmin(s);
       require(addresses[3] == address(0), "Can't change NPM");
     } else {
+      s.mustBeProtocolMember(msg.sender);
       require(addresses[3] != address(0), "Invalid NPM");
 
       s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
       s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
 
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
+
+      s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
+      emit MemberRemoved(msg.sender);
     }
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
@@ -110,6 +112,7 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
     initialized = true;
+
     emit Initialized(addresses, values);
   }
 
