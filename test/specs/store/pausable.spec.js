@@ -15,7 +15,9 @@ describe('Store: Pausable', () => {
     store = await deployer.deploy(cache, 'Store')
   })
 
-  it('must allow the owner to pause the store', async () => {
+  it('must allow a pauser to pause the store', async () => {
+    const [owner] = await ethers.getSigners()
+    await store.setPausers([owner.address], [true])
     await store.pause()
 
     const state = await store.paused()
