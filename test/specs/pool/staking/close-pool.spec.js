@@ -101,10 +101,10 @@ describe('Close Pool', () => {
     const [owner] = await ethers.getSigners()
 
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, owner.address)
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, owner.address)
+
     await deployed.protocol.pause()
     await pool.closePool(payload.key).should.be.rejectedWith('Protocol is paused')
-
-    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, owner.address)
     await deployed.protocol.unpause()
   })
 

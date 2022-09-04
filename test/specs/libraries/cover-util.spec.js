@@ -117,7 +117,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     result.should.equal(coverageAmount)
   })
 
-  it.only('must return correct active protection when active incident is greater than zero and policies purchased', async () => {
+  it('must return correct active protection when active incident is greater than zero and policies purchased', async () => {
     await network.provider.send('evm_increaseTime', [100 * DAYS]) // pass time so that previous policies expire
     const [owner] = await ethers.getSigners()
     let totalCoverageAmount = helper.ether(0, PRECISION)

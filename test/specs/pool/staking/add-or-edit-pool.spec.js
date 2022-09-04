@@ -149,21 +149,22 @@ describe('Add or Edit Pool', () => {
   it('must fail if the protocol is paused', async () => {
     const [, bob] = await ethers.getSigners()
 
-    await deployed.protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, bob.address)
-    await deployed.protocol.connect(bob).pause()
-    await deployed.protocol.revokeRole(key.ACCESS_CONTROL.PAUSE_AGENT, bob.address)
-
     await sabre.transfer(bob.address, payload.values[4])
 
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.ADMIN, bob.address)
     await sabre.connect(bob).approve(pool.address, ethers.constants.MaxUint256)
     await deployed.protocol.revokeRole(key.ACCESS_CONTROL.ADMIN, bob.address)
 
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, bob.address)
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, bob.address)
+    await deployed.protocol.connect(bob).pause()
+
     await pool.connect(bob).addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
       .should.be.rejectedWith('Protocol is paused')
 
-    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, bob.address)
     await deployed.protocol.connect(bob).unpause()
+
+    await deployed.protocol.revokeRole(key.ACCESS_CONTROL.PAUSE_AGENT, bob.address)
     await deployed.protocol.revokeRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, bob.address)
   })
 

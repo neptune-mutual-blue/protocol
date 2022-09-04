@@ -74,12 +74,13 @@ describe('Pausing Protocol', () => {
     const [, pauser, unpauser] = await ethers.getSigners()
 
     await protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, pauser.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, unpauser.address)
+
     await protocol.connect(pauser).pause()
     const isPaused = await protocol.paused()
 
     isPaused.should.be.true
 
-    await protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, unpauser.address)
     await protocol.connect(unpauser).unpause()
   })
 

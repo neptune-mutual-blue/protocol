@@ -106,12 +106,13 @@ describe('Deposit to Staking Pool', () => {
     const amount = helper.ether(10_000)
 
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, owner.address)
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, owner.address)
+
     await deployed.protocol.pause()
 
     await deployed.npm.connect(bob).approve(pool.address, amount)
     await pool.connect(bob).deposit(payload.key, amount).should.be.rejectedWith('Protocol is paused')
 
-    await deployed.protocol.grantRole(key.ACCESS_CONTROL.UNPAUSE_AGENT, owner.address)
     await deployed.protocol.unpause()
   })
 
