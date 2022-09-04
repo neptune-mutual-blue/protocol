@@ -48,6 +48,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @param values[11] state and liquidity update interval
    * @param values[12] max lending ratio
    */
+  // solhint-disable-next-line function-max-lines
   function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
     s.mustBeProtocolMember(msg.sender);
 
@@ -263,6 +264,21 @@ contract Protocol is IProtocol, ProtoBase {
 
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
     emit ContractUpgraded(namespace, key, previous, current);
+  }
+
+
+  /**
+    * @dev Grants `role` to `account`.
+    *
+    * If `account` had not been already granted `role`, emits a {RoleGranted}
+    * event.
+    *
+    * Requirements:
+    *
+    * - the caller must have ``role``'s admin role.
+    */
+  function grantRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+      super.grantRole(role, account);
   }
 
   /**
