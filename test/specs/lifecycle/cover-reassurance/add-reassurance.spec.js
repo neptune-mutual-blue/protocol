@@ -67,7 +67,7 @@ describe('CoverReassurance: addReassurance', () => {
     const amount = helper.ether(1, PRECISION)
 
     await deployed.dai.approve(deployed.reassuranceContract.address, amount)
-    const tx = await coverReassurance.addReassurance(coverKey, amount)
+    const tx = await coverReassurance.addReassurance(coverKey, helper.randomAddress(), amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'ReassuranceAdded')
 
@@ -78,20 +78,20 @@ describe('CoverReassurance: addReassurance', () => {
   it('reverts when protocol is paused', async () => {
     const amount = helper.ether(1, PRECISION)
     await deployed.protocol.pause()
-    await coverReassurance.addReassurance(coverKey, amount)
+    await coverReassurance.addReassurance(coverKey, helper.randomAddress(), amount)
       .should.be.rejectedWith('Protocol is paused')
     await deployed.protocol.unpause()
   })
 
   it('reverts when invalid value is passed as cover key', async () => {
     const amount = helper.ether(1, PRECISION)
-    await coverReassurance.addReassurance(key.toBytes32('invalid-foo-bar'), amount)
+    await coverReassurance.addReassurance(key.toBytes32('invalid-foo-bar'), helper.randomAddress(), amount)
       .should.be.rejectedWith('Cover does not exist')
   })
 
   it('reverts when invalid value is passed as amount', async () => {
     const amount = '0'
-    await coverReassurance.addReassurance(coverKey, amount)
+    await coverReassurance.addReassurance(coverKey, helper.randomAddress(), amount)
       .should.be.rejectedWith('Provide valid amount')
   })
 
@@ -99,7 +99,7 @@ describe('CoverReassurance: addReassurance', () => {
     const [, bob] = await ethers.getSigners()
 
     const amount = helper.ether(1, PRECISION)
-    await coverReassurance.connect(bob).addReassurance(coverKey, amount)
+    await coverReassurance.connect(bob).addReassurance(coverKey, helper.randomAddress(), amount)
       .should.be.rejectedWith('Forbidden')
   })
 })

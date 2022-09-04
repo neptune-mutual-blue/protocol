@@ -14,7 +14,7 @@ const add = async (coverKey, payload) => {
 
   await approve(dai.address, reassuranceContract.address, owner, amount)
 
-  await reassuranceContract.connect(owner).addReassurance(coverKey, amount)
+  await reassuranceContract.connect(owner).addReassurance(coverKey, owner.address, amount)
 
   console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI', PRECISION))
 }

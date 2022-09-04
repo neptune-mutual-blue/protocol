@@ -163,7 +163,7 @@ describe('Protocol Initialization Stories', () => {
     const liquidity = helper.ether(20000, PRECISION)
 
     await contracts.reassuranceToken.approve(contracts.reassuranceContract.address, liquidity)
-    await contracts.reassuranceContract.addReassurance(coverKey, liquidity)
+    await contracts.reassuranceContract.addReassurance(coverKey, helper.randomAddress(), liquidity)
 
     const expected = helper.add(previous.reassuranceTokenBalance, liquidity)
 
