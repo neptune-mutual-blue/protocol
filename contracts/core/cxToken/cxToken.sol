@@ -102,11 +102,11 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    */
   function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
     uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
-    uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
+    uint256 resolutionEOD = PolicyHelperV1.getEODInternal(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
     uint256 totalDays = (resolutionEOD - incidentDate) / 1 days;
 
     for (uint256 i = 0; i < totalDays; i++) {
-      uint256 date = _getEOD(incidentDate + (i * 1 days));
+      uint256 date = PolicyHelperV1.getEODInternal(incidentDate + (i * 1 days));
       exclusion += coverageStartsFrom[account][date];
     }
   }
@@ -155,18 +155,10 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     s.senderMustBePolicyContract();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
+    uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp) + s.getCoverageLagInternal(coverKey); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
 
     super._mint(to, amount);
-  }
-
-  /**
-   * @dev Gets the EOD (End of Day) time
-   */
-  function _getEOD(uint256 date) private pure returns (uint256) {
-    (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
-    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, day, 23, 59, 59);
   }
 
   /**
