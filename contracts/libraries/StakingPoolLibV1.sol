@@ -12,7 +12,6 @@ import "./StakingPoolCoreLibV1.sol";
 library StakingPoolLibV1 {
   using ProtoUtilV1 for IStore;
   using ValidationLibV1 for IStore;
-  using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using StakingPoolCoreLibV1 for IStore;
   using NTransferUtilV2 for IERC20;

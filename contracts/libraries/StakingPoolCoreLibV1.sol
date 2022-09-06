@@ -24,7 +24,7 @@ library StakingPoolCoreLibV1 {
   bytes32 public constant NS_POOL_STAKING_TOKEN_BALANCE = "ns:pool:staking:token:balance";
   bytes32 public constant NS_POOL_REWARD_TOKEN_DEPOSITS = "ns:pool:reward:token:deposits";
   bytes32 public constant NS_POOL_REWARD_TOKEN_DISTRIBUTION = "ns:pool:reward:token:distrib";
-  bytes32 public constant NS_POOL_MAX_STAKE = "ns:pool:reward:token";
+  bytes32 public constant NS_POOL_MAX_STAKE = "ns:pool:max:stake";
   bytes32 public constant NS_POOL_REWARD_PER_BLOCK = "ns:pool:reward:per:block";
   bytes32 public constant NS_POOL_REWARD_PLATFORM_FEE = "ns:pool:reward:platform:fee";
   bytes32 public constant NS_POOL_REWARD_TOKEN_BALANCE = "ns:pool:reward:token:balance";

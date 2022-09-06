@@ -77,7 +77,6 @@ const deployDependencies = async () => {
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
-    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
