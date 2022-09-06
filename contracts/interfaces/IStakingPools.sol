@@ -21,7 +21,8 @@ interface IStakingPools is IMember {
     uint256 maxStake,
     uint256 rewardPerBlock,
     uint256 lockupPeriodInBlocks,
-    uint256 platformFee
+    uint256 platformFee,
+    uint256 stakingTarget
   );
 
   event PoolClosed(bytes32 indexed key, string name);
