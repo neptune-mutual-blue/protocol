@@ -117,6 +117,16 @@ library StoreKeyUtil {
     return s.setString(_getKey(key1, key2), value);
   }
 
+  function setStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    string calldata value
+  ) external {
+    return s.setString(_getKey(key1, key2, key3), value);
+  }
+
   function setBytes32ByKey(
     IStore s,
     bytes32 key,

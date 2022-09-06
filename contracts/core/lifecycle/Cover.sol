@@ -65,7 +65,7 @@ contract Cover is CoverBase {
    */
   function addCover(
     bytes32 coverKey,
-    bytes32 info,
+    string calldata info,
     string calldata tokenName,
     string calldata tokenSymbol,
     bool supportsProducts,
@@ -95,13 +95,13 @@ contract Cover is CoverBase {
    * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
    *
    */
-  function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
+  function updateCover(bytes32 coverKey, string calldata info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustEnsureAllProductsAreNormal(coverKey);
     AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
-    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
+    require(keccak256(bytes(s.getStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey))) != keccak256(bytes(info)), "Duplicate content");
 
     s.updateCoverInternal(coverKey, info);
     emit CoverUpdated(coverKey, info);
@@ -123,7 +123,7 @@ contract Cover is CoverBase {
   function addProduct(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     bool requiresWhitelist,
     uint256[] calldata values
   ) external override {
@@ -142,7 +142,7 @@ contract Cover is CoverBase {
    *
    * @param coverKey Enter the cover key
    * @param productKey Enter the product key
-   * @param info Enter a new IPFS URL to update
+   * @param info Enter a new IPFS hash to update
    * @param values[0] Product status
    * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
    *
@@ -150,7 +150,7 @@ contract Cover is CoverBase {
   function updateProduct(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256[] calldata values
   ) external override {
     // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`

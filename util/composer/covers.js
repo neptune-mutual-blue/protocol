@@ -28,7 +28,7 @@ const addCover = async (payload, info) => {
 
   const { key, leverage, supportsProducts } = info
   const { minReportingStake, reportingPeriod, stakeWithFees, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate, vault } = info
-  const hashBytes32 = await ipfs.write(info)
+  const ipfsHash = await ipfs.write(info)
 
   const values = [
     stakeWithFees.toString(),
@@ -43,7 +43,7 @@ const addCover = async (payload, info) => {
     leverage.toString()
   ]
 
-  await intermediate(cache, cover, 'addCover', key, hashBytes32, vault.name, vault.symbol, supportsProducts, requiresWhitelist, values)
+  await intermediate(cache, cover, 'addCover', key, ipfsHash, vault.name, vault.symbol, supportsProducts, requiresWhitelist, values)
   await rest(100)
 }
 
@@ -52,7 +52,7 @@ const addProduct = async (payload, info) => {
   const { cover } = contracts
 
   const { coverKey, productKey, requiresWhitelist, capitalEfficiency } = info
-  const hashBytes32 = await ipfs.write(info)
+  const ipfsHash = await ipfs.write(info)
 
   const status = 1
 
@@ -61,7 +61,7 @@ const addProduct = async (payload, info) => {
     capitalEfficiency
   ]
 
-  await intermediate(cache, cover, 'addProduct', coverKey, productKey, hashBytes32, requiresWhitelist, values)
+  await intermediate(cache, cover, 'addProduct', coverKey, productKey, ipfsHash, requiresWhitelist, values)
 }
 
 module.exports = { createCovers }
