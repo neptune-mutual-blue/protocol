@@ -29,7 +29,7 @@ describe('Policy Purchase Stories', () => {
     // console.info(`https://ipfs.infura.io/ipfs/${ipfs.toIPFShash(info)}`)
 
     const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
-    const initialLiquidity = helper.ether(24_000_000, PRECISION)
+    const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
     const minReportingStake = helper.ether(250)
     const reportingPeriod = 7 * DAYS
@@ -57,7 +57,7 @@ describe('Policy Purchase Stories', () => {
     const result = await contracts.policy.getCoverPoolSummary(coverKey, helper.emptyBytes32)
     const [totalAmountInPool, totalCommitment, reassurance, reassuranceWeight, count, leverage, efficiency] = result
 
-    totalAmountInPool.toString().should.equal(helper.ether(24_000_000, PRECISION))
+    totalAmountInPool.toString().should.equal(helper.ether(4_000_000, PRECISION))
     totalCommitment.toString().should.equal('0')
     reassurance.toString().should.equal(helper.ether(1_000_000, PRECISION))
     reassuranceWeight.toString().should.equal(helper.percentage(100))
