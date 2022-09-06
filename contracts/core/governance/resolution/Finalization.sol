@@ -81,6 +81,8 @@ abstract contract Finalization is Recoverable, IFinalization {
     bytes32 productKey,
     uint256 incidentDate
   ) internal {
+    s.setBoolByKey(GovernanceUtilV1.getHasFinalizedKeyInternal(coverKey, productKey, incidentDate), true);
+
     // Deleting latest incident date resets this product
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);

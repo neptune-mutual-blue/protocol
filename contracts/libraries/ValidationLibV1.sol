@@ -288,6 +288,15 @@ library ValidationLibV1 {
     require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
   }
 
+  function mustBeAfterFinalization(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public view {
+    require(s.getBoolByKey(GovernanceUtilV1.getHasFinalizedKeyInternal(coverKey, productKey, incidentDate)), "Incident not finalized");
+  }
+
   function mustBeValidIncidentDate(
     IStore s,
     bytes32 coverKey,
@@ -393,11 +402,7 @@ library ValidationLibV1 {
     mustNotBePaused(s);
     mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey, productKey);
-
-    // Before the deadline, emergency resolution can still happen
-    // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey, productKey);
+    mustBeAfterFinalization(s, coverKey, productKey, incidentDate);
   }
 
   /**
@@ -416,7 +421,6 @@ library ValidationLibV1 {
     mustNotBePaused(s);
     mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
@@ -427,14 +431,6 @@ library ValidationLibV1 {
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
-
-    if (incidentHappened) {
-      // Incident occurred. Must unstake with claim during the claim period.
-      mustBeDuringClaimPeriod(s, coverKey, productKey);
-      return;
-    }
   }
 
   function mustBeDuringClaimPeriod(
