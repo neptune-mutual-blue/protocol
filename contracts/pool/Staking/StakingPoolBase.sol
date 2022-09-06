@@ -14,6 +14,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
   using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using StakingPoolCoreLibV1 for IStore;
+  using StakingPoolLibV1 for IStore;
 
   constructor(IStore s) Recoverable(s) {} //solhint-disable-line
 
@@ -52,6 +53,7 @@ abstract contract StakingPoolBase is IStakingPools, Recoverable {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeAdmin(s);
     require(s.getBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key), "Unknown Pool");
+    require(s.getPoolStakeBalanceInternal(key) == 0, "Pool is not empty");
 
     s.deleteBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key);
     emit PoolClosed(key, s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key));
