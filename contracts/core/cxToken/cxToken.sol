@@ -102,16 +102,11 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    */
   function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
     uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
-
     uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
+    uint256 totalDays = (resolutionEOD - incidentDate) / 1 days;
 
-    for (uint256 i = 0; i < 14; i++) {
+    for (uint256 i = 0; i < totalDays; i++) {
       uint256 date = _getEOD(incidentDate + (i * 1 days));
-
-      if (date > resolutionEOD) {
-        break;
-      }
-
       exclusion += coverageStartsFrom[account][date];
     }
   }
