@@ -158,7 +158,7 @@ library RoutineInvokerLibV1 {
     uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
-    require(end > 0 && block.timestamp < end, "Withdrawal period has already ended");
+    require(end > 0 && block.timestamp <= end, "Withdrawal period has already ended");
   }
 
   function _executeAndGetAction(

@@ -282,7 +282,7 @@ library StakingPoolLibV1 {
     require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
-    require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
+    require(block.number >= canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 

@@ -303,7 +303,7 @@ library VaultLibV1 {
     If the token is not supported flashFee MUST revert.
     */
     require(stablecoin == token, "Unsupported token");
-    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) > amount, "Amount insufficient");
+    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) >= amount, "Amount insufficient");
 
     uint256 rate = _getFlashLoanFeeRateInternal(s);
     uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
