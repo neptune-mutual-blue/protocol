@@ -278,7 +278,7 @@ const initialize = async (suite, deploymentId) => {
     ProtoUtilV1: libs.protoUtilV1.address,
     StrategyLibV1: libs.strategyLibV1.address,
     ValidationLibV1: libs.validationLibV1.address
-  }, store.address, '0')
+  }, store.address)
 
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.COVER_POLICY, policy.address)
 

@@ -128,7 +128,7 @@ contract ProtocolSpec is BaseSpec {
     _coverReassurance = new CoverReassurance(_store);
     _governance = new Governance(_store);
     _resolution = new Resolution(_store);
-    _policy = new Policy(_store, 0);
+    _policy = new Policy(_store);
 
     VaultFactory vaultFactory = new VaultFactory(_store);
     VaultDelegate vd = new VaultDelegate(_store);

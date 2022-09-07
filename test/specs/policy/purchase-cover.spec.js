@@ -30,7 +30,7 @@ describe('Policy: purchaseCover', () => {
       ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, '0')
+    }, deployed.store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -96,6 +96,21 @@ describe('Policy: purchaseCover', () => {
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
     available.should.be.gt(amount)
+
+    event.args.policyId.should.equal(1)
+  })
+
+  it('must correctly return new policy id', async () => {
+    const [owner] = await ethers.getSigners()
+
+    const amount = helper.ether(500_000, PRECISION)
+    await deployed.dai.approve(deployed.policy.address, amount)
+
+    const tx = await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'CoverPurchased')
+
+    event.args.policyId.should.equal(2)
   })
 
   it('reverts when policy is disabled', async () => {
@@ -174,7 +189,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
       ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, '0')
+    }, deployed.store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 

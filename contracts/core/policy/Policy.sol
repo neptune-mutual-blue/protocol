@@ -29,11 +29,12 @@ contract Policy is IPolicy, Recoverable {
   using RoutineInvokerLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
-  uint256 public lastPolicyId;
-
-  constructor(IStore store, uint256 _lastPolicyId) Recoverable(store) {
-    lastPolicyId = _lastPolicyId;
-  }
+  /**
+   * @dev Constructs this contract
+   *
+   * @param store Provide an implementation of IStore
+   */
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -97,7 +98,7 @@ contract Policy is IPolicy, Recoverable {
     uint256 coverDuration,
     uint256 amountToCover,
     bytes32 referralCode
-  ) external override nonReentrant returns (address, uint256) {
+  ) external override nonReentrant returns (address, uint256 lastPolicyId) {
     // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
     // and uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
@@ -113,7 +114,7 @@ contract Policy is IPolicy, Recoverable {
     s.mustNotHavePolicyDisabled(coverKey, productKey);
     s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
 
-    lastPolicyId += 1;
+    lastPolicyId = s.setLastPolicyId();
 
     (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
 

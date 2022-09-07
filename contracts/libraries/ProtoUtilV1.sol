@@ -115,6 +115,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
   bytes32 public constant NS_POLICY_DISABLED = "ns:policy:disabled";
+  bytes32 public constant NS_POLICY_LAST_PURCHASE_ID = "ns:policy:last:purchase:id";
 
   bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";

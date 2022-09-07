@@ -274,4 +274,15 @@ library PolicyHelperV1 {
     // Fallback means the default option
     return COVER_LAG_FALLBACK_VALUE;
   }
+
+  /**
+   * @dev Increases the "last policy id" and returns new id
+   *
+   */
+  function setLastPolicyId(IStore s) external returns (uint256 lastPolicyId) {
+    uint256 previous = s.getUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID);
+
+    lastPolicyId = previous + 1;
+    s.setUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID, lastPolicyId);
+  }
 }
