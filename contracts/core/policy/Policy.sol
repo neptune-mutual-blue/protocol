@@ -114,7 +114,7 @@ contract Policy is IPolicy, Recoverable {
     s.mustNotHavePolicyDisabled(coverKey, productKey);
     s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
 
-    lastPolicyId = s.setLastPolicyId();
+    lastPolicyId = s.incrementPolicyId();
 
     (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
 
