@@ -285,7 +285,7 @@ library ValidationLibV1 {
     bytes32 productKey
   ) public view {
     uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
-    require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+    require(deadline > 0 && block.timestamp >= deadline, "Still unresolved"); // solhint-disable-line
   }
 
   function mustBeAfterFinalization(
