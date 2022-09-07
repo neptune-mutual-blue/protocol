@@ -104,7 +104,7 @@ library VaultLibV1 {
     values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
     values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
+    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[4]); //  My share of the liquidity pool (in stablecoin)
     values[6] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
     values[7] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
   }
