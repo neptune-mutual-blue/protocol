@@ -12,6 +12,7 @@ const atAddress = async (at, libraries) => {
       GovernanceUtilV1: libraries.governanceUtilV1.address,
       PolicyHelperV1: libraries.policyHelperV1.address,
       ProtoUtilV1: libraries.protoUtilV1.address,
+      StoreKeyUtil: libraries.storeKeyUtil.address,
       ValidationLibV1: libraries.validationLibV1.address
 
     }

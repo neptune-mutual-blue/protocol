@@ -247,6 +247,7 @@ const deployDependencies = async () => {
     GovernanceUtilV1: governanceUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   })
 
