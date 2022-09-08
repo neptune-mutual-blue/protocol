@@ -60,8 +60,9 @@ library PolicyHelperV1 {
       rate = ceiling;
     }
 
+    uint256 effectiveFrom = getEODInternal(block.timestamp) + getCoverageLagInternal(s, coverKey); // solhint-disable-line
     uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
-    uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(block.timestamp, expiryDate); // solhint-disable-line
+    uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(effectiveFrom, expiryDate);
 
     fee = (amountToCover * rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
   }
@@ -256,7 +257,7 @@ library PolicyHelperV1 {
     s.updateStateAndLiquidity(coverKey);
   }
 
-  function getCoverageLagInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+  function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view returns (uint256) {
     uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
 
     // Custom means set for this exact cover
@@ -273,5 +274,13 @@ library PolicyHelperV1 {
 
     // Fallback means the default option
     return COVER_LAG_FALLBACK_VALUE;
+  }
+
+  /**
+   * @dev Gets the EOD (End of Day) time
+   */
+  function getEODInternal(uint256 date) public pure returns (uint256) {
+    (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
+    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, day, 23, 59, 59);
   }
 }
