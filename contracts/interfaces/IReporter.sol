@@ -3,8 +3,8 @@
 pragma solidity ^0.8.0;
 
 interface IReporter {
-  event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, bytes32 info, uint256 initialStake, uint256 resolutionTimestamp);
-  event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, bytes32 info, uint256 initialStake);
+  event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, string info, uint256 initialStake, uint256 resolutionTimestamp);
+  event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address reporter, uint256 indexed incidentDate, string info, uint256 initialStake);
 
   event ReportingBurnRateSet(uint256 previous, uint256 current);
   event FirstReportingStakeSet(bytes32 coverKey, uint256 previous, uint256 current);
@@ -13,7 +13,7 @@ interface IReporter {
   function report(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external;
 
@@ -21,7 +21,7 @@ interface IReporter {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external;
 

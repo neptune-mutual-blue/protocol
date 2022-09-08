@@ -84,12 +84,12 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bool supportsProducts,
-    bytes32 info,
+    string calldata info,
     bool requiresWhitelist,
     uint256[] calldata values
   ) external {
-    // First validate the information entered
-    (uint256 fee, ) = _validateAndGetFee(s, coverKey, info, values[0]);
+    // Get the fee info required to create this cover
+    (uint256 fee, ) = _getFee(s, coverKey, values[0]);
 
     // Set the basic cover info
     _addCover(s, coverKey, supportsProducts, info, requiresWhitelist, values, fee);
@@ -133,13 +133,13 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bool supportsProducts,
-    bytes32 info,
+    string calldata info,
     bool requiresWhitelist,
     uint256[] calldata values,
     uint256 fee
   ) private {
     require(coverKey > 0, "Invalid cover key");
-    require(info > 0, "Invalid info");
+    require(bytes(info).length > 0, "Invalid info");
     require(values[2] > 0, "Invalid min reporting stake");
     require(values[3] > 0, "Invalid reporting period");
     require(values[4] > 0, "Invalid cooldown period");
@@ -158,7 +158,7 @@ library CoverLibV1 {
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, supportsProducts);
     s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey, msg.sender);
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
@@ -196,7 +196,7 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     bool requiresWhitelist,
     uint256[] calldata values
   ) external {
@@ -204,7 +204,7 @@ library CoverLibV1 {
     s.mustSupportProducts(coverKey);
 
     require(productKey > 0, "Invalid product key");
-    require(info > 0, "Invalid info");
+    require(bytes(info).length > 0, "Invalid info");
 
     // Product Status
     // 0 --> Deleted
@@ -216,7 +216,7 @@ library CoverLibV1 {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == false, "Already exists");
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
     s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
 
@@ -239,7 +239,7 @@ library CoverLibV1 {
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256[] calldata values
   ) external {
     require(values[0] <= 2, "Invalid product status");
@@ -250,7 +250,7 @@ library CoverLibV1 {
 
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
     s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
   }
 
   /**
@@ -282,15 +282,13 @@ library CoverLibV1 {
   }
 
   /**
-   * @dev Validation checks before adding a new cover
+   * @dev Gets the fee to create cover and minimum stake required
    */
-  function _validateAndGetFee(
+  function _getFee(
     IStore s,
     bytes32 coverKey,
-    bytes32 info,
     uint256 stakeWithFee
   ) private view returns (uint256 fee, uint256 minCoverCreationStake) {
-    require(info > 0, "Invalid info");
     (fee, minCoverCreationStake, ) = s.getCoverCreationFeeInfo();
 
     uint256 minStake = fee + minCoverCreationStake;
@@ -310,9 +308,9 @@ library CoverLibV1 {
   function updateCoverInternal(
     IStore s,
     bytes32 coverKey,
-    bytes32 info
+    string calldata info
   ) external {
-    s.setBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
   }
 
   /**
