@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
-  event CoverCreated(bytes32 indexed coverKey, bytes32 info, string tokenName, string tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
-  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values);
-  event CoverUpdated(bytes32 indexed coverKey, bytes32 info);
-  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, bytes32 info, uint256[] values);
+  event CoverCreated(bytes32 indexed coverKey, string info, string tokenName, string tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
+  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, string info, bool requiresWhitelist, uint256[] values);
+  event CoverUpdated(bytes32 indexed coverKey, string info);
+  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, string info, uint256[] values);
   event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool status, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
@@ -57,7 +57,7 @@ interface ICover is IMember {
    */
   function addCover(
     bytes32 coverKey,
-    bytes32 info,
+    string calldata info,
     string calldata tokenName,
     string calldata tokenSymbol,
     bool supportsProducts,
@@ -68,7 +68,7 @@ interface ICover is IMember {
   function addProduct(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     bool requiresWhitelist,
     uint256[] calldata values
   ) external;
@@ -76,7 +76,7 @@ interface ICover is IMember {
   function updateProduct(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256[] calldata values
   ) external;
 
@@ -85,9 +85,9 @@ interface ICover is IMember {
    * This feature is accessible only to the cover owner or protocol owner (governance).
    *
    * @param coverKey Enter the cover key
-   * @param info Enter a new IPFS URL to update
+   * @param info Enter a new IPFS hash to update
    */
-  function updateCover(bytes32 coverKey, bytes32 info) external;
+  function updateCover(bytes32 coverKey, string calldata info) external;
 
   function updateCoverCreatorWhitelist(address account, bool whitelisted) external;
 

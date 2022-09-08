@@ -124,7 +124,7 @@ abstract contract Reporter is IReporter, Witness {
   function report(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external override nonReentrant {
     s.mustNotBePaused();
@@ -201,7 +201,7 @@ abstract contract Reporter is IReporter, Witness {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external override nonReentrant {
     s.mustNotBePaused();
