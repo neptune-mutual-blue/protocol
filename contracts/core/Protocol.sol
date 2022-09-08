@@ -137,7 +137,6 @@ contract Protocol is IProtocol, ProtoBase {
    * @param member Enter an address to add as a protocol member
    */
   function addMember(address member) external override nonReentrant whenNotPaused {
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.addMemberInternal(s, member);
@@ -154,7 +153,6 @@ contract Protocol is IProtocol, ProtoBase {
    */
   function removeMember(address member) external override nonReentrant whenNotPaused {
     ProtoUtilV1.mustBeProtocolMember(s, member);
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.removeMemberInternal(s, member);
@@ -204,7 +202,6 @@ contract Protocol is IProtocol, ProtoBase {
   ) public override nonReentrant whenNotPaused {
     require(contractAddress != address(0), "Invalid contract");
 
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
     address current = s.getProtocolContract(namespace);
 
@@ -262,26 +259,24 @@ contract Protocol is IProtocol, ProtoBase {
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
     emit ContractUpgraded(namespace, key, previous, current);
   }
 
-
   /**
-    * @dev Grants `role` to `account`.
-    *
-    * If `account` had not been already granted `role`, emits a {RoleGranted}
-    * event.
-    *
-    * Requirements:
-    *
-    * - the caller must have ``role``'s admin role.
-    */
+   * @dev Grants `role` to `account`.
+   *
+   * If `account` had not been already granted `role`, emits a {RoleGranted}
+   * event.
+   *
+   * Requirements:
+   *
+   * - the caller must have ``role``'s admin role.
+   */
   function grantRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
-      super.grantRole(role, account);
+    super.grantRole(role, account);
   }
 
   /**
