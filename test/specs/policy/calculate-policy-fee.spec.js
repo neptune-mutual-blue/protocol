@@ -101,7 +101,8 @@ describe('Policy: getCoverFeeInfo', () => {
 
     await deployed.dai.approve(deployed.vault.address, payload.inVault)
     await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    await deployed.vault.addLiquidity(coverKey, payload.inVault, minReportingStake, key.toBytes32(''))
+    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), minReportingStake, key.toBytes32(''))
+    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), 0, key.toBytes32(''))
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     startTimestamp = block.timestamp
