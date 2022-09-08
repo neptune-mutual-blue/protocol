@@ -69,15 +69,23 @@ describe('Policy Purchase Stories', () => {
   it('let\'s purchase a policy for `Compound Finance Cover`', async () => {
     const [owner] = await ethers.getSigners()
 
-    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(2_500_000, PRECISION)]
-    const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '2',
+      amountToCover: helper.ether(2_500_000, PRECISION),
+      referralCode: key.toBytes32('')
+    }
 
-   ;(await contracts.policy.getCxToken(args[1], args[2], args[3]))[0].should.equal(helper.zerox)
+    const { fee } = await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover)
+
+   ;(await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration))[0].should.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
-    await contracts.policy.purchaseCover(...args, key.toBytes32(''))
+    await contracts.policy.purchaseCover(args)
 
-    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[1], args[2], args[3])
+    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)
     const cxToken = await composer.token.at(cxTokenAddress)
 
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
@@ -88,15 +96,24 @@ describe('Policy Purchase Stories', () => {
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
     const [owner] = await ethers.getSigners()
 
-    const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(500_000, PRECISION)]
-    const { fee } = await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '2',
+      amountToCover: helper.ether(500_000, PRECISION),
+      referralCode: key.toBytes32('')
+    }
 
-   ;(await contracts.policy.getCxToken(args[1], args[2], args[3]))[0].should.not.equal(helper.zerox)
+    const { fee } = await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover)
+
+   ;(await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration))[0].should.not.equal(helper.zerox)
 
     await contracts.dai.approve(contracts.policy.address, fee)
-    await contracts.policy.purchaseCover(...args, key.toBytes32(''))
 
-    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args[1], args[2], args[3])
+    await contracts.policy.purchaseCover(args)
+
+    const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)
     const cxToken = await composer.token.at(cxTokenAddress)
 
     const cxDaiBalance = await cxToken.balanceOf(owner.address)
