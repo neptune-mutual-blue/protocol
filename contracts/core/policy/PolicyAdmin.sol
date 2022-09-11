@@ -31,26 +31,6 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
-   * @dev Sets policy rates. This feature is only accessible by cover manager.
-   * @param floor The lowest cover fee rate fallback
-   * @param ceiling The highest cover fee rate fallback
-   */
-  function setPolicyRates(uint256 floor, uint256 ceiling) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    require(floor > 0, "Please specify floor");
-    require(ceiling > floor, "Invalid ceiling");
-
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
-
-    s.updateStateAndLiquidity(0);
-
-    emit PolicyRateSet(floor, ceiling);
-  }
-
-  /**
    * @dev Sets policy rates for the given cover key. This feature is only accessible by cover manager.
    * @param floor The lowest cover fee rate for this cover
    * @param ceiling The highest cover fee rate for this cover
@@ -62,13 +42,19 @@ contract PolicyAdmin is IPolicyAdmin, Recoverable {
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeValidCoverKey(coverKey);
 
     require(floor > 0, "Please specify floor");
-    require(ceiling > 0, "Invalid ceiling");
+    require(ceiling > floor, "Invalid ceiling");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+    if (coverKey > 0) {
+      s.mustBeValidCoverKey(coverKey);
+
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+    } else {
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
+    }
 
     s.updateStateAndLiquidity(coverKey);
 

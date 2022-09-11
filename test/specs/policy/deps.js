@@ -116,31 +116,28 @@ const deployDependencies = async () => {
 
   const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-  await protocol.initialize(
-    [
-      helper.zero1,
-      router.address,
-      factory.address, // factory
-      npm.address,
-      helper.randomAddress(),
-      priceOracle.address
-    ],
-    [
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Claim period
-      helper.percentage(30), // Governance Burn Rate: 30%
-      helper.percentage(10), // Governance Reporter Commission: 10%
-      helper.percentage(6.5), // Claim: Platform Fee: 6.5%
-      helper.percentage(5), // Claim: Reporter Commission: 5%
-      helper.percentage(0.5), // Flash Loan Fee: 0.5%
-      helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-      1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
-      helper.percentage(5) // maximum lending ratio
-    ]
-  )
+  const args = {
+    burner: helper.zero1,
+    uniswapV2RouterLike: router.address,
+    uniswapV2FactoryLike: factory.address,
+    npm: npm.address,
+    treasury: helper.randomAddress(),
+    priceOracle: priceOracle.address,
+    coverCreationFee: helper.ether(0),
+    minCoverCreationStake: helper.ether(0),
+    firstReportingStake: helper.ether(250),
+    claimPeriod: 7 * DAYS,
+    reportingBurnRate: helper.percentage(30),
+    governanceReporterCommission: helper.percentage(10),
+    claimPlatformFee: helper.percentage(6.5),
+    claimReporterCommission: helper.percentage(5),
+    flashLoanFee: helper.percentage(0.5),
+    flashLoanFeeProtocol: helper.percentage(2.5),
+    resolutionCoolDownPeriod: 1 * DAYS,
+    stateUpdateInterval: 1 * DAYS,
+    maxLendingRatio: helper.percentage(5)
+  }
+  await protocol.initialize(args)
 
   await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT, key.ACCESS_CONTROL.GOVERNANCE_ADMIN] }])
   await protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)
