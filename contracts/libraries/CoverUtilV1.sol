@@ -129,30 +129,21 @@ library CoverUtilV1 {
    *
    * Warning: this function does not validate the cover key supplied.
    *
-   * @param _values[0] The total amount in the cover pool
-   * @param _values[1] The total commitment amount
-   * @param _values[2] Reassurance amount
-   * @param _values[3] Reassurance pool weight
-   * @param _values[4] Count of products under this cover
-   * @param _values[5] Leverage
-   * @param _values[6] Cover product efficiency weight
    */
   function getCoverPoolSummaryInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) external view returns (uint256[] memory _values) {
-    _values = new uint256[](8);
-
+  ) external view returns (IPolicy.CoverPoolSummaryType memory summary) {
     uint256 precision = s.getStablecoinPrecision();
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
-    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
-    _values[2] = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
-    _values[3] = getReassuranceWeightInternal(s, coverKey);
-    _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
-    _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
+    summary.totalAmountInPool = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
+    summary.totalCommitment = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
+    summary.reassuranceAmount = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
+    summary.reassurancePoolWeight = getReassuranceWeightInternal(s, coverKey);
+    summary.productCount = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+    summary.leverage = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
+    summary.productCapitalEfficiency = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
   }
 
   /**

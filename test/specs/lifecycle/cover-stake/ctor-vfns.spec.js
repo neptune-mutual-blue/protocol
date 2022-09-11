@@ -28,7 +28,7 @@ describe('CoverStake: Constructor', () => {
       ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, '0')
+    }, deployed.store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 

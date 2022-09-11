@@ -86,7 +86,15 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     // Never ending
     for (let i = 0; i < 20; i++) {
-      const args = [owner.address, coverKey, helper.emptyBytes32, 2, helper.ether(amount, PRECISION), key.toBytes32('REF-CODE-001')]
+      const args = {
+        onBehalfOf: owner.address,
+        coverKey,
+        productKey: helper.emptyBytes32,
+        coverDuration: '2',
+        amountToCover: helper.ether(amount, PRECISION),
+        referralCode: key.toBytes32('REF-CODE-001')
+      }
+
       const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
       const fee = info.fee
       const available = info.totalAvailableLiquidity
@@ -94,7 +102,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
       console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee, 'DAI', PRECISION), totalPurchased.toLocaleString(), formatEther(available, 'DAI', PRECISION))
 
       await contracts.dai.approve(contracts.policy.address, ethers.constants.MaxUint256)
-      await contracts.policy.purchaseCover(...args)
+      await contracts.policy.purchaseCover(args)
 
       totalPurchased += amount
       await network.provider.send('evm_increaseTime', [7 * DAYS])
@@ -106,13 +114,21 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
     const amount = 250_000
 
     for (let i = 0; i < 9; i++) {
-      const args = [owner.address, coverKey, helper.emptyBytes32, 1, helper.ether(amount, PRECISION), key.toBytes32('REF-CODE-001')]
-      const info = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4]))
+      const args = {
+        onBehalfOf: owner.address,
+        coverKey,
+        productKey: helper.emptyBytes32,
+        coverDuration: '1',
+        amountToCover: helper.ether(amount, PRECISION),
+        referralCode: key.toBytes32('REF-CODE-001')
+      }
+
+      const info = (await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover))
       const fee = info.fee
 
       if (i < 4) {
         await contracts.dai.approve(contracts.policy.address, fee)
-        await contracts.policy.purchaseCover(...args)
+        await contracts.policy.purchaseCover(args)
       }
 
       await network.provider.send('evm_increaseTime', [7 * DAYS])

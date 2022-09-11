@@ -29,11 +29,12 @@ contract Policy is IPolicy, Recoverable {
   using RoutineInvokerLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
-  uint256 public lastPolicyId;
-
-  constructor(IStore store, uint256 _lastPolicyId) Recoverable(store) {
-    lastPolicyId = _lastPolicyId;
-  }
+  /**
+   * @dev Constructs this contract
+   *
+   * @param store Provide an implementation of IStore
+   */
+  constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**
    * @dev Purchase cover for the specified amount. <br /> <br />
@@ -84,40 +85,28 @@ contract Policy is IPolicy, Recoverable {
    *
    * @custom:suppress-acl This is a publicly accessible feature
    *
-   *
-   * @param onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
-   * @param coverKey Enter the cover key you wish to purchase the policy for
-   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin to cover.
    */
-  function purchaseCover(
-    address onBehalfOf,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover,
-    bytes32 referralCode
-  ) external override nonReentrant returns (address, uint256) {
+  function purchaseCover(PurchaseCoverArgs calldata args) external override nonReentrant returns (address, uint256) {
     // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
     // and uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
-    require(coverKey > 0, "Invalid cover key");
-    require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
-    require(amountToCover > 0, "Enter an amount");
-    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
+    require(args.coverKey > 0, "Invalid cover key");
+    require(args.onBehalfOf != address(0), "Invalid `onBehalfOf`");
+    require(args.amountToCover > 0, "Enter an amount");
+    require(args.coverDuration > 0 && args.coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     s.mustNotBePaused();
-    s.mustNotExceedProposalThreshold(amountToCover);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustHaveNormalProductStatus(coverKey, productKey);
-    s.mustNotHavePolicyDisabled(coverKey, productKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
+    s.mustNotExceedProposalThreshold(args.amountToCover);
+    s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
+    s.mustHaveNormalProductStatus(args.coverKey, args.productKey);
+    s.mustNotHavePolicyDisabled(args.coverKey, args.productKey);
+    s.senderMustBeWhitelistedIfRequired(args.coverKey, args.productKey, args.onBehalfOf);
 
-    lastPolicyId += 1;
+    uint256 lastPolicyId = s.incrementPolicyId();
 
-    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
+    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(args);
 
-    emit CoverPurchased(coverKey, productKey, onBehalfOf, address(cxToken), fee, platformFee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    emit CoverPurchased(args, address(cxToken), fee, platformFee, cxToken.expiresOn(), lastPolicyId);
     return (address(cxToken), lastPolicyId);
   }
 
@@ -205,37 +194,18 @@ contract Policy is IPolicy, Recoverable {
     bytes32 productKey,
     uint256 coverDuration,
     uint256 amountToCover
-  )
-    external
-    view
-    override
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    return s.calculatePolicyFeeInternal(coverKey, productKey, coverDuration, amountToCover);
+  ) external view override returns (CoverFeeInfoType memory) {
+    PolicyHelperV1.CalculatePolicyFeeArgs memory args = PolicyHelperV1.CalculatePolicyFeeArgs({coverKey: coverKey, productKey: productKey, coverDuration: coverDuration, amountToCover: amountToCover});
+    return s.calculatePolicyFeeInternal(args);
   }
 
   /**
-   * @dev Returns the values of the given cover key
+   * @dev Returns the pool summary of the given cover key
    *
    * Warning: this function does not validate the cover key supplied.
    *
-   * @param _values[0] The total amount in the cover pool
-   * @param _values[1] The total commitment amount
-   * @param _values[2] Reassurance amount
-   * @param _values[3] Reassurance pool weight
-   * @param _values[4] Count of products under this cover
-   * @param _values[5] Leverage
-   * @param _values[6] Cover product efficiency weight
-   *
    */
-  function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (uint256[] memory _values) {
+  function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (IPolicy.CoverPoolSummaryType memory summary) {
     return s.getCoverPoolSummaryInternal(coverKey, productKey);
   }
 

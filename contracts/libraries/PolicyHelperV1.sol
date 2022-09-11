@@ -22,59 +22,44 @@ library PolicyHelperV1 {
 
   uint256 public constant COVER_LAG_FALLBACK_VALUE = 1 days;
 
-  function calculatePolicyFeeInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
-    public
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    (floor, ceiling) = getPolicyRatesInternal(s, coverKey);
-    (uint256 availableLiquidity, uint256 commitment, uint256 reassuranceFund) = _getCoverPoolAmounts(s, coverKey, productKey);
-
-    require(amountToCover > 0, "Please enter an amount");
-    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid duration");
-    require(floor > 0 && ceiling > floor, "Policy rate config error");
-
-    require(availableLiquidity - commitment > amountToCover, "Insufficient fund");
-
-    totalAvailableLiquidity = availableLiquidity + reassuranceFund;
-    utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + amountToCover)) / totalAvailableLiquidity;
-
-    rate = utilizationRatio > floor ? utilizationRatio : floor;
-
-    rate = rate + (coverDuration * 100);
-
-    if (rate > ceiling) {
-      rate = ceiling;
-    }
-
-    uint256 effectiveFrom = getEODInternal(block.timestamp) + getCoverageLagInternal(s, coverKey); // solhint-disable-line
-    uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, coverDuration); // solhint-disable-line
-    uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(effectiveFrom, expiryDate);
-
-    fee = (amountToCover * rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
+  struct CalculatePolicyFeeArgs {
+    bytes32 coverKey;
+    bytes32 productKey;
+    uint256 coverDuration;
+    uint256 amountToCover;
   }
 
-  function getPolicyFeeInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover
-  ) public view returns (uint256 fee, uint256 platformFee) {
-    (fee, , , , , ) = calculatePolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+  function calculatePolicyFeeInternal(IStore s, CalculatePolicyFeeArgs memory args) public view returns (IPolicy.CoverFeeInfoType memory policyFee) {
+    (policyFee.floor, policyFee.ceiling) = getPolicyRatesInternal(s, args.coverKey);
+    (uint256 availableLiquidity, uint256 commitment, uint256 reassuranceFund) = _getCoverPoolAmounts(s, args.coverKey, args.productKey);
+
+    require(args.amountToCover > 0, "Please enter an amount");
+    require(args.coverDuration > 0 && args.coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid duration");
+    require(policyFee.floor > 0 && policyFee.ceiling > policyFee.floor, "Policy rate config error");
+
+    require(availableLiquidity - commitment > args.amountToCover, "Insufficient fund");
+
+    policyFee.totalAvailableLiquidity = availableLiquidity + reassuranceFund;
+    policyFee.utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + args.amountToCover)) / policyFee.totalAvailableLiquidity;
+
+    policyFee.rate = policyFee.utilizationRatio > policyFee.floor ? policyFee.utilizationRatio : policyFee.floor;
+
+    policyFee.rate = policyFee.rate + (args.coverDuration * 100);
+
+    if (policyFee.rate > policyFee.ceiling) {
+      policyFee.rate = policyFee.ceiling;
+    }
+
+    uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, args.coverDuration); // solhint-disable-line
+    uint256 effectiveFrom = getEODInternal(block.timestamp) + getCoverageLagInternal(s, args.coverKey); // solhint-disable-line
+    uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(effectiveFrom, expiryDate);
+
+    policyFee.fee = (args.amountToCover * policyFee.rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
+  }
+
+  function getPolicyFeeInternal(IStore s, CalculatePolicyFeeArgs memory args) public view returns (uint256 fee, uint256 platformFee) {
+    IPolicy.CoverFeeInfoType memory coverFeeInfo = calculatePolicyFeeInternal(s, args);
+    fee = coverFeeInfo.fee;
 
     uint256 rate = s.getUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE);
     platformFee = (fee * rate) / ProtoUtilV1.MULTIPLIER;
@@ -93,29 +78,16 @@ library PolicyHelperV1 {
       uint256 reassuranceFund
     )
   {
-    uint256[] memory values = s.getCoverPoolSummaryInternal(coverKey, productKey);
+    IPolicy.CoverPoolSummaryType memory summary = s.getCoverPoolSummaryInternal(coverKey, productKey);
 
-    /*
-     * values[0] stablecoinOwnedByVault --> The total amount in the cover pool
-     * values[1] commitment --> The total commitment amount
-     * values[2] reassurance
-     * values[3] reassurancePoolWeight
-     * values[4] count --> Count of products under this cover
-     * values[5] leverage
-     * values[6] efficiency --> Cover product efficiency weight
-     */
+    availableLiquidity = summary.totalAmountInPool;
+    commitment = summary.totalCommitment;
 
-    availableLiquidity = values[0];
-    commitment = values[1];
-
-    // (reassurance * reassurancePoolWeight) / multiplier
-    reassuranceFund = (values[2] * values[3]) / ProtoUtilV1.MULTIPLIER;
+    reassuranceFund = (summary.reassuranceAmount * summary.reassurancePoolWeight) / ProtoUtilV1.MULTIPLIER;
 
     if (s.supportsProductsInternal(coverKey)) {
-      require(values[4] > 0, "Misconfigured or retired product");
-
-      // (stablecoinOwnedByVault * leverage * efficiency) / (count * multiplier)
-      availableLiquidity = (values[0] * values[5] * values[6]) / (values[4] * ProtoUtilV1.MULTIPLIER);
+      require(summary.productCount > 0, "Misconfigured or retired product");
+      availableLiquidity = (summary.totalAmountInPool * summary.leverage * summary.productCapitalEfficiency) / (summary.productCount * ProtoUtilV1.MULTIPLIER);
     }
   }
 
@@ -216,20 +188,8 @@ library PolicyHelperV1 {
    *
    * @custom:suppress-malicious-erc The ERC-20 `stablecoin` can't be manipulated via user input.
    *
-   * @param onBehalfOf Enter the address where the claim tokens (cxTokens) should be sent.
-   * @param coverKey Enter the cover key you wish to purchase the policy for
-   * @param coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * @param amountToCover Enter the amount of the stablecoin to cover.
-   *
    */
-  function purchaseCoverInternal(
-    IStore s,
-    address onBehalfOf,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover
-  )
+  function purchaseCoverInternal(IStore s, IPolicy.PurchaseCoverArgs calldata args)
     external
     returns (
       ICxToken cxToken,
@@ -237,7 +197,9 @@ library PolicyHelperV1 {
       uint256 platformFee
     )
   {
-    (fee, platformFee) = getPolicyFeeInternal(s, coverKey, productKey, coverDuration, amountToCover);
+    CalculatePolicyFeeArgs memory policyFeeArgs = CalculatePolicyFeeArgs({coverKey: args.coverKey, productKey: args.productKey, coverDuration: args.coverDuration, amountToCover: args.amountToCover});
+
+    (fee, platformFee) = getPolicyFeeInternal(s, policyFeeArgs);
     require(fee > 0, "Insufficient fee");
     require(platformFee > 0, "Insufficient platform fee");
 
@@ -245,16 +207,16 @@ library PolicyHelperV1 {
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
-    IERC20(stablecoin).ensureTransfer(s.getVaultAddress(coverKey), fee - platformFee);
+    IERC20(stablecoin).ensureTransfer(s.getVaultAddress(args.coverKey), fee - platformFee);
     IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
 
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    uint256 toMint = (amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
+    uint256 toMint = (args.amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
-    cxToken = getCxTokenOrDeployInternal(s, coverKey, productKey, coverDuration);
-    cxToken.mint(coverKey, productKey, onBehalfOf, toMint);
+    cxToken = getCxTokenOrDeployInternal(s, args.coverKey, args.productKey, args.coverDuration);
+    cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidity(args.coverKey);
   }
 
   function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view returns (uint256) {
@@ -282,5 +244,15 @@ library PolicyHelperV1 {
   function getEODInternal(uint256 date) public pure returns (uint256) {
     (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
     return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, day, 23, 59, 59);
+  }
+
+  /**
+   * @dev Increases the "last policy id" and returns new id
+   *
+   */
+  function incrementPolicyId(IStore s) external returns (uint256) {
+    s.addUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID, 1);
+
+    return s.getUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID);
   }
 }

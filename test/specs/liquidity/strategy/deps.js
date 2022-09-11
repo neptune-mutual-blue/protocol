@@ -306,7 +306,7 @@ const deployDependencies = async () => {
     ProtoUtilV1: protoUtilV1.address,
     StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLibV1.address
-  }, store.address, '0')
+  }, store.address)
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, policy.address)
 

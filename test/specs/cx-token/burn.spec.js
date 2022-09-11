@@ -62,7 +62,17 @@ describe('cxToken: `burn` function', () => {
     const amountToCover = helper.ether(100_000, PRECISION)
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amountToCover, key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover,
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
 
     const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
     cxToken = await cxTokenUtil.atAddress(at, deployed)

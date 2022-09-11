@@ -107,7 +107,17 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
 
     // Purchase policy so that cxToken is created
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', coverageAmount, key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: coverageAmount,
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const expiryDate = await deployed.policy.getExpiryDate(block.timestamp, '1')
     const cxToken = await deployed.policy.getCxTokenByExpiryDate(coverKey, helper.emptyBytes32, expiryDate)
@@ -127,7 +137,17 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
 
     while (true) {
       const coverageAmount = helper.ether(10_000, PRECISION)
-      await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '3', helper.ether(10_000, PRECISION), key.toBytes32(''))
+
+      const args = {
+        onBehalfOf: owner.address,
+        coverKey,
+        productKey: helper.emptyBytes32,
+        coverDuration: '1',
+        amountToCover: coverageAmount,
+        referralCode: key.toBytes32('')
+      }
+
+      await deployed.policy.purchaseCover(args)
       totalCoverageAmount = helper.add(totalCoverageAmount, coverageAmount)
       await network.provider.send('evm_increaseTime', [1 * DAYS])
 

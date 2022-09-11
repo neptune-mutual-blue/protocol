@@ -107,24 +107,33 @@ describe('Governance Stories', function () {
     await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
 
     // Purchase a cover
-    let args = [kimberly.address, coverKey, helper.emptyBytes32, 2, helper.ether(constants.coverAmounts.kimberly, PRECISION)]
+    const args = {
+      onBehalfOf: kimberly.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '2',
+      amountToCover: helper.ether(constants.coverAmounts.kimberly, PRECISION),
+      referralCode: key.toBytes32('')
+    }
+
     let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     ; (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken.should.equal(helper.zerox)
 
     await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
-    await contracts.policy.connect(kimberly).purchaseCover(...args, key.toBytes32(''))
+    await contracts.policy.connect(kimberly).purchaseCover(args)
 
     let at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
 
-    // Purchase a cover
-    args = [lewis.address, coverKey, helper.emptyBytes32, 3, helper.ether(constants.coverAmounts.lewis, PRECISION)]
+    args.onBehalfOf = lewis.address
+    args.coverDuration = '3'
+    args.amountToCover = helper.ether(constants.coverAmounts.lewis, PRECISION)
 
     fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
 
     await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
-    await contracts.policy.connect(lewis).purchaseCover(...args, key.toBytes32(''))
+    await contracts.policy.connect(lewis).purchaseCover(args)
 
     at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
     constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)

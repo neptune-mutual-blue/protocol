@@ -30,7 +30,7 @@ describe('Policy: purchaseCover', () => {
       ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, '0')
+    }, deployed.store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -82,7 +82,16 @@ describe('Policy: purchaseCover', () => {
     const amount = helper.ether(500_000, PRECISION)
     await deployed.dai.approve(deployed.policy.address, amount)
 
-    const tx = await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: amount,
+      referralCode: key.toBytes32('')
+    }
+
+    const tx = await deployed.policy.purchaseCover(args)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'CoverPurchased')
 
@@ -96,6 +105,30 @@ describe('Policy: purchaseCover', () => {
 
     const available = await deployed.policy.getAvailableLiquidity(coverKey)
     available.should.be.gt(amount)
+
+    event.args.policyId.should.equal(1)
+  })
+
+  it('must correctly return new policy id', async () => {
+    const [owner] = await ethers.getSigners()
+
+    const amount = helper.ether(500_000, PRECISION)
+    await deployed.dai.approve(deployed.policy.address, amount)
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: amount,
+      referralCode: key.toBytes32('')
+    }
+
+    const tx = await deployed.policy.purchaseCover(args)
+    const { events } = await tx.wait()
+    const event = events.find(x => x.event === 'CoverPurchased')
+
+    event.args.policyId.should.equal(2)
   })
 
   it('reverts when policy is disabled', async () => {
@@ -105,12 +138,24 @@ describe('Policy: purchaseCover', () => {
     await deployed.dai.approve(deployed.policy.address, amount)
 
     await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, true, 'reason: testing')
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: amount,
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Policy purchase disabled')
+
     await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, false, 'reason: testing')
 
     // Can purchase after re-enabled
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+    await deployed.policy.purchaseCover(args)
+      .should.not.be.rejected
   })
 
   it('must revert if zero is sent as the amount to cover', async () => {
@@ -118,7 +163,16 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', '0', key.toBytes32(''))
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: '0',
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Enter an amount')
   })
 
@@ -127,10 +181,21 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '0', helper.ether(500_000), key.toBytes32(''))
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '0',
+      amountToCover: helper.ether(500_000, PRECISION),
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Invalid cover duration')
 
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '5', helper.ether(500_000), key.toBytes32(''))
+    args.coverDuration = '5'
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Invalid cover duration')
   })
 
@@ -140,7 +205,17 @@ describe('Policy: purchaseCover', () => {
     await deployed.protocol.pause()
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000), key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: helper.ether(500_000, PRECISION),
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
@@ -154,7 +229,17 @@ describe('Policy: purchaseCover', () => {
     await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', helper.ether(500_000, PRECISION), key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: helper.ether(500_000, PRECISION),
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
       .should.be.rejectedWith('Status not normal')
   })
 })
@@ -174,7 +259,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
       ProtoUtilV1: deployed.protoUtilV1.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, '0')
+    }, deployed.store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address)
 
@@ -227,7 +312,17 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
 
     await deployed.dai.approve(deployed.policy.address, amount)
-    await deployed.policy.purchaseCover(owner.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: owner.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: amount,
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.purchaseCover(args)
 
     const commitment = await deployed.policy.getCommitment(coverKey, helper.emptyBytes32)
     commitment.should.equal(amount)
@@ -243,7 +338,17 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     await deployed.npm.transfer(bob.address, amount)
 
     await deployed.dai.connect(bob).approve(deployed.policy.address, amount)
-    await deployed.policy.connect(bob).purchaseCover(bob.address, coverKey, helper.emptyBytes32, '1', amount, key.toBytes32(''))
+
+    const args = {
+      onBehalfOf: bob.address,
+      coverKey,
+      productKey: helper.emptyBytes32,
+      coverDuration: '1',
+      amountToCover: amount,
+      referralCode: key.toBytes32('')
+    }
+
+    await deployed.policy.connect(bob).purchaseCover(args)
       .should.be.rejectedWith('You are not whitelisted')
   })
 })
