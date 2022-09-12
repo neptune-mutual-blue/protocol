@@ -87,7 +87,7 @@ abstract contract ProtoBase is AccessControl, Pausable, Recoverable {
    * The only (private) key that is ever allowed to be programmatically used is the
    * pause agents.
    */
-  function unpause() external whenPaused nonReentrant whenPaused {
+  function unpause() external nonReentrant whenPaused {
     AccessControlLibV1.mustBeUnpauseAgent(s);
     super._unpause();
   }
