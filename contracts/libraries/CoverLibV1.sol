@@ -277,7 +277,7 @@ library CoverLibV1 {
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(coverKey, tokenName, tokenSymbol);
 
-    s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, address(deployed));
+    s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, deployed);
     return deployed;
   }
 
