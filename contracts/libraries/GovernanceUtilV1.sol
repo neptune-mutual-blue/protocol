@@ -533,7 +533,7 @@ library GovernanceUtilV1 {
 
     // No has reported yet, this is the first report
     if (currentStake == 0) {
-      s.setAddressByKey(_getReporterKey(coverKey, productKey), msg.sender);
+      s.setAddressByKey(_getReporterKey(coverKey, productKey), who);
     }
 
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
@@ -590,7 +590,7 @@ library GovernanceUtilV1 {
 
     if (currentStake == 0) {
       // The first reporter who disputed
-      s.setAddressByKey(_getDisputerKey(coverKey, productKey), msg.sender);
+      s.setAddressByKey(_getDisputerKey(coverKey, productKey), who);
       s.setBoolByKey(getHasDisputeKeyInternal(coverKey, productKey), true);
     }
 
