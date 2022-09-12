@@ -58,7 +58,8 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    */
   function recoverEther(address sendTo) external onlyOwner {
     // slither-disable-next-line arbitrary-send
-    payable(sendTo).transfer(address(this).balance);
+    (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
+    require(success, "Recipient may have reverted");
   }
 
   /**
