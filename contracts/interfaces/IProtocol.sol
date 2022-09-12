@@ -11,6 +11,29 @@ interface IProtocol is IMember, IAccessControl {
     bytes32[] roles;
   }
 
+  struct InitializeArgs {
+    address burner;
+    address uniswapV2RouterLike;
+    address uniswapV2FactoryLike;
+    address npm;
+    address treasury;
+    address priceOracle;
+    uint256 coverCreationFee;
+    uint256 minCoverCreationStake;
+    uint256 firstReportingStake;
+    uint256 claimPeriod;
+    uint256 reportingBurnRate;
+    uint256 governanceReporterCommission;
+    uint256 claimPlatformFee;
+    uint256 claimReporterCommission;
+    uint256 flashLoanFee;
+    uint256 flashLoanFeeProtocol;
+    uint256 resolutionCoolDownPeriod;
+    uint256 stateUpdateInterval;
+    uint256 maxLendingRatio;
+  }
+
+  event Initialized(InitializeArgs args);
   event ContractAdded(bytes32 indexed namespace, bytes32 indexed key, address indexed contractAddress);
   event ContractUpgraded(bytes32 indexed namespace, bytes32 indexed key, address previous, address indexed current);
   event MemberAdded(address member);
@@ -24,7 +47,7 @@ interface IProtocol is IMember, IAccessControl {
     address contractAddress
   ) external;
 
-  function initialize(address[] calldata addresses, uint256[] calldata values) external;
+  function initialize(InitializeArgs calldata args) external;
 
   function upgradeContract(
     bytes32 namespace,
@@ -44,6 +67,4 @@ interface IProtocol is IMember, IAccessControl {
   function removeMember(address member) external;
 
   function grantRoles(AccountWithRoles[] calldata detail) external;
-
-  event Initialized(address[] addresses, uint256[] values);
 }

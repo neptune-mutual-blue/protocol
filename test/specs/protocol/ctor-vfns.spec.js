@@ -46,31 +46,29 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.percentage(30), // Governance Burn Rate: 30%
-        helper.percentage(10), // Governance Reporter Commission: 10%
-        helper.percentage(6.5), // Claim: Platform Fee: 6.5%
-        helper.percentage(5), // Claim: Reporter Commission: 5%
-        helper.percentage(0.5), // Flash Loan Fee: 0.5%
-        helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args)
 
     protocol.address.should.not.be.empty
     protocol.address.should.not.equal(helper.zerox)
@@ -96,31 +94,29 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury,
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args)
 
     const sProtocolAddress = await store.getAddress(key.PROTOCOL.CNS.CORE)
     sProtocolAddress.should.equal(protocol.address)
@@ -156,57 +152,33 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        helper.zerox, // Can't change NPM address
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    await protocol.initialize(args)
+
+    args.npm = helper.zerox
+
+    await protocol.initialize(args)
   })
 
   it('should fail when zero address is provided as store', async () => {
@@ -241,31 +213,29 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        helper.zerox,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Invalid NPM')
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: helper.zerox,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args).should.be.rejectedWith('Invalid NPM')
   })
 
   it('should fail when zero address is provided as treasury', async () => {
@@ -286,31 +256,29 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        helper.zerox,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Invalid Treasury')
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.zerox,
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args).should.be.rejectedWith('Invalid Treasury')
   })
 
   it('should fail if a non-admin tries to re-initialize the protocol', async () => {
@@ -333,59 +301,33 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args)
 
     await protocol.revokeRole(key.ACCESS_CONTROL.ADMIN, owner.address)
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Forbidden')
+    await protocol.initialize(args).should.be.rejectedWith('Forbidden')
   })
 
   it('should not allow NPM address to be changed', async () => {
@@ -406,57 +348,33 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Can\'t change NPM')
+    await protocol.initialize(args)
+
+    args.npm = helper.randomAddress()
+
+    await protocol.initialize(args).should.be.rejectedWith('Can\'t change NPM')
   })
 
   it('should fail if zero address is provided as burner', async () => {
@@ -477,30 +395,28 @@ describe('Protocol Constructor & Initializer', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zerox,
-        router.address,
-        helper.randomAddress(), // factory
-        helper.randomAddress(),
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    ).should.be.rejectedWith('Invalid Burner')
+    const args = {
+      burner: helper.zerox,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args).should.be.rejectedWith('Invalid Burner')
   })
 })

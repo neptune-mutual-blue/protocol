@@ -13,6 +13,8 @@
   "solidity.validationDelay": 2,
   "standard.autoFixOnSave": true,
   "javascript.suggestionActions.enabled": false,
+  "tsImportSorter.configuration.development.enableDebug": false,
+  "tsImportSorter.configuration.hasSemicolon": false,
   "[javascript]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "vscode.typescript-language-features"

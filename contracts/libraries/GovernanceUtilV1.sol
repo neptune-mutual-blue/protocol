@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
+import "../interfaces/IUnstakable.sol";
 import "../interfaces/ICoverReassurance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
@@ -380,14 +381,6 @@ library GovernanceUtilV1 {
    * @param productKey Enter product key
    * @param incidentDate Enter incident date
    *
-   * @param totalStakeInWinningCamp Total NPM tokens in currently "winning" camp.
-   * @param totalStakeInLosingCamp Total NPM tokens in currently "losing" camp.
-   * @param myStakeInWinningCamp Your NPM tokens in the "winning" camp.
-   * @param toBurn The NPM stake to be burned if you unstake now.
-   * @param toReporter The NPM stake reward/commission to be sent to the "valid" reporter.
-   * @param myReward The NPM stake reward you will receive.
-   * @param unstaken The NPM stake you've already unstaken.
-   *
    */
   function getUnstakeInfoForInternal(
     IStore s,
@@ -395,25 +388,13 @@ library GovernanceUtilV1 {
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  )
-    external
-    view
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    )
-  {
-    (totalStakeInWinningCamp, totalStakeInLosingCamp, myStakeInWinningCamp) = getResolutionInfoForInternal(s, account, coverKey, productKey, incidentDate);
+  ) external view returns (IUnstakable.UnstakeInfoType memory info) {
+    (info.totalStakeInWinningCamp, info.totalStakeInLosingCamp, info.myStakeInWinningCamp) = getResolutionInfoForInternal(s, account, coverKey, productKey, incidentDate);
 
-    unstaken = getReportingUnstakenAmountInternal(s, account, coverKey, productKey, incidentDate);
-    require(myStakeInWinningCamp > 0, "Nothing to unstake");
+    info.unstaken = getReportingUnstakenAmountInternal(s, account, coverKey, productKey, incidentDate);
+    require(info.myStakeInWinningCamp > 0, "Nothing to unstake");
 
-    uint256 rewardRatio = (myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / totalStakeInWinningCamp;
+    uint256 rewardRatio = (info.myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / info.totalStakeInWinningCamp;
 
     uint256 reward = 0;
 
@@ -422,12 +403,12 @@ library GovernanceUtilV1 {
     // before the finalization will receive rewards
     if (s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
-      reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
+      reward = (info.totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
 
-    toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
-    toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;
-    myReward = reward - toBurn - toReporter;
+    info.toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
+    info.toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;
+    info.myReward = reward - info.toBurn - info.toReporter;
   }
 
   /**
@@ -642,7 +623,11 @@ library GovernanceUtilV1 {
    * @param incidentDate Enter incident date
    *
    */
-  function getHasFinalizedKeyInternal(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public pure returns (bytes32) {
+  function getHasFinalizedKeyInternal(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_FINALIZATION, coverKey, productKey, incidentDate));
   }
 

@@ -82,32 +82,30 @@ contract ProtocolSpec is BaseSpec {
     FakeUniswapV2FactoryLike factory = new FakeUniswapV2FactoryLike(address(pair));
     FakePriceOracle oracle = new FakePriceOracle();
 
-    address[] memory addresses = new address[](6);
+    IProtocol.InitializeArgs memory args;
 
-    addresses[0] = address(1); // burner
-    addresses[1] = address(router);
-    addresses[2] = address(factory);
-    addresses[3] = address(_npm);
-    addresses[4] = address(2); // treasury
-    addresses[5] = address(oracle);
+    args.burner = address(1); // burner
+    args.uniswapV2RouterLike = address(router);
+    args.uniswapV2FactoryLike = address(factory);
+    args.npm = address(_npm);
+    args.treasury = address(2); // treasury
+    args.priceOracle = address(oracle);
 
-    uint256[] memory values = new uint256[](13);
+    args.coverCreationFee = 500 ether;
+    args.minCoverCreationStake = 4500 ether;
+    args.firstReportingStake = 5000 ether;
+    args.claimPeriod = 7 days;
+    args.reportingBurnRate = 4000; // 40%
+    args.governanceReporterCommission = 1000; // 10%
+    args.claimPlatformFee = 650; // 6.5%
+    args.claimReporterCommission = 500; // 5%
+    args.flashLoanFee = 50; // 0.5%
+    args.flashLoanFeeProtocol = 250; // 2.5%
+    args.resolutionCoolDownPeriod = 1 days;
+    args.stateUpdateInterval = 10 minutes;
+    args.maxLendingRatio = 1000; // 10%
 
-    values[0] = 500 ether; // cover creation fee
-    values[1] = 4500 ether; // creation creation stake
-    values[2] = 5000 ether; // first reporting stake
-    values[3] = 7 days; // claim period
-    values[4] = 4000; // invalid camp's stake burn rate
-    values[5] = 1000; // reporter's commission on claimed stakes (by valid camp witnesses)
-    values[6] = 650; // platform's claim fee
-    values[7] = 500; // reporter's commission on platform's fee, not total claim fee
-    values[8] = 50; // flash loan fee
-    values[9] = 250; // platform flash loan fee
-    values[10] = 1 days; // cooldown period
-    values[11] = 10 minutes; // liquidity update interval
-    values[12] = 1000; // maximum percent that can be lent from a cover liquidity pool
-
-    _protocol.initialize(addresses, values);
+    _protocol.initialize(args);
 
     _protocol.grantRole(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, address(_protocol));
     _protocol.grantRole(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, address(this));

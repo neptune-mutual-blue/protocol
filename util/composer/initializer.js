@@ -53,30 +53,29 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, store, 'setBool', key.qualify(protocol.address), true)
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
-  await intermediate(cache, protocol, 'initialize',
-    [
-      helper.zero1,
-      router,
-      factory,
-      npm.address,
-      sample.fake.TREASURY,
-      npmPriceOracle
-    ],
-    [helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      claimPeriod,
-      helper.percentage(30), // Governance Burn Rate: 30%
-      helper.percentage(10), // Governance Reporter Commission: 10%
-      helper.percentage(6.5), // Claim: Platform Fee: 6.5%
-      helper.percentage(5), // Claim: Reporter Commission: 5%
-      helper.percentage(0.5), // Flash Loan Fee: 0.5%
-      helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-      cooldownPeriod,
-      stateUpdateInterval,
-      helper.percentage(5)
-    ]
-  )
+  const args = {
+    burner: helper.zero1,
+    uniswapV2RouterLike: router.address,
+    uniswapV2FactoryLike: factory.address,
+    npm: npm.address,
+    treasury: sample.fake.TREASURY,
+    priceOracle: npmPriceOracle,
+    coverCreationFee: helper.ether(0),
+    minCoverCreationStake: helper.ether(0),
+    firstReportingStake: helper.ether(250),
+    claimPeriod,
+    reportingBurnRate: helper.percentage(30),
+    governanceReporterCommission: helper.percentage(10),
+    claimPlatformFee: helper.percentage(6.5),
+    claimReporterCommission: helper.percentage(5),
+    flashLoanFee: helper.percentage(0.5),
+    flashLoanFeeProtocol: helper.percentage(2.5),
+    resolutionCoolDownPeriod: cooldownPeriod,
+    stateUpdateInterval: stateUpdateInterval,
+    maxLendingRatio: helper.percentage(5)
+  }
+
+  await intermediate(cache, protocol, 'initialize', args)
 
   await grantRoles(intermediate, cache, protocol)
   await intermediate(cache, protocol, 'grantRole', key.ACCESS_CONTROL.UPGRADE_AGENT, protocol.address)

@@ -37,31 +37,29 @@ describe('Cover: initialize', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        deployed.router.address,
-        deployed.factory.address, // factory
-        deployed.npm.address,
-        helper.randomAddress(),
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(10), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.percentage(30), // Governance Burn Rate: 30%
-        helper.percentage(10), // Governance Reporter Commission: 10%
-        helper.percentage(6.5), // Claim: Platform Fee: 6.5%
-        helper.percentage(5), // Claim: Reporter Commission: 5%
-        helper.percentage(0.5), // Flash Loan Fee: 0.5%
-        helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)
-      ]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: deployed.router.address,
+      uniswapV2FactoryLike: deployed.factory.address,
+      npm: deployed.npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args)
 
     await protocol.grantRoles([
       {
