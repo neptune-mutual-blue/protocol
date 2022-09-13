@@ -1,3 +1,6 @@
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
-openzeppelin-solidity/=lib/openzeppelin-solidity/
+@ensdomains/=node_modules/@ensdomains/
+eth-gas-reporter/=node_modules/eth-gas-reporter/
+hardhat/=node_modules/hardhat/
+openzeppelin-solidity/=node_modules/openzeppelin-solidity/

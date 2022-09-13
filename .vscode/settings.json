@@ -69,5 +69,6 @@
     "Unstaken",
     "WXDAI",
     "zerox"
-  ]
+  ],
+  "git.detectSubmodules": false
 }

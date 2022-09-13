@@ -1,11 +1,11 @@
-[ci]
+[profile.ci]
 verbosity = 4
 
-[default]
+[profile.default]
 src = 'contracts'
 test = 'fuzzing'
 out = 'out'
-libs = ['lib']
+libs = ['node_modules', 'lib']
 remappings = []
 allow_paths = []
 libraries = []

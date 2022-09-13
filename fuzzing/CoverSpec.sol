@@ -38,7 +38,7 @@ contract BaseSpec is Test {
     _deployTokens();
 
     DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * (10**DAI_DECIMALS);
-    NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * 1 ether;
+    NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_NPM_STAKE * 1 ether;
   }
 
   function _deployTokens() internal {
@@ -176,7 +176,7 @@ contract CoverSpec is ProtocolSpec {
     _npm.approve(address(_coverStake), values[0]);
 
     _dai.mint(values[1]);
-    _dai.approve(address(_coverReassurance), values[1]);
+    _dai.approve(address(_cover), values[1]);
 
     _vault = Vault(_cover.addCover(_COVER_KEY, "ipfs://?", "POD", "POD", false, false, values));
   }
