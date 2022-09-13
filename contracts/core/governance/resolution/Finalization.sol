@@ -70,10 +70,8 @@ abstract contract Finalization is Recoverable, IFinalization {
    *
    * @custom:warning Warning:
    *
-   * 1. Since this product's incident status is needed after finalization,
+   * Since this product's incident status is needed after finalization,
    * do not invoke `setStatusInternal` or attempt to reset it to normal.
-   *
-   * 2. Do not reset the first reporters **by incident date** as it is needed for historical significance.
    *
    */
   function _finalize(
@@ -95,8 +93,8 @@ abstract contract Finalization is Recoverable, IFinalization {
     s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey, incidentDate)));
 
     s.updateStateAndLiquidity(coverKey);
     emit Finalized(coverKey, productKey, msg.sender, incidentDate);

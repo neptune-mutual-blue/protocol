@@ -89,9 +89,6 @@ contract Protocol is IProtocol, ProtoBase {
    * Since adding member to the protocol is a highy risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
    *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
-   *
    * @custom:suppress-address-trust-issue The address `member` can be trusted because this can only come from upgrade agents.
    *
    * @param member Enter an address to add as a protocol member
