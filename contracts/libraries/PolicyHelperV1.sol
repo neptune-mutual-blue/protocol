@@ -42,6 +42,9 @@ library PolicyHelperV1 {
     policyFee.totalAvailableLiquidity = availableLiquidity + reassuranceFund;
     policyFee.utilizationRatio = (ProtoUtilV1.MULTIPLIER * (commitment + args.amountToCover)) / policyFee.totalAvailableLiquidity;
 
+    // console.log("[sc] s: %s, p: %s, u: %s", availableLiquidity, reassuranceFund, policyFee.utilizationRatio);
+    // console.log("[sc] c: %s, a: %s, t: %s", commitment, args.amountToCover, policyFee.totalAvailableLiquidity);
+
     policyFee.rate = policyFee.utilizationRatio > policyFee.floor ? policyFee.utilizationRatio : policyFee.floor;
 
     policyFee.rate = policyFee.rate + (args.coverDuration * 100);

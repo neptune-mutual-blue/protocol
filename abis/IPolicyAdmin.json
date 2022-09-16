@@ -139,24 +139,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "floor",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "ceiling",
-        "type": "uint256"
-      }
-    ],
-    "name": "setPolicyRates",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "coverKey",
         "type": "bytes32"

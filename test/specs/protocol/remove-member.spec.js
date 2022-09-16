@@ -11,7 +11,6 @@ require('chai')
   .should()
 
 describe('Removing Protocol Member(s)', () => {
-  const treasury = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {

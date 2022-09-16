@@ -37,23 +37,19 @@ describe('Setup Bond', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      addresses: [
-        npmDai.address,
-        helper.randomAddress() // treasury
-      ],
-      values: [
-        helper.percentage(1), // 1% bond discount
-        helper.ether(100_000), // Maximum bond amount
-        (5 * MINUTES).toString(), // Bond period / vesting term
-        helper.ether(10_000_000) // NPM to top up
-      ]
+      lpToken: npmDai.address,
+      treasury: helper.randomAddress(),
+      bondDiscountRate: helper.percentage(1),
+      maxBondAmount: helper.ether(100_000),
+      vestingTerm: (5 * MINUTES).toString(),
+      npmToTopUpNow: helper.ether(10_000_000)
     }
   })
 
   it('must correctly set up the bond pool', async () => {
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    const tx = await pool.setup(payload.addresses, payload.values)
+    const tx = await pool.setup(payload)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'BondPoolSetup')
@@ -70,27 +66,25 @@ describe('Setup Bond', () => {
   it('must allow updating the bond pool values without top up', async () => {
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    const addresses = [helper.zerox, helper.zerox]
-
-    const values = [
-      '0', // 1% bond discount
-      '0', // Maximum bond amount
-      '0', // Bond period / vesting term
-      '0' // NPM to top up
-    ]
-
-    await pool.setup(addresses, values)
+    await pool.setup({
+      lpToken: helper.zerox,
+      treasury: helper.zerox,
+      bondDiscountRate: '0',
+      maxBondAmount: '0',
+      vestingTerm: '0',
+      npmToTopUpNow: '0'
+    })
   })
 
   it('must reject if invoked by non admin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    const amount = payload.values[payload.values.length - 1]
+    const amount = payload.npmToTopUpNow
 
     await deployed.npm.transfer(bob.address, amount)
     await deployed.npm.connect(bob).approve(pool.address, amount)
 
-    await pool.connect(bob).setup(payload.addresses, payload.values)
+    await pool.connect(bob).setup(payload)
       .should.be.rejectedWith('Forbidden')
 
     await deployed.npm.connect(bob).transfer(owner.address, amount)
@@ -103,7 +97,7 @@ describe('Setup Bond', () => {
     await deployed.protocol.pause()
 
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.setup(payload.addresses, payload.values)
+    await pool.setup(payload)
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()

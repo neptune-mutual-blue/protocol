@@ -53,36 +53,22 @@ library BondPoolLibV1 {
    * @dev Gets the bond pool information
    *
    * @param s Provide a store instance
-   * @param addresses[0] lpToken -> Returns the LP token address
-   * @param values[0] marketPrice -> Returns the market price of NPM token
-   * @param values[1] discountRate -> Returns the discount rate for bonding
-   * @param values[2] vestingTerm -> Returns the bond vesting period
-   * @param values[3] maxBond -> Returns maximum amount of bond. To clarify, this means the final NPM amount received by bonders after vesting period.
-   * @param values[4] totalNpmAllocated -> Returns the total amount of NPM tokens allocated for bonding.
-   * @param values[5] totalNpmDistributed -> Returns the total amount of NPM tokens that have been distributed under bond.
-   * @param values[6] npmAvailable -> Returns the available NPM tokens that can be still bonded.
-   * @param values[7] bondContribution --> total lp tokens contributed by you
-   * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
-   * @param values[9] unlockDate --> your vesting period end or "unlock date"
    *
    */
-  function getBondPoolInfoInternal(IStore s, address you) external view returns (address[] memory addresses, uint256[] memory values) {
-    addresses = new address[](1);
-    values = new uint256[](10);
+  function getBondPoolInfoInternal(IStore s, address you) external view returns (IBondPool.BondPoolInfoType memory info) {
+    info.lpToken = _getLpTokenAddress(s);
 
-    addresses[0] = _getLpTokenAddress(s);
+    info.marketPrice = s.getNpmPriceInternal(1 ether);
+    info.discountRate = _getDiscountRate(s);
+    info.vestingTerm = _getVestingTerm(s);
+    info.maxBond = _getMaxBondInUnit(s);
+    info.totalNpmAllocated = _getTotalNpmAllocated(s);
+    info.totalNpmDistributed = _getTotalNpmDistributed(s);
+    info.npmAvailable = IERC20(s.npmToken()).balanceOf(address(this));
 
-    values[0] = s.getNpmPriceInternal(1 ether); // marketPrice
-    values[1] = _getDiscountRate(s); // discountRate
-    values[2] = _getVestingTerm(s); // vestingTerm
-    values[3] = _getMaxBondInUnit(s); // maxBond
-    values[4] = _getTotalNpmAllocated(s); // totalNpmAllocated
-    values[5] = _getTotalNpmDistributed(s); // totalNpmDistributed
-    values[6] = IERC20(s.npmToken()).balanceOf(address(this)); // npmAvailable
-
-    values[7] = _getYourBondContribution(s, you); // bondContribution --> total lp tokens contributed by you
-    values[8] = _getYourBondClaimable(s, you); // claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
-    values[9] = _getYourBondUnlockDate(s, you); // unlockDate --> your vesting period end or "unlock date"
+    info.bondContribution = _getYourBondContribution(s, you); // total lp tokens contributed by you
+    info.claimable = _getYourBondClaimable(s, you); // your total claimable NPM tokens at the end of the vesting period or "unlock date"
+    info.unlockDate = _getYourBondUnlockDate(s, you); // your vesting period end or "unlock date"
   }
 
   /**
@@ -164,36 +150,35 @@ library BondPoolLibV1 {
     IStore s,
     uint256 lpTokens,
     uint256 minNpmDesired
-  ) external returns (uint256[] memory values) {
+  ) external returns (uint256 npmToVest, uint256 unlockDate) {
     s.mustNotBePaused();
 
-    values = new uint256[](2);
-    values[0] = calculateTokensForLpInternal(s, lpTokens); // npmToVest
+    npmToVest = calculateTokensForLpInternal(s, lpTokens);
 
-    require(values[0] <= _getMaxBondInUnit(s), "Bond too big");
-    require(values[0] >= minNpmDesired, "Min bond `minNpmDesired` failed");
-    require(_getNpmBalance(s) >= values[0] + _getBondCommitment(s), "NPM balance insufficient to bond");
+    require(npmToVest <= _getMaxBondInUnit(s), "Bond too big");
+    require(npmToVest >= minNpmDesired, "Min bond `minNpmDesired` failed");
+    require(_getNpmBalance(s) >= npmToVest + _getBondCommitment(s), "NPM balance insufficient to bond");
 
     // Pull the tokens from the requester's account
     IERC20(s.getAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN)).ensureTransferFrom(msg.sender, s.getAddressByKey(BondPoolLibV1.NS_LQ_TREASURY), lpTokens);
 
     // Commitment: Total NPM to reserve for bond claims
-    s.addUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+    s.addUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, npmToVest);
 
     // Your bond to claim later
     bytes32 k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender));
-    s.addUintByKey(k, values[0]);
+    s.addUintByKey(k, npmToVest);
 
     // Amount contributed
     k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_CONTRIBUTION, msg.sender));
     s.addUintByKey(k, lpTokens);
 
     // unlock date
-    values[1] = block.timestamp + _getVestingTerm(s); // solhint-disable-line
+    unlockDate = block.timestamp + _getVestingTerm(s); // solhint-disable-line
 
     // Unlock date
     k = keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender));
-    s.setUintByKey(k, values[1]);
+    s.setUintByKey(k, unlockDate);
   }
 
   /**
@@ -222,15 +207,13 @@ library BondPoolLibV1 {
    * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
    *
    */
-  function claimBondInternal(IStore s) external returns (uint256[] memory values) {
+  function claimBondInternal(IStore s) external returns (uint256 npmToTransfer) {
     s.mustNotBePaused();
 
-    values = new uint256[](1);
-
-    values[0] = _getYourBondClaimable(s, msg.sender); // npmToTransfer
+    npmToTransfer = _getYourBondClaimable(s, msg.sender); // npmToTransfer
 
     // Commitment: Reduce NPM reserved for claims
-    s.subtractUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, values[0]);
+    s.subtractUintByKey(BondPoolLibV1.NS_BOND_TO_CLAIM, npmToTransfer);
 
     // Clear the claim amount
     s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_TO_CLAIM, msg.sender)));
@@ -241,10 +224,10 @@ library BondPoolLibV1 {
     s.deleteUintByKey(keccak256(abi.encodePacked(BondPoolLibV1.NS_BOND_UNLOCK_DATE, msg.sender)));
 
     require(block.timestamp >= unlocksOn, "Still vesting"); // solhint-disable-line
-    require(values[0] > 0, "Nothing to claim");
+    require(npmToTransfer > 0, "Nothing to claim");
 
-    s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, values[0]);
-    IERC20(s.npmToken()).ensureTransfer(msg.sender, values[0]);
+    s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, npmToTransfer);
+    IERC20(s.npmToken()).ensureTransfer(msg.sender, npmToTransfer);
   }
 
   /**
@@ -252,42 +235,31 @@ library BondPoolLibV1 {
    *
    * @custom:suppress-malicious-erc The token `s.npmToken()` can't be manipulated via user input
    *
-   * @param s Provide an instance of the store
-   * @param addresses[0] - LP Token Address
-   * @param addresses[1] - Treasury Address
-   * @param values[0] - Bond Discount Rate
-   * @param values[1] - Maximum Bond Amount
-   * @param values[2] - Vesting Term
-   * @param values[3] - NPM to Top Up Now
    */
-  function setupBondPoolInternal(
-    IStore s,
-    address[] calldata addresses,
-    uint256[] calldata values
-  ) external {
-    if (addresses[0] != address(0)) {
-      s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, addresses[0]);
+  function setupBondPoolInternal(IStore s, IBondPool.SetupBondPoolArgs calldata args) external {
+    if (args.lpToken != address(0)) {
+      s.setAddressByKey(BondPoolLibV1.NS_BOND_LP_TOKEN, args.lpToken);
     }
 
-    if (addresses[1] != address(0)) {
-      s.setAddressByKey(BondPoolLibV1.NS_LQ_TREASURY, addresses[1]);
+    if (args.treasury != address(0)) {
+      s.setAddressByKey(BondPoolLibV1.NS_LQ_TREASURY, args.treasury);
     }
 
-    if (values[0] > 0) {
-      s.setUintByKey(BondPoolLibV1.NS_BOND_DISCOUNT_RATE, values[0]);
+    if (args.bondDiscountRate > 0) {
+      s.setUintByKey(BondPoolLibV1.NS_BOND_DISCOUNT_RATE, args.bondDiscountRate);
     }
 
-    if (values[1] > 0) {
-      s.setUintByKey(BondPoolLibV1.NS_BOND_MAX_UNIT, values[1]);
+    if (args.maxBondAmount > 0) {
+      s.setUintByKey(BondPoolLibV1.NS_BOND_MAX_UNIT, args.maxBondAmount);
     }
 
-    if (values[2] > 0) {
-      s.setUintByKey(BondPoolLibV1.NS_BOND_VESTING_TERM, values[2]);
+    if (args.vestingTerm > 0) {
+      s.setUintByKey(BondPoolLibV1.NS_BOND_VESTING_TERM, args.vestingTerm);
     }
 
-    if (values[3] > 0) {
-      IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), values[3]);
-      s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, values[3]);
+    if (args.npmToTopUpNow > 0) {
+      IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), args.npmToTopUpNow);
+      s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, args.npmToTopUpNow);
     }
   }
 }

@@ -81,7 +81,7 @@ describe('Governance Stories', function () {
     const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
     const cooldownPeriod = 1 * constants.DAYS
     const claimPeriod = 7 * constants.DAYS
@@ -95,16 +95,31 @@ describe('Governance Stories', function () {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await contracts.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor: '1'
+    })
 
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await contracts.npm.approve(vault.address, minStakeToReport)
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
     // Purchase a cover
     const args = {
@@ -116,26 +131,26 @@ describe('Governance Stories', function () {
       referralCode: key.toBytes32('')
     }
 
-    let fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
+    let { fee } = (await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover))
 
-    ; (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken.should.equal(helper.zerox)
+    ; (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken.should.equal(helper.zerox)
 
     await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(args)
 
-    let at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
+    let at = (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken
     constants.cxTokens.kimberly = await cxToken.atAddress(at, contracts.libs)
 
     args.onBehalfOf = lewis.address
     args.coverDuration = '3'
     args.amountToCover = helper.ether(constants.coverAmounts.lewis, PRECISION)
 
-    fee = (await contracts.policy.getCoverFeeInfo(args[1], args[2], args[3], args[4])).fee
+    fee = (await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover)).fee
 
     await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(args)
 
-    at = (await contracts.policy.getCxToken(args[1], args[2], args[3])).cxToken
+    at = (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken
     constants.cxTokens.lewis = await cxToken.atAddress(at, contracts.libs)
 
     await network.provider.send('evm_increaseTime', [2 * constants.DAYS])

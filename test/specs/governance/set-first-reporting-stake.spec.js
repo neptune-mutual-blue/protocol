@@ -12,7 +12,7 @@ require('chai')
 
 describe('Governance: `setFirstReportingStake` function', () => {
   const amount = '10000'
-  const minReportingStake = helper.ether(250)
+  const minStakeToReport = helper.ether(250)
   let coverKey, deployed
 
   before(async () => {
@@ -29,10 +29,7 @@ describe('Governance: `setFirstReportingStake` function', () => {
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
-    const leverage = '1'
-
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
+    const leverageFactor = '1'
 
     const info = key.toBytes32('info')
 
@@ -41,12 +38,29 @@ describe('Governance: `setFirstReportingStake` function', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor
+    })
   })
 
   it('must set first reporting stake ', async () => {
     await deployed.governance.setFirstReportingStake(helper.emptyBytes32, amount)
-    await deployed.governance.setFirstReportingStake(coverKey, minReportingStake)
+    await deployed.governance.setFirstReportingStake(coverKey, minStakeToReport)
   })
 
   it('must get first reporting stake ', async () => {
@@ -56,10 +70,10 @@ describe('Governance: `setFirstReportingStake` function', () => {
 
   it('must get first reporting stake ', async () => {
     const result = await deployed.governance.getFirstReportingStake(coverKey)
-    result.should.equal(minReportingStake)
+    result.should.equal(minStakeToReport)
   })
 
-  it('reverts when zero is specified as minReportingStake', async () => {
+  it('reverts when zero is specified as minStakeToReport', async () => {
     await deployed.governance.setFirstReportingStake(coverKey, '0').should.be.rejectedWith('Please specify value')
   })
 })

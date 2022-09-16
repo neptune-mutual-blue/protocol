@@ -59,70 +59,77 @@
         "type": "bytes32"
       },
       {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "key",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "enum IStakingPools.StakingPoolType",
+            "name": "poolType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniStakingTokenDollarPair",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniRewardTokenDollarPair",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingTarget",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "platformFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerBlock",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockupPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardTokenToDeposit",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "enum IStakingPools.StakingPoolType",
-        "name": "poolType",
-        "type": "uint8"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "stakingToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "uniStakingTokenDollarPair",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "rewardToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "uniRewardTokenDollarPair",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "rewardTokenDeposit",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "maxStake",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "rewardPerBlock",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "lockupPeriodInBlocks",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "platformFee",
-        "type": "uint256"
+        "internalType": "struct IStakingPools.AddOrEditPoolArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "PoolUpdated",
@@ -199,29 +206,76 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "coverKey",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "enum IStakingPools.StakingPoolType",
-        "name": "poolType",
-        "type": "uint8"
-      },
-      {
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "key",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "enum IStakingPools.StakingPoolType",
+            "name": "poolType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniStakingTokenDollarPair",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniRewardTokenDollarPair",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingTarget",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "platformFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerBlock",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockupPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardTokenToDeposit",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IStakingPools.AddOrEditPoolArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "addOrEditPool",
@@ -233,7 +287,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       },
       {
@@ -257,7 +311,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       }
     ],
@@ -270,7 +324,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       },
       {
@@ -288,7 +342,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       },
       {
@@ -300,19 +354,111 @@
     "name": "getInfo",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingTokenStablecoinPair",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardTokenStablecoinPair",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "target",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maximumStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakeBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cumulativeDeposits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerBlock",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "platformFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockupPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardTokenBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accountStakeBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalBlockSinceLastReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewards",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "canWithdrawFromBlockHeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastDepositHeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastRewardHeight",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IStakingPools.StakingPoolInfoType",
+        "name": "info",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -348,7 +494,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       },
       {
@@ -366,7 +512,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "coverKey",
+        "name": "key",
         "type": "bytes32"
       }
     ],

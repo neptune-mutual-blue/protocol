@@ -21,7 +21,7 @@ describe('cxTokenFactory: Deploy', () => {
 
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
@@ -29,12 +29,9 @@ describe('cxTokenFactory: Deploy', () => {
     const floor = helper.percentage(1)
     const ceiling = helper.percentage(10)
     const reassuranceRate = helper.percentage(50)
-    const leverage = '1'
+    const leverageFactor = '1'
 
-    const requiresWhitelist = false
-    const values = [stakeWithFee, reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-
-    const info = await ipfs.write([coverKey, ...values])
+    const info = await ipfs.write([coverKey])
 
     factory = await deployer.deployWithLibraries(cache, 'cxTokenFactory', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -53,7 +50,24 @@ describe('cxTokenFactory: Deploy', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, reassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount: '0',
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor
+    })
   })
 
   it('must successfully deploy a new cxToken', async () => {

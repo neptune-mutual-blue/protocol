@@ -108,6 +108,37 @@
         "type": "bytes32"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "closedBy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReportClosed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "caller",
@@ -226,6 +257,29 @@
     ],
     "name": "Unstaken",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "coverKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "productKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "incidentDate",
+        "type": "uint256"
+      }
+    ],
+    "name": "closeReport",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
@@ -378,39 +432,46 @@
     "name": "getUnstakeInfoFor",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "totalStakeInWinningCamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalStakeInLosingCamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "myStakeInWinningCamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "toBurn",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "toReporter",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "myReward",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "unstaken",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalStakeInWinningCamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStakeInLosingCamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "myStakeInWinningCamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "toBurn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "toReporter",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "myReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "unstaken",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUnstakable.UnstakeInfoType",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

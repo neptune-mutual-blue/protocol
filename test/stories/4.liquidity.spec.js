@@ -33,7 +33,7 @@ describe('Liquidity Stories', () => {
 
     const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
@@ -44,27 +44,42 @@ describe('Liquidity Stories', () => {
     await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await contracts.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor: '1'
+    })
   })
 
   it('deployer added $4M to Bitmart cover pool', async () => {
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minReportingStake)
+    await contracts.npm.approve(vault.address, minStakeToReport)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
     await network.provider.send('evm_increaseTime', [1 * DAYS])
 
     await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minReportingStake)
+    await contracts.npm.approve(vault.address, minStakeToReport)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
   })
 
   it('interest could not be accrued before withdrawal period', async () => {

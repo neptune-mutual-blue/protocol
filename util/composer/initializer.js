@@ -55,8 +55,8 @@ const initialize = async (suite, deploymentId) => {
 
   const args = {
     burner: helper.zero1,
-    uniswapV2RouterLike: router.address,
-    uniswapV2FactoryLike: factory.address,
+    uniswapV2RouterLike: router,
+    uniswapV2FactoryLike: factory,
     npm: npm.address,
     treasury: sample.fake.TREASURY,
     priceOracle: npmPriceOracle,
@@ -91,10 +91,15 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, protocol, 'addContract', key.PROTOCOL.CNS.BOND_POOL, bondPoolContract.address)
 
   await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000_000))
-  let addresses = [npmUsdPair.address, sample.fake.TREASURY]
-  let values = [helper.percentage(0.75), helper.ether(10_000), bondPeriod, helper.ether(2_000_000)]
 
-  await intermediate(cache, bondPoolContract, 'setup', addresses, values)
+  await intermediate(cache, bondPoolContract, 'setup', {
+    lpToken: npmUsdPair.address,
+    treasury: sample.fake.TREASURY,
+    bondDiscountRate: helper.percentage(0.75),
+    maxBondAmount: helper.ether(10_000),
+    vestingTerm: bondPeriod,
+    npmToTopUpNow: helper.ether(2_000_000)
+  })
 
   const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -109,34 +114,112 @@ const initialize = async (suite, deploymentId) => {
 
   // @todo: only applicable to testnet
   await intermediate(cache, crpool, 'approve', stakingPoolContract.address, helper.ether(22_094_995_300))
-  addresses = [npm.address, npmUsdPair.address, crpool.address, crpoolUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 22_094_995_300, minutesToBlocks(chainId, 45), helper.ether(13_400_300)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Crpool'), 'Crystalpool Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('Crpool'),
+    name: 'Crystalpool Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: crpool.address,
+    uniRewardTokenDollarPair: crpoolUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(10_000),
+    platformFee: helper.percentage(0.5),
+    rewardPerBlock: (22_094_995_300).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 5),
+    rewardTokenToDeposit: helper.ether(13_400_300)
+  })
 
   await intermediate(cache, hwt, 'approve', stakingPoolContract.address, helper.ether(13_522_000_000))
-  addresses = [npm.address, npmUsdPair.address, hwt.address, hwtUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(10_000), helper.percentage(0.25), 13_522_000_000, minutesToBlocks(chainId, 120), helper.ether(25_303_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('Huobi'), 'Huobi Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('Huobi'),
+    name: 'Huobi Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: hwt.address,
+    uniRewardTokenDollarPair: hwtUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(10_000),
+    platformFee: helper.percentage(0.25),
+    rewardPerBlock: (13_522_000_000).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 120),
+    rewardTokenToDeposit: helper.ether(25_303_000)
+  })
 
   await intermediate(cache, obk, 'approve', stakingPoolContract.address, helper.ether(14_505_290_000))
-  addresses = [npm.address, npmUsdPair.address, obk.address, obkUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(50_000), helper.percentage(0.25), 14_505_290_000, minutesToBlocks(chainId, 60), helper.ether(16_30_330)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('OBK'), 'OBK Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('OBK'),
+    name: 'OBK Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: obk.address,
+    uniRewardTokenDollarPair: obkUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(10_000),
+    platformFee: helper.percentage(0.25),
+    rewardPerBlock: (14_505_290_000).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 60),
+    rewardTokenToDeposit: helper.ether(16_30_330)
+  })
 
   await intermediate(cache, sabre, 'approve', stakingPoolContract.address, helper.ether(30_330_000_010))
-  addresses = [npm.address, npmUsdPair.address, sabre.address, sabreUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(100_000), helper.percentage(0.25), 30_330_000_010, minutesToBlocks(chainId, 180), helper.ether(42_000_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('SABRE'), 'SABRE Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('SABRE'),
+    name: 'SABRE Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: sabre.address,
+    uniRewardTokenDollarPair: sabreUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(100_000),
+    platformFee: helper.percentage(0.25),
+    rewardPerBlock: (30_330_000_010).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 180),
+    rewardTokenToDeposit: helper.ether(42_000_000)
+  })
 
   await intermediate(cache, bec, 'approve', stakingPoolContract.address, helper.ether(8_940_330_000))
-  addresses = [npm.address, npmUsdPair.address, bec.address, becUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(80_000), helper.percentage(0.25), 8_940_330_000, minutesToBlocks(chainId, 60 * 48), helper.ether(27_000_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('BEC'), 'BEC Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('BEC'),
+    name: 'BEC Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: bec.address,
+    uniRewardTokenDollarPair: becUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(100_000),
+    platformFee: helper.percentage(0.25),
+    rewardPerBlock: (8_940_330_000).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 60 * 48),
+    rewardTokenToDeposit: helper.ether(27_000_000)
+  })
 
   await intermediate(cache, xd, 'approve', stakingPoolContract.address, helper.ether(18_559_222_222))
-  addresses = [npm.address, npmUsdPair.address, xd.address, xdUsdPair.address]
-  values = [helper.ether(100_000_000), helper.ether(190_000), helper.percentage(0.25), 18_559_222_222, minutesToBlocks(chainId, 90), helper.ether(19_000_000)]
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key.toBytes32('XT'), 'XT Staking', 0, addresses, values)
+
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', {
+    key: key.toBytes32('XD'),
+    name: 'XD Staking',
+    poolType: '0',
+    stakingToken: npm.address,
+    uniStakingTokenDollarPair: npmUsdPair.address,
+    rewardToken: xd.address,
+    uniRewardTokenDollarPair: xdUsdPair.address,
+    stakingTarget: helper.ether(100_000_000),
+    maxStake: helper.ether(100_000),
+    platformFee: helper.percentage(0.25),
+    rewardPerBlock: (18_559_222_222).toString(),
+    lockupPeriod: minutesToBlocks(chainId, 90),
+    rewardTokenToDeposit: helper.ether(19_000_000)
+  })
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -351,7 +434,7 @@ const initialize = async (suite, deploymentId) => {
   },
   {
     account: owner.address,
-    roles: [key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT]
+    roles: [key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.GOVERNANCE_AGENT, key.ACCESS_CONTROL.LIQUIDITY_MANAGER]
   }]
 
   await intermediate(cache, protocol, 'grantRoles', payload)
@@ -359,7 +442,7 @@ const initialize = async (suite, deploymentId) => {
   await intermediate(cache, cover, 'updateCoverCreatorWhitelist', owner.address, true)
   await intermediate(cache, cover, 'initialize', dai.address, key.toBytes32('DAI'))
 
-  await intermediate(cache, policyAdminContract, 'setPolicyRates', helper.percentage(7), helper.percentage(45))
+  await intermediate(cache, policyAdminContract, 'setPolicyRatesByKey', key.toBytes32(''), helper.percentage(7), helper.percentage(45))
 
   return {
     intermediate,

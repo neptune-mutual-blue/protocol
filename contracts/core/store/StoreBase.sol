@@ -57,7 +57,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
    * @custom:suppress-pausable Risk tolerable. Can only be called by the owner.
    */
   function recoverEther(address sendTo) external onlyOwner {
-    // slither-disable-next-line arbitrary-send
+    // slither-disable-next-line low-level-calls
     (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
     require(success, "Recipient may have reverted");
   }

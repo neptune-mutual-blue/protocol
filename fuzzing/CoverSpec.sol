@@ -155,27 +155,34 @@ contract CoverSpec is ProtocolSpec {
   }
 
   function _initializeCover() internal {
-    uint256[] memory values = new uint256[](10);
-    values[0] = 10_000 ether; // stake with fees
-    values[1] = 1_000_000 * DAI_PRECISION; // reassurance amount to add now
-    values[2] = 20_000 ether; // minimum stake required to report
-    values[3] = 7 days; // reporting period
-    values[4] = 1 days; // cooldown period
-    values[5] = 7 days; // claim period
-    values[6] = 800; // floor
-    values[7] = 3200; // ceiling
-    values[8] = 5000; // reassurance rate
-    values[9] = 1; // leverage factor
+    ICover.AddCoverArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.info = "ipfs://?";
+    args.tokenName = "POD";
+    args.tokenSymbol = "POD";
+    args.supportsProducts = false;
+    args.requiresWhitelist = false;
+    args.stakeWithFee = 10_000 ether;
+    args.initialReassuranceAmount = 1_000_000 * DAI_PRECISION;
+    args.minStakeToReport = 20_000 ether;
+    args.reportingPeriod = 7 days;
+    args.cooldownPeriod = 1 days;
+    args.claimPeriod = 7 days;
+    args.floor = 800;
+    args.ceiling = 3200;
+    args.reassuranceRate = 5000;
+    args.leverageFactor = 1;
 
     _cover.initialize(address(_dai), "DAI Token");
 
     _cover.updateCoverCreatorWhitelist(address(this), true);
-    _npm.mint(values[0]);
-    _npm.approve(address(_coverStake), values[0]);
+    _npm.mint(args.stakeWithFee);
+    _npm.approve(address(_coverStake), args.stakeWithFee);
 
-    _dai.mint(values[1]);
-    _dai.approve(address(_cover), values[1]);
+    _dai.mint(args.initialReassuranceAmount);
+    _dai.approve(address(_cover), args.initialReassuranceAmount);
 
-    _vault = Vault(_cover.addCover(_COVER_KEY, "ipfs://?", "POD", "POD", false, false, values));
+    _vault = Vault(_cover.addCover(args));
   }
 }

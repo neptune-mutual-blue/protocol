@@ -72,7 +72,7 @@ describe('Protocol Initialization Stories', () => {
 
     const initialReassuranceAmount = helper.ether(1000000, PRECISION)
     const stakeWithFee = helper.ether(10000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
@@ -88,9 +88,24 @@ describe('Protocol Initialization Stories', () => {
       reassuranceTokenBalance: (await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)).toString()
     }
 
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await contracts.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor: '1'
+    })
   })
 
   it('corretness rule: DAI should be correctly added to the vault', async () => {
@@ -125,6 +140,7 @@ describe('Protocol Initialization Stories', () => {
     const balance = await contracts.reassuranceToken.balanceOf(contracts.reassuranceContract.address)
 
     const expected = helper.add(previous.reassuranceTokenBalance, helper.ether(1000000, PRECISION))
+
     balance.toString().should.equal(expected.toString())
 
     previous.reassuranceTokenBalance = expected

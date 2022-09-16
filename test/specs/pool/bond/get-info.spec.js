@@ -40,16 +40,12 @@ describe('Bond Pool: Get Info', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      addresses: [
-        npmDai.address,
-        helper.randomAddress() // treasury
-      ],
-      values: [
-        helper.percentage(1), // 1% bond discount
-        helper.ether(100_000), // Maximum bond amount
-        (5 * MINUTES).toString(), // Bond period / vesting term
-        helper.ether(10_000_000) // NPM to top up
-      ]
+      lpToken: npmDai.address,
+      treasury: helper.randomAddress(),
+      bondDiscountRate: helper.percentage(1),
+      maxBondAmount: helper.ether(100_000),
+      vestingTerm: (5 * MINUTES).toString(),
+      npmToTopUpNow: helper.ether(10_000_000)
     }
   })
 
@@ -57,7 +53,7 @@ describe('Bond Pool: Get Info', () => {
     const [owner] = await ethers.getSigners()
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    const tx = await pool.setup(payload.addresses, payload.values)
+    const tx = await pool.setup(payload)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'BondPoolSetup')
@@ -71,69 +67,46 @@ describe('Bond Pool: Get Info', () => {
     }
 
     const info = await pool.getInfo(owner.address)
-    const [
-      [lpToken],
-      [marketPrice, discountRate, vestingTerm, maxBond,
-        totalNpmAllocated, totalNpmDistributed, npmAvailable, bondContribution,
-        claimable, unlockDate]
-    ] = info
 
-    lpToken.should.equal(payload.addresses[0])
-    marketPrice.should.be.gt('0')
-    discountRate.should.equal(payload.values[0])
-    maxBond.should.equal(payload.values[1])
-    vestingTerm.should.equal(payload.values[2])
-    totalNpmAllocated.should.equal(payload.values[3])
-    totalNpmDistributed.should.equal('0')
-    npmAvailable.should.equal(payload.values[3])
-    bondContribution.should.equal('0')
-    claimable.should.equal('0')
-    unlockDate.should.equal('0')
+    info.lpToken.should.equal(payload.lpToken)
+    info.marketPrice.should.be.gt('0')
+    info.discountRate.should.equal(payload.bondDiscountRate)
+    info.vestingTerm.should.equal(payload.vestingTerm)
+    info.maxBond.should.equal(payload.maxBondAmount)
+    info.totalNpmAllocated.should.equal(payload.npmToTopUpNow) // because nothing was added in this transaction
+    info.totalNpmDistributed.should.equal('0')
+    info.npmAvailable.should.equal(payload.npmToTopUpNow)
+    info.bondContribution.should.equal('0')
+    info.claimable.should.equal('0')
+    info.unlockDate.should.equal('0')
   })
 
   it('must allow updating the bond pool values without top up', async () => {
     const [owner] = await ethers.getSigners()
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    const cloned = JSON.parse(JSON.stringify(payload))
-
-    cloned.values = [helper.percentage(2), // 1% bond discount
-      helper.ether(500_000), // Maximum bond amount
-      (1 * MINUTES).toString(), // Bond period / vesting term
-      '0' // NPM to top up
-    ]
-
-    const tx = await pool.setup(cloned.addresses, cloned.values)
-    const { events } = await tx.wait()
-
-    const event = events.find(x => x.event === 'BondPoolSetup')
-
-    for (const i in event.args.addresses) {
-      event.args.addresses[i].should.equal(cloned.addresses[i])
+    const args = {
+      ...payload,
+      bondDiscountRate: helper.percentage(2),
+      maxBondAmount: helper.ether(500_000),
+      vestingTerm: (1 * MINUTES).toString(),
+      npmToTopUpNow: '0'
     }
 
-    for (const i in event.args.values) {
-      event.args.values[i].toString().should.equal(cloned.values[i])
-    }
+    await pool.setup(args)
 
     const info = await pool.getInfo(owner.address)
-    const [
-      [lpToken],
-      [marketPrice, discountRate, vestingTerm, maxBond,
-        totalNpmAllocated, totalNpmDistributed, npmAvailable, bondContribution,
-        claimable, unlockDate]
-    ] = info
 
-    lpToken.should.equal(cloned.addresses[0])
-    marketPrice.should.be.gt('0')
-    discountRate.should.equal(cloned.values[0])
-    maxBond.should.equal(cloned.values[1])
-    vestingTerm.should.equal(cloned.values[2])
-    totalNpmAllocated.should.equal(payload.values[3]) // because nothing was added in this transaction
-    totalNpmDistributed.should.equal('0')
-    npmAvailable.should.equal(payload.values[3])
-    bondContribution.should.equal('0')
-    claimable.should.equal('0')
-    unlockDate.should.equal('0')
+    info.lpToken.should.equal(args.lpToken)
+    info.marketPrice.should.be.gt('0')
+    info.discountRate.should.equal(args.bondDiscountRate)
+    info.vestingTerm.should.equal(args.vestingTerm)
+    info.maxBond.should.equal(args.maxBondAmount)
+    info.totalNpmAllocated.should.equal(payload.npmToTopUpNow) // because nothing was added in this transaction
+    info.totalNpmDistributed.should.equal('0')
+    info.npmAvailable.should.equal(payload.npmToTopUpNow)
+    info.bondContribution.should.equal('0')
+    info.claimable.should.equal('0')
+    info.unlockDate.should.equal('0')
   })
 })

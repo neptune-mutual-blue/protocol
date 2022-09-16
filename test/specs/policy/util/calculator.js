@@ -1,5 +1,5 @@
-const getCoverFee = (data, amount, duration, days, debug = false) => {
-  const truncate = (x, precision) => Math.trunc(x * Math.pow(10, precision)) / Math.pow(10, precision)
+const getCoverFee = (data, amount, duration, days, precision, debug = false) => {
+  const truncate = (x, p) => Math.trunc(x * Math.pow(10, p)) / Math.pow(10, p)
 
   if (!amount) {
     return
@@ -15,8 +15,11 @@ const getCoverFee = (data, amount, duration, days, debug = false) => {
   // solidity-like truncation
   data.utilizationRatio = truncate(((data.totalCommitment + amount) / data.totalAvailableLiquidity), 4)
 
-  debug && console.debug('s: %s. p: %s. u: %s', data.inVault, data.reassuranceFund, data.utilizationRatio)
-  debug && console.debug('c: %s, a: %s. t: %s', data.totalCommitment, amount, data.totalAvailableLiquidity)
+  {
+    const multiplier = 10 ** precision
+    debug && console.debug('[js] s: %s. p: %s. u: %s', data.inVault * multiplier, data.reassuranceFund * multiplier, data.utilizationRatio * 10_000)
+    debug && console.debug('[js] c: %s, a: %s. t: %s', data.totalCommitment * multiplier, amount * multiplier, data.totalAvailableLiquidity * multiplier)
+  }
 
   let rate = data.utilizationRatio > data.floor ? data.utilizationRatio : data.floor
 

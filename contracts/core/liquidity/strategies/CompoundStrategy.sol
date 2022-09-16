@@ -24,9 +24,8 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   bytes32 public constant NS_DEPOSITS = "deposits";
   bytes32 public constant NS_WITHDRAWALS = "withdrawals";
 
-  address public depositCertificate;
-  ICompoundERC20DelegatorLike public delegator;
-  mapping(uint256 => bool) public supportedChains;
+  address public immutable depositCertificate;
+  ICompoundERC20DelegatorLike public immutable delegator;
 
   constructor(
     IStore _s,
@@ -51,14 +50,10 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * Warning: this function does not validate the cover key supplied.
    *
    * @param coverKey Enter the cover key
-   * @param values[0] deposits Total amount deposited
-   * @param values[1] withdrawals Total amount withdrawn
    */
-  function getInfo(bytes32 coverKey) external view override returns (uint256[] memory values) {
-    values = new uint256[](2);
-
-    values[0] = s.getUintByKey(_getDepositsKey(coverKey));
-    values[1] = s.getUintByKey(_getWithdrawalsKey(coverKey));
+  function getInfo(bytes32 coverKey) external view override returns (LendingStrategyInfoType memory info) {
+    info.deposits = s.getUintByKey(_getDepositsKey(coverKey));
+    info.withdrawals = s.getUintByKey(_getWithdrawalsKey(coverKey));
   }
 
   function _getCertificateBalance() private view returns (uint256) {

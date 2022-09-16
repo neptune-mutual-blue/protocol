@@ -11,7 +11,6 @@ require('chai')
   .should()
 
 describe('Unpausing Protocol', () => {
-  const treasury = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {

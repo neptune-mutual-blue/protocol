@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 import "./IMember.sol";
+import "./IVault.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 
@@ -112,7 +113,7 @@ interface IVaultDelegate is IMember {
 
   function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view returns (uint256);
 
-  function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (uint256[] memory result);
+  function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (IVault.VaultInfoType memory);
 
   function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view returns (uint256);
 

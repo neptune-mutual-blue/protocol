@@ -17,7 +17,7 @@
   "tsImportSorter.configuration.hasSemicolon": false,
   "[javascript]": {
     "editor.formatOnSave": false,
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "standard.vscode-standard"
   },
   "[json]": {
     "editor.quickSuggestions": {

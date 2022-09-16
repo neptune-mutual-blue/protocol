@@ -5,7 +5,6 @@ const { ethers, network } = require('hardhat')
 const composer = require('../../util/composer')
 const { helper, key } = require('../../util')
 const { minutesToBlocks } = require('../../util/block-time')
-const poolKey = key.toBytes32('Crpool')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -36,67 +35,69 @@ describe('Staking Pool Stories', () => {
   it('correctly created a new pool: Clearpool Staking', async () => {
     const [owner] = await ethers.getSigners()
 
-    const arg = {
-      stakingTarget: helper.ether(100_000_000),
-      maxStake: helper.ether(100_000),
-      platformFee: helper.percentage(0.25),
-      rewardPerBlock: 342,
-      lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-      rewardTokenDeposit: helper.ether(30_000_000),
-      poolKey,
-      name: key.toBytes32('Clearpool Staking')
+    const args = {
+      key: key.toBytes32('CPOOL'),
+      name: 'Clearpool Staking',
+      poolType: '0',
+      stakingToken: contracts.npm.address,
+      uniStakingTokenDollarPair: contracts.npmUsdPair.address,
+      rewardToken: contracts.crpool.address,
+      uniRewardTokenDollarPair: contracts.crpoolUsdPair.address,
+      stakingTarget: helper.ether(4_000_000),
+      maxStake: helper.ether(10_000),
+      platformFee: helper.percentage(0.5),
+      rewardPerBlock: (12_345_678).toString(),
+      lockupPeriod: minutesToBlocks(31337, 5),
+      rewardTokenToDeposit: helper.ether(10_000_000)
     }
 
-    arg.addresses = [contracts.npm.address, contracts.npmUsdPair.address, contracts.crpool.address, contracts.crpoolUsdPair.address]
-    arg.addresses2 = [contracts.npm.address, contracts.npmUsdPair.address, contracts.hwt.address, contracts.hwtUsdPair.address]
-    arg.values = [arg.stakingTarget, arg.maxStake, arg.platformFee, arg.rewardPerBlock, arg.lockupPeriodInBlocks, arg.rewardTokenDeposit]
+    await contracts.crpool.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
+    await contracts.hwt.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
 
-    await contracts.crpool.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
-    await contracts.hwt.approve(contracts.stakingPoolContract.address, arg.rewardTokenDeposit)
+    await contracts.stakingPoolContract.addOrEditPool(args)
 
-    await contracts.stakingPoolContract.addOrEditPool(arg.poolKey, arg.name, 0, arg.addresses, arg.values)
-    await contracts.stakingPoolContract.addOrEditPool(key.toBytes32('HWT'), key.toBytes32('HWT Staking'), 0, arg.addresses2, arg.values)
+    await contracts.stakingPoolContract.addOrEditPool({
+      ...args,
+      key: key.toBytes32('HWT'),
+      name: key.toBytes32('HWT Staking'),
+      rewardToken: contracts.hwt.address,
+      uniRewardTokenDollarPair: contracts.hwtUsdPair.address
+    })
 
-    const info = await contracts.stakingPoolContract.getInfo(arg.poolKey, owner.address)
-    const [name, addresses, values] = info
-    const [totalStaked, target, maximumStake, stakeBalance, cumulativeDeposits, rewardPerBlock,
-      platformFee, lockupPeriod, rewardTokenBalance, accountStakeBalance, totalBlockSinceLastReward,
-      rewards, canWithdrawFromBlockHeight, lastDepositHeight, lastRewardHeight] = values
+    const info = await contracts.stakingPoolContract.getInfo(args.key, owner.address)
 
-    name.should.equal(arg.name)
-    addresses.should.deep.equal(arg.addresses)
-
-    totalStaked.should.equal('0')
-    target.should.equal(arg.stakingTarget)
-    maximumStake.should.equal(arg.maxStake)
-    stakeBalance.should.equal('0')
-    cumulativeDeposits.should.equal('0')
-    rewardPerBlock.should.equal(arg.rewardPerBlock)
-    platformFee.should.equal(arg.platformFee)
-    lockupPeriod.should.equal(arg.lockupPeriodInBlocks)
-    rewardTokenBalance.should.gte(arg.rewardTokenDeposit)
-    accountStakeBalance.should.equal('0')
-    totalBlockSinceLastReward.should.equal('0')
-    rewards.should.equal('0')
-    canWithdrawFromBlockHeight.should.equal('0')
-    lastDepositHeight.should.equal('0')
-    lastRewardHeight.should.equal('0')
+    info.name.should.equal(args.name)
+    info.totalStaked.should.equal('0')
+    info.target.should.equal(args.stakingTarget)
+    info.maximumStake.should.equal(args.maxStake)
+    info.stakeBalance.should.equal('0')
+    info.cumulativeDeposits.should.equal('0')
+    info.rewardPerBlock.should.equal(args.rewardPerBlock)
+    info.platformFee.should.equal(args.platformFee)
+    info.lockupPeriod.should.equal(args.lockupPeriod)
+    info.rewardTokenBalance.should.gte(args.rewardTokenToDeposit)
+    info.accountStakeBalance.should.equal('0')
+    info.totalBlockSinceLastReward.should.equal('0')
+    info.rewards.should.equal('0')
+    info.canWithdrawFromBlockHeight.should.equal('0')
+    info.lastDepositHeight.should.equal('0')
+    info.lastRewardHeight.should.equal('0')
   })
 
   it('admin staked some tokens', async () => {
     const arg = {
-      poolKey,
-      amount: helper.ether(99_999)
+      key: key.toBytes32('CPOOL'),
+      amount: helper.ether(100)
     }
 
     await contracts.npm.approve(contracts.stakingPoolContract.address, arg.amount)
-    await contracts.stakingPoolContract.deposit(arg.poolKey, arg.amount)
+    await contracts.stakingPoolContract.deposit(arg.key, arg.amount)
   })
 
   it('the admin received some rewards', async () => {
     const [owner] = await ethers.getSigners()
     await mineBlocks(10)
-    const rewards = await contracts.stakingPoolContract.calculateRewards(poolKey, owner.address)
+    const rewards = await contracts.stakingPoolContract.calculateRewards(key.toBytes32('CPOOL'), owner.address)
 
     rewards.should.gt('0')
   })

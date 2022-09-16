@@ -3,22 +3,42 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "onBehalfOf",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "coverKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "productKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coverDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountToCover",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "referralCode",
+            "type": "bytes32"
+          }
+        ],
         "indexed": false,
-        "internalType": "bytes32",
-        "name": "coverKey",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "productKey",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
+        "internalType": "struct IPolicy.PurchaseCoverArgs",
+        "name": "args",
+        "type": "tuple"
       },
       {
         "indexed": true,
@@ -41,20 +61,8 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountToCover",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "expiresOn",
         "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "referralCode",
-        "type": "bytes32"
       },
       {
         "indexed": false,
@@ -135,34 +143,41 @@
     "name": "getCoverFeeInfo",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "utilizationRatio",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalAvailableLiquidity",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "floor",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "ceiling",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rate",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "utilizationRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalAvailableLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "floor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ceiling",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rate",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IPolicy.CoverFeeInfoType",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -184,9 +199,46 @@
     "name": "getCoverPoolSummary",
     "outputs": [
       {
-        "internalType": "uint256[]",
-        "name": "_values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalAmountInPool",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCommitment",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reassuranceAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reassurancePoolWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "productCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leverage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "productCapitalEfficiency",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IPolicy.CoverPoolSummaryType",
+        "name": "summary",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -295,34 +347,41 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "onBehalfOf",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "coverKey",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "productKey",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "coverDuration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountToCover",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "referralCode",
-        "type": "bytes32"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "onBehalfOf",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "coverKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "productKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coverDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountToCover",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "referralCode",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IPolicy.PurchaseCoverArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "purchaseCover",

@@ -6,6 +6,11 @@ import "./IMember.sol";
 pragma solidity ^0.8.0;
 
 interface ILendingStrategy is IMember {
+  struct LendingStrategyInfoType {
+    uint256 deposits;
+    uint256 withdrawals;
+  }
+
   event LogDeposit(bytes32 indexed name, uint256 counter, uint256 amount, uint256 certificateReceived, uint256 depositTotal, uint256 withdrawalTotal);
   event Deposited(bytes32 indexed key, address indexed onBehalfOf, uint256 stablecoinDeposited, uint256 certificateTokenIssued);
   event LogWithdrawal(bytes32 indexed name, uint256 counter, uint256 stablecoinWithdrawn, uint256 certificateRedeemed, uint256 depositTotal, uint256 withdrawalTotal);
@@ -23,10 +28,8 @@ interface ILendingStrategy is IMember {
   /**
    * @dev Gets info of this strategy by cover key
    * @param coverKey Enter the cover key
-   * @param values[0] deposits Total amount deposited
-   * @param values[1] withdrawals Total amount withdrawn
    */
-  function getInfo(bytes32 coverKey) external view returns (uint256[] memory values);
+  function getInfo(bytes32 coverKey) external view returns (LendingStrategyInfoType memory info);
 
   function deposit(bytes32 coverKey, uint256 amount) external returns (uint256 certificateReceived);
 
