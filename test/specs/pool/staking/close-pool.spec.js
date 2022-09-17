@@ -34,6 +34,7 @@ describe('Close Pool', () => {
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address)
 
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, deployed.protocol.address)
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STAKING_POOL, pool.address)
@@ -42,24 +43,20 @@ describe('Close Pool', () => {
       key: key.toBytes32('NPM Staking Pool'),
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
-      addresses: [
-        deployed.npm.address, // Staking Token
-        npmDai.address, // uniStakingTokenDollarPair
-        sabre.address, // rewardToken
-        sabreDai.address // uniRewardTokenDollarPair
-      ],
-      values: [
-        helper.ether(4_000_000), // 4M NPM target
-        helper.ether(10_000), // Max 10_000 per transaction
-        helper.percentage(0.5), // Platform fee
-        (12_345_678).toString(), // Reward per block
-        minutesToBlocks(31337, 5), // 5 minutes lockup period
-        helper.ether(10_000_000) // Deposit 10M sabre tokens
-      ]
+      stakingToken: deployed.npm.address,
+      uniStakingTokenDollarPair: npmDai.address,
+      rewardToken: sabre.address,
+      uniRewardTokenDollarPair: sabreDai.address,
+      stakingTarget: helper.ether(4_000_000),
+      maxStake: helper.ether(10_000),
+      platformFee: helper.percentage(0.5),
+      rewardPerBlock: (12_345_678).toString(),
+      lockupPeriod: minutesToBlocks(31337, 5),
+      rewardTokenToDeposit: helper.ether(10_000_000)
     }
 
     await sabre.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
+    await pool.addOrEditPool(payload)
   })
 
   it('must correctly close a pool', async () => {
@@ -74,27 +71,21 @@ describe('Close Pool', () => {
 
     const info = await pool.getInfo(payload.key, owner.address)
 
-    const [
-      name,
-      [stakingToken, stakingTokenStablecoinPair, rewardToken, rewardTokenStablecoinPair],
-      [totalStaked, target, maximumStake, stakeBalance, cumulativeDeposits, rewardPerBlock, platformFee, lockupPeriod, rewardTokenBalance, accountStakeBalance]
-    ] = info
-
-    name.should.equal('')
-    stakingToken.should.equal(helper.zerox)
-    stakingTokenStablecoinPair.should.equal(helper.zerox)
-    rewardToken.should.equal(helper.zerox)
-    rewardTokenStablecoinPair.should.equal(helper.zerox)
-    totalStaked.should.equal('0')
-    target.should.equal('0')
-    maximumStake.should.equal('0')
-    stakeBalance.should.equal('0')
-    cumulativeDeposits.should.equal('0')
-    rewardPerBlock.should.equal('0')
-    platformFee.should.equal('0')
-    lockupPeriod.should.equal('0')
-    rewardTokenBalance.should.equal('0')
-    accountStakeBalance.should.equal('0')
+    info.name.should.equal('')
+    info.stakingToken.should.equal(helper.zerox)
+    info.stakingTokenStablecoinPair.should.equal(helper.zerox)
+    info.rewardToken.should.equal(helper.zerox)
+    info.rewardTokenStablecoinPair.should.equal(helper.zerox)
+    info.totalStaked.should.equal('0')
+    info.target.should.equal('0')
+    info.maximumStake.should.equal('0')
+    info.stakeBalance.should.equal('0')
+    info.cumulativeDeposits.should.equal('0')
+    info.rewardPerBlock.should.equal('0')
+    info.platformFee.should.equal('0')
+    info.lockupPeriod.should.equal('0')
+    info.rewardTokenBalance.should.equal('0')
+    info.accountStakeBalance.should.equal('0')
   })
 
   it('must reject if the protocol is paused', async () => {

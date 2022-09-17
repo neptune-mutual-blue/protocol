@@ -1,17 +1,12 @@
 const { approve } = require('../contract-helper/erc20')
 
 const addPodStaking = async (intermediate, cache, info, contracts, provider) => {
-  const { key, name, poolType } = info
-  const { stakingToken, uniStakingTokenDollarPair, rewardToken, uniRewardTokenDollarPair } = info
-  const { stakingTarget, maxStake, platformFee, rewardPerBlock, lockupPeriodInBlocks, rewardTokenDeposit } = info
+  const { rewardToken } = info
 
   const { stakingPoolContract } = contracts
   await approve(rewardToken, stakingPoolContract.address, provider)
 
-  const addresses = [stakingToken, uniStakingTokenDollarPair, rewardToken, uniRewardTokenDollarPair]
-  const values = [stakingTarget, maxStake, platformFee, rewardPerBlock.toString(), lockupPeriodInBlocks, rewardTokenDeposit]
-
-  await intermediate(cache, stakingPoolContract, 'addOrEditPool', key, name, poolType, addresses, values)
+  await intermediate(cache, stakingPoolContract, 'addOrEditPool', info)
 }
 
 const addPools = async (intermediate, cache, pools, contracts, provider) => {

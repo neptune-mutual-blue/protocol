@@ -21,68 +21,38 @@ library StakingPoolLibV1 {
    * @param s Specify the store instance
    * @param key Provide the staking pool key to fetch info for
    * @param you Specify the address to customize the info for
-   * @param name Returns the name of the staking pool
-   * @param addresses[0] stakingToken --> Returns the address of the token which is staked in this pool
-   * @param addresses[1] stakingTokenStablecoinPair --> Returns the pair address of the staking token and stablecoin
-   * @param addresses[2] rewardToken --> Returns the address of the token which is rewarded in this pool
-   * @param addresses[3] rewardTokenStablecoinPair --> Returns the pair address of the reward token and stablecoin
-   * @param values[0] totalStaked --> Returns the total units of staked tokens
-   * @param values[1] target --> Returns the target amount to stake (as staking token unit)
-   * @param values[2] maximumStake --> Returns the maximum amount of staking token units that can be added at a time
-   * @param values[3] stakeBalance --> Returns the amount of staking token currently locked in the pool
-   * @param values[4] cumulativeDeposits --> Returns the total amount tokens which were deposited in this pool
-   * @param values[5] rewardPerBlock --> Returns the unit of reward tokens awarded on each block for each unit of staking token
-   * @param values[6] platformFee --> Returns the % rate (multipled by ProtoUtilV1.MULTIPLIER) charged by protocol on rewards
-   * @param values[7] lockupPeriod --> Returns the period until when a stake can't be withdrawn
-   * @param values[8] rewardTokenBalance --> Returns the balance of the reward tokens still left in the pool
-   * @param values[9] accountStakeBalance --> Returns your stake amount
-   * @param values[10] totalBlockSinceLastReward --> Returns the number of blocks since your last reward
-   * @param values[11] rewards --> The amount of reward tokens you have accumulated till this block
-   * @param values[12] canWithdrawFromBlockHeight --> The block height after which you are allowed to withdraw your stake
-   * @param values[13] lastDepositHeight --> Returns the block number of your last deposit
-   * @param values[14] lastRewardHeight --> Returns the block number of your last reward
+   *
    */
   function getInfoInternal(
     IStore s,
     bytes32 key,
     address you
-  )
-    external
-    view
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    )
-  {
-    addresses = new address[](4);
-    values = new uint256[](15);
-
+  ) external view returns (IStakingPools.StakingPoolInfoType memory info) {
     bool valid = s.checkIfStakingPoolExists(key);
 
     if (valid) {
-      name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
+      info.name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-      addresses[0] = s.getStakingTokenAddressInternal(key);
-      addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
-      addresses[2] = s.getRewardTokenAddressInternal(key);
-      addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+      info.stakingToken = s.getStakingTokenAddressInternal(key);
+      info.stakingTokenStablecoinPair = s.getStakingTokenStablecoinPairAddressInternal(key);
+      info.rewardToken = s.getRewardTokenAddressInternal(key);
+      info.rewardTokenStablecoinPair = s.getRewardTokenStablecoinPairAddressInternal(key);
 
-      values[0] = s.getTotalStaked(key);
-      values[1] = s.getTarget(key);
-      values[2] = s.getMaximumStakeInternal(key);
-      values[3] = getPoolStakeBalanceInternal(s, key);
-      values[4] = getPoolCumulativeDeposits(s, key);
-      values[5] = s.getRewardPerBlock(key);
-      values[6] = s.getRewardPlatformFee(key);
-      values[7] = s.getLockupPeriodInBlocks(key);
-      values[8] = s.getRewardTokenBalance(key);
-      values[9] = getAccountStakingBalanceInternal(s, key, you);
-      values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
-      values[11] = calculateRewardsInternal(s, key, you);
-      values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
-      values[13] = getLastDepositHeight(s, key, you);
-      values[14] = getLastRewardHeight(s, key, you);
+      info.totalStaked = s.getTotalStaked(key);
+      info.target = s.getTarget(key);
+      info.maximumStake = s.getMaximumStakeInternal(key);
+      info.stakeBalance = getPoolStakeBalanceInternal(s, key);
+      info.cumulativeDeposits = getPoolCumulativeDeposits(s, key);
+      info.rewardPerBlock = s.getRewardPerBlock(key);
+      info.platformFee = s.getRewardPlatformFee(key);
+      info.lockupPeriod = s.getLockupPeriodInBlocks(key);
+      info.rewardTokenBalance = s.getRewardTokenBalance(key);
+      info.accountStakeBalance = getAccountStakingBalanceInternal(s, key, you);
+      info.totalBlockSinceLastReward = getTotalBlocksSinceLastRewardInternal(s, key, you);
+      info.rewards = calculateRewardsInternal(s, key, you);
+      info.canWithdrawFromBlockHeight = canWithdrawFromBlockHeightInternal(s, key, you);
+      info.lastDepositHeight = getLastDepositHeight(s, key, you);
+      info.lastRewardHeight = getLastRewardHeight(s, key, you);
     }
   }
 

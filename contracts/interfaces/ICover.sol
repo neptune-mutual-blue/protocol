@@ -4,10 +4,46 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
+  struct AddCoverArgs {
+    bytes32 coverKey;
+    string info;
+    string tokenName;
+    string tokenSymbol;
+    bool supportsProducts;
+    bool requiresWhitelist;
+    uint256 stakeWithFee;
+    uint256 initialReassuranceAmount;
+    uint256 minStakeToReport;
+    uint256 reportingPeriod;
+    uint256 cooldownPeriod;
+    uint256 claimPeriod;
+    uint256 floor;
+    uint256 ceiling;
+    uint256 reassuranceRate;
+    uint256 leverageFactor;
+  }
+
+  struct AddProductArgs {
+    bytes32 coverKey;
+    bytes32 productKey;
+    string info;
+    bool requiresWhitelist;
+    uint256 productStatus;
+    uint256 efficiency;
+  }
+
+  struct UpdateProductArgs {
+    bytes32 coverKey;
+    bytes32 productKey;
+    string info;
+    uint256 productStatus;
+    uint256 efficiency;
+  }
+
   event CoverCreated(bytes32 indexed coverKey, string info, string tokenName, string tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
-  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, string info, bool requiresWhitelist, uint256[] values);
+  event ProductCreated(bytes32 indexed coverKey, bytes32 productKey, string info);
   event CoverUpdated(bytes32 indexed coverKey, string info);
-  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, string info, uint256[] values);
+  event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, string info);
   event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool status, string reason);
   event VaultDeployed(bytes32 indexed coverKey, address vault);
 
@@ -43,42 +79,12 @@ interface ICover is IMember {
    * Read the documentation to learn more about the fees: <br />
    * https://docs.neptunemutual.com/covers/contract-creators
    *
-   * @param coverKey Enter a unique key for this cover
-   * @param info IPFS info of the cover contract
-   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
-   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[3] reportingPeriod The period during when reporting happens.
-   * reassurance tokens you'd like to add to this pool.
-   * @param values[4] cooldownperiod Enter the cooldown period for governance.
-   * @param values[5] claimPeriod Enter the claim period.
-   * @param values[6] floor Enter the policy floor rate.
-   * @param values[7] ceiling Enter the policy ceiling rate.
    */
-  function addCover(
-    bytes32 coverKey,
-    string calldata info,
-    string calldata tokenName,
-    string calldata tokenSymbol,
-    bool supportsProducts,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external returns (address);
+  function addCover(AddCoverArgs calldata args) external returns (address);
 
-  function addProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    string calldata info,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external;
+  function addProduct(AddProductArgs calldata args) external;
 
-  function updateProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    string calldata info,
-    uint256[] calldata values
-  ) external;
+  function updateProduct(UpdateProductArgs calldata args) external;
 
   /**
    * @dev Updates the cover contract.

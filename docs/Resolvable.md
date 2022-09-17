@@ -16,8 +16,8 @@ Enables governance agents to resolve a contract undergoing reporting.
 - [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
 - [_resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
-- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
-- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownPeriod)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownPeriod)
 - [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve

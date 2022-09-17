@@ -37,6 +37,7 @@ describe('Zero Rewards: when tokens run out of supply', () => {
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address)
 
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, deployed.protocol.address)
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STAKING_POOL, pool.address)
@@ -45,24 +46,20 @@ describe('Zero Rewards: when tokens run out of supply', () => {
       key: key.toBytes32('NPM Staking Pool'),
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
-      addresses: [
-        deployed.npm.address, // Staking Token
-        npmDai.address, // uniStakingTokenDollarPair
-        sabre.address, // rewardToken
-        sabreDai.address // uniRewardTokenDollarPair
-      ],
-      values: [
-        helper.ether(4_000_000), // 4M NPM target
-        helper.ether(10_000), // Max 10_000 per transaction
-        helper.percentage(0), // Platform fee
-        helper.ether(1), // Reward per block
-        minutesToBlocks(31337, 1), // 5 minutes lockup period
-        helper.ether(1) // Deposit 10M sabre tokens
-      ]
+      stakingToken: deployed.npm.address,
+      uniStakingTokenDollarPair: npmDai.address,
+      rewardToken: sabre.address,
+      uniRewardTokenDollarPair: sabreDai.address,
+      stakingTarget: helper.ether(4_000_000),
+      maxStake: helper.ether(10_000),
+      platformFee: helper.percentage(0),
+      rewardPerBlock: helper.ether(1),
+      lockupPeriod: minutesToBlocks(31337, 5),
+      rewardTokenToDeposit: helper.ether(1)
     }
 
     await sabre.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
+    await pool.addOrEditPool(payload)
 
     await deployed.npm.transfer(bob.address, helper.ether(1_000_000))
     const amount = helper.ether(10_000)
@@ -111,6 +108,7 @@ describe('Zero Rewards: if the protocol is misconfigured', () => {
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address)
 
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, deployed.protocol.address)
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STAKING_POOL, pool.address)
@@ -119,24 +117,20 @@ describe('Zero Rewards: if the protocol is misconfigured', () => {
       key: key.toBytes32('NPM Staking Pool'),
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
-      addresses: [
-        deployed.npm.address, // Staking Token
-        npmDai.address, // uniStakingTokenDollarPair
-        sabre.address, // rewardToken
-        sabreDai.address // uniRewardTokenDollarPair
-      ],
-      values: [
-        helper.ether(4_000_000), // 4M NPM target
-        helper.ether(10_000), // Max 10_000 per transaction
-        helper.percentage(100), // Platform fee
-        helper.ether(1), // Reward per block
-        minutesToBlocks(31337, 1), // 5 minutes lockup period
-        helper.ether(1) // Deposit 10M sabre tokens
-      ]
+      stakingToken: deployed.npm.address,
+      uniStakingTokenDollarPair: npmDai.address,
+      rewardToken: sabre.address,
+      uniRewardTokenDollarPair: sabreDai.address,
+      stakingTarget: helper.ether(4_000_000),
+      maxStake: helper.ether(10_000),
+      platformFee: helper.percentage(0.5),
+      rewardPerBlock: (12_345_678).toString(),
+      lockupPeriod: minutesToBlocks(31337, 5),
+      rewardTokenToDeposit: helper.ether(10_000_000)
     }
 
     await sabre.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
+    await pool.addOrEditPool(payload)
 
     await deployed.npm.transfer(bob.address, helper.ether(1_000_000))
     const amount = helper.ether(10_000)

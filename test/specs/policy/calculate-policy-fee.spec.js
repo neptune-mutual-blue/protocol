@@ -11,6 +11,7 @@ const DAYS = 86400
 const MULTIPLIER = 10_000
 const PRECISION = helper.STABLECOIN_DECIMALS
 const INCIDENT_SUPPORT_POOL_CAP_RATIO = MULTIPLIER
+const DEBUG = false
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -41,7 +42,7 @@ const payload = {
   INCIDENT_SUPPORT_POOL_CAP_RATIO
 }
 
-const getFee = (amount, duration, days) => getCoverFee(data, amount, duration, days, false)
+const getFee = (amount, duration, days) => getCoverFee(data, amount, duration, days, PRECISION, DEBUG)
 
 const getDaysCovered = (startTimestamp, duration) => {
   const monthToAdd = moment.unix(startTimestamp).utc(false).date() >= 25 ? duration : duration - 1
@@ -69,14 +70,13 @@ describe('Policy: getCoverFeeInfo', () => {
 
     coverKey = key.toBytes32('foo-bar')
     const stakeWithFee = helper.ether(10_000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * DAYS
     const cooldownPeriod = 1 * DAYS
     const claimPeriod = 7 * DAYS
-    const leverage = '1'
+    const leverageFactor = '1'
 
     const requiresWhitelist = false
-    const values = [stakeWithFee, payload.reassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, payload.floor, payload.ceiling, payload.reassuranceRate, leverage]
 
     const info = key.toBytes32('info')
 
@@ -85,7 +85,24 @@ describe('Policy: getCoverFeeInfo', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, payload.reassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist,
+      stakeWithFee,
+      initialReassuranceAmount: payload.reassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor: payload.floor,
+      ceiling: payload.ceiling,
+      reassuranceRate: payload.reassuranceRate,
+      leverageFactor
+    })
 
     deployed.vault = await composer.vault.getVault({
       store: deployed.store,
@@ -100,8 +117,8 @@ describe('Policy: getCoverFeeInfo', () => {
     }, coverKey)
 
     await deployed.dai.approve(deployed.vault.address, payload.inVault)
-    await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(deployed.vault.address, minStakeToReport)
+    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), minStakeToReport, key.toBytes32(''))
     await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), 0, key.toBytes32(''))
 
     const coverageLag = await deployed.policyAdminContract.getCoverageLag(coverKey)
@@ -117,10 +134,13 @@ describe('Policy: getCoverFeeInfo', () => {
         const days = getDaysCovered(startTimestamp, duration)
         const expected = helper.formatCurrency(getFee(amount, duration, days), 4).trim()
 
-        console.info(`Expected ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s). Days: ${days}`)
         const [fees] = await deployed.policy.getCoverFeeInfo(coverKey, helper.emptyBytes32, duration.toString(), helper.ether(amount, PRECISION))
 
+        console.info(`Expected ${expected} to cover ${helper.formatCurrency(amount, 0)} for ${duration} month(s). Days: ${days}`)
+
         expected.should.equal(helper.formatCurrency(helper.weiToEther(fees, PRECISION), 4))
+
+        DEBUG && console.log('-'.repeat(128))
       }
     }
   })

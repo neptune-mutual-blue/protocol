@@ -11,7 +11,6 @@ require('chai')
   .should()
 
 describe('Adding a New Protocol Member', () => {
-  const treasury = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {

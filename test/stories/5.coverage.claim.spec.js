@@ -48,7 +48,7 @@ describe('Coverage Claim Stories', function () {
     const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const stakeWithFee = helper.ether(10_000)
-    const minReportingStake = helper.ether(250)
+    const minStakeToReport = helper.ether(250)
     const reportingPeriod = 7 * constants.DAYS
     const cooldownPeriod = 1 * constants.DAYS
     const claimPeriod = 7 * constants.DAYS
@@ -66,17 +66,31 @@ describe('Coverage Claim Stories', function () {
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, '1']
-
-    await contracts.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await contracts.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor: '1'
+    })
 
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await contracts.npm.approve(vault.address, minStakeToReport)
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
     // Create Approvals
     await contracts.dai.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
@@ -94,9 +108,9 @@ describe('Coverage Claim Stories', function () {
       referralCode: key.toBytes32('')
     }
 
-      ; (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken.should.equal(helper.zerox)
+    ; (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken.should.equal(helper.zerox)
 
-    await contracts.policy.connect(attacker).purchaseCover(attacker)
+    await contracts.policy.connect(attacker).purchaseCover(args)
 
     let at = (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken
     constants.cxTokens.attacker = await cxToken.atAddress(at, contracts.libs)

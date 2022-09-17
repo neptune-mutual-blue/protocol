@@ -31,8 +31,8 @@ module.exports = {
   reportingPeriod: 5 * MINUTES,
   cooldownPeriod: 5 * MINUTES,
   claimPeriod: 5 * MINUTES,
-  minReportingStake: ether(2000),
-  stakeWithFees: ether(50_000),
+  minStakeToReport: ether(2000),
+  stakeWithFee: ether(50_000),
   reassurance: ether(50_000, PRECISION),
   reassuranceRate: percentage(25)
 }

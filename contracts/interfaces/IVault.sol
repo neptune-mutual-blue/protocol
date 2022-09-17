@@ -5,6 +5,17 @@ import "./IMember.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 interface IVault is IMember, IERC20 {
+  struct VaultInfoType {
+    uint256 totalPods;
+    uint256 balance;
+    uint256 extendedBalance;
+    uint256 totalReassurance;
+    uint256 myPodBalance;
+    uint256 myShare;
+    uint256 withdrawalOpen;
+    uint256 withdrawalClose;
+  }
+
   event GovernanceTransfer(address indexed to, uint256 amount);
   event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
   event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount, uint256 income, uint256 loss);
@@ -92,7 +103,7 @@ interface IVault is IMember, IERC20 {
 
   function calculateLiquidity(uint256 podsToBurn) external view returns (uint256);
 
-  function getInfo(address forAccount) external view returns (uint256[] memory result);
+  function getInfo(address forAccount) external view returns (VaultInfoType memory info);
 
   /**
    * @dev Returns the stablecoin balance of this vault

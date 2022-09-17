@@ -322,17 +322,14 @@ const deployDependencies = async () => {
   const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
   const initialLiquidity = helper.ether(4_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const minReportingStake = helper.ether(250)
+  const minStakeToReport = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS
   const claimPeriod = 7 * DAYS
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
-  const leverage = '1'
-
-  const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
+  const leverageFactor = '1'
 
   const info = key.toBytes32('info')
 
@@ -341,7 +338,24 @@ const deployDependencies = async () => {
   await npm.approve(stakingContract.address, stakeWithFee)
   await dai.approve(cover.address, initialReassuranceAmount)
 
-  await cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+  await cover.addCover({
+    coverKey,
+    info,
+    tokenName: 'POD',
+    tokenSymbol: 'POD',
+    supportsProducts: false,
+    requiresWhitelist: false,
+    stakeWithFee,
+    initialReassuranceAmount,
+    minStakeToReport,
+    reportingPeriod,
+    cooldownPeriod,
+    claimPeriod,
+    floor,
+    ceiling,
+    reassuranceRate,
+    leverageFactor
+  })
 
   const vault = await composer.vault.getVault({
     store: store,
@@ -356,8 +370,8 @@ const deployDependencies = async () => {
   }, coverKey)
 
   await dai.approve(vault.address, initialLiquidity)
-  await npm.approve(vault.address, minReportingStake)
-  await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+  await npm.approve(vault.address, minStakeToReport)
+  await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
   return {
     npm,

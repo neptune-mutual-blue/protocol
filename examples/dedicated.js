@@ -34,12 +34,12 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(3400),
+    minStakeToReport: ether(3400),
     resolutionSources: [
       'https://twitter.com/animatedbrands',
       'https://twitter.com/neptunemutual'
     ],
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(10_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -73,7 +73,7 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(5000),
+    minStakeToReport: ether(5000),
     resolutionSources: [
       'https://twitter.com/BB8Exchange',
       'https://twitter.com/neptunemutual'
@@ -88,8 +88,8 @@ const covers = [
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_566_764_500,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(15_000_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(15_000_000)
         },
         31337: {
           rewardToken: { symbol: 'BEC' },
@@ -97,8 +97,8 @@ const covers = [
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_566_764_500,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(30_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(30_000)
         },
         80001: {
           rewardToken: { symbol: 'BEC' },
@@ -106,12 +106,12 @@ const covers = [
           stakingTarget: ether(400_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_566_764_500,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 60),
-          rewardTokenDeposit: ether(18_000_000)
+          lockupPeriod: minutesToBlocks(80001, 60),
+          rewardTokenToDeposit: ether(18_000_000)
         }
       }
     },
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -148,7 +148,7 @@ const covers = [
     reportingPeriod: 5 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 5 * MINUTES,
-    minReportingStake: ether(2000),
+    minStakeToReport: ether(2000),
     resolutionSources: [
       'https://twitter.com/CrstalpoolFin',
       'https://crstalpool.medium.com',
@@ -164,8 +164,8 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: 3_300_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(27_500_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(27_500_000)
         },
         31337: {
           rewardToken: { symbol: 'CRPOOL' },
@@ -173,8 +173,8 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: 3_300_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(200_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(200_000)
         },
         80001: {
           rewardToken: { symbol: 'CRPOOL' },
@@ -182,12 +182,12 @@ const covers = [
           stakingTarget: ether(10_000_000),
           maxStake: ether(90_000),
           rewardPerBlock: 3_300_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 150),
-          rewardTokenDeposit: ether(27_500_000)
+          lockupPeriod: minutesToBlocks(80001, 150),
+          rewardTokenToDeposit: ether(27_500_000)
         }
       }
     },
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(50_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -219,12 +219,12 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(5000),
+    minStakeToReport: ether(5000),
     resolutionSources: [
       'https://otc.hicifbank.com',
       'https://twitter.com/neptunemutual'
     ],
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -263,7 +263,7 @@ const covers = [
     reportingPeriod: 10 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 10 * MINUTES,
-    minReportingStake: ether(35_000),
+    minStakeToReport: ether(35_000),
     resolutionSources: [
       'https://twitter.com/HuobiWanGlobal',
       'https://huobiwanglobal.medium.com',
@@ -279,8 +279,8 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: 2_534_320_000,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(15_000_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(15_000_000)
         },
         31337: {
           rewardToken: { symbol: 'HWT' },
@@ -288,8 +288,8 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: 2_534_320_000,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(25_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(25_000)
         },
         80001: {
           rewardToken: { symbol: 'HWT' },
@@ -297,12 +297,12 @@ const covers = [
           stakingTarget: ether(1_000_000),
           maxStake: ether(25_000),
           rewardPerBlock: 2_534_320_000,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 360),
-          rewardTokenDeposit: ether(15_000_000)
+          lockupPeriod: minutesToBlocks(80001, 360),
+          rewardTokenToDeposit: ether(15_000_000)
         }
       }
     },
-    stakeWithFees: ether(20_000),
+    stakeWithFee: ether(20_000),
     reassurance: ether(10_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -340,7 +340,7 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(10_000),
+    minStakeToReport: ether(10_000),
     resolutionSources: [
       'https://twitter.com/ob1ex',
       'https://medium.com/ob1ex-blog',
@@ -356,8 +356,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(35_000_000)
         },
         31337: {
           rewardToken: { symbol: 'OBK' },
@@ -365,8 +365,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(30_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(30_000)
         },
         80001: {
           rewardToken: { symbol: 'OBK' },
@@ -374,12 +374,12 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 4_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 120),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(80001, 120),
+          rewardTokenToDeposit: ether(35_000_000)
         }
       }
     },
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(30_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -410,12 +410,12 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(5000),
+    minStakeToReport: ether(5000),
     resolutionSources: [
       'https://www.qanilia-capital.com',
       'https://twitter.com/neptunemutual'
     ],
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -448,7 +448,7 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(7500),
+    minStakeToReport: ether(7500),
     resolutionSources: [
       'https://twitter.com/SabreOracles',
       'https://twitter.com/neptunemutual'
@@ -463,8 +463,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 2_948_440_000,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(35_000_000)
         },
         31337: {
           rewardToken: { symbol: 'SABRE' },
@@ -472,8 +472,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 2_948_440_000,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(30_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(30_000)
         },
         80001: {
           rewardToken: { symbol: 'SABRE' },
@@ -481,12 +481,12 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 2_948_440_000,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 180),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(80001, 180),
+          rewardTokenToDeposit: ether(35_000_000)
         }
       }
     },
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(150_000, PRECISION),
     reassuranceRate: percentage(25)
   },
@@ -520,7 +520,7 @@ const covers = [
     reportingPeriod: 30 * MINUTES,
     cooldownPeriod: 5 * MINUTES,
     claimPeriod: 30 * MINUTES,
-    minReportingStake: ether(5000),
+    minStakeToReport: ether(5000),
     resolutionSources: [
       'https://twitter.com/x2d2exchange',
       'https://twitter.com/neptunemutual'
@@ -535,8 +535,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 6_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(3, 5),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(3, 5),
+          rewardTokenToDeposit: ether(35_000_000)
         },
         31337: {
           rewardToken: { symbol: 'XD' },
@@ -544,8 +544,8 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 6_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(31337, 5),
-          rewardTokenDeposit: ether(30_000)
+          lockupPeriod: minutesToBlocks(31337, 5),
+          rewardTokenToDeposit: ether(30_000)
         },
         80001: {
           rewardToken: { symbol: 'XD' },
@@ -553,12 +553,12 @@ const covers = [
           stakingTarget: ether(800_000),
           maxStake: ether(20_000),
           rewardPerBlock: 6_400_000_000,
-          lockupPeriodInBlocks: minutesToBlocks(80001, 60),
-          rewardTokenDeposit: ether(35_000_000)
+          lockupPeriod: minutesToBlocks(80001, 60),
+          rewardTokenToDeposit: ether(35_000_000)
         }
       }
     },
-    stakeWithFees: ether(50_000),
+    stakeWithFee: ether(50_000),
     reassurance: ether(20_000, PRECISION),
     reassuranceRate: percentage(25)
   }

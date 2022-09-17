@@ -64,48 +64,27 @@ library CoverLibV1 {
    * https://docs.neptunemutual.com/covers/contract-creators
    *
    * @param s Provide store instance
-   * @param coverKey Enter a unique key for this cover
-   * @param supportsProducts Indicates that this cover supports product(s)
-   * @param info IPFS info of the cover contract
-   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
-   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
-   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[3] reportingPeriod The period during when reporting happens.
-   * reassurance tokens you'd like to add to this pool.
-   * @param values[4] cooldownperiod Enter the cooldown period for governance.
-   * @param values[5] claimPeriod Enter the claim period.
-   * @param values[6] floor Enter the policy floor rate.
-   * @param values[7] ceiling Enter the policy ceiling rate.
-   * @param values[8] reassuranceRate Enter the reassurance rate.
    *
    */
-  function addCoverInternal(
-    IStore s,
-    bytes32 coverKey,
-    bool supportsProducts,
-    string calldata info,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external {
+  function addCoverInternal(IStore s, ICover.AddCoverArgs calldata args) external {
     // Get the fee info required to create this cover
-    (uint256 fee, ) = _getFee(s, coverKey, values[0]);
+    (uint256 fee, ) = _getFee(s, args.coverKey, args.stakeWithFee);
 
     // Set the basic cover info
-    _addCover(s, coverKey, supportsProducts, info, requiresWhitelist, values, fee);
+    _addCover(s, args, fee);
 
     // Stake the supplied NPM tokens and burn the fees
-    s.getStakingContract().increaseStake(coverKey, msg.sender, values[0], fee);
+    s.getStakingContract().increaseStake(args.coverKey, msg.sender, args.stakeWithFee, fee);
 
     // Add cover reassurance
-    if (values[1] > 0) {
+    if (args.initialReassuranceAmount > 0) {
       IERC20 stablecoin = IERC20(s.getStablecoin());
       ICoverReassurance reassurance = s.getReassuranceContract();
 
-      stablecoin.ensureTransferFrom(msg.sender, address(this), values[1]);
-      stablecoin.ensureApproval(address(reassurance), values[1]);
+      stablecoin.ensureTransferFrom(msg.sender, address(this), args.initialReassuranceAmount);
+      stablecoin.ensureApproval(address(reassurance), args.initialReassuranceAmount);
 
-      reassurance.addReassurance(coverKey, msg.sender, values[1]);
+      reassurance.addReassurance(args.coverKey, msg.sender, args.initialReassuranceAmount);
     }
   }
 
@@ -113,69 +92,51 @@ library CoverLibV1 {
    * @dev Adds a new cover
    *
    * @param s Specify store instance
-   * @param coverKey Enter cover key
-   * @param supportsProducts Indicates that this cover supports product(s)
-   * @param info IPFS info of the cover contract
-   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
-   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
-   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[3] reportingPeriod The period during when reporting happens.
-   * reassurance tokens you'd like to add to this pool.
-   * @param values[4] cooldownperiod Enter the cooldown period for governance.
-   * @param values[5] claimPeriod Enter the claim period.
-   * @param values[6] floor Enter the policy floor rate.
-   * @param values[7] ceiling Enter the policy ceiling rate.
-   * @param values[8] reassuranceRate Enter the reassurance rate.
    *
    */
   function _addCover(
     IStore s,
-    bytes32 coverKey,
-    bool supportsProducts,
-    string calldata info,
-    bool requiresWhitelist,
-    uint256[] calldata values,
+    ICover.AddCoverArgs calldata args,
     uint256 fee
   ) private {
-    require(coverKey > 0, "Invalid cover key");
-    require(bytes(info).length > 0, "Invalid info");
-    require(values[2] > 0, "Invalid min reporting stake");
-    require(values[3] > 0, "Invalid reporting period");
-    require(values[4] > 0, "Invalid cooldown period");
-    require(values[5] > 0, "Invalid claim period");
-    require(values[6] > 0, "Invalid floor rate");
-    require(values[7] > 0, "Invalid ceiling rate");
-    require(values[8] > 0, "Invalid reassurance rate");
-    require(values[9] > 0 && values[9] < 25, "Invalid leverage");
+    require(args.coverKey > 0, "Invalid cover key");
+    require(bytes(args.info).length > 0, "Invalid info");
+    require(args.minStakeToReport > 0, "Invalid min reporting stake");
+    require(args.reportingPeriod > 0, "Invalid reporting period");
+    require(args.cooldownPeriod > 0, "Invalid cooldown period");
+    require(args.claimPeriod > 0, "Invalid claim period");
+    require(args.floor > 0, "Invalid floor rate");
+    require(args.ceiling > args.floor, "Invalid ceiling rate");
+    require(args.reassuranceRate > 0, "Invalid reassurance rate");
+    require(args.leverageFactor > 0 && args.leverageFactor < 25, "Invalid leverage");
 
-    if (supportsProducts == false) {
+    if (args.supportsProducts == false) {
       // Standalone pools do not support any leverage
-      require(values[9] == 1, "Invalid leverage");
+      require(args.leverageFactor == 1, "Invalid leverage");
     }
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, true);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER, args.coverKey, true);
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, supportsProducts);
-    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey, msg.sender);
-    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, info);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, args.coverKey, args.supportsProducts);
+    s.setAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, args.coverKey, msg.sender);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, args.coverKey, args.info);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, args.coverKey, ProtoUtilV1.MULTIPLIER); // 100% weight because it's a stablecoin
 
     // Set the fee charged during cover creation
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, coverKey, fee);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, args.coverKey, fee);
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey, block.timestamp); // solhint-disable-line
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, args.coverKey, block.timestamp); // solhint-disable-line
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, requiresWhitelist);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, args.coverKey, args.requiresWhitelist);
 
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, values[2]);
-    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey, values[3]);
-    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, values[4]);
-    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey, values[5]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, values[6]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, values[7]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey, values[8]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey, values[9]);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, args.coverKey, args.minStakeToReport);
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, args.coverKey, args.reportingPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, args.coverKey, args.cooldownPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, args.coverKey, args.claimPeriod);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, args.coverKey, args.floor);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, args.coverKey, args.ceiling);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, args.coverKey, args.reassuranceRate);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, args.coverKey, args.leverageFactor);
   }
 
   /**
@@ -184,73 +145,49 @@ library CoverLibV1 {
    * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
    *
    * @param s Specify store instance
-   * @param coverKey Enter a cover key
-   * @param productKey Enter the product key
-   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
-   * @param requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
-   * @param values[0] Product status
-   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
    *
    */
-  function addProductInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    string calldata info,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external {
-    s.mustBeValidCoverKey(coverKey);
-    s.mustSupportProducts(coverKey);
+  function addProductInternal(IStore s, ICover.AddProductArgs calldata args) external {
+    s.mustBeValidCoverKey(args.coverKey);
+    s.mustSupportProducts(args.coverKey);
 
-    require(productKey > 0, "Invalid product key");
-    require(bytes(info).length > 0, "Invalid info");
+    require(args.productKey > 0, "Invalid product key");
+    require(bytes(args.info).length > 0, "Invalid info");
 
     // Product Status
     // 0 --> Deleted
     // 1 --> Active
     // 2 --> Retired
-    require(values[0] == 1, "Status must be active");
-    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+    require(args.productStatus == 1, "Status must be active");
+    require(args.efficiency > 0 && args.efficiency <= 10_000, "Invalid efficiency");
 
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey) == false, "Already exists");
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey) == false, "Already exists");
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, true);
-    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
-    s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, requiresWhitelist);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey, true);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey, args.info);
+    s.setBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, args.coverKey, args.productKey, args.requiresWhitelist);
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey, args.productStatus);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, args.coverKey, args.productKey, args.efficiency);
   }
 
   /**
    * @dev Updates a cover product.
    *
    * @param s Specify store instance
-   * @param coverKey Enter the cover key
-   * @param productKey Enter the product key
-   * @param info Enter a new IPFS URL to update
-   * @param values[0] Product status
-   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
    *
    */
-  function updateProductInternal(
-    IStore s,
-    bytes32 coverKey,
-    bytes32 productKey,
-    string calldata info,
-    uint256[] calldata values
-  ) external {
-    require(values[0] <= 2, "Invalid product status");
-    require(values[1] > 0 && values[1] <= 10_000, "Invalid efficiency");
+  function updateProductInternal(IStore s, ICover.UpdateProductArgs calldata args) external {
+    require(args.productStatus <= 2, "Invalid product status");
+    require(args.efficiency > 0 && args.efficiency <= 10_000, "Invalid efficiency");
 
-    s.mustBeValidCoverKey(coverKey);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidCoverKey(args.coverKey);
+    s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, values[0]);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey, values[1]);
-    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, info);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey, args.productStatus);
+    s.setUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, args.coverKey, args.productKey, args.efficiency);
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, args.coverKey, args.productKey, args.info);
   }
 
   /**

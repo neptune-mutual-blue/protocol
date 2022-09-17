@@ -19,18 +19,35 @@ describe('Cover: updateCover', () => {
   const coverKey = key.toBytes32('foo-bar')
   const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const minReportingStake = helper.ether(250)
+  const minStakeToReport = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS
   const claimPeriod = 7 * DAYS
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
-  const leverage = '1'
+  const leverageFactor = '1'
 
-  const requiresWhitelist = false
-  const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
   const info = key.toBytes32('info')
+
+  const args = {
+    coverKey,
+    info,
+    tokenName: 'POD',
+    tokenSymbol: 'POD',
+    supportsProducts: false,
+    requiresWhitelist: false,
+    stakeWithFee,
+    initialReassuranceAmount,
+    minStakeToReport,
+    reportingPeriod,
+    cooldownPeriod,
+    claimPeriod,
+    floor,
+    ceiling,
+    reassuranceRate,
+    leverageFactor
+  }
 
   before(async () => {
     deployed = await deployDependencies()
@@ -50,7 +67,7 @@ describe('Cover: updateCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover(args)
 
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
 
@@ -68,9 +85,9 @@ describe('Cover: updateCover', () => {
 
     await deployed.dai.approve(vault.address, ethers.constants.MaxUint256)
     await deployed.npm.approve(vault.address, ethers.constants.MaxUint256)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
@@ -87,7 +104,10 @@ describe('Cover: updateCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      ...args,
+      coverKey
+    })
 
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const lendingPeriod = 1 * HOURS
@@ -104,10 +124,11 @@ describe('Cover: updateCover', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
+
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
-    await deployed.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(vault.address, minStakeToReport)
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
     const updatedInfo = key.toBytes32('info')
@@ -124,7 +145,10 @@ describe('Cover: updateCover', () => {
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      ...args,
+      coverKey
+    })
 
     const initialLiquidity = helper.ether(4_000_000, PRECISION)
     const lendingPeriod = 1 * HOURS
@@ -141,10 +165,11 @@ describe('Cover: updateCover', () => {
         validationLibV1: deployed.validationLibV1
       }
     }, coverKey)
+
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
-    await deployed.npm.approve(vault.address, minReportingStake)
-    await vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(vault.address, minStakeToReport)
+    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
 
     const updatedInfo = key.toBytes32('updated-info')
     await deployed.cover.updateCover(coverKey, updatedInfo)

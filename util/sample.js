@@ -34,7 +34,7 @@ const info = {
     symbol: 'COMP',
     initialAmount: '5000000000000000000000'
   },
-  stakeWithFees: '5000000000000000000000',
+  stakeWithFee: '5000000000000000000000',
   initialLiquidity: '5000000000000000000000'
 }
 

@@ -31,14 +31,30 @@ describe('Policy Admin: setCoverageLag', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_POLICY_ADMIN, deployed.policyAdminContract.address)
 
     coverKey = key.toBytes32('foo-bar')
-    const values = [helper.ether(10_000), '0', helper.ether(100), 7 * DAYS, 1 * DAYS, 7 * DAYS, helper.percentage(1), helper.percentage(100), helper.percentage(30), '1']
     const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, helper.ether(10_000))
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, false, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee: helper.ether(10_000),
+      initialReassuranceAmount: '0',
+      minStakeToReport: helper.ether(100),
+      reportingPeriod: 7 * DAYS,
+      cooldownPeriod: 1 * DAYS,
+      claimPeriod: 7 * DAYS,
+      floor: helper.percentage(1),
+      ceiling: helper.percentage(100),
+      reassuranceRate: helper.percentage(30),
+      leverageFactor: '1'
+    })
   })
 
   it('succeeds without any errors if zero is specified as cover key', async () => {

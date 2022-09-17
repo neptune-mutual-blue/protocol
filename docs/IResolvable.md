@@ -17,8 +17,8 @@ event CooldownPeriodConfigured(bytes32 indexed coverKey, uint256  period);
 
 - [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
-- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
-- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownPeriod)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownPeriod)
 - [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve

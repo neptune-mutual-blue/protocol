@@ -19,7 +19,7 @@ library BaseLibV1 {
    * not have any significance in the SDK or the UI.
    */
   function recoverEtherInternal(address sendTo) external {
-    // slither-disable-next-line arbitrary-send
+    // slither-disable-next-line low-level-calls
     (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
     require(success, "Recipient may have reverted");
   }

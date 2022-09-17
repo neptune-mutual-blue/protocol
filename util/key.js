@@ -100,6 +100,7 @@ const PROTOCOL = {
     COVER_POLICY_RATE_FLOOR: toBytes32('ns:cover:policy:rate:floor'),
     COVER_POLICY_RATE_CEILING: toBytes32('ns:cover:policy:rate:ceiling'),
     POLICY_DISABLED: toBytes32('ns:policy:disabled'),
+    POLICY_LAST_PURCHASE_ID: toBytes32('ns:policy:last:purchase:id'),
     COVER_STAKE: toBytes32('ns:cover:stake'),
     COVER_STAKE_OWNED: toBytes32('ns:cover:stake:owned'),
     COVER_STATUS: toBytes32('ns:cover:status'),
