@@ -67,8 +67,8 @@ const createPodStakingPools = async (payload) => {
       stakingTarget,
       maxStake,
       rewardPerBlock,
-      lockupPeriodInBlocks,
-      rewardTokenDeposit
+      lockupPeriod,
+      rewardTokenToDeposit
     } = settings
 
     const { rewardToken, uniRewardTokenDollarPair } = getAssets(tokenInfo, pairInfo, settings)
@@ -89,8 +89,8 @@ const createPodStakingPools = async (payload) => {
       maxStake,
       platformFee: percentage(0.25),
       rewardPerBlock,
-      lockupPeriodInBlocks: lockupPeriodInBlocks.toString(),
-      rewardTokenDeposit
+      lockupPeriod,
+      rewardTokenToDeposit
     })
   }
 

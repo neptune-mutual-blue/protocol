@@ -34,7 +34,7 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addrefutationinternal)
 - [getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey)](#gethasdisputekeyinternal)
 - [getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutationinternal)
-- [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownperiodinternal)
+- [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownPeriodinternal)
 - [getResolutionDeadlineInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getresolutiondeadlineinternal)
 - [addClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 claimed)](#addclaimpayoutsinternal)
 - [getClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getclaimpayoutsinternal)

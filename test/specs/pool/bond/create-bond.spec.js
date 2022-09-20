@@ -37,21 +37,17 @@ describe('Create Bond', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      addresses: [
-        npmDai.address,
-        helper.randomAddress() // treasury
-      ],
-      values: [
-        helper.percentage(1), // 1% bond discount
-        helper.ether(100_000), // Maximum bond amount
-        (5 * MINUTES).toString(), // Bond period / vesting term
-        helper.ether(2000) // NPM to top up
-      ]
+      lpToken: npmDai.address,
+      treasury: helper.randomAddress(),
+      bondDiscountRate: helper.percentage(1),
+      maxBondAmount: helper.ether(100_000),
+      vestingTerm: (5 * MINUTES).toString(),
+      npmToTopUpNow: helper.ether(2000)
     }
 
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    await pool.setup(payload.addresses, payload.values)
+    await pool.setup(payload)
   })
 
   it('must correctly create a bond', async () => {
@@ -63,7 +59,7 @@ describe('Create Bond', () => {
     const { events } = await tx.wait()
 
     const { timestamp } = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-    const mustUnlockAt = timestamp + parseInt(payload.values[2])
+    const mustUnlockAt = timestamp + parseInt(payload.vestingTerm)
 
     const event = events.find(x => x.event === 'BondCreated')
     event.args.account.should.equal(owner.address)

@@ -81,14 +81,14 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
   const productKey = key.toBytes32('test')
   const initialReassuranceAmount = helper.ether(1_000_000, PRECISION)
   const stakeWithFee = helper.ether(10_000)
-  const minReportingStake = helper.ether(250)
+  const minStakeToReport = helper.ether(250)
   const reportingPeriod = 7 * DAYS
   const cooldownPeriod = 1 * DAYS
   const claimPeriod = 7 * DAYS
   const floor = helper.percentage(7)
   const ceiling = helper.percentage(45)
   const reassuranceRate = helper.percentage(50)
-  const leverage = '1'
+  const leverageFactor = '1'
 
   const requiresWhitelist = false
   const info = key.toBytes32('info')
@@ -101,12 +101,35 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
     await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, reassuranceRate, leverage]
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', true, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: true,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate,
+      leverageFactor
+    })
 
-    await deployed.cover.addProduct(coverKey, productKey, info, requiresWhitelist, [1, 10_000])
+    await deployed.cover.addProduct({
+      coverKey,
+      productKey: key.toBytes32('test'),
+      info,
+      requiresWhitelist,
+      productStatus: '1',
+      efficiency: '10000'
+    })
 
     vault = await composer.vault.getVault({
       store: deployed.store,

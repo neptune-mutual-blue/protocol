@@ -11,7 +11,6 @@ require('chai')
   .should()
 
 describe('Removing Protocol Member(s)', () => {
-  const treasury = helper.randomAddress()
   let npm, store, router, protocol
 
   before(async () => {
@@ -43,30 +42,29 @@ describe('Removing Protocol Member(s)', () => {
 
     const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-    await protocol.initialize(
-      [
-        helper.zero1,
-        router.address,
-        helper.randomAddress(), // factory
-        npm.address,
-        treasury,
-        priceOracle.address
-      ],
-      [
-        helper.ether(0), // Cover Fee
-        helper.ether(0), // Min Cover Stake
-        helper.ether(250), // Min Reporting Stake
-        7 * DAYS, // Claim period
-        helper.ether(0.3), // Governance Burn Rate: 30%
-        helper.ether(0.1), // Governance Reporter Commission: 10%
-        helper.ether(0.065), // Claim: Platform Fee: 6.5%
-        helper.ether(0.005), // Claim: Reporter Commission: 5%
-        helper.ether(0.0005), // Flash Loan Fee: 0.5%
-        helper.ether(0.0025), // Flash Loan Protocol Fee: 2.5%
-        1 * DAYS, // cooldown period,
-        1 * DAYS, // state and liquidity update interval
-        helper.percentage(5)]
-    )
+    const args = {
+      burner: helper.zero1,
+      uniswapV2RouterLike: router.address,
+      uniswapV2FactoryLike: helper.randomAddress(),
+      npm: npm.address,
+      treasury: helper.randomAddress(),
+      priceOracle: priceOracle.address,
+      coverCreationFee: helper.ether(0),
+      minCoverCreationStake: helper.ether(0),
+      firstReportingStake: helper.ether(250),
+      claimPeriod: 7 * DAYS,
+      reportingBurnRate: helper.percentage(30),
+      governanceReporterCommission: helper.percentage(10),
+      claimPlatformFee: helper.percentage(6.5),
+      claimReporterCommission: helper.percentage(5),
+      flashLoanFee: helper.percentage(0.5),
+      flashLoanFeeProtocol: helper.percentage(2.5),
+      resolutionCoolDownPeriod: 1 * DAYS,
+      stateUpdateInterval: 1 * DAYS,
+      maxLendingRatio: helper.percentage(5)
+    }
+
+    await protocol.initialize(args)
   })
 
   it('should correctly remove a member', async () => {

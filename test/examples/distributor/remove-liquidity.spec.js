@@ -90,6 +90,9 @@ describe('Distributor: `removeLiquidity` function', () => {
   })
 
   it('must reject if vault is missing', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const pods = helper.ether(5000)
     const npmStake = helper.ether(200)
@@ -106,9 +109,14 @@ describe('Distributor: `removeLiquidity` function', () => {
 
     await distributor.removeLiquidity(coverKey, pods, npmStake, false)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 
   it('must reject if DAI is missing', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const pods = helper.ether(5000)
     const npmStake = helper.ether(200)
@@ -125,9 +133,14 @@ describe('Distributor: `removeLiquidity` function', () => {
 
     await distributor.removeLiquidity(coverKey, pods, npmStake, false)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 
   it('must reject if NPM is missing', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const pods = helper.ether(5000)
     const npmStake = helper.ether(200)
@@ -144,5 +157,7 @@ describe('Distributor: `removeLiquidity` function', () => {
 
     await distributor.removeLiquidity(coverKey, pods, npmStake, false)
       .should.not.be.rejected
+
+    await deployed.protocol.removeMember(owner.address)
   })
 })

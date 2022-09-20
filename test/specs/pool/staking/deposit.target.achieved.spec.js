@@ -13,7 +13,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Deposit to Staking Pool', () => {
+describe('Deposit to Staking Pool (Target Achieved)', () => {
   let pool, payload, deployed, dai, npmDai, sabre, sabreDai
 
   before(async () => {
@@ -34,6 +34,7 @@ describe('Deposit to Staking Pool', () => {
       ValidationLibV1: deployed.validationLibV1.address
     }, deployed.store.address)
 
+    await deployed.protocol.grantRole(key.ACCESS_CONTROL.LIQUIDITY_MANAGER, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, owner.address)
     await deployed.protocol.grantRole(key.ACCESS_CONTROL.UPGRADE_AGENT, deployed.protocol.address)
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STAKING_POOL, pool.address)
@@ -42,30 +43,26 @@ describe('Deposit to Staking Pool', () => {
       key: key.toBytes32('NPM Staking Pool'),
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
-      addresses: [
-        deployed.npm.address, // Staking Token
-        npmDai.address, // uniStakingTokenDollarPair
-        sabre.address, // rewardToken
-        sabreDai.address // uniRewardTokenDollarPair
-      ],
-      values: [
-        helper.ether(4_000_000), // 4M NPM target
-        helper.ether(400_000_000), // Max 400_000_000 per transaction
-        helper.percentage(0.5), // Platform fee
-        (12_345_678).toString(), // Reward per block
-        minutesToBlocks(31337, 5), // 5 minutes lockup period
-        helper.ether(10_000_000) // Deposit 10M sabre tokens
-      ]
+      stakingToken: deployed.npm.address,
+      uniStakingTokenDollarPair: npmDai.address,
+      rewardToken: sabre.address,
+      uniRewardTokenDollarPair: sabreDai.address,
+      stakingTarget: helper.ether(4_000_000),
+      maxStake: helper.ether(400_000_000),
+      platformFee: helper.percentage(0.5),
+      rewardPerBlock: (12_345_678).toString(),
+      lockupPeriod: minutesToBlocks(31337, 5),
+      rewardTokenToDeposit: helper.ether(10_000_000)
     }
 
     await sabre.approve(pool.address, ethers.constants.MaxUint256)
-    await pool.addOrEditPool(payload.key, payload.name, payload.poolType, payload.addresses, payload.values)
+    await pool.addOrEditPool(payload)
   })
 
   it('must allow depositing up to the target', async () => {
     const [, bob] = await ethers.getSigners()
     await deployed.npm.transfer(bob.address, helper.ether(50_000_000))
-    const amount = payload.values[0]
+    const amount = payload.stakingTarget
 
     await deployed.npm.connect(bob).approve(pool.address, amount)
     await pool.connect(bob).deposit(payload.key, amount)

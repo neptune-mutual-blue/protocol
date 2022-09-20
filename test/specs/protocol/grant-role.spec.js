@@ -10,7 +10,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('Adding a New Protocol Member', () => {
+describe('Grant roles in protocol', () => {
   let npm, store, router, protocol
 
   before(async () => {
@@ -67,22 +67,40 @@ describe('Adding a New Protocol Member', () => {
     await protocol.initialize(args)
   })
 
-  it('should correctly add a new member', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
+  it('should correctly grant role when accessed by role admins', async () => {
+    const [, bob, charles] = await ethers.getSigners()
+
+    await protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, bob.address)
+    await protocol.connect(bob).grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, charles.address)
   })
 
-  it('should reject adding the same member twice', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
-    await protocol.addMember(fakeMember).should.be.rejectedWith('Already exists')
+  it('should correctly setup both role and admin', async () => {
+    const [owner] = await ethers.getSigners()
+
+    await protocol.setupRole(key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.ADMIN, owner.address)
+    const admin = await protocol.getRoleAdmin(key.ACCESS_CONTROL.COVER_MANAGER)
+    const hasRole = await protocol.hasRole(key.ACCESS_CONTROL.COVER_MANAGER, owner.address)
+
+    admin.should.equal(key.ACCESS_CONTROL.ADMIN)
+    hasRole.should.be.true
   })
 
-  it('should correctly set storage values', async () => {
-    const fakeMember = helper.randomAddress()
-    await protocol.addMember(fakeMember)
+  it('should fail if the protocol is paused', async () => {
+    const [, pauser, charles] = await ethers.getSigners()
+    await protocol.grantRoles([{ account: pauser.address, roles: [key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT] }])
 
-    const isMember = await store.getBool(key.qualifyMember(fakeMember))
-    isMember.should.be.true
+    await protocol.connect(pauser).pause()
+    await protocol.grantRole(key.ACCESS_CONTROL.PAUSE_AGENT, charles.address).should.be.rejectedWith('Pausable: paused')
+    await protocol.connect(pauser).unpause()
+  })
+
+  it('should fail if the a non-admin tries to grant a role', async () => {
+    const [owner,, charles] = await ethers.getSigners()
+
+    const hasRole = await protocol.hasRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
+    await protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, charles.address)
+      .should.be.rejectedWith(`AccessControl: account ${owner.address.toLowerCase()} is missing role ${key.ACCESS_CONTROL.GOVERNANCE_ADMIN}`)
+
+    hasRole.should.be.false
   })
 })

@@ -115,9 +115,51 @@
     "name": "getInfoImplementation",
     "outputs": [
       {
-        "internalType": "uint256[]",
-        "name": "result",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalPods",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "extendedBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalReassurance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "myPodBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "myShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawalOpen",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawalClose",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IVault.VaultInfoType",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

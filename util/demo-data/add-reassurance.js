@@ -5,7 +5,7 @@ const faucet = require('../contract-helper/faucet')
 const PRECISION = STABLECOIN_DECIMALS
 
 const add = async (coverKey, payload) => {
-  const [owner] = await ethers.getSigners() // eslint-disable-line
+  const [owner] = await ethers.getSigners()
   const amount = ether(getRandomNumber(250_000, 5_000_000), PRECISION)
 
   const { dai, reassuranceContract } = payload

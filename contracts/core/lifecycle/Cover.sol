@@ -44,45 +44,19 @@ contract Cover is CoverBase {
    *
    *
    * @custom:suppress-acl This is a publicly accessible feature. Can only be called by a whitelisted address.
-   *
-   * @param coverKey Enter a unique key for this cover
-   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
-   * @param tokenName Enter the token name of the POD contract that will be deployed.
-   * @param tokenSymbol Enter the token symbol of the POD contract that will be deployed.
-   * @param supportsProducts Indicates that this cover supports product(s)
-   * @param requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
-   * @param values[0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * @param values[1] initialReassuranceAmount **Optional.** Enter the initial amount of
-   * reassurance tokens you'd like to add to this pool.
-   * @param values[2] minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * @param values[3] reportingPeriod The period during when reporting happens.
-   * @param values[4] cooldownperiod Enter the cooldown period for governance.
-   * @param values[5] claimPeriod Enter the claim period.
-   * @param values[6] floor Enter the policy floor rate.
-   * @param values[7] ceiling Enter the policy ceiling rate.
-   * @param values[8] reassuranceRate Enter the reassurance rate.
-   * @param values[9] leverageFactor Leverage Factor
    */
-  function addCover(
-    bytes32 coverKey,
-    bytes32 info,
-    string calldata tokenName,
-    string calldata tokenSymbol,
-    bool supportsProducts,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external override nonReentrant returns (address) {
+  function addCover(AddCoverArgs calldata args) external override nonReentrant returns (address) {
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
-    require(values[0] >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
+    require(args.stakeWithFee >= s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE), "Your stake is too low");
 
-    s.addCoverInternal(coverKey, supportsProducts, info, requiresWhitelist, values);
+    s.addCoverInternal(args);
 
-    emit CoverCreated(coverKey, info, tokenName, tokenSymbol, supportsProducts, requiresWhitelist);
+    emit CoverCreated(args.coverKey, args.info, args.tokenName, args.tokenSymbol, args.supportsProducts, args.requiresWhitelist);
 
-    address vault = s.deployVaultInternal(coverKey, tokenName, tokenSymbol);
-    emit VaultDeployed(coverKey, vault);
+    address vault = s.deployVaultInternal(args.coverKey, args.tokenName, args.tokenSymbol);
+    emit VaultDeployed(args.coverKey, vault);
 
     return vault;
   }
@@ -95,13 +69,13 @@ contract Cover is CoverBase {
    * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
    *
    */
-  function updateCover(bytes32 coverKey, bytes32 info) external override nonReentrant {
+  function updateCover(bytes32 coverKey, string calldata info) external override nonReentrant {
     s.mustNotBePaused();
     s.mustEnsureAllProductsAreNormal(coverKey);
     AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeDuringWithdrawalPeriod(coverKey);
 
-    require(s.getBytes32ByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey) != info, "Duplicate content");
+    require(keccak256(bytes(s.getStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey))) != keccak256(bytes(info)), "Duplicate content");
 
     s.updateCoverInternal(coverKey, info);
     emit CoverUpdated(coverKey, info);
@@ -112,55 +86,31 @@ contract Cover is CoverBase {
    *
    * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
    *
-   * @param coverKey Enter a cover key
-   * @param productKey Enter the product key
-   * @param info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
-   * @param requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
-   * @param values[0] Product status
-   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
-   *
    */
-  function addProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    bytes32 info,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external override {
+  function addProduct(AddProductArgs calldata args) external override {
     // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
-    s.senderMustBeCoverOwnerOrAdmin(coverKey);
+    s.senderMustBeCoverOwnerOrAdmin(args.coverKey);
 
-    s.addProductInternal(coverKey, productKey, info, requiresWhitelist, values);
-    emit ProductCreated(coverKey, productKey, info, requiresWhitelist, values);
+    s.addProductInternal(args);
+    emit ProductCreated(args.coverKey, args.productKey, args.info);
   }
 
   /**
    * @dev Updates a cover product.
    * This feature is accessible only to the cover manager during withdrawal period.
    *
-   * @param coverKey Enter the cover key
-   * @param productKey Enter the product key
-   * @param info Enter a new IPFS URL to update
-   * @param values[0] Product status
-   * @param values[1] Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
-   *
    */
-  function updateProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    bytes32 info,
-    uint256[] calldata values
-  ) external override {
+  function updateProduct(UpdateProductArgs calldata args) external override {
     // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`
     s.mustNotBePaused();
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeDuringWithdrawalPeriod(coverKey);
+    s.mustBeDuringWithdrawalPeriod(args.coverKey);
 
-    s.updateProductInternal(coverKey, productKey, info, values);
-    emit ProductUpdated(coverKey, productKey, info, values);
+    s.updateProductInternal(args);
+    emit ProductUpdated(args.coverKey, args.productKey, args.info);
   }
 
   /**
@@ -186,7 +136,7 @@ contract Cover is CoverBase {
     string calldata reason
   ) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAdmin(s);
+    AccessControlLibV1.mustBeCoverManager(s);
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     require(status != s.isPolicyDisabledInternal(coverKey, productKey), status ? "Already disabled" : "Already enabled");
@@ -207,7 +157,7 @@ contract Cover is CoverBase {
    */
   function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeGovernanceAgent(s);
+    AccessControlLibV1.mustBeCoverManager(s);
 
     s.updateCoverCreatorWhitelistInternal(account, status);
     emit CoverCreatorWhitelistUpdated(account, status);

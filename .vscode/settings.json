@@ -13,9 +13,11 @@
   "solidity.validationDelay": 2,
   "standard.autoFixOnSave": true,
   "javascript.suggestionActions.enabled": false,
+  "tsImportSorter.configuration.development.enableDebug": false,
+  "tsImportSorter.configuration.hasSemicolon": false,
   "[javascript]": {
     "editor.formatOnSave": false,
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "standard.vscode-standard"
   },
   "[json]": {
     "editor.quickSuggestions": {
@@ -69,5 +71,6 @@
     "Unstaken",
     "WXDAI",
     "zerox"
-  ]
+  ],
+  "git.detectSubmodules": false
 }

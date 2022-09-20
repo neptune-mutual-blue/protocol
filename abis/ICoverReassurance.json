@@ -40,6 +40,12 @@
         "type": "bytes32"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
@@ -77,7 +83,7 @@
       },
       {
         "internalType": "address",
-        "name": "account",
+        "name": "onBehalfOf",
         "type": "address"
       },
       {

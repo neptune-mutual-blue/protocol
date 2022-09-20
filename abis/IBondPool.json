@@ -53,16 +53,42 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bondDiscountRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxBondAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vestingTerm",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "npmToTopUpNow",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "internalType": "struct IBondPool.SetupBondPoolArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "BondPoolSetup",
@@ -123,14 +149,66 @@
     "name": "getInfo",
     "outputs": [
       {
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "marketPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "discountRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vestingTerm",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxBond",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalNpmAllocated",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalNpmDistributed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "npmAvailable",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bondContribution",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimable",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "unlockDate",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IBondPool.BondPoolInfoType",
+        "name": "info",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -165,14 +243,41 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bondDiscountRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxBondAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vestingTerm",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "npmToTopUpNow",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IBondPool.SetupBondPoolArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "setup",

@@ -34,6 +34,9 @@ describe('Distributor: `getPremium` function', () => {
   })
 
   it('must reject if DAI address is not registered on the protocol', async () => {
+    const [owner] = await ethers.getSigners()
+    await deployed.protocol.addMember(owner.address)
+
     const coverKey = deployed.coverKey
     const duration = '2'
     const protection = helper.ether(10_000, PRECISION)
@@ -45,5 +48,6 @@ describe('Distributor: `getPremium` function', () => {
       .should.be.rejectedWith('Fatal: Policy missing')
 
     await deployed.store.setAddress(storeKey, deployed.policy.address)
+    await deployed.protocol.removeMember(owner.address)
   })
 })

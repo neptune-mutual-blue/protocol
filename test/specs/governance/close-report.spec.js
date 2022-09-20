@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-expressions */
-const moment = require('moment')
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
-const { helper, key } = require('../../../../util')
-const composer = require('../../../../util/composer')
-const cxTokenUtil = require('../../../../util/cxToken')
+const { helper, key } = require('../../../util')
+const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
 const DAYS = 86400
 const PRECISION = helper.STABLECOIN_DECIMALS
@@ -14,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-describe('CoverReassurance: capitalizePool', () => {
+describe('Governance: closeReport', () => {
   let deployed, coverKey
 
   before(async () => {
@@ -77,66 +75,75 @@ describe('CoverReassurance: capitalizePool', () => {
     await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
   })
 
-  it('correctly capitalizes reassurance amount', async () => {
-    const [owner] = await ethers.getSigners()
-    const amountToCover = helper.ether(100_000, PRECISION)
+  it('must close the report correctly', async () => {
+    const [owner, bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+    const amount = helper.ether(1000)
 
     const reportingInfo = key.toBytes32('reporting-info')
-    await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
+    await deployed.npm.approve(deployed.governance.address, amount)
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, amount)
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
-
-    const args = {
-      onBehalfOf: owner.address,
-      coverKey,
-      productKey: helper.emptyBytes32,
-      coverDuration: '1',
-      amountToCover,
-      referralCode: key.toBytes32('')
-    }
-
-    await deployed.policy.purchaseCover(args)
-    const at = (await deployed.policy.getCxToken(coverKey, helper.emptyBytes32, '1')).cxToken
-
-    const cxToken = await cxTokenUtil.atAddress(at, deployed)
-
-    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-    const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()
-    const coverageLagPeriod = tomorrowEOD - block.timestamp
-
-    // Coverage lag + 1 second
-    await network.provider.send('evm_increaseTime', [coverageLagPeriod])
-    await network.provider.send('evm_increaseTime', [1])
-
-    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, helper.ether(1000))
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    // Reporting period + 1 second
+    const disputeInfo = key.toBytes32('dispute-info')
+    await deployed.npm.connect(bob).approve(deployed.governance.address, helper.add(amount, 1))
+    await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, helper.add(amount, 1))
+
+    await network.provider.send('evm_increaseTime', [1])
+    const tx = await deployed.resolution.closeReport(coverKey, helper.emptyBytes32, incidentDate)
+
+    const { events } = await tx.wait()
+
+    let event = events.find(x => x.event === 'Resolved')
+    event.args.coverKey.should.equal(coverKey)
+    event.args.incidentDate.should.equal(incidentDate)
+    event.args.emergency.should.equal(true)
+    event.args.decision.should.equal(false)
+
+    event = events.find(x => x.event === 'Finalized')
+    event.args.coverKey.should.equal(coverKey)
+    event.args.incidentDate.should.equal(incidentDate)
+
+    event = events.find(x => x.event === 'ReportClosed')
+    event.args.coverKey.should.equal(coverKey)
+    event.args.productKey.should.equal(helper.emptyBytes32)
+    event.args.closedBy.should.equal(owner.address)
+    event.args.incidentDate.should.equal(incidentDate)
+  })
+
+  it('revert when accessed after reporting period', async () => {
+    const [, bob] = await ethers.getSigners()
+
+    await deployed.npm.transfer(bob.address, helper.ether(2000))
+    const amount = helper.ether(1000)
+
+    const reportingInfo = key.toBytes32('reporting-info')
+    await deployed.npm.approve(deployed.governance.address, amount)
+    await deployed.governance.report(coverKey, helper.emptyBytes32, reportingInfo, amount)
+
+    const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
+
+    const disputeInfo = key.toBytes32('dispute-info')
+    await deployed.npm.connect(bob).approve(deployed.governance.address, helper.add(amount, 1))
+    await deployed.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, disputeInfo, helper.add(amount, 1))
+
     await network.provider.send('evm_increaseTime', [7 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
-    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
+    await deployed.resolution.closeReport(coverKey, helper.emptyBytes32, incidentDate)
+      .should.be.rejectedWith('Reporting window closed')
 
+    await deployed.resolution.resolve(coverKey, helper.emptyBytes32, incidentDate)
     // Cooldown period + 1 second
     await network.provider.send('evm_increaseTime', [1 * DAYS])
     await network.provider.send('evm_increaseTime', [1])
 
-    const claimAmount = helper.ether(100_000)
-    await cxToken.approve(deployed.claimsProcessor.address, claimAmount)
-    await deployed.claimsProcessor.claim(cxToken.address, coverKey, helper.emptyBytes32, incidentDate, claimAmount)
-
-    // Claim period + 1 second
-    await network.provider.send('evm_increaseTime', [7 * DAYS])
-    await network.provider.send('evm_increaseTime', [1])
-
-    const tx = await deployed.reassuranceContract.capitalizePool(coverKey, helper.emptyBytes32, incidentDate)
-    const { events } = await tx.wait()
-    const event = events.find(x => x.event === 'PoolCapitalized')
-
-    event.args.coverKey.should.equal(coverKey)
-    event.args.incidentDate.should.equal(incidentDate)
-    event.args.productKey.should.equal(helper.emptyBytes32)
-    event.args.amount.should.equal(helper.ether(50_000, PRECISION)) // based on reassuranceRate defined above
-
     await deployed.resolution.finalize(coverKey, helper.emptyBytes32, incidentDate)
+  })
+
+  it('reverts when invalid incident date is specified', async () => {
+    await deployed.resolution.closeReport(coverKey, helper.emptyBytes32, 0)
+      .should.be.rejectedWith('Please specify incident date')
   })
 })

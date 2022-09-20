@@ -28,9 +28,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "info",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "indexed": false,
@@ -96,9 +96,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "info",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "indexed": false,
@@ -172,9 +172,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "info",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -374,9 +374,9 @@
         "type": "bytes32"
       },
       {
-        "internalType": "bytes32",
+        "internalType": "string",
         "name": "info",
-        "type": "bytes32"
+        "type": "string"
       },
       {
         "internalType": "uint256",

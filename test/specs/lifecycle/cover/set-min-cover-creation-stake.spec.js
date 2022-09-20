@@ -22,7 +22,7 @@ describe('Cover: setMinCoverCreationStake', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'MinCoverCreationStakeSet')
-    event.args.previous.should.equal(helper.ether(10))
+    event.args.previous.should.equal(helper.ether(2))
     event.args.current.should.equal(minStake)
   })
 

@@ -1,11 +1,11 @@
-[ci]
+[profile.ci]
 verbosity = 4
 
-[default]
+[profile.default]
 src = 'contracts'
 test = 'fuzzing'
 out = 'out'
-libs = ['lib']
+libs = ['node_modules', 'lib']
 remappings = []
 allow_paths = []
 libraries = []
@@ -15,7 +15,7 @@ cache_path = 'cache_foundry'
 force = false
 auto_detect_solc = false
 evm_version = 'london'
-solc_version = '0.8.15'
+solc_version = '0.8.17'
 offline = true
 optimizer = true
 optimizer_runs = 1

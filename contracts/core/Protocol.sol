@@ -27,89 +27,53 @@ contract Protocol is IProtocol, ProtoBase {
    * @custom:note Burner isn't necessarily the zero address. The tokens to be burned are sent to an address,
    * bridged back to the Ethereum mainnet (if on a different chain), and burned on a period but random basis.
    *
-   *
-   * @param addresses[0] burner
-   * @param addresses[1] uniswapV2RouterLike
-   * @param addresses[2] uniswapV2FactoryLike
-   * @param addresses[3] npm
-   * @param addresses[4] treasury
-   * @param addresses[5] npm price oracle
-   * @param values[0] coverCreationFee
-   * @param values[1] minCoverCreationStake
-   * @param values[2] firstReportingStake
-   * @param values[3] claimPeriod
-   * @param values[4] reportingBurnRate
-   * @param values[5] governanceReporterCommission
-   * @param values[6] claimPlatformFee
-   * @param values[7] claimReporterCommission
-   * @param values[8] flashLoanFee
-   * @param values[9] flashLoanFeeProtocol
-   * @param values[10] resolutionCoolDownPeriod
-   * @param values[11] state and liquidity update interval
-   * @param values[12] max lending ratio
    */
-  function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
-    s.mustBeProtocolMember(msg.sender);
-
-    require(addresses[0] != address(0), "Invalid Burner");
-    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
-    require(addresses[4] != address(0), "Invalid Treasury");
-    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
-
-    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
-    // These checks are disabled as this function is only accessible to an admin
-    // require(values[0] > 0, "Invalid cover creation fee");
-    // require(values[1] > 0, "Invalid cover creation stake");
-    // require(values[2] > 0, "Invalid first reporting stake");
-    // require(values[3] > 0, "Invalid claim period");
-    // require(values[4] > 0, "Invalid reporting burn rate");
-    // require(values[5] > 0, "Invalid reporter income: NPM");
-    // require(values[6] > 0, "Invalid platform fee: claims");
-    // require(values[7] > 0, "Invalid reporter income: claims");
-    // require(values[8] > 0, "Invalid vault fee: flashloan");
-    // require(values[9] > 0, "Invalid platform fee: flashloan");
-    // require(values[10] >= 24 hours, "Invalid cooldown period");
-    // require(values[11] > 0, "Invalid state update interval");
-    // require(values[12] > 0, "Invalid max lending ratio");
+  // solhint-disable-next-line function-max-lines
+  function initialize(InitializeArgs calldata args) external override nonReentrant whenNotPaused {
+    require(args.burner != address(0), "Invalid Burner");
+    require(args.treasury != address(0), "Invalid Treasury");
 
     if (initialized == true) {
       AccessControlLibV1.mustBeAdmin(s);
-      require(addresses[3] == address(0), "Can't change NPM");
+      require(args.npm == address(0), "Can't change NPM");
     } else {
-      require(addresses[3] != address(0), "Invalid NPM");
+      s.mustBeProtocolMember(msg.sender);
+      require(args.npm != address(0), "Invalid NPM");
 
       s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
       s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
 
-      s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
+      s.setAddressByKey(ProtoUtilV1.CNS_NPM, args.npm);
+
+      s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
+      emit MemberRemoved(msg.sender);
     }
 
-    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
+    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, args.burner);
 
-    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
-    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
-    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
-    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, addresses[5]);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, args.uniswapV2RouterLike);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, args.uniswapV2FactoryLike);
+    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, args.treasury);
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, args.priceOracle);
 
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, values[2]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, values[6]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
-    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
-    s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, values[11]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, args.coverCreationFee);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, args.minCoverCreationStake);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, args.firstReportingStake);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, args.claimPeriod);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, args.reportingBurnRate);
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, args.governanceReporterCommission);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, args.claimPlatformFee);
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, args.claimReporterCommission);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, args.flashLoanFee);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, args.flashLoanFeeProtocol);
+    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, args.resolutionCoolDownPeriod);
+    s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, args.stateUpdateInterval);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, args.maxLendingRatio);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
     initialized = true;
-    emit Initialized(addresses, values);
+
+    emit Initialized(args);
   }
 
   /**
@@ -125,15 +89,11 @@ contract Protocol is IProtocol, ProtoBase {
    * Since adding member to the protocol is a highy risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
    *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
-   *
    * @custom:suppress-address-trust-issue The address `member` can be trusted because this can only come from upgrade agents.
    *
    * @param member Enter an address to add as a protocol member
    */
   function addMember(address member) external override nonReentrant whenNotPaused {
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.addMemberInternal(s, member);
@@ -150,7 +110,6 @@ contract Protocol is IProtocol, ProtoBase {
    */
   function removeMember(address member) external override nonReentrant whenNotPaused {
     ProtoUtilV1.mustBeProtocolMember(s, member);
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.removeMemberInternal(s, member);
@@ -200,7 +159,6 @@ contract Protocol is IProtocol, ProtoBase {
   ) public override nonReentrant whenNotPaused {
     require(contractAddress != address(0), "Invalid contract");
 
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
     address current = s.getProtocolContract(namespace);
 
@@ -258,11 +216,24 @@ contract Protocol is IProtocol, ProtoBase {
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
     ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
     emit ContractUpgraded(namespace, key, previous, current);
+  }
+
+  /**
+   * @dev Grants `role` to `account`.
+   *
+   * If `account` had not been already granted `role`, emits a {RoleGranted}
+   * event.
+   *
+   * Requirements:
+   *
+   * - the caller must have ``role``'s admin role.
+   */
+  function grantRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+    super.grantRole(role, account);
   }
 
   /**

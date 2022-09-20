@@ -89,7 +89,6 @@ const deployDependencies = async () => {
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
-    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 
@@ -99,6 +98,7 @@ const deployDependencies = async () => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
@@ -132,31 +132,29 @@ const deployDependencies = async () => {
 
   const priceOracle = await deployer.deploy(cache, 'FakePriceOracle')
 
-  await protocol.initialize(
-    [
-      helper.zero1,
-      router.address,
-      factory.address, // factory
-      npm.address,
-      helper.randomAddress(),
-      priceOracle.address
-    ],
-    [
-      helper.ether(0), // Cover Fee
-      helper.ether(0), // Min Cover Stake
-      helper.ether(250), // Min Reporting Stake
-      7 * DAYS, // Claim period
-      helper.percentage(30), // Governance Burn Rate: 30%
-      helper.percentage(10), // Governance Reporter Commission: 10%
-      helper.percentage(6.5), // Claim: Platform Fee: 6.5%
-      helper.percentage(5), // Claim: Reporter Commission: 5%
-      helper.percentage(0.5), // Flash Loan Fee: 0.5%
-      helper.percentage(2.5), // Flash Loan Protocol Fee: 2.5%
-      1 * DAYS, // cooldown period,
-      1 * DAYS, // state and liquidity update interval
-      helper.percentage(5) // maximum lending ratio
-    ]
-  )
+  const args = {
+    burner: helper.zero1,
+    uniswapV2RouterLike: router.address,
+    uniswapV2FactoryLike: factory.address,
+    npm: npm.address,
+    treasury: helper.randomAddress(),
+    priceOracle: priceOracle.address,
+    coverCreationFee: helper.ether(0),
+    minCoverCreationStake: helper.ether(0),
+    firstReportingStake: helper.ether(250),
+    claimPeriod: 7 * DAYS,
+    reportingBurnRate: helper.percentage(30),
+    governanceReporterCommission: helper.percentage(10),
+    claimPlatformFee: helper.percentage(6.5),
+    claimReporterCommission: helper.percentage(5),
+    flashLoanFee: helper.percentage(0.5),
+    flashLoanFeeProtocol: helper.percentage(2.5),
+    resolutionCoolDownPeriod: 1 * DAYS,
+    stateUpdateInterval: 1 * DAYS,
+    maxLendingRatio: helper.percentage(5)
+  }
+
+  await protocol.initialize(args)
 
   await protocol.grantRoles([{
     account: owner.address,
@@ -272,6 +270,7 @@ const deployDependencies = async () => {
     GovernanceUtilV1: governanceUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   })
 

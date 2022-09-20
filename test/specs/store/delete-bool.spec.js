@@ -37,6 +37,8 @@ describe('Store: delete bool', () => {
 
     await store.setBool(k, value)
 
+    const [owner] = await ethers.getSigners()
+    await store.setPausers([owner.address], [true])
     await store.pause()
 
     await store.deleteBool(k)

@@ -38,7 +38,7 @@ contract BaseSpec is Test {
     _deployTokens();
 
     DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * (10**DAI_DECIMALS);
-    NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * 1 ether;
+    NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_NPM_STAKE * 1 ether;
   }
 
   function _deployTokens() internal {
@@ -82,32 +82,30 @@ contract ProtocolSpec is BaseSpec {
     FakeUniswapV2FactoryLike factory = new FakeUniswapV2FactoryLike(address(pair));
     FakePriceOracle oracle = new FakePriceOracle();
 
-    address[] memory addresses = new address[](6);
+    IProtocol.InitializeArgs memory args;
 
-    addresses[0] = address(1); // burner
-    addresses[1] = address(router);
-    addresses[2] = address(factory);
-    addresses[3] = address(_npm);
-    addresses[4] = address(2); // treasury
-    addresses[5] = address(oracle);
+    args.burner = address(1); // burner
+    args.uniswapV2RouterLike = address(router);
+    args.uniswapV2FactoryLike = address(factory);
+    args.npm = address(_npm);
+    args.treasury = address(2); // treasury
+    args.priceOracle = address(oracle);
 
-    uint256[] memory values = new uint256[](13);
+    args.coverCreationFee = 500 ether;
+    args.minCoverCreationStake = 4500 ether;
+    args.firstReportingStake = 5000 ether;
+    args.claimPeriod = 7 days;
+    args.reportingBurnRate = 4000; // 40%
+    args.governanceReporterCommission = 1000; // 10%
+    args.claimPlatformFee = 650; // 6.5%
+    args.claimReporterCommission = 500; // 5%
+    args.flashLoanFee = 50; // 0.5%
+    args.flashLoanFeeProtocol = 250; // 2.5%
+    args.resolutionCoolDownPeriod = 1 days;
+    args.stateUpdateInterval = 10 minutes;
+    args.maxLendingRatio = 1000; // 10%
 
-    values[0] = 500 ether; // cover creation fee
-    values[1] = 4500 ether; // creation creation stake
-    values[2] = 5000 ether; // first reporting stake
-    values[3] = 7 days; // claim period
-    values[4] = 4000; // invalid camp's stake burn rate
-    values[5] = 1000; // reporter's commission on claimed stakes (by valid camp witnesses)
-    values[6] = 650; // platform's claim fee
-    values[7] = 500; // reporter's commission on platform's fee, not total claim fee
-    values[8] = 50; // flash loan fee
-    values[9] = 250; // platform flash loan fee
-    values[10] = 1 days; // cooldown period
-    values[11] = 10 minutes; // liquidity update interval
-    values[12] = 1000; // maximum percent that can be lent from a cover liquidity pool
-
-    _protocol.initialize(addresses, values);
+    _protocol.initialize(args);
 
     _protocol.grantRole(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, address(_protocol));
     _protocol.grantRole(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, address(this));
@@ -128,7 +126,7 @@ contract ProtocolSpec is BaseSpec {
     _coverReassurance = new CoverReassurance(_store);
     _governance = new Governance(_store);
     _resolution = new Resolution(_store);
-    _policy = new Policy(_store, 0);
+    _policy = new Policy(_store);
 
     VaultFactory vaultFactory = new VaultFactory(_store);
     VaultDelegate vd = new VaultDelegate(_store);
@@ -157,27 +155,34 @@ contract CoverSpec is ProtocolSpec {
   }
 
   function _initializeCover() internal {
-    uint256[] memory values = new uint256[](10);
-    values[0] = 10_000 ether; // stake with fees
-    values[1] = 1_000_000 * DAI_PRECISION; // reassurance amount to add now
-    values[2] = 20_000 ether; // minimum stake required to report
-    values[3] = 7 days; // reporting period
-    values[4] = 1 days; // cooldown period
-    values[5] = 7 days; // claim period
-    values[6] = 800; // floor
-    values[7] = 3200; // ceiling
-    values[8] = 5000; // reassurance rate
-    values[9] = 1; // leverage factor
+    ICover.AddCoverArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.info = "ipfs://?";
+    args.tokenName = "POD";
+    args.tokenSymbol = "POD";
+    args.supportsProducts = false;
+    args.requiresWhitelist = false;
+    args.stakeWithFee = 10_000 ether;
+    args.initialReassuranceAmount = 1_000_000 * DAI_PRECISION;
+    args.minStakeToReport = 20_000 ether;
+    args.reportingPeriod = 7 days;
+    args.cooldownPeriod = 1 days;
+    args.claimPeriod = 7 days;
+    args.floor = 800;
+    args.ceiling = 3200;
+    args.reassuranceRate = 5000;
+    args.leverageFactor = 1;
 
     _cover.initialize(address(_dai), "DAI Token");
 
     _cover.updateCoverCreatorWhitelist(address(this), true);
-    _npm.mint(values[0]);
-    _npm.approve(address(_coverStake), values[0]);
+    _npm.mint(args.stakeWithFee);
+    _npm.approve(address(_coverStake), args.stakeWithFee);
 
-    _dai.mint(values[1]);
-    _dai.approve(address(_coverReassurance), values[1]);
+    _dai.mint(args.initialReassuranceAmount);
+    _dai.approve(address(_cover), args.initialReassuranceAmount);
 
-    _vault = Vault(_cover.addCover(_COVER_KEY, "ipfs://?", "POD", "POD", false, false, values));
+    _vault = Vault(_cover.addCover(args));
   }
 }

@@ -37,21 +37,17 @@ describe('Bond: Calculate Tokens for LP', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      addresses: [
-        npmDai.address,
-        helper.randomAddress() // treasury
-      ],
-      values: [
-        helper.percentage(1), // 1% bond discount
-        helper.ether(100_000), // Maximum bond amount
-        (5 * MINUTES).toString(), // Bond period / vesting term
-        helper.ether(10_000_000) // NPM to top up
-      ]
+      lpToken: npmDai.address,
+      treasury: helper.randomAddress(),
+      bondDiscountRate: helper.percentage(1),
+      maxBondAmount: helper.ether(100_000),
+      vestingTerm: (5 * MINUTES).toString(),
+      npmToTopUpNow: helper.ether(10_000_000)
     }
 
     await deployed.npm.approve(pool.address, ethers.constants.MaxUint256)
 
-    await pool.setup(payload.addresses, payload.values)
+    await pool.setup(payload)
   })
 
   it('correctly calculates NPM tokens for specified LP tokens', async () => {

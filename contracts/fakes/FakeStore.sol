@@ -17,6 +17,18 @@ contract FakeStore is IStore {
   mapping(bytes32 => mapping(address => uint256)) public addressArrayPositionMap;
   mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
   mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
+  mapping(address => bool) public pausers;
+
+  function setPausers(address[] calldata accounts, bool[] calldata statuses) external override {
+    require(accounts.length > 0, "No pauser specified");
+    require(accounts.length == statuses.length, "Invalid args");
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+      pausers[accounts[i]] = statuses[i];
+    }
+
+    emit PausersSet(msg.sender, accounts, statuses);
+  }
 
   function setAddress(bytes32 k, address v) external override {
     addressStorage[k] = v;

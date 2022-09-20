@@ -23,39 +23,24 @@ abstract contract BondPoolBase is IBondPool, Recoverable {
 
   /**
    * @dev Gets the bond pool information
-   * @param addresses[0] lpToken -> Returns the LP token address
-   * @param values[0] marketPrice -> Returns the market price of NPM token
-   * @param values[1] discountRate -> Returns the discount rate for bonding
-   * @param values[2] vestingTerm -> Returns the bond vesting period
-   * @param values[3] maxBond -> Returns maximum amount of bond. To clarify, this means the final NPM amount received by bonders after vesting period.
-   * @param values[4] totalNpmAllocated -> Returns the total amount of NPM tokens allocated for bonding.
-   * @param values[5] totalNpmDistributed -> Returns the total amount of NPM tokens that have been distributed under bond.
-   * @param values[6] npmAvailable -> Returns the available NPM tokens that can be still bonded.
-   * @param values[7] bondContribution --> total lp tokens contributed by you
-   * @param values[8] claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
-   * @param values[9] unlockDate --> your vesting period end or "unlock date"
+   *
    */
-  function getInfo(address forAccount) external view override returns (address[] memory addresses, uint256[] memory values) {
+  function getInfo(address forAccount) external view override returns (BondPoolInfoType memory) {
     return s.getBondPoolInfoInternal(forAccount);
   }
 
   /**
    * @dev Sets up the bond pool
-   * @param addresses[0] - LP Token Address
-   * @param addresses[1] - Treasury Address
-   * @param values[0] - Bond Discount Rate
-   * @param values[1] - Maximum Bond Amount
-   * @param values[2] - Vesting Term
-   * @param values[3] - NPM to Top Up Now
+   *
    */
-  function setup(address[] calldata addresses, uint256[] calldata values) external override nonReentrant {
+  function setup(SetupBondPoolArgs calldata args) external override nonReentrant {
     // @suppress-zero-value-check The uint values are checked in the function `setupBondPoolInternal`
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.setupBondPoolInternal(addresses, values);
+    s.setupBondPoolInternal(args);
 
-    emit BondPoolSetup(addresses, values);
+    emit BondPoolSetup(args);
   }
 
   /**

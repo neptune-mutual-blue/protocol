@@ -243,7 +243,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
-    GovernanceUtilV1.mustNotExceedNpmThreshold(amount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToAdd);
 
     address pod = msg.sender;
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
@@ -414,17 +414,9 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
    *
    * @param coverKey Specify cover key to obtain the info of
    * @param you The address for which the info will be customized
-   * @param values[0] totalPods --> Total PODs in existence
-   * @param values[1] balance --> Stablecoins held in the vault
-   * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
-   * @param values[3] totalReassurance -- > Total reassurance for this cover
-   * @param values[4] myPodBalance --> Your POD Balance
-   * @param values[5] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[6] withdrawalOpen --> The timestamp when withdrawals are opened
-   * @param values[7] withdrawalClose --> The timestamp when withdrawals are closed again
    *
    */
-  function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
+  function getInfoImplementation(bytes32 coverKey, address you) external view override returns (IVault.VaultInfoType memory) {
     s.senderMustBeVaultContract(coverKey);
     address pod = msg.sender;
     return s.getInfoInternal(coverKey, pod, you);

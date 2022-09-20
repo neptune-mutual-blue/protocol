@@ -18,7 +18,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
   let deployed, coverKey, mockLiquidityEngineUser, aaveLendingPool, aToken, aaveStrategy
 
   const initialLiquidity = helper.ether(1_000, PRECISION)
-  const minReportingStake = helper.ether(250)
+  const minStakeToReport = helper.ether(250)
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -32,19 +32,33 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     const claimPeriod = 7 * DAYS
     const floor = helper.percentage(7)
     const ceiling = helper.percentage(45)
-    const leverage = '1'
-
-    const requiresWhitelist = false
-    const values = [stakeWithFee, initialReassuranceAmount, minReportingStake, reportingPeriod, cooldownPeriod, claimPeriod, floor, ceiling, 2500, leverage]
+    const leverageFactor = '1'
 
     const info = key.toBytes32('info')
 
     deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
 
     await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
-    await deployed.dai.approve(deployed.reassuranceContract.address, initialReassuranceAmount)
+    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
-    await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
+    await deployed.cover.addCover({
+      coverKey,
+      info,
+      tokenName: 'POD',
+      tokenSymbol: 'POD',
+      supportsProducts: false,
+      requiresWhitelist: false,
+      stakeWithFee,
+      initialReassuranceAmount,
+      minStakeToReport,
+      reportingPeriod,
+      cooldownPeriod,
+      claimPeriod,
+      floor,
+      ceiling,
+      reassuranceRate: '2500',
+      leverageFactor
+    })
 
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
@@ -81,7 +95,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
       { StrategyLibV1: deployed.strategyLibV1.address },
       deployed.store.address
     )
-    await deployed.store.setBool(key.qualifyMember(mockLiquidityEngineUser.address), true)
+    await deployed.protocol.addMember(mockLiquidityEngineUser.address)
   })
 
   it('must deposit all the balance when max lending ratio is greater than 1', async () => {
@@ -90,8 +104,8 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
-    await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(deployed.vault.address, minStakeToReport)
+    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
     const { events } = await tx.wait()
 
     // Deposit to strategies
@@ -105,8 +119,8 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
-    await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(deployed.vault.address, minStakeToReport)
+    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'StrategyTransfer')
@@ -121,8 +135,8 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
-    await deployed.npm.approve(deployed.vault.address, minReportingStake)
-    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minReportingStake, key.toBytes32(''))
+    await deployed.npm.approve(deployed.vault.address, minStakeToReport)
+    const tx = await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
     const { events } = await tx.wait()
 
     // Withdraws from disabled strategies

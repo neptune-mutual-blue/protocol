@@ -78,6 +78,7 @@ const deployAll = async (cache) => {
   const coverLibV1 = await deployer.deployWithLibraries(cache, 'CoverLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     CoverUtilV1: coverUtilV1.address,
+    NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     RegistryLibV1: registryLibV1.address,
     RoutineInvokerLibV1: routineInvokerLibV1.address,
@@ -114,6 +115,7 @@ const deployAll = async (cache) => {
     GovernanceUtilV1: governanceUtilV1.address,
     PolicyHelperV1: policyHelperV1.address,
     ProtoUtilV1: protoUtilV1.address,
+    StoreKeyUtil: storeKeyUtil.address,
     ValidationLibV1: validationLibV1.address
   })
 
@@ -126,7 +128,6 @@ const deployAll = async (cache) => {
     NTransferUtilV2: transferLib.address,
     ProtoUtilV1: protoUtilV1.address,
     StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
-    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address
   })
 

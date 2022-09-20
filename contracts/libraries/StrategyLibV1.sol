@@ -242,7 +242,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 amount
   ) external {
-    if (s.getStablecoin() == address(token) == false) {
+    if (s.getStablecoin() != address(token)) {
       return;
     }
 
@@ -257,7 +257,7 @@ library StrategyLibV1 {
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    if (s.getStablecoin() == address(token) == false) {
+    if (s.getStablecoin() != address(token)) {
       return (income, loss);
     }
 

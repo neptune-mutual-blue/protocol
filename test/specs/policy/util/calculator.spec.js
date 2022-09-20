@@ -6,6 +6,7 @@ const { getCoverFee, getCoverFeeBn } = require('./calculator')
 const MULTIPLIER = 10_000
 const INCIDENT_SUPPORT_POOL_CAP_RATIO = 2500
 const PRECISION = helper.STABLECOIN_DECIMALS
+const DEBUG = false
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -32,7 +33,7 @@ const payload = {
   INCIDENT_SUPPORT_POOL_CAP_RATIO
 }
 
-const getFee = (amount, duration, days) => getCoverFee(data, amount, duration, days, false)
+const getFee = (amount, duration, days) => getCoverFee(data, amount, duration, days, PRECISION, DEBUG)
 const getFeeBn = (amount, duration, days) => getCoverFeeBn(payload, amount, duration, days, false)
 const getDaysCovered = (startedOn, duration) => startedOn.add(duration, 'months').endOf('month').diff(startedOn, 'days')
 

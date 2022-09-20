@@ -3,6 +3,10 @@
 pragma solidity ^0.8.0;
 
 interface IStore {
+  event PausersSet(address indexed addedBy, address[] accounts, bool[] statuses);
+
+  function setPausers(address[] calldata accounts, bool[] calldata statuses) external;
+
   function setAddress(bytes32 k, address v) external;
 
   function setAddressBoolean(

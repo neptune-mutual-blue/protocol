@@ -122,7 +122,8 @@ contract NpmDistributor is ReentrancyGuard {
     IPolicy policy = getPolicyContract();
     require(address(policy) != address(0), "Fatal: Policy missing");
 
-    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
+    IPolicy.CoverFeeInfoType memory coverFeeInfo = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
+    premium = coverFeeInfo.fee;
 
     // Add your fee in addition to the protocol premium
     fee = (premium * feePercentage) / MULTIPLIER;
@@ -142,21 +143,11 @@ contract NpmDistributor is ReentrancyGuard {
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable
    *
-   * @param coverKey Enter the cover key for which you want to buy policy.
-   * @param duration Enter the period of the protection in months.
-   * @param protection Enter the stablecoin dollar amount you want to protect.
-   * @param referralCode Provide a referral code if applicable.
    */
-  function purchasePolicy(
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 duration,
-    uint256 protection,
-    bytes32 referralCode
-  ) external nonReentrant {
-    require(coverKey > 0, "Invalid key");
-    require(duration > 0 && duration < 4, "Invalid duration");
-    require(protection > 0, "Invalid protection amount");
+  function purchasePolicy(IPolicy.PurchaseCoverArgs memory args) external nonReentrant {
+    require(args.coverKey > 0, "Invalid key");
+    require(args.coverDuration > 0 && args.coverDuration < 4, "Invalid duration");
+    require(args.amountToCover > 0, "Invalid protection amount");
 
     IPolicy policy = getPolicyContract();
     require(address(policy) != address(0), "Fatal: Policy missing");
@@ -165,7 +156,7 @@ contract NpmDistributor is ReentrancyGuard {
     require(address(dai) != address(0), "Fatal: DAI missing");
 
     // Get fee info
-    (uint256 premium, uint256 fee) = getPremium(coverKey, productKey, duration, protection);
+    (uint256 premium, uint256 fee) = getPremium(args.coverKey, args.productKey, args.coverDuration, args.amountToCover);
 
     // Transfer DAI to this contract
     dai.safeTransferFrom(msg.sender, address(this), premium + fee);
@@ -173,13 +164,15 @@ contract NpmDistributor is ReentrancyGuard {
     // Approve protocol to pull the protocol fee
     dai.safeIncreaseAllowance(address(policy), premium);
 
+    args.onBehalfOf = msg.sender;
+
     // Purchase protection for this user
-    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, productKey, duration, protection, referralCode);
+    (address cxTokenAt, ) = policy.purchaseCover(args);
 
     // Send your fee (+ any remaining DAI balance) to your treasury address
     dai.safeTransfer(treasury, dai.balanceOf(address(this)));
 
-    emit PolicySold(coverKey, productKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
+    emit PolicySold(args.coverKey, args.productKey, cxTokenAt, msg.sender, args.coverDuration, args.amountToCover, args.referralCode, fee, premium);
   }
 
   function addLiquidity(

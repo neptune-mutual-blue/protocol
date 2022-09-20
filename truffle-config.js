@@ -4,7 +4,7 @@ const config = {
   },
   compilers: {
     solc: {
-      version: '0.8.15',
+      version: '0.8.17',
       docker: false,
       settings: {
         optimizer: {

@@ -37,6 +37,8 @@ describe('Store: delete string', () => {
 
     await store.setString(k, value)
 
+    const [owner] = await ethers.getSigners()
+    await store.setPausers([owner.address], [true])
     await store.pause()
 
     await store.deleteString(k)

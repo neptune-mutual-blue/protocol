@@ -82,31 +82,21 @@ library VaultLibV1 {
    * @param coverKey Specify cover key to obtain the info of.
    * @param pod Provide the address of the POD
    * @param you The address for which the info will be customized
-   * @param values[0] totalPods --> Total PODs in existence
-   * @param values[1] balance --> Stablecoins held in the vault
-   * @param values[2] extendedBalance --> Stablecoins lent outside of the protocol
-   * @param values[3] totalReassurance -- > Total reassurance for this cover
-   * @param values[4] myPodBalance --> Your POD Balance
-   * @param values[5] myShare --> My share of the liquidity pool (in stablecoin)
-   * @param values[6] withdrawalOpen --> The timestamp when withdrawals are opened
-   * @param values[7] withdrawalClose --> The timestamp when withdrawals are closed again
    */
   function getInfoInternal(
     IStore s,
     bytes32 coverKey,
     address pod,
     address you
-  ) external view returns (uint256[] memory values) {
-    values = new uint256[](11);
-
-    values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
-    values[1] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
-    values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
-    values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[6] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
-    values[7] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
+  ) external view returns (IVault.VaultInfoType memory info) {
+    info.totalPods = IERC20(pod).totalSupply(); // Total PODs in existence
+    info.balance = s.getStablecoinOwnedByVaultInternal(coverKey); // Stablecoins held in the vault
+    info.extendedBalance = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
+    info.totalReassurance = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
+    info.myPodBalance = IERC20(pod).balanceOf(you); // Your POD Balance
+    info.myShare = calculateLiquidityInternal(s, coverKey, pod, info.myPodBalance); //  My share of the liquidity pool (in stablecoin)
+    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey)); // The timestamp when withdrawals are opened
+    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey)); // The timestamp when withdrawals are closed again
   }
 
   /**
@@ -303,7 +293,7 @@ library VaultLibV1 {
     If the token is not supported flashFee MUST revert.
     */
     require(stablecoin == token, "Unsupported token");
-    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) > amount, "Amount insufficient");
+    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) >= amount, "Amount insufficient");
 
     uint256 rate = _getFlashLoanFeeRateInternal(s);
     uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);

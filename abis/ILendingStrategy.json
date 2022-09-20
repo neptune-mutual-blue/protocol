@@ -227,9 +227,21 @@
     "name": "getInfo",
     "outputs": [
       {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deposits",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawals",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ILendingStrategy.LendingStrategyInfoType",
+        "name": "info",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

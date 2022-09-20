@@ -15,9 +15,9 @@ library ProtoUtilV1 {
   bytes32 public constant KEY_INTENTIONALLY_EMPTY = 0;
   bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY = 0;
   uint256 public constant MULTIPLIER = 10_000;
-  uint256 public constant MAX_LIQUIDITY = 10_000_000_000;
-  uint256 public constant MAX_PROPOSAL_AMOUNT = 10_000_000_000;
-  uint256 public constant MAX_NPM_STAKE = 10_000_000_000;
+  uint256 public constant MAX_LIQUIDITY = 10_000_000;
+  uint256 public constant MAX_PROPOSAL_AMOUNT = 10_000_000;
+  uint256 public constant MAX_NPM_STAKE = 10_000_000;
   uint256 public constant NPM_PRECISION = 1 ether;
   uint256 public constant CXTOKEN_PRECISION = 1 ether;
   uint256 public constant POD_PRECISION = 1 ether;
@@ -115,6 +115,7 @@ library ProtoUtilV1 {
   bytes32 public constant NS_COVER_POLICY_RATE_FLOOR = "ns:cover:policy:rate:floor";
   bytes32 public constant NS_COVER_POLICY_RATE_CEILING = "ns:cover:policy:rate:ceiling";
   bytes32 public constant NS_POLICY_DISABLED = "ns:policy:disabled";
+  bytes32 public constant NS_POLICY_LAST_PURCHASE_ID = "ns:policy:last:purchase:id";
 
   bytes32 public constant NS_COVER_STAKE = "ns:cover:stake";
   bytes32 public constant NS_COVER_STAKE_OWNED = "ns:cover:stake:owned";
@@ -160,6 +161,9 @@ library ProtoUtilV1 {
 
   /// @dev Used as key to flag if a cover was disputed. Cleared when a cover is finalized.
   bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE = "ns:gov:rep:has:dispute";
+
+  /// @dev Used as key to flag if a incident was finalized.
+  bytes32 public constant NS_GOVERNANCE_REPORTING_FINALIZATION = "ns:gov:rep:has:finalized";
 
   /// @dev Used as key element in a couple of places:
   /// 1. For uint256 --> Sum total of NPM witnesses who disagreed with and disputed an incident reporting

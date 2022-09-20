@@ -59,16 +59,107 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "burner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV2RouterLike",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV2FactoryLike",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "npm",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coverCreationFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minCoverCreationStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "firstReportingStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reportingBurnRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "governanceReporterCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimPlatformFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimReporterCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "flashLoanFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "flashLoanFeeProtocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "resolutionCoolDownPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stateUpdateInterval",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxLendingRatio",
+            "type": "uint256"
+          }
+        ],
         "indexed": false,
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "internalType": "struct IProtocol.InitializeArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "Initialized",
@@ -331,14 +422,106 @@
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "addresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "burner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV2RouterLike",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV2FactoryLike",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "npm",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "treasury",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coverCreationFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minCoverCreationStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "firstReportingStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reportingBurnRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "governanceReporterCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimPlatformFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimReporterCommission",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "flashLoanFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "flashLoanFeeProtocol",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "resolutionCoolDownPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stateUpdateInterval",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxLendingRatio",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IProtocol.InitializeArgs",
+        "name": "args",
+        "type": "tuple"
       }
     ],
     "name": "initialize",
