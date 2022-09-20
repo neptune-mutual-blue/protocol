@@ -1,5 +1,7 @@
 const io = require('../../io')
 const path = require('path')
+
+// npx hardhat compile
 const root = path.join('artifacts', 'contracts', 'interfaces')
 
 const getFiles = async () => {
