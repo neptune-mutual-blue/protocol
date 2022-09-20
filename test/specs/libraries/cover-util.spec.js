@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const { ethers, network } = require('hardhat')
 const BigNumber = require('bignumber.js')
+const moment = require('moment')
 const { deployer, key, helper } = require('../../../util')
 const composer = require('../../../util/composer')
 const { deployDependencies } = require('./deps')
@@ -142,14 +143,42 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
   })
 
   it('must return correct active protection when active incident is greater than zero and policies purchased', async () => {
-    await network.provider.send('evm_increaseTime', [100 * DAYS]) // pass time so that previous policies expire
+    let daysToPass = 100// pass 100 days so that all previous policies expire
+
+    {
+      /* Optimization so that below loop only runs on 23, 24, 25, 26th */
+      /* Find 23rd of the current/next month and add the days to `daysToPass` */
+
+      const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+      const blockDate = moment(block.timestamp * 1000).add(daysToPass, 'days').utc()
+
+      const startDate = blockDate.clone().date(23) // 23rd of the current month
+      if (blockDate.date() >= 25) {
+        startDate.add(1, 'months') // 23rd of the next month
+      }
+
+      daysToPass += startDate.diff(blockDate, 'days') // number of days to pass to get to the 23rd
+    }
+
     const [owner] = await ethers.getSigners()
     let totalCoverageAmount = helper.ether(0, PRECISION)
 
-    // Purchase policy so that cxToken is created
+    await network.provider.send('evm_increaseTime', [daysToPass * DAYS])
+
+    // block number only changes after this transaction even after increasing the time
     await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
+    const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+    const currentDate = new Date(block.timestamp * 1000).getUTCDate()
+    currentDate.should.equal(23) // Confirms if above optimization is done correctly
+
+    // Purchase policies from 23rd to 26th of the month
     while (true) {
+      // Exit if date >= 27
+      const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
+      const currentDate = new Date(block.timestamp * 1000).getUTCDate()
+      if (currentDate >= 27) { break }
+
       const coverageAmount = helper.ether(10_000, PRECISION)
 
       const args = {
@@ -163,12 +192,9 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
 
       await deployed.policy.purchaseCover(args)
       totalCoverageAmount = helper.add(totalCoverageAmount, coverageAmount)
-      await network.provider.send('evm_increaseTime', [1 * DAYS])
 
-      const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
-      if (new Date(block.timestamp * 1000).getUTCDate() === 27) {
-        break
-      }
+      // Increase time by 1 day
+      await network.provider.send('evm_increaseTime', [1 * DAYS])
     }
 
     const result = await mockContract.getActiveLiquidityUnderProtection(coverKey, helper.emptyBytes32)
