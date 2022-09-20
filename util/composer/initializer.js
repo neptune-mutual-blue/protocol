@@ -16,6 +16,7 @@ const { getExternalProtocols } = require('./external-protocols')
 const initialize = async (suite, deploymentId) => {
   const chainId = hre.network.config.chainId
   const [owner] = await ethers.getSigners()
+
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
   const claimPeriod = network.cover.claimPeriod
@@ -25,6 +26,8 @@ const initialize = async (suite, deploymentId) => {
 
   const tokens = await fakeTokenComposer.compose(cache)
   const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
+
+  console.info('[Deployer: %s]. [NPM: %s]. [DAI: %s]', owner.address, await npm.balanceOf(owner.address), await dai.balanceOf(owner.address))
 
   const { router, factory, aaveLendingPool, compoundDaiDelegator, npmPriceOracle } = await getExternalProtocols(cache, tokens)
 
