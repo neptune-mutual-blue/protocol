@@ -6,6 +6,10 @@ import "./IMember.sol";
 pragma solidity ^0.8.0;
 
 interface ILendingStrategy is IMember {
+  /*
+   * deposits Total amount deposited
+   * withdrawals Total amount withdrawn
+   */
   struct LendingStrategyInfoType {
     uint256 deposits;
     uint256 withdrawals;

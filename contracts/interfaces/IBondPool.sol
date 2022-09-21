@@ -4,6 +4,20 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface IBondPool is IMember {
+  /*
+   * lpToken -> Returns the LP token address
+   * marketPrice -> Returns the market price of NPM token
+   * discountRate -> Returns the discount rate for bonding
+   * vestingTerm -> Returns the bond vesting period
+   * maxBond -> Returns maximum amount of bond. To clarify, this means the final NPM amount received by bonders after vesting period.
+   * totalNpmAllocated -> Returns the total amount of NPM tokens allocated for bonding.
+   * totalNpmDistributed -> Returns the total amount of NPM tokens that have been distributed under bond.
+   * npmAvailable -> Returns the available NPM tokens that can be still bonded.
+   * bondContribution --> total lp tokens contributed by you
+   * claimable --> your total claimable NPM tokens at the end of the vesting period or "unlock date"
+   * unlockDate --> your vesting period end or "unlock date"
+   *
+   */
   struct BondPoolInfoType {
     address lpToken;
     uint256 marketPrice;
@@ -17,6 +31,15 @@ interface IBondPool is IMember {
     uint256 claimable;
     uint256 unlockDate;
   }
+
+  /*
+   * LP Token Address
+   * Treasury Address
+   * Bond Discount Rate
+   * Maximum Bond Amount
+   * Vesting Term
+   * NPM to Top Up Now
+   */
 
   struct SetupBondPoolArgs {
     address lpToken;

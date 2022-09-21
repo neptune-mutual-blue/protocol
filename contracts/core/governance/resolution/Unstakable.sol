@@ -122,6 +122,7 @@ abstract contract Unstakable is Resolvable, IUnstakable {
    *
    * @param account Enter account to get the unstake information of
    * @param coverKey Enter the cover key
+   * @param coverKey Enter the product key
    * @param incidentDate Enter the incident date
    */
   function getUnstakeInfoFor(

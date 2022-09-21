@@ -4,6 +4,26 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface ICover is IMember {
+
+  /*
+   * coverKey Enter a unique key for this cover
+   * info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * tokenName Enter the token name of the POD contract that will be deployed.
+   * tokenSymbol Enter the token symbol of the POD contract that will be deployed.
+   * supportsProducts Indicates that this cover supports product(s)
+   * requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
+   * stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+   * initialReassuranceAmount **Optional.** Enter the initial amount of
+   * reassurance tokens you'd like to add to this pool.
+   * minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+   * reportingPeriod The period during when reporting happens.
+   * cooldownperiod Enter the cooldown period for governance.
+   * claimPeriod Enter the claim period.
+   * floor Enter the policy floor rate.
+   * ceiling Enter the policy ceiling rate.
+   * reassuranceRate Enter the reassurance rate.
+   * leverageFactor Leverage Factor
+   */
   struct AddCoverArgs {
     bytes32 coverKey;
     string info;
@@ -23,6 +43,15 @@ interface ICover is IMember {
     uint256 leverageFactor;
   }
 
+  /*
+   * coverKey Enter a cover key
+   * productKey Enter the product key
+   * info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+   * requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
+   * Product status
+   * Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
+   */
   struct AddProductArgs {
     bytes32 coverKey;
     bytes32 productKey;
@@ -32,6 +61,14 @@ interface ICover is IMember {
     uint256 efficiency;
   }
 
+  /*
+   * coverKey Enter the cover key
+   * productKey Enter the product key
+   * info Enter a new IPFS URL to update
+   * Product status
+   * Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
+   *
+   */
   struct UpdateProductArgs {
     bytes32 coverKey;
     bytes32 productKey;

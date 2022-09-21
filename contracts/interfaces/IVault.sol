@@ -5,6 +5,18 @@ import "./IMember.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 interface IVault is IMember, IERC20 {
+  /*
+   * totalPods --> Total PODs in existence
+   * balance --> Stablecoins held in the vault
+   * extendedBalance --> Stablecoins lent outside of the protocol
+   * totalReassurance -- > Total reassurance for this cover
+   * myPodBalance --> Your POD Balance
+   * myShare --> My share of the liquidity pool (in stablecoin)
+   * withdrawalOpen --> The timestamp when withdrawals are opened
+   * withdrawalClose --> The timestamp when withdrawals are closed again
+   *
+   */
+
   struct VaultInfoType {
     uint256 totalPods;
     uint256 balance;
