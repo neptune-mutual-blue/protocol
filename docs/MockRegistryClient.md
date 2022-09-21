@@ -1,6 +1,6 @@
 # MockRegistryClient.sol
 
-View Source: [contracts/mock/MockRegistryClient.sol](../contracts/mock/MockRegistryClient.sol)
+View Source: [\contracts\mock\MockRegistryClient.sol](..\contracts\mock\MockRegistryClient.sol)
 
 **MockRegistryClient**
 
@@ -36,7 +36,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -58,7 +60,9 @@ returns(contract IGovernance)
 
 ```javascript
 function getGovernanceContract() external view returns (IGovernance) {
+
     return s.getGovernanceContract();
+
   }
 ```
 </details>
@@ -80,7 +84,9 @@ returns(contract IPolicy)
 
 ```javascript
 function getPolicyContract() external view returns (IPolicy) {
+
     return s.getPolicyContract();
+
   }
 ```
 </details>
@@ -102,7 +108,9 @@ returns(contract IBondPool)
 
 ```javascript
 function getBondPoolContract() external view returns (IBondPool) {
+
     return s.getBondPoolContract();
+
   }
 ```
 </details>

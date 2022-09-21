@@ -1,6 +1,6 @@
 # StakingPoolLibV1.sol
 
-View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/StakingPoolLibV1.sol)
+View Source: [\contracts\libraries\StakingPoolLibV1.sol](..\contracts\libraries\StakingPoolLibV1.sol)
 
 **StakingPoolLibV1**
 
@@ -14,7 +14,6 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 - [canWithdrawFromBlockHeightInternal(IStore s, bytes32 key, address account)](#canwithdrawfromblockheightinternal)
 - [getLastDepositHeight(IStore s, bytes32 key, address account)](#getlastdepositheight)
 - [getLastRewardHeight(IStore s, bytes32 key, address account)](#getlastrewardheight)
-- [getStakingPoolRewardTokenBalance(IStore s, bytes32 key)](#getstakingpoolrewardtokenbalance)
 - [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
 - [withdrawRewardsInternal(IStore s, bytes32 key, address account)](#withdrawrewardsinternal)
 - [depositInternal(IStore s, bytes32 key, uint256 amount)](#depositinternal)
@@ -26,7 +25,7 @@ Gets the info of a given staking pool by key
 
 ```solidity
 function getInfoInternal(IStore s, bytes32 key, address you) external view
-returns(name string, addresses address[], values uint256[])
+returns(info struct IStakingPools.StakingPoolInfoType)
 ```
 
 **Arguments**
@@ -42,47 +41,61 @@ returns(name string, addresses address[], values uint256[])
 
 ```javascript
 function getInfoInternal(
+
     IStore s,
+
     bytes32 key,
+
     address you
-  )
-    external
-    view
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    )
-  {
-    addresses = new address[](4);
-    values = new uint256[](15);
+
+  ) external view returns (IStakingPools.StakingPoolInfoType memory info) {
 
     bool valid = s.checkIfStakingPoolExists(key);
 
     if (valid) {
-      name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-      addresses[0] = s.getStakingTokenAddressInternal(key);
-      addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
-      addresses[2] = s.getRewardTokenAddressInternal(key);
-      addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+      info.name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-      values[0] = s.getTotalStaked(key);
-      values[1] = s.getTarget(key);
-      values[2] = s.getMaximumStakeInternal(key);
-      values[3] = getPoolStakeBalanceInternal(s, key);
-      values[4] = getPoolCumulativeDeposits(s, key);
-      values[5] = s.getRewardPerBlock(key);
-      values[6] = s.getRewardPlatformFee(key);
-      values[7] = s.getLockupPeriodInBlocks(key);
-      values[8] = s.getRewardTokenBalance(key);
-      values[9] = getAccountStakingBalanceInternal(s, key, you);
-      values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
-      values[11] = calculateRewardsInternal(s, key, you);
-      values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
-      values[13] = getLastDepositHeight(s, key, you);
-      values[14] = getLastRewardHeight(s, key, you);
+      info.stakingToken = s.getStakingTokenAddressInternal(key);
+
+      info.stakingTokenStablecoinPair = s.getStakingTokenStablecoinPairAddressInternal(key);
+
+      info.rewardToken = s.getRewardTokenAddressInternal(key);
+
+      info.rewardTokenStablecoinPair = s.getRewardTokenStablecoinPairAddressInternal(key);
+
+      info.totalStaked = s.getTotalStaked(key);
+
+      info.target = s.getTarget(key);
+
+      info.maximumStake = s.getMaximumStakeInternal(key);
+
+      info.stakeBalance = getPoolStakeBalanceInternal(s, key);
+
+      info.cumulativeDeposits = getPoolCumulativeDeposits(s, key);
+
+      info.rewardPerBlock = s.getRewardPerBlock(key);
+
+      info.platformFee = s.getRewardPlatformFee(key);
+
+      info.lockupPeriod = s.getLockupPeriodInBlocks(key);
+
+      info.rewardTokenBalance = s.getRewardTokenBalance(key);
+
+      info.accountStakeBalance = getAccountStakingBalanceInternal(s, key, you);
+
+      info.totalBlockSinceLastReward = getTotalBlocksSinceLastRewardInternal(s, key, you);
+
+      info.rewards = calculateRewardsInternal(s, key, you);
+
+      info.canWithdrawFromBlockHeight = canWithdrawFromBlockHeightInternal(s, key, you);
+
+      info.lastDepositHeight = getLastDepositHeight(s, key, you);
+
+      info.lastRewardHeight = getLastRewardHeight(s, key, you);
+
     }
+
   }
 ```
 </details>
@@ -106,8 +119,11 @@ returns(uint256)
 
 ```javascript
 function getPoolStakeBalanceInternal(IStore s, bytes32 key) public view returns (uint256) {
+
     uint256 totalStake = s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key);
+
     return totalStake;
+
   }
 ```
 </details>
@@ -131,8 +147,11 @@ returns(uint256)
 
 ```javascript
 function getPoolCumulativeDeposits(IStore s, bytes32 key) public view returns (uint256) {
+
     uint256 totalStake = s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
+
     return totalStake;
+
   }
 ```
 </details>
@@ -157,11 +176,17 @@ returns(uint256)
 
 ```javascript
 function getAccountStakingBalanceInternal(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, account);
+
   }
 ```
 </details>
@@ -186,17 +211,25 @@ returns(uint256)
 
 ```javascript
 function getTotalBlocksSinceLastRewardInternal(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     uint256 from = getLastRewardHeight(s, key, account);
 
     if (from == 0) {
+
       return 0;
+
     }
 
     return block.number - from;
+
   }
 ```
 </details>
@@ -221,19 +254,27 @@ returns(uint256)
 
 ```javascript
 function canWithdrawFromBlockHeightInternal(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
 
     if (lastDepositHeight == 0) {
+
       return 0;
+
     }
 
     uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
 
     return lastDepositHeight + lockupPeriod;
+
   }
 ```
 </details>
@@ -258,11 +299,17 @@ returns(uint256)
 
 ```javascript
 function getLastDepositHeight(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_DEPOSIT_HEIGHTS, key, account);
+
   }
 ```
 </details>
@@ -287,38 +334,17 @@ returns(uint256)
 
 ```javascript
 function getLastRewardHeight(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account);
-  }
-```
-</details>
 
-### getStakingPoolRewardTokenBalance
-
-```solidity
-function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
-    IERC20 rewardToken = IERC20(s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key));
-    address stakingPool = s.getStakingPoolAddress();
-
-    return rewardToken.balanceOf(stakingPool);
   }
 ```
 </details>
@@ -343,23 +369,33 @@ returns(uint256)
 
 ```javascript
 function calculateRewardsInternal(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) public view returns (uint256) {
+
     uint256 totalBlocks = getTotalBlocksSinceLastRewardInternal(s, key, account);
 
     if (totalBlocks == 0) {
+
       return 0;
+
     }
 
     uint256 rewardPerBlock = s.getRewardPerBlock(key);
+
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
+
     uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
 
-    uint256 poolBalance = getStakingPoolRewardTokenBalance(s, key);
+    uint256 poolBalance = s.getRewardTokenBalance(key);
 
     return rewards > poolBalance ? poolBalance : rewards;
+
   }
 ```
 </details>
@@ -386,47 +422,73 @@ returns(rewardToken address, rewards uint256, platformFee uint256)
 
 ```javascript
 function withdrawRewardsInternal(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   )
+
     public
+
     returns (
+
       address rewardToken,
+
       uint256 rewards,
+
       uint256 platformFee
+
     )
+
   {
+
     require(s.getRewardPlatformFee(key) <= ProtoUtilV1.MULTIPLIER, "Invalid reward platform fee");
+
     rewards = calculateRewardsInternal(s, key, account);
 
     s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account, block.number);
 
     if (rewards == 0) {
+
       return (address(0), 0, 0);
+
     }
 
     rewardToken = s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key);
 
     // Update (decrease) the balance of reward token
+
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN_BALANCE, key, rewards);
 
     // Update total rewards given
+
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, account, rewards); // To this account
+
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_TOTAL_REWARD_GIVEN, key, rewards); // To everyone
 
     // @suppress-division Checked side effects. If the reward platform fee is zero
+
     // or a very small number, platform fee becomes zero because of data loss
+
     platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
 
     // @suppress-subtraction If `getRewardPlatformFee` is 100%, the following can result in zero value.
+
     if (rewards - platformFee > 0) {
+
       IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
+
     }
 
     if (platformFee > 0) {
+
       IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+
     }
+
   }
 ```
 </details>
@@ -453,36 +515,57 @@ returns(stakingToken address, rewardToken address, rewards uint256, rewardsPlatf
 
 ```javascript
 function depositInternal(
+
     IStore s,
+
     bytes32 key,
+
     uint256 amount
+
   )
+
     external
+
     returns (
+
       address stakingToken,
+
       address rewardToken,
+
       uint256 rewards,
+
       uint256 rewardsPlatformFee
+
     )
+
   {
+
     require(amount > 0, "Enter an amount");
+
     require(amount <= s.getMaximumStakeInternal(key), "Stake too high");
+
     require(amount <= s.getAvailableToStakeInternal(key), "Target achieved or cap exceeded");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
+
     (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // Individual state
+
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
+
     s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_DEPOSIT_HEIGHTS, key, msg.sender, block.number);
 
     // Global state
+
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
+
     s.addUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key, amount);
 
     IERC20(stakingToken).ensureTransferFrom(msg.sender, address(this), amount);
+
   }
 ```
 </details>
@@ -509,37 +592,57 @@ returns(stakingToken address, rewardToken address, rewards uint256, rewardsPlatf
 
 ```javascript
 function withdrawInternal(
+
     IStore s,
+
     bytes32 key,
+
     uint256 amount
+
   )
+
     external
+
     returns (
+
       address stakingToken,
+
       address rewardToken,
+
       uint256 rewards,
+
       uint256 rewardsPlatformFee
+
     )
+
   {
+
     require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
-    require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
+
+    require(block.number >= canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 
     // First withdraw your rewards
+
     (rewardToken, rewards, rewardsPlatformFee) = withdrawRewardsInternal(s, key, msg.sender);
 
     // @suppress-subtraction The maximum amount that can be withdrawn is the staked balance
+
     // and therefore underflow is not possible.
+
     // Individual state
+
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, msg.sender, amount);
 
     // Global state
+
     s.subtractUintByKeys(StakingPoolCoreLibV1.NS_POOL_STAKING_TOKEN_BALANCE, key, amount);
 
     IERC20(stakingToken).ensureTransfer(msg.sender, amount);
+
   }
 ```
 </details>

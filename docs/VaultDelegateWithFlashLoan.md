@@ -1,6 +1,6 @@
 # With Flash Loan Delegate Contract (VaultDelegateWithFlashLoan.sol)
 
-View Source: [contracts/core/delegates/VaultDelegateWithFlashLoan.sol](../contracts/core/delegates/VaultDelegateWithFlashLoan.sol)
+View Source: [\contracts\core\delegates\VaultDelegateWithFlashLoan.sol](..\contracts\core\delegates\VaultDelegateWithFlashLoan.sol)
 
 **↗ Extends: [VaultDelegateBase](VaultDelegateBase.md)**
 **↘ Derived Contracts: [VaultDelegate](VaultDelegate.md)**
@@ -44,13 +44,21 @@ The amount of `token` to be charged for the loan, on top of the returned princip
 
 ```javascript
 function getFlashFee(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     address token,
+
     uint256 amount
+
   ) external view override returns (uint256) {
+
     s.senderMustBeVaultContract(coverKey);
+
     return s.getFlashFeeInternal(coverKey, token, amount);
+
   }
 ```
 </details>
@@ -82,12 +90,19 @@ The amount of `token` that can be borrowed.
 
 ```javascript
 function getMaxFlashLoan(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     address token
+
   ) external view override returns (uint256) {
+
     s.senderMustBeVaultContract(coverKey);
+
     return s.getMaxFlashLoanInternal(coverKey, token);
+
   }
 ```
 </details>
@@ -117,28 +132,47 @@ returns(stablecoin contract IERC20, fee uint256, protocolFee uint256)
 
 ```javascript
 function preFlashLoan(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     IERC3156FlashBorrower, /*receiver*/
+
     address token,
+
     uint256 amount,
+
     bytes calldata /*data*/
+
   )
+
     external
+
     override
+
     returns (
+
       IERC20 stablecoin,
+
       uint256 fee,
+
       uint256 protocolFee
+
     )
+
   {
+
     s.mustNotBePaused();
+
     s.mustEnsureAllProductsAreNormal(coverKey);
+
     s.senderMustBeVaultContract(coverKey);
 
     stablecoin = IERC20(s.getStablecoin());
 
     // require(address(stablecoin) == token, "Unknown token"); <-- already checked in `getFlashFeesInternal`
+
     // require(amount > 0, "Loan too small"); <-- already checked in `getFlashFeesInternal`
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, true);
@@ -146,7 +180,9 @@ function preFlashLoan(
     (fee, protocolFee) = s.getFlashFeesInternal(coverKey, token, amount);
 
     require(fee > 0, "Loan too small");
+
     require(protocolFee > 0, "Loan too small");
+
   }
 ```
 </details>
@@ -175,20 +211,33 @@ function postFlashLoan(address , bytes32 coverKey, IERC3156FlashBorrower , addre
 
 ```javascript
 function postFlashLoan(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     IERC3156FlashBorrower, /*receiver*/
+
     address, /*token*/
+
     uint256, /*amount*/
+
     bytes calldata /*data*/
+
   ) external override {
+
     // @suppress-zero-value-check The `amount` value isn't used and therefore not checked
+
     s.mustNotBePaused();
+
     s.senderMustBeVaultContract(coverKey);
+
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
+
     s.updateStateAndLiquidity(coverKey);
+
   }
 ```
 </details>

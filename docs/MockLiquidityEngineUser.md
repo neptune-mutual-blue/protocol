@@ -1,6 +1,6 @@
 # MockLiquidityEngineUser.sol
 
-View Source: [contracts/mock/lib-user/MockLiquidityEngineUser.sol](../contracts/mock/lib-user/MockLiquidityEngineUser.sol)
+View Source: [\contracts\mock\lib-user\MockLiquidityEngineUser.sol](..\contracts\mock\lib-user\MockLiquidityEngineUser.sol)
 
 **MockLiquidityEngineUser**
 
@@ -34,7 +34,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -56,7 +58,9 @@ function setMaxLendingRatioInternal(uint256 ratio) external nonpayable
 
 ```javascript
 function setMaxLendingRatioInternal(uint256 ratio) external {
+
     s.setMaxLendingRatioInternal(ratio);
+
   }
 ```
 </details>

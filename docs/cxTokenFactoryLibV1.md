@@ -1,6 +1,6 @@
 # cxTokenFactoryLibV1.sol
 
-View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/libraries/cxTokenFactoryLibV1.sol)
+View Source: [\contracts\libraries\cxTokenFactoryLibV1.sol](..\contracts\libraries\cxTokenFactoryLibV1.sol)
 
 **cxTokenFactoryLibV1**
 
@@ -33,17 +33,27 @@ returns(bytecode bytes, salt bytes32)
 
 ```javascript
 function getByteCode(
+
     IStore s,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     string memory tokenName,
+
     uint256 expiryDate
+
   ) external pure returns (bytes memory bytecode, bytes32 salt) {
+
     salt = keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, expiryDate));
 
     //slither-disable-next-line too-many-digits
+
     bytecode = abi.encodePacked(type(cxToken).creationCode, abi.encode(s, coverKey, productKey, tokenName, expiryDate));
+
     require(bytecode.length > 0, "Invalid bytecode");
+
   }
 ```
 </details>

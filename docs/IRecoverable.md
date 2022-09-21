@@ -1,6 +1,6 @@
 # IRecoverable.sol
 
-View Source: [contracts/interfaces/IRecoverable.sol](../contracts/interfaces/IRecoverable.sol)
+View Source: [\contracts\interfaces\IRecoverable.sol](..\contracts\interfaces\IRecoverable.sol)
 
 **↘ Derived Contracts: [Recoverable](Recoverable.md)**
 

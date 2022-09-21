@@ -1,6 +1,6 @@
 # StakingPoolCoreLibV1.sol
 
-View Source: [contracts/libraries/StakingPoolCoreLibV1.sol](../contracts/libraries/StakingPoolCoreLibV1.sol)
+View Source: [\contracts\libraries\StakingPoolCoreLibV1.sol](..\contracts\libraries\StakingPoolCoreLibV1.sol)
 
 **StakingPoolCoreLibV1**
 
@@ -47,10 +47,10 @@ bytes32 public constant NS_POOL_TOTAL_REWARD_GIVEN;
 - [getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key)](#getrewardtokenstablecoinpairaddressinternal)
 - [ensureValidStakingPool(IStore s, bytes32 key)](#ensurevalidstakingpool)
 - [checkIfStakingPoolExists(IStore s, bytes32 key)](#checkifstakingpoolexists)
-- [validateAddOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#validateaddoreditpoolinternal)
-- [addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values)](#addoreditpoolinternal)
-- [_updatePoolValues(IStore s, bytes32 key, uint256[] values)](#_updatepoolvalues)
-- [_initializeNewPool(IStore s, bytes32 key, address[] addresses)](#_initializenewpool)
+- [validateAddOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#validateaddoreditpoolinternal)
+- [addOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#addoreditpoolinternal)
+- [_updatePoolValues(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#_updatepoolvalues)
+- [_initializeNewPool(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#_initializenewpool)
 
 ### getAvailableToStakeInternal
 
@@ -73,14 +73,19 @@ returns(uint256)
 
 ```javascript
 function getAvailableToStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
+
     uint256 totalStaked = getTotalStaked(s, key);
+
     uint256 target = getTarget(s, key);
 
     if (totalStaked >= target) {
+
       return 0;
+
     }
 
     return target - totalStaked;
+
   }
 ```
 </details>
@@ -104,7 +109,9 @@ returns(uint256)
 
 ```javascript
 function getTarget(IStore s, bytes32 key) public view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_STAKING_TARGET, key);
+
   }
 ```
 </details>
@@ -128,7 +135,9 @@ returns(uint256)
 
 ```javascript
 function getRewardPlatformFee(IStore s, bytes32 key) external view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key);
+
   }
 ```
 </details>
@@ -152,7 +161,9 @@ returns(uint256)
 
 ```javascript
 function getTotalStaked(IStore s, bytes32 key) public view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
+
   }
 ```
 </details>
@@ -176,7 +187,9 @@ returns(uint256)
 
 ```javascript
 function getRewardPerBlock(IStore s, bytes32 key) external view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
+
   }
 ```
 </details>
@@ -200,7 +213,9 @@ returns(uint256)
 
 ```javascript
 function getLockupPeriodInBlocks(IStore s, bytes32 key) external view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
+
   }
 ```
 </details>
@@ -224,7 +239,9 @@ returns(uint256)
 
 ```javascript
 function getRewardTokenBalance(IStore s, bytes32 key) external view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key);
+
   }
 ```
 </details>
@@ -248,7 +265,9 @@ returns(uint256)
 
 ```javascript
 function getMaximumStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
+
     return s.getUintByKeys(NS_POOL_MAX_STAKE, key);
+
   }
 ```
 </details>
@@ -272,7 +291,9 @@ returns(address)
 
 ```javascript
 function getStakingTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
+
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN, key);
+
   }
 ```
 </details>
@@ -296,7 +317,9 @@ returns(address)
 
 ```javascript
 function getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
+
     return s.getAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key);
+
   }
 ```
 </details>
@@ -320,7 +343,9 @@ returns(address)
 
 ```javascript
 function getRewardTokenAddressInternal(IStore s, bytes32 key) external view returns (address) {
+
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN, key);
+
   }
 ```
 </details>
@@ -344,7 +369,9 @@ returns(address)
 
 ```javascript
 function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) external view returns (address) {
+
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key);
+
   }
 ```
 </details>
@@ -367,7 +394,9 @@ function ensureValidStakingPool(IStore s, bytes32 key) external view
 
 ```javascript
 function ensureValidStakingPool(IStore s, bytes32 key) external view {
+
     require(checkIfStakingPoolExists(s, key), "Pool invalid or closed");
+
   }
 ```
 </details>
@@ -391,7 +420,9 @@ returns(bool)
 
 ```javascript
 function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bool) {
+
     return s.getBoolByKeys(NS_POOL, key);
+
   }
 ```
 </details>
@@ -399,7 +430,7 @@ function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bo
 ### validateAddOrEditPoolInternal
 
 ```solidity
-function validateAddOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values) public view
+function validateAddOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args) public view
 returns(bool)
 ```
 
@@ -408,39 +439,42 @@ returns(bool)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 |  | 
-| name | string |  | 
-| addresses | address[] |  | 
-| values | uint256[] |  | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function validateAddOrEditPoolInternal(
-    IStore s,
-    bytes32 key,
-    string calldata name,
-    address[] calldata addresses,
-    uint256[] calldata values
-  ) public view returns (bool) {
-    require(key > 0, "Invalid key");
+function validateAddOrEditPoolInternal(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) public view returns (bool) {
 
-    bool exists = checkIfStakingPoolExists(s, key);
+    require(args.key > 0, "Invalid key");
+
+    bool exists = checkIfStakingPoolExists(s, args.key);
 
     if (exists == false) {
-      require(bytes(name).length > 0, "Invalid name");
-      require(addresses[0] != address(0), "Invalid staking token");
+
+      require(bytes(args.name).length > 0, "Invalid name");
+
+      require(args.stakingToken != address(0), "Invalid staking token");
+
       // require(addresses[1] != address(0), "Invalid staking token pair"); // A POD doesn't have any pair with stablecion
-      require(addresses[2] != address(0), "Invalid reward token");
-      require(addresses[3] != address(0), "Invalid reward token pair");
-      require(values[4] > 0, "Provide lockup period in blocks");
-      require(values[5] > 0, "Provide reward token allocation");
-      require(values[3] > 0, "Provide reward per block");
-      require(values[0] > 0, "Please provide staking target");
+
+      require(args.rewardToken != address(0), "Invalid reward token");
+
+      require(args.uniRewardTokenDollarPair != address(0), "Invalid reward token pair");
+
+      require(args.lockupPeriod > 0, "Provide lockup period in blocks");
+
+      require(args.rewardTokenToDeposit > 0, "Provide reward token allocation");
+
+      require(args.rewardPerBlock > 0, "Provide reward per block");
+
+      require(args.stakingTarget > 0, "Please provide staking target");
+
     }
 
     return exists;
+
   }
 ```
 </details>
@@ -450,7 +484,7 @@ function validateAddOrEditPoolInternal(
 Adds or edits the pool by key
 
 ```solidity
-function addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] addresses, uint256[] values) external nonpayable
+function addOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args) external nonpayable
 ```
 
 **Arguments**
@@ -458,40 +492,38 @@ function addOrEditPoolInternal(IStore s, bytes32 key, string name, address[] add
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| name | string | Enter a name for this pool | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addOrEditPoolInternal(
-    IStore s,
-    bytes32 key,
-    string calldata name,
-    address[] calldata addresses,
-    uint256[] calldata values
-  ) external {
+function addOrEditPoolInternal(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) external {
+
     // @suppress-zero-value-check The uint values are checked in the function `validateAddOrEditPoolInternal`
-    bool poolExists = validateAddOrEditPoolInternal(s, key, name, addresses, values);
+
+    bool poolExists = validateAddOrEditPoolInternal(s, args);
 
     if (poolExists == false) {
-      _initializeNewPool(s, key, addresses);
+
+      _initializeNewPool(s, args);
+
     }
 
-    if (bytes(name).length > 0) {
-      s.setStringByKeys(NS_POOL, key, name);
+    if (bytes(args.name).length > 0) {
+
+      s.setStringByKeys(NS_POOL, args.key, args.name);
+
     }
 
-    _updatePoolValues(s, key, values);
+    _updatePoolValues(s, args);
 
-    // If `values[5] --> rewardTokenDeposit` is specified, the contract
-    // pulls the reward tokens to this contract address
-    if (values[5] > 0) {
-      IERC20(addresses[2]).ensureTransferFrom(msg.sender, address(this), values[5]);
+    if (args.rewardTokenToDeposit > 0) {
+
+      IERC20(args.rewardToken).ensureTransferFrom(msg.sender, address(this), args.rewardTokenToDeposit);
+
     }
+
   }
 ```
 </details>
@@ -501,7 +533,7 @@ function addOrEditPoolInternal(
 Updates the values of a staking pool by the given key
 
 ```solidity
-function _updatePoolValues(IStore s, bytes32 key, uint256[] values) private nonpayable
+function _updatePoolValues(IStore s, struct IStakingPools.AddOrEditPoolArgs args) private nonpayable
 ```
 
 **Arguments**
@@ -509,42 +541,52 @@ function _updatePoolValues(IStore s, bytes32 key, uint256[] values) private nonp
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore | Provide an instance of the store | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _updatePoolValues(
-    IStore s,
-    bytes32 key,
-    uint256[] calldata values
-  ) private {
-    if (values[0] > 0) {
-      s.setUintByKeys(NS_POOL_STAKING_TARGET, key, values[0]);
+function _updatePoolValues(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) private {
+
+    if (args.stakingTarget > 0) {
+
+      s.setUintByKeys(NS_POOL_STAKING_TARGET, args.key, args.stakingTarget);
+
     }
 
-    if (values[1] > 0) {
-      s.setUintByKeys(NS_POOL_MAX_STAKE, key, values[1]);
+    if (args.maxStake > 0) {
+
+      s.setUintByKeys(NS_POOL_MAX_STAKE, args.key, args.maxStake);
+
     }
 
-    if (values[2] > 0) {
-      s.setUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key, values[2]);
+    if (args.platformFee > 0) {
+
+      s.setUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, args.key, args.platformFee);
+
     }
 
-    if (values[3] > 0) {
-      s.setUintByKeys(NS_POOL_REWARD_PER_BLOCK, key, values[3]);
+    if (args.rewardPerBlock > 0) {
+
+      s.setUintByKeys(NS_POOL_REWARD_PER_BLOCK, args.key, args.rewardPerBlock);
+
     }
 
-    if (values[4] > 0) {
-      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key, values[4]);
+    if (args.lockupPeriod > 0) {
+
+      s.setUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, args.key, args.lockupPeriod);
+
     }
 
-    if (values[5] > 0) {
-      s.addUintByKeys(NS_POOL_REWARD_TOKEN_DEPOSITS, key, values[5]);
-      s.addUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key, values[5]);
+    if (args.rewardTokenToDeposit > 0) {
+
+      s.addUintByKeys(NS_POOL_REWARD_TOKEN_DEPOSITS, args.key, args.rewardTokenToDeposit);
+
+      s.addUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, args.key, args.rewardTokenToDeposit);
+
     }
+
   }
 ```
 </details>
@@ -554,7 +596,7 @@ function _updatePoolValues(
 Initializes a new pool by the given key. Assumes that the pool does not exist.
 
 ```solidity
-function _initializeNewPool(IStore s, bytes32 key, address[] addresses) private nonpayable
+function _initializeNewPool(IStore s, struct IStakingPools.AddOrEditPoolArgs args) private nonpayable
 ```
 
 **Arguments**
@@ -562,24 +604,24 @@ function _initializeNewPool(IStore s, bytes32 key, address[] addresses) private 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore | Provide an instance of the store | 
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function _initializeNewPool(
-    IStore s,
-    bytes32 key,
-    address[] calldata addresses
-  ) private {
-    s.setAddressByKeys(NS_POOL_STAKING_TOKEN, key, addresses[0]);
-    s.setAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[1]);
-    s.setAddressByKeys(NS_POOL_REWARD_TOKEN, key, addresses[2]);
-    s.setAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key, addresses[3]);
+function _initializeNewPool(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) private {
 
-    s.setBoolByKeys(NS_POOL, key, true);
+    s.setAddressByKeys(NS_POOL_STAKING_TOKEN, args.key, args.stakingToken);
+
+    s.setAddressByKeys(NS_POOL_STAKING_TOKEN_UNI_STABLECOIN_PAIR, args.key, args.uniStakingTokenDollarPair);
+
+    s.setAddressByKeys(NS_POOL_REWARD_TOKEN, args.key, args.rewardToken);
+
+    s.setAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, args.key, args.uniRewardTokenDollarPair);
+
+    s.setBoolByKeys(NS_POOL, args.key, true);
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # MockProtocol.sol
 
-View Source: [contracts/mock/base/MockProtocol.sol](../contracts/mock/base/MockProtocol.sol)
+View Source: [\contracts\mock\base\MockProtocol.sol](..\contracts\mock\base\MockProtocol.sol)
 
 **↗ Extends: [AccessControl](AccessControl.md)**
 
@@ -37,7 +37,9 @@ function setPaused(bool s) external nonpayable
 
 ```javascript
 function setPaused(bool s) external {
+
     state = s;
+
   }
 ```
 </details>
@@ -59,7 +61,9 @@ returns(bool)
 
 ```javascript
 function paused() external view returns (bool) {
+
     return state;
+
   }
 ```
 </details>
@@ -83,15 +87,23 @@ function setupRole(bytes32 role, bytes32 adminRole, address account) external no
 
 ```javascript
 function setupRole(
+
     bytes32 role,
+
     bytes32 adminRole,
+
     address account
+
   ) external {
+
     _setRoleAdmin(role, adminRole);
 
     if (account != address(0)) {
+
       _setupRole(role, account);
+
     }
+
   }
 ```
 </details>

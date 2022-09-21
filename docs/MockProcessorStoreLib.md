@@ -1,6 +1,6 @@
 # MockProcessorStoreLib.sol
 
-View Source: [contracts/mock/claims-processor/MockProcessorStore.sol](../contracts/mock/claims-processor/MockProcessorStore.sol)
+View Source: [\contracts\mock\claims-processor\MockProcessorStore.sol](..\contracts\mock\claims-processor\MockProcessorStore.sol)
 
 **↗ Extends: [MockStore](MockStore.md)**
 
@@ -41,35 +41,53 @@ returns(values address[])
 
 ```javascript
 function initialize(
+
     MockStore s,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address cxToken,
+
     uint256 incidentDate
+
   ) external returns (address[] memory values) {
+
     MockProtocol protocol = new MockProtocol();
+
     MockVault vault = new MockVault();
+
     FakePriceOracle oracle = new FakePriceOracle();
 
     s.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
+
     s.setAddress(ProtoUtilV1.CNS_COVER_STABLECOIN, cxToken);
+
     s.setAddress(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, address(oracle));
 
     s.setBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
+
     s.setBool(ProtoUtilV1.NS_MEMBERS, cxToken);
+
     s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey)), incidentDate);
 
     s.setBool(ProtoUtilV1.NS_MEMBERS, address(vault));
+
     s.setAddress(ProtoUtilV1.NS_CONTRACTS, "cns:cover:vault", coverKey, address(vault));
 
     setProductStatus(s, coverKey, productKey, incidentDate, 4);
+
     setClaimBeginTimestamp(s, coverKey, productKey, block.timestamp - 100 days); // solhint-disable-line
+
     setClaimExpiryTimestamp(s, coverKey, productKey, block.timestamp + 100 days); // solhint-disable-line
 
     values = new address[](2);
 
     values[0] = address(protocol);
+
     values[1] = address(vault);
+
   }
 ```
 </details>
@@ -92,7 +110,9 @@ function disassociateCxToken(MockStore s, address cxToken) external nonpayable
 
 ```javascript
 function disassociateCxToken(MockStore s, address cxToken) external {
+
     s.unsetBool(ProtoUtilV1.NS_COVER_CXTOKEN, cxToken);
+
   }
 ```
 </details>
@@ -118,13 +138,21 @@ function setProductStatus(MockStore s, bytes32 coverKey, bytes32 productKey, uin
 
 ```javascript
 function setProductStatus(
+
     MockStore s,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 value
+
   ) public {
+
     s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_STATUS, coverKey, productKey, incidentDate)), value);
+
   }
 ```
 </details>
@@ -149,12 +177,19 @@ function setClaimBeginTimestamp(MockStore s, bytes32 coverKey, bytes32 productKe
 
 ```javascript
 function setClaimBeginTimestamp(
+
     MockStore s,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 value
+
   ) public {
+
     s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey)), value);
+
   }
 ```
 </details>
@@ -179,12 +214,19 @@ function setClaimExpiryTimestamp(MockStore s, bytes32 coverKey, bytes32 productK
 
 ```javascript
 function setClaimExpiryTimestamp(
+
     MockStore s,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 value
+
   ) public {
+
     s.setUint(keccak256(abi.encodePacked(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey)), value);
+
   }
 ```
 </details>
@@ -210,12 +252,19 @@ returns(values address[])
 
 ```javascript
 function initialize(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address cxToken,
+
     uint256 incidentDate
+
   ) external returns (address[] memory values) {
+
     return MockProcessorStoreLib.initialize(this, coverKey, productKey, cxToken, incidentDate);
+
   }
 ```
 </details>
@@ -237,7 +286,9 @@ function disassociateCxToken(address cxToken) external nonpayable
 
 ```javascript
 function disassociateCxToken(address cxToken) external {
+
     MockProcessorStoreLib.disassociateCxToken(this, cxToken);
+
   }
 ```
 </details>
@@ -262,12 +313,19 @@ function setProductStatus(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 ```javascript
 function setProductStatus(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 value
+
   ) external {
+
     MockProcessorStoreLib.setProductStatus(this, coverKey, productKey, incidentDate, value);
+
   }
 ```
 </details>
@@ -291,11 +349,17 @@ function setClaimBeginTimestamp(bytes32 coverKey, bytes32 productKey, uint256 va
 
 ```javascript
 function setClaimBeginTimestamp(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 value
+
   ) external {
+
     MockProcessorStoreLib.setClaimBeginTimestamp(this, coverKey, productKey, value);
+
   }
 ```
 </details>
@@ -319,11 +383,17 @@ function setClaimExpiryTimestamp(bytes32 coverKey, bytes32 productKey, uint256 v
 
 ```javascript
 function setClaimExpiryTimestamp(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 value
+
   ) external {
+
     MockProcessorStoreLib.setClaimExpiryTimestamp(this, coverKey, productKey, value);
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # IWitness.sol
 
-View Source: [contracts/interfaces/IWitness.sol](../contracts/interfaces/IWitness.sol)
+View Source: [\contracts\interfaces\IWitness.sol](..\contracts\interfaces\IWitness.sol)
 
 **↘ Derived Contracts: [IGovernance](IGovernance.md), [Witness](Witness.md)**
 
@@ -42,10 +42,15 @@ function attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint
 
 ```javascript
 function attest(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 stake
+
   ) external;
 ```
 </details>
@@ -70,10 +75,15 @@ function refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint
 
 ```javascript
 function refute(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 stake
+
   ) external;
 ```
 </details>
@@ -141,9 +151,13 @@ returns(uint256, uint256)
 
 ```javascript
 function getStakes(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external view returns (uint256, uint256);
 ```
 </details>
@@ -169,10 +183,15 @@ returns(uint256, uint256)
 
 ```javascript
 function getStakesOf(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address account
+
   ) external view returns (uint256, uint256);
 ```
 </details>

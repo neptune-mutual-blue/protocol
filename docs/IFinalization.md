@@ -1,6 +1,6 @@
 # IFinalization.sol
 
-View Source: [contracts/interfaces/IFinalization.sol](../contracts/interfaces/IFinalization.sol)
+View Source: [\contracts\interfaces\IFinalization.sol](..\contracts\interfaces\IFinalization.sol)
 
 **↘ Derived Contracts: [Finalization](Finalization.md), [IResolution](IResolution.md)**
 
@@ -35,9 +35,13 @@ function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ex
 
 ```javascript
 function finalize(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external;
 ```
 </details>

@@ -1,6 +1,6 @@
 # MockCxTokenStore.sol
 
-View Source: [contracts/mock/cx-token/MockCxTokenStore.sol](../contracts/mock/cx-token/MockCxTokenStore.sol)
+View Source: [\contracts\mock\cx-token\MockCxTokenStore.sol](..\contracts\mock\cx-token\MockCxTokenStore.sol)
 
 **↗ Extends: [MockStore](MockStore.md)**
 
@@ -28,13 +28,17 @@ returns(address)
 
 ```javascript
 function initialize() external returns (address) {
+
     MockProtocol protocol = new MockProtocol();
+
     FakePriceOracle oracle = new FakePriceOracle();
 
     this.setAddress(ProtoUtilV1.CNS_CORE, address(protocol));
+
     this.setAddress(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, address(oracle));
 
     return address(protocol);
+
   }
 ```
 </details>
@@ -56,7 +60,9 @@ function registerPolicyContract(address policy) external nonpayable
 
 ```javascript
 function registerPolicyContract(address policy) external {
+
     super.setAddress(ProtoUtilV1.NS_CONTRACTS, ProtoUtilV1.CNS_COVER_POLICY, policy);
+
   }
 ```
 </details>

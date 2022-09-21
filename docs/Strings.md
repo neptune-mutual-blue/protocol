@@ -1,6 +1,6 @@
 # Strings.sol
 
-View Source: [openzeppelin-solidity/contracts/utils/Strings.sol](../openzeppelin-solidity/contracts/utils/Strings.sol)
+View Source: [openzeppelin-solidity\contracts\utils\Strings.sol](..\openzeppelin-solidity\contracts\utils\Strings.sol)
 
 **Strings**
 

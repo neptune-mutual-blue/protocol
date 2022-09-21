@@ -5,76 +5,40 @@ import "./IMember.sol";
 
 interface ICover is IMember {
 
-  /*
-   * coverKey Enter a unique key for this cover
-   * info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
-   * tokenName Enter the token name of the POD contract that will be deployed.
-   * tokenSymbol Enter the token symbol of the POD contract that will be deployed.
-   * supportsProducts Indicates that this cover supports product(s)
-   * requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
-   * stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
-   * initialReassuranceAmount **Optional.** Enter the initial amount of
-   * reassurance tokens you'd like to add to this pool.
-   * minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
-   * reportingPeriod The period during when reporting happens.
-   * cooldownperiod Enter the cooldown period for governance.
-   * claimPeriod Enter the claim period.
-   * floor Enter the policy floor rate.
-   * ceiling Enter the policy ceiling rate.
-   * reassuranceRate Enter the reassurance rate.
-   * leverageFactor Leverage Factor
-   */
   struct AddCoverArgs {
-    bytes32 coverKey;
-    string info;
-    string tokenName;
-    string tokenSymbol;
-    bool supportsProducts;
-    bool requiresWhitelist;
-    uint256 stakeWithFee;
-    uint256 initialReassuranceAmount;
-    uint256 minStakeToReport;
-    uint256 reportingPeriod;
-    uint256 cooldownPeriod;
-    uint256 claimPeriod;
-    uint256 floor;
-    uint256 ceiling;
-    uint256 reassuranceRate;
-    uint256 leverageFactor;
+    bytes32 coverKey; //coverKey Enter a unique key for this cover
+    string info; //info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+    string tokenName; //tokenName Enter the token name of the POD contract that will be deployed.
+    string tokenSymbol; //tokenSymbol Enter the token symbol of the POD contract that will be deployed.
+    bool supportsProducts; //supportsProducts Indicates that this cover supports product(s)
+    bool requiresWhitelist; //requiresWhitelist Signifies if this cover only enables whitelisted addresses to purchase policies.
+    uint256 stakeWithFee;  //stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract.
+    uint256 initialReassuranceAmount; //initialReassuranceAmount **Optional.** Enter the initial amount of
+    uint256 minStakeToReport; //minStakeToReport A cover creator can override default min NPM stake to avoid spam reports
+    uint256 reportingPeriod; //reportingPeriod The period during when reporting happens.
+    uint256 cooldownPeriod; //cooldownperiod Enter the cooldown period for governance.
+    uint256 claimPeriod; //claimPeriod Enter the claim period.
+    uint256 floor; //floor Enter the policy floor rate.
+    uint256 ceiling; //ceiling Enter the policy ceiling rate.
+    uint256 reassuranceRate; //reassuranceRate Enter the reassurance rate.
+    uint256 leverageFactor; //leverageFactor Leverage Factor
   }
 
-  /*
-   * coverKey Enter a cover key
-   * productKey Enter the product key
-   * info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
-   * requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
-   * Product status
-   * Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
-   *
-   */
   struct AddProductArgs {
-    bytes32 coverKey;
-    bytes32 productKey;
-    string info;
-    bool requiresWhitelist;
-    uint256 productStatus;
-    uint256 efficiency;
+    bytes32 coverKey; //coverKey Enter a cover key
+    bytes32 productKey; //productKey Enter the product key
+    string info; //info IPFS hash. Check out the [documentation](https://docs.neptunemutual.com/sdk/managing-covers) for more info.
+    bool requiresWhitelist; //requiresWhitelist Enter true if you want to maintain a whitelist and restrict non-whitelisted users to purchase policies.
+    uint256 productStatus; //Product status
+    uint256 efficiency; //Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
   }
 
-  /*
-   * coverKey Enter the cover key
-   * productKey Enter the product key
-   * info Enter a new IPFS URL to update
-   * Product status
-   * Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
-   *
-   */
   struct UpdateProductArgs {
-    bytes32 coverKey;
-    bytes32 productKey;
-    string info;
-    uint256 productStatus;
-    uint256 efficiency;
+    bytes32 coverKey; //coverKey Enter the cover key
+    bytes32 productKey; //productKey Enter the product key
+    string info; //info Enter a new IPFS URL to update
+    uint256 productStatus; //Product status
+    uint256 efficiency; //Enter the capital efficiency ratio in percentage value (Check ProtoUtilV1.MULTIPLIER for division)
   }
 
   event CoverCreated(bytes32 indexed coverKey, string info, string tokenName, string tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);

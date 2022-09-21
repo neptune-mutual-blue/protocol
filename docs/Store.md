@@ -1,6 +1,6 @@
 # Store.sol
 
-View Source: [contracts/core/store/Store.sol](../contracts/core/store/Store.sol)
+View Source: [\contracts\core\store\Store.sol](..\contracts\core\store\Store.sol)
 
 **↗ Extends: [StoreBase](StoreBase.md)**
 
@@ -71,10 +71,13 @@ function setAddress(bytes32 k, address v) external nonpayable
 
 ```javascript
 function setAddress(bytes32 k, address v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     addressStorage[k] = v;
+
   }
 ```
 </details>
@@ -98,14 +101,21 @@ function setAddressBoolean(bytes32 k, address a, bool v) external nonpayable
 
 ```javascript
 function setAddressBoolean(
+
     bytes32 k,
+
     address a,
+
     bool v
+
   ) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     addressBooleanStorage[k][a] = v;
+
   }
 ```
 </details>
@@ -128,10 +138,13 @@ function setUint(bytes32 k, uint256 v) external nonpayable
 
 ```javascript
 function setUint(bytes32 k, uint256 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     uintStorage[k] = v;
+
   }
 ```
 </details>
@@ -154,11 +167,15 @@ function addUint(bytes32 k, uint256 v) external nonpayable
 
 ```javascript
 function addUint(bytes32 k, uint256 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     uint256 existing = uintStorage[k];
+
     uintStorage[k] = existing + v;
+
   }
 ```
 </details>
@@ -181,11 +198,15 @@ function subtractUint(bytes32 k, uint256 v) external nonpayable
 
 ```javascript
 function subtractUint(bytes32 k, uint256 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     uint256 existing = uintStorage[k];
+
     uintStorage[k] = existing - v;
+
   }
 ```
 </details>
@@ -208,10 +229,13 @@ function setUints(bytes32 k, uint256[] v) external nonpayable
 
 ```javascript
 function setUints(bytes32 k, uint256[] calldata v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     uintsStorage[k] = v;
+
   }
 ```
 </details>
@@ -234,10 +258,13 @@ function setString(bytes32 k, string v) external nonpayable
 
 ```javascript
 function setString(bytes32 k, string calldata v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     stringStorage[k] = v;
+
   }
 ```
 </details>
@@ -260,9 +287,13 @@ function setBytes(bytes32 k, bytes v) external nonpayable
 
 ```javascript
 function setBytes(bytes32 k, bytes calldata v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
+
     bytesStorage[k] = v;
+
   }
 ```
 </details>
@@ -285,15 +316,21 @@ function setBool(bytes32 k, bool v) external nonpayable
 
 ```javascript
 function setBool(bytes32 k, bool v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     if (v) {
+
       boolStorage[k] = v;
+
       return;
+
     }
 
     delete boolStorage[k];
+
   }
 ```
 </details>
@@ -316,10 +353,13 @@ function setInt(bytes32 k, int256 v) external nonpayable
 
 ```javascript
 function setInt(bytes32 k, int256 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     intStorage[k] = v;
+
   }
 ```
 </details>
@@ -342,10 +382,13 @@ function setBytes32(bytes32 k, bytes32 v) external nonpayable
 
 ```javascript
 function setBytes32(bytes32 k, bytes32 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     bytes32Storage[k] = v;
+
   }
 ```
 </details>
@@ -368,13 +411,19 @@ function setAddressArrayItem(bytes32 k, address v) external nonpayable
 
 ```javascript
 function setAddressArrayItem(bytes32 k, address v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     if (addressArrayPositionMap[k][v] == 0) {
+
       addressArrayStorage[k].push(v);
+
       addressArrayPositionMap[k][v] = addressArrayStorage[k].length;
+
     }
+
   }
 ```
 </details>
@@ -397,13 +446,19 @@ function setBytes32ArrayItem(bytes32 k, bytes32 v) external nonpayable
 
 ```javascript
 function setBytes32ArrayItem(bytes32 k, bytes32 v) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     if (bytes32ArrayPositionMap[k][v] == 0) {
+
       bytes32ArrayStorage[k].push(v);
+
       bytes32ArrayPositionMap[k][v] = bytes32ArrayStorage[k].length;
+
     }
+
   }
 ```
 </details>
@@ -425,10 +480,13 @@ function deleteAddress(bytes32 k) external nonpayable
 
 ```javascript
 function deleteAddress(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete addressStorage[k];
+
   }
 ```
 </details>
@@ -450,10 +508,13 @@ function deleteUint(bytes32 k) external nonpayable
 
 ```javascript
 function deleteUint(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete uintStorage[k];
+
   }
 ```
 </details>
@@ -475,10 +536,13 @@ function deleteUints(bytes32 k) external nonpayable
 
 ```javascript
 function deleteUints(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete uintsStorage[k];
+
   }
 ```
 </details>
@@ -500,10 +564,13 @@ function deleteString(bytes32 k) external nonpayable
 
 ```javascript
 function deleteString(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete stringStorage[k];
+
   }
 ```
 </details>
@@ -525,10 +592,13 @@ function deleteBytes(bytes32 k) external nonpayable
 
 ```javascript
 function deleteBytes(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete bytesStorage[k];
+
   }
 ```
 </details>
@@ -550,10 +620,13 @@ function deleteBool(bytes32 k) external nonpayable
 
 ```javascript
 function deleteBool(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete boolStorage[k];
+
   }
 ```
 </details>
@@ -575,10 +648,13 @@ function deleteInt(bytes32 k) external nonpayable
 
 ```javascript
 function deleteInt(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete intStorage[k];
+
   }
 ```
 </details>
@@ -600,10 +676,13 @@ function deleteBytes32(bytes32 k) external nonpayable
 
 ```javascript
 function deleteBytes32(bytes32 k) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     delete bytes32Storage[k];
+
   }
 ```
 </details>
@@ -626,22 +705,31 @@ function deleteAddressArrayItem(bytes32 k, address v) public nonpayable
 
 ```javascript
 function deleteAddressArrayItem(bytes32 k, address v) public override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     require(addressArrayPositionMap[k][v] > 0, "Not found");
 
     uint256 i = addressArrayPositionMap[k][v] - 1;
+
     uint256 count = addressArrayStorage[k].length;
 
     if (i + 1 != count) {
+
       addressArrayStorage[k][i] = addressArrayStorage[k][count - 1];
+
       address theThenLastAddress = addressArrayStorage[k][i];
+
       addressArrayPositionMap[k][theThenLastAddress] = i + 1;
+
     }
 
     addressArrayStorage[k].pop();
+
     delete addressArrayPositionMap[k][v];
+
   }
 ```
 </details>
@@ -664,22 +752,31 @@ function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public nonpayable
 
 ```javascript
 function deleteBytes32ArrayItem(bytes32 k, bytes32 v) public override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     require(bytes32ArrayPositionMap[k][v] > 0, "Not found");
 
     uint256 i = bytes32ArrayPositionMap[k][v] - 1;
+
     uint256 count = bytes32ArrayStorage[k].length;
 
     if (i + 1 != count) {
+
       bytes32ArrayStorage[k][i] = bytes32ArrayStorage[k][count - 1];
+
       bytes32 theThenLastBytes32 = bytes32ArrayStorage[k][i];
+
       bytes32ArrayPositionMap[k][theThenLastBytes32] = i + 1;
+
     }
 
     bytes32ArrayStorage[k].pop();
+
     delete bytes32ArrayPositionMap[k][v];
+
   }
 ```
 </details>
@@ -702,13 +799,17 @@ function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external nonpayable
 
 ```javascript
 function deleteAddressArrayItemByIndex(bytes32 k, uint256 i) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     require(i < addressArrayStorage[k].length, "Invalid index");
 
     address v = addressArrayStorage[k][i];
+
     deleteAddressArrayItem(k, v);
+
   }
 ```
 </details>
@@ -731,13 +832,17 @@ function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external nonpayable
 
 ```javascript
 function deleteBytes32ArrayItemByIndex(bytes32 k, uint256 i) external override {
+
     _throwIfPaused();
+
     _throwIfSenderNotProtocolMember();
 
     require(i < bytes32ArrayStorage[k].length, "Invalid index");
 
     bytes32 v = bytes32ArrayStorage[k][i];
+
     deleteBytes32ArrayItem(k, v);
+
   }
 ```
 </details>
@@ -760,11 +865,15 @@ returns(values address[])
 
 ```javascript
 function getAddressValues(bytes32[] calldata keys) external view override returns (address[] memory values) {
+
     values = new address[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
+
       values[i] = addressStorage[keys[i]];
+
     }
+
   }
 ```
 </details>
@@ -787,7 +896,9 @@ returns(address)
 
 ```javascript
 function getAddress(bytes32 k) external view override returns (address) {
+
     return addressStorage[k];
+
   }
 ```
 </details>
@@ -811,7 +922,9 @@ returns(bool)
 
 ```javascript
 function getAddressBoolean(bytes32 k, address a) external view override returns (bool) {
+
     return addressBooleanStorage[k][a];
+
   }
 ```
 </details>
@@ -834,11 +947,15 @@ returns(values uint256[])
 
 ```javascript
 function getUintValues(bytes32[] calldata keys) external view override returns (uint256[] memory values) {
+
     values = new uint256[](keys.length);
 
     for (uint256 i = 0; i < keys.length; i++) {
+
       values[i] = uintStorage[keys[i]];
+
     }
+
   }
 ```
 </details>
@@ -861,7 +978,9 @@ returns(uint256)
 
 ```javascript
 function getUint(bytes32 k) external view override returns (uint256) {
+
     return uintStorage[k];
+
   }
 ```
 </details>
@@ -884,7 +1003,9 @@ returns(uint256[])
 
 ```javascript
 function getUints(bytes32 k) external view override returns (uint256[] memory) {
+
     return uintsStorage[k];
+
   }
 ```
 </details>
@@ -907,7 +1028,9 @@ returns(string)
 
 ```javascript
 function getString(bytes32 k) external view override returns (string memory) {
+
     return stringStorage[k];
+
   }
 ```
 </details>
@@ -930,7 +1053,9 @@ returns(bytes)
 
 ```javascript
 function getBytes(bytes32 k) external view override returns (bytes memory) {
+
     return bytesStorage[k];
+
   }
 ```
 </details>
@@ -953,7 +1078,9 @@ returns(bool)
 
 ```javascript
 function getBool(bytes32 k) external view override returns (bool) {
+
     return boolStorage[k];
+
   }
 ```
 </details>
@@ -976,7 +1103,9 @@ returns(int256)
 
 ```javascript
 function getInt(bytes32 k) external view override returns (int256) {
+
     return intStorage[k];
+
   }
 ```
 </details>
@@ -999,7 +1128,9 @@ returns(bytes32)
 
 ```javascript
 function getBytes32(bytes32 k) external view override returns (bytes32) {
+
     return bytes32Storage[k];
+
   }
 ```
 </details>
@@ -1022,7 +1153,9 @@ returns(address[])
 
 ```javascript
 function getAddressArray(bytes32 k) external view override returns (address[] memory) {
+
     return addressArrayStorage[k];
+
   }
 ```
 </details>
@@ -1045,7 +1178,9 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32Array(bytes32 k) external view override returns (bytes32[] memory) {
+
     return bytes32ArrayStorage[k];
+
   }
 ```
 </details>
@@ -1069,7 +1204,9 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPosition(bytes32 k, address toFind) external view override returns (uint256) {
+
     return addressArrayPositionMap[k][toFind];
+
   }
 ```
 </details>
@@ -1093,7 +1230,9 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind) external view override returns (uint256) {
+
     return bytes32ArrayPositionMap[k][toFind];
+
   }
 ```
 </details>
@@ -1117,8 +1256,11 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndex(bytes32 k, uint256 i) external view override returns (address) {
+
     require(addressArrayStorage[k].length > i, "Invalid index");
+
     return addressArrayStorage[k][i];
+
   }
 ```
 </details>
@@ -1142,8 +1284,11 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view override returns (bytes32) {
+
     require(bytes32ArrayStorage[k].length > i, "Invalid index");
+
     return bytes32ArrayStorage[k][i];
+
   }
 ```
 </details>
@@ -1166,7 +1311,9 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayItems(bytes32 k) external view override returns (uint256) {
+
     return addressArrayStorage[k].length;
+
   }
 ```
 </details>
@@ -1189,7 +1336,9 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayItems(bytes32 k) external view override returns (uint256) {
+
     return bytes32ArrayStorage[k].length;
+
   }
 ```
 </details>

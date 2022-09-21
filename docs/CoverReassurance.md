@@ -1,6 +1,6 @@
 # Cover Reassurance (CoverReassurance.sol)
 
-View Source: [contracts/core/lifecycle/CoverReassurance.sol](../contracts/core/lifecycle/CoverReassurance.sol)
+View Source: [\contracts\core\lifecycle\CoverReassurance.sol](..\contracts\core\lifecycle\CoverReassurance.sol)
 
 **↗ Extends: [ICoverReassurance](ICoverReassurance.md), [Recoverable](Recoverable.md)**
 
@@ -16,7 +16,7 @@ A covered project can add reassurance fund to exhibit coverage support for their
 ## Functions
 
 - [constructor(IStore store)](#)
-- [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
+- [addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
 - [capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#capitalizepool)
 - [getReassurance(bytes32 coverKey)](#getreassurance)
@@ -48,7 +48,7 @@ constructor(IStore store) Recoverable(store) {}
 Adds reassurance to the specified cover contract
 
 ```solidity
-function addReassurance(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
+function addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -56,7 +56,7 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account from which the reassurance fund will be transferred. | 
+| onBehalfOf | address | Enter the account on behalf of which you are adding reassurance. | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
 <details>
@@ -64,12 +64,19 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 
 ```javascript
 function addReassurance(
+
     bytes32 coverKey,
-    address account,
+
+    address onBehalfOf,
+
     uint256 amount
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeValidCoverKey(coverKey);
+
     s.mustBeCoverOwnerOrCoverContract(coverKey, msg.sender);
 
     require(amount > 0, "Provide valid amount");
@@ -78,12 +85,14 @@ function addReassurance(
 
     s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
-    stablecoin.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(msg.sender, address(this), amount);
 
     // Do not update state during cover creation
+
     // s.updateStateAndLiquidity(coverKey);
 
-    emit ReassuranceAdded(coverKey, amount);
+    emit ReassuranceAdded(coverKey, onBehalfOf, amount);
+
   }
 ```
 </details>
@@ -108,8 +117,11 @@ function setWeight(bytes32 coverKey, uint256 weight) external nonpayable nonReen
 
 ```javascript
 function setWeight(bytes32 coverKey, uint256 weight) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
+
     s.mustBeValidCoverKey(coverKey);
 
     require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
@@ -119,6 +131,7 @@ function setWeight(bytes32 coverKey, uint256 weight) external override nonReentr
     s.updateStateAndLiquidity(coverKey);
 
     emit WeightSet(coverKey, weight);
+
   }
 ```
 </details>
@@ -148,21 +161,33 @@ function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDa
 
 ```javascript
 function capitalizePool(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
+
     s.mustBeClaimable(coverKey, productKey);
+
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     IVault vault = s.getVault(coverKey);
+
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
     uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
@@ -170,10 +195,13 @@ function capitalizePool(
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
+
     s.subtractUintByKey(CoverUtilV1.getReassuranceKey(coverKey), toTransfer);
+
     s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
 
     emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);
+
   }
 ```
 </details>
@@ -199,7 +227,9 @@ returns(uint256)
 
 ```javascript
 function getReassurance(bytes32 coverKey) external view override returns (uint256) {
+
     return s.getReassuranceAmountInternal(coverKey);
+
   }
 ```
 </details>
@@ -223,7 +253,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -247,7 +279,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_COVER_REASSURANCE;
+
   }
 ```
 </details>

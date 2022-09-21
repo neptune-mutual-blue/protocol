@@ -1,6 +1,6 @@
 # Vault Delegate (VaultDelegate.sol)
 
-View Source: [contracts/core/delegates/VaultDelegate.sol](../contracts/core/delegates/VaultDelegate.sol)
+View Source: [\contracts\core\delegates\VaultDelegate.sol](..\contracts\core\delegates\VaultDelegate.sol)
 
 **↗ Extends: [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)**
 

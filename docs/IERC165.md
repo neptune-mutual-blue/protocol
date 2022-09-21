@@ -1,6 +1,6 @@
 # IERC165.sol
 
-View Source: [openzeppelin-solidity/contracts/utils/introspection/IERC165.sol](../openzeppelin-solidity/contracts/utils/introspection/IERC165.sol)
+View Source: [openzeppelin-solidity\contracts\utils\introspection\IERC165.sol](..\openzeppelin-solidity\contracts\utils\introspection\IERC165.sol)
 
 **↘ Derived Contracts: [ERC165](ERC165.md)**
 

@@ -1,6 +1,6 @@
 # FakeUniswapV2FactoryLike.sol
 
-View Source: [contracts/fakes/FakeUniswapV2FactoryLike.sol](../contracts/fakes/FakeUniswapV2FactoryLike.sol)
+View Source: [\contracts\fakes\FakeUniswapV2FactoryLike.sol](..\contracts\fakes\FakeUniswapV2FactoryLike.sol)
 
 **↗ Extends: [IUniswapV2FactoryLike](IUniswapV2FactoryLike.md)**
 
@@ -36,7 +36,9 @@ function (address _pair) public nonpayable
 
 ```javascript
 constructor(address _pair) {
+
     pair = _pair;
+
   }
 ```
 </details>
@@ -60,7 +62,9 @@ returns(address)
 
 ```javascript
 function getPair(address, address) external view override returns (address) {
+
     return pair;
+
   }
 ```
 </details>

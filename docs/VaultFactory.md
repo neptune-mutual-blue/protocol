@@ -1,6 +1,6 @@
 # Vault Factory Contract (VaultFactory.sol)
 
-View Source: [contracts/core/liquidity/VaultFactory.sol](../contracts/core/liquidity/VaultFactory.sol)
+View Source: [\contracts\core\liquidity\VaultFactory.sol](..\contracts\core\liquidity\VaultFactory.sol)
 
 **↗ Extends: [IVaultFactory](IVaultFactory.md), [Recoverable](Recoverable.md)**
 
@@ -60,32 +60,51 @@ returns(addr address)
 
 ```javascript
 function deploy(
+
     bytes32 coverKey,
+
     string calldata tokenName,
+
     string calldata tokenSymbol
+
   ) external override nonReentrant returns (address addr) {
+
     s.mustNotBePaused();
+
     s.senderMustBeCoverContract();
 
     (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, tokenName, tokenSymbol, s.getStablecoin());
 
     // solhint-disable-next-line
+
     assembly {
+
       addr := create2(
+
         callvalue(), // wei sent with current call
+
         // Actual code starts after skipping the first 32 bytes
+
         add(bytecode, 0x20),
+
         mload(bytecode), // Load the size of code contained in the first 32 bytes
+
         salt // Salt from function arguments
+
       )
 
       if iszero(extcodesize(addr)) {
+
         // @suppress-revert This is correct usage
+
         revert(0, 0)
+
       }
+
     }
 
     emit VaultDeployed(coverKey, addr);
+
   }
 ```
 </details>
@@ -109,7 +128,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -133,7 +154,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_VAULT_FACTORY;
+
   }
 ```
 </details>

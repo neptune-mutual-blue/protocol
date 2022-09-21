@@ -1,6 +1,6 @@
 # AccessControlLibV1.sol
 
-View Source: [contracts/libraries/AccessControlLibV1.sol](../contracts/libraries/AccessControlLibV1.sol)
+View Source: [\contracts\libraries\AccessControlLibV1.sol](..\contracts\libraries\AccessControlLibV1.sol)
 
 **AccessControlLibV1**
 
@@ -70,7 +70,9 @@ function mustBeAdmin(IStore s) external view
 
 ```javascript
 function mustBeAdmin(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_ADMIN, msg.sender);
+
   }
 ```
 </details>
@@ -94,7 +96,9 @@ function mustBeCoverManager(IStore s) external view
 
 ```javascript
 function mustBeCoverManager(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, msg.sender);
+
   }
 ```
 </details>
@@ -118,7 +122,9 @@ function mustBeLiquidityManager(IStore s) external view
 
 ```javascript
 function mustBeLiquidityManager(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, msg.sender);
+
   }
 ```
 </details>
@@ -142,7 +148,9 @@ function mustBeGovernanceAgent(IStore s) external view
 
 ```javascript
 function mustBeGovernanceAgent(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, msg.sender);
+
   }
 ```
 </details>
@@ -166,7 +174,9 @@ function mustBeGovernanceAdmin(IStore s) external view
 
 ```javascript
 function mustBeGovernanceAdmin(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, msg.sender);
+
   }
 ```
 </details>
@@ -190,7 +200,9 @@ function mustBeUpgradeAgent(IStore s) external view
 
 ```javascript
 function mustBeUpgradeAgent(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, msg.sender);
+
   }
 ```
 </details>
@@ -214,7 +226,9 @@ function mustBeRecoveryAgent(IStore s) external view
 
 ```javascript
 function mustBeRecoveryAgent(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, msg.sender);
+
   }
 ```
 </details>
@@ -238,7 +252,9 @@ function mustBePauseAgent(IStore s) external view
 
 ```javascript
 function mustBePauseAgent(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, msg.sender);
+
   }
 ```
 </details>
@@ -262,14 +278,16 @@ function mustBeUnpauseAgent(IStore s) external view
 
 ```javascript
 function mustBeUnpauseAgent(IStore s) external view {
+
     _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, msg.sender);
+
   }
 ```
 </details>
 
 ### callerMustBeAdmin
 
-Reverts if the sender is not the protocol admin.
+Reverts if the caller is not the protocol admin.
 
 ```solidity
 function callerMustBeAdmin(IStore s, address caller) external view
@@ -287,14 +305,16 @@ function callerMustBeAdmin(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeAdmin(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_ADMIN, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeCoverManager
 
-Reverts if the sender is not the cover manager.
+Reverts if the caller is not the cover manager.
 
 ```solidity
 function callerMustBeCoverManager(IStore s, address caller) external view
@@ -312,14 +332,16 @@ function callerMustBeCoverManager(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeCoverManager(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_COVER_MANAGER, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeLiquidityManager
 
-Reverts if the sender is not the liquidity manager.
+Reverts if the caller is not the liquidity manager.
 
 ```solidity
 function callerMustBeLiquidityManager(IStore s, address caller) external view
@@ -337,14 +359,16 @@ function callerMustBeLiquidityManager(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeLiquidityManager(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_LIQUIDITY_MANAGER, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeGovernanceAgent
 
-Reverts if the sender is not a governance agent.
+Reverts if the caller is not a governance agent.
 
 ```solidity
 function callerMustBeGovernanceAgent(IStore s, address caller) external view
@@ -362,14 +386,16 @@ function callerMustBeGovernanceAgent(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeGovernanceAgent(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_AGENT, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeGovernanceAdmin
 
-Reverts if the sender is not a governance admin.
+Reverts if the caller is not a governance admin.
 
 ```solidity
 function callerMustBeGovernanceAdmin(IStore s, address caller) external view
@@ -387,14 +413,16 @@ function callerMustBeGovernanceAdmin(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeGovernanceAdmin(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_GOVERNANCE_ADMIN, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeUpgradeAgent
 
-Reverts if the sender is not an upgrade agent.
+Reverts if the caller is not an upgrade agent.
 
 ```solidity
 function callerMustBeUpgradeAgent(IStore s, address caller) public view
@@ -412,14 +440,16 @@ function callerMustBeUpgradeAgent(IStore s, address caller) public view
 
 ```javascript
 function callerMustBeUpgradeAgent(IStore s, address caller) public view {
+
     _mustHaveAccess(s, NS_ROLES_UPGRADE_AGENT, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeRecoveryAgent
 
-Reverts if the sender is not a recovery agent.
+Reverts if the caller is not a recovery agent.
 
 ```solidity
 function callerMustBeRecoveryAgent(IStore s, address caller) external view
@@ -437,14 +467,16 @@ function callerMustBeRecoveryAgent(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeRecoveryAgent(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_RECOVERY_AGENT, caller);
+
   }
 ```
 </details>
 
 ### callerMustBePauseAgent
 
-Reverts if the sender is not the pause agent.
+Reverts if the caller is not the pause agent.
 
 ```solidity
 function callerMustBePauseAgent(IStore s, address caller) external view
@@ -462,14 +494,16 @@ function callerMustBePauseAgent(IStore s, address caller) external view
 
 ```javascript
 function callerMustBePauseAgent(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_PAUSE_AGENT, caller);
+
   }
 ```
 </details>
 
 ### callerMustBeUnpauseAgent
 
-Reverts if the sender is not the unpause agent.
+Reverts if the caller is not the unpause agent.
 
 ```solidity
 function callerMustBeUnpauseAgent(IStore s, address caller) external view
@@ -487,14 +521,16 @@ function callerMustBeUnpauseAgent(IStore s, address caller) external view
 
 ```javascript
 function callerMustBeUnpauseAgent(IStore s, address caller) external view {
+
     _mustHaveAccess(s, NS_ROLES_UNPAUSE_AGENT, caller);
+
   }
 ```
 </details>
 
 ### _mustHaveAccess
 
-Reverts if the sender does not have access to the given role.
+Reverts if the caller does not have access to the given role.
 
 ```solidity
 function _mustHaveAccess(IStore s, bytes32 role, address caller) private view
@@ -513,11 +549,17 @@ function _mustHaveAccess(IStore s, bytes32 role, address caller) private view
 
 ```javascript
 function _mustHaveAccess(
+
     IStore s,
+
     bytes32 role,
+
     address caller
+
   ) private view {
+
     require(hasAccess(s, role, caller), "Forbidden");
+
   }
 ```
 </details>
@@ -548,19 +590,29 @@ Returns true if the user is a member of the specified role
 
 ```javascript
 function hasAccess(
+
     IStore s,
+
     bytes32 role,
+
     address user
+
   ) public view returns (bool) {
+
     address protocol = s.getProtocolAddress();
 
     // The protocol is not deployed yet. Therefore, no role to check
+
     if (protocol == address(0)) {
+
       return false;
+
     }
 
     // You must have the same role in the protocol contract if you're don't have this role here
+
     return IAccessControl(protocol).hasRole(role, user);
+
   }
 ```
 </details>
@@ -587,16 +639,27 @@ function addContractInternal(IStore s, bytes32 namespace, bytes32 key, address c
 
 ```javascript
 function addContractInternal(
+
     IStore s,
+
     bytes32 namespace,
+
     bytes32 key,
+
     address contractAddress
+
   ) external {
+
     // Not only the msg.sender needs to be an upgrade agent
+
     // but the contract using this library (and this function)
+
     // must also be an upgrade agent
+
     callerMustBeUpgradeAgent(s, address(this));
+
     _addContract(s, namespace, key, contractAddress);
+
   }
 ```
 </details>
@@ -621,17 +684,29 @@ function _addContract(IStore s, bytes32 namespace, bytes32 key, address contract
 
 ```javascript
 function _addContract(
+
     IStore s,
+
     bytes32 namespace,
+
     bytes32 key,
+
     address contractAddress
+
   ) private {
+
     if (key > 0) {
+
       s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key, contractAddress);
+
     } else {
+
       s.setAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, contractAddress);
+
     }
+
     _addMember(s, contractAddress);
+
   }
 ```
 </details>
@@ -656,17 +731,29 @@ function _deleteContract(IStore s, bytes32 namespace, bytes32 key, address contr
 
 ```javascript
 function _deleteContract(
+
     IStore s,
+
     bytes32 namespace,
+
     bytes32 key,
+
     address contractAddress
+
   ) private {
+
     if (key > 0) {
+
       s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace, key);
+
     } else {
+
       s.deleteAddressByKeys(ProtoUtilV1.NS_CONTRACTS, namespace);
+
     }
+
     _removeMember(s, contractAddress);
+
   }
 ```
 </details>
@@ -697,22 +784,35 @@ function upgradeContractInternal(IStore s, bytes32 namespace, bytes32 key, addre
 
 ```javascript
 function upgradeContractInternal(
+
     IStore s,
+
     bytes32 namespace,
+
     bytes32 key,
+
     address previous,
+
     address current
+
   ) external {
+
     // Not only the msg.sender needs to be an upgrade agent
+
     // but the contract using this library (and this function)
+
     // must also be an upgrade agent
+
     callerMustBeUpgradeAgent(s, address(this));
 
     bool isMember = s.isProtocolMember(previous);
+
     require(isMember, "Not a protocol member");
 
     _deleteContract(s, namespace, key, previous);
+
     _addContract(s, namespace, key, current);
+
   }
 ```
 </details>
@@ -740,12 +840,17 @@ function addMemberInternal(IStore s, address member) external nonpayable
 
 ```javascript
 function addMemberInternal(IStore s, address member) external {
+
     // Not only the msg.sender needs to be an upgrade agent
+
     // but the contract using this library (and this function)
+
     // must also be an upgrade agent
+
     callerMustBeUpgradeAgent(s, address(this));
 
     _addMember(s, member);
+
   }
 ```
 </details>
@@ -771,12 +876,17 @@ function removeMemberInternal(IStore s, address member) external nonpayable
 
 ```javascript
 function removeMemberInternal(IStore s, address member) external {
+
     // Not only the msg.sender needs to be an upgrade agent
+
     // but the contract using this library (and this function)
+
     // must also be an upgrade agent
+
     callerMustBeUpgradeAgent(s, address(this));
 
     _removeMember(s, member);
+
   }
 ```
 </details>
@@ -799,8 +909,11 @@ function _addMember(IStore s, address member) private nonpayable
 
 ```javascript
 function _addMember(IStore s, address member) private {
+
     require(s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, member) == false, "Already exists");
+
     s.setBoolByKeys(ProtoUtilV1.NS_MEMBERS, member, true);
+
   }
 ```
 </details>
@@ -823,7 +936,9 @@ function _removeMember(IStore s, address member) private nonpayable
 
 ```javascript
 function _removeMember(IStore s, address member) private {
+
     s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, member);
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # PoorMansERC20.sol
 
-View Source: [contracts/fakes/PoorMansERC20.sol](../contracts/fakes/PoorMansERC20.sol)
+View Source: [\contracts\fakes\PoorMansERC20.sol](..\contracts\fakes\PoorMansERC20.sol)
 
 **PoorMansERC20**
 
@@ -52,18 +52,27 @@ function (string _name, string _symbol, uint256 _supply) public nonpayable
 
 ```javascript
 constructor(
+
     string memory _name,
+
     string memory _symbol,
+
     uint256 _supply
+
   ) {
+
     name = _name;
+
     _symbol = symbol;
+
     decimals = 18;
 
     balances[msg.sender] = _supply;
+
     totalSupply = _supply;
 
     emit Transfer(address(0), msg.sender, _supply);
+
   }
 ```
 </details>
@@ -87,13 +96,19 @@ returns(bool)
 
 ```javascript
 function transfer(address _to, uint256 _value) external returns (bool) {
+
     if (balances[msg.sender] >= _value && _value > 0) {
+
       balances[msg.sender] -= _value;
+
       balances[_to] += _value;
+
       emit Transfer(msg.sender, _to, _value);
+
     }
 
     return false;
+
   }
 ```
 </details>
@@ -118,18 +133,29 @@ returns(bool)
 
 ```javascript
 function transferFrom(
+
     address _from,
+
     address _to,
+
     uint256 _value
+
   ) external returns (bool) {
+
     if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
+
       balances[_to] += _value;
+
       balances[_from] -= _value;
+
       allowed[_from][msg.sender] -= _value;
+
       emit Transfer(_from, _to, _value);
+
     }
 
     return false;
+
   }
 ```
 </details>
@@ -152,7 +178,9 @@ returns(balance uint256)
 
 ```javascript
 function balanceOf(address _owner) external view returns (uint256 balance) {
+
     return balances[_owner];
+
   }
 ```
 </details>
@@ -176,10 +204,13 @@ returns(bool)
 
 ```javascript
 function approve(address _spender, uint256 _value) external returns (bool) {
+
     allowed[msg.sender][_spender] = _value;
+
     emit Approval(msg.sender, _spender, _value);
 
     return false;
+
   }
 ```
 </details>
@@ -203,7 +234,9 @@ returns(remaining uint256)
 
 ```javascript
 function allowance(address _owner, address _spender) external view returns (uint256 remaining) {
+
     return allowed[_owner][_spender];
+
   }
 ```
 </details>

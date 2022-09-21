@@ -1,6 +1,6 @@
 # StakingPoolInfo.sol
 
-View Source: [contracts/pool/Staking/StakingPoolInfo.sol](../contracts/pool/Staking/StakingPoolInfo.sol)
+View Source: [\contracts\pool\Staking\StakingPoolInfo.sol](..\contracts\pool\Staking\StakingPoolInfo.sol)
 
 **↗ Extends: [StakingPoolReward](StakingPoolReward.md)**
 **↘ Derived Contracts: [StakingPools](StakingPools.md)**
@@ -38,7 +38,7 @@ Gets the info of a given staking pool by key
 
 ```solidity
 function getInfo(bytes32 key, address you) external view
-returns(name string, addresses address[], values uint256[])
+returns(struct IStakingPools.StakingPoolInfoType)
 ```
 
 **Arguments**
@@ -52,17 +52,10 @@ returns(name string, addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 key, address you)
-    external
-    view
-    override
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    )
-  {
+function getInfo(bytes32 key, address you) external view override returns (StakingPoolInfoType memory) {
+
     return s.getInfoInternal(key, you);
+
   }
 ```
 </details>

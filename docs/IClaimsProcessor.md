@@ -1,6 +1,6 @@
 # IClaimsProcessor.sol
 
-View Source: [contracts/interfaces/IClaimsProcessor.sol](../contracts/interfaces/IClaimsProcessor.sol)
+View Source: [\contracts\interfaces\IClaimsProcessor.sol](..\contracts\interfaces\IClaimsProcessor.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [Processor](Processor.md)**
@@ -45,11 +45,17 @@ function claim(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 in
 
 ```javascript
 function claim(
+
     address cxToken,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -76,11 +82,17 @@ returns(bool)
 
 ```javascript
 function validate(
+
     address cxToken,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 amount
+
   ) external view returns (bool);
 ```
 </details>
@@ -149,11 +161,17 @@ function setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate
 
 ```javascript
 function setBlacklist(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address[] calldata accounts,
+
     bool[] calldata statuses
+
   ) external;
 ```
 </details>
@@ -179,10 +197,15 @@ returns(bool)
 
 ```javascript
 function isBlacklisted(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address account
+
   ) external view returns (bool);
 ```
 </details>

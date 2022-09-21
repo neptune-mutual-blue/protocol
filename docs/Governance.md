@@ -1,6 +1,6 @@
 # Governance Contract (Governance.sol)
 
-View Source: [contracts/core/governance/Governance.sol](../contracts/core/governance/Governance.sol)
+View Source: [\contracts\core\governance\Governance.sol](..\contracts\core\governance\Governance.sol)
 
 **↗ Extends: [IGovernance](IGovernance.md), [Reporter](Reporter.md)**
 
@@ -72,7 +72,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -96,7 +98,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_GOVERNANCE;
+
   }
 ```
 </details>

@@ -1,10 +1,25 @@
 # IUnstakable.sol
 
-View Source: [contracts/interfaces/IUnstakable.sol](../contracts/interfaces/IUnstakable.sol)
+View Source: [\contracts\interfaces\IUnstakable.sol](..\contracts\interfaces\IUnstakable.sol)
 
 **↘ Derived Contracts: [IResolution](IResolution.md), [Unstakable](Unstakable.md)**
 
 **IUnstakable**
+
+## Structs
+### UnstakeInfoType
+
+```js
+struct UnstakeInfoType {
+ uint256 totalStakeInWinningCamp,
+ uint256 totalStakeInLosingCamp,
+ uint256 myStakeInWinningCamp,
+ uint256 toBurn,
+ uint256 toReporter,
+ uint256 myReward,
+ uint256 unstaken
+}
+```
 
 **Events**
 
@@ -39,9 +54,13 @@ function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 
 ```javascript
 function unstake(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external;
 ```
 </details>
@@ -65,9 +84,13 @@ function unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 ```javascript
 function unstakeWithClaim(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external;
 ```
 </details>
@@ -76,7 +99,7 @@ function unstakeWithClaim(
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
+returns(struct IUnstakable.UnstakeInfoType)
 ```
 
 **Arguments**
@@ -93,22 +116,16 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 ```javascript
 function getUnstakeInfoFor(
+
     address account,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
-  )
-    external
-    view
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    );
+
+  ) external view returns (UnstakeInfoType memory);
 ```
 </details>
 

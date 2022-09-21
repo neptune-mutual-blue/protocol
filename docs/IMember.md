@@ -1,6 +1,6 @@
 # IMember.sol
 
-View Source: [contracts/interfaces/IMember.sol](../contracts/interfaces/IMember.sol)
+View Source: [\contracts\interfaces\IMember.sol](..\contracts\interfaces\IMember.sol)
 
 **↘ Derived Contracts: [IBondPool](IBondPool.md), [IClaimsProcessor](IClaimsProcessor.md), [ICover](ICover.md), [ICoverReassurance](ICoverReassurance.md), [ICoverStake](ICoverStake.md), [ICxTokenFactory](ICxTokenFactory.md), [IGovernance](IGovernance.md), [ILendingStrategy](ILendingStrategy.md), [ILiquidityEngine](ILiquidityEngine.md), [IPolicy](IPolicy.md), [IPolicyAdmin](IPolicyAdmin.md), [IProtocol](IProtocol.md), [IResolution](IResolution.md), [IStakingPools](IStakingPools.md), [IVault](IVault.md), [IVaultDelegate](IVaultDelegate.md), [IVaultFactory](IVaultFactory.md)**
 

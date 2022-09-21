@@ -1,6 +1,6 @@
 # TimelockController.sol
 
-View Source: [openzeppelin-solidity/contracts/governance/TimelockController.sol](../openzeppelin-solidity/contracts/governance/TimelockController.sol)
+View Source: [openzeppelin-solidity\contracts\governance\TimelockController.sol](..\openzeppelin-solidity\contracts\governance\TimelockController.sol)
 
 **↗ Extends: [AccessControl](AccessControl.md)**
 **↘ Derived Contracts: [Delayable](Delayable.md)**

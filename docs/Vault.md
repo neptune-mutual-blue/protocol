@@ -1,6 +1,6 @@
 # Vault Contract (Vault.sol)
 
-View Source: [contracts/core/liquidity/Vault.sol](../contracts/core/liquidity/Vault.sol)
+View Source: [\contracts\core\liquidity\Vault.sol](..\contracts\core\liquidity\Vault.sol)
 
 **↗ Extends: [WithFlashLoan](WithFlashLoan.md)**
 
@@ -67,11 +67,17 @@ function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, 
 
 ```javascript
 constructor(
+
     IStore store,
+
     bytes32 coverKey,
+
     string memory tokenName,
+
     string memory tokenSymbol,
+
     IERC20 stablecoin
+
   ) VaultBase(store, coverKey, tokenName, tokenSymbol, stablecoin) {}
 ```
 </details>
@@ -83,7 +89,7 @@ Gets information of a given vault by the cover key
 
 ```solidity
 function getInfo(address you) external view
-returns(values uint256[])
+returns(struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -96,8 +102,10 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address you) external view override returns (uint256[] memory values) {
+function getInfo(address you) external view override returns (VaultInfoType memory) {
+
     return delgate().getInfoImplementation(key, you);
+
   }
 ```
 </details>
@@ -121,7 +129,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -145,7 +155,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_LIQUIDITY_VAULT;
+
   }
 ```
 </details>

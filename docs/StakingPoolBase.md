@@ -1,6 +1,6 @@
 # StakingPoolBase.sol
 
-View Source: [contracts/pool/Staking/StakingPoolBase.sol](../contracts/pool/Staking/StakingPoolBase.sol)
+View Source: [\contracts\pool\Staking\StakingPoolBase.sol](..\contracts\pool\Staking\StakingPoolBase.sol)
 
 **↗ Extends: [IStakingPools](IStakingPools.md), [Recoverable](Recoverable.md)**
 **↘ Derived Contracts: [StakingPoolReward](StakingPoolReward.md)**
@@ -10,7 +10,7 @@ View Source: [contracts/pool/Staking/StakingPoolBase.sol](../contracts/pool/Stak
 ## Functions
 
 - [constructor(IStore s)](#)
-- [addOrEditPool(bytes32 key, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values)](#addoreditpool)
+- [addOrEditPool(struct IStakingPools.AddOrEditPoolArgs args)](#addoreditpool)
 - [closePool(bytes32 key)](#closepool)
 - [version()](#version)
 - [getName()](#getname)
@@ -40,36 +40,31 @@ constructor(IStore s) Recoverable(s) {}
 Adds or edits the pool by key
 
 ```solidity
-function addOrEditPool(bytes32 key, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values) external nonpayable nonReentrant 
+function addOrEditPool(struct IStakingPools.AddOrEditPoolArgs args) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| key | bytes32 | Enter the key of the pool you want to create or edit | 
-| name | string | Enter a name for this pool | 
-| poolType | enum IStakingPools.StakingPoolType | Specify the pool type: TokenStaking or PODStaking | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addOrEditPool(
-    bytes32 key,
-    string calldata name,
-    StakingPoolType poolType,
-    address[] calldata addresses,
-    uint256[] calldata values
-  ) external override nonReentrant {
-    // @suppress-zero-value-check The uint values are checked in the function `addOrEditPoolInternal`
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
+function addOrEditPool(AddOrEditPoolArgs calldata args) external override nonReentrant {
 
-    s.addOrEditPoolInternal(key, name, addresses, values);
-    emit PoolUpdated(key, name, poolType, addresses[0], addresses[1], addresses[2], addresses[3], values[5], values[1], values[3], values[4], values[2]);
+    // @suppress-zero-value-check The uint values are checked in the function `addOrEditPoolInternal`
+
+    s.mustNotBePaused();
+
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
+    s.addOrEditPoolInternal(args);
+
+    emit PoolUpdated(args.key, args);
+
   }
 ```
 </details>
@@ -91,12 +86,19 @@ function closePool(bytes32 key) external nonpayable nonReentrant
 
 ```javascript
 function closePool(bytes32 key) external override nonReentrant {
+
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
+
+    AccessControlLibV1.mustBeLiquidityManager(s);
+
     require(s.getBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key), "Unknown Pool");
 
+    require(s.getPoolStakeBalanceInternal(key) == 0, "Pool is not empty");
+
     s.deleteBoolByKeys(StakingPoolCoreLibV1.NS_POOL, key);
+
     emit PoolClosed(key, s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key));
+
   }
 ```
 </details>
@@ -120,7 +122,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -144,7 +148,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_STAKING_POOL;
+
   }
 ```
 </details>

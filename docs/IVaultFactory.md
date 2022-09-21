@@ -1,6 +1,6 @@
 # IVaultFactory.sol
 
-View Source: [contracts/interfaces/IVaultFactory.sol](../contracts/interfaces/IVaultFactory.sol)
+View Source: [\contracts\interfaces\IVaultFactory.sol](..\contracts\interfaces\IVaultFactory.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [VaultFactory](VaultFactory.md)**
@@ -37,9 +37,13 @@ returns(address)
 
 ```javascript
 function deploy(
+
     bytes32 coverKey,
+
     string calldata name,
+
     string calldata symbol
+
   ) external returns (address);
 ```
 </details>

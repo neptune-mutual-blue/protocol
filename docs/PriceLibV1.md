@@ -1,6 +1,6 @@
 # PriceLibV1.sol
 
-View Source: [contracts/libraries/PriceLibV1.sol](../contracts/libraries/PriceLibV1.sol)
+View Source: [\contracts\libraries\PriceLibV1.sol](..\contracts\libraries\PriceLibV1.sol)
 
 **PriceLibV1**
 
@@ -32,7 +32,9 @@ returns(contract IPriceOracle)
 
 ```javascript
 function getPriceOracleInternal(IStore s) public view returns (IPriceOracle) {
+
     return IPriceOracle(s.getNpmPriceOracle());
+
   }
 ```
 </details>
@@ -54,7 +56,9 @@ function setNpmPrice(IStore s) internal nonpayable
 
 ```javascript
 function setNpmPrice(IStore s) internal {
+
     getPriceOracleInternal(s).update();
+
   }
 ```
 </details>
@@ -78,7 +82,9 @@ returns(uint256)
 
 ```javascript
 function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view returns (uint256) {
+
     return getPriceOracleInternal(s).consultPair(amountIn);
+
   }
 ```
 </details>
@@ -102,8 +108,11 @@ returns(uint256)
 
 ```javascript
 function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+
     bytes32 key = getLastUpdateKey(coverKey);
+
     return s.getUintByKey(key);
+
   }
 ```
 </details>
@@ -126,8 +135,11 @@ function setLastUpdatedOn(IStore s, bytes32 coverKey) external nonpayable
 
 ```javascript
 function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
+
     bytes32 key = getLastUpdateKey(coverKey);
+
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
+
   }
 ```
 </details>
@@ -153,7 +165,9 @@ returns(bytes32)
 
 ```javascript
 function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
+
   }
 ```
 </details>
@@ -177,7 +191,9 @@ returns(uint256)
 
 ```javascript
 function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (uint256) {
+
     return getPriceOracleInternal(s).consult(s.getNpmTokenAddress(), amountIn);
+
   }
 ```
 </details>

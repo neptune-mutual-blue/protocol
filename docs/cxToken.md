@@ -1,6 +1,6 @@
 # cxToken (cxToken.sol)
 
-View Source: [contracts/core/cxToken/cxToken.sol](../contracts/core/cxToken/cxToken.sol)
+View Source: [\contracts\core\cxToken\cxToken.sol](..\contracts\core\cxToken\cxToken.sol)
 
 **↗ Extends: [ICxToken](ICxToken.md), [Recoverable](Recoverable.md), [ERC20](ERC20.md)**
 
@@ -38,7 +38,6 @@ mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
 - [_getExcludedCoverageOf(address account)](#_getexcludedcoverageof)
 - [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
 - [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
-- [_getEOD(uint256 date)](#_geteod)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address from, address to, uint256 )](#_beforetokentransfer)
 
@@ -65,15 +64,25 @@ function (IStore store, bytes32 coverKey, bytes32 productKey, string tokenName, 
 
 ```javascript
 constructor(
+
     IStore store,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     string memory tokenName,
+
     uint256 expiry
+
   ) ERC20(tokenName, "cxUSD") Recoverable(store) {
+
     COVER_KEY = coverKey;
+
     PRODUCT_KEY = productKey;
+
     expiresOn = expiry;
+
   }
 ```
 </details>
@@ -100,7 +109,9 @@ returns(uint256)
 
 ```javascript
 function getCoverageStartsFrom(address account, uint256 date) external view override returns (uint256) {
+
     return coverageStartsFrom[account][date];
+
   }
 ```
 </details>
@@ -132,19 +143,21 @@ returns(exclusion uint256)
 
 ```javascript
 function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
+
     uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
 
-    uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
+    uint256 resolutionEOD = PolicyHelperV1.getEODInternal(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
 
-    for (uint256 i = 0; i < 14; i++) {
-      uint256 date = _getEOD(incidentDate + (i * 1 days));
+    uint256 totalDays = (resolutionEOD - incidentDate) / 1 days;
 
-      if (date > resolutionEOD) {
-        break;
-      }
+    for (uint256 i = 0; i < totalDays; i++) {
+
+      uint256 date = PolicyHelperV1.getEODInternal(incidentDate + (i * 1 days));
 
       exclusion += coverageStartsFrom[account][date];
+
     }
+
   }
 ```
 </details>
@@ -170,14 +183,19 @@ returns(uint256)
 
 ```javascript
 function getClaimablePolicyOf(address account) external view override returns (uint256) {
+
     uint256 exclusion = _getExcludedCoverageOf(account);
+
     uint256 balance = super.balanceOf(account);
 
     if (exclusion > balance) {
+
       return 0;
+
     }
 
     return balance - exclusion;
+
   }
 ```
 </details>
@@ -205,49 +223,35 @@ function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) 
 
 ```javascript
 function mint(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address to,
+
     uint256 amount
+
   ) external override nonReentrant {
+
     require(amount > 0, "Please specify amount");
+
     require(coverKey == COVER_KEY, "Invalid cover");
+
     require(productKey == PRODUCT_KEY, "Invalid product");
 
     s.mustNotBePaused();
+
     s.senderMustBePolicyContract();
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
+    uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp) + s.getCoverageLagInternal(coverKey); // solhint-disable-line
+
     coverageStartsFrom[to][effectiveFrom] += amount;
 
     super._mint(to, amount);
-  }
-```
-</details>
 
-### _getEOD
-
-Gets the EOD (End of Day) time
-
-```solidity
-function _getEOD(uint256 date) private pure
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| date | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getEOD(uint256 date) private pure returns (uint256) {
-    (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
-    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, day, 23, 59, 59);
   }
 ```
 </details>
@@ -271,10 +275,13 @@ function burn(uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function burn(uint256 amount) external override nonReentrant {
+
     require(amount > 0, "Please specify amount");
 
     s.mustNotBePaused();
+
     super._burn(msg.sender, amount);
+
   }
 ```
 </details>
@@ -305,19 +312,31 @@ function _beforeTokenTransfer(address from, address to, uint256 ) internal view
 
 ```javascript
 function _beforeTokenTransfer(
+
     address from,
+
     address to,
+
     uint256
+
   ) internal view override {
+
     // solhint-disable-next-line
+
     if (block.timestamp > expiresOn) {
+
       require(to == address(0), "Expired cxToken");
+
     }
 
     // cxTokens can only be transferred to the claims processor contract
+
     if (from != address(0) && to != address(0)) {
+
       s.mustBeExactContract(ProtoUtilV1.CNS_CLAIM_PROCESSOR, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, to);
+
     }
+
   }
 ```
 </details>

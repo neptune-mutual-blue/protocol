@@ -1,6 +1,6 @@
 # Proof of Authority Tokens (POTs) (POT.sol)
 
-View Source: [contracts/core/token/POT.sol](../contracts/core/token/POT.sol)
+View Source: [\contracts\core\token\POT.sol](..\contracts\core\token\POT.sol)
 
 **↗ Extends: [NPM](NPM.md)**
 
@@ -55,12 +55,17 @@ function (address timelockOrOwner, IStore store) public nonpayable NPM
 
 ```javascript
 constructor(address timelockOrOwner, IStore store) NPM(timelockOrOwner, "Neptune Mutual POT", "POT") {
+
     // require(timelockOrOwner != address(0), "Invalid owner"); // Already checked in `NPM`
+
     require(address(store) != address(0), "Invalid store");
 
     s = store;
+
     whitelist[address(this)] = true;
+
     whitelist[timelockOrOwner] = true;
+
   }
 ```
 </details>
@@ -82,11 +87,15 @@ function _throwIfNotProtocolMember(address account) private view
 
 ```javascript
 function _throwIfNotProtocolMember(address account) private view {
+
     bytes32 key = keccak256(abi.encodePacked(NS_MEMBERS, account));
+
     bool isMember = s.getBool(key);
 
     // POTs can only be used within the Neptune Mutual protocol
+
     require(isMember == true, "Access denied");
+
   }
 ```
 </details>
@@ -112,14 +121,19 @@ function updateWhitelist(address[] accounts, bool[] statuses) external nonpayabl
 
 ```javascript
 function updateWhitelist(address[] calldata accounts, bool[] memory statuses) external onlyOwner {
+
     require(accounts.length > 0, "No account");
+
     require(accounts.length == statuses.length, "Invalid args");
 
     for (uint256 i = 0; i < accounts.length; i++) {
+
       whitelist[accounts[i]] = statuses[i];
+
     }
 
     emit WhitelistUpdated(msg.sender, accounts, statuses);
+
   }
 ```
 </details>
@@ -143,22 +157,37 @@ function _beforeTokenTransfer(address from, address to, uint256 ) internal view 
 
 ```javascript
 function _beforeTokenTransfer(
+
     address from,
+
     address to,
+
     uint256
+
   ) internal view override whenNotPaused {
+
     // Token mints
+
     if (from == address(0)) {
+
       // aren't restricted
+
       return;
+
     }
 
     // Someone not whitelisted
+
     // ............................ can still transfer to a whitelisted address
+
     if (whitelist[from] == false && whitelist[to] == false) {
+
       // and to the Neptune Mutual Protocol contracts but nowhere else
+
       _throwIfNotProtocolMember(to);
+
     }
+
   }
 ```
 </details>

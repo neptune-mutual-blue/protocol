@@ -1,13 +1,20 @@
 # IStore.sol
 
-View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.sol)
+View Source: [\contracts\interfaces\IStore.sol](..\contracts\interfaces\IStore.sol)
 
 **↘ Derived Contracts: [FakeStore](FakeStore.md), [StoreBase](StoreBase.md)**
 
 **IStore**
 
+**Events**
+
+```js
+event PausersSet(address indexed addedBy, address[]  accounts, bool[]  statuses);
+```
+
 ## Functions
 
+- [setPausers(address[] accounts, bool[] statuses)](#setpausers)
 - [setAddress(bytes32 k, address v)](#setaddress)
 - [setAddressBoolean(bytes32 k, address a, bool v)](#setaddressboolean)
 - [setUint(bytes32 k, uint256 v)](#setuint)
@@ -53,6 +60,27 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 - [getAddressArrayItemByIndex(bytes32 k, uint256 i)](#getaddressarrayitembyindex)
 - [getBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#getbytes32arrayitembyindex)
 
+### setPausers
+
+```solidity
+function setPausers(address[] accounts, bool[] statuses) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setPausers(address[] calldata accounts, bool[] calldata statuses) external;
+```
+</details>
+
 ### setAddress
 
 ```solidity
@@ -93,9 +121,13 @@ function setAddressBoolean(bytes32 k, address a, bool v) external nonpayable
 
 ```javascript
 function setAddressBoolean(
+
     bytes32 k,
+
     address a,
+
     bool v
+
   ) external;
 ```
 </details>

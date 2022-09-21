@@ -1,6 +1,6 @@
 # MockValidationLibUser.sol
 
-View Source: [contracts/mock/lib-user/MockValidationLibUser.sol](../contracts/mock/lib-user/MockValidationLibUser.sol)
+View Source: [\contracts\mock\lib-user\MockValidationLibUser.sol](..\contracts\mock\lib-user\MockValidationLibUser.sol)
 
 **MockValidationLibUser**
 
@@ -39,7 +39,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -60,7 +62,9 @@ function senderMustBePolicyManagerContract() external view
 
 ```javascript
 function senderMustBePolicyManagerContract() external view {
+
     s.senderMustBePolicyManagerContract();
+
   }
 ```
 </details>
@@ -81,7 +85,9 @@ function senderMustBeGovernanceContract() external view
 
 ```javascript
 function senderMustBeGovernanceContract() external view {
+
     s.senderMustBeGovernanceContract();
+
   }
 ```
 </details>
@@ -102,7 +108,9 @@ function senderMustBeClaimsProcessorContract() external view
 
 ```javascript
 function senderMustBeClaimsProcessorContract() external view {
+
     s.senderMustBeClaimsProcessorContract();
+
   }
 ```
 </details>
@@ -123,7 +131,9 @@ function senderMustBeStrategyContract() external view
 
 ```javascript
 function senderMustBeStrategyContract() external view {
+
     s.senderMustBeStrategyContract();
+
   }
 ```
 </details>
@@ -146,7 +156,9 @@ function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view
 
 ```javascript
 function mustBeDisputed(bytes32 coverKey, bytes32 productKey) external view {
+
     s.mustBeDisputed(coverKey, productKey);
+
   }
 ```
 </details>
@@ -169,7 +181,9 @@ function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) exter
 
 ```javascript
 function mustHaveNormalProductStatus(bytes32 coverKey, bytes32 productKey) external view {
+
     s.mustHaveNormalProductStatus(coverKey, productKey);
+
   }
 ```
 </details>

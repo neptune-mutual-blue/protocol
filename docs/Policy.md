@@ -1,6 +1,6 @@
 # Policy Contract (Policy.sol)
 
-View Source: [contracts/core/policy/Policy.sol](../contracts/core/policy/Policy.sol)
+View Source: [\contracts\core\policy\Policy.sol](..\contracts\core\policy\Policy.sol)
 
 **↗ Extends: [IPolicy](IPolicy.md), [Recoverable](Recoverable.md)**
 
@@ -8,18 +8,10 @@ View Source: [contracts/core/policy/Policy.sol](../contracts/core/policy/Policy.
 
 The policy contract enables you to a purchase cover
 
-## Contract Members
-**Constants & Variables**
-
-```js
-uint256 public lastPolicyId;
-
-```
-
 ## Functions
 
-- [constructor(IStore store, uint256 _lastPolicyId)](#)
-- [purchaseCover(address onBehalfOf, bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
+- [constructor(IStore store)](#)
+- [purchaseCover(struct IPolicy.PurchaseCoverArgs args)](#purchasecover)
 - [getCxToken(bytes32 coverKey, bytes32 productKey, uint256 coverDuration)](#getcxtoken)
 - [getCxTokenByExpiryDate(bytes32 coverKey, bytes32 productKey, uint256 expiryDate)](#getcxtokenbyexpirydate)
 - [getExpiryDate(uint256 today, uint256 coverDuration)](#getexpirydate)
@@ -32,24 +24,23 @@ uint256 public lastPolicyId;
 
 ### 
 
+Constructs this contract
+
 ```solidity
-function (IStore store, uint256 _lastPolicyId) public nonpayable Recoverable 
+function (IStore store) public nonpayable Recoverable 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| store | IStore |  | 
-| _lastPolicyId | uint256 |  | 
+| store | IStore | Provide an implementation of IStore | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(IStore store, uint256 _lastPolicyId) Recoverable(store) {
-    lastPolicyId = _lastPolicyId;
-  }
+constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
@@ -64,7 +55,7 @@ Purchase cover for the specified amount. <br /> <br />
  ## Payouts and Incident Date
 
 ```solidity
-function purchaseCover(address onBehalfOf, bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable nonReentrant 
+function purchaseCover(struct IPolicy.PurchaseCoverArgs args) external nonpayable nonReentrant 
 returns(address, uint256)
 ```
 
@@ -72,46 +63,48 @@ returns(address, uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| onBehalfOf | address | Enter an address you would like to send the claim tokens (cxTokens) to. | 
-| coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
-| productKey | bytes32 |  | 
-| coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
-| referralCode | bytes32 |  | 
+| args | struct IPolicy.PurchaseCoverArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function purchaseCover(
-    address onBehalfOf,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover,
-    bytes32 referralCode
-  ) external override nonReentrant returns (address, uint256) {
+function purchaseCover(PurchaseCoverArgs calldata args) external override nonReentrant returns (address, uint256) {
+
     // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
+
     // and uncomment the following line
+
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
-    require(coverKey > 0, "Invalid cover key");
-    require(onBehalfOf != address(0), "Invalid `onBehalfOf`");
-    require(amountToCover > 0, "Enter an amount");
-    require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
+
+    require(args.coverKey > 0, "Invalid cover key");
+
+    require(args.onBehalfOf != address(0), "Invalid `onBehalfOf`");
+
+    require(args.amountToCover > 0, "Enter an amount");
+
+    require(args.coverDuration > 0 && args.coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     s.mustNotBePaused();
-    s.mustNotExceedProposalThreshold(amountToCover);
-    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
-    s.mustHaveNormalProductStatus(coverKey, productKey);
-    s.mustNotHavePolicyDisabled(coverKey, productKey);
-    s.senderMustBeWhitelistedIfRequired(coverKey, productKey, onBehalfOf);
 
-    lastPolicyId += 1;
+    s.mustNotExceedProposalThreshold(args.amountToCover);
 
-    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(onBehalfOf, coverKey, productKey, coverDuration, amountToCover);
+    s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
 
-    emit CoverPurchased(coverKey, productKey, onBehalfOf, address(cxToken), fee, platformFee, amountToCover, cxToken.expiresOn(), referralCode, lastPolicyId);
+    s.mustHaveNormalProductStatus(args.coverKey, args.productKey);
+
+    s.mustNotHavePolicyDisabled(args.coverKey, args.productKey);
+
+    s.senderMustBeWhitelistedIfRequired(args.coverKey, args.productKey, args.onBehalfOf);
+
+    uint256 lastPolicyId = s.incrementPolicyId();
+
+    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(args);
+
+    emit CoverPurchased(args, address(cxToken), fee, platformFee, cxToken.expiresOn(), lastPolicyId);
+
     return (address(cxToken), lastPolicyId);
+
   }
 ```
 </details>
@@ -139,13 +132,19 @@ returns(cxToken address, expiryDate uint256)
 
 ```javascript
 function getCxToken(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 coverDuration
+
   ) external view override returns (address cxToken, uint256 expiryDate) {
+
     require(coverDuration > 0 && coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     return s.getCxTokenInternal(coverKey, productKey, coverDuration);
+
   }
 ```
 </details>
@@ -173,11 +172,17 @@ returns(cxToken address)
 
 ```javascript
 function getCxTokenByExpiryDate(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 expiryDate
+
   ) external view override returns (address cxToken) {
+
     return s.getCxTokenByExpiryDateInternal(coverKey, productKey, expiryDate);
+
   }
 ```
 </details>
@@ -203,7 +208,9 @@ returns(uint256)
 
 ```javascript
 function getExpiryDate(uint256 today, uint256 coverDuration) external pure override returns (uint256) {
+
     return CoverUtilV1.getExpiryDateInternal(today, coverDuration);
+
   }
 ```
 </details>
@@ -230,8 +237,11 @@ returns(uint256)
 
 ```javascript
 function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     uint256 precision = s.getStablecoinPrecision();
+
     return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
+
   }
 ```
 </details>
@@ -257,7 +267,9 @@ returns(uint256)
 
 ```javascript
 function getAvailableLiquidity(bytes32 coverKey) external view override returns (uint256) {
+
     return s.getStablecoinOwnedByVaultInternal(coverKey);
+
   }
 ```
 </details>
@@ -269,7 +281,7 @@ Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
 function getCoverFeeInfo(bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover) external view
-returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, floor uint256, ceiling uint256, rate uint256)
+returns(struct IPolicy.CoverFeeInfoType)
 ```
 
 **Arguments**
@@ -286,36 +298,33 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 
 ```javascript
 function getCoverFeeInfo(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 coverDuration,
+
     uint256 amountToCover
-  )
-    external
-    view
-    override
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    )
-  {
-    return s.calculatePolicyFeeInternal(coverKey, productKey, coverDuration, amountToCover);
+
+  ) external view override returns (CoverFeeInfoType memory) {
+
+    PolicyHelperV1.CalculatePolicyFeeArgs memory args = PolicyHelperV1.CalculatePolicyFeeArgs({coverKey: coverKey, productKey: productKey, coverDuration: coverDuration, amountToCover: amountToCover});
+
+    return s.calculatePolicyFeeInternal(args);
+
   }
 ```
 </details>
 
 ### getCoverPoolSummary
 
-Returns the values of the given cover key
+Returns the pool summary of the given cover key
  Warning: this function does not validate the cover key supplied.
 
 ```solidity
 function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view
-returns(_values uint256[])
+returns(summary struct IPolicy.CoverPoolSummaryType)
 ```
 
 **Arguments**
@@ -329,8 +338,10 @@ returns(_values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (uint256[] memory _values) {
+function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view override returns (IPolicy.CoverPoolSummaryType memory summary) {
+
     return s.getCoverPoolSummaryInternal(coverKey, productKey);
+
   }
 ```
 </details>
@@ -354,7 +365,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -378,7 +391,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_POLICY;
+
   }
 ```
 </details>

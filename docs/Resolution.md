@@ -1,6 +1,6 @@
 # Resolution Contract (Resolution.sol)
 
-View Source: [contracts/core/governance/resolution/Resolution.sol](../contracts/core/governance/resolution/Resolution.sol)
+View Source: [\contracts\core\governance\resolution\Resolution.sol](..\contracts\core\governance\resolution\Resolution.sol)
 
 **↗ Extends: [IResolution](IResolution.md), [Unstakable](Unstakable.md)**
 
@@ -56,7 +56,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -80,7 +82,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_RESOLUTION;
+
   }
 ```
 </details>

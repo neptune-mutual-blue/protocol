@@ -1,6 +1,6 @@
 # Liquidity Engine contract (LiquidityEngine.sol)
 
-View Source: [contracts/core/liquidity/LiquidityEngine.sol](../contracts/core/liquidity/LiquidityEngine.sol)
+View Source: [\contracts\core\liquidity\LiquidityEngine.sol](..\contracts\core\liquidity\LiquidityEngine.sol)
 
 **↗ Extends: [ILiquidityEngine](ILiquidityEngine.md), [Recoverable](Recoverable.md)**
 
@@ -64,12 +64,15 @@ function addStrategies(address[] strategies) external nonpayable nonReentrant
 
 ```javascript
 function addStrategies(address[] calldata strategies) external override nonReentrant {
+
     require(strategies.length > 0, "No strategy specified");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.addStrategiesInternal(strategies);
+
   }
 ```
 </details>
@@ -95,13 +98,17 @@ function setLiquidityStateUpdateInterval(uint256 value) external nonpayable nonR
 
 ```javascript
 function setLiquidityStateUpdateInterval(uint256 value) external override nonReentrant {
+
     require(value > 0, "Invalid value");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, value);
+
     emit LiquidityStateUpdateIntervalSet(value);
+
   }
 ```
 </details>
@@ -126,12 +133,17 @@ function disableStrategy(address strategy) external nonpayable nonReentrant
 
 ```javascript
 function disableStrategy(address strategy) external override nonReentrant {
+
     // because this function can only be invoked by a liquidity manager.
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.disableStrategyInternal(strategy);
+
     emit StrategyDisabled(strategy);
+
   }
 ```
 </details>
@@ -155,11 +167,15 @@ function deleteStrategy(address strategy) external nonpayable nonReentrant
 
 ```javascript
 function deleteStrategy(address strategy) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.deleteStrategyInternal(strategy);
+
     emit StrategyDeleted(strategy);
+
   }
 ```
 </details>
@@ -191,18 +207,27 @@ function setRiskPoolingPeriods(bytes32 coverKey, uint256 lendingPeriod, uint256 
 
 ```javascript
 function setRiskPoolingPeriods(
+
     bytes32 coverKey,
+
     uint256 lendingPeriod,
+
     uint256 withdrawalWindow
+
   ) external override nonReentrant {
+
     require(lendingPeriod > 0, "Please specify lending period");
+
     require(withdrawalWindow > 0, "Please specify withdrawal window");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.setRiskPoolingPeriodsInternal(coverKey, lendingPeriod, withdrawalWindow);
+
     // event emitted in the above function
+
   }
 ```
 </details>
@@ -226,13 +251,17 @@ function setMaxLendingRatio(uint256 ratio) external nonpayable nonReentrant
 
 ```javascript
 function setMaxLendingRatio(uint256 ratio) external override nonReentrant {
+
     require(ratio > 0, "Please specify lending ratio");
+
     require(ratio <= ProtoUtilV1.MULTIPLIER, "Invalid lending ratio");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeLiquidityManager(s);
 
     s.setMaxLendingRatioInternal(ratio);
+
   }
 ```
 </details>
@@ -256,7 +285,9 @@ returns(ratio uint256)
 
 ```javascript
 function getMaxLendingRatio() external view override returns (uint256 ratio) {
+
     return s.getMaxLendingRatioInternal();
+
   }
 ```
 </details>
@@ -285,7 +316,9 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 
 ```javascript
 function getRiskPoolingPeriods(bytes32 coverKey) external view override returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+
     return s.getRiskPoolingPeriodsInternal(coverKey);
+
   }
 ```
 </details>
@@ -309,7 +342,9 @@ returns(strategies address[])
 
 ```javascript
 function getDisabledStrategies() external view override returns (address[] memory strategies) {
+
     return s.getDisabledStrategiesInternal();
+
   }
 ```
 </details>
@@ -333,7 +368,9 @@ returns(strategies address[])
 
 ```javascript
 function getActiveStrategies() external view override returns (address[] memory strategies) {
+
     return s.getActiveStrategiesInternal();
+
   }
 ```
 </details>
@@ -357,7 +394,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -381,7 +420,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_LIQUIDITY_ENGINE;
+
   }
 ```
 </details>

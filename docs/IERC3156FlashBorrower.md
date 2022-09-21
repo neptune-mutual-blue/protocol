@@ -1,6 +1,6 @@
 # IERC3156FlashBorrower.sol
 
-View Source: [openzeppelin-solidity/contracts/interfaces/IERC3156FlashBorrower.sol](../openzeppelin-solidity/contracts/interfaces/IERC3156FlashBorrower.sol)
+View Source: [openzeppelin-solidity\contracts\interfaces\IERC3156FlashBorrower.sol](..\openzeppelin-solidity\contracts\interfaces\IERC3156FlashBorrower.sol)
 
 **↘ Derived Contracts: [MockFlashBorrower](MockFlashBorrower.md)**
 

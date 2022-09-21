@@ -1,6 +1,6 @@
 # IERC20Detailed.sol
 
-View Source: [contracts/interfaces/IERC20Detailed.sol](../contracts/interfaces/IERC20Detailed.sol)
+View Source: [\contracts\interfaces\IERC20Detailed.sol](..\contracts\interfaces\IERC20Detailed.sol)
 
 **↗ Extends: [IERC20](IERC20.md)**
 

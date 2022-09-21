@@ -1,6 +1,6 @@
 # IUniswapV2PairLike.sol
 
-View Source: [contracts/dependencies/uniswap-v2/IUniswapV2PairLike.sol](../contracts/dependencies/uniswap-v2/IUniswapV2PairLike.sol)
+View Source: [\contracts\dependencies\uniswap-v2\IUniswapV2PairLike.sol](..\contracts\dependencies\uniswap-v2\IUniswapV2PairLike.sol)
 
 **↘ Derived Contracts: [FakeUniswapPair](FakeUniswapPair.md), [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)**
 
@@ -90,12 +90,19 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 
 ```javascript
 function getReserves()
+
     external
+
     view
+
     returns (
+
       uint112 reserve0,
+
       uint112 reserve1,
+
       uint32 blockTimestampLast
+
     );
 ```
 </details>

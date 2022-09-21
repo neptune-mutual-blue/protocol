@@ -1,6 +1,6 @@
 # ICxToken.sol
 
-View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToken.sol)
+View Source: [\contracts\interfaces\ICxToken.sol](..\contracts\interfaces\ICxToken.sol)
 
 **↗ Extends: [IERC20](IERC20.md)**
 **↘ Derived Contracts: [cxToken](cxToken.md)**
@@ -38,10 +38,15 @@ function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) 
 
 ```javascript
 function mint(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address to,
+
     uint256 amount
+
   ) external;
 ```
 </details>

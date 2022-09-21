@@ -1,6 +1,6 @@
 # MockVaultLibUser.sol
 
-View Source: [contracts/mock/lib-user/MockVaultLibUser.sol](../contracts/mock/lib-user/MockVaultLibUser.sol)
+View Source: [\contracts\mock\lib-user\MockVaultLibUser.sol](..\contracts\mock\lib-user\MockVaultLibUser.sol)
 
 **MockVaultLibUser**
 
@@ -42,7 +42,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -65,7 +67,9 @@ function setFlashLoanStatus(bytes32 coverKey, bool status) external nonpayable
 
 ```javascript
 function setFlashLoanStatus(bytes32 coverKey, bool status) external {
+
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, status);
+
   }
 ```
 </details>
@@ -88,7 +92,9 @@ returns(bool)
 
 ```javascript
 function getFlashLoanStatus(bytes32 coverKey) external view returns (bool) {
+
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey);
+
   }
 ```
 </details>
@@ -114,13 +120,21 @@ function preAddLiquidityInternal(bytes32 coverKey, address pod, address account,
 
 ```javascript
 function preAddLiquidityInternal(
+
     bytes32 coverKey,
+
     address pod,
+
     address account,
+
     uint256 amount,
+
     uint256 npmStakeToAdd
+
   ) external {
+
     s.preAddLiquidityInternal(coverKey, pod, account, amount, npmStakeToAdd);
+
   }
 ```
 </details>
@@ -148,15 +162,25 @@ returns(stablecoin address, releaseAmount uint256)
 
 ```javascript
 function preRemoveLiquidityInternal(
+
     bytes32 coverKey,
+
     address pod,
+
     address account,
+
     uint256 podsToRedeem,
+
     uint256 npmStakeToRemove,
+
     bool exit
+
   ) external returns (address stablecoin, uint256 releaseAmount) {
+
     (stablecoin, releaseAmount) = s.preRemoveLiquidityInternal(coverKey, pod, account, podsToRedeem, npmStakeToRemove, exit);
+
     require(releaseAmount == 0, "Release amount should be zero");
+
   }
 ```
 </details>
@@ -180,14 +204,21 @@ function setAmountInStrategies(bytes32 coverKey, address stablecoin, uint256 amo
 
 ```javascript
 function setAmountInStrategies(
+
     bytes32 coverKey,
+
     address stablecoin,
+
     uint256 amount
+
   ) external {
+
     // getStrategyOutKey
+
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, stablecoin));
 
     s.setUintByKey(k, amount);
+
   }
 ```
 </details>
@@ -210,7 +241,9 @@ function mustHaveNoBalanceInStrategies(bytes32 coverKey, address stablecoin) ext
 
 ```javascript
 function mustHaveNoBalanceInStrategies(bytes32 coverKey, address stablecoin) external view {
+
     s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
+
   }
 ```
 </details>
@@ -234,7 +267,9 @@ returns(uint256)
 
 ```javascript
 function getMaxFlashLoanInternal(bytes32 coverKey, address token) external view returns (uint256) {
+
     return s.getMaxFlashLoanInternal(coverKey, token);
+
   }
 ```
 </details>
@@ -257,7 +292,9 @@ function setAddressByKey(bytes32 key, address value) external nonpayable
 
 ```javascript
 function setAddressByKey(bytes32 key, address value) external {
+
     s.setAddressByKey(key, value);
+
   }
 ```
 </details>
@@ -280,7 +317,9 @@ returns(address)
 
 ```javascript
 function getAddressByKey(bytes32 key) external view returns (address) {
+
     return s.getAddressByKey(key);
+
   }
 ```
 </details>

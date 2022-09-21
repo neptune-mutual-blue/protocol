@@ -1,6 +1,6 @@
 # cxToken Factory Contract (cxTokenFactory.sol)
 
-View Source: [contracts/core/cxToken/cxTokenFactory.sol](../contracts/core/cxToken/cxTokenFactory.sol)
+View Source: [\contracts\core\cxToken\cxTokenFactory.sol](..\contracts\core\cxToken\cxTokenFactory.sol)
 
 **↗ Extends: [ICxTokenFactory](ICxTokenFactory.md), [Recoverable](Recoverable.md)**
 
@@ -60,14 +60,23 @@ returns(deployed address)
 
 ```javascript
 function deploy(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     string calldata tokenName,
+
     uint256 expiryDate
+
   ) external override nonReentrant returns (address deployed) {
+
     s.mustNotBePaused();
+
     s.senderMustBePolicyContract();
+
     s.mustBeValidCoverKey(coverKey);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     require(expiryDate > 0, "Please specify expiry date");
@@ -77,26 +86,41 @@ function deploy(
     require(s.getAddress(salt) == address(0), "Already deployed");
 
     // solhint-disable-next-line
+
     assembly {
+
       deployed := create2(
+
         callvalue(), // wei sent with current call
+
         // Actual code starts after skipping the first 32 bytes
+
         add(bytecode, 0x20),
+
         mload(bytecode), // Load the size of code contained in the first 32 bytes
+
         salt // Salt from function arguments
+
       )
 
       if iszero(extcodesize(deployed)) {
+
         // @suppress-revert This is correct usage
+
         revert(0, 0)
+
       }
+
     }
 
     s.setAddress(salt, deployed);
+
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
+
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, deployed);
 
     emit CxTokenDeployed(coverKey, productKey, deployed, expiryDate);
+
   }
 ```
 </details>
@@ -120,7 +144,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -144,7 +170,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_CXTOKEN_FACTORY;
+
   }
 ```
 </details>

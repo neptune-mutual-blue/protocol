@@ -6,13 +6,10 @@ import "./IMember.sol";
 pragma solidity ^0.8.0;
 
 interface ILendingStrategy is IMember {
-  /*
-   * deposits Total amount deposited
-   * withdrawals Total amount withdrawn
-   */
+  
   struct LendingStrategyInfoType {
-    uint256 deposits;
-    uint256 withdrawals;
+    uint256 deposits; //deposits Total amount deposited
+    uint256 withdrawals; //withdrawals Total amount withdrawn
   }
 
   event LogDeposit(bytes32 indexed name, uint256 counter, uint256 amount, uint256 certificateReceived, uint256 depositTotal, uint256 withdrawalTotal);

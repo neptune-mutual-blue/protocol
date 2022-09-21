@@ -1,6 +1,6 @@
 # IERC3156FlashLender.sol
 
-View Source: [openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol](../openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol)
+View Source: [openzeppelin-solidity\contracts\interfaces\IERC3156FlashLender.sol](..\openzeppelin-solidity\contracts\interfaces\IERC3156FlashLender.sol)
 
 **↘ Derived Contracts: [WithFlashLoan](WithFlashLoan.md)**
 

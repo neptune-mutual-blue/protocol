@@ -1,6 +1,6 @@
 # Resolvable Contract (Resolvable.sol)
 
-View Source: [contracts/core/governance/resolution/Resolvable.sol](../contracts/core/governance/resolution/Resolvable.sol)
+View Source: [\contracts\core\governance\resolution\Resolvable.sol](..\contracts\core\governance\resolution\Resolvable.sol)
 
 **↗ Extends: [Finalization](Finalization.md), [IResolvable](IResolvable.md)**
 **↘ Derived Contracts: [Unstakable](Unstakable.md)**
@@ -16,8 +16,9 @@ Enables governance agents to resolve a contract undergoing reporting.
 - [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
 - [_resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
-- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownPeriod)
-- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownPeriod)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
+- [closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#closereport)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
 - [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve
@@ -44,24 +45,35 @@ function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 
 ```javascript
 function resolve(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeGovernanceAgent(s);
 
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeReportingOrDisputed(coverKey, productKey);
+
     s.mustBeAfterReportingPeriod(coverKey, productKey);
+
     s.mustNotHaveResolutionDeadline(coverKey, productKey);
 
     bool decision = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.IncidentHappened;
 
     _resolve(coverKey, productKey, incidentDate, decision, false);
+
   }
 ```
 </details>
@@ -88,21 +100,33 @@ function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 ```javascript
 function emergencyResolve(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     bool decision
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeGovernanceAdmin(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeAfterReportingPeriod(coverKey, productKey);
+
     s.mustBeBeforeResolutionDeadline(coverKey, productKey);
 
     _resolve(coverKey, productKey, incidentDate, decision, true);
+
   }
 ```
 </details>
@@ -128,64 +152,105 @@ function _resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bo
 
 ```javascript
 function _resolve(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     bool decision,
+
     bool emergency
+
   ) private {
+
     // A grace period given to a governance admin(s) to defend
+
     // against a concensus attack(s).
+
     uint256 cooldownPeriod = s.getCoolDownPeriodInternal(coverKey);
 
     // The timestamp until when a governance admin is allowed
+
     // to perform emergency resolution.
+
     // After this timestamp, the cover has to be claimable
+
     // or finalized
+
     uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
 
     // A cover, when being resolved, will either directly go to finalization or have a claim period.
+
     //
+
     // Decision: False Reporting
+
     // 1. A governance admin can still overwrite, override, or reverse this decision before `deadline`.
+
     // 2. After the deadline and before finalization, the NPM holders
+
     //    who staked for `False Reporting` camp can withdraw the original stake + reward.
+
     // 3. After finalization, the NPM holders who staked for this camp will only be able to receive
+
     // back the original stake. No rewards.
+
     //
+
     // Decision: Claimable
+
     //
+
     // 1. A governance admin can still overwrite, override, or reverse this decision before `deadline`.
+
     // 2. All policyholders must claim during the `Claim Period`. Otherwise, claims are not valid.
+
     // 3. After the deadline and before finalization, the NPM holders
+
     //    who staked for `Incident Happened` camp can withdraw the original stake + reward.
+
     // 4. After finalization, the NPM holders who staked for this camp will only be able to receive
+
     // back the original stake. No rewards.
+
     CoverUtilV1.ProductStatus status = decision ? CoverUtilV1.ProductStatus.Claimable : CoverUtilV1.ProductStatus.FalseReporting;
 
     // Status can change during `Emergency Resolution` attempt(s)
+
     s.setStatusInternal(coverKey, productKey, incidentDate, status);
 
     if (deadline == 0) {
+
       // Deadline can't be before claim begin date.
+
       // In other words, once a cover becomes claimable, emergency resolution
+
       // can not be performed any longer
+
       deadline = block.timestamp + cooldownPeriod; // solhint-disable-line
+
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, deadline);
+
     }
 
     // Claim begins when deadline timestamp is passed
+
     uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
 
     // Claim expires after the period specified by the cover creator.
+
     uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
 
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey, claimBeginsFrom);
+
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey, claimExpiresAt);
 
     s.updateStateAndLiquidity(coverKey);
 
     emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
+
   }
 ```
 </details>
@@ -210,18 +275,88 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external nonp
 
 ```javascript
 function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeGovernanceAdmin(s);
 
     require(period > 0, "Please specify period");
 
     if (coverKey > 0) {
+
       s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey, period);
+
     } else {
+
       s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, period);
+
     }
 
     emit CooldownPeriodConfigured(coverKey, period);
+
+  }
+```
+</details>
+
+### closeReport
+
+Enables governance admins to perform a emergency resolution to close a report.
+ The status is set to `False Reporting` and the cover is made available to be finalized
+
+```solidity
+function closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter the cover key you want to resolve | 
+| productKey | bytes32 | Enter the product key you want to resolve | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function closeReport(
+
+    bytes32 coverKey,
+
+    bytes32 productKey,
+
+    uint256 incidentDate
+
+  ) external override nonReentrant {
+
+    require(incidentDate > 0, "Please specify incident date");
+
+    s.mustNotBePaused();
+
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
+    s.mustBeDuringReportingPeriod(coverKey, productKey);
+
+    s.mustNotHaveResolutionDeadline(coverKey, productKey);
+
+    // solhint-disable-next-line not-rely-on-time
+
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey, block.timestamp);
+
+    // solhint-disable-next-line not-rely-on-time
+
+    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, block.timestamp);
+
+    _resolve(coverKey, productKey, incidentDate, false, true);
+
+    _finalize(coverKey, productKey, incidentDate);
+
+    emit ReportClosed(coverKey, productKey, msg.sender, incidentDate);
+
   }
 ```
 </details>
@@ -247,7 +382,9 @@ returns(uint256)
 
 ```javascript
 function getCoolDownPeriod(bytes32 coverKey) external view override returns (uint256) {
+
     return s.getCoolDownPeriodInternal(coverKey);
+
   }
 ```
 </details>
@@ -274,7 +411,9 @@ returns(uint256)
 
 ```javascript
 function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     return s.getResolutionDeadlineInternal(coverKey, productKey);
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # MockAccessControlUser.sol
 
-View Source: [contracts/mock/lib-user/MockAccessControlUser.sol](../contracts/mock/lib-user/MockAccessControlUser.sol)
+View Source: [\contracts\mock\lib-user\MockAccessControlUser.sol](..\contracts\mock\lib-user\MockAccessControlUser.sol)
 
 **MockAccessControlUser**
 
@@ -41,7 +41,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -63,7 +65,9 @@ function callerMustBeAdmin(address caller) external view
 
 ```javascript
 function callerMustBeAdmin(address caller) external view {
+
     s.callerMustBeAdmin(caller);
+
   }
 ```
 </details>
@@ -85,7 +89,9 @@ function callerMustBeCoverManager(address caller) external view
 
 ```javascript
 function callerMustBeCoverManager(address caller) external view {
+
     s.callerMustBeCoverManager(caller);
+
   }
 ```
 </details>
@@ -107,7 +113,9 @@ function callerMustBeGovernanceAgent(address caller) external view
 
 ```javascript
 function callerMustBeGovernanceAgent(address caller) external view {
+
     s.callerMustBeGovernanceAgent(caller);
+
   }
 ```
 </details>
@@ -129,7 +137,9 @@ function callerMustBeGovernanceAdmin(address caller) external view
 
 ```javascript
 function callerMustBeGovernanceAdmin(address caller) external view {
+
     s.callerMustBeGovernanceAdmin(caller);
+
   }
 ```
 </details>
@@ -151,7 +161,9 @@ function callerMustBeRecoveryAgent(address caller) external view
 
 ```javascript
 function callerMustBeRecoveryAgent(address caller) external view {
+
     s.callerMustBeRecoveryAgent(caller);
+
   }
 ```
 </details>
@@ -173,7 +185,9 @@ function callerMustBePauseAgent(address caller) external view
 
 ```javascript
 function callerMustBePauseAgent(address caller) external view {
+
     s.callerMustBePauseAgent(caller);
+
   }
 ```
 </details>
@@ -195,7 +209,9 @@ function callerMustBeUnpauseAgent(address caller) external view
 
 ```javascript
 function callerMustBeUnpauseAgent(address caller) external view {
+
     s.callerMustBeUnpauseAgent(caller);
+
   }
 ```
 </details>
@@ -219,7 +235,9 @@ returns(bool)
 
 ```javascript
 function hasAccess(bytes32 role, address user) external view returns (bool) {
+
     return s.hasAccess(role, user);
+
   }
 ```
 </details>

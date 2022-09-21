@@ -1,6 +1,6 @@
 # FakeCompoundDaiDelegator.sol
 
-View Source: [contracts/fakes/FakeCompoundDaiDelegator.sol](../contracts/fakes/FakeCompoundDaiDelegator.sol)
+View Source: [\contracts\fakes\FakeCompoundDaiDelegator.sol](..\contracts\fakes\FakeCompoundDaiDelegator.sol)
 
 **↗ Extends: [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md), [ERC20](ERC20.md)**
 
@@ -39,8 +39,11 @@ function (FakeToken _dai, FakeToken _cDai) public nonpayable ERC20
 
 ```javascript
 constructor(FakeToken _dai, FakeToken _cDai) ERC20("cDAI", "cDAI") {
+
     dai = _dai;
+
     cDai = _cDai;
+
   }
 ```
 </details>
@@ -69,12 +72,15 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function mint(uint256 mintAmount) external override returns (uint256) {
+
     dai.transferFrom(msg.sender, address(this), mintAmount);
 
     cDai.mint(mintAmount);
+
     cDai.transfer(msg.sender, mintAmount);
 
     return 0;
+
   }
 ```
 </details>
@@ -103,14 +109,17 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function redeem(uint256 redeemTokens) external override returns (uint256) {
+
     cDai.transferFrom(msg.sender, address(this), redeemTokens);
 
     uint256 interest = (redeemTokens * 3) / 100;
+
     dai.mint(interest);
 
     dai.transfer(msg.sender, redeemTokens + interest);
 
     return 0;
+
   }
 ```
 </details>

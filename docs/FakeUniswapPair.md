@@ -1,6 +1,6 @@
 # FakeUniswapPair.sol
 
-View Source: [contracts/fakes/FakeUniswapPair.sol](../contracts/fakes/FakeUniswapPair.sol)
+View Source: [\contracts\fakes\FakeUniswapPair.sol](..\contracts\fakes\FakeUniswapPair.sol)
 
 **↗ Extends: [IUniswapV2PairLike](IUniswapV2PairLike.md), [ERC20](ERC20.md)**
 
@@ -39,10 +39,13 @@ function (address _token0, address _token1) public nonpayable ERC20
 
 ```javascript
 constructor(address _token0, address _token1) ERC20("PAIR", "PAIR") {
+
     token0 = _token0;
+
     token1 = _token1;
 
     super._mint(msg.sender, 100000 ether);
+
   }
 ```
 </details>
@@ -64,7 +67,9 @@ returns(uint256)
 
 ```javascript
 function totalSupply() public view override(ERC20, IUniswapV2PairLike) returns (uint256) {
+
     return super.totalSupply();
+
   }
 ```
 </details>
@@ -86,18 +91,31 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 
 ```javascript
 function getReserves()
+
     external
+
     view
+
     override
+
     returns (
+
       uint112 reserve0,
+
       uint112 reserve1,
+
       uint32 blockTimestampLast
+
     )
+
   {
+
     reserve0 = 100000 ether;
+
     reserve1 = 50000 ether;
+
     blockTimestampLast = uint32(block.timestamp - 1 hours); // solhint-disable-line
+
   }
 ```
 </details>

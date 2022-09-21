@@ -1,6 +1,6 @@
 # MockCxTokenPolicy.sol
 
-View Source: [contracts/mock/cx-token/MockCxTokenPolicy.sol](../contracts/mock/cx-token/MockCxTokenPolicy.sol)
+View Source: [\contracts\mock\cx-token\MockCxTokenPolicy.sol](..\contracts\mock\cx-token\MockCxTokenPolicy.sol)
 
 **MockCxTokenPolicy**
 
@@ -34,7 +34,9 @@ function (ICxToken _cxToken) public nonpayable
 
 ```javascript
 constructor(ICxToken _cxToken) {
+
     cxToken = _cxToken;
+
   }
 ```
 </details>
@@ -59,12 +61,19 @@ function callMint(bytes32 key, bytes32 productKey, address to, uint256 amount) e
 
 ```javascript
 function callMint(
+
     bytes32 key,
+
     bytes32 productKey,
+
     address to,
+
     uint256 amount
+
   ) external {
+
     cxToken.mint(key, productKey, to, amount);
+
   }
 ```
 </details>

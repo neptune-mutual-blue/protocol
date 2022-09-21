@@ -1,6 +1,6 @@
 # StoreKeyUtil.sol
 
-View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/StoreKeyUtil.sol)
+View Source: [\contracts\libraries\StoreKeyUtil.sol](..\contracts\libraries\StoreKeyUtil.sol)
 
 **StoreKeyUtil**
 
@@ -18,6 +18,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value)](#subtractuintbykeys)
 - [setStringByKey(IStore s, bytes32 key, string value)](#setstringbykey)
 - [setStringByKeys(IStore s, bytes32 key1, bytes32 key2, string value)](#setstringbykeys)
+- [setStringByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, string value)](#setstringbykeys)
 - [setBytes32ByKey(IStore s, bytes32 key, bytes32 value)](#setbytes32bykey)
 - [setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value)](#setbytes32bykeys)
 - [setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value)](#setbytes32bykeys)
@@ -126,12 +127,19 @@ function setUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 
 ```javascript
 function setUintByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setUint(key, value);
+
   }
 ```
 </details>
@@ -156,12 +164,19 @@ function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) exte
 
 ```javascript
 function setUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     return s.setUint(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -187,13 +202,21 @@ function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, uint2
 
 ```javascript
 function setUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 value
+
   ) external {
+
     return s.setUint(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -219,13 +242,21 @@ function setUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, ui
 
 ```javascript
 function setUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     return s.setUint(_getKey(key1, key2, account), value);
+
   }
 ```
 </details>
@@ -249,12 +280,19 @@ function addUintByKey(IStore s, bytes32 key, uint256 value) external nonpayable
 
 ```javascript
 function addUintByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.addUint(key, value);
+
   }
 ```
 </details>
@@ -279,12 +317,19 @@ function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value) exte
 
 ```javascript
 function addUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     return s.addUint(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -310,13 +355,21 @@ function addUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, ui
 
 ```javascript
 function addUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     return s.addUint(_getKey(key1, key2, account), value);
+
   }
 ```
 </details>
@@ -340,12 +393,19 @@ function subtractUintByKey(IStore s, bytes32 key, uint256 value) external nonpay
 
 ```javascript
 function subtractUintByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.subtractUint(key, value);
+
   }
 ```
 </details>
@@ -370,12 +430,19 @@ function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, uint256 value)
 
 ```javascript
 function subtractUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     return s.subtractUint(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -401,13 +468,21 @@ function subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address accoun
 
 ```javascript
 function subtractUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     return s.subtractUint(_getKey(key1, key2, account), value);
+
   }
 ```
 </details>
@@ -431,12 +506,19 @@ function setStringByKey(IStore s, bytes32 key, string value) external nonpayable
 
 ```javascript
 function setStringByKey(
+
     IStore s,
+
     bytes32 key,
+
     string calldata value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     s.setString(key, value);
+
   }
 ```
 </details>
@@ -461,12 +543,59 @@ function setStringByKeys(IStore s, bytes32 key1, bytes32 key2, string value) ext
 
 ```javascript
 function setStringByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     string calldata value
+
   ) external {
+
     return s.setString(_getKey(key1, key2), value);
+
+  }
+```
+</details>
+
+### setStringByKeys
+
+```solidity
+function setStringByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, string value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setStringByKeys(
+
+    IStore s,
+
+    bytes32 key1,
+
+    bytes32 key2,
+
+    bytes32 key3,
+
+    string calldata value
+
+  ) external {
+
+    return s.setString(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -490,12 +619,19 @@ function setBytes32ByKey(IStore s, bytes32 key, bytes32 value) external nonpayab
 
 ```javascript
 function setBytes32ByKey(
+
     IStore s,
+
     bytes32 key,
+
     bytes32 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     s.setBytes32(key, value);
+
   }
 ```
 </details>
@@ -520,12 +656,19 @@ function setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value) e
 
 ```javascript
 function setBytes32ByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     return s.setBytes32(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -551,13 +694,21 @@ function setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, by
 
 ```javascript
 function setBytes32ByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 value
+
   ) external {
+
     return s.setBytes32(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -581,12 +732,19 @@ function setBoolByKey(IStore s, bytes32 key, bool value) external nonpayable
 
 ```javascript
 function setBoolByKey(
+
     IStore s,
+
     bytes32 key,
+
     bool value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setBool(key, value);
+
   }
 ```
 </details>
@@ -611,12 +769,19 @@ function setBoolByKeys(IStore s, bytes32 key1, bytes32 key2, bool value) externa
 
 ```javascript
 function setBoolByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bool value
+
   ) external {
+
     return s.setBool(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -642,13 +807,21 @@ function setBoolByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, bool 
 
 ```javascript
 function setBoolByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bool value
+
   ) external {
+
     return s.setBool(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -673,12 +846,19 @@ function setBoolByKeys(IStore s, bytes32 key, address account, bool value) exter
 
 ```javascript
 function setBoolByKeys(
+
     IStore s,
+
     bytes32 key,
+
     address account,
+
     bool value
+
   ) external {
+
     return s.setBool(_getKey(key, account), value);
+
   }
 ```
 </details>
@@ -702,12 +882,19 @@ function setAddressByKey(IStore s, bytes32 key, address value) external nonpayab
 
 ```javascript
 function setAddressByKey(
+
     IStore s,
+
     bytes32 key,
+
     address value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setAddress(key, value);
+
   }
 ```
 </details>
@@ -732,12 +919,19 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, address value) e
 
 ```javascript
 function setAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     return s.setAddress(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -763,13 +957,21 @@ function setAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, ad
 
 ```javascript
 function setAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     return s.setAddress(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -793,12 +995,19 @@ function setAddressArrayByKey(IStore s, bytes32 key, address value) external non
 
 ```javascript
 function setAddressArrayByKey(
+
     IStore s,
+
     bytes32 key,
+
     address value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setAddressArrayItem(key, value);
+
   }
 ```
 </details>
@@ -823,12 +1032,19 @@ function setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address val
 
 ```javascript
 function setAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     return s.setAddressArrayItem(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -854,13 +1070,21 @@ function setAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key
 
 ```javascript
 function setAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     return s.setAddressArrayItem(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -885,13 +1109,21 @@ function setAddressBooleanByKey(IStore s, bytes32 key, address account, bool val
 
 ```javascript
 function setAddressBooleanByKey(
+
     IStore s,
+
     bytes32 key,
+
     address account,
+
     bool value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setAddressBoolean(key, account, value);
+
   }
 ```
 </details>
@@ -917,13 +1149,21 @@ function setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, address a
 
 ```javascript
 function setAddressBooleanByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     bool value
+
   ) external {
+
     return s.setAddressBoolean(_getKey(key1, key2), account, value);
+
   }
 ```
 </details>
@@ -950,14 +1190,23 @@ function setAddressBooleanByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 k
 
 ```javascript
 function setAddressBooleanByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address account,
+
     bool value
+
   ) external {
+
     return s.setAddressBoolean(_getKey(key1, key2, key3), account, value);
+
   }
 ```
 </details>
@@ -980,8 +1229,11 @@ function deleteUintByKey(IStore s, bytes32 key) external nonpayable
 
 ```javascript
 function deleteUintByKey(IStore s, bytes32 key) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteUint(key);
+
   }
 ```
 </details>
@@ -1005,11 +1257,17 @@ function deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpaya
 
 ```javascript
 function deleteUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external {
+
     return s.deleteUint(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1034,12 +1292,19 @@ function deleteUintByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3) ex
 
 ```javascript
 function deleteUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external {
+
     return s.deleteUint(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -1062,8 +1327,11 @@ function deleteBytes32ByKey(IStore s, bytes32 key) external nonpayable
 
 ```javascript
 function deleteBytes32ByKey(IStore s, bytes32 key) external {
+
     require(key > 0, "Invalid key");
+
     s.deleteBytes32(key);
+
   }
 ```
 </details>
@@ -1087,11 +1355,17 @@ function deleteBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2) external nonp
 
 ```javascript
 function deleteBytes32ByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external {
+
     return s.deleteBytes32(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1114,8 +1388,11 @@ function deleteBoolByKey(IStore s, bytes32 key) external nonpayable
 
 ```javascript
 function deleteBoolByKey(IStore s, bytes32 key) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteBool(key);
+
   }
 ```
 </details>
@@ -1139,11 +1416,17 @@ function deleteBoolByKeys(IStore s, bytes32 key1, bytes32 key2) external nonpaya
 
 ```javascript
 function deleteBoolByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external {
+
     return s.deleteBool(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1167,11 +1450,17 @@ function deleteBoolByKeys(IStore s, bytes32 key, address account) external nonpa
 
 ```javascript
 function deleteBoolByKeys(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) external {
+
     return s.deleteBool(_getKey(key, account));
+
   }
 ```
 </details>
@@ -1194,8 +1483,11 @@ function deleteAddressByKey(IStore s, bytes32 key) external nonpayable
 
 ```javascript
 function deleteAddressByKey(IStore s, bytes32 key) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteAddress(key);
+
   }
 ```
 </details>
@@ -1219,11 +1511,17 @@ function deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2) external nonp
 
 ```javascript
 function deleteAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external {
+
     return s.deleteAddress(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1248,12 +1546,19 @@ function deleteAddressByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3)
 
 ```javascript
 function deleteAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external {
+
     return s.deleteAddress(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -1277,12 +1582,19 @@ function deleteAddressArrayByKey(IStore s, bytes32 key, address value) external 
 
 ```javascript
 function deleteAddressArrayByKey(
+
     IStore s,
+
     bytes32 key,
+
     address value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteAddressArrayItem(key, value);
+
   }
 ```
 </details>
@@ -1307,12 +1619,19 @@ function deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, address 
 
 ```javascript
 function deleteAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     return s.deleteAddressArrayItem(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -1338,13 +1657,21 @@ function deleteAddressArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 
 
 ```javascript
 function deleteAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     return s.deleteAddressArrayItem(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -1368,12 +1695,19 @@ function deleteAddressArrayByIndexByKey(IStore s, bytes32 key, uint256 index) ex
 
 ```javascript
 function deleteAddressArrayByIndexByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 index
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteAddressArrayItemByIndex(key, index);
+
   }
 ```
 </details>
@@ -1398,12 +1732,19 @@ function deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, u
 
 ```javascript
 function deleteAddressArrayByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external {
+
     return s.deleteAddressArrayItemByIndex(_getKey(key1, key2), index);
+
   }
 ```
 </details>
@@ -1429,13 +1770,21 @@ function deleteAddressArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, b
 
 ```javascript
 function deleteAddressArrayByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external {
+
     return s.deleteAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
+
   }
 ```
 </details>
@@ -1459,8 +1808,11 @@ returns(uint256)
 
 ```javascript
 function getUintByKey(IStore s, bytes32 key) external view returns (uint256) {
+
     require(key > 0, "Invalid key");
+
     return s.getUint(key);
+
   }
 ```
 </details>
@@ -1485,11 +1837,17 @@ returns(uint256)
 
 ```javascript
 function getUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (uint256) {
+
     return s.getUint(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1515,12 +1873,19 @@ returns(uint256)
 
 ```javascript
 function getUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (uint256) {
+
     return s.getUint(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -1546,12 +1911,19 @@ returns(uint256)
 
 ```javascript
 function getUintByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account
+
   ) external view returns (uint256) {
+
     return s.getUint(_getKey(key1, key2, account));
+
   }
 ```
 </details>
@@ -1575,8 +1947,11 @@ returns(string)
 
 ```javascript
 function getStringByKey(IStore s, bytes32 key) external view returns (string memory) {
+
     require(key > 0, "Invalid key");
+
     return s.getString(key);
+
   }
 ```
 </details>
@@ -1601,11 +1976,17 @@ returns(string)
 
 ```javascript
 function getStringByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (string memory) {
+
     return s.getString(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1629,8 +2010,11 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ByKey(IStore s, bytes32 key) external view returns (bytes32) {
+
     require(key > 0, "Invalid key");
+
     return s.getBytes32(key);
+
   }
 ```
 </details>
@@ -1655,11 +2039,17 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (bytes32) {
+
     return s.getBytes32(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1683,8 +2073,11 @@ returns(bool)
 
 ```javascript
 function getBoolByKey(IStore s, bytes32 key) external view returns (bool) {
+
     require(key > 0, "Invalid key");
+
     return s.getBool(key);
+
   }
 ```
 </details>
@@ -1710,12 +2103,19 @@ returns(bool)
 
 ```javascript
 function getBoolByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (bool) {
+
     return s.getBool(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -1740,11 +2140,17 @@ returns(bool)
 
 ```javascript
 function getBoolByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (bool) {
+
     return s.getBool(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1769,11 +2175,17 @@ returns(bool)
 
 ```javascript
 function getBoolByKeys(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) external view returns (bool) {
+
     return s.getBool(_getKey(key, account));
+
   }
 ```
 </details>
@@ -1797,8 +2209,11 @@ returns(address)
 
 ```javascript
 function getAddressByKey(IStore s, bytes32 key) external view returns (address) {
+
     require(key > 0, "Invalid key");
+
     return s.getAddress(key);
+
   }
 ```
 </details>
@@ -1823,11 +2238,17 @@ returns(address)
 
 ```javascript
 function getAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (address) {
+
     return s.getAddress(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -1853,12 +2274,19 @@ returns(address)
 
 ```javascript
 function getAddressByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (address) {
+
     return s.getAddress(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -1883,12 +2311,19 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKey(
+
     IStore s,
+
     bytes32 key,
+
     address account
+
   ) external view returns (bool) {
+
     require(key > 0, "Invalid key");
+
     return s.getAddressBoolean(key, account);
+
   }
 ```
 </details>
@@ -1914,12 +2349,19 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account
+
   ) external view returns (bool) {
+
     return s.getAddressBoolean(_getKey(key1, key2), account);
+
   }
 ```
 </details>
@@ -1946,13 +2388,21 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address account
+
   ) external view returns (bool) {
+
     return s.getAddressBoolean(_getKey(key1, key2, key3), account);
+
   }
 ```
 </details>
@@ -1976,8 +2426,11 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKey(IStore s, bytes32 key) external view returns (uint256) {
+
     require(key > 0, "Invalid key");
+
     return s.countAddressArrayItems(key);
+
   }
 ```
 </details>
@@ -2002,11 +2455,17 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (uint256) {
+
     return s.countAddressArrayItems(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -2032,12 +2491,19 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (uint256) {
+
     return s.countAddressArrayItems(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -2061,8 +2527,11 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKey(IStore s, bytes32 key) external view returns (address[] memory) {
+
     require(key > 0, "Invalid key");
+
     return s.getAddressArray(key);
+
   }
 ```
 </details>
@@ -2087,11 +2556,17 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (address[] memory) {
+
     return s.getAddressArray(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -2117,12 +2592,19 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (address[] memory) {
+
     return s.getAddressArray(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -2147,12 +2629,19 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKey(
+
     IStore s,
+
     bytes32 key,
+
     address addressToFind
+
   ) external view returns (uint256) {
+
     require(key > 0, "Invalid key");
+
     return s.getAddressArrayItemPosition(key, addressToFind);
+
   }
 ```
 </details>
@@ -2178,12 +2667,19 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     address addressToFind
+
   ) external view returns (uint256) {
+
     return s.getAddressArrayItemPosition(_getKey(key1, key2), addressToFind);
+
   }
 ```
 </details>
@@ -2210,13 +2706,21 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address addressToFind
+
   ) external view returns (uint256) {
+
     return s.getAddressArrayItemPosition(_getKey(key1, key2, key3), addressToFind);
+
   }
 ```
 </details>
@@ -2241,12 +2745,19 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 index
+
   ) external view returns (address) {
+
     require(key > 0, "Invalid key");
+
     return s.getAddressArrayItemByIndex(key, index);
+
   }
 ```
 </details>
@@ -2272,12 +2783,19 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external view returns (address) {
+
     return s.getAddressArrayItemByIndex(_getKey(key1, key2), index);
+
   }
 ```
 </details>
@@ -2304,13 +2822,21 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external view returns (address) {
+
     return s.getAddressArrayItemByIndex(_getKey(key1, key2, key3), index);
+
   }
 ```
 </details>
@@ -2334,7 +2860,9 @@ returns(bytes32)
 
 ```javascript
 function _getKey(bytes32 key1, bytes32 key2) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(key1, key2));
+
   }
 ```
 </details>
@@ -2359,11 +2887,17 @@ returns(bytes32)
 
 ```javascript
 function _getKey(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(key1, key2, key3));
+
   }
 ```
 </details>
@@ -2387,7 +2921,9 @@ returns(bytes32)
 
 ```javascript
 function _getKey(bytes32 key, address account) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(key, account));
+
   }
 ```
 </details>
@@ -2412,11 +2948,17 @@ returns(bytes32)
 
 ```javascript
 function _getKey(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account
+
   ) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(key1, key2, account));
+
   }
 ```
 </details>
@@ -2440,12 +2982,19 @@ function setBytes32ArrayByKey(IStore s, bytes32 key, bytes32 value) external non
 
 ```javascript
 function setBytes32ArrayByKey(
+
     IStore s,
+
     bytes32 key,
+
     bytes32 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.setBytes32ArrayItem(key, value);
+
   }
 ```
 </details>
@@ -2470,12 +3019,19 @@ function setBytes32ArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 val
 
 ```javascript
 function setBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     return s.setBytes32ArrayItem(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -2501,13 +3057,21 @@ function setBytes32ArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key
 
 ```javascript
 function setBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 value
+
   ) external {
+
     return s.setBytes32ArrayItem(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -2531,12 +3095,19 @@ function deleteBytes32ArrayByKey(IStore s, bytes32 key, bytes32 value) external 
 
 ```javascript
 function deleteBytes32ArrayByKey(
+
     IStore s,
+
     bytes32 key,
+
     bytes32 value
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteBytes32ArrayItem(key, value);
+
   }
 ```
 </details>
@@ -2561,12 +3132,19 @@ function deleteBytes32ArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 
 
 ```javascript
 function deleteBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     return s.deleteBytes32ArrayItem(_getKey(key1, key2), value);
+
   }
 ```
 </details>
@@ -2592,13 +3170,21 @@ function deleteBytes32ArrayByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 
 
 ```javascript
 function deleteBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 value
+
   ) external {
+
     return s.deleteBytes32ArrayItem(_getKey(key1, key2, key3), value);
+
   }
 ```
 </details>
@@ -2622,12 +3208,19 @@ function deleteBytes32ArrayByIndexByKey(IStore s, bytes32 key, uint256 index) ex
 
 ```javascript
 function deleteBytes32ArrayByIndexByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 index
+
   ) external {
+
     require(key > 0, "Invalid key");
+
     return s.deleteBytes32ArrayItemByIndex(key, index);
+
   }
 ```
 </details>
@@ -2652,12 +3245,19 @@ function deleteBytes32ArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, u
 
 ```javascript
 function deleteBytes32ArrayByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external {
+
     return s.deleteBytes32ArrayItemByIndex(_getKey(key1, key2), index);
+
   }
 ```
 </details>
@@ -2683,13 +3283,21 @@ function deleteBytes32ArrayByIndexByKeys(IStore s, bytes32 key1, bytes32 key2, b
 
 ```javascript
 function deleteBytes32ArrayByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external {
+
     return s.deleteBytes32ArrayItemByIndex(_getKey(key1, key2, key3), index);
+
   }
 ```
 </details>
@@ -2713,8 +3321,11 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKey(IStore s, bytes32 key) external view returns (uint256) {
+
     require(key > 0, "Invalid key");
+
     return s.countBytes32ArrayItems(key);
+
   }
 ```
 </details>
@@ -2739,11 +3350,17 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (uint256) {
+
     return s.countBytes32ArrayItems(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -2769,12 +3386,19 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (uint256) {
+
     return s.countBytes32ArrayItems(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -2798,8 +3422,11 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKey(IStore s, bytes32 key) external view returns (bytes32[] memory) {
+
     require(key > 0, "Invalid key");
+
     return s.getBytes32Array(key);
+
   }
 ```
 </details>
@@ -2824,11 +3451,17 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2
+
   ) external view returns (bytes32[] memory) {
+
     return s.getBytes32Array(_getKey(key1, key2));
+
   }
 ```
 </details>
@@ -2854,12 +3487,19 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (bytes32[] memory) {
+
     return s.getBytes32Array(_getKey(key1, key2, key3));
+
   }
 ```
 </details>
@@ -2884,12 +3524,19 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKey(
+
     IStore s,
+
     bytes32 key,
+
     bytes32 bytes32ToFind
+
   ) external view returns (uint256) {
+
     require(key > 0, "Invalid key");
+
     return s.getBytes32ArrayItemPosition(key, bytes32ToFind);
+
   }
 ```
 </details>
@@ -2915,12 +3562,19 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 bytes32ToFind
+
   ) external view returns (uint256) {
+
     return s.getBytes32ArrayItemPosition(_getKey(key1, key2), bytes32ToFind);
+
   }
 ```
 </details>
@@ -2947,13 +3601,21 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 bytes32ToFind
+
   ) external view returns (uint256) {
+
     return s.getBytes32ArrayItemPosition(_getKey(key1, key2, key3), bytes32ToFind);
+
   }
 ```
 </details>
@@ -2978,12 +3640,19 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKey(
+
     IStore s,
+
     bytes32 key,
+
     uint256 index
+
   ) external view returns (bytes32) {
+
     require(key > 0, "Invalid key");
+
     return s.getBytes32ArrayItemByIndex(key, index);
+
   }
 ```
 </details>
@@ -3009,12 +3678,19 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external view returns (bytes32) {
+
     return s.getBytes32ArrayItemByIndex(_getKey(key1, key2), index);
+
   }
 ```
 </details>
@@ -3041,13 +3717,21 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKeys(
+
     IStore s,
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external view returns (bytes32) {
+
     return s.getBytes32ArrayItemByIndex(_getKey(key1, key2, key3), index);
+
   }
 ```
 </details>

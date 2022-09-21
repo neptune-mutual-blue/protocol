@@ -1,6 +1,6 @@
 # MockStore.sol
 
-View Source: [contracts/mock/base/MockStore.sol](../contracts/mock/base/MockStore.sol)
+View Source: [\contracts\mock\base\MockStore.sol](..\contracts\mock\base\MockStore.sol)
 
 **↗ Extends: [FakeStore](FakeStore.md)**
 **↘ Derived Contracts: [MockCxTokenStore](MockCxTokenStore.md), [MockProcessorStore](MockProcessorStore.md), [MockProcessorStoreLib](MockProcessorStoreLib.md)**
@@ -33,8 +33,11 @@ function setBool(bytes32 prefix, address a) external nonpayable
 
 ```javascript
 function setBool(bytes32 prefix, address a) external {
+
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
+
     this.setBool(k, true);
+
   }
 ```
 </details>
@@ -57,8 +60,11 @@ function unsetBool(bytes32 prefix, address a) external nonpayable
 
 ```javascript
 function unsetBool(bytes32 prefix, address a) external {
+
     bytes32 k = keccak256(abi.encodePacked(prefix, a));
+
     this.deleteBool(k);
+
   }
 ```
 </details>
@@ -82,11 +88,17 @@ function setAddress(bytes32 k1, bytes32 k2, address v) public nonpayable
 
 ```javascript
 function setAddress(
+
     bytes32 k1,
+
     bytes32 k2,
+
     address v
+
   ) public {
+
     this.setAddress(keccak256(abi.encodePacked(k1, k2)), v);
+
   }
 ```
 </details>
@@ -111,12 +123,19 @@ function setAddress(bytes32 k1, bytes32 k2, bytes32 k3, address v) external nonp
 
 ```javascript
 function setAddress(
+
     bytes32 k1,
+
     bytes32 k2,
+
     bytes32 k3,
+
     address v
+
   ) external {
+
     this.setAddress(keccak256(abi.encodePacked(k1, k2, k3)), v);
+
   }
 ```
 </details>
@@ -140,11 +159,17 @@ function setUint(bytes32 k1, bytes32 k2, uint256 v) external nonpayable
 
 ```javascript
 function setUint(
+
     bytes32 k1,
+
     bytes32 k2,
+
     uint256 v
+
   ) external {
+
     this.setUint(keccak256(abi.encodePacked(k1, k2)), v);
+
   }
 ```
 </details>

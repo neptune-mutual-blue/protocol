@@ -1,11 +1,21 @@
 # ILendingStrategy.sol
 
-View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces/ILendingStrategy.sol)
+View Source: [\contracts\interfaces\ILendingStrategy.sol](..\contracts\interfaces\ILendingStrategy.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [CompoundStrategy](CompoundStrategy.md)**
 
 **ILendingStrategy**
+
+## Structs
+### LendingStrategyInfoType
+
+```js
+struct LendingStrategyInfoType {
+ uint256 deposits,
+ uint256 withdrawals
+}
+```
 
 **Events**
 
@@ -113,7 +123,7 @@ Gets info of this strategy by cover key
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
-returns(values uint256[])
+returns(info struct ILendingStrategy.LendingStrategyInfoType)
 ```
 
 **Arguments**
@@ -126,7 +136,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 coverKey) external view returns (uint256[] memory values);
+function getInfo(bytes32 coverKey) external view returns (LendingStrategyInfoType memory info);
 ```
 </details>
 

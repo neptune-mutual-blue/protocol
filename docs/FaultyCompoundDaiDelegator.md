@@ -1,6 +1,6 @@
 # FaultyCompoundDaiDelegator.sol
 
-View Source: [contracts/fakes/FaultyCompoundDaiDelegator.sol](../contracts/fakes/FaultyCompoundDaiDelegator.sol)
+View Source: [\contracts\fakes\FaultyCompoundDaiDelegator.sol](..\contracts\fakes\FaultyCompoundDaiDelegator.sol)
 
 **↗ Extends: [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md), [ERC20](ERC20.md)**
 
@@ -40,7 +40,9 @@ function setReturnValue(uint256 _returnValue) external nonpayable
 
 ```javascript
 function setReturnValue(uint256 _returnValue) external {
+
     returnValue = _returnValue;
+
   }
 ```
 </details>
@@ -64,13 +66,21 @@ function (FakeToken _dai, FakeToken _cDai, uint256 _returnValue) public nonpayab
 
 ```javascript
 constructor(
+
     FakeToken _dai,
+
     FakeToken _cDai,
+
     uint256 _returnValue
+
   ) ERC20("cDAI", "cDAI") {
+
     dai = _dai;
+
     cDai = _cDai;
+
     returnValue = _returnValue;
+
   }
 ```
 </details>
@@ -99,8 +109,11 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function mint(uint256 mintAmount) external override returns (uint256) {
+
     dai.transferFrom(msg.sender, address(this), mintAmount);
+
     return returnValue;
+
   }
 ```
 </details>
@@ -129,8 +142,11 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function redeem(uint256 redeemTokens) external override returns (uint256) {
+
     cDai.transferFrom(msg.sender, address(this), redeemTokens);
+
     return returnValue;
+
   }
 ```
 </details>

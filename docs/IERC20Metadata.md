@@ -1,6 +1,6 @@
 # IERC20Metadata.sol
 
-View Source: [openzeppelin-solidity/contracts/token/ERC20/extensions/IERC20Metadata.sol](../openzeppelin-solidity/contracts/token/ERC20/extensions/IERC20Metadata.sol)
+View Source: [openzeppelin-solidity\contracts\token\ERC20\extensions\IERC20Metadata.sol](..\openzeppelin-solidity\contracts\token\ERC20\extensions\IERC20Metadata.sol)
 
 **↗ Extends: [IERC20](IERC20.md)**
 **↘ Derived Contracts: [ERC20](ERC20.md)**

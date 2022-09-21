@@ -1,6 +1,6 @@
 # Protocol.sol
 
-View Source: [contracts/core/Protocol.sol](../contracts/core/Protocol.sol)
+View Source: [\contracts\core\Protocol.sol](..\contracts\core\Protocol.sol)
 
 **↗ Extends: [IProtocol](IProtocol.md), [ProtoBase](ProtoBase.md)**
 
@@ -17,13 +17,14 @@ bool public initialized;
 ## Functions
 
 - [constructor(IStore store)](#)
-- [initialize(address[] addresses, uint256[] values)](#initialize)
+- [initialize(struct IProtocol.InitializeArgs args)](#initialize)
 - [addMember(address member)](#addmember)
 - [removeMember(address member)](#removemember)
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
+- [grantRole(bytes32 role, address account)](#grantrole)
 - [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
 - [version()](#version)
 - [getName()](#getname)
@@ -54,82 +55,91 @@ Initializes the protocol once. There is only one instance of the protocol
  that can function.
 
 ```solidity
-function initialize(address[] addresses, uint256[] values) external nonpayable nonReentrant whenNotPaused 
+function initialize(struct IProtocol.InitializeArgs args) external nonpayable nonReentrant whenNotPaused 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] | [0] burner | 
-| values | uint256[] | [0] coverCreationFee | 
+| args | struct IProtocol.InitializeArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address[] calldata addresses, uint256[] calldata values) external override nonReentrant whenNotPaused {
-    s.mustBeProtocolMember(msg.sender);
+function initialize(InitializeArgs calldata args) external override nonReentrant whenNotPaused {
 
-    require(addresses[0] != address(0), "Invalid Burner");
-    // require(addresses[1] != address(0), "Invalid Uniswap V2 Router");
-    // require(addresses[2] != address(0), "Invalid Uniswap V2 Factory");
-    // require(addresses[3] != address(0), "Invalid NPM"); // @note: check validation below
-    require(addresses[4] != address(0), "Invalid Treasury");
-    // require(addresses[5] != address(0), "Invalid NPM Price Oracle");
+    require(args.burner != address(0), "Invalid Burner");
 
-    // @suppress-zero-value-check @suppress-accidental-zero Some zero values are allowed
-    // These checks are disabled as this function is only accessible to an admin
-    // require(values[0] > 0, "Invalid cover creation fee");
-    // require(values[1] > 0, "Invalid cover creation stake");
-    // require(values[2] > 0, "Invalid first reporting stake");
-    // require(values[3] > 0, "Invalid claim period");
-    // require(values[4] > 0, "Invalid reporting burn rate");
-    // require(values[5] > 0, "Invalid reporter income: NPM");
-    // require(values[6] > 0, "Invalid platform fee: claims");
-    // require(values[7] > 0, "Invalid reporter income: claims");
-    // require(values[8] > 0, "Invalid vault fee: flashloan");
-    // require(values[9] > 0, "Invalid platform fee: flashloan");
-    // require(values[10] >= 24 hours, "Invalid cooldown period");
-    // require(values[11] > 0, "Invalid state update interval");
-    // require(values[12] > 0, "Invalid max lending ratio");
+    require(args.treasury != address(0), "Invalid Treasury");
 
     if (initialized == true) {
+
       AccessControlLibV1.mustBeAdmin(s);
-      require(addresses[3] == address(0), "Can't change NPM");
+
+      require(args.npm == address(0), "Can't change NPM");
+
     } else {
-      require(addresses[3] != address(0), "Invalid NPM");
+
+      s.mustBeProtocolMember(msg.sender);
+
+      require(args.npm != address(0), "Invalid NPM");
 
       s.setAddressByKey(ProtoUtilV1.CNS_CORE, address(this));
+
       s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
 
-      s.setAddressByKey(ProtoUtilV1.CNS_NPM, addresses[3]);
+      s.setAddressByKey(ProtoUtilV1.CNS_NPM, args.npm);
+
+      s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
+
+      emit MemberRemoved(msg.sender);
+
     }
 
-    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, addresses[0]);
+    s.setAddressByKey(ProtoUtilV1.CNS_BURNER, args.burner);
 
-    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, addresses[1]);
-    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, addresses[2]);
-    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, addresses[4]);
-    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, addresses[5]);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, args.uniswapV2RouterLike);
 
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, values[0]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, values[1]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, values[2]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, values[3]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, values[4]);
-    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, values[5]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, values[6]);
-    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, values[7]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, values[8]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, values[9]);
-    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, values[10]);
-    s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, values[11]);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, values[12]);
+    s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_FACTORY, args.uniswapV2FactoryLike);
+
+    s.setAddressByKey(ProtoUtilV1.CNS_TREASURY, args.treasury);
+
+    s.setAddressByKey(ProtoUtilV1.CNS_NPM_PRICE_ORACLE, args.priceOracle);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, args.coverCreationFee);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, args.minCoverCreationStake);
+
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, args.firstReportingStake);
+
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, args.claimPeriod);
+
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, args.reportingBurnRate);
+
+    s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, args.governanceReporterCommission);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_PLATFORM_FEE, args.claimPlatformFee);
+
+    s.setUintByKey(ProtoUtilV1.NS_CLAIM_REPORTER_COMMISSION, args.claimReporterCommission);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE, args.flashLoanFee);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_FLASH_LOAN_FEE_PROTOCOL, args.flashLoanFeeProtocol);
+
+    s.setUintByKey(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, args.resolutionCoolDownPeriod);
+
+    s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, args.stateUpdateInterval);
+
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, args.maxLendingRatio);
+
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
 
     initialized = true;
-    emit Initialized(addresses, values);
+
+    emit Initialized(args);
+
   }
 ```
 </details>
@@ -156,11 +166,13 @@ function addMember(address member) external nonpayable nonReentrant whenNotPause
 
 ```javascript
 function addMember(address member) external override nonReentrant whenNotPaused {
-    s.mustNotBePaused();
+
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.addMemberInternal(s, member);
+
     emit MemberAdded(member);
+
   }
 ```
 </details>
@@ -185,12 +197,15 @@ function removeMember(address member) external nonpayable nonReentrant whenNotPa
 
 ```javascript
 function removeMember(address member) external override nonReentrant whenNotPaused {
+
     ProtoUtilV1.mustBeProtocolMember(s, member);
-    s.mustNotBePaused();
+
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.removeMemberInternal(s, member);
+
     emit MemberRemoved(member);
+
   }
 ```
 </details>
@@ -215,7 +230,9 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external override {
+
     addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
+
   }
 ```
 </details>
@@ -246,20 +263,27 @@ function addContractWithKey(bytes32 namespace, bytes32 key, address contractAddr
 
 ```javascript
 function addContractWithKey(
+
     bytes32 namespace,
+
     bytes32 key,
+
     address contractAddress
+
   ) public override nonReentrant whenNotPaused {
+
     require(contractAddress != address(0), "Invalid contract");
 
-    s.mustNotBePaused();
     AccessControlLibV1.mustBeUpgradeAgent(s);
+
     address current = s.getProtocolContract(namespace);
 
     require(current == address(0), "Please upgrade contract");
 
     AccessControlLibV1.addContractInternal(s, namespace, key, contractAddress);
+
     emit ContractAdded(namespace, key, contractAddress);
+
   }
 ```
 </details>
@@ -285,11 +309,17 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 
 ```javascript
 function upgradeContract(
+
     bytes32 namespace,
+
     address previous,
+
     address current
+
   ) external override {
+
     upgradeContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, previous, current);
+
   }
 ```
 </details>
@@ -319,20 +349,60 @@ function upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous
 
 ```javascript
 function upgradeContractWithKey(
+
     bytes32 namespace,
+
     bytes32 key,
+
     address previous,
+
     address current
+
   ) public override nonReentrant whenNotPaused {
+
     require(current != address(0), "Invalid contract");
 
     ProtoUtilV1.mustBeProtocolMember(s, previous);
+
     ProtoUtilV1.mustBeExactContract(s, namespace, key, previous);
-    s.mustNotBePaused();
+
     AccessControlLibV1.mustBeUpgradeAgent(s);
 
     AccessControlLibV1.upgradeContractInternal(s, namespace, key, previous, current);
+
     emit ContractUpgraded(namespace, key, previous, current);
+
+  }
+```
+</details>
+
+### grantRole
+
+Grants `role` to `account`.
+ If `account` had not been already granted `role`, emits a {RoleGranted}
+ event.
+ Requirements:
+ - the caller must have ``role``'s admin role.
+
+```solidity
+function grantRole(bytes32 role, address account) public nonpayable whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| role | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+
+    super.grantRole(role, account);
+
   }
 ```
 </details>
@@ -359,15 +429,23 @@ function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpaya
 
 ```javascript
 function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
+
     // @suppress-zero-value-check Checked
+
     require(detail.length > 0, "Invalid args");
+
     AccessControlLibV1.mustBeAdmin(s);
 
     for (uint256 i = 0; i < detail.length; i++) {
+
       for (uint256 j = 0; j < detail[i].roles.length; j++) {
+
         _grantRole(detail[i].roles[j], detail[i].account);
+
       }
+
     }
+
   }
 ```
 </details>
@@ -391,7 +469,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -415,7 +495,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_PROTOCOL;
+
   }
 ```
 </details>

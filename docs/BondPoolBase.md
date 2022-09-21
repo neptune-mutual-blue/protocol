@@ -1,6 +1,6 @@
 # BondPoolBase.sol
 
-View Source: [contracts/pool/Bond/BondPoolBase.sol](../contracts/pool/Bond/BondPoolBase.sol)
+View Source: [\contracts\pool\Bond\BondPoolBase.sol](..\contracts\pool\Bond\BondPoolBase.sol)
 
 **↗ Extends: [IBondPool](IBondPool.md), [Recoverable](Recoverable.md)**
 **↘ Derived Contracts: [BondPool](BondPool.md)**
@@ -13,7 +13,7 @@ View Source: [contracts/pool/Bond/BondPoolBase.sol](../contracts/pool/Bond/BondP
 - [getNpmMarketPrice()](#getnpmmarketprice)
 - [calculateTokensForLp(uint256 lpTokens)](#calculatetokensforlp)
 - [getInfo(address forAccount)](#getinfo)
-- [setup(address[] addresses, uint256[] values)](#setup)
+- [setup(struct IBondPool.SetupBondPoolArgs args)](#setup)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -54,7 +54,9 @@ returns(uint256)
 
 ```javascript
 function getNpmMarketPrice() external view override returns (uint256) {
+
     return s.getNpmPriceInternal(1 ether);
+
   }
 ```
 </details>
@@ -77,7 +79,9 @@ returns(uint256)
 
 ```javascript
 function calculateTokensForLp(uint256 lpTokens) external view override returns (uint256) {
+
     return s.calculateTokensForLpInternal(lpTokens);
+
   }
 ```
 </details>
@@ -88,7 +92,7 @@ Gets the bond pool information
 
 ```solidity
 function getInfo(address forAccount) external view
-returns(addresses address[], values uint256[])
+returns(struct IBondPool.BondPoolInfoType)
 ```
 
 **Arguments**
@@ -101,8 +105,10 @@ returns(addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address forAccount) external view override returns (address[] memory addresses, uint256[] memory values) {
+function getInfo(address forAccount) external view override returns (BondPoolInfoType memory) {
+
     return s.getBondPoolInfoInternal(forAccount);
+
   }
 ```
 </details>
@@ -112,28 +118,31 @@ function getInfo(address forAccount) external view override returns (address[] m
 Sets up the bond pool
 
 ```solidity
-function setup(address[] addresses, uint256[] values) external nonpayable nonReentrant 
+function setup(struct IBondPool.SetupBondPoolArgs args) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] | [0] - LP Token Address | 
-| values | uint256[] | [0] - Bond Discount Rate | 
+| args | struct IBondPool.SetupBondPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setup(address[] calldata addresses, uint256[] calldata values) external override nonReentrant {
+function setup(SetupBondPoolArgs calldata args) external override nonReentrant {
+
     // @suppress-zero-value-check The uint values are checked in the function `setupBondPoolInternal`
+
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
 
-    s.setupBondPoolInternal(addresses, values);
+    AccessControlLibV1.mustBeLiquidityManager(s);
 
-    emit BondPoolSetup(addresses, values);
+    s.setupBondPoolInternal(args);
+
+    emit BondPoolSetup(args);
+
   }
 ```
 </details>
@@ -157,7 +166,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -181,7 +192,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_BOND_POOL;
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # StoreBase.sol
 
-View Source: [contracts/core/store/StoreBase.sol](../contracts/core/store/StoreBase.sol)
+View Source: [\contracts\core\store\StoreBase.sol](..\contracts\core\store\StoreBase.sol)
 
 **↗ Extends: [IStore](IStore.md), [Pausable](Pausable.md), [Ownable](Ownable.md)**
 **↘ Derived Contracts: [Store](Store.md)**
@@ -25,6 +25,7 @@ mapping(bytes32 => address[]) public addressArrayStorage;
 mapping(bytes32 => mapping(address => uint256)) public addressArrayPositionMap;
 mapping(bytes32 => bytes32[]) public bytes32ArrayStorage;
 mapping(bytes32 => mapping(bytes32 => uint256)) public bytes32ArrayPositionMap;
+mapping(address => bool) public pausers;
 
 //private members
 bytes32 private constant _NS_MEMBERS;
@@ -34,6 +35,7 @@ bytes32 private constant _NS_MEMBERS;
 ## Functions
 
 - [constructor()](#)
+- [setPausers(address[] accounts, bool[] statuses)](#setpausers)
 - [recoverEther(address sendTo)](#recoverether)
 - [recoverToken(address token, address sendTo)](#recovertoken)
 - [pause()](#pause)
@@ -58,8 +60,48 @@ function () internal nonpayable
 
 ```javascript
 constructor() {
+
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, msg.sender))] = true;
+
     boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, address(this)))] = true;
+
+  }
+```
+</details>
+
+### setPausers
+
+Accepts a list of accounts and their respective statuses for addition or removal as pausers.
+
+```solidity
+function setPausers(address[] accounts, bool[] statuses) external nonpayable onlyOwner whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setPausers(address[] calldata accounts, bool[] calldata statuses) external override onlyOwner whenNotPaused {
+
+    require(accounts.length > 0, "No pauser specified");
+
+    require(accounts.length == statuses.length, "Invalid args");
+
+    for (uint256 i = 0; i < accounts.length; i++) {
+
+      pausers[accounts[i]] = statuses[i];
+
+    }
+
+    emit PausersSet(msg.sender, accounts, statuses);
+
   }
 ```
 </details>
@@ -83,8 +125,13 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 
 ```javascript
 function recoverEther(address sendTo) external onlyOwner {
-    // slither-disable-next-line arbitrary-send
-    payable(sendTo).transfer(address(this).balance);
+
+    // slither-disable-next-line low-level-calls
+
+    (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
+
+    require(success, "Recipient may have reverted");
+
   }
 ```
 </details>
@@ -109,14 +156,19 @@ function recoverToken(address token, address sendTo) external nonpayable onlyOwn
 
 ```javascript
 function recoverToken(address token, address sendTo) external onlyOwner {
+
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
+
       // slither-disable-next-line unchecked-transfer
+
       erc20.safeTransfer(sendTo, balance);
+
     }
+
   }
 ```
 </details>
@@ -126,7 +178,7 @@ function recoverToken(address token, address sendTo) external onlyOwner {
 Pauses the store
 
 ```solidity
-function pause() external nonpayable onlyOwner 
+function pause() external nonpayable
 ```
 
 **Arguments**
@@ -138,8 +190,12 @@ function pause() external nonpayable onlyOwner
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function pause() external onlyOwner {
+function pause() external {
+
+    require(pausers[msg.sender], "Forbidden");
+
     super._pause();
+
   }
 ```
 </details>
@@ -162,7 +218,9 @@ function unpause() external nonpayable onlyOwner
 
 ```javascript
 function unpause() external onlyOwner {
+
     super._unpause();
+
   }
 ```
 </details>
@@ -185,7 +243,9 @@ returns(bool)
 
 ```javascript
 function isProtocolMember(address contractAddress) public view returns (bool) {
+
     return boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, contractAddress))];
+
   }
 ```
 </details>
@@ -206,7 +266,9 @@ function _throwIfPaused() internal view
 
 ```javascript
 function _throwIfPaused() internal view {
-    require(!super.paused(), "Pausable: paused");
+
+    require(super.paused() == false, "Pausable: paused");
+
   }
 ```
 </details>
@@ -227,7 +289,9 @@ function _throwIfSenderNotProtocolMember() internal view
 
 ```javascript
 function _throwIfSenderNotProtocolMember() internal view {
+
     require(isProtocolMember(msg.sender), "Forbidden");
+
   }
 ```
 </details>

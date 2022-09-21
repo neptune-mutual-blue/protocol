@@ -1,6 +1,6 @@
 # InvalidStrategy.sol
 
-View Source: [contracts/fakes/InvalidStrategy.sol](../contracts/fakes/InvalidStrategy.sol)
+View Source: [\contracts\fakes\InvalidStrategy.sol](..\contracts\fakes\InvalidStrategy.sol)
 
 **↗ Extends: [AaveStrategy](AaveStrategy.md)**
 
@@ -30,9 +30,13 @@ function (IStore _s, IAaveV2LendingPoolLike _lendingPool, address _aToken) publi
 
 ```javascript
 constructor(
+
     IStore _s,
+
     IAaveV2LendingPoolLike _lendingPool,
+
     address _aToken
+
   ) AaveStrategy(_s, _lendingPool, _aToken) {}
 ```
 </details>
@@ -54,7 +58,9 @@ returns(uint256)
 
 ```javascript
 function getWeight() external pure override returns (uint256) {
+
     return 20_000; // 100%
+
   }
 ```
 </details>

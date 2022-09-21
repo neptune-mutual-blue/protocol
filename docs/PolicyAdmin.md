@@ -1,6 +1,6 @@
 # Policy Admin Contract (PolicyAdmin.sol)
 
-View Source: [contracts/core/policy/PolicyAdmin.sol](../contracts/core/policy/PolicyAdmin.sol)
+View Source: [\contracts\core\policy\PolicyAdmin.sol](..\contracts\core\policy\PolicyAdmin.sol)
 
 **↗ Extends: [IPolicyAdmin](IPolicyAdmin.md), [Recoverable](Recoverable.md)**
 
@@ -12,7 +12,6 @@ The policy admin contract enables the owner (governance)
 ## Functions
 
 - [constructor(IStore store)](#)
-- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
 - [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
 - [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
 - [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
@@ -42,42 +41,6 @@ constructor(IStore store) Recoverable(store) {}
 ```
 </details>
 
-### setPolicyRates
-
-Sets policy rates. This feature is only accessible by cover manager.
-
-```solidity
-function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate fallback | 
-| ceiling | uint256 | The highest cover fee rate fallback | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    require(floor > 0, "Please specify floor");
-    require(ceiling > floor, "Invalid ceiling");
-
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
-
-    s.updateStateAndLiquidity(0);
-
-    emit PolicyRateSet(floor, ceiling);
-  }
-```
-</details>
-
 ### setPolicyRatesByKey
 
 Sets policy rates for the given cover key. This feature is only accessible by cover manager.
@@ -99,23 +62,43 @@ function setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling) e
 
 ```javascript
 function setPolicyRatesByKey(
+
     bytes32 coverKey,
+
     uint256 floor,
+
     uint256 ceiling
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeValidCoverKey(coverKey);
 
     require(floor > 0, "Please specify floor");
-    require(ceiling > 0, "Invalid ceiling");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+    require(ceiling > floor, "Invalid ceiling");
+
+    if (coverKey > 0) {
+
+      s.mustBeValidCoverKey(coverKey);
+
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
+
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+
+    } else {
+
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
+
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
+
+    }
 
     s.updateStateAndLiquidity(coverKey);
 
     emit CoverPolicyRateSet(coverKey, floor, ceiling);
+
   }
 ```
 </details>
@@ -146,21 +129,29 @@ function setCoverageLag(bytes32 coverKey, uint256 window) external nonpayable
 
 ```javascript
 function setCoverageLag(bytes32 coverKey, uint256 window) external override {
+
     require(window >= 1 days, "Enter at least 1 day");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     if (coverKey > 0) {
+
       s.mustBeValidCoverKey(coverKey);
+
       s.setUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey, window);
 
       emit CoverageLagSet(coverKey, window);
+
       return;
+
     }
 
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, window);
+
     emit CoverageLagSet(coverKey, window);
+
   }
 ```
 </details>
@@ -186,7 +177,9 @@ returns(floor uint256, ceiling uint256)
 
 ```javascript
 function getPolicyRates(bytes32 coverKey) external view override returns (uint256 floor, uint256 ceiling) {
+
     return s.getPolicyRatesInternal(coverKey);
+
   }
 ```
 </details>
@@ -212,7 +205,9 @@ returns(uint256)
 
 ```javascript
 function getCoverageLag(bytes32 coverKey) external view override returns (uint256) {
+
     return s.getCoverageLagInternal(coverKey);
+
   }
 ```
 </details>
@@ -236,7 +231,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -260,7 +257,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_POLICY_ADMIN;
+
   }
 ```
 </details>

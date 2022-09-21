@@ -1,6 +1,6 @@
 # FakeRecoverable.sol
 
-View Source: [contracts/fakes/FakeRecoverable.sol](../contracts/fakes/FakeRecoverable.sol)
+View Source: [\contracts\fakes\FakeRecoverable.sol](..\contracts\fakes\FakeRecoverable.sol)
 
 **↗ Extends: [Recoverable](Recoverable.md)**
 

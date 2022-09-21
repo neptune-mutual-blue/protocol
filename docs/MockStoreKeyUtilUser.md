@@ -1,6 +1,6 @@
 # MockStoreKeyUtilUser.sol
 
-View Source: [contracts/mock/lib-user/MockStoreKeyUtilUser.sol](../contracts/mock/lib-user/MockStoreKeyUtilUser.sol)
+View Source: [\contracts\mock\lib-user\MockStoreKeyUtilUser.sol](..\contracts\mock\lib-user\MockStoreKeyUtilUser.sol)
 
 **MockStoreKeyUtilUser**
 
@@ -123,7 +123,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -146,7 +148,9 @@ function setUintByKey(bytes32 key, uint256 value) external nonpayable
 
 ```javascript
 function setUintByKey(bytes32 key, uint256 value) external {
+
     s.setUintByKey(key, value);
+
   }
 ```
 </details>
@@ -170,11 +174,17 @@ function setUintByKeys(bytes32 key1, bytes32 key2, uint256 value) external nonpa
 
 ```javascript
 function setUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     s.setUintByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -199,12 +209,19 @@ function setUintByKeys(bytes32 key1, bytes32 key2, address account, uint256 valu
 
 ```javascript
 function setUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     s.setUintByKeys(key1, key2, account, value);
+
   }
 ```
 </details>
@@ -227,7 +244,9 @@ function addUintByKey(bytes32 key, uint256 value) external nonpayable
 
 ```javascript
 function addUintByKey(bytes32 key, uint256 value) external {
+
     s.addUintByKey(key, value);
+
   }
 ```
 </details>
@@ -251,11 +270,17 @@ function addUintByKeys(bytes32 key1, bytes32 key2, uint256 value) external nonpa
 
 ```javascript
 function addUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     s.addUintByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -280,12 +305,19 @@ function addUintByKeys(bytes32 key1, bytes32 key2, address account, uint256 valu
 
 ```javascript
 function addUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     s.addUintByKeys(key1, key2, account, value);
+
   }
 ```
 </details>
@@ -308,7 +340,9 @@ function subtractUintByKey(bytes32 key, uint256 value) external nonpayable
 
 ```javascript
 function subtractUintByKey(bytes32 key, uint256 value) external {
+
     s.subtractUintByKey(key, value);
+
   }
 ```
 </details>
@@ -332,11 +366,17 @@ function subtractUintByKeys(bytes32 key1, bytes32 key2, uint256 value) external 
 
 ```javascript
 function subtractUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 value
+
   ) external {
+
     s.subtractUintByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -361,12 +401,19 @@ function subtractUintByKeys(bytes32 key1, bytes32 key2, address account, uint256
 
 ```javascript
 function subtractUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     uint256 value
+
   ) external {
+
     s.subtractUintByKeys(key1, key2, account, value);
+
   }
 ```
 </details>
@@ -389,7 +436,9 @@ function setStringByKey(bytes32 key, string value) external nonpayable
 
 ```javascript
 function setStringByKey(bytes32 key, string calldata value) external {
+
     s.setStringByKey(key, value);
+
   }
 ```
 </details>
@@ -413,11 +462,17 @@ function setStringByKeys(bytes32 key1, bytes32 key2, string value) external nonp
 
 ```javascript
 function setStringByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     string calldata value
+
   ) external {
+
     s.setStringByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -440,7 +495,9 @@ function setBytes32ByKey(bytes32 key, bytes32 value) external nonpayable
 
 ```javascript
 function setBytes32ByKey(bytes32 key, bytes32 value) external {
+
     s.setBytes32ByKey(key, value);
+
   }
 ```
 </details>
@@ -464,11 +521,17 @@ function setBytes32ByKeys(bytes32 key1, bytes32 key2, bytes32 value) external no
 
 ```javascript
 function setBytes32ByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     s.setBytes32ByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -491,7 +554,9 @@ function setBoolByKey(bytes32 key, bool value) external nonpayable
 
 ```javascript
 function setBoolByKey(bytes32 key, bool value) external {
+
     s.setBoolByKey(key, value);
+
   }
 ```
 </details>
@@ -515,11 +580,17 @@ function setBoolByKeys(bytes32 key1, bytes32 key2, bool value) external nonpayab
 
 ```javascript
 function setBoolByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bool value
+
   ) external {
+
     s.setBoolByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -543,11 +614,17 @@ function setBoolByKeys(bytes32 key, address account, bool value) external nonpay
 
 ```javascript
 function setBoolByKeys(
+
     bytes32 key,
+
     address account,
+
     bool value
+
   ) external {
+
     s.setBoolByKeys(key, account, value);
+
   }
 ```
 </details>
@@ -570,7 +647,9 @@ function setAddressByKey(bytes32 key, address value) external nonpayable
 
 ```javascript
 function setAddressByKey(bytes32 key, address value) external {
+
     s.setAddressByKey(key, value);
+
   }
 ```
 </details>
@@ -594,11 +673,17 @@ function setAddressByKeys(bytes32 key1, bytes32 key2, address value) external no
 
 ```javascript
 function setAddressByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     s.setAddressByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -623,12 +708,19 @@ function setAddressByKeys(bytes32 key1, bytes32 key2, bytes32 key3, address valu
 
 ```javascript
 function setAddressByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     s.setAddressByKeys(key1, key2, key3, value);
+
   }
 ```
 </details>
@@ -651,7 +743,9 @@ function setAddressArrayByKey(bytes32 key, address value) external nonpayable
 
 ```javascript
 function setAddressArrayByKey(bytes32 key, address value) external {
+
     s.setAddressArrayByKey(key, value);
+
   }
 ```
 </details>
@@ -675,11 +769,17 @@ function setAddressArrayByKeys(bytes32 key1, bytes32 key2, address value) extern
 
 ```javascript
 function setAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     s.setAddressArrayByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -704,12 +804,19 @@ function setAddressArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, address
 
 ```javascript
 function setAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     s.setAddressArrayByKeys(key1, key2, key3, value);
+
   }
 ```
 </details>
@@ -733,11 +840,17 @@ function setAddressBooleanByKey(bytes32 key, address account, bool value) extern
 
 ```javascript
 function setAddressBooleanByKey(
+
     bytes32 key,
+
     address account,
+
     bool value
+
   ) external {
+
     s.setAddressBooleanByKey(key, account, value);
+
   }
 ```
 </details>
@@ -762,12 +875,19 @@ function setAddressBooleanByKeys(bytes32 key1, bytes32 key2, address account, bo
 
 ```javascript
 function setAddressBooleanByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account,
+
     bool value
+
   ) external {
+
     s.setAddressBooleanByKeys(key1, key2, account, value);
+
   }
 ```
 </details>
@@ -793,13 +913,21 @@ function setAddressBooleanByKeys(bytes32 key1, bytes32 key2, bytes32 key3, addre
 
 ```javascript
 function setAddressBooleanByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address account,
+
     bool value
+
   ) external {
+
     s.setAddressBooleanByKeys(key1, key2, key3, account, value);
+
   }
 ```
 </details>
@@ -821,7 +949,9 @@ function deleteUintByKey(bytes32 key) external nonpayable
 
 ```javascript
 function deleteUintByKey(bytes32 key) external {
+
     s.deleteUintByKey(key);
+
   }
 ```
 </details>
@@ -844,7 +974,9 @@ function deleteUintByKeys(bytes32 key1, bytes32 key2) external nonpayable
 
 ```javascript
 function deleteUintByKeys(bytes32 key1, bytes32 key2) external {
+
     s.deleteUintByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -866,7 +998,9 @@ function deleteBytes32ByKey(bytes32 key) external nonpayable
 
 ```javascript
 function deleteBytes32ByKey(bytes32 key) external {
+
     s.deleteBytes32ByKey(key);
+
   }
 ```
 </details>
@@ -889,7 +1023,9 @@ function deleteBytes32ByKeys(bytes32 key1, bytes32 key2) external nonpayable
 
 ```javascript
 function deleteBytes32ByKeys(bytes32 key1, bytes32 key2) external {
+
     s.deleteBytes32ByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -912,7 +1048,9 @@ function deleteBytes32ArrayByKey(bytes32 key, bytes32 value) external nonpayable
 
 ```javascript
 function deleteBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+
     s.deleteBytes32ArrayByKey(key, value);
+
   }
 ```
 </details>
@@ -936,11 +1074,17 @@ function deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value) ext
 
 ```javascript
 function deleteBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     s.deleteBytes32ArrayByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -965,12 +1109,19 @@ function deleteBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, byte
 
 ```javascript
 function deleteBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 value
+
   ) external {
+
     s.deleteBytes32ArrayByKeys(key1, key2, key3, value);
+
   }
 ```
 </details>
@@ -993,7 +1144,9 @@ function deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index) external non
 
 ```javascript
 function deleteBytes32ArrayByIndexByKey(bytes32 key, uint256 index) external {
+
     s.deleteBytes32ArrayByIndexByKey(key, index);
+
   }
 ```
 </details>
@@ -1017,11 +1170,17 @@ function deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, uint256 ind
 
 ```javascript
 function deleteBytes32ArrayByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external {
+
     s.deleteBytes32ArrayByIndexByKeys(key1, key2, index);
+
   }
 ```
 </details>
@@ -1046,12 +1205,19 @@ function deleteBytes32ArrayByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key
 
 ```javascript
 function deleteBytes32ArrayByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external {
+
     s.deleteBytes32ArrayByIndexByKeys(key1, key2, key3, index);
+
   }
 ```
 </details>
@@ -1073,7 +1239,9 @@ function deleteBoolByKey(bytes32 key) external nonpayable
 
 ```javascript
 function deleteBoolByKey(bytes32 key) external {
+
     s.deleteBoolByKey(key);
+
   }
 ```
 </details>
@@ -1096,7 +1264,9 @@ function deleteBoolByKeys(bytes32 key1, bytes32 key2) external nonpayable
 
 ```javascript
 function deleteBoolByKeys(bytes32 key1, bytes32 key2) external {
+
     s.deleteBoolByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1119,7 +1289,9 @@ function deleteBoolByKeys(bytes32 key, address account) external nonpayable
 
 ```javascript
 function deleteBoolByKeys(bytes32 key, address account) external {
+
     s.deleteBoolByKeys(key, account);
+
   }
 ```
 </details>
@@ -1141,7 +1313,9 @@ function deleteAddressByKey(bytes32 key) external nonpayable
 
 ```javascript
 function deleteAddressByKey(bytes32 key) external {
+
     s.deleteAddressByKey(key);
+
   }
 ```
 </details>
@@ -1164,7 +1338,9 @@ function deleteAddressByKeys(bytes32 key1, bytes32 key2) external nonpayable
 
 ```javascript
 function deleteAddressByKeys(bytes32 key1, bytes32 key2) external {
+
     s.deleteAddressByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1188,11 +1364,17 @@ function deleteAddressByKeys(bytes32 key1, bytes32 key2, bytes32 key3) external 
 
 ```javascript
 function deleteAddressByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external {
+
     s.deleteAddressByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -1215,7 +1397,9 @@ function deleteAddressArrayByKey(bytes32 key, address value) external nonpayable
 
 ```javascript
 function deleteAddressArrayByKey(bytes32 key, address value) external {
+
     s.deleteAddressArrayByKey(key, value);
+
   }
 ```
 </details>
@@ -1239,11 +1423,17 @@ function deleteAddressArrayByKeys(bytes32 key1, bytes32 key2, address value) ext
 
 ```javascript
 function deleteAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address value
+
   ) external {
+
     s.deleteAddressArrayByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -1268,12 +1458,19 @@ function deleteAddressArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, addr
 
 ```javascript
 function deleteAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address value
+
   ) external {
+
     s.deleteAddressArrayByKeys(key1, key2, key3, value);
+
   }
 ```
 </details>
@@ -1296,7 +1493,9 @@ function deleteAddressArrayByIndexByKey(bytes32 key, uint256 index) external non
 
 ```javascript
 function deleteAddressArrayByIndexByKey(bytes32 key, uint256 index) external {
+
     s.deleteAddressArrayByIndexByKey(key, index);
+
   }
 ```
 </details>
@@ -1320,11 +1519,17 @@ function deleteAddressArrayByIndexByKeys(bytes32 key1, bytes32 key2, uint256 ind
 
 ```javascript
 function deleteAddressArrayByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external {
+
     s.deleteAddressArrayByIndexByKeys(key1, key2, index);
+
   }
 ```
 </details>
@@ -1349,12 +1554,19 @@ function deleteAddressArrayByIndexByKeys(bytes32 key1, bytes32 key2, bytes32 key
 
 ```javascript
 function deleteAddressArrayByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external {
+
     s.deleteAddressArrayByIndexByKeys(key1, key2, key3, index);
+
   }
 ```
 </details>
@@ -1377,7 +1589,9 @@ returns(uint256)
 
 ```javascript
 function getUintByKey(bytes32 key) external view returns (uint256) {
+
     return s.getUintByKey(key);
+
   }
 ```
 </details>
@@ -1401,7 +1615,9 @@ returns(uint256)
 
 ```javascript
 function getUintByKeys(bytes32 key1, bytes32 key2) external view returns (uint256) {
+
     return s.getUintByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1426,11 +1642,17 @@ returns(uint256)
 
 ```javascript
 function getUintByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account
+
   ) external view returns (uint256) {
+
     return s.getUintByKeys(key1, key2, account);
+
   }
 ```
 </details>
@@ -1453,7 +1675,9 @@ returns(string)
 
 ```javascript
 function getStringByKey(bytes32 key) external view returns (string memory) {
+
     return s.getStringByKey(key);
+
   }
 ```
 </details>
@@ -1477,7 +1701,9 @@ returns(string)
 
 ```javascript
 function getStringByKeys(bytes32 key1, bytes32 key2) external view returns (string memory) {
+
     return s.getStringByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1500,7 +1726,9 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ByKey(bytes32 key) external view returns (bytes32) {
+
     return s.getBytes32ByKey(key);
+
   }
 ```
 </details>
@@ -1524,7 +1752,9 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ByKeys(bytes32 key1, bytes32 key2) external view returns (bytes32) {
+
     return s.getBytes32ByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1547,7 +1777,9 @@ returns(bool)
 
 ```javascript
 function getBoolByKey(bytes32 key) external view returns (bool) {
+
     return s.getBoolByKey(key);
+
   }
 ```
 </details>
@@ -1571,7 +1803,9 @@ returns(bool)
 
 ```javascript
 function getBoolByKeys(bytes32 key1, bytes32 key2) external view returns (bool) {
+
     return s.getBoolByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1595,7 +1829,9 @@ returns(bool)
 
 ```javascript
 function getBoolByKeys(bytes32 key, address account) external view returns (bool) {
+
     return s.getBoolByKeys(key, account);
+
   }
 ```
 </details>
@@ -1618,7 +1854,9 @@ returns(address)
 
 ```javascript
 function getAddressByKey(bytes32 key) external view returns (address) {
+
     return s.getAddressByKey(key);
+
   }
 ```
 </details>
@@ -1642,7 +1880,9 @@ returns(address)
 
 ```javascript
 function getAddressByKeys(bytes32 key1, bytes32 key2) external view returns (address) {
+
     return s.getAddressByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1667,11 +1907,17 @@ returns(address)
 
 ```javascript
 function getAddressByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (address) {
+
     return s.getAddressByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -1695,7 +1941,9 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKey(bytes32 key, address account) external view returns (bool) {
+
     return s.getAddressBooleanByKey(key, account);
+
   }
 ```
 </details>
@@ -1720,11 +1968,17 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address account
+
   ) external view returns (bool) {
+
     return s.getAddressBooleanByKeys(key1, key2, account);
+
   }
 ```
 </details>
@@ -1750,12 +2004,19 @@ returns(bool)
 
 ```javascript
 function getAddressBooleanByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address account
+
   ) external view returns (bool) {
+
     return s.getAddressBooleanByKeys(key1, key2, key3, account);
+
   }
 ```
 </details>
@@ -1778,7 +2039,9 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKey(bytes32 key) external view returns (uint256) {
+
     return s.countAddressArrayByKey(key);
+
   }
 ```
 </details>
@@ -1802,7 +2065,9 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKeys(bytes32 key1, bytes32 key2) external view returns (uint256) {
+
     return s.countAddressArrayByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1827,11 +2092,17 @@ returns(uint256)
 
 ```javascript
 function countAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (uint256) {
+
     return s.countAddressArrayByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -1854,7 +2125,9 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKey(bytes32 key) external view returns (address[] memory) {
+
     return s.getAddressArrayByKey(key);
+
   }
 ```
 </details>
@@ -1878,7 +2151,9 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKeys(bytes32 key1, bytes32 key2) external view returns (address[] memory) {
+
     return s.getAddressArrayByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -1903,11 +2178,17 @@ returns(address[])
 
 ```javascript
 function getAddressArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (address[] memory) {
+
     return s.getAddressArrayByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -1931,7 +2212,9 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKey(bytes32 key, address addressToFind) external view returns (uint256) {
+
     return s.getAddressArrayItemPositionByKey(key, addressToFind);
+
   }
 ```
 </details>
@@ -1956,11 +2239,17 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     address addressToFind
+
   ) external view returns (uint256) {
+
     return s.getAddressArrayItemPositionByKeys(key1, key2, addressToFind);
+
   }
 ```
 </details>
@@ -1986,12 +2275,19 @@ returns(uint256)
 
 ```javascript
 function getAddressArrayItemPositionByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     address addressToFind
+
   ) external view returns (uint256) {
+
     return s.getAddressArrayItemPositionByKeys(key1, key2, key3, addressToFind);
+
   }
 ```
 </details>
@@ -2015,7 +2311,9 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKey(bytes32 key, uint256 index) external view returns (address) {
+
     return s.getAddressArrayItemByIndexByKey(key, index);
+
   }
 ```
 </details>
@@ -2040,11 +2338,17 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external view returns (address) {
+
     return s.getAddressArrayItemByIndexByKeys(key1, key2, index);
+
   }
 ```
 </details>
@@ -2070,12 +2374,19 @@ returns(address)
 
 ```javascript
 function getAddressArrayItemByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external view returns (address) {
+
     return s.getAddressArrayItemByIndexByKeys(key1, key2, key3, index);
+
   }
 ```
 </details>
@@ -2098,7 +2409,9 @@ function setBytes32ArrayByKey(bytes32 key, bytes32 value) external nonpayable
 
 ```javascript
 function setBytes32ArrayByKey(bytes32 key, bytes32 value) external {
+
     s.setBytes32ArrayByKey(key, value);
+
   }
 ```
 </details>
@@ -2122,11 +2435,17 @@ function setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 value) extern
 
 ```javascript
 function setBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 value
+
   ) external {
+
     s.setBytes32ArrayByKeys(key1, key2, value);
+
   }
 ```
 </details>
@@ -2151,12 +2470,19 @@ function setBytes32ArrayByKeys(bytes32 key1, bytes32 key2, bytes32 key3, bytes32
 
 ```javascript
 function setBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 value
+
   ) external {
+
     s.setBytes32ArrayByKeys(key1, key2, key3, value);
+
   }
 ```
 </details>
@@ -2179,7 +2505,9 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKey(bytes32 key) external view returns (uint256) {
+
     return s.countBytes32ArrayByKey(key);
+
   }
 ```
 </details>
@@ -2203,7 +2531,9 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (uint256) {
+
     return s.countBytes32ArrayByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -2228,11 +2558,17 @@ returns(uint256)
 
 ```javascript
 function countBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (uint256) {
+
     return s.countBytes32ArrayByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -2255,7 +2591,9 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKey(bytes32 key) external view returns (bytes32[] memory) {
+
     return s.getBytes32ArrayByKey(key);
+
   }
 ```
 </details>
@@ -2279,7 +2617,9 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKeys(bytes32 key1, bytes32 key2) external view returns (bytes32[] memory) {
+
     return s.getBytes32ArrayByKeys(key1, key2);
+
   }
 ```
 </details>
@@ -2304,11 +2644,17 @@ returns(bytes32[])
 
 ```javascript
 function getBytes32ArrayByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3
+
   ) external view returns (bytes32[] memory) {
+
     return s.getBytes32ArrayByKeys(key1, key2, key3);
+
   }
 ```
 </details>
@@ -2332,7 +2678,9 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKey(bytes32 key, bytes32 bytes32ToFind) external view returns (uint256) {
+
     return s.getBytes32ArrayItemPositionByKey(key, bytes32ToFind);
+
   }
 ```
 </details>
@@ -2357,11 +2705,17 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 bytes32ToFind
+
   ) external view returns (uint256) {
+
     return s.getBytes32ArrayItemPositionByKeys(key1, key2, bytes32ToFind);
+
   }
 ```
 </details>
@@ -2387,12 +2741,19 @@ returns(uint256)
 
 ```javascript
 function getBytes32ArrayItemPositionByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     bytes32 bytes32ToFind
+
   ) external view returns (uint256) {
+
     return s.getBytes32ArrayItemPositionByKeys(key1, key2, key3, bytes32ToFind);
+
   }
 ```
 </details>
@@ -2416,7 +2777,9 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKey(bytes32 key, uint256 index) external view returns (bytes32) {
+
     return s.getBytes32ArrayItemByIndexByKey(key, index);
+
   }
 ```
 </details>
@@ -2441,11 +2804,17 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     uint256 index
+
   ) external view returns (bytes32) {
+
     return s.getBytes32ArrayItemByIndexByKeys(key1, key2, index);
+
   }
 ```
 </details>
@@ -2471,12 +2840,19 @@ returns(bytes32)
 
 ```javascript
 function getBytes32ArrayItemByIndexByKeys(
+
     bytes32 key1,
+
     bytes32 key2,
+
     bytes32 key3,
+
     uint256 index
+
   ) external view returns (bytes32) {
+
     return s.getBytes32ArrayItemByIndexByKeys(key1, key2, key3, index);
+
   }
 ```
 </details>

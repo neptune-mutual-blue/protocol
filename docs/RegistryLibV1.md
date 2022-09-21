@@ -1,6 +1,6 @@
 # RegistryLibV1.sol
 
-View Source: [contracts/libraries/RegistryLibV1.sol](../contracts/libraries/RegistryLibV1.sol)
+View Source: [\contracts\libraries\RegistryLibV1.sol](..\contracts\libraries\RegistryLibV1.sol)
 
 **RegistryLibV1**
 
@@ -41,7 +41,9 @@ returns(contract IGovernance)
 
 ```javascript
 function getGovernanceContract(IStore s) external view returns (IGovernance) {
+
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -64,7 +66,9 @@ returns(contract IGovernance)
 
 ```javascript
 function getResolutionContract(IStore s) external view returns (IGovernance) {
+
     return IGovernance(s.getContract(ProtoUtilV1.CNS_GOVERNANCE_RESOLUTION, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -87,7 +91,9 @@ returns(contract ICoverStake)
 
 ```javascript
 function getStakingContract(IStore s) external view returns (ICoverStake) {
+
     return ICoverStake(s.getContract(ProtoUtilV1.CNS_COVER_STAKE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -110,7 +116,9 @@ returns(contract ICxTokenFactory)
 
 ```javascript
 function getCxTokenFactory(IStore s) external view returns (ICxTokenFactory) {
+
     return ICxTokenFactory(s.getContract(ProtoUtilV1.CNS_COVER_CXTOKEN_FACTORY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -133,7 +141,9 @@ returns(contract IPolicy)
 
 ```javascript
 function getPolicyContract(IStore s) external view returns (IPolicy) {
+
     return IPolicy(s.getContract(ProtoUtilV1.CNS_COVER_POLICY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -156,7 +166,9 @@ returns(contract ICoverReassurance)
 
 ```javascript
 function getReassuranceContract(IStore s) external view returns (ICoverReassurance) {
+
     return ICoverReassurance(s.getContract(ProtoUtilV1.CNS_COVER_REASSURANCE, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY));
+
   }
 ```
 </details>
@@ -179,7 +191,9 @@ returns(contract IBondPool)
 
 ```javascript
 function getBondPoolContract(IStore s) external view returns (IBondPool) {
+
     return IBondPool(getBondPoolAddress(s));
+
   }
 ```
 </details>
@@ -203,7 +217,9 @@ returns(address)
 
 ```javascript
 function getProtocolContract(IStore s, bytes32 cns) public view returns (address) {
+
     return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns);
+
   }
 ```
 </details>
@@ -228,11 +244,17 @@ returns(address)
 
 ```javascript
 function getProtocolContract(
+
     IStore s,
+
     bytes32 cns,
+
     bytes32 key
+
   ) public view returns (address) {
+
     return s.getAddressByKeys(ProtoUtilV1.NS_CONTRACTS, cns, key);
+
   }
 ```
 </details>
@@ -255,8 +277,11 @@ returns(contract ICover)
 
 ```javascript
 function getCoverContract(IStore s) external view returns (ICover) {
+
     address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER);
+
     return ICover(vault);
+
   }
 ```
 </details>
@@ -280,7 +305,9 @@ returns(contract IVault)
 
 ```javascript
 function getVault(IStore s, bytes32 coverKey) external view returns (IVault) {
+
     return IVault(getVaultAddress(s, coverKey));
+
   }
 ```
 </details>
@@ -304,8 +331,11 @@ returns(address)
 
 ```javascript
 function getVaultAddress(IStore s, bytes32 coverKey) public view returns (address) {
+
     address vault = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT, coverKey);
+
     return vault;
+
   }
 ```
 </details>
@@ -328,8 +358,11 @@ returns(address)
 
 ```javascript
 function getVaultDelegate(IStore s) external view returns (address) {
+
     address vaultImplementation = getProtocolContract(s, ProtoUtilV1.CNS_COVER_VAULT_DELEGATE);
+
     return vaultImplementation;
+
   }
 ```
 </details>
@@ -352,8 +385,11 @@ returns(address)
 
 ```javascript
 function getStakingPoolAddress(IStore s) external view returns (address) {
+
     address pool = getProtocolContract(s, ProtoUtilV1.CNS_STAKING_POOL);
+
     return pool;
+
   }
 ```
 </details>
@@ -376,8 +412,11 @@ returns(address)
 
 ```javascript
 function getBondPoolAddress(IStore s) public view returns (address) {
+
     address pool = getProtocolContract(s, ProtoUtilV1.CNS_BOND_POOL);
+
     return pool;
+
   }
 ```
 </details>
@@ -400,8 +439,11 @@ returns(contract IVaultFactory)
 
 ```javascript
 function getVaultFactoryContract(IStore s) external view returns (IVaultFactory) {
+
     address factory = s.getContract(ProtoUtilV1.CNS_COVER_VAULT_FACTORY, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY);
+
     return IVaultFactory(factory);
+
   }
 ```
 </details>

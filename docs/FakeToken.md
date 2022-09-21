@@ -1,6 +1,6 @@
 # FakeToken.sol
 
-View Source: [contracts/fakes/FakeToken.sol](../contracts/fakes/FakeToken.sol)
+View Source: [\contracts\fakes\FakeToken.sol](..\contracts\fakes\FakeToken.sol)
 
 **↗ Extends: [ERC20](ERC20.md)**
 
@@ -60,7 +60,9 @@ function addMinter(address account, bool flag) public nonpayable onlyDeployer
 
 ```javascript
 function addMinter(address account, bool flag) public onlyDeployer {
+
     minters[account] = flag;
+
   }
 ```
 </details>
@@ -85,17 +87,27 @@ function (string name, string symbol, uint256 supply, uint8 decimalPlaces) publi
 
 ```javascript
 constructor(
+
     string memory name,
+
     string memory symbol,
+
     uint256 supply,
+
     uint8 decimalPlaces
+
   ) ERC20(name, symbol) {
+
     require(decimalPlaces > 0, "Invalid decimal places value");
 
     super._mint(msg.sender, supply);
+
     deployer = msg.sender;
+
     minters[msg.sender] = true;
+
     _decimals = decimalPlaces;
+
   }
 ```
 </details>
@@ -117,7 +129,9 @@ returns(uint8)
 
 ```javascript
 function decimals() public view virtual override returns (uint8) {
+
     return _decimals;
+
   }
 ```
 </details>
@@ -139,11 +153,15 @@ function mint(uint256 amount) external nonpayable
 
 ```javascript
 function mint(uint256 amount) external {
+
     if (amount > 2000 * (10**_decimals)) {
+
       require(minters[msg.sender], "Please specify a smaller value");
+
     }
 
     super._mint(msg.sender, amount);
+
   }
 ```
 </details>
@@ -165,7 +183,9 @@ function burn(uint256 amount) external nonpayable
 
 ```javascript
 function burn(uint256 amount) external {
+
     super._burn(msg.sender, amount);
+
   }
 ```
 </details>

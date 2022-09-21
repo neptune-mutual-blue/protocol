@@ -4,54 +4,33 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface IPolicy is IMember {
-  /*
-   * onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
-   * coverKey Enter the cover key you wish to purchase the policy for
-   * productKey Enter the product key you wish to purchase the policy for
-   * coverDuration Enter the number of months to cover. Accepted values: 1-3.
-   * amountToCover Enter the amount of the stablecoin to cover.
-   */
+  
   struct PurchaseCoverArgs {
-    address onBehalfOf;
-    bytes32 coverKey;
-    bytes32 productKey;
-    uint256 coverDuration;
-    uint256 amountToCover;
+    address onBehalfOf; //onBehalfOf Enter an address you would like to send the claim tokens (cxTokens) to.
+    bytes32 coverKey; //coverKey Enter the cover key you wish to purchase the policy for
+    bytes32 productKey; //productKey Enter the product key you wish to purchase the policy for
+    uint256 coverDuration; //coverDuration Enter the number of months to cover. Accepted values: 1-3.
+    uint256 amountToCover; //amountToCover Enter the amount of the stablecoin to cover.
     bytes32 referralCode;
   }
 
-  /*
-   * floor The lowest cover fee rate fallback
-   * ceiling The highest cover fee rate fallback
-   */
   struct CoverFeeInfoType {
     uint256 fee;
     uint256 utilizationRatio;
     uint256 totalAvailableLiquidity;
-    uint256 floor;
-    uint256 ceiling;
+    uint256 floor; //floor The lowest cover fee rate fallback
+    uint256 ceiling; //ceiling The highest cover fee rate fallback
     uint256 rate;
   }
 
-  /*
-   * totalAmountInPool The total amount in the cover pool
-   * totalCommitment The total commitment amount
-   * reassuranceAmount Reassurance amount
-   * reassurancePoolWeight Reassurance pool weight
-   * productCount Count of products under this cover
-   * leverage Leverage
-   * productCapitalEfficiency Cover product efficiency weight
-   *
-   */
-
   struct CoverPoolSummaryType {
-    uint256 totalAmountInPool;
-    uint256 totalCommitment;
-    uint256 reassuranceAmount;
-    uint256 reassurancePoolWeight;
-    uint256 productCount;
-    uint256 leverage;
-    uint256 productCapitalEfficiency;
+    uint256 totalAmountInPool; //totalAmountInPool The total amount in the cover pool
+    uint256 totalCommitment; //totalCommitment The total commitment amount
+    uint256 reassuranceAmount; //reassuranceAmount Reassurance amount
+    uint256 reassurancePoolWeight; //reassurancePoolWeight Reassurance pool weight
+    uint256 productCount; //productCount Count of products under this cover
+    uint256 leverage; //leverage Leverage
+    uint256 productCapitalEfficiency; //productCapitalEfficiency Cover product efficiency weight
   }
 
   event CoverPurchased(PurchaseCoverArgs args, address indexed cxToken, uint256 fee, uint256 platformFee, uint256 expiresOn, uint256 policyId);

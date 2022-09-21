@@ -1,6 +1,6 @@
 # AccessControl.sol
 
-View Source: [openzeppelin-solidity/contracts/access/AccessControl.sol](../openzeppelin-solidity/contracts/access/AccessControl.sol)
+View Source: [openzeppelin-solidity\contracts\access\AccessControl.sol](..\openzeppelin-solidity\contracts\access\AccessControl.sol)
 
 **↗ Extends: [Context](Context.md), [IAccessControl](IAccessControl.md), [ERC165](ERC165.md)**
 **↘ Derived Contracts: [MockProtocol](MockProtocol.md), [ProtoBase](ProtoBase.md), [TimelockController](TimelockController.md)**

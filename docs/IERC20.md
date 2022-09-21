@@ -1,6 +1,6 @@
 # IERC20.sol
 
-View Source: [openzeppelin-solidity/contracts/token/ERC20/IERC20.sol](../openzeppelin-solidity/contracts/token/ERC20/IERC20.sol)
+View Source: [openzeppelin-solidity\contracts\token\ERC20\IERC20.sol](..\openzeppelin-solidity\contracts\token\ERC20\IERC20.sol)
 
 **↘ Derived Contracts: [ERC20](ERC20.md), [ICxToken](ICxToken.md), [IERC20Detailed](IERC20Detailed.md), [IERC20Metadata](IERC20Metadata.md), [IVault](IVault.md)**
 

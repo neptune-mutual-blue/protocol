@@ -1,6 +1,6 @@
 # IPriceOracle.sol
 
-View Source: [contracts/interfaces/IPriceOracle.sol](../contracts/interfaces/IPriceOracle.sol)
+View Source: [\contracts\interfaces\IPriceOracle.sol](..\contracts\interfaces\IPriceOracle.sol)
 
 **↘ Derived Contracts: [FakePriceOracle](FakePriceOracle.md)**
 

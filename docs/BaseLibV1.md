@@ -1,6 +1,6 @@
 # BaseLibV1.sol
 
-View Source: [contracts/libraries/BaseLibV1.sol](../contracts/libraries/BaseLibV1.sol)
+View Source: [\contracts\libraries\BaseLibV1.sol](..\contracts\libraries\BaseLibV1.sol)
 
 **BaseLibV1**
 
@@ -30,8 +30,13 @@ function recoverEtherInternal(address sendTo) external nonpayable
 
 ```javascript
 function recoverEtherInternal(address sendTo) external {
-    // slither-disable-next-line arbitrary-send
-    payable(sendTo).transfer(address(this).balance);
+
+    // slither-disable-next-line low-level-calls
+
+    (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
+
+    require(success, "Recipient may have reverted");
+
   }
 ```
 </details>
@@ -58,14 +63,19 @@ function recoverTokenInternal(address token, address sendTo) external nonpayable
 
 ```javascript
 function recoverTokenInternal(address token, address sendTo) external {
+
     IERC20 erc20 = IERC20(token);
 
     uint256 balance = erc20.balanceOf(address(this));
 
     if (balance > 0) {
+
       // slither-disable-next-line unchecked-transfer
+
       erc20.safeTransfer(sendTo, balance);
+
     }
+
   }
 ```
 </details>

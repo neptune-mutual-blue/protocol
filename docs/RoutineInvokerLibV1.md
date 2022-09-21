@@ -1,6 +1,6 @@
 # RoutineInvokerLibV1.sol
 
-View Source: [contracts/libraries/RoutineInvokerLibV1.sol](../contracts/libraries/RoutineInvokerLibV1.sol)
+View Source: [\contracts\libraries\RoutineInvokerLibV1.sol](..\contracts\libraries\RoutineInvokerLibV1.sol)
 
 **RoutineInvokerLibV1**
 
@@ -54,7 +54,9 @@ function updateStateAndLiquidity(IStore s, bytes32 coverKey) external nonpayable
 
 ```javascript
 function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
+
     _invoke(s, coverKey);
+
   }
 ```
 </details>
@@ -77,18 +79,27 @@ function _invoke(IStore s, bytes32 coverKey) private nonpayable
 
 ```javascript
 function _invoke(IStore s, bytes32 coverKey) private {
+
     // solhint-disable-next-line
+
     if (s.getLastUpdatedOnInternal(coverKey) + _getUpdateInterval(s) > block.timestamp) {
+
       return;
+
     }
 
     PriceLibV1.setNpmPrice(s);
 
     if (coverKey > 0) {
+
       _updateWithdrawalPeriod(s, coverKey);
+
       _invokeAssetManagement(s, coverKey);
+
       s.setLastUpdatedOn(coverKey);
+
     }
+
   }
 ```
 </details>
@@ -111,7 +122,9 @@ returns(uint256)
 
 ```javascript
 function _getUpdateInterval(IStore s) private view returns (uint256) {
+
     return s.getUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL);
+
   }
 ```
 </details>
@@ -135,26 +148,43 @@ returns(isWithdrawalPeriod bool, lendingPeriod uint256, withdrawalWindow uint256
 
 ```javascript
 function getWithdrawalInfoInternal(IStore s, bytes32 coverKey)
+
     public
+
     view
+
     returns (
+
       bool isWithdrawalPeriod,
+
       uint256 lendingPeriod,
+
       uint256 withdrawalWindow,
+
       uint256 start,
+
       uint256 end
+
     )
+
   {
+
     (lendingPeriod, withdrawalWindow) = s.getRiskPoolingPeriodsInternal(coverKey);
 
     // Get the withdrawal period of this cover liquidity
+
     start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+
     end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     // solhint-disable-next-line
+
     if (block.timestamp >= start && block.timestamp <= end) {
+
       isWithdrawalPeriod = true;
+
     }
+
   }
 ```
 </details>
@@ -178,8 +208,11 @@ returns(bool)
 
 ```javascript
 function _isWithdrawalPeriod(IStore s, bytes32 coverKey) private view returns (bool) {
+
     (bool isWithdrawalPeriod, , , , ) = getWithdrawalInfoInternal(s, coverKey);
+
     return isWithdrawalPeriod;
+
   }
 ```
 </details>
@@ -202,30 +235,45 @@ function _updateWithdrawalPeriod(IStore s, bytes32 coverKey) private nonpayable
 
 ```javascript
 function _updateWithdrawalPeriod(IStore s, bytes32 coverKey) private {
+
     (, uint256 lendingPeriod, uint256 withdrawalWindow, uint256 start, uint256 end) = getWithdrawalInfoInternal(s, coverKey);
 
     // Without a lending period and withdrawal window, nothing can be updated
+
     if (lendingPeriod == 0 || withdrawalWindow == 0) {
+
       return;
+
     }
 
     // The withdrawal period is now over.
+
     // Deposits can be performed again.
+
     // Set the next withdrawal cycle
+
     if (block.timestamp > end) {
+
       // solhint-disable-previous-line
 
       // Next Withdrawal Cycle
 
       // Withdrawals can start after the lending period
+
       start = block.timestamp + lendingPeriod; // solhint-disable
+
       // Withdrawals can be performed until the end of the next withdrawal cycle
+
       end = start + withdrawalWindow;
 
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
+
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
+
       setAccrualCompleteInternal(s, coverKey, false);
+
     }
+
   }
 ```
 </details>
@@ -249,7 +297,9 @@ returns(bool)
 
 ```javascript
 function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view returns (bool) {
+
     return s.getBoolByKey(getAccrualInvocationKey(coverKey));
+
   }
 ```
 </details>
@@ -273,11 +323,17 @@ function setAccrualCompleteInternal(IStore s, bytes32 coverKey, bool flag) publi
 
 ```javascript
 function setAccrualCompleteInternal(
+
     IStore s,
+
     bytes32 coverKey,
+
     bool flag
+
   ) public {
+
     s.setBoolByKey(getAccrualInvocationKey(coverKey), flag);
+
   }
 ```
 </details>
@@ -303,7 +359,9 @@ returns(bytes32)
 
 ```javascript
 function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_ACCRUAL_INVOCATION, coverKey));
+
   }
 ```
 </details>
@@ -329,7 +387,9 @@ returns(bytes32)
 
 ```javascript
 function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_START, coverKey));
+
   }
 ```
 </details>
@@ -355,7 +415,9 @@ returns(bytes32)
 
 ```javascript
 function getNextWithdrawalEndKey(bytes32 coverKey) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_END, coverKey));
+
   }
 ```
 </details>
@@ -378,12 +440,17 @@ function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view
 
 ```javascript
 function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view {
+
     // Get the withdrawal period of this cover liquidity
+
     uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
+
     uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
-    require(end > 0 && block.timestamp < end, "Withdrawal period has already ended");
+
+    require(end > 0 && block.timestamp <= end, "Withdrawal period has already ended");
+
   }
 ```
 </details>
@@ -408,26 +475,39 @@ returns(enum RoutineInvokerLibV1.Action)
 
 ```javascript
 function _executeAndGetAction(
+
     IStore s,
+
     ILendingStrategy,
+
     bytes32 coverKey
+
   ) private returns (Action) {
+
     // If the cover is undergoing reporting, withdraw everything
+
     bool isNormal = s.isCoverNormalInternal(coverKey);
 
     if (isNormal != true) {
+
       // Reset the withdrawal window
+
       s.setUintByKey(getNextWithdrawalStartKey(coverKey), 0);
+
       s.setUintByKey(getNextWithdrawalEndKey(coverKey), 0);
 
       return Action.Withdraw;
+
     }
 
     if (_isWithdrawalPeriod(s, coverKey) == true) {
+
       return Action.Withdraw;
+
     }
 
     return Action.Deposit;
+
   }
 ```
 </details>
@@ -453,25 +533,39 @@ returns(uint256)
 
 ```javascript
 function _canDeposit(
+
     IStore s,
+
     ILendingStrategy strategy,
+
     uint256 totalStrategies,
+
     bytes32 coverKey
+
   ) private view returns (uint256) {
+
     IERC20 stablecoin = IERC20(s.getStablecoin());
 
     uint256 totalBalance = s.getStablecoinOwnedByVaultInternal(coverKey);
+
     uint256 maximumAllowed = (totalBalance * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
+
     uint256 allocation = maximumAllowed / totalStrategies;
+
     uint256 weight = strategy.getWeight();
+
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
+
     uint256 alreadyDeposited = s.getAmountInStrategy(coverKey, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
+
       return 0;
+
     }
 
     return canDeposit - alreadyDeposited;
+
   }
 ```
 </details>
@@ -494,15 +588,21 @@ function _invokeAssetManagement(IStore s, bytes32 coverKey) private nonpayable
 
 ```javascript
 function _invokeAssetManagement(IStore s, bytes32 coverKey) private {
+
     address vault = s.getVaultAddress(coverKey);
+
     _withdrawFromDisabled(s, coverKey, vault);
 
     address[] memory strategies = s.getActiveStrategiesInternal();
 
     for (uint256 i = 0; i < strategies.length; i++) {
+
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
+
       _executeStrategy(s, strategy, strategies.length, vault, coverKey);
+
     }
+
   }
 ```
 </details>
@@ -528,31 +628,47 @@ function _executeStrategy(IStore s, ILendingStrategy strategy, uint256 totalStra
 
 ```javascript
 function _executeStrategy(
+
     IStore s,
+
     ILendingStrategy strategy,
+
     uint256 totalStrategies,
+
     address vault,
+
     bytes32 coverKey
+
   ) private {
+
     uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, coverKey);
+
     uint256 balance = IERC20(s.getStablecoin()).balanceOf(vault);
 
     if (canDeposit > balance) {
+
       canDeposit = balance;
+
     }
 
     Action action = _executeAndGetAction(s, strategy, coverKey);
 
     if (action == Action.Deposit && canDeposit == 0) {
+
       return;
+
     }
 
     if (action == Action.Withdraw) {
+
       _withdrawAllFromStrategy(strategy, vault, coverKey);
+
       return;
+
     }
 
     _depositToStrategy(strategy, coverKey, canDeposit);
+
   }
 ```
 </details>
@@ -576,11 +692,17 @@ function _depositToStrategy(ILendingStrategy strategy, bytes32 coverKey, uint256
 
 ```javascript
 function _depositToStrategy(
+
     ILendingStrategy strategy,
+
     bytes32 coverKey,
+
     uint256 amount
+
   ) private {
+
     strategy.deposit(coverKey, amount);
+
   }
 ```
 </details>
@@ -605,15 +727,23 @@ returns(stablecoinWithdrawn uint256)
 
 ```javascript
 function _withdrawAllFromStrategy(
+
     ILendingStrategy strategy,
+
     address vault,
+
     bytes32 coverKey
+
   ) private returns (uint256 stablecoinWithdrawn) {
+
     uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(vault);
 
     if (balance > 0) {
+
       stablecoinWithdrawn = strategy.withdraw(coverKey);
+
     }
+
   }
 ```
 </details>
@@ -637,20 +767,31 @@ function _withdrawFromDisabled(IStore s, bytes32 coverKey, address onBehalfOf) p
 
 ```javascript
 function _withdrawFromDisabled(
+
     IStore s,
+
     bytes32 coverKey,
+
     address onBehalfOf
+
   ) private {
+
     address[] memory strategies = s.getDisabledStrategiesInternal();
 
     for (uint256 i = 0; i < strategies.length; i++) {
+
       ILendingStrategy strategy = ILendingStrategy(strategies[i]);
+
       uint256 balance = IERC20(strategy.getDepositCertificate()).balanceOf(onBehalfOf);
 
       if (balance > 0) {
+
         strategy.withdraw(coverKey);
+
       }
+
     }
+
   }
 ```
 </details>

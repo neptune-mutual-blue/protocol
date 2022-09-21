@@ -1,6 +1,6 @@
 # IReporter.sol
 
-View Source: [contracts/interfaces/IReporter.sol](../contracts/interfaces/IReporter.sol)
+View Source: [\contracts\interfaces\IReporter.sol](..\contracts\interfaces\IReporter.sol)
 
 **↘ Derived Contracts: [IGovernance](IGovernance.md), [Reporter](Reporter.md)**
 
@@ -9,8 +9,8 @@ View Source: [contracts/interfaces/IReporter.sol](../contracts/interfaces/IRepor
 **Events**
 
 ```js
-event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, bytes32  info, uint256  initialStake, uint256  resolutionTimestamp);
-event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, bytes32  info, uint256  initialStake);
+event Reported(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, string  info, uint256  initialStake, uint256  resolutionTimestamp);
+event Disputed(bytes32 indexed coverKey, bytes32 indexed productKey, address  reporter, uint256 indexed incidentDate, string  info, uint256  initialStake);
 event ReportingBurnRateSet(uint256  previous, uint256  current);
 event FirstReportingStakeSet(bytes32  coverKey, uint256  previous, uint256  current);
 event ReporterCommissionSet(uint256  previous, uint256  current);
@@ -18,8 +18,8 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 
 ## Functions
 
-- [report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake)](#report)
-- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake)](#report)
+- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake)](#dispute)
 - [getActiveIncidentDate(bytes32 coverKey, bytes32 productKey)](#getactiveincidentdate)
 - [getAttestation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestation)
 - [getRefutation(bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutation)
@@ -33,7 +33,7 @@ event ReporterCommissionSet(uint256  previous, uint256  current);
 ### report
 
 ```solidity
-function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake) external nonpayable
+function report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake) external nonpayable
 ```
 
 **Arguments**
@@ -42,7 +42,7 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 | ------------- |------------- | -----|
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
-| info | bytes32 |  | 
+| info | string |  | 
 | stake | uint256 |  | 
 
 <details>
@@ -50,10 +50,15 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 
 ```javascript
 function report(
+
     bytes32 coverKey,
+
     bytes32 productKey,
-    bytes32 info,
+
+    string calldata info,
+
     uint256 stake
+
   ) external;
 ```
 </details>
@@ -61,7 +66,7 @@ function report(
 ### dispute
 
 ```solidity
-function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable
+function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake) external nonpayable
 ```
 
 **Arguments**
@@ -71,7 +76,7 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
 | incidentDate | uint256 |  | 
-| info | bytes32 |  | 
+| info | string |  | 
 | stake | uint256 |  | 
 
 <details>
@@ -79,11 +84,17 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 
 ```javascript
 function dispute(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
-    bytes32 info,
+
+    string calldata info,
+
     uint256 stake
+
   ) external;
 ```
 </details>
@@ -131,10 +142,15 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getAttestation(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address who,
+
     uint256 incidentDate
+
   ) external view returns (uint256 myStake, uint256 totalStake);
 ```
 </details>
@@ -160,10 +176,15 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getRefutation(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address who,
+
     uint256 incidentDate
+
   ) external view returns (uint256 myStake, uint256 totalStake);
 ```
 </details>
@@ -188,9 +209,13 @@ returns(address)
 
 ```javascript
 function getReporter(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external view returns (address);
 ```
 </details>

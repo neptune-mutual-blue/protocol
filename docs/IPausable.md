@@ -1,6 +1,6 @@
 # IPausable.sol
 
-View Source: [contracts/interfaces/IPausable.sol](../contracts/interfaces/IPausable.sol)
+View Source: [\contracts\interfaces\IPausable.sol](..\contracts\interfaces\IPausable.sol)
 
 **IPausable**
 

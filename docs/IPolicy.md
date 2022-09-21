@@ -1,21 +1,62 @@
 # IPolicy.sol
 
-View Source: [contracts/interfaces/IPolicy.sol](../contracts/interfaces/IPolicy.sol)
+View Source: [\contracts\interfaces\IPolicy.sol](..\contracts\interfaces\IPolicy.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [Policy](Policy.md)**
 
 **IPolicy**
 
+## Structs
+### PurchaseCoverArgs
+
+```js
+struct PurchaseCoverArgs {
+ address onBehalfOf,
+ bytes32 coverKey,
+ bytes32 productKey,
+ uint256 coverDuration,
+ uint256 amountToCover,
+ bytes32 referralCode
+}
+```
+
+### CoverFeeInfoType
+
+```js
+struct CoverFeeInfoType {
+ uint256 fee,
+ uint256 utilizationRatio,
+ uint256 totalAvailableLiquidity,
+ uint256 floor,
+ uint256 ceiling,
+ uint256 rate
+}
+```
+
+### CoverPoolSummaryType
+
+```js
+struct CoverPoolSummaryType {
+ uint256 totalAmountInPool,
+ uint256 totalCommitment,
+ uint256 reassuranceAmount,
+ uint256 reassurancePoolWeight,
+ uint256 productCount,
+ uint256 leverage,
+ uint256 productCapitalEfficiency
+}
+```
+
 **Events**
 
 ```js
-event CoverPurchased(bytes32  coverKey, bytes32  productKey, address  onBehalfOf, address indexed cxToken, uint256  fee, uint256  platformFee, uint256  amountToCover, uint256  expiresOn, bytes32 indexed referralCode, uint256  policyId);
+event CoverPurchased(struct IPolicy.PurchaseCoverArgs  args, address indexed cxToken, uint256  fee, uint256  platformFee, uint256  expiresOn, uint256  policyId);
 ```
 
 ## Functions
 
-- [purchaseCover(address onBehalfOf, bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode)](#purchasecover)
+- [purchaseCover(struct IPolicy.PurchaseCoverArgs args)](#purchasecover)
 - [getCoverFeeInfo(bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover)](#getcoverfeeinfo)
 - [getCoverPoolSummary(bytes32 coverKey, bytes32 productKey)](#getcoverpoolsummary)
 - [getCxToken(bytes32 coverKey, bytes32 productKey, uint256 coverDuration)](#getcxtoken)
@@ -33,7 +74,7 @@ Purchase cover for the specified amount. <br /> <br />
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
 ```solidity
-function purchaseCover(address onBehalfOf, bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover, bytes32 referralCode) external nonpayable
+function purchaseCover(struct IPolicy.PurchaseCoverArgs args) external nonpayable
 returns(address, uint256)
 ```
 
@@ -41,25 +82,13 @@ returns(address, uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| onBehalfOf | address | Enter an address you would like to send the claim tokens (cxTokens) to. | 
-| coverKey | bytes32 | Enter the cover key you wish to purchase the policy for | 
-| productKey | bytes32 |  | 
-| coverDuration | uint256 | Enter the number of months to cover. Accepted values: 1-3. | 
-| amountToCover | uint256 | Enter the amount of the stablecoin to cover. | 
-| referralCode | bytes32 |  | 
+| args | struct IPolicy.PurchaseCoverArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function purchaseCover(
-    address onBehalfOf,
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 coverDuration,
-    uint256 amountToCover,
-    bytes32 referralCode
-  ) external returns (address, uint256);
+function purchaseCover(PurchaseCoverArgs calldata args) external returns (address, uint256);
 ```
 </details>
 
@@ -69,7 +98,7 @@ Gets the cover fee info for the given cover key, duration, and amount
 
 ```solidity
 function getCoverFeeInfo(bytes32 coverKey, bytes32 productKey, uint256 coverDuration, uint256 amountToCover) external view
-returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, floor uint256, ceiling uint256, rate uint256)
+returns(struct IPolicy.CoverFeeInfoType)
 ```
 
 **Arguments**
@@ -86,31 +115,26 @@ returns(fee uint256, utilizationRatio uint256, totalAvailableLiquidity uint256, 
 
 ```javascript
 function getCoverFeeInfo(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 coverDuration,
+
     uint256 amountToCover
-  )
-    external
-    view
-    returns (
-      uint256 fee,
-      uint256 utilizationRatio,
-      uint256 totalAvailableLiquidity,
-      uint256 floor,
-      uint256 ceiling,
-      uint256 rate
-    );
+
+  ) external view returns (CoverFeeInfoType memory);
 ```
 </details>
 
 ### getCoverPoolSummary
 
-Returns the values of the given cover key
+Returns pool summary of the given cover key
 
 ```solidity
 function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view
-returns(_values uint256[])
+returns(summary struct IPolicy.CoverPoolSummaryType)
 ```
 
 **Arguments**
@@ -124,7 +148,7 @@ returns(_values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view returns (uint256[] memory _values);
+function getCoverPoolSummary(bytes32 coverKey, bytes32 productKey) external view returns (CoverPoolSummaryType memory summary);
 ```
 </details>
 
@@ -148,9 +172,13 @@ returns(cxToken address, expiryDate uint256)
 
 ```javascript
 function getCxToken(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 coverDuration
+
   ) external view returns (address cxToken, uint256 expiryDate);
 ```
 </details>
@@ -175,9 +203,13 @@ returns(cxToken address)
 
 ```javascript
 function getCxTokenByExpiryDate(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 expiryDate
+
   ) external view returns (address cxToken);
 ```
 </details>

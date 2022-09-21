@@ -1,6 +1,6 @@
 # MockFlashBorrower.sol
 
-View Source: [contracts/mock/MockFlashBorrower.sol](../contracts/mock/MockFlashBorrower.sol)
+View Source: [\contracts\mock\MockFlashBorrower.sol](..\contracts\mock\MockFlashBorrower.sol)
 
 **↗ Extends: [IERC3156FlashBorrower](IERC3156FlashBorrower.md)**
 
@@ -44,8 +44,11 @@ function (IERC20 stablecoin, IERC3156FlashLender provider) public nonpayable
 
 ```javascript
 constructor(IERC20 stablecoin, IERC3156FlashLender provider) {
+
     _stablecoin = stablecoin;
+
     _provider = provider;
+
   }
 ```
 </details>
@@ -67,7 +70,9 @@ function setStablecoin(IERC20 value) external nonpayable
 
 ```javascript
 function setStablecoin(IERC20 value) external {
+
     _stablecoin = value;
+
   }
 ```
 </details>
@@ -89,7 +94,9 @@ function setReturnValue(bytes32 value) external nonpayable
 
 ```javascript
 function setReturnValue(bytes32 value) external {
+
     _returnValue = value;
+
   }
 ```
 </details>
@@ -111,7 +118,9 @@ function setCreateApproval(bool value) external nonpayable
 
 ```javascript
 function setCreateApproval(bool value) external {
+
     _createsApproval = value;
+
   }
 ```
 </details>
@@ -134,15 +143,21 @@ function borrow(uint256 amount, bytes data) external nonpayable
 
 ```javascript
 function borrow(uint256 amount, bytes calldata data) external {
+
     uint256 allowance = _stablecoin.allowance(address(this), address(_provider));
+
     uint256 fee = _provider.flashFee(address(_stablecoin), amount);
+
     uint256 repayment = amount + fee;
 
     if (_createsApproval) {
+
       _stablecoin.approve(address(_provider), allowance + repayment);
+
     }
 
     _provider.flashLoan(this, address(_stablecoin), amount, data);
+
   }
 ```
 </details>
@@ -169,15 +184,25 @@ returns(bytes32)
 
 ```javascript
 function onFlashLoan(
+
     address initiator,
+
     address, /*token*/
+
     uint256, /*amount*/
+
     uint256, /*fee*/
+
     bytes calldata /*data*/
+
   ) external view override returns (bytes32) {
+
     require(msg.sender == address(_provider), "FlashBorrower: Untrusted lender");
+
     require(initiator == address(this), "FlashBorrower: Untrusted loan initiator"); // solhint-disable-line
+
     return _returnValue;
+
   }
 ```
 </details>

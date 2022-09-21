@@ -1,6 +1,6 @@
 # ProtoUtilV1.sol
 
-View Source: [contracts/libraries/ProtoUtilV1.sol](../contracts/libraries/ProtoUtilV1.sol)
+View Source: [\contracts\libraries\ProtoUtilV1.sol](..\contracts\libraries\ProtoUtilV1.sol)
 
 **ProtoUtilV1**
 
@@ -82,6 +82,7 @@ bytes32 public constant NS_COVERAGE_LAG;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
 bytes32 public constant NS_POLICY_DISABLED;
+bytes32 public constant NS_POLICY_LAST_PURCHASE_ID;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
@@ -102,6 +103,7 @@ bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE;
 bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES;
 bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE;
+bytes32 public constant NS_GOVERNANCE_REPORTING_FINALIZATION;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO;
@@ -184,7 +186,9 @@ returns(contract IProtocol)
 
 ```javascript
 function getProtocol(IStore s) external view returns (IProtocol) {
+
     return IProtocol(getProtocolAddress(s));
+
   }
 ```
 </details>
@@ -207,7 +211,9 @@ returns(address)
 
 ```javascript
 function getProtocolAddress(IStore s) public view returns (address) {
+
     return s.getAddressByKey(CNS_CORE);
+
   }
 ```
 </details>
@@ -232,15 +238,23 @@ returns(address)
 
 ```javascript
 function getContract(
+
     IStore s,
+
     bytes32 name,
+
     bytes32 key
+
   ) public view returns (address) {
+
     if (key > 0) {
+
       return s.getAddressByKeys(NS_CONTRACTS, name, key);
+
     }
 
     return s.getAddressByKeys(NS_CONTRACTS, name);
+
   }
 ```
 </details>
@@ -264,7 +278,9 @@ returns(bool)
 
 ```javascript
 function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+
     return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
+
   }
 ```
 </details>
@@ -289,8 +305,11 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view
 
 ```javascript
 function mustBeProtocolMember(IStore s, address contractAddress) external view {
+
     bool isMember = isProtocolMember(s, contractAddress);
+
     require(isMember, "Not a protocol member");
+
   }
 ```
 </details>
@@ -317,13 +336,21 @@ function mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender
 
 ```javascript
 function mustBeExactContract(
+
     IStore s,
+
     bytes32 name,
+
     bytes32 key,
+
     address sender
+
   ) public view {
+
     address contractAddress = getContract(s, name, key);
+
     require(sender == contractAddress, "Access denied");
+
   }
 ```
 </details>
@@ -348,7 +375,9 @@ function senderMustBeExactContract(IStore s, bytes32 name) external view
 
 ```javascript
 function senderMustBeExactContract(IStore s, bytes32 name) external view {
+
     return callerMustBeExactContract(s, name, msg.sender);
+
   }
 ```
 </details>
@@ -374,11 +403,17 @@ function callerMustBeExactContract(IStore s, bytes32 name, address caller) publi
 
 ```javascript
 function callerMustBeExactContract(
+
     IStore s,
+
     bytes32 name,
+
     address caller
+
   ) public view {
+
     return mustBeExactContract(s, name, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, caller);
+
   }
 ```
 </details>
@@ -401,7 +436,9 @@ returns(contract IERC20)
 
 ```javascript
 function npmToken(IStore s) external view returns (IERC20) {
+
     return IERC20(getNpmTokenAddress(s));
+
   }
 ```
 </details>
@@ -424,8 +461,11 @@ returns(address)
 
 ```javascript
 function getNpmTokenAddress(IStore s) public view returns (address) {
+
     address npm = s.getAddressByKey(CNS_NPM);
+
     return npm;
+
   }
 ```
 </details>
@@ -448,7 +488,9 @@ returns(address)
 
 ```javascript
 function getUniswapV2Router(IStore s) external view returns (address) {
+
     return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
+
   }
 ```
 </details>
@@ -471,7 +513,9 @@ returns(address)
 
 ```javascript
 function getUniswapV2Factory(IStore s) external view returns (address) {
+
     return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
+
   }
 ```
 </details>
@@ -494,7 +538,9 @@ returns(address)
 
 ```javascript
 function getNpmPriceOracle(IStore s) external view returns (address) {
+
     return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
+
   }
 ```
 </details>
@@ -517,7 +563,9 @@ returns(address)
 
 ```javascript
 function getTreasury(IStore s) external view returns (address) {
+
     return s.getAddressByKey(CNS_TREASURY);
+
   }
 ```
 </details>
@@ -540,7 +588,9 @@ returns(address)
 
 ```javascript
 function getStablecoin(IStore s) public view returns (address) {
+
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
+
   }
 ```
 </details>
@@ -563,7 +613,9 @@ returns(uint256)
 
 ```javascript
 function getStablecoinPrecision(IStore s) external view returns (uint256) {
+
     return 10**IERC20Detailed(getStablecoin(s)).decimals();
+
   }
 ```
 </details>
@@ -586,7 +638,9 @@ returns(address)
 
 ```javascript
 function getBurnAddress(IStore s) external view returns (address) {
+
     return s.getAddressByKey(CNS_BURNER);
+
   }
 ```
 </details>

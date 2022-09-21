@@ -1,6 +1,6 @@
 # Vault Base Contract (VaultBase.sol)
 
-View Source: [contracts/core/liquidity/VaultBase.sol](../contracts/core/liquidity/VaultBase.sol)
+View Source: [\contracts\core\liquidity\VaultBase.sol](..\contracts\core\liquidity\VaultBase.sol)
 
 **↗ Extends: [ERC20](ERC20.md), [Recoverable](Recoverable.md), [IVault](IVault.md)**
 **↘ Derived Contracts: [VaultLiquidity](VaultLiquidity.md)**
@@ -44,14 +44,23 @@ function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, 
 
 ```javascript
 constructor(
+
     IStore store,
+
     bytes32 coverKey,
+
     string memory tokenName,
+
     string memory tokenSymbol,
+
     IERC20 stablecoin
+
   ) ERC20(tokenName, tokenSymbol) Recoverable(store) {
+
     key = coverKey;
+
     sc = address(stablecoin);
+
   }
 ```
 </details>
@@ -75,8 +84,11 @@ returns(contract IVaultDelegate)
 
 ```javascript
 function delgate() public view returns (IVaultDelegate) {
+
     address delegate = s.getVaultDelegate();
+
     return IVaultDelegate(delegate);
+
   }
 ```
 </details>

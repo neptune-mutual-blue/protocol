@@ -1,6 +1,6 @@
 # NTransferUtilV2.sol
 
-View Source: [contracts/libraries/NTransferUtilV2.sol](../contracts/libraries/NTransferUtilV2.sol)
+View Source: [\contracts\libraries\NTransferUtilV2.sol](..\contracts\libraries\NTransferUtilV2.sol)
 
 **NTransferUtilV2**
 
@@ -31,15 +31,23 @@ function ensureApproval(IERC20 malicious, address spender, uint256 amount) exter
 
 ```javascript
 function ensureApproval(
+
     IERC20 malicious,
+
     address spender,
+
     uint256 amount
+
   ) external {
+
     require(address(malicious) != address(0), "Invalid token address");
+
     require(spender != address(0), "Invalid spender");
+
     require(amount > 0, "Invalid transfer amount");
 
     malicious.safeIncreaseAllowance(spender, amount);
+
   }
 ```
 </details>
@@ -65,22 +73,33 @@ function ensureTransfer(IERC20 malicious, address recipient, uint256 amount) ext
 
 ```javascript
 function ensureTransfer(
+
     IERC20 malicious,
+
     address recipient,
+
     uint256 amount
+
   ) external {
+
     require(address(malicious) != address(0), "Invalid token address");
+
     require(recipient != address(0), "Spender can't be zero");
+
     require(amount > 0, "Invalid transfer amount");
 
     uint256 balanceBeforeTransfer = malicious.balanceOf(recipient);
+
     malicious.safeTransfer(recipient, amount);
+
     uint256 balanceAfterTransfer = malicious.balanceOf(recipient);
 
     // @suppress-subtraction
+
     uint256 actualTransferAmount = balanceAfterTransfer - balanceBeforeTransfer;
 
     require(actualTransferAmount == amount, "Invalid transfer");
+
   }
 ```
 </details>
@@ -107,24 +126,37 @@ function ensureTransferFrom(IERC20 malicious, address sender, address recipient,
 
 ```javascript
 function ensureTransferFrom(
+
     IERC20 malicious,
+
     address sender,
+
     address recipient,
+
     uint256 amount
+
   ) external {
+
     require(address(malicious) != address(0), "Invalid token address");
+
     require(sender != address(0), "Invalid sender");
+
     require(recipient != address(0), "Invalid recipient");
+
     require(amount > 0, "Invalid transfer amount");
 
     uint256 balanceBeforeTransfer = malicious.balanceOf(recipient);
+
     malicious.safeTransferFrom(sender, recipient, amount);
+
     uint256 balanceAfterTransfer = malicious.balanceOf(recipient);
 
     // @suppress-subtraction
+
     uint256 actualTransferAmount = balanceAfterTransfer - balanceBeforeTransfer;
 
     require(actualTransferAmount == amount, "Invalid transfer");
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # Cover Stake (CoverStake.sol)
 
-View Source: [contracts/core/lifecycle/CoverStake.sol](../contracts/core/lifecycle/CoverStake.sol)
+View Source: [\contracts\core\lifecycle\CoverStake.sol](..\contracts\core\lifecycle\CoverStake.sol)
 
 **↗ Extends: [ICoverStake](ICoverStake.md), [Recoverable](Recoverable.md)**
 
@@ -69,13 +69,21 @@ function increaseStake(bytes32 coverKey, address account, uint256 amount, uint25
 
 ```javascript
 function increaseStake(
+
     bytes32 coverKey,
+
     address account,
+
     uint256 amount,
+
     uint256 fee
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeValidCoverKey(coverKey);
+
     s.senderMustBeCoverContract();
 
     require(amount >= fee, "Invalid fee");
@@ -83,16 +91,23 @@ function increaseStake(
     s.npmToken().ensureTransferFrom(account, address(this), amount);
 
     if (fee > 0) {
+
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
+
       emit FeeBurned(coverKey, fee);
+
     }
 
     // @suppress-subtraction Checked usage. Fee is always less than amount
+
     // if we reach this far.
+
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount - fee);
+
     s.addUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account, amount - fee);
 
     emit StakeAdded(coverKey, account, amount - fee);
+
   }
 ```
 </details>
@@ -118,16 +133,23 @@ function decreaseStake(bytes32 coverKey, uint256 amount) external nonpayable non
 
 ```javascript
 function decreaseStake(bytes32 coverKey, uint256 amount) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeValidCoverKey(coverKey);
+
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     uint256 drawingPower = _getDrawingPower(coverKey, msg.sender);
+
     require(amount > 0, "Please specify amount");
+
     require(drawingPower >= amount, "Exceeds your drawing power");
 
     // @suppress-subtraction
+
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount);
+
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, msg.sender, amount);
 
     s.npmToken().ensureTransfer(msg.sender, amount);
@@ -135,6 +157,7 @@ function decreaseStake(bytes32 coverKey, uint256 amount) external override nonRe
     s.updateStateAndLiquidity(coverKey);
 
     emit StakeRemoved(coverKey, msg.sender, amount);
+
   }
 ```
 </details>
@@ -164,7 +187,9 @@ Returns the total stake of the specified account on the given cover key
 
 ```javascript
 function stakeOf(bytes32 coverKey, address account) public view override returns (uint256) {
+
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, account);
+
   }
 ```
 </details>
@@ -195,13 +220,17 @@ Returns the drawing power of the specified account on the given cover key
 
 ```javascript
 function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
+
     uint256 createdAt = s.getCoverCreationDate(coverKey);
+
     uint256 yourStake = stakeOf(coverKey, account);
+
     bool isOwner = account == s.getCoverOwner(coverKey);
 
     uint256 minStakeRequired = block.timestamp > createdAt + 365 days ? 0 : s.getMinCoverCreationStake(); // solhint-disable-line
 
     return isOwner ? yourStake - minStakeRequired : yourStake;
+
   }
 ```
 </details>
@@ -225,7 +254,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -249,7 +280,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_COVER_STAKE;
+
   }
 ```
 </details>

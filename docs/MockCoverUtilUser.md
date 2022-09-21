@@ -1,6 +1,6 @@
 # MockCoverUtilUser.sol
 
-View Source: [contracts/mock/lib-user/MockCoverUtil.sol](../contracts/mock/lib-user/MockCoverUtil.sol)
+View Source: [\contracts\mock\lib-user\MockCoverUtil.sol](..\contracts\mock\lib-user\MockCoverUtil.sol)
 
 **MockCoverUtilUser**
 
@@ -34,7 +34,9 @@ function (IStore store) public nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     s = store;
+
   }
 ```
 </details>
@@ -58,8 +60,11 @@ returns(uint256)
 
 ```javascript
 function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
+
     uint256 precision = s.getStablecoinPrecision();
+
     return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
+
   }
 ```
 </details>

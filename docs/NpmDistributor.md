@@ -1,6 +1,6 @@
 # NpmDistributor.sol
 
-View Source: [contracts/examples/NpmDistributor.sol](../contracts/examples/NpmDistributor.sol)
+View Source: [\contracts\examples\NpmDistributor.sol](..\contracts\examples\NpmDistributor.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md)**
 
@@ -42,7 +42,7 @@ event Drained(IERC20 indexed token, address indexed to, uint256  amount);
 - [getVaultContract(bytes32 coverKey)](#getvaultcontract)
 - [getClaimsProcessorContract()](#getclaimsprocessorcontract)
 - [getPremium(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection)](#getpremium)
-- [purchasePolicy(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection, bytes32 referralCode)](#purchasepolicy)
+- [purchasePolicy(struct IPolicy.PurchaseCoverArgs args)](#purchasepolicy)
 - [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [_drain(IERC20 token)](#_drain)
@@ -89,17 +89,27 @@ function (IStoreLike _store, address _treasury, uint256 _feePercentage) public n
 
 ```javascript
 constructor(
+
     IStoreLike _store,
+
     address _treasury,
+
     uint256 _feePercentage
+
   ) {
+
     require(address(_store) != address(0), "Invalid store");
+
     require(_treasury != address(0), "Invalid treasury");
+
     require(_feePercentage > 0 && _feePercentage < MULTIPLIER, "Invalid fee percentage");
 
     store = _store;
+
     treasury = _treasury;
+
     feePercentage = _feePercentage;
+
   }
 ```
 </details>
@@ -123,7 +133,9 @@ returns(contract IERC20)
 
 ```javascript
 function getStablecoin() public view returns (IERC20) {
+
     return IERC20(store.getAddress(CNS_COVER_STABLECOIN));
+
   }
 ```
 </details>
@@ -147,7 +159,9 @@ returns(contract IERC20)
 
 ```javascript
 function getNpm() public view returns (IERC20) {
+
     return IERC20(store.getAddress(CNS_NPM_INSTANCE));
+
   }
 ```
 </details>
@@ -171,7 +185,9 @@ returns(contract IPolicy)
 
 ```javascript
 function getPolicyContract() public view returns (IPolicy) {
+
     return IPolicy(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_COVER_POLICY))));
+
   }
 ```
 </details>
@@ -196,7 +212,9 @@ returns(contract IVault)
 
 ```javascript
 function getVaultContract(bytes32 coverKey) public view returns (IVault) {
+
     return IVault(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_COVER_VAULT, coverKey))));
+
   }
 ```
 </details>
@@ -220,7 +238,9 @@ returns(contract IClaimsProcessor)
 
 ```javascript
 function getClaimsProcessorContract() external view returns (IClaimsProcessor) {
+
     return IClaimsProcessor(store.getAddress(keccak256(abi.encodePacked(NS_CONTRACTS, CNS_CLAIM_PROCESSOR))));
+
   }
 ```
 </details>
@@ -248,18 +268,29 @@ returns(premium uint256, fee uint256)
 
 ```javascript
 function getPremium(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 duration,
+
     uint256 protection
+
   ) public view returns (uint256 premium, uint256 fee) {
+
     IPolicy policy = getPolicyContract();
+
     require(address(policy) != address(0), "Fatal: Policy missing");
 
-    (premium, , , , , ) = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
+    IPolicy.CoverFeeInfoType memory coverFeeInfo = policy.getCoverFeeInfo(coverKey, productKey, duration, protection);
+
+    premium = coverFeeInfo.fee;
 
     // Add your fee in addition to the protocol premium
+
     fee = (premium * feePercentage) / MULTIPLIER;
+
   }
 ```
 </details>
@@ -275,56 +306,59 @@ Purchases a new policy on behalf of your users.
  after the resolution of an incident.
 
 ```solidity
-function purchasePolicy(bytes32 coverKey, bytes32 productKey, uint256 duration, uint256 protection, bytes32 referralCode) external nonpayable nonReentrant 
+function purchasePolicy(struct IPolicy.PurchaseCoverArgs args) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key for which you want to buy policy. | 
-| productKey | bytes32 |  | 
-| duration | uint256 | Enter the period of the protection in months. | 
-| protection | uint256 | Enter the stablecoin dollar amount you want to protect. | 
-| referralCode | bytes32 | Provide a referral code if applicable. | 
+| args | struct IPolicy.PurchaseCoverArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function purchasePolicy(
-    bytes32 coverKey,
-    bytes32 productKey,
-    uint256 duration,
-    uint256 protection,
-    bytes32 referralCode
-  ) external nonReentrant {
-    require(coverKey > 0, "Invalid key");
-    require(duration > 0 && duration < 4, "Invalid duration");
-    require(protection > 0, "Invalid protection amount");
+function purchasePolicy(IPolicy.PurchaseCoverArgs memory args) external nonReentrant {
+
+    require(args.coverKey > 0, "Invalid key");
+
+    require(args.coverDuration > 0 && args.coverDuration < 4, "Invalid duration");
+
+    require(args.amountToCover > 0, "Invalid protection amount");
 
     IPolicy policy = getPolicyContract();
+
     require(address(policy) != address(0), "Fatal: Policy missing");
 
     IERC20 dai = getStablecoin();
+
     require(address(dai) != address(0), "Fatal: DAI missing");
 
     // Get fee info
-    (uint256 premium, uint256 fee) = getPremium(coverKey, productKey, duration, protection);
+
+    (uint256 premium, uint256 fee) = getPremium(args.coverKey, args.productKey, args.coverDuration, args.amountToCover);
 
     // Transfer DAI to this contract
+
     dai.safeTransferFrom(msg.sender, address(this), premium + fee);
 
     // Approve protocol to pull the protocol fee
+
     dai.safeIncreaseAllowance(address(policy), premium);
 
+    args.onBehalfOf = msg.sender;
+
     // Purchase protection for this user
-    (address cxTokenAt, ) = policy.purchaseCover(msg.sender, coverKey, productKey, duration, protection, referralCode);
+
+    (address cxTokenAt, ) = policy.purchaseCover(args);
 
     // Send your fee (+ any remaining DAI balance) to your treasury address
+
     dai.safeTransfer(treasury, dai.balanceOf(address(this)));
 
-    emit PolicySold(coverKey, productKey, cxTokenAt, msg.sender, duration, protection, referralCode, fee, premium);
+    emit PolicySold(args.coverKey, args.productKey, cxTokenAt, msg.sender, args.coverDuration, args.amountToCover, args.referralCode, fee, premium);
+
   }
 ```
 </details>
@@ -349,39 +383,59 @@ function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes3
 
 ```javascript
 function addLiquidity(
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake,
+
     bytes32 referralCode
+
   ) external nonReentrant {
+
     require(coverKey > 0, "Invalid key");
+
     require(amount > 0, "Invalid amount");
 
     IVault nDai = getVaultContract(coverKey);
+
     IERC20 dai = getStablecoin();
+
     IERC20 npm = getNpm();
 
     require(address(nDai) != address(0), "Fatal: Vault missing");
+
     require(address(dai) != address(0), "Fatal: DAI missing");
+
     require(address(npm) != address(0), "Fatal: NPM missing");
 
     // Before moving forward, first drain all balances of this contract
+
     _drain(nDai);
+
     _drain(dai);
+
     _drain(npm);
 
     // Transfer DAI from sender's wallet here
+
     dai.safeTransferFrom(msg.sender, address(this), amount);
 
     // Approve the Vault (or nDai) contract to spend DAI
+
     dai.safeIncreaseAllowance(address(nDai), amount);
 
     if (npmStake > 0) {
+
       // Transfer NPM from the sender's wallet here
+
       npm.safeTransferFrom(msg.sender, address(this), npmStake);
 
       // Approve the Vault (or nDai) contract to spend NPM
+
       npm.safeIncreaseAllowance(address(nDai), npmStake);
+
     }
 
     nDai.addLiquidity(coverKey, amount, npmStake, referralCode);
@@ -389,6 +443,7 @@ function addLiquidity(
     nDai.safeTransfer(msg.sender, nDai.balanceOf(address(this)));
 
     emit LiquidityAdded(coverKey, msg.sender, referralCode, amount, npmStake);
+
   }
 ```
 </details>
@@ -413,31 +468,47 @@ function removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, boo
 
 ```javascript
 function removeLiquidity(
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake,
+
     bool exit
+
   ) external nonReentrant {
+
     require(coverKey > 0, "Invalid key");
+
     require(amount > 0, "Invalid amount");
 
     IVault nDai = getVaultContract(coverKey);
+
     IERC20 dai = getStablecoin();
+
     IERC20 npm = getNpm();
 
     require(address(nDai) != address(0), "Fatal: Vault missing");
+
     require(address(dai) != address(0), "Fatal: DAI missing");
+
     require(address(npm) != address(0), "Fatal: NPM missing");
 
     // Before moving forward, first drain all balances of this contract
+
     _drain(nDai);
+
     _drain(dai);
+
     _drain(npm);
 
     // Transfer nDai from sender's wallet here
+
     nDai.safeTransferFrom(msg.sender, address(this), amount);
 
     // Approve the Vault (or nDai) contract to spend nDai
+
     nDai.safeIncreaseAllowance(address(nDai), amount);
 
     nDai.removeLiquidity(coverKey, amount, npmStake, exit);
@@ -445,6 +516,7 @@ function removeLiquidity(
     dai.safeTransfer(msg.sender, nDai.balanceOf(address(this)));
 
     emit LiquidityRemoved(coverKey, msg.sender, amount, npmStake, exit);
+
   }
 ```
 </details>
@@ -468,12 +540,17 @@ function _drain(IERC20 token) private nonpayable
 
 ```javascript
 function _drain(IERC20 token) private {
+
     uint256 balance = token.balanceOf(address(this));
 
     if (balance > 0) {
+
       token.safeTransfer(treasury, balance);
+
       emit Drained(token, treasury, balance);
+
     }
+
   }
 ```
 </details>

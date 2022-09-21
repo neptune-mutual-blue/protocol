@@ -1,19 +1,68 @@
 # ICover.sol
 
-View Source: [contracts/interfaces/ICover.sol](../contracts/interfaces/ICover.sol)
+View Source: [\contracts\interfaces\ICover.sol](..\contracts\interfaces\ICover.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [CoverBase](CoverBase.md)**
 
 **ICover**
 
+## Structs
+### AddCoverArgs
+
+```js
+struct AddCoverArgs {
+ bytes32 coverKey,
+ string info,
+ string tokenName,
+ string tokenSymbol,
+ bool supportsProducts,
+ bool requiresWhitelist,
+ uint256 stakeWithFee,
+ uint256 initialReassuranceAmount,
+ uint256 minStakeToReport,
+ uint256 reportingPeriod,
+ uint256 cooldownPeriod,
+ uint256 claimPeriod,
+ uint256 floor,
+ uint256 ceiling,
+ uint256 reassuranceRate,
+ uint256 leverageFactor
+}
+```
+
+### AddProductArgs
+
+```js
+struct AddProductArgs {
+ bytes32 coverKey,
+ bytes32 productKey,
+ string info,
+ bool requiresWhitelist,
+ uint256 productStatus,
+ uint256 efficiency
+}
+```
+
+### UpdateProductArgs
+
+```js
+struct UpdateProductArgs {
+ bytes32 coverKey,
+ bytes32 productKey,
+ string info,
+ uint256 productStatus,
+ uint256 efficiency
+}
+```
+
 **Events**
 
 ```js
-event CoverCreated(bytes32 indexed coverKey, bytes32  info, string  tokenName, string  tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
-event ProductCreated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, bool  requiresWhitelist, uint256[]  values);
-event CoverUpdated(bytes32 indexed coverKey, bytes32  info);
-event ProductUpdated(bytes32 indexed coverKey, bytes32  productKey, bytes32  info, uint256[]  values);
+event CoverCreated(bytes32 indexed coverKey, string  info, string  tokenName, string  tokenSymbol, bool indexed supportsProducts, bool indexed requiresWhitelist);
+event ProductCreated(bytes32 indexed coverKey, bytes32  productKey, string  info);
+event CoverUpdated(bytes32 indexed coverKey, string  info);
+event ProductUpdated(bytes32 indexed coverKey, bytes32  productKey, string  info);
 event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool  status, string  reason);
 event VaultDeployed(bytes32 indexed coverKey, address  vault);
 event CoverCreatorWhitelistUpdated(address  account, bool  status);
@@ -27,10 +76,10 @@ event CoverInitialized(address indexed stablecoin, bytes32  withName);
 ## Functions
 
 - [initialize(address stablecoin, bytes32 friendlyName)](#initialize)
-- [addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values)](#addcover)
-- [addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values)](#addproduct)
-- [updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values)](#updateproduct)
-- [updateCover(bytes32 coverKey, bytes32 info)](#updatecover)
+- [addCover(struct ICover.AddCoverArgs args)](#addcover)
+- [addProduct(struct ICover.AddProductArgs args)](#addproduct)
+- [updateProduct(struct ICover.UpdateProductArgs args)](#updateproduct)
+- [updateCover(bytes32 coverKey, string info)](#updatecover)
 - [updateCoverCreatorWhitelist(address account, bool whitelisted)](#updatecovercreatorwhitelist)
 - [updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address[] accounts, bool[] statuses)](#updatecoveruserswhitelist)
 - [disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string reason)](#disablepolicy)
@@ -78,7 +127,7 @@ Adds a new coverage pool or cover contract.
  https://docs.neptunemutual.com/covers/contract-creators
 
 ```solidity
-function addCover(bytes32 coverKey, bytes32 info, string tokenName, string tokenSymbol, bool supportsProducts, bool requiresWhitelist, uint256[] values) external nonpayable
+function addCover(struct ICover.AddCoverArgs args) external nonpayable
 returns(address)
 ```
 
@@ -86,85 +135,53 @@ returns(address)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter a unique key for this cover | 
-| info | bytes32 | IPFS info of the cover contract | 
-| tokenName | string |  | 
-| tokenSymbol | string |  | 
-| supportsProducts | bool |  | 
-| requiresWhitelist | bool |  | 
-| values | uint256[] | [0] stakeWithFee Enter the total NPM amount (stake + fee) to transfer to this contract. | 
+| args | struct ICover.AddCoverArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addCover(
-    bytes32 coverKey,
-    bytes32 info,
-    string calldata tokenName,
-    string calldata tokenSymbol,
-    bool supportsProducts,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external returns (address);
+function addCover(AddCoverArgs calldata args) external returns (address);
 ```
 </details>
 
 ### addProduct
 
 ```solidity
-function addProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, bool requiresWhitelist, uint256[] values) external nonpayable
+function addProduct(struct ICover.AddProductArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| requiresWhitelist | bool |  | 
-| values | uint256[] |  | 
+| args | struct ICover.AddProductArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    bytes32 info,
-    bool requiresWhitelist,
-    uint256[] calldata values
-  ) external;
+function addProduct(AddProductArgs calldata args) external;
 ```
 </details>
 
 ### updateProduct
 
 ```solidity
-function updateProduct(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256[] values) external nonpayable
+function updateProduct(struct ICover.UpdateProductArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
-| productKey | bytes32 |  | 
-| info | bytes32 |  | 
-| values | uint256[] |  | 
+| args | struct ICover.UpdateProductArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateProduct(
-    bytes32 coverKey,
-    bytes32 productKey,
-    bytes32 info,
-    uint256[] calldata values
-  ) external;
+function updateProduct(UpdateProductArgs calldata args) external;
 ```
 </details>
 
@@ -174,7 +191,7 @@ Updates the cover contract.
  This feature is accessible only to the cover owner or protocol owner (governance).
 
 ```solidity
-function updateCover(bytes32 coverKey, bytes32 info) external nonpayable
+function updateCover(bytes32 coverKey, string info) external nonpayable
 ```
 
 **Arguments**
@@ -182,13 +199,13 @@ function updateCover(bytes32 coverKey, bytes32 info) external nonpayable
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| info | bytes32 | Enter a new IPFS URL to update | 
+| info | string | Enter a new IPFS hash to update | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function updateCover(bytes32 coverKey, bytes32 info) external;
+function updateCover(bytes32 coverKey, string calldata info) external;
 ```
 </details>
 
@@ -233,10 +250,15 @@ function updateCoverUsersWhitelist(bytes32 coverKey, bytes32 productKey, address
 
 ```javascript
 function updateCoverUsersWhitelist(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address[] calldata accounts,
+
     bool[] calldata statuses
+
   ) external;
 ```
 </details>
@@ -261,10 +283,15 @@ function disablePolicy(bytes32 coverKey, bytes32 productKey, bool status, string
 
 ```javascript
 function disablePolicy(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     bool status,
+
     string calldata reason
+
   ) external;
 ```
 </details>
@@ -310,9 +337,13 @@ returns(bool)
 
 ```javascript
 function checkIfWhitelistedUser(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address account
+
   ) external view returns (bool);
 ```
 </details>

@@ -1,6 +1,6 @@
 # Claims Processor Contract (Processor.sol)
 
-View Source: [contracts/core/claims/Processor.sol](../contracts/core/claims/Processor.sol)
+View Source: [\contracts\core\claims\Processor.sol](..\contracts\core\claims\Processor.sol)
 
 **↗ Extends: [IClaimsProcessor](IClaimsProcessor.md), [Recoverable](Recoverable.md)**
 
@@ -74,21 +74,31 @@ function claim(address cxToken, bytes32 coverKey, bytes32 productKey, uint256 in
 
 ```javascript
 function claim(
+
     address cxToken,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 amount
+
   ) external override nonReentrant {
+
     validate(cxToken, coverKey, productKey, incidentDate, amount);
 
     IERC20(cxToken).ensureTransferFrom(msg.sender, address(this), amount);
+
     ICxToken(cxToken).burn(amount);
 
     IVault vault = s.getVault(coverKey);
+
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
+
     uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
 
     require(payout > 0, "Invalid payout");
@@ -96,11 +106,15 @@ function claim(
     s.addClaimPayoutsInternal(coverKey, productKey, incidentDate, payout);
 
     // @suppress-zero-value-check Checked side effects. If the claim platform fee is zero
+
     // or a very small number, platform fee becomes zero due to data loss.
+
     uint256 platformFee = (payout * s.getPlatformCoverFeeRateInternal()) / ProtoUtilV1.MULTIPLIER;
 
     // @suppress-zero-value-check Checked side effects. If the claim reporter commission rate is zero
+
     // or a very small number, reporterFee fee becomes zero due to data loss.
+
     uint256 reporterFee = (platformFee * s.getClaimReporterCommissionInternal()) / ProtoUtilV1.MULTIPLIER;
 
     require(payout >= platformFee, "Invalid platform fee");
@@ -108,24 +122,35 @@ function claim(
     uint256 claimed = payout - platformFee;
 
     // @suppress-zero-value-check If the platform fee rate was 100%,
+
     // "claimed" can be zero
+
     if (claimed > 0) {
+
       vault.transferGovernance(coverKey, msg.sender, claimed);
+
     }
 
     if (reporterFee > 0) {
+
       vault.transferGovernance(coverKey, finalReporter, reporterFee);
+
     }
 
     if (platformFee - reporterFee > 0) {
+
       // @suppress-subtraction The following (or above) subtraction can cause
+
       // an underflow if `getClaimReporterCommissionInternal` is greater than 100%.
+
       vault.transferGovernance(coverKey, s.getTreasury(), platformFee - reporterFee);
+
     }
 
     s.updateStateAndLiquidity(coverKey);
 
     emit Claimed(cxToken, coverKey, productKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
+
   }
 ```
 </details>
@@ -158,21 +183,33 @@ If the given claim is valid and can result in a successful payout, returns true.
 
 ```javascript
 function validate(
+
     address cxToken,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 amount
+
   ) public view override returns (bool) {
+
     s.mustNotBePaused();
+
     s.mustBeValidClaim(msg.sender, coverKey, productKey, cxToken, incidentDate, amount);
+
     require(isBlacklisted(coverKey, productKey, incidentDate, msg.sender) == false, "Access denied");
+
     require(amount > 0, "Enter an amount");
 
     require(s.getClaimReporterCommissionInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid claim reporter fee");
+
     require(s.getPlatformCoverFeeRateInternal() <= ProtoUtilV1.MULTIPLIER, "Invalid platform fee rate");
 
     return true;
+
   }
 ```
 </details>
@@ -200,7 +237,9 @@ returns(uint256)
 
 ```javascript
 function getClaimExpiryDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     return s.getUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
+
   }
 ```
 </details>
@@ -227,7 +266,9 @@ function setClaimPeriod(bytes32 coverKey, uint256 value) external nonpayable non
 
 ```javascript
 ction setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     require(value > 0, "Please specify value");
@@ -235,16 +276,23 @@ ction setClaimPeriod(bytes32 coverKey, uint256 value) external override nonReent
     uint256 previous;
 
     if (coverKey > 0) {
+
       previous = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey);
+
       s.setUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey, value);
+
       emit ClaimPeriodSet(coverKey, previous, value);
+
       return;
+
     }
 
     previous = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
+
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, value);
 
     emit ClaimPeriodSet(coverKey, previous, value);
+
   }
 
 ```
@@ -277,25 +325,41 @@ function setBlacklist(bytes32 coverKey, bytes32 productKey, uint256 incidentDate
 
 ```javascript
 ction setBlacklist(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address[] calldata accounts,
+
     bool[] calldata statuses
+
   ) external override nonReentrant {
+
     // @suppress-zero-value-check Checked
+
     require(accounts.length > 0, "Invalid accounts");
+
     require(accounts.length == statuses.length, "Invalid args");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
 
     for (uint256 i = 0; i < accounts.length; i++) {
+
       s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
+
       emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
+
     }
+
   }
 
 ```
@@ -324,12 +388,19 @@ returns(bool)
 
 ```javascript
 ction isBlacklisted(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address account
+
   ) public view override returns (bool) {
+
     return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), account);
+
   }
 
 ```
@@ -354,7 +425,9 @@ returns(bytes32)
 
 ```javascript
 ction version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 
 ```
@@ -379,10 +452,12 @@ returns(bytes32)
 
 ```javascript
 ction getName() external pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_CLAIMS_PROCESSOR;
-  }
-}
 
+    return ProtoUtilV1.CNAME_CLAIMS_PROCESSOR;
+
+  }
+
+}
 ```
 </details>
 

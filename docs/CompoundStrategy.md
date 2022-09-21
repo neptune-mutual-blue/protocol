@@ -1,6 +1,6 @@
 # CompoundStrategy.sol
 
-View Source: [contracts/core/liquidity/strategies/CompoundStrategy.sol](../contracts/core/liquidity/strategies/CompoundStrategy.sol)
+View Source: [\contracts\core\liquidity\strategies\CompoundStrategy.sol](..\contracts\core\liquidity\strategies\CompoundStrategy.sol)
 
 **↗ Extends: [ILendingStrategy](ILendingStrategy.md), [Recoverable](Recoverable.md)**
 
@@ -21,7 +21,6 @@ bytes32 public constant NS_DEPOSITS;
 bytes32 public constant NS_WITHDRAWALS;
 address public depositCertificate;
 contract ICompoundERC20DelegatorLike public delegator;
-mapping(uint256 => bool) public supportedChains;
 
 ```
 
@@ -61,12 +60,19 @@ function (IStore _s, ICompoundERC20DelegatorLike _delegator, address _compoundWr
 
 ```javascript
 constructor(
+
     IStore _s,
+
     ICompoundERC20DelegatorLike _delegator,
+
     address _compoundWrappedStablecoin
+
   ) Recoverable(_s) {
+
     depositCertificate = _compoundWrappedStablecoin;
+
     delegator = _delegator;
+
   }
 ```
 </details>
@@ -88,7 +94,9 @@ returns(contract IERC20)
 
 ```javascript
 function getDepositAsset() public view override returns (IERC20) {
+
     return IERC20(s.getStablecoin());
+
   }
 ```
 </details>
@@ -110,7 +118,9 @@ returns(contract IERC20)
 
 ```javascript
 function getDepositCertificate() public view override returns (IERC20) {
+
     return IERC20(depositCertificate);
+
   }
 ```
 </details>
@@ -122,7 +132,7 @@ Gets info of this strategy by cover key
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
-returns(values uint256[])
+returns(info struct ILendingStrategy.LendingStrategyInfoType)
 ```
 
 **Arguments**
@@ -135,11 +145,12 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 coverKey) external view override returns (uint256[] memory values) {
-    values = new uint256[](2);
+function getInfo(bytes32 coverKey) external view override returns (LendingStrategyInfoType memory info) {
 
-    values[0] = s.getUintByKey(_getDepositsKey(coverKey));
-    values[1] = s.getUintByKey(_getWithdrawalsKey(coverKey));
+    info.deposits = s.getUintByKey(_getDepositsKey(coverKey));
+
+    info.withdrawals = s.getUintByKey(_getWithdrawalsKey(coverKey));
+
   }
 ```
 </details>
@@ -161,7 +172,9 @@ returns(uint256)
 
 ```javascript
 function _getCertificateBalance() private view returns (uint256) {
+
     return getDepositCertificate().balanceOf(address(this));
+
   }
 ```
 </details>
@@ -183,13 +196,17 @@ function _drain(IERC20 asset) private nonpayable
 
 ```javascript
 function _drain(IERC20 asset) private {
+
     uint256 amount = asset.balanceOf(address(this));
 
     if (amount > 0) {
+
       asset.ensureTransfer(s.getTreasury(), amount);
 
       emit Drained(asset, amount);
+
     }
+
   }
 ```
 </details>
@@ -216,26 +233,35 @@ returns(compoundWrappedStablecoinMinted uint256)
 
 ```javascript
 function deposit(bytes32 coverKey, uint256 amount) external override nonReentrant returns (uint256 compoundWrappedStablecoinMinted) {
+
     s.mustNotBePaused();
+
     s.senderMustBeProtocolMember();
 
     IVault vault = s.getVault(coverKey);
 
     if (amount == 0) {
+
       return 0;
+
     }
 
     IERC20 stablecoin = getDepositAsset();
+
     IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
     // This strategy should never have token balances
+
     _drain(compoundWrappedStablecoin);
+
     _drain(stablecoin);
 
     // Transfer DAI to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
+
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
+
     stablecoin.ensureApproval(address(delegator), amount);
 
     uint256 result = delegator.mint(amount);
@@ -243,21 +269,27 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
     require(result == 0, "Compound delegator mint failed");
 
     // Check how many compoundWrappedStablecoin we received
+
     compoundWrappedStablecoinMinted = _getCertificateBalance();
 
     require(compoundWrappedStablecoinMinted > 0, "Minting cUS$ failed");
 
     // Immediately send compoundWrappedStablecoin to the original vault stablecoin came from
+
     compoundWrappedStablecoin.ensureApproval(address(vault), compoundWrappedStablecoinMinted);
+
     vault.receiveFromStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinMinted);
 
     s.addUintByKey(_getDepositsKey(coverKey), amount);
 
     _counters[coverKey] += 1;
+
     _depositTotal[coverKey] += amount;
 
     emit LogDeposit(getName(), _counters[coverKey], amount, compoundWrappedStablecoinMinted, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
     emit Deposited(coverKey, address(vault), amount, compoundWrappedStablecoinMinted);
+
   }
 ```
 </details>
@@ -283,46 +315,63 @@ returns(stablecoinWithdrawn uint256)
 
 ```javascript
 function withdraw(bytes32 coverKey) external virtual override nonReentrant returns (uint256 stablecoinWithdrawn) {
+
     s.mustNotBePaused();
+
     s.senderMustBeProtocolMember();
+
     IVault vault = s.getVault(coverKey);
 
     IERC20 stablecoin = getDepositAsset();
+
     IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
     // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `DAI`
+
     _drain(compoundWrappedStablecoin);
+
     _drain(stablecoin);
 
     uint256 compoundWrappedStablecoinRedeemed = compoundWrappedStablecoin.balanceOf(address(vault));
 
     if (compoundWrappedStablecoinRedeemed == 0) {
+
       return 0;
+
     }
 
     // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem DAI
+
     vault.transferToStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinRedeemed);
+
     compoundWrappedStablecoin.ensureApproval(address(delegator), compoundWrappedStablecoinRedeemed);
+
     uint256 result = delegator.redeem(compoundWrappedStablecoinRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
     // Check how many DAI we received
+
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     require(stablecoinWithdrawn > 0, "Redeeming cUS$ failed");
 
     // Immediately send DAI to the vault compoundWrappedStablecoin came from
+
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
+
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
     s.addUintByKey(_getWithdrawalsKey(coverKey), stablecoinWithdrawn);
 
     _counters[coverKey] += 1;
+
     _withdrawalTotal[coverKey] += stablecoinWithdrawn;
 
     emit LogWithdrawal(getName(), _counters[coverKey], stablecoinWithdrawn, compoundWrappedStablecoinRedeemed, _depositTotal[coverKey], _withdrawalTotal[coverKey]);
+
     emit Withdrawn(coverKey, address(vault), stablecoinWithdrawn, compoundWrappedStablecoinRedeemed);
+
   }
 ```
 </details>
@@ -348,7 +397,9 @@ returns(bytes32)
 
 ```javascript
 function _getDepositsKey(bytes32 coverKey) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(_KEY, coverKey, NS_DEPOSITS));
+
   }
 ```
 </details>
@@ -374,7 +425,9 @@ returns(bytes32)
 
 ```javascript
 function _getWithdrawalsKey(bytes32 coverKey) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(_KEY, coverKey, NS_WITHDRAWALS));
+
   }
 ```
 </details>
@@ -396,7 +449,9 @@ returns(uint256)
 
 ```javascript
 function getWeight() external pure override returns (uint256) {
+
     return 10_000; // 100%
+
   }
 ```
 </details>
@@ -418,7 +473,9 @@ returns(bytes32)
 
 ```javascript
 function getKey() external pure override returns (bytes32) {
+
     return _KEY;
+
   }
 ```
 </details>
@@ -442,7 +499,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -466,7 +525,9 @@ returns(bytes32)
 
 ```javascript
 function getName() public pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_STRATEGY_COMPOUND;
+
   }
 ```
 </details>

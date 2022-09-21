@@ -1,6 +1,6 @@
 # ForceEther.sol
 
-View Source: [contracts/fakes/ForceEther.sol](../contracts/fakes/ForceEther.sol)
+View Source: [\contracts\fakes\ForceEther.sol](..\contracts\fakes\ForceEther.sol)
 
 **ForceEther**
 
@@ -31,7 +31,9 @@ function () external payable
 
 ```javascript
 receive() external payable {
+
     emit Received(msg.sender, msg.value);
+
   }
 ```
 </details>
@@ -53,7 +55,9 @@ function destruct(address payable to) external nonpayable
 
 ```javascript
 function destruct(address payable to) external {
+
     selfdestruct(to);
+
   }
 ```
 </details>

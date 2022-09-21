@@ -1,6 +1,6 @@
 # IGovernance.sol
 
-View Source: [contracts/interfaces/IGovernance.sol](../contracts/interfaces/IGovernance.sol)
+View Source: [\contracts\interfaces\IGovernance.sol](..\contracts\interfaces\IGovernance.sol)
 
 **↗ Extends: [IMember](IMember.md), [IReporter](IReporter.md), [IWitness](IWitness.md)**
 **↘ Derived Contracts: [Governance](Governance.md)**

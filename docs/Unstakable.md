@@ -1,6 +1,6 @@
 # Unstakable Contract (Unstakable.sol)
 
-View Source: [contracts/core/governance/resolution/Unstakable.sol](../contracts/core/governance/resolution/Unstakable.sol)
+View Source: [\contracts\core\governance\resolution\Unstakable.sol](..\contracts\core\governance\resolution\Unstakable.sol)
 
 **↗ Extends: [Resolvable](Resolvable.md), [IUnstakable](IUnstakable.md)**
 **↘ Derived Contracts: [Resolution](Resolution.md)**
@@ -39,28 +39,39 @@ function unstake(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 
 ```javascript
 function unstake(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
 
     // Incident date is reset (when cover is finalized) and
+
     // therefore shouldn't be validated otherwise "valid" reporters
+
     // will never be able to unstake
 
     // s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.validateUnstakeWithoutClaim(coverKey, productKey, incidentDate);
 
     (, , uint256 myStakeInWinningCamp) = s.getResolutionInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
+
     s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
     s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
+
     s.updateStateAndLiquidity(coverKey);
 
     emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, 0);
+
   }
 ```
 </details>
@@ -90,38 +101,53 @@ function unstakeWithClaim(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 ```javascript
 function unstakeWithClaim(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
+
     s.validateUnstakeWithClaim(coverKey, productKey, incidentDate);
 
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
+
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
+    UnstakeInfoType memory info = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
 
-    uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, info.myStakeInWinningCamp, info.myReward, info.toBurn, info.toReporter);
+
+    uint256 myStakeWithReward = info.myReward + info.myStakeInWinningCamp;
 
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
 
-    if (toReporter > 0) {
-      s.npmToken().ensureTransfer(finalReporter, toReporter);
+    if (info.toReporter > 0) {
+
+      s.npmToken().ensureTransfer(finalReporter, info.toReporter);
+
     }
 
-    if (toBurn > 0) {
-      s.npmToken().ensureTransfer(burner, toBurn);
+    if (info.toBurn > 0) {
+
+      s.npmToken().ensureTransfer(burner, info.toBurn);
+
     }
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, myReward);
-    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, myReward, toReporter);
-    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, myReward, toBurn);
+    emit Unstaken(coverKey, productKey, msg.sender, info.myStakeInWinningCamp, info.myReward);
+
+    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, info.myReward, info.toReporter);
+
+    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, info.myReward, info.toBurn);
+
   }
 ```
 </details>
@@ -133,7 +159,7 @@ Gets the unstake information for the supplied account
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
+returns(struct IUnstakable.UnstakeInfoType)
 ```
 
 **Arguments**
@@ -150,25 +176,19 @@ returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStake
 
 ```javascript
 function getUnstakeInfoFor(
+
     address account,
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
-  )
-    external
-    view
-    override
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    )
-  {
+
+  ) external view override returns (UnstakeInfoType memory) {
+
     return s.getUnstakeInfoForInternal(account, coverKey, productKey, incidentDate);
+
   }
 ```
 </details>

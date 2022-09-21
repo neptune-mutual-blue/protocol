@@ -1,6 +1,6 @@
 # Witness Contract (Witness.sol)
 
-View Source: [contracts/core/governance/Witness.sol](../contracts/core/governance/Witness.sol)
+View Source: [\contracts\core\governance\Witness.sol](..\contracts\core\governance\Witness.sol)
 
 **↗ Extends: [Recoverable](Recoverable.md), [IWitness](IWitness.md)**
 **↘ Derived Contracts: [Reporter](Reporter.md)**
@@ -69,15 +69,25 @@ function attest(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint
 
 ```javascript
 function attest(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 stake
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeReportingOrDisputed(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeDuringReportingPeriod(coverKey, productKey);
 
     require(stake > 0, "Enter a stake");
@@ -87,6 +97,7 @@ function attest(
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
+
   }
 ```
 </details>
@@ -117,15 +128,25 @@ function refute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint
 
 ```javascript
 function refute(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     uint256 stake
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustHaveDispute(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeDuringReportingPeriod(coverKey, productKey);
 
     require(stake > 0, "Enter a stake");
@@ -135,6 +156,7 @@ function refute(
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);
+
   }
 ```
 </details>
@@ -166,7 +188,9 @@ Returns the cover status as an integer.
 
 ```javascript
 function getStatus(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     return uint256(s.getProductStatusInternal(coverKey, productKey));
+
   }
 ```
 </details>
@@ -195,7 +219,9 @@ Returns the cover status as an bool.
 
 ```javascript
 function isCoverNormal(bytes32 coverKey) external view returns (bool) {
+
     return s.isCoverNormalInternal(coverKey);
+
   }
 ```
 </details>
@@ -227,11 +253,17 @@ Returns an array of integers --> [yes, no]
 
 ```javascript
 function getStakes(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external view override returns (uint256, uint256) {
+
     return s.getStakesInternal(coverKey, productKey, incidentDate);
+
   }
 ```
 </details>
@@ -264,12 +296,19 @@ Returns an array of integers --> [yes, no]
 
 ```javascript
 function getStakesOf(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     address account
+
   ) external view override returns (uint256, uint256) {
+
     return s.getStakesOfInternal(account, coverKey, productKey, incidentDate);
+
   }
 ```
 </details>

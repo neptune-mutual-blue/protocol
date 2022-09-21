@@ -1,6 +1,6 @@
 # NTransferUtilV2Intermediate.sol
 
-View Source: [contracts/fakes/NTransferUtilV2Intermediate.sol](../contracts/fakes/NTransferUtilV2Intermediate.sol)
+View Source: [\contracts\fakes\NTransferUtilV2Intermediate.sol](..\contracts\fakes\NTransferUtilV2Intermediate.sol)
 
 **NTransferUtilV2Intermediate**
 
@@ -28,11 +28,17 @@ function iTransfer(IERC20 token, address recipient, uint256 amount) external non
 
 ```javascript
 function iTransfer(
+
     IERC20 token,
+
     address recipient,
+
     uint256 amount
+
   ) external {
+
     token.ensureTransfer(recipient, amount);
+
   }
 ```
 </details>
@@ -57,12 +63,19 @@ function iTransferFrom(IERC20 token, address sender, address recipient, uint256 
 
 ```javascript
 function iTransferFrom(
+
     IERC20 token,
+
     address sender,
+
     address recipient,
+
     uint256 amount
+
   ) external {
+
     token.ensureTransferFrom(sender, recipient, amount);
+
   }
 ```
 </details>

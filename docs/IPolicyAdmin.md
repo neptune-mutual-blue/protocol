@@ -1,6 +1,6 @@
 # IPolicyAdmin.sol
 
-View Source: [contracts/interfaces/IPolicyAdmin.sol](../contracts/interfaces/IPolicyAdmin.sol)
+View Source: [\contracts\interfaces\IPolicyAdmin.sol](..\contracts\interfaces\IPolicyAdmin.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [PolicyAdmin](PolicyAdmin.md)**
@@ -17,34 +17,10 @@ event CoverageLagSet(bytes32 indexed coverKey, uint256  window);
 
 ## Functions
 
-- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
 - [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
 - [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
 - [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
 - [getCoverageLag(bytes32 coverKey)](#getcoveragelag)
-
-### setPolicyRates
-
-Sets policy rates. This feature is only accessible by owner or protocol owner.
-
-```solidity
-function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate fallback | 
-| ceiling | uint256 | The highest cover fee rate fallback | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external;
-```
-</details>
 
 ### setPolicyRatesByKey
 
@@ -67,9 +43,13 @@ function setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling) e
 
 ```javascript
 function setPolicyRatesByKey(
+
     bytes32 coverKey,
+
     uint256 floor,
+
     uint256 ceiling
+
   ) external;
 ```
 </details>

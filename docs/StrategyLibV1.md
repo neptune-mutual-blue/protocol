@@ -1,6 +1,6 @@
 # StrategyLibV1.sol
 
-View Source: [contracts/libraries/StrategyLibV1.sol](../contracts/libraries/StrategyLibV1.sol)
+View Source: [\contracts\libraries\StrategyLibV1.sol](..\contracts\libraries\StrategyLibV1.sol)
 
 **StrategyLibV1**
 
@@ -74,7 +74,9 @@ returns(bytes32)
 
 ```javascript
 function _getIsActiveStrategyKey(address strategyAddress) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, strategyAddress));
+
   }
 ```
 </details>
@@ -100,7 +102,9 @@ returns(bytes32)
 
 ```javascript
 function _getIsDisabledStrategyKey(address strategyAddress) private pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, strategyAddress));
+
   }
 ```
 </details>
@@ -125,9 +129,11 @@ function disableStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function disableStrategyInternal(IStore s, address toFind) external {
+
     _disableStrategy(s, toFind);
 
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED, toFind);
+
   }
 ```
 </details>
@@ -152,7 +158,9 @@ function deleteStrategyInternal(IStore s, address toFind) external nonpayable
 
 ```javascript
 function deleteStrategyInternal(IStore s, address toFind) external {
+
     _deleteStrategy(s, toFind);
+
   }
 ```
 </details>
@@ -175,10 +183,15 @@ function addStrategiesInternal(IStore s, address[] strategies) external nonpayab
 
 ```javascript
 function addStrategiesInternal(IStore s, address[] calldata strategies) external {
+
     for (uint256 i = 0; i < strategies.length; i++) {
+
       address strategy = strategies[i];
+
       _addStrategy(s, strategy);
+
     }
+
   }
 ```
 </details>
@@ -202,16 +215,23 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 
 ```javascript
 function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
+
     lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
+
     withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
 
     if (lendingPeriod == 0) {
+
       lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
+
       withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
+
     }
 
     lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
+
     withdrawalWindow = withdrawalWindow == 0 ? DEFAULT_WITHDRAWAL_WINDOW : withdrawalWindow;
+
   }
 ```
 </details>
@@ -236,15 +256,23 @@ function setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendi
 
 ```javascript
 function setRiskPoolingPeriodsInternal(
+
     IStore s,
+
     bytes32 coverKey,
+
     uint256 lendingPeriod,
+
     uint256 withdrawalWindow
+
   ) external {
+
     s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
+
     s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
 
     emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
+
   }
 ```
 </details>
@@ -270,11 +298,15 @@ returns(bytes32)
 
 ```javascript
 function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
+
     if (coverKey > 0) {
+
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
+
     }
 
     return ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD;
+
   }
 ```
 </details>
@@ -297,7 +329,9 @@ returns(uint256)
 
 ```javascript
 function getMaxLendingRatioInternal(IStore s) external view returns (uint256) {
+
     return s.getUintByKey(getMaxLendingRatioKey());
+
   }
 ```
 </details>
@@ -320,9 +354,11 @@ function setMaxLendingRatioInternal(IStore s, uint256 ratio) external nonpayable
 
 ```javascript
 function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
+
     s.setUintByKey(getMaxLendingRatioKey(), ratio);
 
     emit MaxLendingRatioSet(ratio);
+
   }
 ```
 </details>
@@ -346,7 +382,9 @@ returns(bytes32)
 
 ```javascript
 function getMaxLendingRatioKey() public pure returns (bytes32) {
+
     return ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
+
   }
 ```
 </details>
@@ -372,11 +410,15 @@ returns(bytes32)
 
 ```javascript
 function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {
+
     if (coverKey > 0) {
+
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
+
     }
 
     return ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW;
+
   }
 ```
 </details>
@@ -399,12 +441,17 @@ function _addStrategy(IStore s, address deployedOn) private nonpayable
 
 ```javascript
 function _addStrategy(IStore s, address deployedOn) private {
+
     ILendingStrategy strategy = ILendingStrategy(deployedOn);
+
     require(strategy.getWeight() <= ProtoUtilV1.MULTIPLIER, "Weight too much");
 
     s.setBoolByKey(_getIsActiveStrategyKey(deployedOn), true);
+
     s.setAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE, deployedOn);
+
     emit StrategyAdded(deployedOn);
+
   }
 ```
 </details>
@@ -427,14 +474,19 @@ function _disableStrategy(IStore s, address toFind) private nonpayable
 
 ```javascript
 function _disableStrategy(IStore s, address toFind) private {
+
     bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE;
 
     uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+
     require(pos > 0, "Invalid strategy");
 
     s.deleteAddressArrayItem(key, toFind);
+
     s.setBoolByKey(_getIsActiveStrategyKey(toFind), false);
+
     s.setBoolByKey(_getIsDisabledStrategyKey(toFind), true);
+
   }
 ```
 </details>
@@ -457,13 +509,17 @@ function _deleteStrategy(IStore s, address toFind) private nonpayable
 
 ```javascript
 function _deleteStrategy(IStore s, address toFind) private {
+
     bytes32 key = ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED;
 
     uint256 pos = s.getAddressArrayItemPosition(key, toFind);
+
     require(pos > 0, "Invalid strategy");
 
     s.deleteAddressArrayItem(key, toFind);
+
     s.setBoolByKey(_getIsDisabledStrategyKey(toFind), false);
+
   }
 ```
 </details>
@@ -486,7 +542,9 @@ returns(strategies address[])
 
 ```javascript
 function getDisabledStrategiesInternal(IStore s) external view returns (address[] memory strategies) {
+
     return s.getAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_DISABLED);
+
   }
 ```
 </details>
@@ -509,7 +567,9 @@ returns(strategies address[])
 
 ```javascript
 function getActiveStrategiesInternal(IStore s) external view returns (address[] memory strategies) {
+
     return s.getAddressArrayByKey(ProtoUtilV1.NS_LENDING_STRATEGY_ACTIVE);
+
   }
 ```
 </details>
@@ -536,7 +596,9 @@ returns(bytes32)
 
 ```javascript
 function getStrategyOutKey(bytes32 coverKey, address token) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
+
   }
 ```
 </details>
@@ -564,11 +626,17 @@ returns(bytes32)
 
 ```javascript
 function getSpecificStrategyOutKey(
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     address token
+
   ) public pure returns (bytes32) {
+
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, strategyName, token));
+
   }
 ```
 </details>
@@ -593,12 +661,19 @@ returns(uint256)
 
 ```javascript
 function getAmountInStrategies(
+
     IStore s,
+
     bytes32 coverKey,
+
     address token
+
   ) public view returns (uint256) {
+
     bytes32 k = getStrategyOutKey(coverKey, token);
+
     return s.getUintByKey(k);
+
   }
 ```
 </details>
@@ -624,13 +699,21 @@ returns(uint256)
 
 ```javascript
 function getAmountInStrategy(
+
     IStore s,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     address token
+
   ) public view returns (uint256) {
+
     bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+
     return s.getUintByKey(k);
+
   }
 ```
 </details>
@@ -656,18 +739,29 @@ function preTransferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey,
 
 ```javascript
 function preTransferToStrategyInternal(
+
     IStore s,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external {
-    if (s.getStablecoin() == address(token) == false) {
+
+    if (s.getStablecoin() != address(token)) {
+
       return;
+
     }
 
     _addToStrategyOut(s, coverKey, address(token), amount);
+
     _addToSpecificStrategyOut(s, coverKey, strategyName, address(token), amount);
+
   }
 ```
 </details>
@@ -694,25 +788,37 @@ returns(income uint256, loss uint256)
 
 ```javascript
 function postReceiveFromStrategyInternal(
+
     IStore s,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 received
+
   ) external returns (uint256 income, uint256 loss) {
-    if (s.getStablecoin() == address(token) == false) {
+
+    if (s.getStablecoin() != address(token)) {
+
       return (income, loss);
+
     }
 
     uint256 amountInThisStrategy = getAmountInStrategy(s, coverKey, strategyName, address(token));
 
     income = received > amountInThisStrategy ? received - amountInThisStrategy : 0;
+
     loss = received < amountInThisStrategy ? amountInThisStrategy - received : 0;
 
     _reduceStrategyOut(s, coverKey, address(token), amountInThisStrategy);
+
     _clearSpecificStrategyOut(s, coverKey, strategyName, address(token));
 
     _logIncomes(s, coverKey, strategyName, income, loss);
+
   }
 ```
 </details>
@@ -737,13 +843,21 @@ function _addToStrategyOut(IStore s, bytes32 coverKey, address token, uint256 am
 
 ```javascript
 function _addToStrategyOut(
+
     IStore s,
+
     bytes32 coverKey,
+
     address token,
+
     uint256 amountToAdd
+
   ) private {
+
     bytes32 k = getStrategyOutKey(coverKey, token);
+
     s.addUintByKey(k, amountToAdd);
+
   }
 ```
 </details>
@@ -768,13 +882,21 @@ function _reduceStrategyOut(IStore s, bytes32 coverKey, address token, uint256 a
 
 ```javascript
 function _reduceStrategyOut(
+
     IStore s,
+
     bytes32 coverKey,
+
     address token,
+
     uint256 amount
+
   ) private {
+
     bytes32 k = getStrategyOutKey(coverKey, token);
+
     s.subtractUintByKey(k, amount);
+
   }
 ```
 </details>
@@ -800,14 +922,23 @@ function _addToSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyN
 
 ```javascript
 function _addToSpecificStrategyOut(
+
     IStore s,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     address token,
+
     uint256 amountToAdd
+
   ) private {
+
     bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+
     s.addUintByKey(k, amountToAdd);
+
   }
 ```
 </details>
@@ -832,13 +963,21 @@ function _clearSpecificStrategyOut(IStore s, bytes32 coverKey, bytes32 strategyN
 
 ```javascript
 function _clearSpecificStrategyOut(
+
     IStore s,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     address token
+
   ) private {
+
     bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+
     s.deleteUintByKey(k);
+
   }
 ```
 </details>
@@ -864,29 +1003,43 @@ function _logIncomes(IStore s, bytes32 coverKey, bytes32 strategyName, uint256 i
 
 ```javascript
 function _logIncomes(
+
     IStore s,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 income,
+
     uint256 loss
+
   ) private {
+
     // Overall Income
+
     s.addUintByKey(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, income);
 
     // By Cover
+
     s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, coverKey)), income);
 
     // By Cover on This Strategy
+
     s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_INCOMES, coverKey, strategyName)), income);
 
     // Overall Loss
+
     s.addUintByKey(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, loss);
 
     // By Cover
+
     s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, coverKey)), loss);
 
     // By Cover on This Strategy
+
     s.addUintByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_LENDING_LOSSES, coverKey, strategyName)), loss);
+
   }
 ```
 </details>
@@ -910,12 +1063,15 @@ returns(uint256)
 
 ```javascript
 function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
+
     address stablecoin = s.getStablecoin();
 
     uint256 balance = IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey));
+
     uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
 
     return balance + inStrategies;
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # ICoverStake.sol
 
-View Source: [contracts/interfaces/ICoverStake.sol](../contracts/interfaces/ICoverStake.sol)
+View Source: [\contracts\interfaces\ICoverStake.sol](..\contracts\interfaces\ICoverStake.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [CoverStake](CoverStake.md)**
@@ -43,10 +43,15 @@ function increaseStake(bytes32 coverKey, address account, uint256 amount, uint25
 
 ```javascript
 function increaseStake(
+
     bytes32 coverKey,
+
     address account,
+
     uint256 amount,
+
     uint256 fee
+
   ) external;
 ```
 </details>

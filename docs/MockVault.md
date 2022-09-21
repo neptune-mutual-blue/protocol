@@ -1,6 +1,6 @@
 # MockVault.sol
 
-View Source: [contracts/mock/claims-processor/MockVault.sol](../contracts/mock/claims-processor/MockVault.sol)
+View Source: [\contracts\mock\claims-processor\MockVault.sol](..\contracts\mock\claims-processor\MockVault.sol)
 
 **↗ Extends: [ERC20](ERC20.md)**
 
@@ -27,7 +27,9 @@ function () public nonpayable ERC20
 
 ```javascript
 constructor() ERC20("USD Coin", "USDC") {
+
     super._mint(msg.sender, 100_000 ether);
+
   }
 ```
 </details>
@@ -51,13 +53,21 @@ function transferGovernance(bytes32 , address sender, uint256 amount) external n
 
 ```javascript
 function transferGovernance(
+
     bytes32,
+
     address sender,
+
     uint256 amount
+
   ) external {
+
     if (sender != address(0)) {
+
       super._mint(sender, amount);
+
     }
+
   }
 ```
 </details>

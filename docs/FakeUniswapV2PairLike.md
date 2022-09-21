@@ -1,6 +1,6 @@
 # FakeUniswapV2PairLike.sol
 
-View Source: [contracts/fakes/FakeUniswapV2PairLike.sol](../contracts/fakes/FakeUniswapV2PairLike.sol)
+View Source: [\contracts\fakes\FakeUniswapV2PairLike.sol](..\contracts\fakes\FakeUniswapV2PairLike.sol)
 
 **↗ Extends: [IUniswapV2PairLike](IUniswapV2PairLike.md)**
 
@@ -39,8 +39,11 @@ function (address _token0, address _token1) public nonpayable
 
 ```javascript
 constructor(address _token0, address _token1) {
+
     token0 = _token0;
+
     token1 = _token1;
+
   }
 ```
 </details>
@@ -62,7 +65,9 @@ returns(uint256)
 
 ```javascript
 function totalSupply() external pure override returns (uint256) {
+
     return 100 ether;
+
   }
 ```
 </details>
@@ -84,18 +89,31 @@ returns(reserve0 uint112, reserve1 uint112, blockTimestampLast uint32)
 
 ```javascript
 function getReserves()
+
     external
+
     view
+
     override
+
     returns (
+
       uint112 reserve0,
+
       uint112 reserve1,
+
       uint32 blockTimestampLast
+
     )
+
   {
+
     reserve0 = 200 ether;
+
     reserve1 = 100 ether;
+
     blockTimestampLast = uint32(block.timestamp); // solhint-disable-line
+
   }
 ```
 </details>

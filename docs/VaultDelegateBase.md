@@ -1,6 +1,6 @@
 # Vault Delegate Base Contract (VaultDelegateBase.sol)
 
-View Source: [contracts/core/delegates/VaultDelegateBase.sol](../contracts/core/delegates/VaultDelegateBase.sol)
+View Source: [\contracts\core\delegates\VaultDelegateBase.sol](..\contracts\core\delegates\VaultDelegateBase.sol)
 
 **↗ Extends: [IVaultDelegate](IVaultDelegate.md), [Recoverable](Recoverable.md)**
 **↘ Derived Contracts: [VaultDelegateWithFlashLoan](VaultDelegateWithFlashLoan.md)**
@@ -80,19 +80,31 @@ stablecoin Returns address of the protocol stablecoin if the hook validation pas
 
 ```javascript
 function preTransferGovernance(
+
     address caller,
+
     bytes32 coverKey,
+
     address, /*to*/
+
     uint256 /*amount*/
+
   ) external override nonReentrant returns (address stablecoin) {
+
     // @suppress-zero-value-check This function does not transfer any values
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeClaimsProcessorContract(caller);
 
     stablecoin = s.getStablecoin();
+
   }
 ```
 </details>
@@ -120,16 +132,27 @@ function postTransferGovernance(address caller, bytes32 coverKey, address , uint
 
 ```javascript
 function postTransferGovernance(
+
     address caller,
+
     bytes32 coverKey,
+
     address, /*to*/
+
     uint256 /*amount*/
+
   ) external view override {
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeClaimsProcessorContract(caller);
+
   }
 ```
 </details>
@@ -157,20 +180,33 @@ function preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, b
 
 ```javascript
 function preTransferToStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external override nonReentrant {
+
     // @suppress-zero-value-check Checked
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
     s.preTransferToStrategyInternal(token, coverKey, strategyName, amount);
+
   }
 ```
 </details>
@@ -199,17 +235,29 @@ function postTransferToStrategy(address caller, IERC20 , bytes32 coverKey, bytes
 
 ```javascript
 function postTransferToStrategy(
+
     address caller,
+
     IERC20, /*token*/
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 /*amount*/
+
   ) external view override {
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
+
   }
 ```
 </details>
@@ -237,18 +285,31 @@ function preReceiveFromStrategy(address caller, IERC20 , bytes32 coverKey, bytes
 
 ```javascript
 function preReceiveFromStrategy(
+
     address caller,
+
     IERC20, /*token*/
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 /*amount*/
+
   ) external override nonReentrant {
+
     // @suppress-zero-value-check This function does not transfer any tokens
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
+
   }
 ```
 </details>
@@ -278,20 +339,33 @@ returns(income uint256, loss uint256)
 
 ```javascript
 function postReceiveFromStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external override returns (uint256 income, uint256 loss) {
+
     // @suppress-zero-value-check This call does not perform any transfers
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(caller);
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.callerMustBeSpecificStrategyContract(caller, strategyName);
 
     (income, loss) = s.postReceiveFromStrategyInternal(token, coverKey, strategyName, amount);
+
   }
 ```
 </details>
@@ -319,22 +393,35 @@ returns(podsToMint uint256, previousNpmStake uint256)
 
 ```javascript
 function preAddLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStakeToAdd
+
   ) external override nonReentrant returns (uint256 podsToMint, uint256 previousNpmStake) {
+
     // @suppress-zero-value-check This call does not transfer any tokens
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
-    GovernanceUtilV1.mustNotExceedNpmThreshold(amount);
+
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToAdd);
 
     address pod = msg.sender;
+
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
+
   }
 ```
 </details>
@@ -362,17 +449,29 @@ function postAddLiquidity(address , bytes32 coverKey, uint256 , uint256 ) extern
 
 ```javascript
 function postAddLiquidity(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     uint256, /*amount*/
+
     uint256 /*npmStakeToAdd*/
+
   ) external override {
+
     // @suppress-zero-value-check This function does not transfer any tokens
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.mustEnsureAllProductsAreNormal(coverKey);
+
     s.updateStateAndLiquidity(coverKey);
+
   }
 ```
 </details>
@@ -398,11 +497,15 @@ function accrueInterestImplementation(address caller, bytes32 coverKey) external
 
 ```javascript
 function accrueInterestImplementation(address caller, bytes32 coverKey) external override {
+
     s.mustNotBePaused();
+
     s.senderMustBeVaultContract(coverKey);
+
     AccessControlLibV1.callerMustBeLiquidityManager(s, caller);
 
     s.accrueInterestInternal(coverKey);
+
   }
 ```
 </details>
@@ -431,24 +534,41 @@ returns(stablecoin address, stablecoinToRelease uint256)
 
 ```javascript
 function preRemoveLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 podsToRedeem,
+
     uint256 npmStakeToRemove,
+
     bool exit
+
   ) external override nonReentrant returns (address stablecoin, uint256 stablecoinToRelease) {
+
     // @suppress-zero-value-check This call does not transfer any tokens
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.mustMaintainBlockHeightOffset(coverKey);
+
     s.mustEnsureAllProductsAreNormal(coverKey);
+
     s.mustBeDuringWithdrawalPeriod(coverKey);
+
     s.mustHaveNoBalanceInStrategies(coverKey, stablecoin);
+
     s.mustBeAccrued(coverKey);
 
     address pod = msg.sender; // The sender is vault contract
+
     return s.preRemoveLiquidityInternal(coverKey, pod, caller, podsToRedeem, npmStakeToRemove, exit);
+
   }
 ```
 </details>
@@ -477,17 +597,29 @@ function postRemoveLiquidity(address , bytes32 coverKey, uint256 , uint256 , boo
 
 ```javascript
 function postRemoveLiquidity(
+
     address, /*caller*/
+
     bytes32 coverKey,
+
     uint256, /*podsToRedeem*/
+
     uint256, /*npmStakeToRemove*/
+
     bool /*exit*/
+
   ) external override {
+
     // @suppress-zero-value-check The uint values are not used and therefore not checked
+
     s.mustNotBePaused();
+
     s.mustBeProtocolMember(msg.sender);
+
     s.senderMustBeVaultContract(coverKey);
+
     s.updateStateAndLiquidity(coverKey);
+
   }
 ```
 </details>
@@ -518,11 +650,13 @@ Returns the units of PODs to be minted if this stablecoin liquidity was supplied
 
 ```javascript
 function calculatePodsImplementation(bytes32 coverKey, uint256 stablecoinIn) external view override returns (uint256) {
+
     s.senderMustBeVaultContract(coverKey);
 
     address pod = msg.sender;
 
     return s.calculatePodsInternal(coverKey, pod, stablecoinIn);
+
   }
 ```
 </details>
@@ -553,9 +687,13 @@ Returns the units of stablecoins to redeem if the specified PODs were burned.
 
 ```javascript
 function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) external view override returns (uint256) {
+
     s.senderMustBeVaultContract(coverKey);
+
     address pod = msg.sender;
+
     return s.calculateLiquidityInternal(coverKey, pod, podsToBurn);
+
   }
 ```
 </details>
@@ -582,8 +720,11 @@ returns(uint256)
 
 ```javascript
 function getStablecoinBalanceOfImplementation(bytes32 coverKey) external view override returns (uint256) {
+
     s.senderMustBeVaultContract(coverKey);
+
     return s.getStablecoinOwnedByVaultInternal(coverKey);
+
   }
 ```
 </details>
@@ -595,7 +736,7 @@ Gets information of a given vault by the cover key
 
 ```solidity
 function getInfoImplementation(bytes32 coverKey, address you) external view
-returns(values uint256[])
+returns(struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -609,10 +750,14 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
+function getInfoImplementation(bytes32 coverKey, address you) external view override returns (IVault.VaultInfoType memory) {
+
     s.senderMustBeVaultContract(coverKey);
+
     address pod = msg.sender;
+
     return s.getInfoInternal(coverKey, pod, you);
+
   }
 ```
 </details>
@@ -636,7 +781,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -660,7 +807,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_VAULT_DELEGATE;
+
   }
 ```
 </details>

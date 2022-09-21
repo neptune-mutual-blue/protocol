@@ -1,6 +1,6 @@
 # Delayable.sol
 
-View Source: [contracts/core/token/Delayable.sol](../contracts/core/token/Delayable.sol)
+View Source: [\contracts\core\token\Delayable.sol](..\contracts\core\token\Delayable.sol)
 
 **↗ Extends: [TimelockController](TimelockController.md), [WithRecovery](WithRecovery.md)**
 
@@ -29,9 +29,13 @@ function (uint256 minDelay, address[] proposers, address[] executors) public non
 
 ```javascript
 constructor(
+
     uint256 minDelay,
+
     address[] memory proposers,
+
     address[] memory executors
+
   ) TimelockController(minDelay, proposers, executors) {}
 ```
 </details>

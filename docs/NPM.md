@@ -1,6 +1,6 @@
 # NPM.sol
 
-View Source: [contracts/core/token/NPM.sol](../contracts/core/token/NPM.sol)
+View Source: [\contracts\core\token\NPM.sol](..\contracts\core\token\NPM.sol)
 
 **↗ Extends: [WithPausability](WithPausability.md), [WithRecovery](WithRecovery.md), [ERC20](ERC20.md)**
 **↘ Derived Contracts: [POT](POT.md)**
@@ -50,15 +50,23 @@ function (address timelockOrOwner, string tokenName, string tokenSymbol) public 
 
 ```javascript
 constructor(
+
     address timelockOrOwner,
+
     string memory tokenName,
+
     string memory tokenSymbol
+
   ) Ownable() Pausable() ERC20(tokenName, tokenSymbol) {
+
     require(timelockOrOwner != address(0), "Invalid owner");
+
     require(bytes(tokenName).length > 0, "Invalid token name");
+
     require(bytes(tokenSymbol).length > 0, "Invalid token symbol");
 
     super._transferOwnership(timelockOrOwner);
+
   }
 ```
 </details>
@@ -82,9 +90,13 @@ function _beforeTokenTransfer(address , address , uint256 ) internal view whenNo
 
 ```javascript
 function _beforeTokenTransfer(
+
     address,
+
     address,
+
     uint256
+
   ) internal view virtual override whenNotPaused {}
 ```
 </details>
@@ -108,19 +120,29 @@ function issueMany(bytes32 key, address[] receivers, uint256[] amounts) external
 
 ```javascript
 function issueMany(
+
     bytes32 key,
+
     address[] calldata receivers,
+
     uint256[] calldata amounts
+
   ) external onlyOwner whenNotPaused {
+
     require(receivers.length > 0, "No receiver");
+
     require(receivers.length == amounts.length, "Invalid args");
 
     _issued += _sumOf(amounts);
+
     require(_issued <= _CAP, "Cap exceeded");
 
     for (uint256 i = 0; i < receivers.length; i++) {
+
       _issue(key, receivers[i], amounts[i]);
+
     }
+
   }
 ```
 </details>
@@ -143,12 +165,17 @@ function transferMany(address[] receivers, uint256[] amounts) external nonpayabl
 
 ```javascript
 function transferMany(address[] calldata receivers, uint256[] calldata amounts) external onlyOwner whenNotPaused {
+
     require(receivers.length > 0, "No receiver");
+
     require(receivers.length == amounts.length, "Invalid args");
 
     for (uint256 i = 0; i < receivers.length; i++) {
+
       super.transfer(receivers[i], amounts[i]);
+
     }
+
   }
 ```
 </details>
@@ -172,14 +199,21 @@ function _issue(bytes32 key, address mintTo, uint256 amount) private nonpayable
 
 ```javascript
 function _issue(
+
     bytes32 key,
+
     address mintTo,
+
     uint256 amount
+
   ) private {
+
     require(amount > 0, "Invalid amount");
 
     super._mint(mintTo, amount);
+
     emit Minted(key, mintTo, amount);
+
   }
 ```
 </details>
@@ -202,9 +236,13 @@ returns(total uint256)
 
 ```javascript
 function _sumOf(uint256[] calldata amounts) private pure returns (uint256 total) {
+
     for (uint256 i = 0; i < amounts.length; i++) {
+
       total += amounts[i];
+
     }
+
   }
 ```
 </details>

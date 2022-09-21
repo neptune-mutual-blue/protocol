@@ -1,6 +1,6 @@
 # StakingPoolReward.sol
 
-View Source: [contracts/pool/Staking/StakingPoolReward.sol](../contracts/pool/Staking/StakingPoolReward.sol)
+View Source: [\contracts\pool\Staking\StakingPoolReward.sol](..\contracts\pool\Staking\StakingPoolReward.sol)
 
 **↗ Extends: [StakingPoolBase](StakingPoolBase.md)**
 **↘ Derived Contracts: [StakingPoolInfo](StakingPoolInfo.md)**
@@ -52,7 +52,9 @@ returns(uint256)
 
 ```javascript
 function calculateRewards(bytes32 key, address account) external view override returns (uint256) {
+
     return s.calculateRewardsInternal(key, account);
+
   }
 ```
 </details>
@@ -77,14 +79,19 @@ function withdrawRewards(bytes32 key) external nonpayable nonReentrant
 
 ```javascript
 function withdrawRewards(bytes32 key) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.ensureValidStakingPool(key);
 
     (address rewardToken, uint256 rewards, uint256 platformFee) = s.withdrawRewardsInternal(key, msg.sender);
 
     if (rewards > 0) {
+
       emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, platformFee);
+
     }
+
   }
 ```
 </details>

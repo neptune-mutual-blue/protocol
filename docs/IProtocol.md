@@ -1,6 +1,6 @@
 # IProtocol.sol
 
-View Source: [contracts/interfaces/IProtocol.sol](../contracts/interfaces/IProtocol.sol)
+View Source: [\contracts\interfaces\IProtocol.sol](..\contracts\interfaces\IProtocol.sol)
 
 **↗ Extends: [IMember](IMember.md), [IAccessControl](IAccessControl.md)**
 **↘ Derived Contracts: [Protocol](Protocol.md)**
@@ -17,21 +17,47 @@ struct AccountWithRoles {
 }
 ```
 
+### InitializeArgs
+
+```js
+struct InitializeArgs {
+ address burner,
+ address uniswapV2RouterLike,
+ address uniswapV2FactoryLike,
+ address npm,
+ address treasury,
+ address priceOracle,
+ uint256 coverCreationFee,
+ uint256 minCoverCreationStake,
+ uint256 firstReportingStake,
+ uint256 claimPeriod,
+ uint256 reportingBurnRate,
+ uint256 governanceReporterCommission,
+ uint256 claimPlatformFee,
+ uint256 claimReporterCommission,
+ uint256 flashLoanFee,
+ uint256 flashLoanFeeProtocol,
+ uint256 resolutionCoolDownPeriod,
+ uint256 stateUpdateInterval,
+ uint256 maxLendingRatio
+}
+```
+
 **Events**
 
 ```js
+event Initialized(struct IProtocol.InitializeArgs  args);
 event ContractAdded(bytes32 indexed namespace, bytes32 indexed key, address indexed contractAddress);
 event ContractUpgraded(bytes32 indexed namespace, bytes32 indexed key, address  previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
-event Initialized(address[]  addresses, uint256[]  values);
 ```
 
 ## Functions
 
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
 - [addContractWithKey(bytes32 namespace, bytes32 coverKey, address contractAddress)](#addcontractwithkey)
-- [initialize(address[] addresses, uint256[] values)](#initialize)
+- [initialize(struct IProtocol.InitializeArgs args)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [upgradeContractWithKey(bytes32 namespace, bytes32 coverKey, address previous, address current)](#upgradecontractwithkey)
 - [addMember(address member)](#addmember)
@@ -78,9 +104,13 @@ function addContractWithKey(bytes32 namespace, bytes32 coverKey, address contrac
 
 ```javascript
 function addContractWithKey(
+
     bytes32 namespace,
+
     bytes32 coverKey,
+
     address contractAddress
+
   ) external;
 ```
 </details>
@@ -88,21 +118,20 @@ function addContractWithKey(
 ### initialize
 
 ```solidity
-function initialize(address[] addresses, uint256[] values) external nonpayable
+function initialize(struct IProtocol.InitializeArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] |  | 
-| values | uint256[] |  | 
+| args | struct IProtocol.InitializeArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address[] calldata addresses, uint256[] calldata values) external;
+function initialize(InitializeArgs calldata args) external;
 ```
 </details>
 
@@ -125,9 +154,13 @@ function upgradeContract(bytes32 namespace, address previous, address current) e
 
 ```javascript
 function upgradeContract(
+
     bytes32 namespace,
+
     address previous,
+
     address current
+
   ) external;
 ```
 </details>
@@ -152,10 +185,15 @@ function upgradeContractWithKey(bytes32 namespace, bytes32 coverKey, address pre
 
 ```javascript
 function upgradeContractWithKey(
+
     bytes32 namespace,
+
     bytes32 coverKey,
+
     address previous,
+
     address current
+
   ) external;
 ```
 </details>

@@ -1,6 +1,6 @@
 # ICompoundERC20DelegatorLike.sol
 
-View Source: [contracts/dependencies/compound/ICompoundERC20DelegatorLike.sol](../contracts/dependencies/compound/ICompoundERC20DelegatorLike.sol)
+View Source: [\contracts\dependencies\compound\ICompoundERC20DelegatorLike.sol](..\contracts\dependencies\compound\ICompoundERC20DelegatorLike.sol)
 
 **↘ Derived Contracts: [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md), [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)**
 

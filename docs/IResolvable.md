@@ -1,6 +1,6 @@
 # IResolvable.sol
 
-View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IResolvable.sol)
+View Source: [\contracts\interfaces\IResolvable.sol](..\contracts\interfaces\IResolvable.sol)
 
 **↘ Derived Contracts: [IResolution](IResolution.md), [Resolvable](Resolvable.md)**
 
@@ -11,14 +11,16 @@ View Source: [contracts/interfaces/IResolvable.sol](../contracts/interfaces/IRes
 ```js
 event Resolved(bytes32 indexed coverKey, bytes32 indexed productKey, uint256  incidentDate, uint256  resolutionDeadline, bool  decision, bool  emergency, uint256  claimBeginsFrom, uint256  claimExpiresAt);
 event CooldownPeriodConfigured(bytes32 indexed coverKey, uint256  period);
+event ReportClosed(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed closedBy, uint256  incidentDate);
 ```
 
 ## Functions
 
 - [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
-- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownPeriod)
-- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownPeriod)
+- [closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#closereport)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
 - [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve
@@ -40,9 +42,13 @@ function resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ext
 
 ```javascript
 function resolve(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external;
 ```
 </details>
@@ -67,10 +73,45 @@ function emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incident
 
 ```javascript
 function emergencyResolve(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
+
     bool decision
+
+  ) external;
+```
+</details>
+
+### closeReport
+
+```solidity
+function closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function closeReport(
+
+    bytes32 coverKey,
+
+    bytes32 productKey,
+
+    uint256 incidentDate
+
   ) external;
 ```
 </details>

@@ -1,6 +1,6 @@
 # ICxTokenFactory.sol
 
-View Source: [contracts/interfaces/ICxTokenFactory.sol](../contracts/interfaces/ICxTokenFactory.sol)
+View Source: [\contracts\interfaces\ICxTokenFactory.sol](..\contracts\interfaces\ICxTokenFactory.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [cxTokenFactory](cxTokenFactory.md)**
@@ -38,10 +38,15 @@ returns(address)
 
 ```javascript
 function deploy(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     string calldata tokenName,
+
     uint256 expiryDate
+
   ) external returns (address);
 ```
 </details>

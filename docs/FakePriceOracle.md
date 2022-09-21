@@ -1,6 +1,6 @@
 # FakePriceOracle.sol
 
-View Source: [contracts/fakes/FakePriceOracle.sol](../contracts/fakes/FakePriceOracle.sol)
+View Source: [\contracts\fakes\FakePriceOracle.sol](..\contracts\fakes\FakePriceOracle.sol)
 
 **↗ Extends: [IPriceOracle](IPriceOracle.md)**
 
@@ -36,7 +36,9 @@ function update() external nonpayable
 
 ```javascript
 function update() external override {
+
     _counter++;
+
   }
 ```
 </details>
@@ -60,7 +62,9 @@ returns(uint256)
 
 ```javascript
 function consult(address, uint256 amountIn) external pure override returns (uint256) {
+
     return amountIn * 2;
+
   }
 ```
 </details>
@@ -83,7 +87,9 @@ returns(uint256)
 
 ```javascript
 function consultPair(uint256 amountIn) external pure override returns (uint256) {
+
     return amountIn;
+
   }
 ```
 </details>

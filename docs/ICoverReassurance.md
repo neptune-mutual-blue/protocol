@@ -1,6 +1,6 @@
 # ICoverReassurance.sol
 
-View Source: [contracts/interfaces/ICoverReassurance.sol](../contracts/interfaces/ICoverReassurance.sol)
+View Source: [\contracts\interfaces\ICoverReassurance.sol](..\contracts\interfaces\ICoverReassurance.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [CoverReassurance](CoverReassurance.md)**
@@ -10,14 +10,14 @@ View Source: [contracts/interfaces/ICoverReassurance.sol](../contracts/interface
 **Events**
 
 ```js
-event ReassuranceAdded(bytes32 indexed coverKey, uint256  amount);
+event ReassuranceAdded(bytes32 indexed coverKey, address indexed onBehalfOf, uint256  amount);
 event WeightSet(bytes32 indexed coverKey, uint256  weight);
 event PoolCapitalized(bytes32 indexed coverKey, bytes32 indexed productKey, uint256 indexed incidentDate, uint256  amount);
 ```
 
 ## Functions
 
-- [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
+- [addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
 - [capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#capitalizepool)
 - [getReassurance(bytes32 coverKey)](#getreassurance)
@@ -27,7 +27,7 @@ event PoolCapitalized(bytes32 indexed coverKey, bytes32 indexed productKey, uint
 Adds reassurance to the specified cover contract
 
 ```solidity
-function addReassurance(bytes32 coverKey, address account, uint256 amount) external nonpayable
+function addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount) external nonpayable
 ```
 
 **Arguments**
@@ -35,7 +35,7 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| account | address |  | 
+| onBehalfOf | address | Enter the account on behalf of which you are adding reassurance. | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
 <details>
@@ -43,9 +43,13 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 
 ```javascript
 function addReassurance(
+
     bytes32 coverKey,
-    address account,
+
+    address onBehalfOf,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -90,9 +94,13 @@ function capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDa
 
 ```javascript
 function capitalizePool(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external;
 ```
 </details>

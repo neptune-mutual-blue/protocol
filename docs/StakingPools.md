@@ -1,6 +1,6 @@
 # StakingPools.sol
 
-View Source: [contracts/pool/Staking/StakingPools.sol](../contracts/pool/Staking/StakingPools.sol)
+View Source: [\contracts\pool\Staking\StakingPools.sol](..\contracts\pool\Staking\StakingPools.sol)
 
 **↗ Extends: [StakingPoolInfo](StakingPoolInfo.md)**
 
@@ -53,15 +53,21 @@ function deposit(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function deposit(bytes32 key, uint256 amount) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.ensureValidStakingPool(key);
 
     (address stakingToken, address rewardToken, uint256 rewards, uint256 rewardsPlatformFee) = s.depositInternal(key, amount);
+
     emit Deposited(key, msg.sender, stakingToken, amount);
 
     if (rewards > 0) {
+
       emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, rewardsPlatformFee);
+
     }
+
   }
 ```
 </details>
@@ -87,15 +93,21 @@ function withdraw(bytes32 key, uint256 amount) external nonpayable nonReentrant
 
 ```javascript
 function withdraw(bytes32 key, uint256 amount) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.ensureValidStakingPool(key);
 
     (address stakingToken, address rewardToken, uint256 rewards, uint256 rewardsPlatformFee) = s.withdrawInternal(key, amount);
+
     emit Withdrawn(key, msg.sender, stakingToken, amount);
 
     if (rewards > 0) {
+
       emit RewardsWithdrawn(key, msg.sender, rewardToken, rewards, rewardsPlatformFee);
+
     }
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # WithPausability.sol
 
-View Source: [contracts/core/token/WithPausability.sol](../contracts/core/token/WithPausability.sol)
+View Source: [\contracts\core\token\WithPausability.sol](..\contracts\core\token\WithPausability.sol)
 
 **↗ Extends: [Pausable](Pausable.md), [Ownable](Ownable.md)**
 **↘ Derived Contracts: [NPM](NPM.md)**
@@ -30,12 +30,17 @@ function pause(bool flag) external nonpayable onlyOwner
 
 ```javascript
 function pause(bool flag) external onlyOwner {
+
     if (flag) {
+
       super._pause();
+
       return;
+
     }
 
     super._unpause();
+
   }
 ```
 </details>

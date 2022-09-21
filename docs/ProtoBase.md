@@ -1,6 +1,6 @@
 # ProtoBase.sol
 
-View Source: [contracts/core/ProtoBase.sol](../contracts/core/ProtoBase.sol)
+View Source: [\contracts\core\ProtoBase.sol](..\contracts\core\ProtoBase.sol)
 
 **↗ Extends: [AccessControl](AccessControl.md), [Pausable](Pausable.md), [Recoverable](Recoverable.md)**
 **↘ Derived Contracts: [Protocol](Protocol.md)**
@@ -32,7 +32,9 @@ function (IStore store) internal nonpayable Recoverable
 
 ```javascript
 constructor(IStore store) Recoverable(store) {
+
     _setAccessPolicy();
+
   }
 ```
 </details>
@@ -53,17 +55,27 @@ function _setAccessPolicy() private nonpayable
 
 ```javascript
 function _setAccessPolicy() private {
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_COVER_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_LIQUIDITY_MANAGER, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_GOVERNANCE_AGENT, AccessControlLibV1.NS_ROLES_GOVERNANCE_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_UPGRADE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_RECOVERY_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_PAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
+
     _setRoleAdmin(AccessControlLibV1.NS_ROLES_UNPAUSE_AGENT, AccessControlLibV1.NS_ROLES_ADMIN);
 
     _setupRole(AccessControlLibV1.NS_ROLES_ADMIN, msg.sender);
+
   }
 ```
 </details>
@@ -87,18 +99,27 @@ function setupRole(bytes32 role, bytes32 adminRole, address account) external no
 
 ```javascript
 function setupRole(
+
     bytes32 role,
+
     bytes32 adminRole,
+
     address account
+
   ) external nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeAdmin(s);
 
     _setRoleAdmin(role, adminRole);
 
     if (account != address(0)) {
+
       _setupRole(role, account);
+
     }
+
   }
 ```
 </details>
@@ -131,8 +152,11 @@ function pause() external nonpayable nonReentrant whenNotPaused
 
 ```javascript
 function pause() external nonReentrant whenNotPaused {
+
     AccessControlLibV1.mustBePauseAgent(s);
+
     super._pause();
+
   }
 ```
 </details>
@@ -152,7 +176,7 @@ Unpauses or resumes this contract.
  pause agents.
 
 ```solidity
-function unpause() external nonpayable whenPaused nonReentrant whenPaused 
+function unpause() external nonpayable nonReentrant whenPaused 
 ```
 
 **Arguments**
@@ -164,9 +188,12 @@ function unpause() external nonpayable whenPaused nonReentrant whenPaused
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unpause() external whenPaused nonReentrant whenPaused {
+function unpause() external nonReentrant whenPaused {
+
     AccessControlLibV1.mustBeUnpauseAgent(s);
+
     super._unpause();
+
   }
 ```
 </details>

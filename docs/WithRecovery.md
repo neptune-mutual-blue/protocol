@@ -1,6 +1,6 @@
 # WithRecovery.sol
 
-View Source: [contracts/core/token/WithRecovery.sol](../contracts/core/token/WithRecovery.sol)
+View Source: [\contracts\core\token\WithRecovery.sol](..\contracts\core\token\WithRecovery.sol)
 
 **↗ Extends: [Ownable](Ownable.md)**
 **↘ Derived Contracts: [Delayable](Delayable.md), [NPM](NPM.md)**
@@ -31,8 +31,13 @@ function recoverEther(address sendTo) external nonpayable onlyOwner
 
 ```javascript
 function recoverEther(address sendTo) external onlyOwner {
-    // slither-disable-next-line arbitrary-send
-    payable(sendTo).transfer(address(this).balance);
+
+    // slither-disable-next-line low-level-calls
+
+    (bool success, ) = payable(sendTo).call{value: address(this).balance}(""); // solhint-disable-line avoid-low-level-calls
+
+    require(success, "Recipient may have reverted");
+
   }
 ```
 </details>
@@ -57,7 +62,9 @@ function recoverToken(IERC20 malicious, address sendTo) external nonpayable only
 
 ```javascript
 function recoverToken(IERC20 malicious, address sendTo) external onlyOwner {
+
     malicious.safeTransfer(sendTo, malicious.balanceOf(address(this)));
+
   }
 ```
 </details>

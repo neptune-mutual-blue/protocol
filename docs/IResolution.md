@@ -1,6 +1,6 @@
 # IResolution.sol
 
-View Source: [contracts/interfaces/IResolution.sol](../contracts/interfaces/IResolution.sol)
+View Source: [\contracts\interfaces\IResolution.sol](..\contracts\interfaces\IResolution.sol)
 
 **↗ Extends: [IFinalization](IFinalization.md), [IResolvable](IResolvable.md), [IUnstakable](IUnstakable.md), [IMember](IMember.md)**
 **↘ Derived Contracts: [Resolution](Resolution.md)**

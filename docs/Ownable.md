@@ -1,6 +1,6 @@
 # Ownable.sol
 
-View Source: [openzeppelin-solidity/contracts/access/Ownable.sol](../openzeppelin-solidity/contracts/access/Ownable.sol)
+View Source: [openzeppelin-solidity\contracts\access\Ownable.sol](..\openzeppelin-solidity\contracts\access\Ownable.sol)
 
 **↗ Extends: [Context](Context.md)**
 **↘ Derived Contracts: [StoreBase](StoreBase.md), [WithPausability](WithPausability.md), [WithRecovery](WithRecovery.md)**

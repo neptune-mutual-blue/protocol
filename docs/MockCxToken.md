@@ -1,6 +1,6 @@
 # MockCxToken.sol
 
-View Source: [contracts/mock/base/MockCxToken.sol](../contracts/mock/base/MockCxToken.sol)
+View Source: [\contracts\mock\base\MockCxToken.sol](..\contracts\mock\base\MockCxToken.sol)
 
 **↗ Extends: [ERC20](ERC20.md)**
 
@@ -31,7 +31,9 @@ function () public nonpayable ERC20
 
 ```javascript
 constructor() ERC20("Test", "Test") {
+
     super._mint(msg.sender, 1 ether);
+
   }
 ```
 </details>
@@ -53,7 +55,9 @@ function burn(uint256 amount) external nonpayable
 
 ```javascript
 function burn(uint256 amount) external {
+
     super._burn(msg.sender, amount);
+
   }
 ```
 </details>
@@ -75,7 +79,9 @@ returns(uint256)
 
 ```javascript
 function expiresOn() external view returns (uint256) {
+
     return block.timestamp + 30 days; // solhint-disable-line
+
   }
 ```
 </details>
@@ -98,7 +104,9 @@ returns(uint256)
 
 ```javascript
 function getClaimablePolicyOf(address) external pure returns (uint256) {
+
     return 1000 ether;
+
   }
 ```
 </details>
@@ -120,8 +128,11 @@ returns(bytes32)
 
 ```javascript
 function COVER_KEY() external pure returns (bytes32) {
+
     // solhint-disable-previous-line
+
     return "test";
+
   }
 ```
 </details>
@@ -143,8 +154,11 @@ returns(bytes32)
 
 ```javascript
 function PRODUCT_KEY() external pure returns (bytes32) {
+
     // solhint-disable-previous-line
+
     return "";
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # IAccessControl.sol
 
-View Source: [openzeppelin-solidity/contracts/access/IAccessControl.sol](../openzeppelin-solidity/contracts/access/IAccessControl.sol)
+View Source: [openzeppelin-solidity\contracts\access\IAccessControl.sol](..\openzeppelin-solidity\contracts\access\IAccessControl.sol)
 
 **↘ Derived Contracts: [AccessControl](AccessControl.md), [IProtocol](IProtocol.md)**
 

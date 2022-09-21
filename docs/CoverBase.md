@@ -1,6 +1,6 @@
 # Base Cover Contract (CoverBase.sol)
 
-View Source: [contracts/core/lifecycle/CoverBase.sol](../contracts/core/lifecycle/CoverBase.sol)
+View Source: [\contracts\core\lifecycle\CoverBase.sol](..\contracts\core\lifecycle\CoverBase.sol)
 
 **↗ Extends: [ICover](ICover.md), [Recoverable](Recoverable.md)**
 **↘ Derived Contracts: [Cover](Cover.md)**
@@ -59,13 +59,17 @@ function initialize(address stablecoin, bytes32 friendlyName) external nonpayabl
 
 ```javascript
 function initialize(address stablecoin, bytes32 friendlyName) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     require(s.getAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN) == address(0), "Already initialized");
 
     s.initializeCoverInternal(stablecoin, friendlyName);
+
     emit CoverInitialized(stablecoin, friendlyName);
+
   }
 ```
 </details>
@@ -89,13 +93,17 @@ function setCoverCreationFee(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setCoverCreationFee(uint256 value) external override nonReentrant {
+
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.setCoverCreationFeeInternal(value);
+
     emit CoverCreationFeeSet(previous, value);
+
   }
 ```
 </details>
@@ -119,13 +127,17 @@ function setMinCoverCreationStake(uint256 value) external nonpayable nonReentran
 
 ```javascript
 function setMinCoverCreationStake(uint256 value) external override nonReentrant {
+
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.setMinCoverCreationStakeInternal(value);
+
     emit MinCoverCreationStakeSet(previous, value);
+
   }
 ```
 </details>
@@ -149,13 +161,17 @@ function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentra
 
 ```javascript
 function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
+
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.setMinStakeToAddLiquidityInternal(value);
+
     emit MinStakeToAddLiquiditySet(previous, value);
+
   }
 ```
 </details>
@@ -179,7 +195,9 @@ returns(bytes32)
 
 ```javascript
 function version() external pure override returns (bytes32) {
+
     return "v0.1";
+
   }
 ```
 </details>
@@ -203,7 +221,9 @@ returns(bytes32)
 
 ```javascript
 function getName() external pure override returns (bytes32) {
+
     return ProtoUtilV1.CNAME_COVER;
+
   }
 ```
 </details>

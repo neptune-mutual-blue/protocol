@@ -1,6 +1,6 @@
 # IVaultDelegate.sol
 
-View Source: [contracts/interfaces/IVaultDelegate.sol](../contracts/interfaces/IVaultDelegate.sol)
+View Source: [\contracts\interfaces\IVaultDelegate.sol](..\contracts\interfaces\IVaultDelegate.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [VaultDelegateBase](VaultDelegateBase.md)**
@@ -50,10 +50,15 @@ returns(podsToMint uint256, previousNpmStake uint256)
 
 ```javascript
 function preAddLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake
+
   ) external returns (uint256 podsToMint, uint256 previousNpmStake);
 ```
 </details>
@@ -78,10 +83,15 @@ function postAddLiquidity(address caller, bytes32 coverKey, uint256 amount, uint
 
 ```javascript
 function postAddLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake
+
   ) external;
 ```
 </details>
@@ -129,11 +139,17 @@ returns(stablecoin address, stableCoinToRelease uint256)
 
 ```javascript
 function preRemoveLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake,
+
     bool exit
+
   ) external returns (address stablecoin, uint256 stableCoinToRelease);
 ```
 </details>
@@ -159,11 +175,17 @@ function postRemoveLiquidity(address caller, bytes32 coverKey, uint256 amount, u
 
 ```javascript
 function postRemoveLiquidity(
+
     address caller,
+
     bytes32 coverKey,
+
     uint256 amount,
+
     uint256 npmStake,
+
     bool exit
+
   ) external;
 ```
 </details>
@@ -189,10 +211,15 @@ returns(stablecoin address)
 
 ```javascript
 function preTransferGovernance(
+
     address caller,
+
     bytes32 coverKey,
+
     address to,
+
     uint256 amount
+
   ) external returns (address stablecoin);
 ```
 </details>
@@ -217,10 +244,15 @@ function postTransferGovernance(address caller, bytes32 coverKey, address to, ui
 
 ```javascript
 function postTransferGovernance(
+
     address caller,
+
     bytes32 coverKey,
+
     address to,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -246,11 +278,17 @@ function preTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, b
 
 ```javascript
 function preTransferToStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -276,11 +314,17 @@ function postTransferToStrategy(address caller, IERC20 token, bytes32 coverKey, 
 
 ```javascript
 function postTransferToStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -306,11 +350,17 @@ function preReceiveFromStrategy(address caller, IERC20 token, bytes32 coverKey, 
 
 ```javascript
 function preReceiveFromStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external;
 ```
 </details>
@@ -337,11 +387,17 @@ returns(income uint256, loss uint256)
 
 ```javascript
 function postReceiveFromStrategy(
+
     address caller,
+
     IERC20 token,
+
     bytes32 coverKey,
+
     bytes32 strategyName,
+
     uint256 amount
+
   ) external returns (uint256 income, uint256 loss);
 ```
 </details>
@@ -369,18 +425,31 @@ returns(stablecoin contract IERC20, fee uint256, protocolFee uint256)
 
 ```javascript
 function preFlashLoan(
+
     address caller,
+
     bytes32 coverKey,
+
     IERC3156FlashBorrower receiver,
+
     address token,
+
     uint256 amount,
+
     bytes calldata data
+
   )
+
     external
+
     returns (
+
       IERC20 stablecoin,
+
       uint256 fee,
+
       uint256 protocolFee
+
     );
 ```
 </details>
@@ -407,12 +476,19 @@ function postFlashLoan(address caller, bytes32 coverKey, IERC3156FlashBorrower r
 
 ```javascript
 function postFlashLoan(
+
     address caller,
+
     bytes32 coverKey,
+
     IERC3156FlashBorrower receiver,
+
     address token,
+
     uint256 amount,
+
     bytes calldata data
+
   ) external;
 ```
 </details>
@@ -465,7 +541,7 @@ function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) 
 
 ```solidity
 function getInfoImplementation(bytes32 coverKey, address forAccount) external view
-returns(result uint256[])
+returns(struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -479,7 +555,7 @@ returns(result uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (uint256[] memory result);
+function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (IVault.VaultInfoType memory);
 ```
 </details>
 
@@ -525,10 +601,15 @@ returns(uint256)
 
 ```javascript
 function getFlashFee(
+
     address caller,
+
     bytes32 coverKey,
+
     address token,
+
     uint256 amount
+
   ) external view returns (uint256);
 ```
 </details>
@@ -553,9 +634,13 @@ returns(uint256)
 
 ```javascript
 function getMaxFlashLoan(
+
     address caller,
+
     bytes32 coverKey,
+
     address token
+
   ) external view returns (uint256);
 ```
 </details>

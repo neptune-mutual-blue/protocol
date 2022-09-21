@@ -1,6 +1,6 @@
 # IUniswapV2RouterLike.sol
 
-View Source: [contracts/dependencies/uniswap-v2/IUniswapV2RouterLike.sol](../contracts/dependencies/uniswap-v2/IUniswapV2RouterLike.sol)
+View Source: [\contracts\dependencies\uniswap-v2\IUniswapV2RouterLike.sol](..\contracts\dependencies\uniswap-v2\IUniswapV2RouterLike.sol)
 
 **↘ Derived Contracts: [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)**
 
@@ -56,9 +56,13 @@ returns(amountOut uint256)
 
 ```javascript
 function getAmountOut(
+
     uint256 amountIn,
+
     uint256 reserveIn,
+
     uint256 reserveOut
+
   ) external pure returns (uint256 amountOut);
 ```
 </details>
@@ -83,9 +87,13 @@ returns(amountIn uint256)
 
 ```javascript
 function getAmountIn(
+
     uint256 amountOut,
+
     uint256 reserveIn,
+
     uint256 reserveOut
+
   ) external pure returns (uint256 amountIn);
 ```
 </details>
@@ -154,9 +162,13 @@ returns(amountB uint256)
 
 ```javascript
 function quote(
+
     uint256 amountA,
+
     uint256 reserveA,
+
     uint256 reserveB
+
   ) external pure returns (uint256 amountB);
 ```
 </details>
@@ -186,20 +198,35 @@ returns(amountA uint256, amountB uint256, liquidity uint256)
 
 ```javascript
 function addLiquidity(
+
     address tokenA,
+
     address tokenB,
+
     uint256 amountADesired,
+
     uint256 amountBDesired,
+
     uint256 amountAMin,
+
     uint256 amountBMin,
+
     address to,
+
     uint256 deadline
+
   )
+
     external
+
     returns (
+
       uint256 amountA,
+
       uint256 amountB,
+
       uint256 liquidity
+
     );
 ```
 </details>

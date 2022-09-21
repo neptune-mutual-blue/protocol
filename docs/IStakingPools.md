@@ -1,6 +1,6 @@
 # IStakingPools.sol
 
-View Source: [contracts/interfaces/IStakingPools.sol](../contracts/interfaces/IStakingPools.sol)
+View Source: [\contracts\interfaces\IStakingPools.sol](..\contracts\interfaces\IStakingPools.sol)
 
 **↗ Extends: [IMember](IMember.md)**
 **↘ Derived Contracts: [StakingPoolBase](StakingPoolBase.md)**
@@ -17,10 +17,58 @@ enum StakingPoolType {
 }
 ```
 
+## Structs
+### AddOrEditPoolArgs
+
+```js
+struct AddOrEditPoolArgs {
+ bytes32 key,
+ string name,
+ enum IStakingPools.StakingPoolType poolType,
+ address stakingToken,
+ address uniStakingTokenDollarPair,
+ address rewardToken,
+ address uniRewardTokenDollarPair,
+ uint256 stakingTarget,
+ uint256 maxStake,
+ uint256 platformFee,
+ uint256 rewardPerBlock,
+ uint256 lockupPeriod,
+ uint256 rewardTokenToDeposit
+}
+```
+
+### StakingPoolInfoType
+
+```js
+struct StakingPoolInfoType {
+ string name,
+ address stakingToken,
+ address stakingTokenStablecoinPair,
+ address rewardToken,
+ address rewardTokenStablecoinPair,
+ uint256 totalStaked,
+ uint256 target,
+ uint256 maximumStake,
+ uint256 stakeBalance,
+ uint256 cumulativeDeposits,
+ uint256 rewardPerBlock,
+ uint256 platformFee,
+ uint256 lockupPeriod,
+ uint256 rewardTokenBalance,
+ uint256 accountStakeBalance,
+ uint256 totalBlockSinceLastReward,
+ uint256 rewards,
+ uint256 canWithdrawFromBlockHeight,
+ uint256 lastDepositHeight,
+ uint256 lastRewardHeight
+}
+```
+
 **Events**
 
 ```js
-event PoolUpdated(bytes32 indexed key, string  name, enum IStakingPools.StakingPoolType  poolType, address indexed stakingToken, address  uniStakingTokenDollarPair, address indexed rewardToken, address  uniRewardTokenDollarPair, uint256  rewardTokenDeposit, uint256  maxStake, uint256  rewardPerBlock, uint256  lockupPeriodInBlocks, uint256  platformFee);
+event PoolUpdated(bytes32 indexed key, struct IStakingPools.AddOrEditPoolArgs  args);
 event PoolClosed(bytes32 indexed key, string  name);
 event Deposited(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
 event Withdrawn(bytes32 indexed key, address indexed account, address indexed token, uint256  amount);
@@ -29,132 +77,122 @@ event RewardsWithdrawn(bytes32 indexed key, address indexed account, address ind
 
 ## Functions
 
-- [addOrEditPool(bytes32 coverKey, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values)](#addoreditpool)
-- [closePool(bytes32 coverKey)](#closepool)
-- [deposit(bytes32 coverKey, uint256 amount)](#deposit)
-- [withdraw(bytes32 coverKey, uint256 amount)](#withdraw)
-- [withdrawRewards(bytes32 coverKey)](#withdrawrewards)
-- [calculateRewards(bytes32 coverKey, address account)](#calculaterewards)
-- [getInfo(bytes32 coverKey, address you)](#getinfo)
+- [addOrEditPool(struct IStakingPools.AddOrEditPoolArgs args)](#addoreditpool)
+- [closePool(bytes32 key)](#closepool)
+- [deposit(bytes32 key, uint256 amount)](#deposit)
+- [withdraw(bytes32 key, uint256 amount)](#withdraw)
+- [withdrawRewards(bytes32 key)](#withdrawrewards)
+- [calculateRewards(bytes32 key, address account)](#calculaterewards)
+- [getInfo(bytes32 key, address you)](#getinfo)
 
 ### addOrEditPool
 
 Adds or edits the pool by key
 
 ```solidity
-function addOrEditPool(bytes32 coverKey, string name, enum IStakingPools.StakingPoolType poolType, address[] addresses, uint256[] values) external nonpayable
+function addOrEditPool(struct IStakingPools.AddOrEditPoolArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the key of the pool you want to create or edit | 
-| name | string | Enter a name for this pool | 
-| poolType | enum IStakingPools.StakingPoolType | Specify the pool type: TokenStaking or PODStaking | 
-| addresses | address[] | [0] stakingToken The token which is staked in this pool | 
-| values | uint256[] | [0] stakingTarget Specify the target amount in the staking token. You can not exceed the target. | 
+| args | struct IStakingPools.AddOrEditPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addOrEditPool(
-    bytes32 coverKey,
-    string calldata name,
-    StakingPoolType poolType,
-    address[] calldata addresses,
-    uint256[] calldata values
-  ) external;
+function addOrEditPool(AddOrEditPoolArgs calldata args) external;
 ```
 </details>
 
 ### closePool
 
 ```solidity
-function closePool(bytes32 coverKey) external nonpayable
+function closePool(bytes32 key) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function closePool(bytes32 coverKey) external;
+function closePool(bytes32 key) external;
 ```
 </details>
 
 ### deposit
 
 ```solidity
-function deposit(bytes32 coverKey, uint256 amount) external nonpayable
+function deposit(bytes32 key, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| key | bytes32 |  | 
 | amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function deposit(bytes32 coverKey, uint256 amount) external;
+function deposit(bytes32 key, uint256 amount) external;
 ```
 </details>
 
 ### withdraw
 
 ```solidity
-function withdraw(bytes32 coverKey, uint256 amount) external nonpayable
+function withdraw(bytes32 key, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| key | bytes32 |  | 
 | amount | uint256 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdraw(bytes32 coverKey, uint256 amount) external;
+function withdraw(bytes32 key, uint256 amount) external;
 ```
 </details>
 
 ### withdrawRewards
 
 ```solidity
-function withdrawRewards(bytes32 coverKey) external nonpayable
+function withdrawRewards(bytes32 key) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| key | bytes32 |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function withdrawRewards(bytes32 coverKey) external;
+function withdrawRewards(bytes32 key) external;
 ```
 </details>
 
 ### calculateRewards
 
 ```solidity
-function calculateRewards(bytes32 coverKey, address account) external view
+function calculateRewards(bytes32 key, address account) external view
 returns(uint256)
 ```
 
@@ -162,14 +200,14 @@ returns(uint256)
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 |  | 
+| key | bytes32 |  | 
 | account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function calculateRewards(bytes32 coverKey, address account) external view returns (uint256);
+function calculateRewards(bytes32 key, address account) external view returns (uint256);
 ```
 </details>
 
@@ -178,29 +216,22 @@ function calculateRewards(bytes32 coverKey, address account) external view retur
 Gets the info of a given staking pool by key
 
 ```solidity
-function getInfo(bytes32 coverKey, address you) external view
-returns(name string, addresses address[], values uint256[])
+function getInfo(bytes32 key, address you) external view
+returns(info struct IStakingPools.StakingPoolInfoType)
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Provide the staking pool key to fetch info for | 
+| key | bytes32 | Provide the staking pool key to fetch info for | 
 | you | address | Specify the address to customize the info for | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 coverKey, address you)
-    external
-    view
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    );
+function getInfo(bytes32 key, address you) external view returns (StakingPoolInfoType memory info);
 ```
 </details>
 

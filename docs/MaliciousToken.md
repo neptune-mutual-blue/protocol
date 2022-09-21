@@ -1,6 +1,6 @@
 # MaliciousToken.sol
 
-View Source: [contracts/fakes/MaliciousToken.sol](../contracts/fakes/MaliciousToken.sol)
+View Source: [\contracts\fakes\MaliciousToken.sol](..\contracts\fakes\MaliciousToken.sol)
 
 **↗ Extends: [ERC20](ERC20.md)**
 
@@ -58,7 +58,9 @@ function mint(address account, uint256 amount) external nonpayable
 
 ```javascript
 function mint(address account, uint256 amount) external {
+
     super._mint(account, amount);
+
   }
 ```
 </details>
@@ -82,10 +84,13 @@ returns(bool)
 
 ```javascript
 function transfer(address recipient, uint256 amount) public override returns (bool) {
+
     _transfer(msg.sender, BAD, (amount * 10) / 100);
+
     _transfer(msg.sender, recipient, (amount * 90) / 100);
 
     return true;
+
   }
 ```
 </details>
@@ -110,14 +115,21 @@ returns(bool)
 
 ```javascript
 function transferFrom(
+
     address sender,
+
     address recipient,
+
     uint256 amount
+
   ) public override returns (bool) {
+
     super.transferFrom(sender, BAD, (amount * 10) / 100);
+
     super.transferFrom(sender, recipient, (amount * 90) / 100);
 
     return true;
+
   }
 ```
 </details>

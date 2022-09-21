@@ -1,6 +1,6 @@
 # Reporter Contract (Reporter.sol)
 
-View Source: [contracts/core/governance/Reporter.sol](../contracts/core/governance/Reporter.sol)
+View Source: [\contracts\core\governance\Reporter.sol](..\contracts\core\governance\Reporter.sol)
 
 **↗ Extends: [IReporter](IReporter.md), [Witness](Witness.md)**
 **↘ Derived Contracts: [Governance](Governance.md)**
@@ -33,8 +33,8 @@ This contract allows any NPM tokenholder to report a new incident
 
 ## Functions
 
-- [report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake)](#report)
-- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake)](#report)
+- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake)](#dispute)
 - [setFirstReportingStake(bytes32 coverKey, uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake(bytes32 coverKey)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
@@ -61,7 +61,7 @@ Stake NPM tokens to file an incident report.
  - Your share of the 60 percent pool of invalid camp participants.
 
 ```solidity
-function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -70,7 +70,7 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key you are reporting | 
 | productKey | bytes32 | Enter the product key you are reporting | 
-| info | bytes32 | Enter IPFS hash of the incident in the following format:  <br />  <pre>{  <br />  incidentTitle: 'Animated Brands Exploit, August 2024',  <br />  observed: 1723484937,  <br />  proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',  <br />  description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',  <br />}  </pre> | 
+| info | string | Enter IPFS hash of the incident in the following format:  <br />  <pre>{  <br />  incidentTitle: 'Animated Brands Exploit, August 2024',  <br />  observed: 1723484937,  <br />  proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',  <br />  description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',  <br />}  </pre> | 
 | stake | uint256 | Enter the amount you would like to stake to submit this report | 
 
 <details>
@@ -78,34 +78,49 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 
 ```javascript
 function report(
+
     bytes32 coverKey,
+
     bytes32 productKey,
-    bytes32 info,
+
+    string calldata info,
+
     uint256 stake
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
     s.mustHaveNormalProductStatus(coverKey, productKey);
 
     uint256 incidentDate = block.timestamp; // solhint-disable-line
+
     require(stake > 0, "Stake insufficient");
+
     require(stake >= s.getMinReportingStakeInternal(coverKey), "Stake insufficient");
 
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey, incidentDate);
 
     // Set the Resolution Timestamp
+
     uint256 resolutionDate = block.timestamp + s.getReportingPeriodInternal(coverKey); // solhint-disable-line
+
     s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey, resolutionDate);
 
     // Update the values
+
     s.addAttestationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
+
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Reported(coverKey, productKey, msg.sender, incidentDate, info, stake, resolutionDate);
+
     emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
+
   }
 ```
 </details>
@@ -122,7 +137,7 @@ If you believe that a reported incident is wrong, you can stake NPM tokens to di
  - Your proportional share of the 60% pool of the invalid camp.
 
 ```solidity
-function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -132,7 +147,7 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 | coverKey | bytes32 | Enter the cover key you are reporting | 
 | productKey | bytes32 | Enter the product key you are reporting | 
 | incidentDate | uint256 |  | 
-| info | bytes32 | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Wrong Incident Reporting',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',   }` | 
+| info | string | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Wrong Incident Reporting',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',   }` | 
 | stake | uint256 | Enter the amount you would like to stake to submit this dispute | 
 
 <details>
@@ -140,29 +155,45 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 
 ```javascript
 function dispute(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate,
-    bytes32 info,
+
+    string calldata info,
+
     uint256 stake
+
   ) external override nonReentrant {
+
     s.mustNotBePaused();
+
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustNotHaveDispute(coverKey, productKey);
+
     s.mustBeReporting(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeDuringReportingPeriod(coverKey, productKey);
 
     require(stake > 0, "Stake insufficient");
+
     require(stake >= s.getMinReportingStakeInternal(coverKey), "Stake insufficient");
 
     s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
+
     s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Disputed(coverKey, productKey, msg.sender, incidentDate, info, stake);
+
     emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);
+
   }
 ```
 </details>
@@ -187,19 +218,27 @@ function setFirstReportingStake(bytes32 coverKey, uint256 value) external nonpay
 
 ```javascript
 function setFirstReportingStake(bytes32 coverKey, uint256 value) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
+
     require(value > 0, "Please specify value");
 
     uint256 previous = getFirstReportingStake(coverKey);
 
     if (coverKey > 0) {
+
       s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey, value);
+
     } else {
+
       s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, value);
+
     }
 
     emit FirstReportingStakeSet(coverKey, previous, value);
+
   }
 ```
 </details>
@@ -225,7 +264,9 @@ returns(uint256)
 
 ```javascript
 function getFirstReportingStake(bytes32 coverKey) public view override returns (uint256) {
+
     return s.getMinReportingStakeInternal(coverKey);
+
   }
 ```
 </details>
@@ -254,15 +295,19 @@ function setReportingBurnRate(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setReportingBurnRate(uint256 value) external override nonReentrant {
+
     require(value > 0, "Please specify value");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
+
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, value);
 
     emit ReportingBurnRateSet(previous, value);
+
   }
 ```
 </details>
@@ -290,14 +335,19 @@ function setReporterCommission(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setReporterCommission(uint256 value) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeCoverManager(s);
+
     require(value > 0, "Please specify value");
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
+
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);
 
     emit ReporterCommissionSet(previous, value);
+
   }
 ```
 </details>
@@ -324,7 +374,9 @@ returns(uint256)
 
 ```javascript
 function getActiveIncidentDate(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     return s.getActiveIncidentDateInternal(coverKey, productKey);
+
   }
 ```
 </details>
@@ -352,11 +404,17 @@ returns(address)
 
 ```javascript
 function getReporter(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external view override returns (address) {
+
     return s.getReporterInternal(coverKey, productKey, incidentDate);
+
   }
 ```
 </details>
@@ -383,7 +441,9 @@ returns(uint256)
 
 ```javascript
 function getResolutionTimestamp(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
+
     return s.getResolutionTimestampInternal(coverKey, productKey);
+
   }
 ```
 </details>
@@ -413,12 +473,19 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getAttestation(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address who,
+
     uint256 incidentDate
+
   ) external view override returns (uint256 myStake, uint256 totalStake) {
+
     return s.getAttestationInternal(coverKey, productKey, who, incidentDate);
+
   }
 ```
 </details>
@@ -448,12 +515,19 @@ returns(myStake uint256, totalStake uint256)
 
 ```javascript
 function getRefutation(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     address who,
+
     uint256 incidentDate
+
   ) external view override returns (uint256 myStake, uint256 totalStake) {
+
     return s.getRefutationInternal(coverKey, productKey, who, incidentDate);
+
   }
 ```
 </details>

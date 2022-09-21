@@ -1,6 +1,6 @@
 # Finalization Contract (Finalization.sol)
 
-View Source: [contracts/core/governance/resolution/Finalization.sol](../contracts/core/governance/resolution/Finalization.sol)
+View Source: [\contracts\core\governance\resolution\Finalization.sol](..\contracts\core\governance\resolution\Finalization.sol)
 
 **↗ Extends: [Recoverable](Recoverable.md), [IFinalization](IFinalization.md)**
 **↘ Derived Contracts: [Resolvable](Resolvable.md)**
@@ -40,26 +40,39 @@ function finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) ex
 
 ```javascript
 function finalize(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
+
   ) external override nonReentrant {
+
     require(incidentDate > 0, "Please specify incident date");
 
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeGovernanceAgent(s);
 
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+
     s.mustBeClaimingOrDisputed(coverKey, productKey);
+
     s.mustBeAfterResolutionDeadline(coverKey, productKey);
+
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     // The reassurance capital (if available) needs to be transferred before this cover can be finalized.
+
     uint256 transferable = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
+
     require(transferable == 0, "Pool must be capitalized");
 
     _finalize(coverKey, productKey, incidentDate);
+
   }
 ```
 </details>
@@ -67,7 +80,7 @@ function finalize(
 ### _finalize
 
 ```solidity
-function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
+function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) internal nonpayable
 ```
 
 **Arguments**
@@ -83,27 +96,45 @@ function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) p
 
 ```javascript
 function _finalize(
+
     bytes32 coverKey,
+
     bytes32 productKey,
+
     uint256 incidentDate
-  ) private {
+
+  ) internal {
+
+    s.setBoolByKey(GovernanceUtilV1.getHasFinalizedKeyInternal(coverKey, productKey, incidentDate), true);
+
     // Deleting latest incident date resets this product
+
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
+
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
+
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey);
+
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey);
+
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey);
+
     s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
+
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey, incidentDate)));
+
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey, incidentDate)));
 
     s.updateStateAndLiquidity(coverKey);
+
     emit Finalized(coverKey, productKey, msg.sender, incidentDate);
+
   }
 ```
 </details>

@@ -1,6 +1,6 @@
 # FakeUniswapV2RouterLike.sol
 
-View Source: [contracts/fakes/FakeUniswapV2RouterLike.sol](../contracts/fakes/FakeUniswapV2RouterLike.sol)
+View Source: [\contracts\fakes\FakeUniswapV2RouterLike.sol](..\contracts\fakes\FakeUniswapV2RouterLike.sol)
 
 **↗ Extends: [IUniswapV2RouterLike](IUniswapV2RouterLike.md)**
 
@@ -42,7 +42,9 @@ returns(address)
 
 ```javascript
 function factory() external view override returns (address) {
+
     return address(this);
+
   }
 ```
 </details>
@@ -67,11 +69,17 @@ returns(uint256)
 
 ```javascript
 function getAmountOut(
+
     uint256 amountIn,
+
     uint256,
+
     uint256
+
   ) external pure override returns (uint256) {
+
     return amountIn * 2;
+
   }
 ```
 </details>
@@ -96,11 +104,17 @@ returns(uint256)
 
 ```javascript
 function getAmountIn(
+
     uint256 amountOut,
+
     uint256,
+
     uint256
+
   ) external pure override returns (uint256) {
+
     return amountOut * 2;
+
   }
 ```
 </details>
@@ -124,12 +138,15 @@ returns(uint256[])
 
 ```javascript
 function getAmountsOut(uint256 multiplier, address[] calldata) external pure override returns (uint256[] memory) {
+
     uint256[] memory amounts = new uint256[](2);
 
     amounts[0] = multiplier;
+
     amounts[1] = multiplier;
 
     return amounts;
+
   }
 ```
 </details>
@@ -154,11 +171,17 @@ returns(amountB uint256)
 
 ```javascript
 function quote(
+
     uint256 amountA,
+
     uint256,
+
     uint256
+
   ) public pure virtual override returns (uint256 amountB) {
+
     return amountA;
+
   }
 ```
 </details>
@@ -182,12 +205,15 @@ returns(uint256[])
 
 ```javascript
 function getAmountsIn(uint256 multiplier, address[] calldata) external pure override returns (uint256[] memory) {
+
     uint256[] memory amounts = new uint256[](2);
 
     amounts[0] = multiplier;
+
     amounts[1] = multiplier;
 
     return amounts;
+
   }
 ```
 </details>
@@ -217,29 +243,51 @@ returns(amountA uint256, amountB uint256, liquidity uint256)
 
 ```javascript
 function addLiquidity(
+
     address _tokenA,
+
     address _tokenB,
+
     uint256 _amountADesired,
+
     uint256 _amountBDesired,
+
     uint256,
+
     uint256,
+
     address,
+
     uint256
+
   )
+
     external
+
     override
+
     returns (
+
       uint256 amountA,
+
       uint256 amountB,
+
       uint256 liquidity
+
     )
+
   {
+
     tokenA = _tokenA;
+
     tokenB = _tokenB;
 
     amountA = _amountADesired;
+
     amountB = _amountBDesired;
+
     liquidity = 1;
+
   }
 ```
 </details>

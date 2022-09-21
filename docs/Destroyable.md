@@ -1,6 +1,6 @@
 # Destroyable.sol
 
-View Source: [contracts/fakes/Destroyable.sol](../contracts/fakes/Destroyable.sol)
+View Source: [\contracts\fakes\Destroyable.sol](..\contracts\fakes\Destroyable.sol)
 
 **Destroyable**
 
@@ -45,7 +45,9 @@ function destroy(address payable _recipient) public nonpayable
 
 ```javascript
 function destroy(address payable _recipient) public {
+
     selfdestruct(_recipient);
+
   }
 ```
 </details>

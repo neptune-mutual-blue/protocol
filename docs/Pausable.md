@@ -1,6 +1,6 @@
 # Pausable.sol
 
-View Source: [openzeppelin-solidity/contracts/security/Pausable.sol](../openzeppelin-solidity/contracts/security/Pausable.sol)
+View Source: [openzeppelin-solidity\contracts\security\Pausable.sol](..\openzeppelin-solidity\contracts\security\Pausable.sol)
 
 **↗ Extends: [Context](Context.md)**
 **↘ Derived Contracts: [ProtoBase](ProtoBase.md), [StoreBase](StoreBase.md), [WithPausability](WithPausability.md)**

@@ -1,6 +1,6 @@
 # Recoverable Contract (Recoverable.sol)
 
-View Source: [contracts/core/Recoverable.sol](../contracts/core/Recoverable.sol)
+View Source: [\contracts\core\Recoverable.sol](..\contracts\core\Recoverable.sol)
 
 **↗ Extends: [ReentrancyGuard](ReentrancyGuard.md), [IRecoverable](IRecoverable.md)**
 **↘ Derived Contracts: [AaveStrategy](AaveStrategy.md), [BondPoolBase](BondPoolBase.md), [CompoundStrategy](CompoundStrategy.md), [CoverBase](CoverBase.md), [CoverReassurance](CoverReassurance.md), [CoverStake](CoverStake.md), [cxToken](cxToken.md), [cxTokenFactory](cxTokenFactory.md), [FakeRecoverable](FakeRecoverable.md), [Finalization](Finalization.md), [LiquidityEngine](LiquidityEngine.md), [Policy](Policy.md), [PolicyAdmin](PolicyAdmin.md), [Processor](Processor.md), [ProtoBase](ProtoBase.md), [StakingPoolBase](StakingPoolBase.md), [VaultBase](VaultBase.md), [VaultDelegateBase](VaultDelegateBase.md), [VaultFactory](VaultFactory.md), [Witness](Witness.md)**
@@ -43,8 +43,11 @@ function (IStore store) internal nonpayable
 
 ```javascript
 constructor(IStore store) {
+
     require(address(store) != address(0), "Invalid Store");
+
     s = store;
+
   }
 ```
 </details>
@@ -70,9 +73,13 @@ function recoverEther(address sendTo) external nonpayable nonReentrant
 
 ```javascript
 function recoverEther(address sendTo) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeRecoveryAgent(s);
+
     BaseLibV1.recoverEtherInternal(sendTo);
+
   }
 ```
 </details>
@@ -99,9 +106,13 @@ function recoverToken(address token, address sendTo) external nonpayable nonReen
 
 ```javascript
 function recoverToken(address token, address sendTo) external override nonReentrant {
+
     s.mustNotBePaused();
+
     AccessControlLibV1.mustBeRecoveryAgent(s);
+
     BaseLibV1.recoverTokenInternal(token, sendTo);
+
   }
 ```
 </details>
