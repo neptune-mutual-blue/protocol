@@ -168,7 +168,7 @@ returns(struct IUnstakable.UnstakeInfoType)
 | ------------- |------------- | -----|
 | account | address | Enter account to get the unstake information of | 
 | coverKey | bytes32 | Enter the cover key | 
-| productKey | bytes32 |  | 
+| productKey | bytes32 | Enter the product key | 
 | incidentDate | uint256 | Enter the incident date | 
 
 <details>
