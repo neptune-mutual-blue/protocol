@@ -27,7 +27,7 @@ interface IStakingPools is IMember {
   }
 
   struct StakingPoolInfoType {
-    string name; //urns the name of the staking pool
+    string name; //Returns the name of the staking pool
     address stakingToken; // Returns the address of the token which is staked in this pool
     address stakingTokenStablecoinPair; // Returns the pair address of the staking token and stablecoin
     address rewardToken; // Returns the address of the token which is rewarded in this pool
