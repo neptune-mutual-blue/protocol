@@ -61,7 +61,7 @@ describe('Aave Withdrawal', () => {
   })
 })
 
-describe('Aave Deposit: Faulty Pool', () => {
+describe('Aave Withdrawal: Faulty Pool', () => {
   let deployed, aaveLendingPool, aToken, aaveStrategy
 
   beforeEach(async () => {

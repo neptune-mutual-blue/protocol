@@ -35,9 +35,9 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   it('correctly whitelist the user', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -70,7 +70,7 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   it('reverts when not accessed by CoverOwnerOrAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.cover.connect(bob).updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
       .should.be.rejectedWith('Forbidden')
@@ -79,7 +79,7 @@ describe('Cover: updateCoverUsersWhitelist', () => {
   it('reverts when protocol is paused', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.protocol.pause()
 

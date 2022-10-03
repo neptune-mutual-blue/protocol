@@ -10,7 +10,7 @@ View Source: [contracts/core/liquidity/VaultLiquidity.sol](../contracts/core/liq
 ## Functions
 
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
-- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode)](#addliquidity)
+- [addLiquidity(struct IVault.AddLiquidityArgs args)](#addliquidity)
 - [removeLiquidity(bytes32 coverKey, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#removeliquidity)
 - [calculatePods(uint256 forStablecoinUnits)](#calculatepods)
 - [calculateLiquidity(uint256 podsToBurn)](#calculateliquidity)
@@ -72,36 +72,28 @@ Adds liquidity to the specified cover contract.
  Uses the hooks `preAddLiquidity` and `postAddLiquidity` on the vault delegate contract.
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStakeToAdd, bytes32 referralCode) external nonpayable nonReentrant 
+function addLiquidity(struct IVault.AddLiquidityArgs args) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStakeToAdd | uint256 | Enter the amount of NPM token to stake. | 
-| referralCode | bytes32 |  | 
+| args | struct IVault.AddLiquidityArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStakeToAdd,
-    bytes32 referralCode
-  ) external override nonReentrant {
-    require(coverKey == key, "Forbidden");
-    require(amount > 0, "Please specify amount");
+function addLiquidity(AddLiquidityArgs calldata args) external override nonReentrant {
+    require(args.coverKey == key, "Forbidden");
+    require(args.amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
      ******************************************************************************************/
 
-    (uint256 podsToMint, uint256 previousNpmStake) = delgate().preAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
+    (uint256 podsToMint, uint256 previousNpmStake) = delgate().preAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
     require(podsToMint > 0, "Can't determine PODs");
 
@@ -109,10 +101,10 @@ function addLiquidity(
       BODY
      ******************************************************************************************/
 
-    IERC20(sc).ensureTransferFrom(msg.sender, address(this), amount);
+    IERC20(sc).ensureTransferFrom(msg.sender, address(this), args.amount);
 
-    if (npmStakeToAdd > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), npmStakeToAdd);
+    if (args.npmStakeToAdd > 0) {
+      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
     }
 
     super._mint(msg.sender, podsToMint);
@@ -121,15 +113,15 @@ function addLiquidity(
       POST
      ******************************************************************************************/
 
-    delgate().postAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
+    delgate().postAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
-    emit PodsIssued(msg.sender, podsToMint, amount, referralCode);
+    emit PodsIssued(msg.sender, podsToMint, args.amount, args.referralCode);
 
     if (previousNpmStake == 0) {
-      emit Entered(coverKey, msg.sender);
+      emit Entered(args.coverKey, msg.sender);
     }
 
-    emit NpmStaken(msg.sender, npmStakeToAdd);
+    emit NpmStaken(msg.sender, args.npmStakeToAdd);
   }
 ```
 </details>
@@ -173,7 +165,7 @@ function removeLiquidity(
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    if(podsToRedeem > 0) {
+    if (podsToRedeem > 0) {
       IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
       IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
     }
@@ -365,6 +357,7 @@ function accrueInterest() external override nonReentrant {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -404,6 +397,7 @@ function accrueInterest() external override nonReentrant {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -12,31 +12,22 @@ require('chai')
 
 describe('Protocol Constructor & Initializer', () => {
   const treasury = helper.randomAddress()
-  let npm, store, router, storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1
+  let store, deployed
 
   beforeEach(async () => {
-    const deployed = await deployDependencies()
-
-    npm = deployed.npm
+    deployed = await deployDependencies()
     store = deployed.store
-    router = deployed.router
-    storeKeyUtil = deployed.storeKeyUtil
-    protoUtilV1 = deployed.protoUtilV1
-    accessControlLibV1 = deployed.accessControlLibV1
-    validationLibV1 = deployed.validationLibV1
-    baseLibV1 = deployed.baseLibV1
-    registryLibV1 = deployed.registryLibV1
   })
 
   it('should deploy correctly', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -48,9 +39,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -79,12 +70,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should correctly set storage values', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -96,9 +87,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury,
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -125,7 +116,7 @@ describe('Protocol Constructor & Initializer', () => {
     isProtocolAddress.should.be.true
 
     const npmAddress = await store.getAddress(key.PROTOCOL.CNS.NPM)
-    npmAddress.should.equal(npm.address)
+    npmAddress.should.equal(deployed.npm.address)
 
     const sBurner = await store.getAddress(key.PROTOCOL.CNS.BURNER)
     sBurner.should.equal(helper.zero1)
@@ -137,12 +128,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should allow initializing more than once', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -154,9 +145,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -184,12 +175,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should fail when zero address is provided as store', async () => {
     await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       helper.zerox
     ).should.be.rejectedWith('Invalid Store')
@@ -198,12 +189,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should fail when zero address is provided as NPM', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -215,7 +206,7 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
       npm: helper.zerox,
       treasury: helper.randomAddress(),
@@ -241,12 +232,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should fail when zero address is provided as treasury', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -258,9 +249,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.zerox,
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -286,12 +277,12 @@ describe('Protocol Constructor & Initializer', () => {
 
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -303,9 +294,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -333,12 +324,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should not allow NPM address to be changed', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -350,9 +341,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
@@ -380,12 +371,12 @@ describe('Protocol Constructor & Initializer', () => {
   it('should fail if zero address is provided as burner', async () => {
     const protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -397,9 +388,9 @@ describe('Protocol Constructor & Initializer', () => {
 
     const args = {
       burner: helper.zerox,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),

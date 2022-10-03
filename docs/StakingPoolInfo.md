@@ -38,7 +38,7 @@ Gets the info of a given staking pool by key
 
 ```solidity
 function getInfo(bytes32 key, address you) external view
-returns(name string, addresses address[], values uint256[])
+returns(struct IStakingPools.StakingPoolInfoType)
 ```
 
 **Arguments**
@@ -52,16 +52,7 @@ returns(name string, addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 key, address you)
-    external
-    view
-    override
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    )
-  {
+function getInfo(bytes32 key, address you) external view override returns (StakingPoolInfoType memory) {
     return s.getInfoInternal(key, you);
   }
 ```
@@ -130,6 +121,7 @@ function getInfo(bytes32 key, address you)
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -169,6 +161,7 @@ function getInfo(bytes32 key, address you)
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

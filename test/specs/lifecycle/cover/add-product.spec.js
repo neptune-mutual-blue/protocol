@@ -34,9 +34,9 @@ describe('Cover: addProduct', () => {
 
     deployed = await deployDependencies()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -84,7 +84,7 @@ describe('Cover: addProduct', () => {
   it('reverts when the accessed by non-whitelisted cover creator', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, false)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [false])
 
     await deployed.cover.addProduct({
       coverKey,
@@ -95,7 +95,7 @@ describe('Cover: addProduct', () => {
       efficiency: '10000'
     }).should.be.rejectedWith('Not whitelisted')
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
   })
 
   it('reverts when status is invalid', async () => {
@@ -154,9 +154,9 @@ describe('Cover: addProduct', () => {
 
     const coverKey = key.toBytes32('foo-bar-without-products')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -191,7 +191,7 @@ describe('Cover: addProduct', () => {
   it('reverts when not accessed by cover creator', async () => {
     const [, bob] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(bob.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([bob.address], [true])
 
     await deployed.cover.connect(bob).addProduct({
       coverKey,
@@ -202,7 +202,7 @@ describe('Cover: addProduct', () => {
       efficiency: '10000'
     }).should.be.rejectedWith('Forbidden')
 
-    await deployed.cover.updateCoverCreatorWhitelist(bob.address, false)
+    await deployed.cover.updateCoverCreatorWhitelist([bob.address], [false])
   })
 
   it('reverts when protocol is paused', async () => {

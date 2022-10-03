@@ -125,6 +125,20 @@ contract Protocol is IProtocol, ProtoBase {
     addContractWithKey(namespace, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, contractAddress);
   }
 
+  function addContracts(
+    bytes32[] calldata namespaces,
+    bytes32[] calldata keys,
+    address[] calldata contractAddresses
+  ) external override {
+    require(namespaces.length > 0, "Please provide namespaces");
+    require(namespaces.length == contractAddresses.length, "Invalid args");
+    require(namespaces.length == keys.length, "Invalid args");
+
+    for (uint256 i = 0; i < namespaces.length; i++) {
+      addContractWithKey(namespaces[i], keys[i], contractAddresses[i]);
+    }
+  }
+
   /**
    * @dev Adds a contract to the protocol using a namespace and key.
    *

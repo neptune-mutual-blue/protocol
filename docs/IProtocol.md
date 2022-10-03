@@ -17,21 +17,48 @@ struct AccountWithRoles {
 }
 ```
 
+### InitializeArgs
+
+```js
+struct InitializeArgs {
+ address burner,
+ address uniswapV2RouterLike,
+ address uniswapV2FactoryLike,
+ address npm,
+ address treasury,
+ address priceOracle,
+ uint256 coverCreationFee,
+ uint256 minCoverCreationStake,
+ uint256 firstReportingStake,
+ uint256 claimPeriod,
+ uint256 reportingBurnRate,
+ uint256 governanceReporterCommission,
+ uint256 claimPlatformFee,
+ uint256 claimReporterCommission,
+ uint256 flashLoanFee,
+ uint256 flashLoanFeeProtocol,
+ uint256 resolutionCoolDownPeriod,
+ uint256 stateUpdateInterval,
+ uint256 maxLendingRatio
+}
+```
+
 **Events**
 
 ```js
+event Initialized(struct IProtocol.InitializeArgs  args);
 event ContractAdded(bytes32 indexed namespace, bytes32 indexed key, address indexed contractAddress);
 event ContractUpgraded(bytes32 indexed namespace, bytes32 indexed key, address  previous, address indexed current);
 event MemberAdded(address  member);
 event MemberRemoved(address  member);
-event Initialized(address[]  addresses, uint256[]  values);
 ```
 
 ## Functions
 
 - [addContract(bytes32 namespace, address contractAddress)](#addcontract)
+- [addContracts(bytes32[] namespaces, bytes32[] keys, address[] contractAddresses)](#addcontracts)
 - [addContractWithKey(bytes32 namespace, bytes32 coverKey, address contractAddress)](#addcontractwithkey)
-- [initialize(address[] addresses, uint256[] values)](#initialize)
+- [initialize(struct IProtocol.InitializeArgs args)](#initialize)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [upgradeContractWithKey(bytes32 namespace, bytes32 coverKey, address previous, address current)](#upgradecontractwithkey)
 - [addMember(address member)](#addmember)
@@ -56,6 +83,32 @@ function addContract(bytes32 namespace, address contractAddress) external nonpay
 
 ```javascript
 function addContract(bytes32 namespace, address contractAddress) external;
+```
+</details>
+
+### addContracts
+
+```solidity
+function addContracts(bytes32[] namespaces, bytes32[] keys, address[] contractAddresses) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| namespaces | bytes32[] |  | 
+| keys | bytes32[] |  | 
+| contractAddresses | address[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addContracts(
+    bytes32[] calldata namespaces,
+    bytes32[] calldata keys,
+    address[] calldata contractAddresses
+  ) external;
 ```
 </details>
 
@@ -88,21 +141,20 @@ function addContractWithKey(
 ### initialize
 
 ```solidity
-function initialize(address[] addresses, uint256[] values) external nonpayable
+function initialize(struct IProtocol.InitializeArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] |  | 
-| values | uint256[] |  | 
+| args | struct IProtocol.InitializeArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function initialize(address[] calldata addresses, uint256[] calldata values) external;
+function initialize(InitializeArgs calldata args) external;
 ```
 </details>
 
@@ -283,6 +335,7 @@ function grantRoles(AccountWithRoles[] calldata detail) external;
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -322,6 +375,7 @@ function grantRoles(AccountWithRoles[] calldata detail) external;
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

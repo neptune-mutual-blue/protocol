@@ -16,39 +16,32 @@ const fallback = {
 }
 
 describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
-  const coverkey = key.toBytes32('test')
+  const coverKey = key.toBytes32('test')
   let store,
     liquidityEngine,
-    accessControlLibV1,
-    baseLibV1,
-    validationLibV1,
-    strategyLibV1,
-    storeKeyUtil,
     deployed
 
   before(async () => {
     deployed = await deployDependencies()
 
     store = deployed.store
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    validationLibV1 = deployed.validationLibV1
-    strategyLibV1 = deployed.strategyLibV1
-    storeKeyUtil = deployed.storeKeyUtil
 
     liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      StrategyLibV1: strategyLibV1.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      NTransferUtilV2: deployed.transferLib.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
+      RegistryLibV1: deployed.registryLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      StrategyLibV1: deployed.strategyLibV1.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
   })
 
   it('correct gets the lending period', async () => {
-    const result = await liquidityEngine.getRiskPoolingPeriods(coverkey)
+    const result = await liquidityEngine.getRiskPoolingPeriods(coverKey)
     result[0].should.equal(fallback.lendingPeriod)
     result[1].should.equal(fallback.withdrawalWindow)
   })
@@ -57,7 +50,7 @@ describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
     const lendingPeriod = '10'
     const withdrawalWindow = '10'
 
-    const tx = await liquidityEngine.setRiskPoolingPeriods(coverkey, lendingPeriod, withdrawalWindow)
+    const tx = await liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'RiskPoolingPeriodSet')
@@ -65,7 +58,7 @@ describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
     event.args.lendingPeriod.should.equal(lendingPeriod)
     event.args.withdrawalWindow.should.equal(withdrawalWindow)
 
-    const result = await liquidityEngine.getRiskPoolingPeriods(coverkey)
+    const result = await liquidityEngine.getRiskPoolingPeriods(coverKey)
     result[0].should.equal(lendingPeriod)
     result[1].should.equal(withdrawalWindow)
   })
@@ -75,7 +68,7 @@ describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
     const withdrawalWindow = '10'
 
     await deployed.protocol.pause()
-    await liquidityEngine.setRiskPoolingPeriods(coverkey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Protocol is paused')
+    await liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Protocol is paused')
     await deployed.protocol.unpause()
   })
 
@@ -84,20 +77,20 @@ describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
     const lendingPeriod = '10'
     const withdrawalWindow = '10'
 
-    await liquidityEngine.connect(bob).setRiskPoolingPeriods(coverkey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Forbidden')
+    await liquidityEngine.connect(bob).setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Forbidden')
   })
 
   it('reverts when zero is specified as lendingPeriod', async () => {
     const lendingPeriod = '0'
     const withdrawalWindow = '10'
 
-    await liquidityEngine.setRiskPoolingPeriods(coverkey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Please specify lending period')
+    await liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Please specify lending period')
   })
 
   it('reverts when zero is specified as withdrawalWindow', async () => {
     const lendingPeriod = '10'
     const withdrawalWindow = '0'
 
-    await liquidityEngine.setRiskPoolingPeriods(coverkey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Please specify withdrawal window')
+    await liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow).should.be.rejectedWith('Please specify withdrawal window')
   })
 })

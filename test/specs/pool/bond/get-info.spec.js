@@ -14,27 +14,22 @@ require('chai')
   .should()
 
 describe('Bond Pool: Get Info', () => {
-  let deployed, store, dai, npmDai, bondPoolLibV1, accessControlLibV1, baseLibV1, priceLibV1, validationLibV1, pool, payload
+  let deployed, store, dai, npmDai, pool, payload
 
   before(async () => {
     deployed = await deployDependencies()
 
     store = deployed.store
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    validationLibV1 = deployed.validationLibV1
-    bondPoolLibV1 = deployed.bondPoolLibV1
-    priceLibV1 = deployed.priceLibV1
 
     dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
     ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
 
     pool = await deployer.deployWithLibraries(cache, 'BondPool', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BondPoolLibV1: bondPoolLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      PriceLibV1: priceLibV1.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BondPoolLibV1: deployed.bondPoolLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      PriceLibV1: deployed.priceLibV1.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)

@@ -331,7 +331,7 @@ function preAddLiquidity(
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
-    GovernanceUtilV1.mustNotExceedNpmThreshold(amount);
+    GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToAdd);
 
     address pod = msg.sender;
     (podsToMint, previousNpmStake) = s.preAddLiquidityInternal(coverKey, pod, caller, amount, npmStakeToAdd);
@@ -595,7 +595,7 @@ Gets information of a given vault by the cover key
 
 ```solidity
 function getInfoImplementation(bytes32 coverKey, address you) external view
-returns(values uint256[])
+returns(struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -609,7 +609,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfoImplementation(bytes32 coverKey, address you) external view override returns (uint256[] memory values) {
+function getInfoImplementation(bytes32 coverKey, address you) external view override returns (IVault.VaultInfoType memory) {
     s.senderMustBeVaultContract(coverKey);
     address pod = msg.sender;
     return s.getInfoInternal(coverKey, pod, you);
@@ -728,6 +728,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -767,6 +768,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

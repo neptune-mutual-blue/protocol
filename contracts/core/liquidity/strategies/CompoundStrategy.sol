@@ -20,6 +20,8 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
   mapping(bytes32 => uint256) private _depositTotal;
   mapping(bytes32 => uint256) private _withdrawalTotal;
 
+  bytes32 public constant CNAME_STRATEGY_COMPOUND = "Compound Strategy";
+
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "compound", "v2"));
   bytes32 public constant NS_DEPOSITS = "deposits";
   bytes32 public constant NS_WITHDRAWALS = "withdrawals";
@@ -219,6 +221,6 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_STRATEGY_COMPOUND;
+    return CNAME_STRATEGY_COMPOUND;
   }
 }

@@ -67,7 +67,7 @@ function finalize(
 ### _finalize
 
 ```solidity
-function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) private nonpayable
+function _finalize(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) internal nonpayable
 ```
 
 **Arguments**
@@ -86,7 +86,9 @@ function _finalize(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  ) private {
+  ) internal {
+    s.setBoolByKey(GovernanceUtilV1.getHasFinalizedKeyInternal(coverKey, productKey, incidentDate), true);
+
     // Deleting latest incident date resets this product
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey);
@@ -94,13 +96,13 @@ function _finalize(
     s.deleteUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey);
 
     s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
-    s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey);
+    s.deleteAddressByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey);
     s.deleteBoolByKey(GovernanceUtilV1.getHasDisputeKeyInternal(coverKey, productKey));
 
     // @warning: do not uncomment these lines as these vales are required to enable unstaking any time after finalization
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, incidentDate)));
-    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_YES, coverKey, productKey, incidentDate)));
+    // s.deleteAddressByKey(keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_WITNESS_NO, coverKey, productKey, incidentDate)));
 
     s.updateStateAndLiquidity(coverKey);
     emit Finalized(coverKey, productKey, msg.sender, incidentDate);
@@ -171,6 +173,7 @@ function _finalize(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -210,6 +213,7 @@ function _finalize(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -38,7 +38,6 @@ mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
 - [_getExcludedCoverageOf(address account)](#_getexcludedcoverageof)
 - [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
 - [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
-- [_getEOD(uint256 date)](#_geteod)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address from, address to, uint256 )](#_beforetokentransfer)
 
@@ -133,16 +132,11 @@ returns(exclusion uint256)
 ```javascript
 function _getExcludedCoverageOf(address account) private view returns (uint256 exclusion) {
     uint256 incidentDate = s.getActiveIncidentDateInternal(COVER_KEY, PRODUCT_KEY);
+    uint256 resolutionEOD = PolicyHelperV1.getEODInternal(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
+    uint256 totalDays = (resolutionEOD - incidentDate) / 1 days;
 
-    uint256 resolutionEOD = _getEOD(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
-
-    for (uint256 i = 0; i < 14; i++) {
-      uint256 date = _getEOD(incidentDate + (i * 1 days));
-
-      if (date > resolutionEOD) {
-        break;
-      }
-
+    for (uint256 i = 0; i < totalDays; i++) {
+      uint256 date = PolicyHelperV1.getEODInternal(incidentDate + (i * 1 days));
       exclusion += coverageStartsFrom[account][date];
     }
   }
@@ -218,36 +212,10 @@ function mint(
     s.senderMustBePolicyContract();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    uint256 effectiveFrom = _getEOD(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
+    uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp) + s.getCoverageLagInternal(coverKey); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
 
     super._mint(to, amount);
-  }
-```
-</details>
-
-### _getEOD
-
-Gets the EOD (End of Day) time
-
-```solidity
-function _getEOD(uint256 date) private pure
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| date | uint256 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function _getEOD(uint256 date) private pure returns (uint256) {
-    (uint256 year, uint256 month, uint256 day) = BokkyPooBahsDateTimeLibrary.timestampToDate(date);
-    return BokkyPooBahsDateTimeLibrary.timestampFromDateTime(year, month, day, 23, 59, 59);
   }
 ```
 </details>
@@ -385,6 +353,7 @@ function _beforeTokenTransfer(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -424,6 +393,7 @@ function _beforeTokenTransfer(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

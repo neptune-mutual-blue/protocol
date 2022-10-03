@@ -38,7 +38,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
     const reassuranceRate = helper.percentage(50)
     const leverageFactor = '1'
 
-    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
 
     await contracts.cover.addCover({
       coverKey,
@@ -63,7 +63,12 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('does not allow fractional reserves', async () => {
@@ -103,6 +108,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
   it('allows reuse of liquidity as policies expire', async () => {
     const [owner] = await ethers.getSigners()
+
     let totalPurchased = 0
     const amount = 250_000
 

@@ -37,6 +37,7 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [mustBeBeforeResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbebeforeresolutiondeadline)
 - [mustNotHaveResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothaveresolutiondeadline)
 - [mustBeAfterResolutionDeadline(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbeafterresolutiondeadline)
+- [mustBeAfterFinalization(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#mustbeafterfinalization)
 - [mustBeValidIncidentDate(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#mustbevalidincidentdate)
 - [mustHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey)](#musthavedispute)
 - [mustNotHaveDispute(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothavedispute)
@@ -881,7 +882,37 @@ function mustBeAfterResolutionDeadline(
     bytes32 productKey
   ) public view {
     uint256 deadline = s.getResolutionDeadlineInternal(coverKey, productKey);
-    require(deadline > 0 && block.timestamp > deadline, "Still unresolved"); // solhint-disable-line
+    require(deadline > 0 && block.timestamp >= deadline, "Still unresolved"); // solhint-disable-line
+  }
+```
+</details>
+
+### mustBeAfterFinalization
+
+```solidity
+function mustBeAfterFinalization(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public view
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| productKey | bytes32 |  | 
+| incidentDate | uint256 |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function mustBeAfterFinalization(
+    IStore s,
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public view {
+    require(s.getBoolByKey(GovernanceUtilV1.getHasFinalizedKeyInternal(coverKey, productKey, incidentDate)), "Incident not finalized");
   }
 ```
 </details>
@@ -1174,11 +1205,7 @@ function validateUnstakeWithoutClaim(
     mustNotBePaused(s);
     mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey, productKey);
-
-    // Before the deadline, emergency resolution can still happen
-    // that may have an impact on the final decision. We, therefore, have to wait.
-    mustBeAfterResolutionDeadline(s, coverKey, productKey);
+    mustBeAfterFinalization(s, coverKey, productKey, incidentDate);
   }
 ```
 </details>
@@ -1213,7 +1240,6 @@ function validateUnstakeWithClaim(
     mustNotBePaused(s);
     mustBeSupportedProductOrEmpty(s, coverKey, productKey);
     mustNotHaveUnstaken(s, msg.sender, coverKey, productKey, incidentDate);
-    mustBeAfterReportingPeriod(s, coverKey, productKey);
 
     // If this reporting gets finalized, incident date will become invalid
     // meaning this execution will revert thereby restricting late comers
@@ -1224,14 +1250,6 @@ function validateUnstakeWithClaim(
     // Before the deadline, emergency resolution can still happen
     // that may have an impact on the final decision. We, therefore, have to wait.
     mustBeAfterResolutionDeadline(s, coverKey, productKey);
-
-    bool incidentHappened = s.getProductStatusOfInternal(coverKey, productKey, incidentDate) == CoverUtilV1.ProductStatus.Claimable;
-
-    if (incidentHappened) {
-      // Incident occurred. Must unstake with claim during the claim period.
-      mustBeDuringClaimPeriod(s, coverKey, productKey);
-      return;
-    }
   }
 ```
 </details>
@@ -1534,6 +1552,7 @@ function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view 
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1573,6 +1592,7 @@ function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view 
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

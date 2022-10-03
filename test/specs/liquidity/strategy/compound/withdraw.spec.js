@@ -69,6 +69,7 @@ describe('Compound Withdrawal: Faulty Pool', () => {
 
     deployed = await deployDependencies()
     await deployed.protocol.addMember(owner.address)
+
     const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
     daiDelegator = await deployer.deploy(cache, 'FaultyCompoundDaiDelegator', deployed.dai.address, cDai.address, '1')
 

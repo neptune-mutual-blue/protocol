@@ -220,10 +220,8 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_TREASURY = "Treasury";
   bytes32 public constant CNAME_POLICY = "Policy";
   bytes32 public constant CNAME_POLICY_ADMIN = "Policy Admin";
-  bytes32 public constant CNAME_POLICY_MANAGER = "Policy Manager";
   bytes32 public constant CNAME_BOND_POOL = "BondPool";
   bytes32 public constant CNAME_STAKING_POOL = "Staking Pool";
-  bytes32 public constant CNAME_POD_STAKING_POOL = "PODStaking Pool";
   bytes32 public constant CNAME_CLAIMS_PROCESSOR = "Claims Processor";
   bytes32 public constant CNAME_COVER = "Cover";
   bytes32 public constant CNAME_GOVERNANCE = "Governance";
@@ -235,8 +233,6 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_LIQUIDITY_VAULT = "Vault";
   bytes32 public constant CNAME_VAULT_DELEGATE = "Vault Delegate";
   bytes32 public constant CNAME_LIQUIDITY_ENGINE = "Liquidity Engine";
-  bytes32 public constant CNAME_STRATEGY_AAVE = "Aave Strategy";
-  bytes32 public constant CNAME_STRATEGY_COMPOUND = "Compound Strategy";
 
   function getProtocol(IStore s) external view returns (IProtocol) {
     return IProtocol(getProtocolAddress(s));

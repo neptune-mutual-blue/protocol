@@ -22,10 +22,10 @@ const add = async (coverKey, payload) => {
 
 const addReassurance = async (payload) => {
   for (const i in covers) {
-    const { key, coverName } = covers[i]
+    const { coverKey, coverName } = covers[i]
 
     console.info('Adding reassurance to %s', coverName)
-    await add(key, payload)
+    await add(coverKey, payload)
   }
 }
 

@@ -1,8 +1,9 @@
-const { network } = require('hardhat')
+const { network, ethers } = require('hardhat')
 const composer = require('../util/composer')
-const { createCovers } = require('../util/composer/covers')
-const { createPodStakingPools } = require('../util/composer/pod-staking')
-const { createDemoData } = require('../util/demo-data')
+const helper = require('../util/helper')
+const covers = require('../util/composer/covers')
+const podStakingPools = require('../util/composer/pod-staking')
+const demoData = require('../util/demo-data')
 
 const DEPLOYMENT_ID = 6
 
@@ -15,22 +16,26 @@ const deploy = async () => {
   const isHardhat = network.name === 'hardhat'
 
   const result = await composer.initializer.initialize(isHardhat, DEPLOYMENT_ID)
-  const { intermediate, cache, tokenInfo, pairInfo } = result
+  const { intermediate, cache, tokenInfo, pairInfo, startBalance } = result
 
   console.info('Stop: 100ms')
   await rest(100)
   console.info('Go')
-  await createCovers({ intermediate, cache, contracts: result })
+  await covers.create({ intermediate, cache, contracts: result })
 
   console.info('Stop: 200ms')
   await rest(200)
   console.info('Go')
-  await createPodStakingPools({ intermediate, cache, contracts: result, tokenInfo, pairInfo, provider: owner })
+  await podStakingPools.create({ intermediate, cache, contracts: result, tokenInfo, pairInfo, provider: owner })
 
   console.info('Stop: 200ms')
   await rest(200)
   console.info('Go')
-  await createDemoData(result)
+  await demoData.create(result)
+
+  const endBalance = await ethers.provider.getBalance(owner.address)
+  const spent = startBalance.sub(endBalance)
+  console.log('Gas consumed %s / Balance: %s', helper.weiAsToken(spent, 'ETH'), helper.weiAsToken(endBalance, 'ETH'))
 }
 
 deploy()

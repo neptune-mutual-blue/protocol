@@ -62,7 +62,7 @@ contract CoverStake is ICoverStake, Recoverable {
 
     require(amount >= fee, "Invalid fee");
 
-    s.npmToken().ensureTransferFrom(account, address(this), amount);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
 
     if (fee > 0) {
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);

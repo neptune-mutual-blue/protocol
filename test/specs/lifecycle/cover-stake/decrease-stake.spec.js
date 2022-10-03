@@ -47,9 +47,9 @@ describe('CoverStake: decreaseStake', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -85,7 +85,12 @@ describe('CoverStake: decreaseStake', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     await deployed.protocol.upgradeContract(key.PROTOCOL.CNS.COVER, deployed.cover.address, alice.address)
   })
@@ -95,7 +100,7 @@ describe('CoverStake: decreaseStake', () => {
     const amount = helper.ether(10)
 
     await deployed.npm.transfer(alice.address, amount)
-    await deployed.npm.approve(deployed.stakingContract.address, amount)
+    await deployed.npm.approve(deployed.cover.address, amount)
     const tx = await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'StakeRemoved')
@@ -109,7 +114,7 @@ describe('CoverStake: decreaseStake', () => {
     const amount = helper.ether(10000)
 
     await deployed.npm.transfer(alice.address, amount)
-    await deployed.npm.approve(deployed.stakingContract.address, amount)
+    await deployed.npm.approve(deployed.cover.address, amount)
     await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
       .should.be.rejectedWith('Exceeds your drawing power')
   })
@@ -119,7 +124,7 @@ describe('CoverStake: decreaseStake', () => {
     const amount = helper.ether(0)
 
     await deployed.npm.transfer(alice.address, amount)
-    await deployed.npm.approve(deployed.stakingContract.address, amount)
+    await deployed.npm.approve(deployed.cover.address, amount)
     await deployed.stakingContract.connect(alice).decreaseStake(coverKey, amount)
       .should.be.rejectedWith('Please specify amount')
   })

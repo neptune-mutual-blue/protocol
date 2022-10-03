@@ -28,7 +28,14 @@ contract VaultTest is CoverSpec {
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
 
-    _vault.addLiquidity(_COVER_KEY, amount, npmStakeToAdd, referralCode);
+    IVault.AddLiquidityArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.amount = amount;
+    args.npmStakeToAdd = npmStakeToAdd;
+    args.referralCode = referralCode;
+
+    _vault.addLiquidity(args);
   }
 
   function testRemoveLiquidityWithdrawalNotStarted(
@@ -45,7 +52,14 @@ contract VaultTest is CoverSpec {
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
 
-    _vault.addLiquidity(_COVER_KEY, amount, npmStakeToAdd, referralCode);
+    IVault.AddLiquidityArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.amount = amount;
+    args.npmStakeToAdd = npmStakeToAdd;
+    args.referralCode = referralCode;
+
+    _vault.addLiquidity(args);
 
     vm.roll(block.number + 2);
 
@@ -70,7 +84,14 @@ contract VaultTest is CoverSpec {
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
 
-    _vault.addLiquidity(_COVER_KEY, amount, npmStakeToAdd, referralCode);
+    IVault.AddLiquidityArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.amount = amount;
+    args.npmStakeToAdd = npmStakeToAdd;
+    args.referralCode = referralCode;
+
+    _vault.addLiquidity(args);
 
     vm.warp(block.timestamp + 1 days);
 
@@ -100,7 +121,14 @@ contract VaultTest is CoverSpec {
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
 
-    _vault.addLiquidity(_COVER_KEY, amount, npmStakeToAdd, referralCode);
+    IVault.AddLiquidityArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.amount = amount;
+    args.npmStakeToAdd = npmStakeToAdd;
+    args.referralCode = referralCode;
+
+    _vault.addLiquidity(args);
 
     vm.warp(block.timestamp + 1 days);
 
@@ -130,7 +158,14 @@ contract VaultTest is CoverSpec {
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
 
-    _vault.addLiquidity(_COVER_KEY, amount, npmStakeToAdd, referralCode);
+    IVault.AddLiquidityArgs memory args;
+
+    args.coverKey = _COVER_KEY;
+    args.amount = amount;
+    args.npmStakeToAdd = npmStakeToAdd;
+    args.referralCode = referralCode;
+
+    _vault.addLiquidity(args);
 
     vm.warp(block.timestamp + 1 days);
 

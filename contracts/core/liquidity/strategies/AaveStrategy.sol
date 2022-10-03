@@ -17,6 +17,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
+  bytes32 public constant CNAME_STRATEGY_AAVE = "Aave Strategy";
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "aave", "v2"));
   bytes32 public constant NS_DEPOSITS = "deposits";
   bytes32 public constant NS_WITHDRAWALS = "withdrawals";
@@ -217,6 +218,6 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_STRATEGY_AAVE;
+    return CNAME_STRATEGY_AAVE;
   }
 }

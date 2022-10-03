@@ -82,7 +82,11 @@ interface ICover is IMember {
    */
   function addCover(AddCoverArgs calldata args) external returns (address);
 
+  function addCovers(AddCoverArgs[] calldata args) external returns (address[] memory vaults);
+
   function addProduct(AddProductArgs calldata args) external;
+
+  function addProducts(AddProductArgs[] calldata args) external;
 
   function updateProduct(UpdateProductArgs calldata args) external;
 
@@ -95,7 +99,7 @@ interface ICover is IMember {
    */
   function updateCover(bytes32 coverKey, string calldata info) external;
 
-  function updateCoverCreatorWhitelist(address account, bool whitelisted) external;
+  function updateCoverCreatorWhitelist(address[] calldata account, bool[] calldata whitelisted) external;
 
   function updateCoverUsersWhitelist(
     bytes32 coverKey,

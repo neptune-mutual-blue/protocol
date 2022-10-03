@@ -662,7 +662,7 @@ function preTransferToStrategyInternal(
     bytes32 strategyName,
     uint256 amount
   ) external {
-    if (s.getStablecoin() == address(token) == false) {
+    if (s.getStablecoin() != address(token)) {
       return;
     }
 
@@ -700,7 +700,7 @@ function postReceiveFromStrategyInternal(
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    if (s.getStablecoin() == address(token) == false) {
+    if (s.getStablecoin() != address(token)) {
       return (income, loss);
     }
 
@@ -983,6 +983,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1022,6 +1023,7 @@ function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external 
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

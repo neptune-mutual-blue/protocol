@@ -404,6 +404,107 @@
             "type": "bytes32"
           },
           {
+            "internalType": "string",
+            "name": "info",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "tokenName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "tokenSymbol",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "supportsProducts",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "requiresWhitelist",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakeWithFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialReassuranceAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minStakeToReport",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reportingPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cooldownPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "claimPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "floor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ceiling",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reassuranceRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leverageFactor",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ICover.AddCoverArgs[]",
+        "name": "args",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addCovers",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "vaults",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "coverKey",
+            "type": "bytes32"
+          },
+          {
             "internalType": "bytes32",
             "name": "productKey",
             "type": "bytes32"
@@ -435,6 +536,51 @@
       }
     ],
     "name": "addProduct",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "coverKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "productKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "info",
+            "type": "string"
+          },
+          {
+            "internalType": "bool",
+            "name": "requiresWhitelist",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "productStatus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "efficiency",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ICover.AddProductArgs[]",
+        "name": "args",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addProducts",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -606,14 +752,14 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "address[]",
         "name": "account",
-        "type": "address"
+        "type": "address[]"
       },
       {
-        "internalType": "bool",
+        "internalType": "bool[]",
         "name": "whitelisted",
-        "type": "bool"
+        "type": "bool[]"
       }
     ],
     "name": "updateCoverCreatorWhitelist",

@@ -11,25 +11,23 @@ require('chai')
   .should()
 
 describe('Pausing Protocol', () => {
-  let npm, store, router, protocol
+  let store, protocol
 
   before(async () => {
     const [owner] = await ethers.getSigners()
 
     const deployed = await deployDependencies()
-    const { storeKeyUtil, protoUtilV1, accessControlLibV1, validationLibV1, baseLibV1, registryLibV1 } = deployed
-    npm = deployed.npm
+
     store = deployed.store
-    router = deployed.router
 
     protocol = await deployer.deployWithLibraries(cache, 'Protocol',
       {
-        AccessControlLibV1: accessControlLibV1.address,
-        BaseLibV1: baseLibV1.address,
-        ProtoUtilV1: protoUtilV1.address,
-        RegistryLibV1: registryLibV1.address,
-        StoreKeyUtil: storeKeyUtil.address,
-        ValidationLibV1: validationLibV1.address
+        AccessControlLibV1: deployed.accessControlLibV1.address,
+        BaseLibV1: deployed.baseLibV1.address,
+        ProtoUtilV1: deployed.protoUtilV1.address,
+        RegistryLibV1: deployed.registryLibV1.address,
+        StoreKeyUtil: deployed.storeKeyUtil.address,
+        ValidationLibV1: deployed.validationLibV1.address
       },
       store.address
     )
@@ -44,9 +42,9 @@ describe('Pausing Protocol', () => {
 
     const args = {
       burner: helper.zero1,
-      uniswapV2RouterLike: router.address,
+      uniswapV2RouterLike: deployed.router.address,
       uniswapV2FactoryLike: helper.randomAddress(),
-      npm: npm.address,
+      npm: deployed.npm.address,
       treasury: helper.randomAddress(),
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
