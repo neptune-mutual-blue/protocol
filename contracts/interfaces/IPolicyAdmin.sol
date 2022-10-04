@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "./IMember.sol";
 
 interface IPolicyAdmin is IMember {
-  event PolicyRateSet(uint256 floor, uint256 ceiling);
   event CoverPolicyRateSet(bytes32 indexed coverKey, uint256 floor, uint256 ceiling);
   event CoverageLagSet(bytes32 indexed coverKey, uint256 window);
 

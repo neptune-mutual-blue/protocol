@@ -6,6 +6,21 @@ View Source: [contracts/interfaces/IUnstakable.sol](../contracts/interfaces/IUns
 
 **IUnstakable**
 
+## Structs
+### UnstakeInfoType
+
+```js
+struct UnstakeInfoType {
+ uint256 totalStakeInWinningCamp,
+ uint256 totalStakeInLosingCamp,
+ uint256 myStakeInWinningCamp,
+ uint256 toBurn,
+ uint256 toReporter,
+ uint256 myReward,
+ uint256 unstaken
+}
+```
+
 **Events**
 
 ```js
@@ -76,7 +91,7 @@ function unstakeWithClaim(
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
+returns(struct IUnstakable.UnstakeInfoType)
 ```
 
 **Arguments**
@@ -97,18 +112,7 @@ function getUnstakeInfoFor(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  )
-    external
-    view
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    );
+  ) external view returns (UnstakeInfoType memory);
 ```
 </details>
 
@@ -175,6 +179,7 @@ function getUnstakeInfoFor(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -214,6 +219,7 @@ function getUnstakeInfoFor(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

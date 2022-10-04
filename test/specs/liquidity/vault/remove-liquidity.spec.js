@@ -14,7 +14,7 @@ require('chai')
   .should()
 
 describe('Vault: removeLiquidity (Dedicated Cover)', () => {
-  let deployed, coverKey, npmStake
+  let deployed, coverKey, npmStakeToAdd
 
   beforeEach(async () => {
     deployed = await deployDependencies()
@@ -27,13 +27,18 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
 
     const amount = helper.ether(10_000_000, PRECISION)
-    npmStake = helper.ether(500)
+    npmStakeToAdd = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
     await deployed.dai.approve(deployed.vault.address, amount)
 
-    await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    })
   })
 
   it('reverts when tried to exit without removing total NPM stake', async () => {
@@ -43,12 +48,12 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
     const pods = helper.ether(2000)
     await deployed.vault.approve(deployed.vault.address, pods)
 
-    await deployed.vault.removeLiquidity(coverKey, pods, npmStake, true)
+    await deployed.vault.removeLiquidity(coverKey, pods, npmStakeToAdd, true)
       .should.be.rejectedWith('Invalid NPM stake to exit')
   })
 
   it('successfully removes liquidity', async () => {
-    const totalNPMStake = helper.add(npmStake, deployed.minStakeToReport)
+    const totalNPMStake = helper.add(npmStakeToAdd, deployed.minStakeToReport)
 
     await network.provider.send('evm_increaseTime', [1 * HOURS])
     await deployed.vault.accrueInterest()
@@ -77,14 +82,14 @@ describe('Vault: removeLiquidity (Dedicated Cover)', () => {
     await deployed.vault.removeLiquidity(coverKey, pods, '0', false)
   })
 
-  it('reverts when coverkey is invalid', async () => {
+  it('reverts when coverKey is invalid', async () => {
     await network.provider.send('evm_increaseTime', [1 * HOURS])
     await deployed.vault.accrueInterest()
 
     const pods = helper.ether(1_000)
     await deployed.vault.approve(deployed.vault.address, pods)
 
-    await deployed.vault.removeLiquidity(key.toBytes32('foobar'), pods, npmStake, false)
+    await deployed.vault.removeLiquidity(key.toBytes32('foobar'), pods, npmStakeToAdd, false)
       .should.be.rejectedWith('Forbidden')
   })
 
@@ -142,16 +147,16 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
 
   const lendingPeriod = 1 * HOURS
   const withdrawalWindow = 1 * HOURS
-  const npmStake = helper.ether(500)
+  const npmStakeToAdd = helper.ether(500)
 
   before(async () => {
     const [owner] = await ethers.getSigners()
 
     deployed = await deployDependencies()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -201,10 +206,15 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     const amount = helper.ether(10_000_000, PRECISION)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(vault.address, npmStake)
+    await deployed.npm.approve(vault.address, npmStakeToAdd)
     await deployed.dai.approve(vault.address, amount)
 
-    await vault.addLiquidity(coverKey, amount, npmStake, referralCode)
+    await vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    })
   })
 
   it('successfully removes liquidity', async () => {
@@ -215,7 +225,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     const pods = helper.ether(2000)
     await vault.approve(vault.address, pods)
 
-    const tx = await vault.removeLiquidity(coverKey, pods, npmStake, true)
+    const tx = await vault.removeLiquidity(coverKey, pods, npmStakeToAdd, true)
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PodsRedeemed')
@@ -233,7 +243,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     await vault.approve(vault.address, pods)
 
     await deployed.cover.disablePolicy(coverKey, productKey, true, 'testing liqiudity removal')
-    const tx = await vault.removeLiquidity(coverKey, pods, npmStake, true)
+    const tx = await vault.removeLiquidity(coverKey, pods, npmStakeToAdd, true)
     await deployed.cover.disablePolicy(coverKey, productKey, false, 'testing liqiudity removal')
 
     const { events } = await tx.wait()
@@ -253,7 +263,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     await vault.approve(vault.address, pods)
 
     await deployed.cover.disablePolicy(coverKey, productKey, true, 'testing liqiudity removal')
-    const tx = await vault.removeLiquidity(coverKey, 0, npmStake, true)
+    const tx = await vault.removeLiquidity(coverKey, 0, npmStakeToAdd, true)
     await deployed.cover.disablePolicy(coverKey, productKey, false, 'testing liqiudity removal')
 
     const { events } = await tx.wait()
@@ -277,7 +287,7 @@ describe('Vault: removeLiquidity (Diversified Cover)', () => {
     await deployed.npm.approve(deployed.governance.address, reportingStake)
     await deployed.governance.report(coverKey, productKey, reportingInfo, reportingStake)
 
-    await vault.removeLiquidity(coverKey, pods, npmStake, true)
+    await vault.removeLiquidity(coverKey, pods, npmStakeToAdd, true)
       .should.be.rejectedWith('Status not normal')
 
     const incidentDate = await deployed.governance.getActiveIncidentDate(coverKey, productKey)

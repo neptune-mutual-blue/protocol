@@ -12,7 +12,6 @@ The policy admin contract enables the owner (governance)
 ## Functions
 
 - [constructor(IStore store)](#)
-- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
 - [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
 - [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
 - [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
@@ -39,42 +38,6 @@ function (IStore store) public nonpayable Recoverable
 
 ```javascript
 constructor(IStore store) Recoverable(store) {}
-```
-</details>
-
-### setPolicyRates
-
-Sets policy rates. This feature is only accessible by cover manager.
-
-```solidity
-function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable nonReentrant 
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate fallback | 
-| ceiling | uint256 | The highest cover fee rate fallback | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external override nonReentrant {
-    s.mustNotBePaused();
-    AccessControlLibV1.mustBeCoverManager(s);
-
-    require(floor > 0, "Please specify floor");
-    require(ceiling > floor, "Invalid ceiling");
-
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
-    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
-
-    s.updateStateAndLiquidity(0);
-
-    emit PolicyRateSet(floor, ceiling);
-  }
 ```
 </details>
 
@@ -105,13 +68,19 @@ function setPolicyRatesByKey(
   ) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    s.mustBeValidCoverKey(coverKey);
 
     require(floor > 0, "Please specify floor");
-    require(ceiling > 0, "Invalid ceiling");
+    require(ceiling > floor, "Invalid ceiling");
 
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
-    s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+    if (coverKey > 0) {
+      s.mustBeValidCoverKey(coverKey);
+
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, coverKey, floor);
+      s.setUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey, ceiling);
+    } else {
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, floor);
+      s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
+    }
 
     s.updateStateAndLiquidity(coverKey);
 
@@ -328,6 +297,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -367,6 +337,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

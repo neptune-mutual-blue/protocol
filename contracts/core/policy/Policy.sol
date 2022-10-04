@@ -86,7 +86,7 @@ contract Policy is IPolicy, Recoverable {
    * @custom:suppress-acl This is a publicly accessible feature
    *
    */
-  function purchaseCover(PurchaseCoverArgs calldata args) external override nonReentrant returns (address, uint256) {
+  function purchaseCover(PurchaseCoverArgs calldata args) public override nonReentrant returns (address, uint256) {
     // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
     // and uncomment the following line
     // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
@@ -108,6 +108,12 @@ contract Policy is IPolicy, Recoverable {
 
     emit CoverPurchased(args, address(cxToken), fee, platformFee, cxToken.expiresOn(), lastPolicyId);
     return (address(cxToken), lastPolicyId);
+  }
+
+  function purchaseCovers(PurchaseCoverArgs[] calldata args) external {
+    for (uint256 i = 0; i < args.length; i++) {
+      purchaseCover(args[i]);
+    }
   }
 
   /**

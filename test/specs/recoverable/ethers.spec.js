@@ -19,6 +19,9 @@ describe('Recoverable: Ether', () => {
     recoverable = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
       BaseLibV1: deployed.baseLibV1.address,
+      NTransferUtilV2: deployed.transferLib.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
+      RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       StrategyLibV1: deployed.strategyLibV1.address,
       ValidationLibV1: deployed.validationLibV1.address

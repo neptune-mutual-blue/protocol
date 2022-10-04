@@ -7,6 +7,16 @@ View Source: [contracts/interfaces/ILendingStrategy.sol](../contracts/interfaces
 
 **ILendingStrategy**
 
+## Structs
+### LendingStrategyInfoType
+
+```js
+struct LendingStrategyInfoType {
+ uint256 deposits,
+ uint256 withdrawals
+}
+```
+
 **Events**
 
 ```js
@@ -113,7 +123,7 @@ Gets info of this strategy by cover key
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
-returns(values uint256[])
+returns(info struct ILendingStrategy.LendingStrategyInfoType)
 ```
 
 **Arguments**
@@ -126,7 +136,7 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 coverKey) external view returns (uint256[] memory values);
+function getInfo(bytes32 coverKey) external view returns (LendingStrategyInfoType memory info);
 ```
 </details>
 
@@ -236,6 +246,7 @@ function withdraw(bytes32 coverKey) external returns (uint256 stablecoinWithdraw
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -275,6 +286,7 @@ function withdraw(bytes32 coverKey) external returns (uint256 stablecoinWithdraw
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

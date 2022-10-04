@@ -240,6 +240,9 @@ const deployDependencies = async () => {
   const liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
+    NTransferUtilV2: transferLib.address,
+    ProtoUtilV1: protoUtilV1.address,
+    RegistryLibV1: registryLibV1.address,
     StoreKeyUtil: storeKeyUtil.address,
     StrategyLibV1: strategyLibV1.address,
     ValidationLibV1: validationLibV1.address
@@ -338,9 +341,9 @@ const deployDependencies = async () => {
 
   const info = key.toBytes32('info')
 
-  cover.updateCoverCreatorWhitelist(owner.address, true)
+  cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-  await npm.approve(stakingContract.address, stakeWithFee)
+  await npm.approve(cover.address, stakeWithFee)
   await dai.approve(cover.address, initialReassuranceAmount)
 
   await cover.addCover({
@@ -376,7 +379,12 @@ const deployDependencies = async () => {
 
   await dai.approve(vault.address, initialLiquidity)
   await npm.approve(vault.address, minStakeToReport)
-  await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+  await vault.addLiquidity({
+    coverKey,
+    amount: initialLiquidity,
+    npmStakeToAdd: minStakeToReport,
+    referralCode: key.toBytes32('')
+  })
 
   const processor = await deployer.deployWithLibraries(cache, 'Processor', {
     AccessControlLibV1: accessControlLibV1.address,

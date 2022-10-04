@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 const BigNumber = require('bignumber.js')
+const { ethers } = require('hardhat')
 const { helper, key, ipfs, sample } = require('../../util')
 const composer = require('../../util/composer')
 const PRECISION = helper.STABLECOIN_DECIMALS
@@ -80,7 +81,7 @@ describe('Protocol Initialization Stories', () => {
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
 
-    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     previous = {
@@ -109,16 +110,22 @@ describe('Protocol Initialization Stories', () => {
   })
 
   it('corretness rule: DAI should be correctly added to the vault', async () => {
-    const npmToStake = helper.ether(300)
+    const npmStakeToAdd = helper.ether(300)
     const initialLiquidity = helper.ether(4000000, PRECISION)
 
     const vault = await composer.vault.getVault(contracts, coverKey)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
     await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, npmToStake)
+    await contracts.npm.approve(vault.address, npmStakeToAdd)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, npmToStake, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd,
+      referralCode: key.toBytes32('')
+    })
+
     const balance = await vault.getStablecoinBalanceOf()
 
     const expected = helper.add(previous.daiBalance, initialLiquidity)
@@ -155,7 +162,12 @@ describe('Protocol Initialization Stories', () => {
     await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
-    await vault.addLiquidity(coverKey, liquidity, npmToStake, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: liquidity,
+      npmStakeToAdd: npmToStake,
+      referralCode: key.toBytes32('')
+    })
 
     const expected = helper.add(previous.daiBalance, liquidity)
 
@@ -196,7 +208,6 @@ describe('Protocol Initialization Stories', () => {
 
     // Directly transferring DAI to simulate an income earned from external source(s)
     await contracts.dai.transfer(vault.address, liquidity)
-    // await vault.addLiquidity(coverKey, liquidity, key.toBytes32(''))
 
     const expected = helper.add(previous.daiBalance, liquidity)
 
@@ -217,7 +228,12 @@ describe('Protocol Initialization Stories', () => {
     await contracts.dai.approve(vault.address, liquidity)
     await contracts.npm.approve(vault.address, npmToStake)
 
-    await vault.addLiquidity(coverKey, liquidity, npmToStake, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: liquidity,
+      npmStakeToAdd: npmToStake,
+      referralCode: key.toBytes32('')
+    })
 
     const expected = helper.add(previous.daiBalance, liquidity)
 

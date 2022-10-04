@@ -47,9 +47,9 @@ describe('CoverStake: increaseStake', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -85,7 +85,12 @@ describe('CoverStake: increaseStake', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     await deployed.protocol.upgradeContract(key.PROTOCOL.CNS.COVER, deployed.cover.address, alice.address)
   })
@@ -96,7 +101,8 @@ describe('CoverStake: increaseStake', () => {
     const fee = helper.ether(0)
 
     await deployed.npm.transfer(alice.address, amount)
-    await deployed.npm.approve(deployed.stakingContract.address, amount)
+    await deployed.npm.connect(alice).approve(deployed.stakingContract.address, amount)
+
     const tx = await deployed.stakingContract.connect(alice).increaseStake(coverKey, owner.address, amount, fee)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'StakeAdded')
@@ -111,7 +117,7 @@ describe('CoverStake: increaseStake', () => {
     const fee = ethers.BigNumber.from('20')
 
     await deployed.npm.transfer(alice.address, amount)
-    await deployed.npm.approve(deployed.stakingContract.address, amount.add(fee))
+    await deployed.npm.connect(alice).approve(deployed.stakingContract.address, amount.add(fee))
 
     const tx = await deployed.stakingContract.connect(alice).increaseStake(coverKey, owner.address, amount, fee)
     const { events } = await tx.wait()

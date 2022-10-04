@@ -18,7 +18,7 @@ describe('Cover: updateCoverCreatorWhitelist', () => {
   it('correctly whitelists cover creator', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     const isWhitelistedOwner = await deployed.cover.checkIfWhitelistedCoverCreator(owner.address)
     isWhitelistedOwner.should.equal(true)
@@ -31,7 +31,7 @@ describe('Cover: updateCoverCreatorWhitelist', () => {
     await deployed.protocol.pause()
 
     const [owner] = await ethers.getSigners()
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
       .should.be.rejectedWith('Protocol is paused')
 
     await deployed.protocol.unpause()
@@ -40,7 +40,7 @@ describe('Cover: updateCoverCreatorWhitelist', () => {
   it('reverts when not accessed by CoverManager', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    await deployed.cover.connect(bob).updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.connect(bob).updateCoverCreatorWhitelist([owner.address], [true])
       .should.be.rejectedWith('Forbidden')
   })
 })

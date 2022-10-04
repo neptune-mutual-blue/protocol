@@ -92,6 +92,41 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "coverKey",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "npmStakeToAdd",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "referralCode",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct IVault.AddLiquidityArgs[]",
+        "name": "args",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "addBulkLiquidity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address[]",
         "name": "strategies",
         "type": "address[]"

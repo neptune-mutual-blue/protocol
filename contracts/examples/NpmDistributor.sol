@@ -175,16 +175,11 @@ contract NpmDistributor is ReentrancyGuard {
     emit PolicySold(args.coverKey, args.productKey, cxTokenAt, msg.sender, args.coverDuration, args.amountToCover, args.referralCode, fee, premium);
   }
 
-  function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStake,
-    bytes32 referralCode
-  ) external nonReentrant {
-    require(coverKey > 0, "Invalid key");
-    require(amount > 0, "Invalid amount");
+  function addLiquidity(IVault.AddLiquidityArgs calldata args) external nonReentrant {
+    require(args.coverKey > 0, "Invalid key");
+    require(args.amount > 0, "Invalid amount");
 
-    IVault nDai = getVaultContract(coverKey);
+    IVault nDai = getVaultContract(args.coverKey);
     IERC20 dai = getStablecoin();
     IERC20 npm = getNpm();
 
@@ -198,24 +193,24 @@ contract NpmDistributor is ReentrancyGuard {
     _drain(npm);
 
     // Transfer DAI from sender's wallet here
-    dai.safeTransferFrom(msg.sender, address(this), amount);
+    dai.safeTransferFrom(msg.sender, address(this), args.amount);
 
     // Approve the Vault (or nDai) contract to spend DAI
-    dai.safeIncreaseAllowance(address(nDai), amount);
+    dai.safeIncreaseAllowance(address(nDai), args.amount);
 
-    if (npmStake > 0) {
+    if (args.npmStakeToAdd > 0) {
       // Transfer NPM from the sender's wallet here
-      npm.safeTransferFrom(msg.sender, address(this), npmStake);
+      npm.safeTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
 
       // Approve the Vault (or nDai) contract to spend NPM
-      npm.safeIncreaseAllowance(address(nDai), npmStake);
+      npm.safeIncreaseAllowance(address(nDai), args.npmStakeToAdd);
     }
 
-    nDai.addLiquidity(coverKey, amount, npmStake, referralCode);
+    nDai.addLiquidity(args);
 
     nDai.safeTransfer(msg.sender, nDai.balanceOf(address(this)));
 
-    emit LiquidityAdded(coverKey, msg.sender, referralCode, amount, npmStake);
+    emit LiquidityAdded(args.coverKey, msg.sender, args.referralCode, args.amount, args.npmStakeToAdd);
   }
 
   function removeLiquidity(

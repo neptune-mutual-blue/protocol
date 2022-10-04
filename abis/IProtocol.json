@@ -310,6 +310,29 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32[]",
+        "name": "namespaces",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "keys",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "contractAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "addContracts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "member",
         "type": "address"

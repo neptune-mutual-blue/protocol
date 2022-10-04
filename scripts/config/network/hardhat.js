@@ -11,6 +11,7 @@ const config = {
   31337: {
     network: 'Hardhat Forked Ethereum Network',
     chainId: 31337,
+    mainnet: false,
     pool: {
       bond: {
         period: 7 * DAYS

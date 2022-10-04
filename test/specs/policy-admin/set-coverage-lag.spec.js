@@ -33,9 +33,9 @@ describe('Policy Admin: setCoverageLag', () => {
     coverKey = key.toBytes32('foo-bar')
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, helper.ether(10_000))
+    await deployed.npm.approve(deployed.cover.address, helper.ether(10_000))
 
     await deployed.cover.addCover({
       coverKey,

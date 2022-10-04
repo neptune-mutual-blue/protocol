@@ -100,28 +100,28 @@ function unstakeWithClaim(
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
     address burner = s.getBurnAddress();
 
-    (, , uint256 myStakeInWinningCamp, uint256 toBurn, uint256 toReporter, uint256 myReward, ) = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
+    UnstakeInfoType memory info = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
     // Set the unstake details
-    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, myReward, toBurn, toReporter);
+    s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, info.myStakeInWinningCamp, info.myReward, info.toBurn, info.toReporter);
 
-    uint256 myStakeWithReward = myReward + myStakeInWinningCamp;
+    uint256 myStakeWithReward = info.myReward + info.myStakeInWinningCamp;
 
     s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
 
-    if (toReporter > 0) {
-      s.npmToken().ensureTransfer(finalReporter, toReporter);
+    if (info.toReporter > 0) {
+      s.npmToken().ensureTransfer(finalReporter, info.toReporter);
     }
 
-    if (toBurn > 0) {
-      s.npmToken().ensureTransfer(burner, toBurn);
+    if (info.toBurn > 0) {
+      s.npmToken().ensureTransfer(burner, info.toBurn);
     }
 
     s.updateStateAndLiquidity(coverKey);
 
-    emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, myReward);
-    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, myReward, toReporter);
-    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, myReward, toBurn);
+    emit Unstaken(coverKey, productKey, msg.sender, info.myStakeInWinningCamp, info.myReward);
+    emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, info.myReward, info.toReporter);
+    emit GovernanceBurned(coverKey, productKey, msg.sender, burner, info.myReward, info.toBurn);
   }
 ```
 </details>
@@ -133,7 +133,7 @@ Gets the unstake information for the supplied account
 
 ```solidity
 function getUnstakeInfoFor(address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
+returns(struct IUnstakable.UnstakeInfoType)
 ```
 
 **Arguments**
@@ -154,20 +154,7 @@ function getUnstakeInfoFor(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  )
-    external
-    view
-    override
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    )
-  {
+  ) external view override returns (UnstakeInfoType memory) {
     return s.getUnstakeInfoForInternal(account, coverKey, productKey, incidentDate);
   }
 ```
@@ -236,6 +223,7 @@ function getUnstakeInfoFor(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -275,6 +263,7 @@ function getUnstakeInfoFor(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

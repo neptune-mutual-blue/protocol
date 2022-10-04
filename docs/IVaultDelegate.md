@@ -465,7 +465,7 @@ function calculateLiquidityImplementation(bytes32 coverKey, uint256 podsToBurn) 
 
 ```solidity
 function getInfoImplementation(bytes32 coverKey, address forAccount) external view
-returns(result uint256[])
+returns(struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -479,7 +479,7 @@ returns(result uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (uint256[] memory result);
+function getInfoImplementation(bytes32 coverKey, address forAccount) external view returns (IVault.VaultInfoType memory);
 ```
 </details>
 
@@ -623,6 +623,7 @@ function getMaxFlashLoan(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -662,6 +663,7 @@ function getMaxFlashLoan(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

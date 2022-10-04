@@ -1,75 +1,60 @@
-const { ethers } = require('ethers')
+const { ethers } = require('hardhat')
 const { covers, products } = require('../../examples')
 const ipfs = require('../ipfs')
-const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
+const CHUNK_SIZE = 4
 
-const createCovers = async (payload) => {
+const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
+const toChunks = (array, size) => Array(Math.ceil(array.length / size)).fill().map((_, index) => index * size).map(begin => array.slice(begin, begin + size))
+
+const create = async (payload) => {
   const { intermediate, cache, contracts } = payload
-  const { npm, stakingContract, cover, dai } = contracts
+  const { npm, cover, dai } = contracts
 
   await intermediate(cache, npm, 'approve', cover.address, ethers.constants.MaxUint256)
   await intermediate(cache, dai, 'approve', cover.address, ethers.constants.MaxUint256)
-  await intermediate(cache, npm, 'approve', stakingContract.address, ethers.constants.MaxUint256)
 
-  for (const i in covers) {
-    const info = covers[i]
-    await addCover(payload, info)
-    await rest(200)
-  }
-
-  for (const i in products) {
-    const info = products[i]
-    await addProduct(payload, info)
-  }
+  await addCovers(payload)
+  await rest(200)
+  await addProducts(payload)
 }
 
-const addCover = async (payload, info) => {
+const addCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
   const { cover } = contracts
 
-  const { key, leverage, supportsProducts } = info
-  const { minStakeToReport, reportingPeriod, stakeWithFee, reassurance, cooldownPeriod, claimPeriod, pricingFloor, pricingCeiling, requiresWhitelist, reassuranceRate, vault } = info
-  const ipfsHash = await ipfs.write(info)
+  if (covers.length > CHUNK_SIZE) {
+    console.log('Total covers: %s. Breaking into to chunks of %s covers', covers.length, CHUNK_SIZE)
+  }
+  const chunks = toChunks(covers, CHUNK_SIZE)
 
-  await intermediate(cache, cover, 'addCover', {
-    coverKey: key,
-    info: ipfsHash,
-    tokenName: vault.name,
-    tokenSymbol: vault.symbol,
-    supportsProducts,
-    requiresWhitelist,
-    stakeWithFee,
-    initialReassuranceAmount: reassurance,
-    minStakeToReport,
-    reportingPeriod,
-    cooldownPeriod,
-    claimPeriod,
-    floor: pricingFloor,
-    ceiling: pricingCeiling,
-    reassuranceRate,
-    leverageFactor: leverage
-  })
+  for (const chunk of chunks) {
+    const args = await Promise.all(chunk.map(async (x) => {
+      return {
+        info: await ipfs.write(x),
+        ...x
+      }
+    }))
 
-  await rest(100)
+    await intermediate(cache, cover, 'addCovers', args)
+  }
 }
 
-const addProduct = async (payload, info) => {
+const addProducts = async (payload) => {
   const { intermediate, cache, contracts } = payload
   const { cover } = contracts
 
-  const { coverKey, productKey, requiresWhitelist, capitalEfficiency } = info
-  const ipfsHash = await ipfs.write(info)
+  const args = await Promise.all(products.map(async (x) => {
+    return {
+      coverKey: x.coverKey,
+      productKey: x.productKey,
+      info: await ipfs.write(x),
+      requiresWhitelist: x.requiresWhitelist,
+      productStatus: '1',
+      efficiency: x.efficiency
+    }
+  }))
 
-  const status = 1
-
-  await intermediate(cache, cover, 'addProduct', {
-    coverKey,
-    productKey,
-    info: ipfsHash,
-    requiresWhitelist,
-    productStatus: status,
-    efficiency: capitalEfficiency
-  })
+  await intermediate(cache, cover, 'addProducts', args)
 }
 
-module.exports = { createCovers }
+module.exports = { create }

@@ -55,6 +55,7 @@
  * @property {Object} policy - Policy contract
  * @property {Object} governance - Governance contract
  * @property {Object} resolution - Resolution contract
+ * @property {Object} neptuneRouter - Neptune Mutual Router
  * @property {Object} claimsProcessor - Claims processor contract
  * @property {Object} bondPoolContract - Bond pool contract
  * @property {Object} stakingPoolContract - Staking pool contract

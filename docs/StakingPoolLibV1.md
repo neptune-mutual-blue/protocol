@@ -14,7 +14,6 @@ View Source: [contracts/libraries/StakingPoolLibV1.sol](../contracts/libraries/S
 - [canWithdrawFromBlockHeightInternal(IStore s, bytes32 key, address account)](#canwithdrawfromblockheightinternal)
 - [getLastDepositHeight(IStore s, bytes32 key, address account)](#getlastdepositheight)
 - [getLastRewardHeight(IStore s, bytes32 key, address account)](#getlastrewardheight)
-- [getStakingPoolRewardTokenBalance(IStore s, bytes32 key)](#getstakingpoolrewardtokenbalance)
 - [calculateRewardsInternal(IStore s, bytes32 key, address account)](#calculaterewardsinternal)
 - [withdrawRewardsInternal(IStore s, bytes32 key, address account)](#withdrawrewardsinternal)
 - [depositInternal(IStore s, bytes32 key, uint256 amount)](#depositinternal)
@@ -26,7 +25,7 @@ Gets the info of a given staking pool by key
 
 ```solidity
 function getInfoInternal(IStore s, bytes32 key, address you) external view
-returns(name string, addresses address[], values uint256[])
+returns(info struct IStakingPools.StakingPoolInfoType)
 ```
 
 **Arguments**
@@ -45,43 +44,32 @@ function getInfoInternal(
     IStore s,
     bytes32 key,
     address you
-  )
-    external
-    view
-    returns (
-      string memory name,
-      address[] memory addresses,
-      uint256[] memory values
-    )
-  {
-    addresses = new address[](4);
-    values = new uint256[](15);
-
+  ) external view returns (IStakingPools.StakingPoolInfoType memory info) {
     bool valid = s.checkIfStakingPoolExists(key);
 
     if (valid) {
-      name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
+      info.name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
 
-      addresses[0] = s.getStakingTokenAddressInternal(key);
-      addresses[1] = s.getStakingTokenStablecoinPairAddressInternal(key);
-      addresses[2] = s.getRewardTokenAddressInternal(key);
-      addresses[3] = s.getRewardTokenStablecoinPairAddressInternal(key);
+      info.stakingToken = s.getStakingTokenAddressInternal(key);
+      info.stakingTokenStablecoinPair = s.getStakingTokenStablecoinPairAddressInternal(key);
+      info.rewardToken = s.getRewardTokenAddressInternal(key);
+      info.rewardTokenStablecoinPair = s.getRewardTokenStablecoinPairAddressInternal(key);
 
-      values[0] = s.getTotalStaked(key);
-      values[1] = s.getTarget(key);
-      values[2] = s.getMaximumStakeInternal(key);
-      values[3] = getPoolStakeBalanceInternal(s, key);
-      values[4] = getPoolCumulativeDeposits(s, key);
-      values[5] = s.getRewardPerBlock(key);
-      values[6] = s.getRewardPlatformFee(key);
-      values[7] = s.getLockupPeriodInBlocks(key);
-      values[8] = s.getRewardTokenBalance(key);
-      values[9] = getAccountStakingBalanceInternal(s, key, you);
-      values[10] = getTotalBlocksSinceLastRewardInternal(s, key, you);
-      values[11] = calculateRewardsInternal(s, key, you);
-      values[12] = canWithdrawFromBlockHeightInternal(s, key, you);
-      values[13] = getLastDepositHeight(s, key, you);
-      values[14] = getLastRewardHeight(s, key, you);
+      info.totalStaked = s.getTotalStaked(key);
+      info.target = s.getTarget(key);
+      info.maximumStake = s.getMaximumStakeInternal(key);
+      info.stakeBalance = getPoolStakeBalanceInternal(s, key);
+      info.cumulativeDeposits = getPoolCumulativeDeposits(s, key);
+      info.rewardPerBlock = s.getRewardPerBlock(key);
+      info.platformFee = s.getRewardPlatformFee(key);
+      info.lockupPeriod = s.getLockupPeriodInBlocks(key);
+      info.rewardTokenBalance = s.getRewardTokenBalance(key);
+      info.accountStakeBalance = getAccountStakingBalanceInternal(s, key, you);
+      info.totalBlockSinceLastReward = getTotalBlocksSinceLastRewardInternal(s, key, you);
+      info.rewards = calculateRewardsInternal(s, key, you);
+      info.canWithdrawFromBlockHeight = canWithdrawFromBlockHeightInternal(s, key, you);
+      info.lastDepositHeight = getLastDepositHeight(s, key, you);
+      info.lastRewardHeight = getLastRewardHeight(s, key, you);
     }
   }
 ```
@@ -296,33 +284,6 @@ function getLastRewardHeight(
 ```
 </details>
 
-### getStakingPoolRewardTokenBalance
-
-```solidity
-function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| key | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getStakingPoolRewardTokenBalance(IStore s, bytes32 key) public view returns (uint256) {
-    IERC20 rewardToken = IERC20(s.getAddressByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_TOKEN, key));
-    address stakingPool = s.getStakingPoolAddress();
-
-    return rewardToken.balanceOf(stakingPool);
-  }
-```
-</details>
-
 ### calculateRewardsInternal
 
 ```solidity
@@ -357,7 +318,7 @@ function calculateRewardsInternal(
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
     uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
 
-    uint256 poolBalance = getStakingPoolRewardTokenBalance(s, key);
+    uint256 poolBalance = s.getRewardTokenBalance(key);
 
     return rewards > poolBalance ? poolBalance : rewards;
   }
@@ -524,7 +485,7 @@ function withdrawInternal(
     require(amount > 0, "Please specify amount");
 
     require(getAccountStakingBalanceInternal(s, key, msg.sender) >= amount, "Insufficient balance");
-    require(block.number > canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
+    require(block.number >= canWithdrawFromBlockHeightInternal(s, key, msg.sender), "Withdrawal too early");
 
     stakingToken = s.getStakingTokenAddressInternal(key);
 
@@ -607,6 +568,7 @@ function withdrawInternal(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -646,6 +608,7 @@ function withdrawInternal(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -98,14 +98,7 @@ library CoverUtilV1 {
    * @param s Specify store instance
    */
   function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
-    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
-
-    if (value == 0) {
-      // Fallback to 250 NPM
-      value = 250 ether;
-    }
-
-    return value;
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
   }
 
   /**

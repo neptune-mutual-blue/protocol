@@ -38,9 +38,9 @@ describe('cxToken: `getClaimablePolicyOf` function', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     // await deployed.cover.addCover(coverKey, info, 'POD', 'POD', false, requiresWhitelist, values)
@@ -78,7 +78,12 @@ describe('cxToken: `getClaimablePolicyOf` function', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 

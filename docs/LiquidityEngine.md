@@ -22,6 +22,7 @@ The liquidity engine contract enables liquidity manager(s)
 - [getRiskPoolingPeriods(bytes32 coverKey)](#getriskpoolingperiods)
 - [getDisabledStrategies()](#getdisabledstrategies)
 - [getActiveStrategies()](#getactivestrategies)
+- [addBulkLiquidity(struct IVault.AddLiquidityArgs[] args)](#addbulkliquidity)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -338,6 +339,60 @@ function getActiveStrategies() external view override returns (address[] memory 
 ```
 </details>
 
+### addBulkLiquidity
+
+```solidity
+function addBulkLiquidity(struct IVault.AddLiquidityArgs[] args) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| args | struct IVault.AddLiquidityArgs[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external override {
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 npm = s.npmToken();
+
+    uint256 totalAmount;
+    uint256 totalNpm;
+
+    for (uint256 i = 0; i < args.length; i++) {
+      totalAmount += args[i].amount;
+      totalNpm += args[i].npmStakeToAdd;
+    }
+
+    stablecoin.ensureTransferFrom(msg.sender, address(this), totalAmount);
+    npm.ensureTransferFrom(msg.sender, address(this), totalNpm);
+
+    for (uint256 i = 0; i < args.length; i++) {
+      IVault vault = s.getVault(args[i].coverKey);
+      uint256 balance = vault.balanceOf(address(this));
+
+      if (balance > 0) {
+        IERC20(vault).ensureTransfer(s.getTreasury(), balance);
+      }
+
+      stablecoin.approve(address(vault), args[i].amount);
+      npm.approve(address(vault), args[i].npmStakeToAdd);
+
+      vault.addLiquidity(args[i]);
+
+      balance = vault.balanceOf(address(this));
+
+      require(balance > 0, "Fatal, no PODs minted");
+
+      IERC20(vault).ensureTransfer(msg.sender, vault.balanceOf(address(this)));
+    }
+  }
+```
+</details>
+
 ### version
 
 Version number of this contract
@@ -449,6 +504,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -488,6 +544,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

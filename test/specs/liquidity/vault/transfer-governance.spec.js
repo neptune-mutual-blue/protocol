@@ -16,7 +16,7 @@ describe('Vault: transferGovernance', () => {
     deployed = await deployDependencies()
   })
 
-  it('reverts when coverkey is invalid', async () => {
+  it('reverts when coverKey is invalid', async () => {
     const coverKey = key.toBytes32('foo-bar2')
     const amount = helper.ether(1_000, PRECISION)
     const address = helper.zero1

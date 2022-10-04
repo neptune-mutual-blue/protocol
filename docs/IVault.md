@@ -7,6 +7,33 @@ View Source: [contracts/interfaces/IVault.sol](../contracts/interfaces/IVault.so
 
 **IVault**
 
+## Structs
+### VaultInfoType
+
+```js
+struct VaultInfoType {
+ uint256 totalPods,
+ uint256 balance,
+ uint256 extendedBalance,
+ uint256 totalReassurance,
+ uint256 myPodBalance,
+ uint256 myShare,
+ uint256 withdrawalOpen,
+ uint256 withdrawalClose
+}
+```
+
+### AddLiquidityArgs
+
+```js
+struct AddLiquidityArgs {
+ bytes32 coverKey,
+ uint256 amount,
+ uint256 npmStakeToAdd,
+ bytes32 referralCode
+}
+```
+
 **Events**
 
 ```js
@@ -27,7 +54,7 @@ event Exited(bytes32 indexed coverKey, address indexed account);
 
 - [key()](#key)
 - [sc()](#sc)
-- [addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode)](#addliquidity)
+- [addLiquidity(struct IVault.AddLiquidityArgs args)](#addliquidity)
 - [accrueInterest()](#accrueinterest)
 - [removeLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bool exit)](#removeliquidity)
 - [transferGovernance(bytes32 coverKey, address to, uint256 amount)](#transfergovernance)
@@ -83,28 +110,20 @@ function sc() external view returns (address);
 Adds liquidity to the specified cover contract
 
 ```solidity
-function addLiquidity(bytes32 coverKey, uint256 amount, uint256 npmStake, bytes32 referralCode) external nonpayable
+function addLiquidity(struct IVault.AddLiquidityArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| coverKey | bytes32 | Enter the cover key | 
-| amount | uint256 | Enter the amount of liquidity token to supply. | 
-| npmStake | uint256 | Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period. | 
-| referralCode | bytes32 |  | 
+| args | struct IVault.AddLiquidityArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStake,
-    bytes32 referralCode
-  ) external;
+function addLiquidity(AddLiquidityArgs calldata args) external;
 ```
 </details>
 
@@ -291,7 +310,7 @@ function calculateLiquidity(uint256 podsToBurn) external view returns (uint256);
 
 ```solidity
 function getInfo(address forAccount) external view
-returns(result uint256[])
+returns(info struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -304,7 +323,7 @@ returns(result uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address forAccount) external view returns (uint256[] memory result);
+function getInfo(address forAccount) external view returns (VaultInfoType memory info);
 ```
 </details>
 
@@ -394,6 +413,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -433,6 +453,7 @@ function getStablecoinBalanceOf() external view returns (uint256);
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -21,13 +21,19 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
   it('correctly adds liquidity', async () => {
     const coverKey = key.toBytes32('foo-bar')
     const amount = helper.ether(1_000, PRECISION)
-    const npmStake = helper.ether(500)
+    const npmStakeToAdd = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
     await deployed.dai.approve(deployed.vault.address, amount)
 
-    const tx = await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
+    const tx = await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    })
+
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PodsIssued')
@@ -37,40 +43,52 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
   it('correctly adds liquidity without NPM stake', async () => {
     const coverKey = key.toBytes32('foo-bar')
     const amount = '100'
-    const npmStake = helper.ether(0)
+    const npmStakeToAdd = helper.ether(0)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
     await deployed.dai.approve(deployed.vault.address, amount)
 
-    await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
-      .should.not.be.rejected
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    }).should.not.be.rejected
   })
 
-  it('reverts when coverkey is invalid', async () => {
+  it('reverts when coverKey is invalid', async () => {
     const coverKey = key.toBytes32('foo-bar2')
     const amount = helper.ether(1_000, PRECISION)
-    const npmStake = helper.ether(500)
+    const npmStakeToAdd = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
     await deployed.dai.approve(deployed.vault.address, amount)
 
-    await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
-      .should.be.rejectedWith('Forbidden')
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    }).should.be.rejectedWith('Forbidden')
   })
 
   it('reverts when invalid amount is supplied', async () => {
     const coverKey = key.toBytes32('foo-bar')
     const amount = helper.ether(0)
-    const npmStake = helper.ether(1)
+    const npmStakeToAdd = helper.ether(1)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(deployed.vault.address, npmStake)
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
     await deployed.dai.approve(deployed.vault.address, amount)
 
-    await deployed.vault.addLiquidity(coverKey, amount, npmStake, referralCode)
-      .should.be.rejectedWith('Please specify amount')
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    }).should.be.rejectedWith('Please specify amount')
   })
 })
 
@@ -98,9 +116,9 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
 
     deployed = await deployDependencies()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -146,13 +164,19 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
 
   it('correctly adds liquidity', async () => {
     const amount = helper.ether(1_000, PRECISION)
-    const npmStake = helper.ether(500)
+    const npmStakeToAdd = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(vault.address, npmStake)
+    await deployed.npm.approve(vault.address, npmStakeToAdd)
     await deployed.dai.approve(vault.address, amount)
 
-    const tx = await vault.addLiquidity(coverKey, amount, npmStake, referralCode)
+    const tx = await vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    })
+
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'PodsIssued')
@@ -170,13 +194,17 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
     await deployed.governance.connect(bob).report(coverKey, productKey, reportingInfo, reportingStake)
 
     const amount = helper.ether(1_000, PRECISION)
-    const npmStake = helper.ether(500)
+    const npmStakeToAdd = helper.ether(500)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.connect(bob).approve(vault.address, npmStake)
+    await deployed.npm.connect(bob).approve(vault.address, npmStakeToAdd)
     await deployed.dai.connect(bob).approve(vault.address, amount)
 
-    await vault.connect(bob).addLiquidity(coverKey, amount, npmStake, referralCode)
-      .should.be.rejectedWith('Status not normal')
+    await vault.connect(bob).addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    }).should.be.rejectedWith('Status not normal')
   })
 })

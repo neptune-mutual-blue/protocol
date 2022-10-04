@@ -16,8 +16,9 @@ Enables governance agents to resolve a contract undergoing reporting.
 - [resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#resolve)
 - [emergencyResolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision)](#emergencyresolve)
 - [_resolve(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bool decision, bool emergency)](#_resolve)
-- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownPeriod)
-- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownPeriod)
+- [configureCoolDownPeriod(bytes32 coverKey, uint256 period)](#configurecooldownperiod)
+- [closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#closereport)
+- [getCoolDownPeriod(bytes32 coverKey)](#getcooldownperiod)
 - [getResolutionDeadline(bytes32 coverKey, bytes32 productKey)](#getresolutiondeadline)
 
 ### resolve
@@ -226,6 +227,56 @@ function configureCoolDownPeriod(bytes32 coverKey, uint256 period) external over
 ```
 </details>
 
+### closeReport
+
+Enables governance admins to perform a emergency resolution to close a report.
+ The status is set to `False Reporting` and the cover is made available to be finalized
+
+```solidity
+function closeReport(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external nonpayable nonReentrant 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter the cover key you want to resolve | 
+| productKey | bytes32 | Enter the product key you want to resolve | 
+| incidentDate | uint256 | Enter the date of this incident reporting | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function closeReport(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) external override nonReentrant {
+    require(incidentDate > 0, "Please specify incident date");
+
+    s.mustNotBePaused();
+    AccessControlLibV1.mustBeGovernanceAdmin(s);
+
+    s.mustBeSupportedProductOrEmpty(coverKey, productKey);
+    s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
+    s.mustBeDuringReportingPeriod(coverKey, productKey);
+    s.mustNotHaveResolutionDeadline(coverKey, productKey);
+
+    // solhint-disable-next-line not-rely-on-time
+    s.setUintByKeys(ProtoUtilV1.NS_GOVERNANCE_RESOLUTION_TS, coverKey, productKey, block.timestamp);
+
+    // solhint-disable-next-line not-rely-on-time
+    s.setUintByKeys(ProtoUtilV1.NS_RESOLUTION_DEADLINE, coverKey, productKey, block.timestamp);
+
+    _resolve(coverKey, productKey, incidentDate, false, true);
+    _finalize(coverKey, productKey, incidentDate);
+
+    emit ReportClosed(coverKey, productKey, msg.sender, incidentDate);
+  }
+```
+</details>
+
 ### getCoolDownPeriod
 
 Gets the cooldown period of a given cover
@@ -342,6 +393,7 @@ function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external vi
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -381,6 +433,7 @@ function getResolutionDeadline(bytes32 coverKey, bytes32 productKey) external vi
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

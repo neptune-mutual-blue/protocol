@@ -83,7 +83,7 @@ const deployDependencies = async () => {
   const baseLibV1 = await deployer.deployWithLibraries(cache, 'BaseLibV1', {
   })
 
-  const vaultFactoryLib = await deployer.deployWithLibraries(cache, 'VaultFactoryLibV1', {
+  const vaultFactoryLibV1 = await deployer.deployWithLibraries(cache, 'VaultFactoryLibV1', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
     NTransferUtilV2: transferLib.address,
@@ -167,7 +167,7 @@ const deployDependencies = async () => {
     stakingPoolLibV1,
     transferLib,
     strategyLibV1,
-    vaultFactoryLib,
+    vaultFactoryLibV1,
     protocol
   }
 }

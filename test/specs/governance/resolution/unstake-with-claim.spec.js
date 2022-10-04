@@ -34,9 +34,9 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -72,7 +72,12 @@ describe('Resolution: unstakeWithClaim (incident occurred)', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('must unstake and claim rewards correctly', async () => {
@@ -378,9 +383,9 @@ describe('Resolution: unstakeWithClaim (false reporting)', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -416,7 +421,12 @@ describe('Resolution: unstakeWithClaim (false reporting)', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('must unstake and claim rewards correctly', async () => {

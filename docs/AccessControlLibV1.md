@@ -269,7 +269,7 @@ function mustBeUnpauseAgent(IStore s) external view {
 
 ### callerMustBeAdmin
 
-Reverts if the sender is not the protocol admin.
+Reverts if the caller is not the protocol admin.
 
 ```solidity
 function callerMustBeAdmin(IStore s, address caller) external view
@@ -294,7 +294,7 @@ function callerMustBeAdmin(IStore s, address caller) external view {
 
 ### callerMustBeCoverManager
 
-Reverts if the sender is not the cover manager.
+Reverts if the caller is not the cover manager.
 
 ```solidity
 function callerMustBeCoverManager(IStore s, address caller) external view
@@ -319,7 +319,7 @@ function callerMustBeCoverManager(IStore s, address caller) external view {
 
 ### callerMustBeLiquidityManager
 
-Reverts if the sender is not the liquidity manager.
+Reverts if the caller is not the liquidity manager.
 
 ```solidity
 function callerMustBeLiquidityManager(IStore s, address caller) external view
@@ -344,7 +344,7 @@ function callerMustBeLiquidityManager(IStore s, address caller) external view {
 
 ### callerMustBeGovernanceAgent
 
-Reverts if the sender is not a governance agent.
+Reverts if the caller is not a governance agent.
 
 ```solidity
 function callerMustBeGovernanceAgent(IStore s, address caller) external view
@@ -369,7 +369,7 @@ function callerMustBeGovernanceAgent(IStore s, address caller) external view {
 
 ### callerMustBeGovernanceAdmin
 
-Reverts if the sender is not a governance admin.
+Reverts if the caller is not a governance admin.
 
 ```solidity
 function callerMustBeGovernanceAdmin(IStore s, address caller) external view
@@ -394,7 +394,7 @@ function callerMustBeGovernanceAdmin(IStore s, address caller) external view {
 
 ### callerMustBeUpgradeAgent
 
-Reverts if the sender is not an upgrade agent.
+Reverts if the caller is not an upgrade agent.
 
 ```solidity
 function callerMustBeUpgradeAgent(IStore s, address caller) public view
@@ -419,7 +419,7 @@ function callerMustBeUpgradeAgent(IStore s, address caller) public view {
 
 ### callerMustBeRecoveryAgent
 
-Reverts if the sender is not a recovery agent.
+Reverts if the caller is not a recovery agent.
 
 ```solidity
 function callerMustBeRecoveryAgent(IStore s, address caller) external view
@@ -444,7 +444,7 @@ function callerMustBeRecoveryAgent(IStore s, address caller) external view {
 
 ### callerMustBePauseAgent
 
-Reverts if the sender is not the pause agent.
+Reverts if the caller is not the pause agent.
 
 ```solidity
 function callerMustBePauseAgent(IStore s, address caller) external view
@@ -469,7 +469,7 @@ function callerMustBePauseAgent(IStore s, address caller) external view {
 
 ### callerMustBeUnpauseAgent
 
-Reverts if the sender is not the unpause agent.
+Reverts if the caller is not the unpause agent.
 
 ```solidity
 function callerMustBeUnpauseAgent(IStore s, address caller) external view
@@ -494,7 +494,7 @@ function callerMustBeUnpauseAgent(IStore s, address caller) external view {
 
 ### _mustHaveAccess
 
-Reverts if the sender does not have access to the given role.
+Reverts if the caller does not have access to the given role.
 
 ```solidity
 function _mustHaveAccess(IStore s, bytes32 role, address caller) private view
@@ -891,6 +891,7 @@ function _removeMember(IStore s, address member) private {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -930,6 +931,7 @@ function _removeMember(IStore s, address member) private {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

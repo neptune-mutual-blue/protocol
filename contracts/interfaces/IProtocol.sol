@@ -41,6 +41,12 @@ interface IProtocol is IMember, IAccessControl {
 
   function addContract(bytes32 namespace, address contractAddress) external;
 
+  function addContracts(
+    bytes32[] calldata namespaces,
+    bytes32[] calldata keys,
+    address[] calldata contractAddresses
+  ) external;
+
   function addContractWithKey(
     bytes32 namespace,
     bytes32 coverKey,

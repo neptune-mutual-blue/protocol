@@ -19,7 +19,12 @@ const add = async (coverKey, payload) => {
   await approve(dai.address, vault.address, lp, amount)
   await approve(npm.address, vault.address, lp, stake)
 
-  await vault.connect(lp).addLiquidity(coverKey, amount, stake, toBytes32(''))
+  await vault.connect(lp).addLiquidity({
+    coverKey,
+    amount,
+    npmStakeToAdd: stake,
+    referralCode: toBytes32('')
+  })
 
   console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'DAI'), weiAsToken(stake, 'NPM'))
 }

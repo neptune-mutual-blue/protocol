@@ -148,10 +148,8 @@ const PROTOCOL = {
     TREASURY: toBytes32('Treasury'),
     POLICY: toBytes32('Policy'),
     POLICY_ADMIN: toBytes32('Policy Admin'),
-    POLICY_MANAGER: toBytes32('Policy Manager'),
     BOND_POOL: toBytes32('BondPool'),
     STAKING_POOL: toBytes32('Staking Pool'),
-    POD_STAKING_POOL: toBytes32('PODStaking Pool'),
     CLAIMS_PROCESSOR: toBytes32('Claims Processor'),
     COVER: toBytes32('Cover'),
     GOVERNANCE: toBytes32('Governance'),
@@ -162,9 +160,7 @@ const PROTOCOL = {
     COVER_REASSURANCE: toBytes32('Cover Reassurance'),
     LIQUIDITY_VAULT: toBytes32('Vault'),
     VAULT_DELEGATE: toBytes32('Vault Delegate'),
-    LIQUIDITY_ENGINE: toBytes32('Liquidity Engine'),
-    STRATEGY_AAVE: toBytes32('Aave Strategy'),
-    STRATEGY_COMPOUND: toBytes32('Compound Strategy')
+    LIQUIDITY_ENGINE: toBytes32('Liquidity Engine')
   }
 }
 

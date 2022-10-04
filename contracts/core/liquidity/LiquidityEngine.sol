@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 // import "../../interfaces/IVault.sol";
 import "../Recoverable.sol";
+import "../../libraries/NTransferUtilV2.sol";
 import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/StrategyLibV1.sol";
 import "../../interfaces/ILendingStrategy.sol";
@@ -15,6 +16,8 @@ import "../../interfaces/ILiquidityEngine.sol";
  *
  */
 contract LiquidityEngine is ILiquidityEngine, Recoverable {
+  using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using StrategyLibV1 for IStore;
@@ -167,6 +170,42 @@ contract LiquidityEngine is ILiquidityEngine, Recoverable {
    */
   function getActiveStrategies() external view override returns (address[] memory strategies) {
     return s.getActiveStrategiesInternal();
+  }
+
+  function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external override {
+    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 npm = s.npmToken();
+
+    uint256 totalAmount;
+    uint256 totalNpm;
+
+    for (uint256 i = 0; i < args.length; i++) {
+      totalAmount += args[i].amount;
+      totalNpm += args[i].npmStakeToAdd;
+    }
+
+    stablecoin.ensureTransferFrom(msg.sender, address(this), totalAmount);
+    npm.ensureTransferFrom(msg.sender, address(this), totalNpm);
+
+    for (uint256 i = 0; i < args.length; i++) {
+      IVault vault = s.getVault(args[i].coverKey);
+      uint256 balance = vault.balanceOf(address(this));
+
+      if (balance > 0) {
+        IERC20(vault).ensureTransfer(s.getTreasury(), balance);
+      }
+
+      stablecoin.approve(address(vault), args[i].amount);
+      npm.approve(address(vault), args[i].npmStakeToAdd);
+
+      vault.addLiquidity(args[i]);
+
+      balance = vault.balanceOf(address(this));
+
+      require(balance > 0, "Fatal, no PODs minted");
+
+      IERC20(vault).ensureTransfer(msg.sender, vault.balanceOf(address(this)));
+    }
   }
 
   /**

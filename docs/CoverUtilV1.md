@@ -214,14 +214,7 @@ returns(uint256)
 
 ```javascript
 function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
-    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
-
-    if (value == 0) {
-      // Fallback to 250 NPM
-      value = 250 ether;
-    }
-
-    return value;
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
   }
 ```
 </details>
@@ -263,7 +256,7 @@ Returns a summary of the given cover pool.
 
 ```solidity
 function getCoverPoolSummaryInternal(IStore s, bytes32 coverKey, bytes32 productKey) external view
-returns(_values uint256[])
+returns(summary struct IPolicy.CoverPoolSummaryType)
 ```
 
 **Arguments**
@@ -282,18 +275,16 @@ function getCoverPoolSummaryInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
-  ) external view returns (uint256[] memory _values) {
-    _values = new uint256[](8);
-
+  ) external view returns (IPolicy.CoverPoolSummaryType memory summary) {
     uint256 precision = s.getStablecoinPrecision();
 
-    _values[0] = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
-    _values[1] = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
-    _values[2] = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
-    _values[3] = getReassuranceWeightInternal(s, coverKey);
-    _values[4] = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
-    _values[5] = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
-    _values[6] = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
+    summary.totalAmountInPool = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
+    summary.totalCommitment = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
+    summary.reassuranceAmount = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
+    summary.reassurancePoolWeight = getReassuranceWeightInternal(s, coverKey);
+    summary.productCount = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
+    summary.leverage = s.getUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
+    summary.productCapitalEfficiency = s.getUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
   }
 ```
 </details>
@@ -958,9 +949,7 @@ function _getFutureCommitments(
     bytes32 productKey,
     uint256 excludedExpiryDate
   ) private view returns (uint256 sum) {
-    uint256 maxMonthsToProtect = 3;
-
-    for (uint256 i = 0; i < maxMonthsToProtect; i++) {
+    for (uint256 i = 0; i <= ProtoUtilV1.MAX_POLICY_DURATION; i++) {
       uint256 expiryDate = _getNextMonthEndDate(block.timestamp, i); // solhint-disable-line
 
       if (expiryDate == excludedExpiryDate || expiryDate <= block.timestamp) {
@@ -1491,6 +1480,7 @@ function getActiveIncidentDateInternal(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1530,6 +1520,7 @@ function getActiveIncidentDateInternal(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

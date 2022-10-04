@@ -73,8 +73,15 @@ library CoverLibV1 {
     // Set the basic cover info
     _addCover(s, args, fee);
 
+    IERC20 npm = s.npmToken();
+    ICoverStake stakingContract = s.getStakingContract();
+
+    npm.ensureTransferFrom(msg.sender, address(this), args.stakeWithFee);
+
+    npm.ensureApproval(address(stakingContract), args.stakeWithFee);
+
     // Stake the supplied NPM tokens and burn the fees
-    s.getStakingContract().increaseStake(args.coverKey, msg.sender, args.stakeWithFee, fee);
+    stakingContract.increaseStake(args.coverKey, msg.sender, args.stakeWithFee, fee);
 
     // Add cover reassurance
     if (args.initialReassuranceAmount > 0) {

@@ -6,8 +6,15 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 
 **IStore**
 
+**Events**
+
+```js
+event PausersSet(address indexed addedBy, address[]  accounts, bool[]  statuses);
+```
+
 ## Functions
 
+- [setPausers(address[] accounts, bool[] statuses)](#setpausers)
 - [setAddress(bytes32 k, address v)](#setaddress)
 - [setAddressBoolean(bytes32 k, address a, bool v)](#setaddressboolean)
 - [setUint(bytes32 k, uint256 v)](#setuint)
@@ -52,6 +59,27 @@ View Source: [contracts/interfaces/IStore.sol](../contracts/interfaces/IStore.so
 - [getBytes32ArrayItemPosition(bytes32 k, bytes32 toFind)](#getbytes32arrayitemposition)
 - [getAddressArrayItemByIndex(bytes32 k, uint256 i)](#getaddressarrayitembyindex)
 - [getBytes32ArrayItemByIndex(bytes32 k, uint256 i)](#getbytes32arrayitembyindex)
+
+### setPausers
+
+```solidity
+function setPausers(address[] accounts, bool[] statuses) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| accounts | address[] |  | 
+| statuses | bool[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setPausers(address[] calldata accounts, bool[] calldata statuses) external;
+```
+</details>
 
 ### setAddress
 
@@ -1042,6 +1070,7 @@ function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1081,6 +1110,7 @@ function getBytes32ArrayItemByIndex(bytes32 k, uint256 i) external view returns 
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -14,35 +14,22 @@ describe('Liquidity Engine: disableStrategy', () => {
   let store,
     aaveStrategy,
     liquidityEngine,
-    accessControlLibV1,
-    baseLibV1,
-    validationLibV1,
-    strategyLibV1,
-    transferLib,
-    protoUtilV1,
-    registryLibV1,
-    storeKeyUtil,
     deployed
 
   beforeEach(async () => {
     deployed = await deployDependencies()
 
     store = deployed.store
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    validationLibV1 = deployed.validationLibV1
-    strategyLibV1 = deployed.strategyLibV1
-    transferLib = deployed.transferLib
-    protoUtilV1 = deployed.protoUtilV1
-    registryLibV1 = deployed.registryLibV1
-    storeKeyUtil = deployed.storeKeyUtil
 
     liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      StrategyLibV1: strategyLibV1.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      NTransferUtilV2: deployed.transferLib.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
+      RegistryLibV1: deployed.registryLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      StrategyLibV1: deployed.strategyLibV1.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
@@ -52,13 +39,13 @@ describe('Liquidity Engine: disableStrategy', () => {
     const aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      NTransferUtilV2: transferLib.address,
-      ProtoUtilV1: protoUtilV1.address,
-      RegistryLibV1: registryLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      NTransferUtilV2: deployed.transferLib.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
+      RegistryLibV1: deployed.registryLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address, aaveLendingPool.address, aToken.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_AAVE, aaveStrategy.address)

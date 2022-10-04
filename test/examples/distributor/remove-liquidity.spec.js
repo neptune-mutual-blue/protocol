@@ -26,12 +26,17 @@ describe('Distributor: `removeLiquidity` function', () => {
 
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000, PRECISION)
-    const npmStake = helper.ether(1000)
+    const npmStakeToAdd = helper.ether(1000)
 
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
 
-    await distributor.addLiquidity(coverKey, amount, npmStake, key.toBytes32(''))
+    await distributor.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode: key.toBytes32('')
+    })
 
     await network.provider.send('evm_increaseTime', [2 * DAYS])
 

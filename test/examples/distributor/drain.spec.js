@@ -25,15 +25,21 @@ describe('Distributor: `drain` function', () => {
   it('must correctly drain the entire token balance', async () => {
     const coverKey = deployed.coverKey
     const amount = helper.ether(5000, PRECISION)
-    const npmStake = helper.ether(1000)
+    const npmStakeToAdd = helper.ether(1000)
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.npm.approve(distributor.address, npmStake)
+    await deployed.npm.approve(distributor.address, npmStakeToAdd)
     await deployed.dai.approve(distributor.address, amount)
 
     await deployed.npm.transfer(distributor.address, helper.ether(3333))
 
-    const tx = await distributor.addLiquidity(coverKey, amount, npmStake, referralCode)
+    const tx = await distributor.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    })
+
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Drained')
 

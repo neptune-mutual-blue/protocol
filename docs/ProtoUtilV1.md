@@ -82,6 +82,7 @@ bytes32 public constant NS_COVERAGE_LAG;
 bytes32 public constant NS_COVER_POLICY_RATE_FLOOR;
 bytes32 public constant NS_COVER_POLICY_RATE_CEILING;
 bytes32 public constant NS_POLICY_DISABLED;
+bytes32 public constant NS_POLICY_LAST_PURCHASE_ID;
 bytes32 public constant NS_COVER_STAKE;
 bytes32 public constant NS_COVER_STAKE_OWNED;
 bytes32 public constant NS_COVER_STATUS;
@@ -102,6 +103,7 @@ bytes32 public constant NS_GOVERNANCE_REPORTING_INCIDENT_DATE;
 bytes32 public constant NS_GOVERNANCE_REPORTING_PERIOD;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_YES;
 bytes32 public constant NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE;
+bytes32 public constant NS_GOVERNANCE_REPORTING_FINALIZATION;
 bytes32 public constant NS_GOVERNANCE_REPORTING_WITNESS_NO;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_YES;
 bytes32 public constant NS_GOVERNANCE_REPORTING_STAKE_OWNED_NO;
@@ -126,10 +128,8 @@ bytes32 public constant CNAME_PROTOCOL;
 bytes32 public constant CNAME_TREASURY;
 bytes32 public constant CNAME_POLICY;
 bytes32 public constant CNAME_POLICY_ADMIN;
-bytes32 public constant CNAME_POLICY_MANAGER;
 bytes32 public constant CNAME_BOND_POOL;
 bytes32 public constant CNAME_STAKING_POOL;
-bytes32 public constant CNAME_POD_STAKING_POOL;
 bytes32 public constant CNAME_CLAIMS_PROCESSOR;
 bytes32 public constant CNAME_COVER;
 bytes32 public constant CNAME_GOVERNANCE;
@@ -141,8 +141,6 @@ bytes32 public constant CNAME_COVER_REASSURANCE;
 bytes32 public constant CNAME_LIQUIDITY_VAULT;
 bytes32 public constant CNAME_VAULT_DELEGATE;
 bytes32 public constant CNAME_LIQUIDITY_ENGINE;
-bytes32 public constant CNAME_STRATEGY_AAVE;
-bytes32 public constant CNAME_STRATEGY_COMPOUND;
 
 ```
 
@@ -654,6 +652,7 @@ function getBurnAddress(IStore s) external view returns (address) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -693,6 +692,7 @@ function getBurnAddress(IStore s) external view returns (address) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

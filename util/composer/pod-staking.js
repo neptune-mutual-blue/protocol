@@ -41,7 +41,7 @@ const getAssets = (tokenInfo, pairInfo, settings) => {
   }
 }
 
-const createPodStakingPools = async (payload) => {
+const create = async (payload) => {
   const { intermediate, cache, contracts, provider, tokenInfo, pairInfo } = payload
   const pools = []
 
@@ -97,4 +97,4 @@ const createPodStakingPools = async (payload) => {
   await addPools(intermediate, cache, pools, contracts, provider)
 }
 
-module.exports = { createPodStakingPools }
+module.exports = { create }

@@ -152,7 +152,7 @@ Unpauses or resumes this contract.
  pause agents.
 
 ```solidity
-function unpause() external nonpayable whenPaused nonReentrant whenPaused 
+function unpause() external nonpayable nonReentrant whenPaused 
 ```
 
 **Arguments**
@@ -164,7 +164,7 @@ function unpause() external nonpayable whenPaused nonReentrant whenPaused
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function unpause() external whenPaused nonReentrant whenPaused {
+function unpause() external nonReentrant whenPaused {
     AccessControlLibV1.mustBeUnpauseAgent(s);
     super._unpause();
   }
@@ -234,6 +234,7 @@ function unpause() external whenPaused nonReentrant whenPaused {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -273,6 +274,7 @@ function unpause() external whenPaused nonReentrant whenPaused {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

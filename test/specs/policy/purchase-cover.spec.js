@@ -51,9 +51,9 @@ describe('Policy: purchaseCover', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -89,7 +89,12 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('must succeed without any errors', async () => {
@@ -296,9 +301,9 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -334,7 +339,12 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('must succeed without any errors', async () => {

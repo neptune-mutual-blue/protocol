@@ -135,7 +135,7 @@ Gets information of a given vault by the cover key
 
 ```solidity
 function getInfoInternal(IStore s, bytes32 coverKey, address pod, address you) external view
-returns(values uint256[])
+returns(info struct IVault.VaultInfoType)
 ```
 
 **Arguments**
@@ -156,17 +156,15 @@ function getInfoInternal(
     bytes32 coverKey,
     address pod,
     address you
-  ) external view returns (uint256[] memory values) {
-    values = new uint256[](11);
-
-    values[0] = IERC20(pod).totalSupply(); // Total PODs in existence
-    values[1] = s.getStablecoinOwnedByVaultInternal(coverKey);
-    values[2] = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
-    values[3] = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
-    values[4] = IERC20(pod).balanceOf(you); // Your POD Balance
-    values[5] = calculateLiquidityInternal(s, coverKey, pod, values[5]); //  My share of the liquidity pool (in stablecoin)
-    values[6] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey));
-    values[7] = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey));
+  ) external view returns (IVault.VaultInfoType memory info) {
+    info.totalPods = IERC20(pod).totalSupply(); // Total PODs in existence
+    info.balance = s.getStablecoinOwnedByVaultInternal(coverKey); // Stablecoins held in the vault
+    info.extendedBalance = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
+    info.totalReassurance = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
+    info.myPodBalance = IERC20(pod).balanceOf(you); // Your POD Balance
+    info.myShare = calculateLiquidityInternal(s, coverKey, pod, info.myPodBalance); //  My share of the liquidity pool (in stablecoin)
+    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey)); // The timestamp when withdrawals are opened
+    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey)); // The timestamp when withdrawals are closed again
   }
 ```
 </details>
@@ -614,7 +612,7 @@ function getFlashFeesInternal(
     If the token is not supported flashFee MUST revert.
     */
     require(stablecoin == token, "Unsupported token");
-    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) > amount, "Amount insufficient");
+    require(IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey)) >= amount, "Amount insufficient");
 
     uint256 rate = _getFlashLoanFeeRateInternal(s);
     uint256 protocolRate = _getProtocolFlashLoanFeeRateInternal(s);
@@ -814,6 +812,7 @@ function getMaxFlashLoanInternal(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -853,6 +852,7 @@ function getMaxFlashLoanInternal(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

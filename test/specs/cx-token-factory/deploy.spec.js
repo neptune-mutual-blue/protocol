@@ -43,11 +43,9 @@ describe('cxTokenFactory: Deploy', () => {
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.COVER_CXTOKEN_FACTORY, factory.address)
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
-
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, reassuranceAmount)
 
     await deployed.cover.addCover({
