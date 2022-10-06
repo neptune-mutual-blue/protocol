@@ -35,7 +35,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    (IERC20 stablecoin, uint256 fee, uint256 protocolFee) = delgate().preFlashLoan(msg.sender, key, receiver, token, amount, data);
+    (IERC20 stablecoin, uint256 fee, uint256 protocolFee) = delegate().preFlashLoan(msg.sender, key, receiver, token, amount, data);
 
     /******************************************************************************************
       BODY
@@ -57,7 +57,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
       POST
      ******************************************************************************************/
 
-    delgate().postFlashLoan(msg.sender, key, receiver, token, amount, data);
+    delegate().postFlashLoan(msg.sender, key, receiver, token, amount, data);
 
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
 
@@ -68,13 +68,13 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
    * @dev Gets the fee required to borrow the specified token and given amount of the loan.
    */
   function flashFee(address token, uint256 amount) external view override returns (uint256) {
-    return delgate().getFlashFee(msg.sender, key, token, amount);
+    return delegate().getFlashFee(msg.sender, key, token, amount);
   }
 
   /**
    * @dev Gets maximum amount in the specified token units that can be borrowed.
    */
   function maxFlashLoan(address token) external view override returns (uint256) {
-    return delgate().getMaxFlashLoan(msg.sender, key, token);
+    return delegate().getMaxFlashLoan(msg.sender, key, token);
   }
 }

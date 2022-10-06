@@ -83,7 +83,7 @@ contract Vault is WithFlashLoan {
    *
    */
   function getInfo(address you) external view override returns (VaultInfoType memory) {
-    return delgate().getInfoImplementation(key, you);
+    return delegate().getInfoImplementation(key, you);
   }
 
   /**
