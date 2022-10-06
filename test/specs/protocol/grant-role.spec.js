@@ -95,6 +95,7 @@ describe('Grant roles in protocol', () => {
     const [owner,, charles] = await ethers.getSigners()
 
     const hasRole = await protocol.hasRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
+
     await protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, charles.address)
       .should.be.rejectedWith(`AccessControl: account ${owner.address.toLowerCase()} is missing role ${key.ACCESS_CONTROL.GOVERNANCE_ADMIN}`)
 

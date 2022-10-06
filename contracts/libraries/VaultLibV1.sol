@@ -4,20 +4,14 @@
 pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
-import "./ProtoUtilV1.sol";
-import "./StoreKeyUtil.sol";
-import "./RegistryLibV1.sol";
-import "./CoverUtilV1.sol";
-import "./RoutineInvokerLibV1.sol";
-import "./StrategyLibV1.sol";
 import "./ValidationLibV1.sol";
 
 library VaultLibV1 {
-  using ProtoUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
+  using ProtoUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
   using StrategyLibV1 for IStore;
 
   // Before withdrawing, wait for the following number of blocks after deposit

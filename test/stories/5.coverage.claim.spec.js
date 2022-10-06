@@ -169,6 +169,7 @@ describe('Coverage Claim Stories', function () {
     await contracts.npm.approve(contracts.governance.address, helper.ether(100_000))
     await contracts.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(100_000))
 
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, owner.address)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)

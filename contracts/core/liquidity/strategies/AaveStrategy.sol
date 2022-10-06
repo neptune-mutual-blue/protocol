@@ -6,16 +6,14 @@ import "openzeppelin-solidity/contracts/utils/Address.sol";
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
 import "../../../dependencies/aave/IAaveV2LendingPoolLike.sol";
-import "../../../libraries/ProtoUtilV1.sol";
-import "../../../libraries/StoreKeyUtil.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 contract AaveStrategy is ILendingStrategy, Recoverable {
+  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   bytes32 public constant CNAME_STRATEGY_AAVE = "Aave Strategy";
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "aave", "v2"));

@@ -31,6 +31,8 @@ describe('Distributor: `removeLiquidity` function', () => {
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
     await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
 
+    await deployed.cover.setMinStakeToAddLiquidity(helper.ether(250))
+
     await distributor.addLiquidity({
       coverKey,
       amount,

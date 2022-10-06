@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 import "./StakingPoolReward.sol";
 
 abstract contract StakingPoolInfo is StakingPoolReward {
-  using StakingPoolCoreLibV1 for IStore;
   using StakingPoolLibV1 for IStore;
 
   constructor(IStore s) StakingPoolReward(s) {} //solhint-disable-line

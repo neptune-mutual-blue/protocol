@@ -3,12 +3,7 @@
 pragma solidity ^0.8.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICoverReassurance.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/CoverUtilV1.sol";
-import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/StoreKeyUtil.sol";
 import "../../libraries/NTransferUtilV2.sol";
-import "../../libraries/GovernanceUtilV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -25,15 +20,14 @@ import "../Recoverable.sol";
  *
  */
 contract CoverReassurance is ICoverReassurance, Recoverable {
-  using ProtoUtilV1 for bytes;
-  using ProtoUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
   using CoverUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
+  using GovernanceUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
-  using GovernanceUtilV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 

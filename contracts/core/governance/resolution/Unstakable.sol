@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 import "./Resolvable.sol";
 import "../../../interfaces/IResolution.sol";
 import "../../../interfaces/IUnstakable.sol";
-import "../../../libraries/GovernanceUtilV1.sol";
-import "../../../libraries/ValidationLibV1.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 /**
@@ -15,22 +13,19 @@ import "../../../libraries/NTransferUtilV2.sol";
  */
 abstract contract Unstakable is Resolvable, IUnstakable {
   using GovernanceUtilV1 for IStore;
-  using ProtoUtilV1 for IStore;
-  using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ValidationLibV1 for IStore;
-  using RoutineInvokerLibV1 for IStore;
-  using ValidationLibV1 for bytes32;
   using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
-   * @dev Reporters on the valid camp can unstake their tokens even after the claim period is over.
+   * @dev Reporters on the valid camp can unstake their tokens even after finalization.
    * Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
    * use this function.
    *
    * @custom:warning Warning:
    *
-   * You should instead use `unstakeWithClaim` throughout the claim period.
+   * You should instead use `unstakeWithClaim` after resolution and before finalization.
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable

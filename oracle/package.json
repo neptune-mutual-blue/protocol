@@ -49,5 +49,9 @@
     "solidity-coverage": "^0.7.17",
     "standard": "^16.0.4",
     "openzeppelin-solidity": "3.4.0"
+  },
+  "volta": {
+    "node": "16.13.1",
+    "yarn": "1.22.19"
   }
 }

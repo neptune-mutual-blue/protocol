@@ -70,7 +70,20 @@
     "unstake",
     "Unstaken",
     "WXDAI",
-    "zerox"
+    "zerox",
+    "staker",
+    "stakers",
+    "unstake",
+    "unstaking",
+    "unstakable",
+    "unstakewithclaim",
+    "ndai",
+    "nusdc",
+    "unpause",
+    "unpauser",
+    "uint",
+    "uints",
+    "finalizer"
   ],
   "git.detectSubmodules": false
 }

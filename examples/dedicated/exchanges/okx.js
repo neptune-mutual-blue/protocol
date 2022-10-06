@@ -11,8 +11,8 @@ module.exports = {
   tokenName: 'Income Bearing DAI',
   tokenSymbol: 'iDAI-OKX',
   requiresWhitelist: false,
-  supportsProducts: true,
-  leverageFactor: '10',
+  supportsProducts: false,
+  leverageFactor: '1',
   tags: ['exchange', 'cex', 'okx', 'okex'],
   about: 'Founded in 2017, OKX is a rebrand from the former OKEX exchange, it is one of the leading global crypto exchanges,  particularly with strong derivatives trading volume. Users can trade spots, futures and derivatives via its online platform and mobile app. Centralized exchanges operate order books and take custody of users assets to facilitate trading, it also facilitates lending and borrowing as well as other services such as staking to its user base.',
   parameters: [

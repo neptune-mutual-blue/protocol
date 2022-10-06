@@ -5,7 +5,6 @@ import "./CoverBase.sol";
 import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/IVault.sol";
-import "../liquidity/Vault.sol";
 
 /**
  * @title Cover Contract
@@ -13,13 +12,11 @@ import "../liquidity/Vault.sol";
  *
  */
 contract Cover is CoverBase {
-  using AccessControlLibV1 for IStore;
   using CoverLibV1 for IStore;
   using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -189,7 +186,7 @@ contract Cover is CoverBase {
    * When a cover requires whitelist, you must add accounts
    * to the cover user whitelist before they are able to purchase policies.
    *
-   * @custom:suppress-acl This function is only accessilbe to the cover owner or admin
+   * @custom:suppress-acl This function is only accessible to the cover owner or admin
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key

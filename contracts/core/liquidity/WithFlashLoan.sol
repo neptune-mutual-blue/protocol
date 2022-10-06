@@ -65,7 +65,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
   }
 
   /**
-   * @dev Gets the fee required to borrow the spefied token and given amount of the loan.
+   * @dev Gets the fee required to borrow the specified token and given amount of the loan.
    */
   function flashFee(address token, uint256 amount) external view override returns (uint256) {
     return delgate().getFlashFee(msg.sender, key, token, amount);

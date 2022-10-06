@@ -11,8 +11,8 @@ module.exports = {
   tokenName: 'Income Bearing DAI',
   tokenSymbol: 'iDAI-HT',
   requiresWhitelist: false,
-  supportsProducts: true,
-  leverageFactor: '10',
+  supportsProducts: false,
+  leverageFactor: '1',
   tags: ['exchange', 'cex', 'huobi', 'ht'],
   about: 'Founded in 2013 Huobi Global is amongst the battle tested crypto exchanges with longer operating history and once ranked number 1 globally in terms of trading volume. Users can trade spots, futures and derivatives via its online platform and mobile app. Centralized exchanges operate order books and take custody of users assets to facilitate trading, it also facilitates lending and borrowing as well as other services such as staking to its user base.',
   parameters: [

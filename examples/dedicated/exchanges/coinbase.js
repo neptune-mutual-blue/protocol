@@ -11,8 +11,8 @@ module.exports = {
   tokenName: 'Income Bearing DAI',
   tokenSymbol: 'iDAI-COIN',
   requiresWhitelist: false,
-  supportsProducts: true,
-  leverageFactor: '10',
+  supportsProducts: false,
+  leverageFactor: '1',
   tags: ['exchange', 'cex', 'coinbase', 'coin'],
   about: 'Founded in 2012 Coinbase is the largest exchange for institutional crypto traders, and the first crypto exchange that went public and listed on Nasdaq. Users can trade mainly spots via its online platform and mobile app. Centralized exchanges operate order books and take custody of users assets to facilitate trading, it also facilitates lending and borrowing as well as other services such as staking to its user base.',
   parameters: [

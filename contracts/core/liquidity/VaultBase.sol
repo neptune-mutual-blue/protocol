@@ -20,7 +20,7 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
   address public override sc;
 
   /**
-   * @dev Contructs this contract
+   * @dev Constructs this contract
    *
    * @param store Provide store instance
    * @param coverKey Provide a cover key that doesn't have a vault deployed

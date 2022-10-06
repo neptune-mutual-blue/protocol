@@ -57,7 +57,7 @@ contract Vault is WithFlashLoan {
   using RegistryLibV1 for IStore;
 
   /**
-   * @dev Contructs this contract
+   * @dev Constructs this contract
    *
    * @param store Provide store instance
    * @param coverKey Provide a cover key that doesn't have a vault deployed

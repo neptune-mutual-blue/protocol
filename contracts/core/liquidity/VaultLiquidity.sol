@@ -170,7 +170,7 @@ abstract contract VaultLiquidity is VaultBase {
   }
 
   /**
-   * @dev Accrues interests from external straties
+   * @dev Accrues interests from external strategies
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable Validated in `accrueInterestImplementation`
