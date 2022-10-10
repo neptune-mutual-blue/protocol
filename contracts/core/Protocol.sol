@@ -155,9 +155,6 @@ contract Protocol is IProtocol, ProtoBase {
    * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
    *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
-   *
    * @custom:suppress-address-trust-issue Although the `contractAddress` can't be trusted,
    * an upgrade admin has to check the contract code manually.
    *
@@ -209,9 +206,6 @@ contract Protocol is IProtocol, ProtoBase {
    * This feature is only accessible to an upgrade agent.
    * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
    *
    * @custom:suppress-address-trust-issue Can only be invoked by an upgrade agent.
    *
