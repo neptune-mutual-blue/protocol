@@ -2,6 +2,8 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IPolicy.sol";
 import "../interfaces/ICoverStake.sol";
@@ -9,17 +11,12 @@ import "../interfaces/IUnstakable.sol";
 import "../interfaces/ICoverReassurance.sol";
 import "../interfaces/IVault.sol";
 import "../interfaces/IVaultFactory.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "./ProtoUtilV1.sol";
 import "./RoutineInvokerLibV1.sol";
-import "./StoreKeyUtil.sol";
-import "./CoverUtilV1.sol";
 
 library GovernanceUtilV1 {
   using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ProtoUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
 
   /**
    * @dev Gets the reporting period for the given cover.
@@ -405,6 +402,8 @@ library GovernanceUtilV1 {
       // slither-disable-next-line divide-before-multiply
       reward = (info.totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
+
+    require(getReportingBurnRateInternal(s) + getGovernanceReporterCommissionInternal(s) <= ProtoUtilV1.MULTIPLIER, "Invalid configuration");
 
     info.toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
     info.toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;

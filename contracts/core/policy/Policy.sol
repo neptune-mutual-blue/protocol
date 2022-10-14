@@ -7,11 +7,7 @@ import "../../interfaces/IStore.sol";
 import "../../interfaces/ICxTokenFactory.sol";
 import "../../interfaces/ICxToken.sol";
 import "../../interfaces/IPolicy.sol";
-import "../../libraries/CoverUtilV1.sol";
-import "../../libraries/RegistryLibV1.sol";
-import "../../libraries/ProtoUtilV1.sol";
 import "../../libraries/PolicyHelperV1.sol";
-import "../../libraries/RoutineInvokerLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -20,13 +16,9 @@ import "../Recoverable.sol";
  */
 contract Policy is IPolicy, Recoverable {
   using PolicyHelperV1 for IStore;
-  using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using CoverUtilV1 for IStore;
-  using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
   using ValidationLibV1 for IStore;
-  using RoutineInvokerLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
   /**

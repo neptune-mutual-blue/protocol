@@ -3,18 +3,14 @@
 /* solhint-disable ordering  */
 pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "./StoreKeyUtil.sol";
 import "./ProtoUtilV1.sol";
-import "./NTransferUtilV2.sol";
-import "./ValidationLibV1.sol";
 import "./StakingPoolCoreLibV1.sol";
 
 library StakingPoolLibV1 {
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using StakingPoolCoreLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
+  using StakingPoolCoreLibV1 for IStore;
+  using StoreKeyUtil for IStore;
 
   /**
    * @dev Gets the info of a given staking pool by key

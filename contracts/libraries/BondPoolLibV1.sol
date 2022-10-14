@@ -3,15 +3,12 @@
 /* solhint-disable ordering  */
 pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "./ValidationLibV1.sol";
-import "./NTransferUtilV2.sol";
-import "./AccessControlLibV1.sol";
-import "./PriceLibV1.sol";
 import "../interfaces/IProtocol.sol";
 import "../interfaces/IPausable.sol";
+import "./NTransferUtilV2.sol";
+import "./ValidationLibV1.sol";
 
 library BondPoolLibV1 {
-  using AccessControlLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
   using PriceLibV1 for IStore;
   using ProtoUtilV1 for IStore;

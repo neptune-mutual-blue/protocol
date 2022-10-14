@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "../../interfaces/IStore.sol";
 import "../../interfaces/ICover.sol";
 import "../../libraries/CoverLibV1.sol";
-import "../../libraries/StoreKeyUtil.sol";
 import "../Recoverable.sol";
 
 /**

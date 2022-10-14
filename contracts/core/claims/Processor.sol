@@ -1,16 +1,12 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
+// solhint-disable function-max-lines
 pragma solidity ^0.8.0;
 import "../Recoverable.sol";
 import "../../interfaces/IClaimsProcessor.sol";
 import "../../interfaces/ICxToken.sol";
 import "../../interfaces/IVault.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/RegistryLibV1.sol";
-import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
-import "../../libraries/StoreKeyUtil.sol";
-import "../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Claims Processor Contract
@@ -37,7 +33,6 @@ contract Processor is IClaimsProcessor, Recoverable {
   using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
-  using ValidationLibV1 for bytes32;
 
   /**
    * @dev Constructs this contract

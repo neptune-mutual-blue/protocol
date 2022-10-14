@@ -38,6 +38,8 @@ describe('Vault Library', () => {
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
+    await deployed.cover.setMinStakeToAddLiquidity(helper.ether(250))
+
     await deployed.cover.addCover({
       coverKey,
       info,

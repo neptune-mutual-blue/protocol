@@ -3,14 +3,9 @@
 pragma solidity ^0.8.0;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "../Recoverable.sol";
 import "../../interfaces/IVaultDelegate.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/CoverUtilV1.sol";
 import "../../libraries/VaultLibV1.sol";
-import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/StrategyLibV1.sol";
-import "../../libraries/NTransferUtilV2.sol";
+import "../Recoverable.sol";
 
 /**
  * Important: This contract is not intended to be accessed
@@ -24,15 +19,11 @@ import "../../libraries/NTransferUtilV2.sol";
  *
  */
 abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
-  using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
-  using VaultLibV1 for IStore;
-  using ValidationLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
-  using StoreKeyUtil for IStore;
   using StrategyLibV1 for IStore;
-  using CoverUtilV1 for IStore;
-  using NTransferUtilV2 for IERC20;
+  using ValidationLibV1 for IStore;
+  using VaultLibV1 for IStore;
 
   /**
    * @dev Constructs this contract

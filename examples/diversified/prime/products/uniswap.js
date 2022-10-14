@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('uniswap-v2'),
-  productName: 'Uniswap V2',
+  productName: 'Uniswap v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['exchange', 'dex', 'swap', 'nft'],

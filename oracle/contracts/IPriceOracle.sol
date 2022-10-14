@@ -1,5 +1,6 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
+// solhint-disable compiler-version
 pragma solidity 0.6.6;
 
 interface IPriceOracle {

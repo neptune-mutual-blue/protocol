@@ -6,7 +6,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
-import "./ProtoUtilV1.sol";
 import "./RegistryLibV1.sol";
 
 library StrategyLibV1 {

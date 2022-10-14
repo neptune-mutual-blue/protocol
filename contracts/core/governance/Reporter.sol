@@ -163,7 +163,7 @@ abstract contract Reporter is IReporter, Witness {
    *
    * If you get resolution in your favor, you will receive these rewards:
    *
-   * - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
+   * - A 10% commission on all reward received by valid camp voters (check `Unstakable.unstakeWithClaim`) in NPM tokens.
    * - Your proportional share of the 60% pool of the invalid camp.
    *
    * @custom:warning **Warning:**
@@ -278,6 +278,8 @@ abstract contract Reporter is IReporter, Witness {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
+    require(s.getGovernanceReporterCommissionInternal() + value <= ProtoUtilV1.MULTIPLIER, "Rate too high");
+
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, value);
 
@@ -297,9 +299,12 @@ abstract contract Reporter is IReporter, Witness {
    *
    */
   function setReporterCommission(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    require(value > 0, "Please specify value");
+
+    require(s.getReportingBurnRateInternal() + value <= ProtoUtilV1.MULTIPLIER, "Rate too high");
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);
@@ -341,7 +346,7 @@ abstract contract Reporter is IReporter, Witness {
   }
 
   /**
-   * @dev Retuns the resolution date of a given cover
+   * @dev Returns the resolution date of a given cover
    *
    * Warning: this function does not validate the input arguments.
    *
@@ -362,7 +367,7 @@ abstract contract Reporter is IReporter, Witness {
    * @param coverKey Enter the cover key you want to get attestation of
    * @param productKey Enter the product key you want to get attestation of
    * @param who Enter the account you want to get attestation of
-   * @param who Enter the specified cover's indicent date for which attestation will be returned
+   * @param who Enter the specified cover's incident date for which attestation will be returned
    *
    */
   function getAttestation(
@@ -383,7 +388,7 @@ abstract contract Reporter is IReporter, Witness {
    * @param coverKey Enter the cover key you want to get refutation of
    * @param productKey Enter the product key you want to get refutation of
    * @param who Enter the account you want to get refutation of
-   * @param who Enter the specified cover's indicent date for which refutation will be returned
+   * @param who Enter the specified cover's incident date for which refutation will be returned
    *
    */
   function getRefutation(

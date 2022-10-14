@@ -2,25 +2,19 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import "./ProtoUtilV1.sol";
-import "./CoverUtilV1.sol";
-import "./ValidationLibV1.sol";
-import "./RoutineInvokerLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IERC20Detailed.sol";
-import "../libraries/NTransferUtilV2.sol";
+import "./NTransferUtilV2.sol";
+import "./RoutineInvokerLibV1.sol";
 
 library PolicyHelperV1 {
-  using ProtoUtilV1 for IStore;
-  using RoutineInvokerLibV1 for IStore;
-  using ValidationLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
-  using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
   using StoreKeyUtil for IStore;
-
-  uint256 public constant COVER_LAG_FALLBACK_VALUE = 1 days;
 
   struct CalculatePolicyFeeArgs {
     bytes32 coverKey;
@@ -54,7 +48,7 @@ library PolicyHelperV1 {
     }
 
     uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, args.coverDuration); // solhint-disable-line
-    uint256 effectiveFrom = getEODInternal(block.timestamp) + getCoverageLagInternal(s, args.coverKey); // solhint-disable-line
+    uint256 effectiveFrom = getEODInternal(block.timestamp + s.getCoverageLagInternal(args.coverKey)); // solhint-disable-line
     uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(effectiveFrom, expiryDate);
 
     policyFee.fee = (args.amountToCover * policyFee.rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
@@ -162,10 +156,10 @@ library PolicyHelperV1 {
    * Format:
    *
    * For basket cover pool product
-   * --> cxusd:dex:uni:nov (cxUSD)
+   * --> dex:uni:nov (cxUSD)
    *
    * For standalone cover pool
-   * --> cxusd:bal:nov (cxUSD)
+   * --> bal:nov (cxUSD)
    */
   function _getCxTokenName(
     bytes32 coverKey,
@@ -175,10 +169,10 @@ library PolicyHelperV1 {
     bytes3 month = _getMonthName(expiry);
 
     if (productKey > 0) {
-      return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(productKey)), ":", string(abi.encodePacked(month))));
+      return string(abi.encodePacked(string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(productKey)), ":", string(abi.encodePacked(month))));
     }
 
-    return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(month))));
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(month))));
   }
 
   /**
@@ -220,25 +214,6 @@ library PolicyHelperV1 {
     cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
     s.updateStateAndLiquidity(args.coverKey);
-  }
-
-  function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view returns (uint256) {
-    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
-
-    // Custom means set for this exact cover
-    if (custom > 0) {
-      return custom;
-    }
-
-    // Global means set for all covers (without specifying a cover key)
-    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
-
-    if (global > 0) {
-      return global;
-    }
-
-    // Fallback means the default option
-    return COVER_LAG_FALLBACK_VALUE;
   }
 
   /**

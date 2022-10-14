@@ -39,12 +39,6 @@ import "../../interfaces/IGovernance.sol";
  *
  */
 contract Governance is IGovernance, Reporter {
-  using GovernanceUtilV1 for IStore;
-  using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ValidationLibV1 for IStore;
-  using ValidationLibV1 for bytes32;
-
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**

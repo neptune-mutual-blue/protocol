@@ -11,8 +11,8 @@ module.exports = {
   tokenName: 'Income Bearing DAI',
   tokenSymbol: 'iDAI-BNB',
   requiresWhitelist: false,
-  supportsProducts: true,
-  leverageFactor: '10',
+  supportsProducts: false,
+  leverageFactor: '1',
   tags: ['exchange', 'cex', 'bnb', 'binance'],
   about: 'Founded in 2017 Binance is by far the largest centralized crypto exchange ranked by daily volume traded. Users can trade spots, futures and derivatives via its online platform and mobile app. Centralized exchanges operate order books and take custody of users assets to facilitate trading, it also facilitates lending and borrowing as well as other services such as staking to its user base.',
   parameters: [

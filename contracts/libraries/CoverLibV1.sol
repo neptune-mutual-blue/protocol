@@ -1,27 +1,20 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
-import "../interfaces/IStore.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "./ProtoUtilV1.sol";
-import "./AccessControlLibV1.sol";
-import "./CoverUtilV1.sol";
-import "./RegistryLibV1.sol";
-import "./StoreKeyUtil.sol";
-import "./RoutineInvokerLibV1.sol";
-import "./StrategyLibV1.sol";
+import "../interfaces/IStore.sol";
 import "./NTransferUtilV2.sol";
+import "./ValidationLibV1.sol";
 
 library CoverLibV1 {
-  using CoverUtilV1 for IStore;
-  using RegistryLibV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ProtoUtilV1 for IStore;
-  using RoutineInvokerLibV1 for IStore;
   using AccessControlLibV1 for IStore;
-  using ValidationLibV1 for IStore;
-  using StrategyLibV1 for IStore;
+  using CoverUtilV1 for IStore;
   using NTransferUtilV2 for IERC20;
+  using ProtoUtilV1 for IStore;
+  using RegistryLibV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);
 
@@ -116,6 +109,7 @@ library CoverLibV1 {
     require(args.ceiling > args.floor, "Invalid ceiling rate");
     require(args.reassuranceRate > 0, "Invalid reassurance rate");
     require(args.leverageFactor > 0 && args.leverageFactor < 25, "Invalid leverage");
+    require(args.reportingPeriod >= s.getCoverageLagInternal(args.coverKey), "Invalid reporting period");
 
     if (args.supportsProducts == false) {
       // Standalone pools do not support any leverage

@@ -105,7 +105,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     uint256 resolutionEOD = PolicyHelperV1.getEODInternal(s.getResolutionTimestampInternal(COVER_KEY, PRODUCT_KEY));
     uint256 totalDays = (resolutionEOD - incidentDate) / 1 days;
 
-    for (uint256 i = 0; i < totalDays; i++) {
+    for (uint256 i = 0; i <= totalDays; i++) {
       uint256 date = PolicyHelperV1.getEODInternal(incidentDate + (i * 1 days));
       exclusion += coverageStartsFrom[account][date];
     }
@@ -155,7 +155,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
     s.senderMustBePolicyContract();
     s.mustBeSupportedProductOrEmpty(coverKey, productKey);
 
-    uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp) + s.getCoverageLagInternal(coverKey); // solhint-disable-line
+    uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
 
     super._mint(to, amount);

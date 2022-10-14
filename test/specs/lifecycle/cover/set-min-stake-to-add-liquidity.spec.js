@@ -22,7 +22,7 @@ describe('Cover: setMinStakeToAddLiquidity', () => {
     const { events } = await tx.wait()
 
     const event = events.find(x => x.event === 'MinStakeToAddLiquiditySet')
-    event.args.previous.should.equal(helper.ether(250))
+    event.args.previous.should.equal(helper.ether(0))
     event.args.current.should.equal(minStake)
   })
 

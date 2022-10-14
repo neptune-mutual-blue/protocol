@@ -20,7 +20,7 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
   address public override sc;
 
   /**
-   * @dev Contructs this contract
+   * @dev Constructs this contract
    *
    * @param store Provide store instance
    * @param coverKey Provide a cover key that doesn't have a vault deployed
@@ -43,8 +43,7 @@ abstract contract VaultBase is ERC20, Recoverable, IVault {
   /**
    * @dev Returns the delegate contract instance
    */
-  function delgate() public view returns (IVaultDelegate) {
-    address delegate = s.getVaultDelegate();
-    return IVaultDelegate(delegate);
+  function delegate() public view returns (IVaultDelegate) {
+    return IVaultDelegate(s.getVaultDelegate());
   }
 }

@@ -1,18 +1,16 @@
 // Neptune Mutual Protocol (https://neptunemutual.com)
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+import "./ProtoBase.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IProtocol.sol";
-import "../libraries/ProtoUtilV1.sol";
-import "../libraries/StoreKeyUtil.sol";
-import "./ProtoBase.sol";
 
 contract Protocol is IProtocol, ProtoBase {
   using ProtoUtilV1 for bytes;
-  using RegistryLibV1 for IStore;
   using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
+  using RegistryLibV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   bool public initialized = false;
 
@@ -48,6 +46,8 @@ contract Protocol is IProtocol, ProtoBase {
       s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
       emit MemberRemoved(msg.sender);
     }
+
+    require(args.reportingBurnRate + args.governanceReporterCommission <= ProtoUtilV1.MULTIPLIER, "Invalid gov burn/commission rate");
 
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, args.burner);
 
@@ -86,7 +86,7 @@ contract Protocol is IProtocol, ProtoBase {
    * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
-   * Since adding member to the protocol is a highy risky activity,
+   * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
    *
    * @custom:suppress-address-trust-issue The address `member` can be trusted because this can only come from upgrade agents.
@@ -152,11 +152,8 @@ contract Protocol is IProtocol, ProtoBase {
    * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
-   * Since adding member to the protocol is a highy risky activity,
+   * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
    *
    * @custom:suppress-address-trust-issue Although the `contractAddress` can't be trusted,
    * an upgrade admin has to check the contract code manually.
@@ -201,17 +198,14 @@ contract Protocol is IProtocol, ProtoBase {
    * @dev Upgrades a contract at the given namespace and key.
    *
    * The previous contract's protocol membership is revoked and
-   * the current immediately starts assuming responsbility of
+   * the current immediately starts assuming responsibility of
    * whatever the contract needs to do at the supplied namespace and key.
    *
    * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
-   * Since adding member to the protocol is a highy risky activity,
+   * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
    *
    * @custom:suppress-address-trust-issue Can only be invoked by an upgrade agent.
    *
@@ -237,6 +231,28 @@ contract Protocol is IProtocol, ProtoBase {
   }
 
   /**
+   * @dev Grants roles to the protocol.
+   *
+   * Individual Neptune Mutual protocol contracts inherit roles
+   * defined to this contract. Meaning, the `AccessControl` logic
+   * here is used everywhere else.
+   *
+   * @custom:warning Warning:
+   * @custom:suppress-acl Can only be called by a role admin of the specified role(s)
+   *
+   */
+  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
+    // @suppress-zero-value-check Checked
+    require(detail.length > 0, "Invalid args");
+
+    for (uint256 i = 0; i < detail.length; i++) {
+      for (uint256 j = 0; j < detail[i].roles.length; j++) {
+        super.grantRole(detail[i].roles[j], detail[i].account);
+      }
+    }
+  }
+
+  /**
    * @dev Grants `role` to `account`.
    *
    * If `account` had not been already granted `role`, emits a {RoleGranted}
@@ -245,36 +261,43 @@ contract Protocol is IProtocol, ProtoBase {
    * Requirements:
    *
    * - the caller must have ``role``'s admin role.
+   * @custom:suppress-acl Check the ACL of the base function
    */
   function grantRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
     super.grantRole(role, account);
   }
 
   /**
-   * @dev Grants roles to the protocol.
+   * @dev Revokes `role` from `account`.
    *
-   * Individual Neptune Mutual protocol contracts inherit roles
-   * defined to this contract. Meaning, the `AccessControl` logic
-   * here is used everywhere else.
+   * If `account` had been granted `role`, emits a {RoleRevoked} event.
    *
-   * @custom:warning Warning:
+   * Requirements:
    *
-   * This feature is only accessible to an admin. Adding any kind of role to the protocol is immensely risky.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
-   *
+   * - the caller must have ``role``'s admin role.
+   * @custom:suppress-acl Check the ACL of the base function
    */
-  function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
-    // @suppress-zero-value-check Checked
-    require(detail.length > 0, "Invalid args");
-    AccessControlLibV1.mustBeAdmin(s);
+  function revokeRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+    super.revokeRole(role, account);
+  }
 
-    for (uint256 i = 0; i < detail.length; i++) {
-      for (uint256 j = 0; j < detail[i].roles.length; j++) {
-        _grantRole(detail[i].roles[j], detail[i].account);
-      }
-    }
+  /**
+   * @dev Revokes `role` from the calling account.
+   *
+   * Roles are often managed via {grantRole} and {revokeRole}: this function's
+   * purpose is to provide a mechanism for accounts to lose their privileges
+   * if they are compromised (such as when a trusted device is misplaced).
+   *
+   * If the calling account had been revoked `role`, emits a {RoleRevoked}
+   * event.
+   *
+   * Requirements:
+   *
+   * - the caller must be `account`.
+   * @custom:suppress-acl Check the ACL of the base function
+   */
+  function renounceRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+    super.renounceRole(role, account);
   }
 
   /**

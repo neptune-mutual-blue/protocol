@@ -4,7 +4,6 @@
 pragma solidity ^0.8.0;
 import "./Finalization.sol";
 import "../../../interfaces/IResolvable.sol";
-import "../../../libraries/NTransferUtilV2.sol";
 
 /**
  * @title Resolvable Contract
@@ -13,16 +12,14 @@ import "../../../libraries/NTransferUtilV2.sol";
  * can perform emergency resolution to defend against governance attacks.
  */
 abstract contract Resolvable is Finalization, IResolvable {
-  using GovernanceUtilV1 for IStore;
-  using ProtoUtilV1 for IStore;
   using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
+  using GovernanceUtilV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
-  using ValidationLibV1 for bytes32;
 
   /**
-   * @dev Marks as a cover as "resolved" after the reporting period.
+   * @dev Marks a cover as "resolved" after the reporting period.
    * A resolution has a (configurable) 24-hour cooldown period
    * that enables governance admins to revese decision in case of
    * attack or mistake.
