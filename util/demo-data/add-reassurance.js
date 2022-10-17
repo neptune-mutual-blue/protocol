@@ -1,4 +1,5 @@
-const { covers } = require('../../examples/dedicated')
+const { ethers } = require('hardhat')
+const { covers } = require('../../examples')
 const { ether, getRandomNumber, weiAsToken, STABLECOIN_DECIMALS } = require('../helper')
 const { approve } = require('../contract-helper/erc20')
 const faucet = require('../contract-helper/faucet')
@@ -12,7 +13,7 @@ const add = async (coverKey, payload) => {
 
   await faucet.request(dai, amount)
 
-  await approve(dai.address, reassuranceContract.address, owner, amount)
+  await approve(dai.address, reassuranceContract.address, owner, ethers.constants.MaxUint256)
 
   await reassuranceContract.connect(owner).addReassurance(coverKey, owner.address, amount)
 
@@ -21,10 +22,10 @@ const add = async (coverKey, payload) => {
 
 const addReassurance = async (payload) => {
   for (const i in covers) {
-    const { key, coverName } = covers[i]
+    const { coverKey, coverName } = covers[i]
 
     console.info('Adding reassurance to %s', coverName)
-    await add(key, payload)
+    await add(coverKey, payload)
   }
 }
 

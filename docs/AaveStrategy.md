@@ -11,18 +11,18 @@ View Source: [contracts/core/liquidity/strategies/AaveStrategy.sol](../contracts
 **Constants & Variables**
 
 ```js
+//public members
+bytes32 public constant CNAME_STRATEGY_AAVE;
+bytes32 public constant NS_DEPOSITS;
+bytes32 public constant NS_WITHDRAWALS;
+address public depositCertificate;
+contract IAaveV2LendingPoolLike public lendingPool;
+
 //private members
 bytes32 private constant _KEY;
 mapping(bytes32 => uint256) private _counters;
 mapping(bytes32 => uint256) private _depositTotal;
 mapping(bytes32 => uint256) private _withdrawalTotal;
-
-//public members
-bytes32 public constant NS_DEPOSITS;
-bytes32 public constant NS_WITHDRAWALS;
-address public depositCertificate;
-contract IAaveV2LendingPoolLike public lendingPool;
-mapping(uint256 => bool) public supportedChains;
 
 ```
 
@@ -150,7 +150,7 @@ Gets info of this strategy by cover key
 
 ```solidity
 function getInfo(bytes32 coverKey) external view
-returns(values uint256[])
+returns(info struct ILendingStrategy.LendingStrategyInfoType)
 ```
 
 **Arguments**
@@ -163,11 +163,9 @@ returns(values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(bytes32 coverKey) external view override returns (uint256[] memory values) {
-    values = new uint256[](2);
-
-    values[0] = s.getUintByKey(_getDepositsKey(coverKey));
-    values[1] = s.getUintByKey(_getWithdrawalsKey(coverKey));
+function getInfo(bytes32 coverKey) external view override returns (LendingStrategyInfoType memory info) {
+    info.deposits = s.getUintByKey(_getDepositsKey(coverKey));
+    info.withdrawals = s.getUintByKey(_getWithdrawalsKey(coverKey));
   }
 ```
 </details>
@@ -464,7 +462,7 @@ returns(bytes32)
 
 ```javascript
 function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_STRATEGY_AAVE;
+    return CNAME_STRATEGY_AAVE;
   }
 ```
 </details>
@@ -532,6 +530,7 @@ function getName() public pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -571,6 +570,7 @@ function getName() public pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

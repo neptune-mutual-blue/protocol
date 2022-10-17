@@ -3,9 +3,6 @@
 pragma solidity ^0.8.0;
 import "../../Recoverable.sol";
 import "../../../interfaces/IFinalization.sol";
-import "../../../libraries/GovernanceUtilV1.sol";
-import "../../../libraries/ValidationLibV1.sol";
-import "../../../libraries/RoutineInvokerLibV1.sol";
 
 /**
  * @title Finalization Contract
@@ -18,12 +15,9 @@ import "../../../libraries/RoutineInvokerLibV1.sol";
  */
 abstract contract Finalization is Recoverable, IFinalization {
   using GovernanceUtilV1 for IStore;
-  using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for bytes32;
 
   /**
    * @dev Finalizes a cover pool or a product contract.

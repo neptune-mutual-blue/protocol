@@ -5,8 +5,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "../../interfaces/IStore.sol";
 import "../../interfaces/IPolicyAdmin.sol";
 import "../../libraries/PolicyHelperV1.sol";
-import "../../libraries/StoreKeyUtil.sol";
-import "../../libraries/ProtoUtilV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -15,14 +13,12 @@ import "../Recoverable.sol";
  * to set the policy rate and fee info.
  */
 contract PolicyAdmin is IPolicyAdmin, Recoverable {
-  using ProtoUtilV1 for bytes;
-  using PolicyHelperV1 for IStore;
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
   using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using NTransferUtilV2 for IERC20;
+  using GovernanceUtilV1 for IStore;
+  using PolicyHelperV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
    * @dev Constructs this contract

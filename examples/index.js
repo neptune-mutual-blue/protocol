@@ -1,11 +1,11 @@
-const dedicated = require('./dedicated')
 const diversified = require('./diversified')
+const dedicated = require('./dedicated')
 
 const covers = [
-  ...dedicated.covers,
-  ...diversified.covers
+  ...diversified.covers,
+  ...dedicated
 ]
 
 const { products } = diversified
 
-module.exports = { covers, products, dedicated, diversified }
+module.exports = { covers, diversified, dedicated, products }

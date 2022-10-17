@@ -10,41 +10,16 @@ View Source: [contracts/interfaces/IPolicyAdmin.sol](../contracts/interfaces/IPo
 **Events**
 
 ```js
-event PolicyRateSet(uint256  floor, uint256  ceiling);
 event CoverPolicyRateSet(bytes32 indexed coverKey, uint256  floor, uint256  ceiling);
 event CoverageLagSet(bytes32 indexed coverKey, uint256  window);
 ```
 
 ## Functions
 
-- [setPolicyRates(uint256 floor, uint256 ceiling)](#setpolicyrates)
 - [setPolicyRatesByKey(bytes32 coverKey, uint256 floor, uint256 ceiling)](#setpolicyratesbykey)
 - [getPolicyRates(bytes32 coverKey)](#getpolicyrates)
 - [setCoverageLag(bytes32 coverKey, uint256 window)](#setcoveragelag)
 - [getCoverageLag(bytes32 coverKey)](#getcoveragelag)
-
-### setPolicyRates
-
-Sets policy rates. This feature is only accessible by owner or protocol owner.
-
-```solidity
-function setPolicyRates(uint256 floor, uint256 ceiling) external nonpayable
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| floor | uint256 | The lowest cover fee rate fallback | 
-| ceiling | uint256 | The highest cover fee rate fallback | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function setPolicyRates(uint256 floor, uint256 ceiling) external;
-```
-</details>
 
 ### setPolicyRatesByKey
 
@@ -202,6 +177,7 @@ function getCoverageLag(bytes32 coverKey) external view returns (uint256);
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -241,6 +217,7 @@ function getCoverageLag(bytes32 coverKey) external view returns (uint256);
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

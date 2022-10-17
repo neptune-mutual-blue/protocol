@@ -383,7 +383,7 @@ function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view 
     uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
 
     require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
-    require(end > 0 && block.timestamp < end, "Withdrawal period has already ended");
+    require(end > 0 && block.timestamp <= end, "Withdrawal period has already ended");
   }
 ```
 </details>
@@ -718,6 +718,7 @@ function _withdrawFromDisabled(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -757,6 +758,7 @@ function _withdrawFromDisabled(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

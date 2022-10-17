@@ -234,17 +234,14 @@ library AccessControlLibV1 {
    * @dev Upgrades a contract at the given namespace and key.
    *
    * The previous contract's protocol membership is revoked and
-   * the current immediately starts assuming responsbility of
+   * the current immediately starts assuming responsibility of
    * whatever the contract needs to do at the supplied namespace and key.
    *
    * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
-   * Since adding member to the protocol is a highy risky activity,
+   * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
    *
    * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
    *
@@ -283,11 +280,8 @@ library AccessControlLibV1 {
    * @custom:warning Warning:
    *
    * This feature is only accessible to an upgrade agent.
-   * Since adding member to the protocol is a highy risky activity,
+   * Since adding member to the protocol is a highly risky activity,
    * the role `Upgrade Agent` is considered to be one of the most `Critical` roles.
-   *
-   * Using Tenderly War Rooms/Web3 Actions or OZ Defender, the protocol needs to be paused
-   * when this function is invoked.
    *
    * @custom:suppress-address-trust-issue This feature can only be accessed internally within the protocol.
    *

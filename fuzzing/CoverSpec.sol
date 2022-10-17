@@ -176,7 +176,13 @@ contract CoverSpec is ProtocolSpec {
 
     _cover.initialize(address(_dai), "DAI Token");
 
-    _cover.updateCoverCreatorWhitelist(address(this), true);
+    address[] memory whitelist = new address[](1);
+    whitelist[0] = address(this);
+
+    bool[] memory statuses = new bool[](1);
+    statuses[0] = true;
+
+    _cover.updateCoverCreatorWhitelist(whitelist, statuses);
     _npm.mint(args.stakeWithFee);
     _npm.approve(address(_coverStake), args.stakeWithFee);
 

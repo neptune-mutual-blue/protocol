@@ -1,17 +1,23 @@
-const ens = require('./ens')
-const kyber = require('./kyber')
-const lido = require('./lido')
-const nexus = require('./nexus')
 const oneInch = require('./1inch')
+const compound = require('./compound')
+const convex = require('./convex')
+const kyberswap = require('./kyberswap')
+const lido = require('./lido')
+const nexusMutual = require('./nexus-mutual')
+const rocketPool = require('./rocket-pool')
 const sushi = require('./sushi')
 const synthetix = require('./synthetix')
+const uniswap = require('./uniswap')
 
 module.exports = [
-  ens,
-  kyber,
-  lido,
   oneInch,
-  nexus,
+  compound,
+  convex,
+  kyberswap,
+  lido,
+  nexusMutual,
+  rocketPool,
   sushi,
-  synthetix
+  synthetix,
+  uniswap
 ]

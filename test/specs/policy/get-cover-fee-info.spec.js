@@ -80,9 +80,9 @@ describe('Policy: getCoverFeeInfo', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, payload.reassuranceAmount)
 
     await deployed.cover.addCover({
@@ -118,8 +118,20 @@ describe('Policy: getCoverFeeInfo', () => {
 
     await deployed.dai.approve(deployed.vault.address, payload.inVault)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), minStakeToReport, key.toBytes32(''))
-    await deployed.vault.addLiquidity(coverKey, payload.inVault.div(2), 0, key.toBytes32(''))
+
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: payload.inVault.div(2),
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
+
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount: payload.inVault.div(2),
+      npmStakeToAdd: '0',
+      referralCode: key.toBytes32('')
+    })
 
     const coverageLag = await deployed.policyAdminContract.getCoverageLag(coverKey)
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())

@@ -41,7 +41,7 @@ describe('Liquidity Stories', () => {
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
 
-    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     await contracts.cover.addCover({
@@ -72,14 +72,24 @@ describe('Liquidity Stories', () => {
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minStakeToReport)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     await network.provider.send('evm_increaseTime', [1 * DAYS])
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minStakeToReport)
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('interest could not be accrued before withdrawal period', async () => {

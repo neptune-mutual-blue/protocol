@@ -18,6 +18,7 @@ View Source: [contracts/libraries/StoreKeyUtil.sol](../contracts/libraries/Store
 - [subtractUintByKeys(IStore s, bytes32 key1, bytes32 key2, address account, uint256 value)](#subtractuintbykeys)
 - [setStringByKey(IStore s, bytes32 key, string value)](#setstringbykey)
 - [setStringByKeys(IStore s, bytes32 key1, bytes32 key2, string value)](#setstringbykeys)
+- [setStringByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, string value)](#setstringbykeys)
 - [setBytes32ByKey(IStore s, bytes32 key, bytes32 value)](#setbytes32bykey)
 - [setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 value)](#setbytes32bykeys)
 - [setBytes32ByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, bytes32 value)](#setbytes32bykeys)
@@ -467,6 +468,38 @@ function setStringByKeys(
     string calldata value
   ) external {
     return s.setString(_getKey(key1, key2), value);
+  }
+```
+</details>
+
+### setStringByKeys
+
+```solidity
+function setStringByKeys(IStore s, bytes32 key1, bytes32 key2, bytes32 key3, string value) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| key1 | bytes32 |  | 
+| key2 | bytes32 |  | 
+| key3 | bytes32 |  | 
+| value | string |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function setStringByKeys(
+    IStore s,
+    bytes32 key1,
+    bytes32 key2,
+    bytes32 key3,
+    string calldata value
+  ) external {
+    return s.setString(_getKey(key1, key2, key3), value);
   }
 ```
 </details>
@@ -3115,6 +3148,7 @@ function getBytes32ArrayItemByIndexByKeys(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -3154,6 +3188,7 @@ function getBytes32ArrayItemByIndexByKeys(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

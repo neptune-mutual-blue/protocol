@@ -30,6 +30,7 @@ event MaxLendingRatioSet(uint256  ratio);
 - [getMaxLendingRatio()](#getmaxlendingratio)
 - [getDisabledStrategies()](#getdisabledstrategies)
 - [getActiveStrategies()](#getactivestrategies)
+- [addBulkLiquidity(struct IVault.AddLiquidityArgs[] args)](#addbulkliquidity)
 
 ### addStrategies
 
@@ -238,6 +239,26 @@ function getActiveStrategies() external view returns (address[] memory strategie
 ```
 </details>
 
+### addBulkLiquidity
+
+```solidity
+function addBulkLiquidity(struct IVault.AddLiquidityArgs[] args) external nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| args | struct IVault.AddLiquidityArgs[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external;
+```
+</details>
+
 ## Contracts
 
 * [AaveStrategy](AaveStrategy.md)
@@ -301,6 +322,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -340,6 +362,7 @@ function getActiveStrategies() external view returns (address[] memory strategie
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

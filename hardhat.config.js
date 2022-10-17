@@ -5,6 +5,8 @@ require('hardhat-gas-reporter')
 require('@nomiclabs/hardhat-etherscan')
 require('dotenv').config()
 
+const GWEI = 1000000000
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -12,10 +14,8 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      // forking: {
-      //   url: process.env.ALCHEMY_API_URL,
-      //   blockNumber: 11819774
-      // }
+      gasPrice: 50 * GWEI,
+      blockGasLimit: 20000000 // 20M
     },
     mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com',

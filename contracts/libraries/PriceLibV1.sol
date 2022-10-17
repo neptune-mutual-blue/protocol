@@ -9,7 +9,6 @@ import "../dependencies/uniswap-v2/IUniswapV2RouterLike.sol";
 import "../dependencies/uniswap-v2/IUniswapV2PairLike.sol";
 import "../dependencies/uniswap-v2/IUniswapV2FactoryLike.sol";
 import "./ProtoUtilV1.sol";
-import "./StoreKeyUtil.sol";
 
 library PriceLibV1 {
   using ProtoUtilV1 for IStore;

@@ -5,6 +5,7 @@ const config = {
   1: {
     network: 'Main Ethereum Network',
     chainId: 1,
+    mainnet: true,
     pool: {
       bond: {
         period: 7 * DAYS

@@ -4,22 +4,18 @@
 pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/access/IAccessControl.sol";
-import "./ProtoUtilV1.sol";
-import "./StoreKeyUtil.sol";
-import "./RegistryLibV1.sol";
-import "./CoverUtilV1.sol";
-import "./GovernanceUtilV1.sol";
-import "./AccessControlLibV1.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/IPausable.sol";
 import "../interfaces/ICxToken.sol";
+import "./GovernanceUtilV1.sol";
+import "./AccessControlLibV1.sol";
 
 library ValidationLibV1 {
-  using ProtoUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
   using GovernanceUtilV1 for IStore;
+  using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
+  using StoreKeyUtil for IStore;
 
   /**
    * @dev Reverts if the protocol is paused
@@ -390,8 +386,8 @@ library ValidationLibV1 {
    * @dev Validates your `unstakeWithoutClaim` arguments
    *
    * @custom:note This function is not intended be used and does not produce correct result
-   * during a claim period. Please use `validateUnstakeWithClaim` if you are accessing
-   * this function during claim period.
+   * before an incident is finalized. Please use `validateUnstakeWithClaim` if you are accessing
+   * this function after resolution and before finalization.
    */
   function validateUnstakeWithoutClaim(
     IStore s,
@@ -408,9 +404,9 @@ library ValidationLibV1 {
   /**
    * @dev Validates your `unstakeWithClaim` arguments
    *
-   * @custom:note This function is only intended be used during a claim period.
+   * @custom:note This function is only intended be used after resolution and before finalization.
    * Please use `validateUnstakeWithoutClaim` if you are accessing
-   * this function after claim period expiry.
+   * this function after finalization.
    */
   function validateUnstakeWithClaim(
     IStore s,

@@ -16,6 +16,17 @@ interface IVault is IMember, IERC20 {
     uint256 withdrawalClose;
   }
 
+  struct AddLiquidityArgs {
+    /// @dev Enter the cover key
+    bytes32 coverKey;
+    /// @dev Enter the amount of liquidity token to supply.
+    uint256 amount;
+    /// @dev Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period.
+    uint256 npmStakeToAdd;
+    /// @dev Enter referral code
+    bytes32 referralCode;
+  }
+
   event GovernanceTransfer(address indexed to, uint256 amount);
   event StrategyTransfer(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount);
   event StrategyReceipt(address indexed token, address indexed strategy, bytes32 indexed name, uint256 amount, uint256 income, uint256 loss);
@@ -34,16 +45,8 @@ interface IVault is IMember, IERC20 {
 
   /**
    * @dev Adds liquidity to the specified cover contract
-   * @param coverKey Enter the cover key
-   * @param amount Enter the amount of liquidity token to supply.
-   * @param npmStake Enter the amount of NPM token to stake. Will be locked for a minimum window of one withdrawal period.
    */
-  function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStake,
-    bytes32 referralCode
-  ) external;
+  function addLiquidity(AddLiquidityArgs calldata args) external;
 
   function accrueInterest() external;
 

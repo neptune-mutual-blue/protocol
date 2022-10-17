@@ -44,25 +44,6 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "floor",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "ceiling",
-        "type": "uint256"
-      }
-    ],
-    "name": "PolicyRateSet",
-    "type": "event"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",

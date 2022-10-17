@@ -61,7 +61,7 @@ describe('Coverage Claim Stories', function () {
     }
 
     // Submit approvals
-    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
@@ -90,7 +90,12 @@ describe('Coverage Claim Stories', function () {
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     // Create Approvals
     await contracts.dai.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
@@ -165,6 +170,7 @@ describe('Coverage Claim Stories', function () {
     await contracts.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(100_000))
 
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
+    await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_AGENT, owner.address)
 
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 

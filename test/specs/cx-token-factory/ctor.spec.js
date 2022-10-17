@@ -10,31 +10,21 @@ require('chai')
   .should()
 
 describe('cxTokenFactory: Constructor and Views', () => {
-  let store,
-    accessControlLibV1,
-    baseLibV1,
-    storeKeyUtil,
-    validationLibV1,
-    cxTokenFactoryLib
+  let store, deployed
 
   before(async () => {
-    const deployed = await deployDependencies()
+    deployed = await deployDependencies()
 
     store = deployed.store
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    storeKeyUtil = deployed.storeKeyUtil
-    validationLibV1 = deployed.validationLibV1
-    cxTokenFactoryLib = deployed.cxTokenFactoryLib
   })
 
   it('correctly deploys', async () => {
     const factory = await deployer.deployWithLibraries(cache, 'cxTokenFactory', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      ValidationLibV1: validationLibV1.address,
-      cxTokenFactoryLibV1: cxTokenFactoryLib.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      ValidationLibV1: deployed.validationLibV1.address,
+      cxTokenFactoryLibV1: deployed.cxTokenFactoryLib.address
     }, store.address)
 
     const _store = await factory.s()

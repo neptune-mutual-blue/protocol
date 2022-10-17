@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./IMember.sol";
+import "./IVault.sol";
 
 pragma solidity ^0.8.0;
 
@@ -36,4 +37,6 @@ interface ILiquidityEngine is IMember {
   function getDisabledStrategies() external view returns (address[] memory strategies);
 
   function getActiveStrategies() external view returns (address[] memory strategies);
+
+  function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external;
 }

@@ -3,6 +3,14 @@ const path = require('path')
 const root = path.join('artifacts', 'contracts', 'interfaces')
 
 const getFiles = async () => {
+  const hasFiles = await io.exists(root)
+
+  if (!hasFiles) {
+    const command = '\x1b[36m' + 'npx hardhat compile' + '\x1b[0m'
+    console.log(`Please generate artifacts using: ${command}`)
+    return
+  }
+
   const files = await io.findFiles('json', root)
   const all = files.map(x => `${x.replace('.dbg', '')}`)
 

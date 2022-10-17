@@ -33,8 +33,9 @@ View Source: [contracts/libraries/GovernanceUtilV1.sol](../contracts/libraries/G
 - [getAttestationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getattestationinternal)
 - [addRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate, uint256 stake)](#addrefutationinternal)
 - [getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey)](#gethasdisputekeyinternal)
+- [getHasFinalizedKeyInternal(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#gethasfinalizedkeyinternal)
 - [getRefutationInternal(IStore s, bytes32 coverKey, bytes32 productKey, address who, uint256 incidentDate)](#getrefutationinternal)
-- [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownPeriodinternal)
+- [getCoolDownPeriodInternal(IStore s, bytes32 coverKey)](#getcooldownperiodinternal)
 - [getResolutionDeadlineInternal(IStore s, bytes32 coverKey, bytes32 productKey)](#getresolutiondeadlineinternal)
 - [addClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate, uint256 claimed)](#addclaimpayoutsinternal)
 - [getClaimPayoutsInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#getclaimpayoutsinternal)
@@ -668,7 +669,7 @@ Returns unstake info of the given account
 
 ```solidity
 function getUnstakeInfoForInternal(IStore s, address account, bytes32 coverKey, bytes32 productKey, uint256 incidentDate) external view
-returns(totalStakeInWinningCamp uint256, totalStakeInLosingCamp uint256, myStakeInWinningCamp uint256, toBurn uint256, toReporter uint256, myReward uint256, unstaken uint256)
+returns(info struct IUnstakable.UnstakeInfoType)
 ```
 
 **Arguments**
@@ -691,25 +692,13 @@ function getUnstakeInfoForInternal(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
-  )
-    external
-    view
-    returns (
-      uint256 totalStakeInWinningCamp,
-      uint256 totalStakeInLosingCamp,
-      uint256 myStakeInWinningCamp,
-      uint256 toBurn,
-      uint256 toReporter,
-      uint256 myReward,
-      uint256 unstaken
-    )
-  {
-    (totalStakeInWinningCamp, totalStakeInLosingCamp, myStakeInWinningCamp) = getResolutionInfoForInternal(s, account, coverKey, productKey, incidentDate);
+  ) external view returns (IUnstakable.UnstakeInfoType memory info) {
+    (info.totalStakeInWinningCamp, info.totalStakeInLosingCamp, info.myStakeInWinningCamp) = getResolutionInfoForInternal(s, account, coverKey, productKey, incidentDate);
 
-    unstaken = getReportingUnstakenAmountInternal(s, account, coverKey, productKey, incidentDate);
-    require(myStakeInWinningCamp > 0, "Nothing to unstake");
+    info.unstaken = getReportingUnstakenAmountInternal(s, account, coverKey, productKey, incidentDate);
+    require(info.myStakeInWinningCamp > 0, "Nothing to unstake");
 
-    uint256 rewardRatio = (myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / totalStakeInWinningCamp;
+    uint256 rewardRatio = (info.myStakeInWinningCamp * ProtoUtilV1.MULTIPLIER) / info.totalStakeInWinningCamp;
 
     uint256 reward = 0;
 
@@ -718,12 +707,12 @@ function getUnstakeInfoForInternal(
     // before the finalization will receive rewards
     if (s.getActiveIncidentDateInternal(coverKey, productKey) == incidentDate) {
       // slither-disable-next-line divide-before-multiply
-      reward = (totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
+      reward = (info.totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
 
-    toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
-    toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;
-    myReward = reward - toBurn - toReporter;
+    info.toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
+    info.toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;
+    info.myReward = reward - info.toBurn - info.toReporter;
   }
 ```
 </details>
@@ -928,7 +917,7 @@ function addAttestationInternal(
 
     // No has reported yet, this is the first report
     if (currentStake == 0) {
-      s.setAddressByKey(_getReporterKey(coverKey, productKey), msg.sender);
+      s.setAddressByKey(_getReporterKey(coverKey, productKey), who);
     }
 
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
@@ -1015,7 +1004,7 @@ function addRefutationInternal(
 
     if (currentStake == 0) {
       // The first reporter who disputed
-      s.setAddressByKey(_getDisputerKey(coverKey, productKey), msg.sender);
+      s.setAddressByKey(_getDisputerKey(coverKey, productKey), who);
       s.setBoolByKey(getHasDisputeKeyInternal(coverKey, productKey), true);
     }
 
@@ -1050,6 +1039,38 @@ returns(bytes32)
 ```javascript
 function getHasDisputeKeyInternal(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_HAS_A_DISPUTE, coverKey, productKey));
+  }
+```
+</details>
+
+### getHasFinalizedKeyInternal
+
+Hash key of the "has finalized flag" for the specified cover product.
+ Warning: this function does not validate the input arguments.
+
+```solidity
+function getHasFinalizedKeyInternal(bytes32 coverKey, bytes32 productKey, uint256 incidentDate) public pure
+returns(bytes32)
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| coverKey | bytes32 | Enter cover key | 
+| productKey | bytes32 | Enter product key | 
+| incidentDate | uint256 | Enter incident date | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function getHasFinalizedKeyInternal(
+    bytes32 coverKey,
+    bytes32 productKey,
+    uint256 incidentDate
+  ) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(ProtoUtilV1.NS_GOVERNANCE_REPORTING_FINALIZATION, coverKey, productKey, incidentDate));
   }
 ```
 </details>
@@ -1418,6 +1439,7 @@ function mustNotExceedNpmThreshold(uint256 amount) public pure {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -1457,6 +1479,7 @@ function mustNotExceedNpmThreshold(uint256 amount) public pure {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

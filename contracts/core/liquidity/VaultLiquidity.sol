@@ -28,7 +28,7 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    address stablecoin = delgate().preTransferGovernance(msg.sender, coverKey, to, amount);
+    address stablecoin = delegate().preTransferGovernance(msg.sender, coverKey, to, amount);
 
     /******************************************************************************************
       BODY
@@ -39,7 +39,7 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    delgate().postTransferGovernance(msg.sender, coverKey, to, amount);
+    delegate().postTransferGovernance(msg.sender, coverKey, to, amount);
     emit GovernanceTransfer(to, amount);
   }
 
@@ -50,25 +50,17 @@ abstract contract VaultLiquidity is VaultBase {
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable
    *
-   * @param coverKey Enter the cover key
-   * @param amount Enter the amount of liquidity token to supply.
-   * @param npmStakeToAdd Enter the amount of NPM token to stake.
    *
    */
-  function addLiquidity(
-    bytes32 coverKey,
-    uint256 amount,
-    uint256 npmStakeToAdd,
-    bytes32 referralCode
-  ) external override nonReentrant {
-    require(coverKey == key, "Forbidden");
-    require(amount > 0, "Please specify amount");
+  function addLiquidity(AddLiquidityArgs calldata args) external override nonReentrant {
+    require(args.coverKey == key, "Forbidden");
+    require(args.amount > 0, "Please specify amount");
 
     /******************************************************************************************
       PRE
      ******************************************************************************************/
 
-    (uint256 podsToMint, uint256 previousNpmStake) = delgate().preAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
+    (uint256 podsToMint, uint256 previousNpmStake) = delegate().preAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
     require(podsToMint > 0, "Can't determine PODs");
 
@@ -76,10 +68,10 @@ abstract contract VaultLiquidity is VaultBase {
       BODY
      ******************************************************************************************/
 
-    IERC20(sc).ensureTransferFrom(msg.sender, address(this), amount);
+    IERC20(sc).ensureTransferFrom(msg.sender, address(this), args.amount);
 
-    if (npmStakeToAdd > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), npmStakeToAdd);
+    if (args.npmStakeToAdd > 0) {
+      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
     }
 
     super._mint(msg.sender, podsToMint);
@@ -88,15 +80,15 @@ abstract contract VaultLiquidity is VaultBase {
       POST
      ******************************************************************************************/
 
-    delgate().postAddLiquidity(msg.sender, coverKey, amount, npmStakeToAdd);
+    delegate().postAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
-    emit PodsIssued(msg.sender, podsToMint, amount, referralCode);
+    emit PodsIssued(msg.sender, podsToMint, args.amount, args.referralCode);
 
     if (previousNpmStake == 0) {
-      emit Entered(coverKey, msg.sender);
+      emit Entered(args.coverKey, msg.sender);
     }
 
-    emit NpmStaken(msg.sender, npmStakeToAdd);
+    emit NpmStaken(msg.sender, args.npmStakeToAdd);
   }
 
   /**
@@ -122,12 +114,12 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    (address stablecoin, uint256 stablecoinToRelease) = delgate().preRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
+    (address stablecoin, uint256 stablecoinToRelease) = delegate().preRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
 
     /******************************************************************************************
       BODY
      ******************************************************************************************/
-    if(podsToRedeem > 0) {
+    if (podsToRedeem > 0) {
       IERC20(address(this)).ensureTransferFrom(msg.sender, address(this), podsToRedeem);
       IERC20(stablecoin).ensureTransfer(msg.sender, stablecoinToRelease);
     }
@@ -142,7 +134,7 @@ abstract contract VaultLiquidity is VaultBase {
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    delgate().postRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
+    delegate().postRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, stablecoinToRelease);
 
@@ -159,14 +151,14 @@ abstract contract VaultLiquidity is VaultBase {
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
    */
   function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
-    return delgate().calculatePodsImplementation(key, forStablecoinUnits);
+    return delegate().calculatePodsImplementation(key, forStablecoinUnits);
   }
 
   /**
    * @dev Calculates the amount of stablecoins to withdraw for the given amount of PODs to redeem
    */
   function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
-    return delgate().calculateLiquidityImplementation(key, podsToBurn);
+    return delegate().calculateLiquidityImplementation(key, podsToBurn);
   }
 
   /**
@@ -174,18 +166,18 @@ abstract contract VaultLiquidity is VaultBase {
    * This also includes amounts lent out in lending strategies
    */
   function getStablecoinBalanceOf() external view override returns (uint256) {
-    return delgate().getStablecoinBalanceOfImplementation(key);
+    return delegate().getStablecoinBalanceOfImplementation(key);
   }
 
   /**
-   * @dev Accrues interests from external straties
+   * @dev Accrues interests from external strategies
    *
    * @custom:suppress-acl This is a publicly accessible feature
    * @custom:suppress-pausable Validated in `accrueInterestImplementation`
    *
    */
   function accrueInterest() external override nonReentrant {
-    delgate().accrueInterestImplementation(msg.sender, key);
+    delegate().accrueInterestImplementation(msg.sender, key);
     emit InterestAccrued(key);
   }
 }

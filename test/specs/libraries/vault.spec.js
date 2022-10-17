@@ -33,10 +33,12 @@ describe('Vault Library', () => {
 
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+
+    await deployed.cover.setMinStakeToAddLiquidity(helper.ether(250))
 
     await deployed.cover.addCover({
       coverKey,
@@ -71,7 +73,12 @@ describe('Vault Library', () => {
 
     // await deployed.dai.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
-    // await deployed.vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    // await deployed.vault.addLiquidity({
+    //   coverKey,
+    //   amount: initialLiquidity,
+    //   npmStakeToAdd: minStakeToReport,
+    //   referralCode: key.toBytes32('')
+    // })
 
     mockContract = await deployer.deployWithLibraries(
       cache,

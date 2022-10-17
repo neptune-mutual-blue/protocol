@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const CNAME_STRATEGY_AAVE = key.toBytes32('Aave Strategy')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -32,6 +33,6 @@ describe('Aave Strategy Constructor', () => {
 
    ; (await aaveStrategy.getKey()).should.equal(ethers.utils.solidityKeccak256(['string', 'string', 'string', 'string'], ['lending', 'strategy', 'aave', 'v2']))
     ; (await aaveStrategy.version()).should.equal(key.toBytes32('v0.1'))
-    ; (await aaveStrategy.getName()).should.equal(key.PROTOCOL.CNAME.STRATEGY_AAVE)
+    ; (await aaveStrategy.getName()).should.equal(CNAME_STRATEGY_AAVE)
   })
 })

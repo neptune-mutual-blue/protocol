@@ -7,6 +7,7 @@ const config = {
   80001: {
     network: 'Mumbai Testnet',
     chainId: 80001,
+    mainnet: false,
     pool: {
       bond: {
         period: 10 * MINUTES

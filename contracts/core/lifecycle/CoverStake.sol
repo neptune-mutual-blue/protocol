@@ -3,10 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "../../interfaces/ICoverStake.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/CoverUtilV1.sol";
-import "../../libraries/StoreKeyUtil.sol";
-import "../../libraries/ValidationLibV1.sol";
 import "../../libraries/NTransferUtilV2.sol";
 import "../Recoverable.sol";
 
@@ -25,7 +21,6 @@ import "../Recoverable.sol";
  *
  */
 contract CoverStake is ICoverStake, Recoverable {
-  using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using CoverUtilV1 for IStore;
@@ -62,7 +57,7 @@ contract CoverStake is ICoverStake, Recoverable {
 
     require(amount >= fee, "Invalid fee");
 
-    s.npmToken().ensureTransferFrom(account, address(this), amount);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
 
     if (fee > 0) {
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);

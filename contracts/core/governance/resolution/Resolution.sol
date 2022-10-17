@@ -5,20 +5,16 @@ import "./Unstakable.sol";
 import "../../../interfaces/IResolution.sol";
 
 /**
+ *
  * @title Resolution Contract
  * @dev This contract enables governance agents or admins to resolve
  * actively-reporting cover products. Once a resolution occurs, the
  * NPM token holders who voted for the valid camp can unstake
- * their staking during the claim period with additional rewards.
+ * their stakes after resolution and before finalization
+ * with additional rewards.
+ *
  */
 contract Resolution is IResolution, Unstakable {
-  using GovernanceUtilV1 for IStore;
-  using ProtoUtilV1 for IStore;
-  using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ValidationLibV1 for IStore;
-  using ValidationLibV1 for bytes32;
-
   constructor(IStore store) Recoverable(store) {} // solhint-disable-line
 
   /**

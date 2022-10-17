@@ -80,7 +80,7 @@ function increaseStake(
 
     require(amount >= fee, "Invalid fee");
 
-    s.npmToken().ensureTransferFrom(account, address(this), amount);
+    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
 
     if (fee > 0) {
       s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
@@ -317,6 +317,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -356,6 +357,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

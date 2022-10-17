@@ -72,7 +72,7 @@ describe('Governance Stories', function () {
 
   before(async () => {
     contracts = await composer.initializer.initialize(true)
-    const [_o, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
+    const [owner, _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line
 
     const info = await ipfs.write(sample.info)
 
@@ -90,7 +90,7 @@ describe('Governance Stories', function () {
     const reassuranceRate = helper.percentage(50)
 
     // Submit approvals
-    await contracts.npm.approve(contracts.stakingContract.address, stakeWithFee)
+    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
     await contracts.dai.approve(contracts.cover.address, initialLiquidity)
 
@@ -119,7 +119,12 @@ describe('Governance Stories', function () {
 
     await contracts.dai.approve(vault.address, initialLiquidity)
     await contracts.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     // Purchase a cover
     const args = {

@@ -6,20 +6,15 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IStore.sol";
 import "../interfaces/ILendingStrategy.sol";
 import "./PriceLibV1.sol";
-import "./ProtoUtilV1.sol";
 import "./CoverUtilV1.sol";
-import "./RegistryLibV1.sol";
-import "./StrategyLibV1.sol";
-import "./ValidationLibV1.sol";
 
 library RoutineInvokerLibV1 {
+  using CoverUtilV1 for IStore;
   using PriceLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
-  using StrategyLibV1 for IStore;
-  using CoverUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using ValidationLibV1 for IStore;
+  using StrategyLibV1 for IStore;
 
   enum Action {
     Deposit,

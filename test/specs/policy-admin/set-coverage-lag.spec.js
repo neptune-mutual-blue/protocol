@@ -33,9 +33,9 @@ describe('Policy Admin: setCoverageLag', () => {
     coverKey = key.toBytes32('foo-bar')
     const info = key.toBytes32('info')
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, helper.ether(10_000))
+    await deployed.npm.approve(deployed.cover.address, helper.ether(10_000))
 
     await deployed.cover.addCover({
       coverKey,
@@ -62,7 +62,7 @@ describe('Policy Admin: setCoverageLag', () => {
     const before = await deployed.policyAdminContract.getCoverageLag(coverKey)
     before.should.equal(1 * DAYS)
 
-    const window = 2 * DAYS
+    const window = 1 * DAYS
 
     // Sets the global coverage lag, when coverKey is 0
     const tx = await deployed.policyAdminContract.setCoverageLag(key.toBytes32(''), window)
@@ -78,7 +78,7 @@ describe('Policy Admin: setCoverageLag', () => {
   })
 
   it('succeeds without any errors', async () => {
-    const window = 2 * DAYS
+    const window = 1 * DAYS
 
     const tx = await deployed.policyAdminContract.setCoverageLag(coverKey, window)
     const { events } = await tx.wait()

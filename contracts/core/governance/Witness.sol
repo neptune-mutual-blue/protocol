@@ -2,15 +2,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 import "../Recoverable.sol";
-import "../../libraries/ProtoUtilV1.sol";
-import "../../libraries/StoreKeyUtil.sol";
-import "../../libraries/CoverUtilV1.sol";
 import "../../interfaces/IWitness.sol";
-import "../../libraries/NTransferUtilV2.sol";
-import "../../libraries/GovernanceUtilV1.sol";
-import "../../libraries/ValidationLibV1.sol";
-import "../../libraries/RegistryLibV1.sol";
 import "../../interfaces/IVault.sol";
+import "../../libraries/NTransferUtilV2.sol";
 
 /**
  * @title Witness Contract
@@ -55,13 +49,11 @@ import "../../interfaces/IVault.sol";
  *
  */
 abstract contract Witness is Recoverable, IWitness {
-  using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using CoverUtilV1 for IStore;
   using GovernanceUtilV1 for IStore;
   using ValidationLibV1 for IStore;
-  using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
 
   /**

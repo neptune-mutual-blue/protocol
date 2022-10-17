@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/ICxTokenFactory.sol";
 import "../../libraries/cxTokenFactoryLibV1.sol";
-import "../../libraries/ValidationLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -16,10 +15,8 @@ import "../Recoverable.sol";
 // slither-disable-next-line naming-convention
 contract cxTokenFactory is ICxTokenFactory, Recoverable {
   // solhint-disable-previous-line
-  using ProtoUtilV1 for bytes;
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
   using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
    * @dev Constructs this contract

@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import "../../interfaces/IVault.sol";
 import "../../interfaces/IVaultFactory.sol";
 import "../../libraries/VaultFactoryLibV1.sol";
-import "../../libraries/ValidationLibV1.sol";
 import "../Recoverable.sol";
 
 /**
@@ -15,9 +14,7 @@ import "../Recoverable.sol";
  *
  */
 contract VaultFactory is IVaultFactory, Recoverable {
-  using ProtoUtilV1 for bytes;
   using ProtoUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
 
   /**
@@ -29,7 +26,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
   /**
    * @dev Deploys a new instance of Vault
    *
-   * @custom:suppress-acl This function is only accessilbe to the cover contract
+   * @custom:suppress-acl This function is only accessible to the cover contract
    *
    * @param coverKey Enter the cover key related to this Vault instance
    */

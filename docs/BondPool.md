@@ -57,8 +57,8 @@ function createBond(uint256 lpTokens, uint256 minNpmDesired) external override n
     require(lpTokens > 0, "Please specify `lpTokens`");
     require(minNpmDesired > 0, "Please enter `minNpmDesired`");
 
-    uint256[] memory values = s.createBondInternal(lpTokens, minNpmDesired);
-    emit BondCreated(msg.sender, lpTokens, values[0], values[1]);
+    (uint256 npmToVest, uint256 unlockDate) = s.createBondInternal(lpTokens, minNpmDesired);
+    emit BondCreated(msg.sender, lpTokens, npmToVest, unlockDate);
   }
 ```
 </details>
@@ -84,8 +84,8 @@ function claimBond() external override nonReentrant {
     s.mustNotBePaused();
 
     // @suppress-zero-value-check The uint values are validated in the function `claimBondInternal`
-    uint256[] memory values = s.claimBondInternal();
-    emit BondClaimed(msg.sender, values[0]);
+    uint256 npmTransferred = s.claimBondInternal();
+    emit BondClaimed(msg.sender, npmTransferred);
   }
 ```
 </details>
@@ -153,6 +153,7 @@ function claimBond() external override nonReentrant {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -192,6 +193,7 @@ function claimBond() external override nonReentrant {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

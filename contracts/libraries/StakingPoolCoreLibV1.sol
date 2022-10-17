@@ -3,14 +3,13 @@
 /* solhint-disable ordering  */
 pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "./StoreKeyUtil.sol";
-import "./ProtoUtilV1.sol";
-import "./NTransferUtilV2.sol";
 import "../interfaces/IStakingPools.sol";
+import "./NTransferUtilV2.sol";
+import "./StoreKeyUtil.sol";
 
 library StakingPoolCoreLibV1 {
-  using StoreKeyUtil for IStore;
   using NTransferUtilV2 for IERC20;
+  using StoreKeyUtil for IStore;
 
   bytes32 public constant NS_POOL = "ns:pool:staking";
   bytes32 public constant NS_POOL_NAME = "ns:pool:staking:name";

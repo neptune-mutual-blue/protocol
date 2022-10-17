@@ -12,29 +12,22 @@ require('chai')
 describe('Liquidity Engine: `setMaxLendingRatio` function', () => {
   let store,
     liquidityEngine,
-    accessControlLibV1,
-    baseLibV1,
-    validationLibV1,
-    storeKeyUtil,
-    strategyLibV1,
     deployed
 
   before(async () => {
     deployed = await deployDependencies()
 
     store = deployed.store
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    validationLibV1 = deployed.validationLibV1
-    storeKeyUtil = deployed.storeKeyUtil
-    strategyLibV1 = deployed.strategyLibV1
 
     liquidityEngine = await deployer.deployWithLibraries(cache, 'LiquidityEngine', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      StrategyLibV1: strategyLibV1.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      NTransferUtilV2: deployed.transferLib.address,
+      ProtoUtilV1: deployed.protoUtilV1.address,
+      RegistryLibV1: deployed.registryLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      StrategyLibV1: deployed.strategyLibV1.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)

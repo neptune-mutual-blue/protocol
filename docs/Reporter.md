@@ -33,8 +33,8 @@ This contract allows any NPM tokenholder to report a new incident
 
 ## Functions
 
-- [report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake)](#report)
-- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake)](#dispute)
+- [report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake)](#report)
+- [dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake)](#dispute)
 - [setFirstReportingStake(bytes32 coverKey, uint256 value)](#setfirstreportingstake)
 - [getFirstReportingStake(bytes32 coverKey)](#getfirstreportingstake)
 - [setReportingBurnRate(uint256 value)](#setreportingburnrate)
@@ -61,7 +61,7 @@ Stake NPM tokens to file an incident report.
  - Your share of the 60 percent pool of invalid camp participants.
 
 ```solidity
-function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function report(bytes32 coverKey, bytes32 productKey, string info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -70,7 +70,7 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key you are reporting | 
 | productKey | bytes32 | Enter the product key you are reporting | 
-| info | bytes32 | Enter IPFS hash of the incident in the following format:  <br />  <pre>{  <br />  incidentTitle: 'Animated Brands Exploit, August 2024',  <br />  observed: 1723484937,  <br />  proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',  <br />  description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',  <br />}  </pre> | 
+| info | string | Enter IPFS hash of the incident in the following format:  <br />  <pre>{  <br />  incidentTitle: 'Animated Brands Exploit, August 2024',  <br />  observed: 1723484937,  <br />  proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',  <br />  description: 'In a recent exploit, attackers were able to drain 50M USDC from Animated Brands lending vaults',  <br />}  </pre> | 
 | stake | uint256 | Enter the amount you would like to stake to submit this report | 
 
 <details>
@@ -80,7 +80,7 @@ function report(bytes32 coverKey, bytes32 productKey, bytes32 info, uint256 stak
 function report(
     bytes32 coverKey,
     bytes32 productKey,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external override nonReentrant {
     s.mustNotBePaused();
@@ -122,7 +122,7 @@ If you believe that a reported incident is wrong, you can stake NPM tokens to di
  - Your proportional share of the 60% pool of the invalid camp.
 
 ```solidity
-function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, bytes32 info, uint256 stake) external nonpayable nonReentrant 
+function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, string info, uint256 stake) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -132,7 +132,7 @@ function dispute(bytes32 coverKey, bytes32 productKey, uint256 incidentDate, byt
 | coverKey | bytes32 | Enter the cover key you are reporting | 
 | productKey | bytes32 | Enter the product key you are reporting | 
 | incidentDate | uint256 |  | 
-| info | bytes32 | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Wrong Incident Reporting',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',   }` | 
+| info | string | Enter IPFS hash of the incident in the following format:  `{     incidentTitle: 'Wrong Incident Reporting',     observed: 1723484937,     proofOfIncident: 'https://twitter.com/AnimatedBrand/status/5739383124571205635',     description: 'Animated Brands emphasised in its most recent tweet that the report regarding their purported hack was false.',   }` | 
 | stake | uint256 | Enter the amount you would like to stake to submit this dispute | 
 
 <details>
@@ -143,7 +143,7 @@ function dispute(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate,
-    bytes32 info,
+    string calldata info,
     uint256 stake
   ) external override nonReentrant {
     s.mustNotBePaused();
@@ -521,6 +521,7 @@ function getRefutation(
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -560,6 +561,7 @@ function getRefutation(
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

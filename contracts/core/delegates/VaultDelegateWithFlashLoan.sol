@@ -15,10 +15,10 @@ import "./VaultDelegateBase.sol";
  */
 abstract contract VaultDelegateWithFlashLoan is VaultDelegateBase {
   using ProtoUtilV1 for IStore;
+  using RoutineInvokerLibV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using VaultLibV1 for IStore;
-  using RoutineInvokerLibV1 for IStore;
 
   /**
    * @dev The fee to be charged for a given loan.

@@ -16,7 +16,7 @@ A covered project can add reassurance fund to exhibit coverage support for their
 ## Functions
 
 - [constructor(IStore store)](#)
-- [addReassurance(bytes32 coverKey, address account, uint256 amount)](#addreassurance)
+- [addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount)](#addreassurance)
 - [setWeight(bytes32 coverKey, uint256 weight)](#setweight)
 - [capitalizePool(bytes32 coverKey, bytes32 productKey, uint256 incidentDate)](#capitalizepool)
 - [getReassurance(bytes32 coverKey)](#getreassurance)
@@ -48,7 +48,7 @@ constructor(IStore store) Recoverable(store) {}
 Adds reassurance to the specified cover contract
 
 ```solidity
-function addReassurance(bytes32 coverKey, address account, uint256 amount) external nonpayable nonReentrant 
+function addReassurance(bytes32 coverKey, address onBehalfOf, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
@@ -56,7 +56,7 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | coverKey | bytes32 | Enter the cover key | 
-| account | address | Specify the account from which the reassurance fund will be transferred. | 
+| onBehalfOf | address | Enter the account on behalf of which you are adding reassurance. | 
 | amount | uint256 | Enter the amount you would like to supply | 
 
 <details>
@@ -65,7 +65,7 @@ function addReassurance(bytes32 coverKey, address account, uint256 amount) exter
 ```javascript
 function addReassurance(
     bytes32 coverKey,
-    address account,
+    address onBehalfOf,
     uint256 amount
   ) external override nonReentrant {
     s.mustNotBePaused();
@@ -78,12 +78,12 @@ function addReassurance(
 
     s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
 
-    stablecoin.ensureTransferFrom(account, address(this), amount);
+    stablecoin.ensureTransferFrom(msg.sender, address(this), amount);
 
     // Do not update state during cover creation
     // s.updateStateAndLiquidity(coverKey);
 
-    emit ReassuranceAdded(coverKey, amount);
+    emit ReassuranceAdded(coverKey, onBehalfOf, amount);
   }
 ```
 </details>
@@ -315,6 +315,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -354,6 +355,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

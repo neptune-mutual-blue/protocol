@@ -26,9 +26,5 @@ import "./VaultDelegateWithFlashLoan.sol";
  *
  */
 contract VaultDelegate is VaultDelegateWithFlashLoan {
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
-  using VaultLibV1 for IStore;
-
   constructor(IStore store) VaultDelegateBase(store) {} // solhint-disable-line
 }

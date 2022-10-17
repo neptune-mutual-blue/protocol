@@ -4,22 +4,17 @@ pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../dependencies/BokkyPooBahsDateTimeLibrary.sol";
 import "../interfaces/IStore.sol";
-import "./ProtoUtilV1.sol";
-import "./AccessControlLibV1.sol";
-import "./StoreKeyUtil.sol";
-import "./RegistryLibV1.sol";
-import "./StrategyLibV1.sol";
 import "../interfaces/ICxToken.sol";
 import "../interfaces/IERC20Detailed.sol";
+import "./StrategyLibV1.sol";
 
 library CoverUtilV1 {
-  using RegistryLibV1 for IStore;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
-  using AccessControlLibV1 for IStore;
   using StrategyLibV1 for IStore;
 
   uint256 public constant REASSURANCE_WEIGHT_FALLBACK_VALUE = 8000;
+  uint256 public constant COVER_LAG_FALLBACK_VALUE = 1 days;
 
   enum ProductStatus {
     Normal,
@@ -98,14 +93,7 @@ library CoverUtilV1 {
    * @param s Specify store instance
    */
   function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
-    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
-
-    if (value == 0) {
-      // Fallback to 250 NPM
-      value = 250 ether;
-    }
-
-    return value;
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
   }
 
   /**
@@ -168,7 +156,7 @@ library CoverUtilV1 {
       return setForTheCoverPool;
     }
 
-    // Globally set value: not set for any specifical cover
+    // Globally set value: not set for any specific cover
     uint256 setGlobally = s.getUintByKey(getReassuranceWeightKey(0));
 
     if (setGlobally > 0) {
@@ -407,7 +395,7 @@ library CoverUtilV1 {
   }
 
   /**
-   * @dev Returns the total liquidity commited/under active protection.
+   * @dev Returns the total liquidity committed/under active protection.
    * If the cover is a diversified pool, returns sum total of all products' commitments.
    *
    * Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
@@ -444,7 +432,7 @@ library CoverUtilV1 {
   }
 
   /**
-   * @dev Returns the total liquidity commited/under active protection.
+   * @dev Returns the total liquidity committed/under active protection.
    * If the cover is a diversified pool, you must a provide product key.
    *
    * Simply put, commitments are the "totalSupply" of cxTokens that haven't yet expired.
@@ -723,5 +711,24 @@ library CoverUtilV1 {
     bytes32 productKey
   ) public view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_INCIDENT_DATE, coverKey, productKey);
+  }
+
+  function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view returns (uint256) {
+    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
+
+    // Custom means set for this exact cover
+    if (custom > 0) {
+      return custom;
+    }
+
+    // Global means set for all covers (without specifying a cover key)
+    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
+
+    if (global > 0) {
+      return global;
+    }
+
+    // Fallback means the default option
+    return COVER_LAG_FALLBACK_VALUE;
   }
 }

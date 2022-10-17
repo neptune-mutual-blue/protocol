@@ -13,7 +13,7 @@ View Source: [contracts/pool/Bond/BondPoolBase.sol](../contracts/pool/Bond/BondP
 - [getNpmMarketPrice()](#getnpmmarketprice)
 - [calculateTokensForLp(uint256 lpTokens)](#calculatetokensforlp)
 - [getInfo(address forAccount)](#getinfo)
-- [setup(address[] addresses, uint256[] values)](#setup)
+- [setup(struct IBondPool.SetupBondPoolArgs args)](#setup)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -88,7 +88,7 @@ Gets the bond pool information
 
 ```solidity
 function getInfo(address forAccount) external view
-returns(addresses address[], values uint256[])
+returns(struct IBondPool.BondPoolInfoType)
 ```
 
 **Arguments**
@@ -101,7 +101,7 @@ returns(addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address forAccount) external view override returns (address[] memory addresses, uint256[] memory values) {
+function getInfo(address forAccount) external view override returns (BondPoolInfoType memory) {
     return s.getBondPoolInfoInternal(forAccount);
   }
 ```
@@ -112,28 +112,27 @@ function getInfo(address forAccount) external view override returns (address[] m
 Sets up the bond pool
 
 ```solidity
-function setup(address[] addresses, uint256[] values) external nonpayable nonReentrant 
+function setup(struct IBondPool.SetupBondPoolArgs args) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] | [0] - LP Token Address | 
-| values | uint256[] | [0] - Bond Discount Rate | 
+| args | struct IBondPool.SetupBondPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setup(address[] calldata addresses, uint256[] calldata values) external override nonReentrant {
+function setup(SetupBondPoolArgs calldata args) external override nonReentrant {
     // @suppress-zero-value-check The uint values are checked in the function `setupBondPoolInternal`
     s.mustNotBePaused();
-    AccessControlLibV1.mustBeAdmin(s);
+    AccessControlLibV1.mustBeLiquidityManager(s);
 
-    s.setupBondPoolInternal(addresses, values);
+    s.setupBondPoolInternal(args);
 
-    emit BondPoolSetup(addresses, values);
+    emit BondPoolSetup(args);
   }
 ```
 </details>
@@ -249,6 +248,7 @@ function getName() external pure override returns (bytes32) {
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -288,6 +288,7 @@ function getName() external pure override returns (bytes32) {
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)

@@ -5,7 +5,6 @@ import "./CoverBase.sol";
 import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/IVault.sol";
-import "../liquidity/Vault.sol";
 
 /**
  * @title Cover Contract
@@ -13,13 +12,11 @@ import "../liquidity/Vault.sol";
  *
  */
 contract Cover is CoverBase {
-  using AccessControlLibV1 for IStore;
   using CoverLibV1 for IStore;
   using CoverUtilV1 for IStore;
-  using StoreKeyUtil for IStore;
-  using ProtoUtilV1 for IStore;
-  using ValidationLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
+  using StoreKeyUtil for IStore;
+  using ValidationLibV1 for IStore;
 
   /**
    * @dev Constructs this contract
@@ -45,7 +42,7 @@ contract Cover is CoverBase {
    *
    * @custom:suppress-acl This is a publicly accessible feature. Can only be called by a whitelisted address.
    */
-  function addCover(AddCoverArgs calldata args) external override nonReentrant returns (address) {
+  function addCover(AddCoverArgs calldata args) public override nonReentrant returns (address) {
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
 
@@ -59,6 +56,14 @@ contract Cover is CoverBase {
     emit VaultDeployed(args.coverKey, vault);
 
     return vault;
+  }
+
+  function addCovers(AddCoverArgs[] calldata args) external override returns (address[] memory vaults) {
+    vaults = new address[](args.length + 1);
+
+    for (uint256 i = 0; i < args.length; i++) {
+      vaults[i] = addCover(args[i]);
+    }
   }
 
   /**
@@ -87,7 +92,7 @@ contract Cover is CoverBase {
    * @custom:suppress-acl This function can only be accessed by the cover owner or an admin
    *
    */
-  function addProduct(AddProductArgs calldata args) external override {
+  function addProduct(AddProductArgs calldata args) public override nonReentrant {
     // @suppress-zero-value-check The uint values are validated in the function `addProductInternal`
     s.mustNotBePaused();
     s.senderMustBeWhitelistedCoverCreator();
@@ -97,12 +102,18 @@ contract Cover is CoverBase {
     emit ProductCreated(args.coverKey, args.productKey, args.info);
   }
 
+  function addProducts(AddProductArgs[] calldata args) external override {
+    for (uint256 i = 0; i < args.length; i++) {
+      addProduct(args[i]);
+    }
+  }
+
   /**
    * @dev Updates a cover product.
    * This feature is accessible only to the cover manager during withdrawal period.
    *
    */
-  function updateProduct(UpdateProductArgs calldata args) external override {
+  function updateProduct(UpdateProductArgs calldata args) external override nonReentrant {
     // @suppress-zero-value-check The uint values are validated in the function `updateProductInternal`
     s.mustNotBePaused();
     s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
@@ -151,16 +162,21 @@ contract Cover is CoverBase {
    * For the first version of the protocol, a cover creator has to be whitelisted
    * before they can call the `addCover` function.
    *
-   * @param account Enter the address of the cover creator
-   * @param status Set this to true if you want to add to or false to remove from the whitelist
+   * @param accounts Enter list of address of cover creators
+   * @param statuses Set this to true if you want to add to or false to remove from the whitelist
    *
    */
-  function updateCoverCreatorWhitelist(address account, bool status) external override nonReentrant {
+  function updateCoverCreatorWhitelist(address[] calldata accounts, bool[] calldata statuses) external override nonReentrant {
+    require(accounts.length > 0, "Please specify an account");
+    require(accounts.length == statuses.length, "Invalid args");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    s.updateCoverCreatorWhitelistInternal(account, status);
-    emit CoverCreatorWhitelistUpdated(account, status);
+    for (uint256 i = 0; i < accounts.length; i++) {
+      s.updateCoverCreatorWhitelistInternal(accounts[i], statuses[i]);
+      emit CoverCreatorWhitelistUpdated(accounts[i], statuses[i]);
+    }
   }
 
   /**
@@ -170,7 +186,7 @@ contract Cover is CoverBase {
    * When a cover requires whitelist, you must add accounts
    * to the cover user whitelist before they are able to purchase policies.
    *
-   * @custom:suppress-acl This function is only accessilbe to the cover owner or admin
+   * @custom:suppress-acl This function is only accessible to the cover owner or admin
    *
    * @param coverKey Enter cover key
    * @param productKey Enter product key

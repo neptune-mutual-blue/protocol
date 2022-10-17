@@ -4,7 +4,6 @@ import "./StakingPoolInfo.sol";
 
 contract StakingPools is StakingPoolInfo {
   using ValidationLibV1 for IStore;
-  using StoreKeyUtil for IStore;
   using StakingPoolCoreLibV1 for IStore;
   using StakingPoolLibV1 for IStore;
 

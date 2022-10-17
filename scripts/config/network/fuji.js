@@ -7,6 +7,7 @@ const config = {
   43113: {
     network: 'Avalanche FUJI C-Chain',
     chainId: 43113,
+    mainnet: false,
     pool: {
       bond: {
         period: 10 * MINUTES

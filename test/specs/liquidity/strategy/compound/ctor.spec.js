@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const { deployer, key, helper } = require('../../../../../util')
 const { deployDependencies } = require('../deps')
 const cache = null
+const CNAME_STRATEGY_COMPOUND = key.toBytes32('Compound Strategy')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -32,6 +33,6 @@ describe('Compound Strategy Constructor', () => {
 
    ; (await compoundStrategy.getKey()).should.equal(ethers.utils.solidityKeccak256(['string', 'string', 'string', 'string'], ['lending', 'strategy', 'compound', 'v2']))
     ; (await compoundStrategy.version()).should.equal(key.toBytes32('v0.1'))
-    ; (await compoundStrategy.getName()).should.equal(key.PROTOCOL.CNAME.STRATEGY_COMPOUND)
+    ; (await compoundStrategy.getName()).should.equal(CNAME_STRATEGY_COMPOUND)
   })
 })

@@ -36,9 +36,9 @@ describe('Cover: updateProduct', () => {
 
     deployed = await deployDependencies()
 
-    deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -87,7 +87,12 @@ describe('Cover: updateProduct', () => {
 
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
   })
 
   it('correctly update product when accessed by cover creator', async () => {

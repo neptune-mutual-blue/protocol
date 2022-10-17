@@ -62,9 +62,9 @@ describe('Cover: updateCover', () => {
   it('correctly updates cover', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover(args)
@@ -85,9 +85,19 @@ describe('Cover: updateCover', () => {
 
     await deployed.dai.approve(vault.address, ethers.constants.MaxUint256)
     await deployed.npm.approve(vault.address, ethers.constants.MaxUint256)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
@@ -99,9 +109,9 @@ describe('Cover: updateCover', () => {
     const coverKey = key.toBytes32('foo-bar-2')
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -128,7 +138,12 @@ describe('Cover: updateCover', () => {
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
     const updatedInfo = key.toBytes32('info')
@@ -140,9 +155,9 @@ describe('Cover: updateCover', () => {
     const coverKey = key.toBytes32('foo-bar-3')
     const [owner] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
-    await deployed.npm.approve(deployed.stakingContract.address, stakeWithFee)
+    await deployed.npm.approve(deployed.cover.address, stakeWithFee)
     await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
@@ -169,7 +184,12 @@ describe('Cover: updateCover', () => {
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
     await deployed.dai.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
-    await vault.addLiquidity(coverKey, initialLiquidity, minStakeToReport, key.toBytes32(''))
+    await vault.addLiquidity({
+      coverKey,
+      amount: initialLiquidity,
+      npmStakeToAdd: minStakeToReport,
+      referralCode: key.toBytes32('')
+    })
 
     const updatedInfo = key.toBytes32('updated-info')
     await deployed.cover.updateCover(coverKey, updatedInfo)
@@ -184,7 +204,7 @@ describe('Cover: updateCover', () => {
   it('reverts when not accessed by GovernanceAdmin', async () => {
     const [owner, bob] = await ethers.getSigners()
 
-    await deployed.cover.updateCoverCreatorWhitelist(owner.address, true)
+    await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     const updatedInfo = key.toBytes32('updated-info')
     await deployed.cover.connect(bob).updateCover(coverKey, updatedInfo)

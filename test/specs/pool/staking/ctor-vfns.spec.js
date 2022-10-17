@@ -10,28 +10,22 @@ require('chai')
   .should()
 
 describe('Staking Pool Constructor and Views', () => {
-  let store, storeKeyUtil, accessControlLibV1, baseLibV1, stakingPoolCoreLibV1, stakingPoolLibV1, validationLibV1
+  let store, deployed
 
   before(async () => {
-    const deployed = await deployDependencies()
+    deployed = await deployDependencies()
 
     store = deployed.store
-    storeKeyUtil = deployed.storeKeyUtil
-    accessControlLibV1 = deployed.accessControlLibV1
-    baseLibV1 = deployed.baseLibV1
-    stakingPoolCoreLibV1 = deployed.stakingPoolCoreLibV1
-    stakingPoolLibV1 = deployed.stakingPoolLibV1
-    validationLibV1 = deployed.validationLibV1
   })
 
   it('correctly deploys', async () => {
     const stakingPoolContract = await deployer.deployWithLibraries(cache, 'StakingPools', {
-      AccessControlLibV1: accessControlLibV1.address,
-      BaseLibV1: baseLibV1.address,
-      StakingPoolCoreLibV1: stakingPoolCoreLibV1.address,
-      StakingPoolLibV1: stakingPoolLibV1.address,
-      StoreKeyUtil: storeKeyUtil.address,
-      ValidationLibV1: validationLibV1.address
+      AccessControlLibV1: deployed.accessControlLibV1.address,
+      BaseLibV1: deployed.baseLibV1.address,
+      StakingPoolCoreLibV1: deployed.stakingPoolCoreLibV1.address,
+      StakingPoolLibV1: deployed.stakingPoolLibV1.address,
+      StoreKeyUtil: deployed.storeKeyUtil.address,
+      ValidationLibV1: deployed.validationLibV1.address
     }, store.address)
 
     stakingPoolContract.address.should.not.be.empty

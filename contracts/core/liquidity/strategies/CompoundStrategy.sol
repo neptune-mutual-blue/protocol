@@ -5,20 +5,20 @@ pragma solidity ^0.8.0;
 import "../../Recoverable.sol";
 import "../../../interfaces/ILendingStrategy.sol";
 import "../../../dependencies/compound/ICompoundERC20DelegatorLike.sol";
-import "../../../libraries/ProtoUtilV1.sol";
-import "../../../libraries/StoreKeyUtil.sol";
 import "../../../libraries/NTransferUtilV2.sol";
 
 contract CompoundStrategy is ILendingStrategy, Recoverable {
+  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using StoreKeyUtil for IStore;
   using ValidationLibV1 for IStore;
   using RegistryLibV1 for IStore;
-  using NTransferUtilV2 for IERC20;
 
   mapping(bytes32 => uint256) private _counters;
   mapping(bytes32 => uint256) private _depositTotal;
   mapping(bytes32 => uint256) private _withdrawalTotal;
+
+  bytes32 public constant CNAME_STRATEGY_COMPOUND = "Compound Strategy";
 
   bytes32 private constant _KEY = keccak256(abi.encodePacked("lending", "strategy", "compound", "v2"));
   bytes32 public constant NS_DEPOSITS = "deposits";
@@ -219,6 +219,6 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
    * @dev Name of this contract
    */
   function getName() public pure override returns (bytes32) {
-    return ProtoUtilV1.CNAME_STRATEGY_COMPOUND;
+    return CNAME_STRATEGY_COMPOUND;
   }
 }

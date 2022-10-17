@@ -7,17 +7,49 @@ View Source: [contracts/interfaces/IBondPool.sol](../contracts/interfaces/IBondP
 
 **IBondPool**
 
+## Structs
+### BondPoolInfoType
+
+```js
+struct BondPoolInfoType {
+ address lpToken,
+ uint256 marketPrice,
+ uint256 discountRate,
+ uint256 vestingTerm,
+ uint256 maxBond,
+ uint256 totalNpmAllocated,
+ uint256 totalNpmDistributed,
+ uint256 npmAvailable,
+ uint256 bondContribution,
+ uint256 claimable,
+ uint256 unlockDate
+}
+```
+
+### SetupBondPoolArgs
+
+```js
+struct SetupBondPoolArgs {
+ address lpToken,
+ address treasury,
+ uint256 bondDiscountRate,
+ uint256 maxBondAmount,
+ uint256 vestingTerm,
+ uint256 npmToTopUpNow
+}
+```
+
 **Events**
 
 ```js
-event BondPoolSetup(address[]  addresses, uint256[]  values);
+event BondPoolSetup(struct IBondPool.SetupBondPoolArgs  args);
 event BondCreated(address indexed account, uint256  lpTokens, uint256  npmToVest, uint256  unlockDate);
 event BondClaimed(address indexed account, uint256  amount);
 ```
 
 ## Functions
 
-- [setup(address[] addresses, uint256[] values)](#setup)
+- [setup(struct IBondPool.SetupBondPoolArgs args)](#setup)
 - [createBond(uint256 lpTokens, uint256 minNpmDesired)](#createbond)
 - [claimBond()](#claimbond)
 - [getNpmMarketPrice()](#getnpmmarketprice)
@@ -27,21 +59,20 @@ event BondClaimed(address indexed account, uint256  amount);
 ### setup
 
 ```solidity
-function setup(address[] addresses, uint256[] values) external nonpayable
+function setup(struct IBondPool.SetupBondPoolArgs args) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| addresses | address[] |  | 
-| values | uint256[] |  | 
+| args | struct IBondPool.SetupBondPoolArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setup(address[] calldata addresses, uint256[] calldata values) external;
+function setup(SetupBondPoolArgs calldata args) external;
 ```
 </details>
 
@@ -130,7 +161,7 @@ function calculateTokensForLp(uint256 lpTokens) external view returns (uint256);
 
 ```solidity
 function getInfo(address forAccount) external view
-returns(addresses address[], values uint256[])
+returns(info struct IBondPool.BondPoolInfoType)
 ```
 
 **Arguments**
@@ -143,7 +174,7 @@ returns(addresses address[], values uint256[])
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getInfo(address forAccount) external view returns (address[] calldata addresses, uint256[] calldata values);
+function getInfo(address forAccount) external view returns (BondPoolInfoType memory info);
 ```
 </details>
 
@@ -210,6 +241,7 @@ function getInfo(address forAccount) external view returns (address[] calldata a
 * [ILendingStrategy](ILendingStrategy.md)
 * [ILiquidityEngine](ILiquidityEngine.md)
 * [IMember](IMember.md)
+* [INeptuneRouterV1](INeptuneRouterV1.md)
 * [InvalidStrategy](InvalidStrategy.md)
 * [IPausable](IPausable.md)
 * [IPolicy](IPolicy.md)
@@ -249,6 +281,7 @@ function getInfo(address forAccount) external view returns (address[] calldata a
 * [MockValidationLibUser](MockValidationLibUser.md)
 * [MockVault](MockVault.md)
 * [MockVaultLibUser](MockVaultLibUser.md)
+* [NeptuneRouterV1](NeptuneRouterV1.md)
 * [NPM](NPM.md)
 * [NpmDistributor](NpmDistributor.md)
 * [NTransferUtilV2](NTransferUtilV2.md)
