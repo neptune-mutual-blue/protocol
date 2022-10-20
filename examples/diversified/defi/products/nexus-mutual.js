@@ -8,7 +8,11 @@ module.exports = {
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['insurance', 'cover'],
-  about: 'Nexus Mutual is a decentralised alternative to insurance. Nexus Mutual uses blockchain technology to create a risk sharing pool in the form of a mutual to return the power of insurance to the people. The platform is built on the Ethereum public chain. It allows anyone to become a member and purchase cover. It replaces the idea of a traditional insurance company because it is wholly owned by the members. The model encourages engagement as members will get economic incentives for participating in Risk Assessment, Claims Assessment and Governance.',
+  about: 'Nexus Mutual is a decentralized alternative to insurance. Nexus Mutual uses blockchain technology to create a risk sharing pool in the form of a mutual to return the power of insurance to the people. The platform is built on the Ethereum public chain. It allows anyone to become a member and purchase cover. It replaces the idea of a traditional insurance company because it is wholly owned by the members. The model encourages engagement as members will get economic incentives for participating in Risk Assessment, Claims Assessment and Governance.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,7 +63,13 @@ module.exports = {
     telegram: 'https://t.me/joinchat/K_g-fA-3CmFwXumCKQUXkw'
   },
   resolutionSources: [
-    'https://twitter.com/NexusMutual',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Nexus Mutual Twitter',
+      uri: 'https://twitter.com/NexusMutual'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(75),
   tags: ['exchange', 'swap', 'dex', 'launchpad', 'flashloan'],
   about: 'Balancer is an automated market maker (AMM ) that allows LPs to deposit more types of tokens to liquidity pools instead of a pair, also gives more flexibility for LP creator to customize trading fees or create private pools. With the launch of V2 (since May 2021) the single Vault architecture separates the token accounting and management from the Pool logic, hence assets can shift around without emitting an ERC20 transfer event on-chain improving gas efficiency for traders.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,8 +63,17 @@ module.exports = {
     github: 'https://github.com/balancer-labs/'
   },
   resolutionSources: [
-    'https://twitter.com/BalancerLabs',
-    'https://medium.com/balancer-protocol',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Balancer Blog',
+      uri: 'https://medium.com/balancer-protocol'
+    },
+    {
+      text: 'Balancer Twitter',
+      uri: 'https://twitter.com/BalancerLabs'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

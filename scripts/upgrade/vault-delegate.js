@@ -19,9 +19,10 @@ const upgradeContract = async () => {
   let libraries = {
     CoverUtilV1: current.coverUtilV1,
     GovernanceUtilV1: current.governanceUtilV1,
-    RoutineInvokerLibV1: current.routineInvokerLibV1,
+    NTransferUtilV2: current.nTransferUtilV2,
     ProtoUtilV1: current.protoUtilV1,
     RegistryLibV1: current.registryLibV1,
+    RoutineInvokerLibV1: current.routineInvokerLibV1,
     StoreKeyUtil: current.storeKeyUtil,
     StrategyLibV1: current.strategyLibV1,
     ValidationLibV1: current.validationLibV1

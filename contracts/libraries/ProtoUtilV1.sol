@@ -15,7 +15,9 @@ library ProtoUtilV1 {
   bytes32 public constant KEY_INTENTIONALLY_EMPTY = 0;
   bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY = 0;
   uint256 public constant MULTIPLIER = 10_000;
+  uint256 public constant MIN_LIQUIDITY = 10;
   uint256 public constant MAX_LIQUIDITY = 10_000_000;
+  uint256 public constant MIN_PROPOSAL_AMOUNT = 10;
   uint256 public constant MAX_PROPOSAL_AMOUNT = 10_000_000;
   uint256 public constant MAX_NPM_STAKE = 10_000_000;
   uint256 public constant NPM_PRECISION = 1 ether;

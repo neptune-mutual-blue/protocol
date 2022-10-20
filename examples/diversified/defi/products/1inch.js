@@ -7,8 +7,12 @@ module.exports = {
   productName: '1inch (v2)',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
-  tags: ['exchange', 'dex', 'swap', 'aggregration'],
+  tags: ['exchange', 'dex', 'swap', 'aggregation'],
   about: 'The 1inch Network unites decentralized protocols whose synergy enables the most lucrative, fastest, and protected operations in the DeFi space by offering access to hundreds of liquidity sources across multiple chains. The 1inch Network was launched at the ETHGlobal New York hackathon in May 2019 with the release of its Aggregation Protocol v1. Since then, 1inch Network has developed additional DeFi tools such as the Liquidity Protocol, Limit Order Protocol, P2P transactions, and 1inch Mobile Wallet.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -61,8 +65,17 @@ module.exports = {
     github: 'https://github.com/1inch'
   },
   resolutionSources: [
-    'https://twitter.com/1inch',
-    'https://blog.1inch.io/',
-    'https://twitter.com/neptunemutual'
+    {
+      text: '1inch Blog',
+      uri: 'https://blog.1inch.io/'
+    },
+    {
+      text: '1inch Twitter',
+      uri: 'https://twitter.com/1inch'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

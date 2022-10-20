@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(70),
   tags: ['dex', 'exchange', 'swap', 'stablecoin'],
   about: 'Curve is an automated market maker (AMM), The main difference between Curve and other DEXes is that Curve focuses mainly on stablecoins trading. Thereby improving capital efficiency and reducing slippage. The release of its V2 since June 2021, also allows trading of non-pegged assets in a more concentrated liquidity fashion whilst still allowing LP to passively provide liquidity without specifying a price range.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,8 +63,17 @@ module.exports = {
 
   },
   resolutionSources: [
-    'https://twitter.com/CurveFinance',
-    'https://news.curve.fi/',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Curve News',
+      uri: 'https://news.curve.fi'
+    },
+    {
+      text: 'Curve Twitter',
+      uri: 'https://twitter.com/CurveFinance'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

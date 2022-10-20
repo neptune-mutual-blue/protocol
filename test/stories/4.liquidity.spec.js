@@ -100,7 +100,7 @@ describe('Liquidity Stories', () => {
 
   it('deployer can not remove liquidity without interest accrual', async () => {
     const [owner] = await ethers.getSigners()
-    const toRedeem = helper.ether(3_000_000, PRECISION)
+    const toRedeem = helper.ether(3_000_000)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await network.provider.send('evm_increaseTime', [181 * DAYS])
@@ -111,7 +111,7 @@ describe('Liquidity Stories', () => {
 
   it('deployer removed $3M from Bitmart cover pool', async () => {
     const [owner] = await ethers.getSigners()
-    const toRedeem = helper.ether(3_000_000, PRECISION)
+    const toRedeem = helper.ether(3_000_000)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
     await vault.accrueInterest()

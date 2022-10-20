@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(100),
   tags: ['borrowing', 'loan', 'interest', 'interest-bearing', 'lending', 'yield', 'staking'],
   about: 'Aave is a decentralized non-custodial liquidity protocol where users can participate as depositors or borrowers. Depositors provide liquidity to the market to earn a passive income, while borrowers are able to borrow in an overcollateralized (perpetually) or undercollateralized (one-block liquidity) fashion.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -73,8 +77,17 @@ module.exports = {
     linkedin: ''
   },
   resolutionSources: [
-    'https://twitter.com/aaveaave',
-    'https://medium.com/aave',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Aave Twitter',
+      uri: 'https://twitter.com/aaveaave'
+    },
+    {
+      text: 'Aave Blog',
+      uri: 'https://medium.com/aave'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

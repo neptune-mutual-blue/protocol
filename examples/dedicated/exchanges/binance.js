@@ -78,7 +78,13 @@ module.exports = {
     youtube: 'https://www.youtube.com/binanceyoutube'
   },
   resolutionSources: [
-    'https://twitter.com/binance',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Binance Twitter',
+      uri: 'https://twitter.com/binance'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(70),
   tags: ['wallet', 'multi-sig'],
   about: 'Gnosis Safe is the successor to the Gnosis Multisig. Multi-signature. Multi-signature allows you define an access/control-scheme through multiple signers that need to confirm transactions. DeFi integrations. Easily interact with popular decentralized finance protocols to invest, trade and manage digital assets.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -57,7 +61,13 @@ module.exports = {
     documentation: 'https://docs.gnosis-safe.io/'
   },
   resolutionSources: [
-    'https://twitter.com/gnosisSafe',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Gnosis Safe Twitter',
+      uri: 'https://twitter.com/gnosisSafe'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

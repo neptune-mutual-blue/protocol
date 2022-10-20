@@ -92,24 +92,6 @@ describe('Vault Library', () => {
     await deployed.protocol.addMember(mockContract.address)
   })
 
-  describe('VaultLibV1: calculatePodsInternal', () => {
-    it('must revert when flashloan is going on', async () => {
-      await mockContract.setFlashLoanStatus(coverKey, true)
-
-      await deployed.vault.calculatePods(helper.ether(1))
-        .should.be.rejectedWith('On flash loan, please try again')
-
-      await mockContract.setFlashLoanStatus(coverKey, false)
-    })
-
-    it('must revert when pod and liquidity mismatch', async () => {
-      await deployed.dai.transfer(deployed.vault.address, helper.ether(1, PRECISION))
-
-      await deployed.vault.calculatePods(helper.ether(1, PRECISION))
-        .should.be.rejectedWith('Liquidity/POD mismatch')
-    })
-  })
-
   describe('VaultLibV1: calculateLiquidityInternal', () => {
     it('must revert when flashloan is going on', async () => {
       await mockContract.setFlashLoanStatus(coverKey, true)
@@ -143,15 +125,6 @@ describe('Vault Library', () => {
 
       await mockContract.mustHaveNoBalanceInStrategies(coverKey, deployed.dai.address)
         .should.be.rejectedWith('Strategy balance is not zero')
-    })
-  })
-
-  describe('VaultLibV1: _redeemPodCalculation', () => {
-    it('must correctly return releaseAmount when podsToRedeem is zero', async () => {
-      const [owner] = await ethers.getSigners()
-
-      const tx = await mockContract.preRemoveLiquidityInternal(coverKey, deployed.vault.address, owner.address, 0, 0, true)
-      await tx.wait()
     })
   })
 

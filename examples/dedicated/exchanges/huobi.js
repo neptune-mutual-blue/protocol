@@ -77,7 +77,13 @@ module.exports = {
     linkedin: 'https://www.linkedin.com/company/huobi/'
   },
   resolutionSources: [
-    'https://twitter.com/huobiglobal',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Huobi Twitter',
+      uri: 'https://twitter.com/huobiglobal'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

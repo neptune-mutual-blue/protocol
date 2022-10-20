@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['staking', 'yield'],
   about: 'Rocket Pool is a liquid staking service protocol that runs a network of decentralized nodes, to perform validation services for the Ethereum 2.0 blockchain. Its purpose is to provide users who do not possess the required minimum of ETH tokens to stake and earn yields.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -60,7 +64,13 @@ module.exports = {
     reddit: 'https://www.reddit.com/r/rocketpool/'
   },
   resolutionSources: [
-    'https://twitter.com/Rocket_Pool',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Rocket Pool Twitter',
+      uri: 'https://twitter.com/Rocket_Pool'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

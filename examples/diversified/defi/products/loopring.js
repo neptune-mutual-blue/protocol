@@ -8,7 +8,11 @@ module.exports = {
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['dex', 'zk', 'zkrollup', 'swap', 'exchange'],
-  about: 'Loopring Exchange is the dex built on top of the Loopring protocol which is a first zkrollup layer2 solution to scale Ethereum. Loopring Exchange is able to facilitate trade via order books instead of the common AMM  model adopted by popular dexs thanks to the lower gas fee and higher transaction speed.',
+  about: 'Loopring Exchange is the dex built on top of the Loopring protocol which is a first zkrollup layer2 solution to scale Ethereum. Loopring Exchange is able to facilitate trade via order books instead of the common AMM  model adopted by popular dexes thanks to the lower gas fee and higher transaction speed.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,7 +63,13 @@ module.exports = {
     docs: 'https://docs.loopring.io/en/'
   },
   resolutionSources: [
-    'https://twitter.com/loopringorg',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Loopring Twitter',
+      uri: 'https://twitter.com/loopringorg'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

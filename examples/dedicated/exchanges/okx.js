@@ -76,7 +76,13 @@ module.exports = {
     linkedin: 'https://www.linkedin.com/company/okxofficial/'
   },
   resolutionSources: [
-    'https://twitter.com/okx',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'OKX Twitter',
+      uri: 'https://twitter.com/okx'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

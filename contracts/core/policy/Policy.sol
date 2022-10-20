@@ -88,7 +88,7 @@ contract Policy is IPolicy, Recoverable {
     require(args.coverDuration > 0 && args.coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     s.mustNotBePaused();
-    s.mustNotExceedProposalThreshold(args.amountToCover);
+    s.mustMaintainProposalThreshold(args.amountToCover);
     s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
     s.mustHaveNormalProductStatus(args.coverKey, args.productKey);
     s.mustNotHavePolicyDisabled(args.coverKey, args.productKey);
