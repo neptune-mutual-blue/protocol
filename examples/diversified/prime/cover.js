@@ -6,7 +6,7 @@ const PRECISION = STABLECOIN_DECIMALS
 
 module.exports = {
   coverKey: key.toBytes32('prime'),
-  coverName: 'Prime DApps',
+  coverName: 'Prime dApps',
   projectName: null,
   tokenName: 'Income Bearing DAI',
   tokenSymbol: 'iDAI-PRI',

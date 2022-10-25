@@ -785,6 +785,6 @@ library GovernanceUtilV1 {
   }
 
   function mustNotExceedNpmThreshold(uint256 amount) public pure {
-    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "Please specify a smaller amount");
+    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "NPM stake is above threshold");
   }
 }

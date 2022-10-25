@@ -5,9 +5,11 @@ pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/interfaces/IERC3156FlashLender.sol";
 import "./ValidationLibV1.sol";
+import "./NTransferUtilV2.sol";
 
 library VaultLibV1 {
   using CoverUtilV1 for IStore;
+  using NTransferUtilV2 for IERC20;
   using ProtoUtilV1 for IStore;
   using RegistryLibV1 for IStore;
   using RoutineInvokerLibV1 for IStore;
@@ -18,6 +20,23 @@ library VaultLibV1 {
   uint256 public constant WITHDRAWAL_HEIGHT_OFFSET = 1;
 
   /**
+   * @dev Validates the vault's balance before adding liquidity.
+   */
+  function _validateVaultBalance(
+    IStore s,
+    bytes32 coverKey,
+    address pod
+  ) private {
+    uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 podSupply = IERC20(pod).totalSupply();
+
+    // The vault should not have a stablecoin balance unless someone purposefully transferred it shortly after deployment.
+    if (podSupply == 0 && balance > 0) {
+      IERC20(s.getStablecoin()).ensureTransfer(s.getTreasury(), balance); // Zeros out the vault's stablecoin balance
+    }
+  }
+
+  /**
    * @dev Calculates the amount of PODS to mint for the given amount of liquidity to transfer
    */
   function calculatePodsInternal(
@@ -26,18 +45,9 @@ library VaultLibV1 {
     address pod,
     uint256 liquidityToAdd
   ) public view returns (uint256) {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
-
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
-
-    // This smart contract contains stablecoins without liquidity provider contribution.
-    // This can happen if someone wants to create a nuisance by sending stablecoin
-    // to this contract immediately after deployment.
-    if (podSupply == 0 && balance > 0) {
-      revert("Liquidity/POD mismatch");
-    }
 
     if (balance > 0) {
       return (podSupply * liquidityToAdd) / balance;
@@ -113,6 +123,9 @@ library VaultLibV1 {
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
     require(account != address(0), "Invalid account");
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
+    _validateVaultBalance(s, coverKey, pod);
 
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
@@ -190,12 +203,14 @@ library VaultLibV1 {
     uint256 npmStakeToRemove,
     bool exit
   ) external returns (address stablecoin, uint256 releaseAmount) {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
     stablecoin = s.getStablecoin();
 
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
-    ValidationLibV1.mustNotExceedStablecoinThreshold(s, releaseAmount);
+    ValidationLibV1.mustMaintainStablecoinThreshold(s, releaseAmount);
     GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToRemove);
 
     // Unstake NPM tokens
@@ -251,6 +266,8 @@ library VaultLibV1 {
   }
 
   function accrueInterestInternal(IStore s, bytes32 coverKey) external {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
     (bool isWithdrawalPeriod, , , , ) = s.getWithdrawalInfoInternal(coverKey);
     require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
 

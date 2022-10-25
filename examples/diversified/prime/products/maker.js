@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['lending', 'borrowing', 'stablecoin', 'yield', 'staking', 'payment'],
   about: 'MakerDAO is a decentralized organization dedicated to bringing stability to the cryptocurrency economy. The Maker Protocol employs a two-token system. The first being, Dai, a collateral-backed stablecoin that offers stability. The Maker Foundation and the MakerDAO community believe that a decentralized stablecoin is required to have any business or individual realize the advantages of digital money. Second, there is MKR, a governance token that is used by stakeholders to maintain the system and manage Dai. MKR token holders are the decision-makers of the Maker Protocol, supported by the larger public community and various other external parties.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -60,8 +64,17 @@ module.exports = {
     youtube: 'https://www.youtube.com/MakerDAO'
   },
   resolutionSources: [
-    'https://twitter.com/MakerDAO',
-    'https://medium.com/@MakerDAO',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'MakerDAO Blog',
+      uri: 'https://medium.com/@MakerDAO'
+    },
+    {
+      text: 'MakerDAO Twitter',
+      uri: 'https://twitter.com/MakerDAO'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

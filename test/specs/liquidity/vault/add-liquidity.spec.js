@@ -40,9 +40,26 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     event.args.referralCode.should.equal(referralCode)
   })
 
-  it('correctly adds liquidity without NPM stake', async () => {
+  it('reverts if the supplied amount is below threshold', async () => {
     const coverKey = key.toBytes32('foo-bar')
     const amount = '100'
+    const npmStakeToAdd = helper.ether(0)
+    const referralCode = key.toBytes32('referral-code')
+
+    await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
+    await deployed.dai.approve(deployed.vault.address, amount)
+
+    await deployed.vault.addLiquidity({
+      coverKey,
+      amount,
+      npmStakeToAdd,
+      referralCode
+    }).should.be.rejectedWith('Liquidity is below threshold')
+  })
+
+  it('correctly adds liquidity without NPM stake', async () => {
+    const coverKey = key.toBytes32('foo-bar')
+    const amount = helper.ether(100, PRECISION)
     const npmStakeToAdd = helper.ether(0)
     const referralCode = key.toBytes32('referral-code')
 

@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['borrowing', 'loan', 'interest', 'interest-bearing', 'lending', 'yield', 'staking'],
   about: 'Compound  is a decentralized non-custodial liquidity protocol on Ethereum where users can participate as depositors or borrowers. Depositors provide liquidity to the market to earn a passive income, while borrowers are able to borrow in an overcollateralized (perpetually) fashion.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -58,7 +62,13 @@ module.exports = {
     app: 'https://app.compound.finance/'
   },
   resolutionSources: [
-    'https://twitter.com/compoundfinance',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Compound Twitter',
+      uri: 'https://twitter.com/compoundfinance'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

@@ -10,6 +10,10 @@ module.exports = {
   efficiency: helper.percentage(50),
   tags: ['exchange', 'dex', 'swap'],
   about: 'Kyber Network is a multi-chain crypto trading and liquidity hub that connects liquidity from different sources to enable trades at the best rates .',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -63,7 +67,13 @@ module.exports = {
     blog: 'https://blog.kyber.network/'
   },
   resolutionSources: [
-    'https://twitter.com/kybernetwork/',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Kyber Twitter',
+      uri: 'https://twitter.com/kybernetwork'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

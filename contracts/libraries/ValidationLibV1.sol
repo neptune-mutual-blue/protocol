@@ -498,13 +498,17 @@ library ValidationLibV1 {
     require(!s.isPolicyDisabledInternal(coverKey, productKey), "Policy purchase disabled");
   }
 
-  function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
+  function mustMaintainStablecoinThreshold(IStore s, uint256 amount) external view {
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
+
+    require(amount >= ProtoUtilV1.MIN_LIQUIDITY * stablecoinPrecision, "Liquidity is below threshold");
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Liquidity is above threshold");
   }
 
-  function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view {
+  function mustMaintainProposalThreshold(IStore s, uint256 amount) external view {
     uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Please specify a smaller amount");
+
+    require(amount >= ProtoUtilV1.MIN_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is below threshold");
+    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is above threshold");
   }
 }

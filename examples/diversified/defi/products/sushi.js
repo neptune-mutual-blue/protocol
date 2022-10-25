@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(70),
   tags: ['exchange', 'dex', 'swap', 'fork', 'flashloan'],
   about: 'Sushi is a community-driven organization built to solve what might be called the “liquidity problem.” One could define this problem as the inability of disparate forms of liquidity to connect with markets in a decentralized way, and vice versa. While other solutions provide incrementally progressive advances toward solving the problem of liquidity, Sushi’s progress is intended to create a broader range of network effects. Rather than limiting itself to a single solution, Sushi intertwines many decentralized markets and instruments.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -17,7 +21,7 @@ module.exports = {
       list: {
         type: 'unordered',
         items: [
-          'This policy relates exclusively to the SushiwSwap v2 deployed on the Ethereum blockchain.',
+          'This policy relates exclusively to the SushiSwap v2 deployed on the Ethereum blockchain.',
           'To be eligible for a claim, policyholder must hold at least 10 NPM tokens in the wallet used for the policy transaction for the full duration of the cover policy.'
         ]
       }
@@ -57,8 +61,17 @@ module.exports = {
     documentation: 'https://dev.sushi.com/'
   },
   resolutionSources: [
-    'https://twitter.com/sushiswap',
-    'https://sushichef.medium.com/',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Sushi Blog',
+      uri: 'https://sushichef.medium.com'
+    },
+    {
+      text: 'Sushi Twitter',
+      uri: 'https://twitter.com/sushiswap'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

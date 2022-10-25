@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['exchange', 'dex', 'swap', 'flashloan', 'nft'],
   about: 'The Key difference of UniswapV3 compared to V2 is “concentrated liquidity”,  allowing LPs to control the price range in which their assets get traded. To reduce slippage and improve capital efficiency. V3 is released in May 2021.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,8 +63,17 @@ module.exports = {
     docs: 'https://docs.uniswap.org/protocol/introduction'
   },
   resolutionSources: [
-    'https://twitter.com/Uniswap',
-    'https://uniswap.org/blog',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Uniswap Blog',
+      uri: 'https://uniswap.org/blog'
+    },
+    {
+      text: 'Uniswap Twitter',
+      uri: 'https://twitter.com/Uniswap'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

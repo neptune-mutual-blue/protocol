@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['staking', 'yield'],
   about: 'Lido is the leading liquid staking solution - providing a simple and secure way to earn interest on your digital assets. By staking with Lido your assets remain liquid and can be used across a range of DeFi applications, earning extra yield.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -60,7 +64,13 @@ module.exports = {
     blog: 'https://blog.lido.fi/'
   },
   resolutionSources: [
-    'https://twitter.com/lidofinance',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Lido Twitter',
+      uri: 'https://twitter.com/lidofinance'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

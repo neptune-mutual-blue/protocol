@@ -233,7 +233,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
 
-    ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
+    ValidationLibV1.mustMaintainStablecoinThreshold(s, amount);
     GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToAdd);
 
     address pod = msg.sender;

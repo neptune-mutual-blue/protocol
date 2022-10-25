@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(70),
   tags: ['derivative', 'staking', 'yield'],
   about: 'Synthetix is a new financial primitive enabling the creation of synthetic assets, offering unique derivatives and exposure to real-world assets on the blockchain.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -59,7 +63,13 @@ module.exports = {
     documentation: 'https://docs.synthetix.io/'
   },
   resolutionSources: [
-    'https://twitter.com/synthetix_io',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Synthetix Twitter',
+      uri: 'https://twitter.com/synthetix_io'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

@@ -73,7 +73,13 @@ module.exports = {
     facebook: 'https://www.facebook.com/Coinbase'
   },
   resolutionSources: [
-    'https://twitter.com/coinbase',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Coinbase Twitter',
+      uri: 'https://twitter.com/coinbase'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }

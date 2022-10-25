@@ -9,6 +9,10 @@ module.exports = {
   efficiency: helper.percentage(90),
   tags: ['curve', 'staking', 'yield'],
   about: 'Convex Finance is a platform for CRV token holders and Curve liquidity providers to earn additional interest rewards and Curve trading fees on their tokens. Users can deposit either CRV or Curve LP tokens into Convex and be able to receive yields the native tokens are entitled to as well as CVX.',
+  blockchains: [{
+    chainId: 1,
+    name: 'Main Ethereum Network'
+  }],
   parameters: [
     {
       parameter: 'Cover Policy Conditions',
@@ -58,7 +62,13 @@ module.exports = {
     telegram: 'https://t.me/convexEthChat'
   },
   resolutionSources: [
-    'https://twitter.com/ConvexFinance',
-    'https://twitter.com/neptunemutual'
+    {
+      text: 'Convex Twitter',
+      uri: 'https://twitter.com/ConvexFinance'
+    },
+    {
+      text: 'Neptune Mutual Twitter',
+      uri: 'https://twitter.com/neptunemutual'
+    }
   ]
 }
