@@ -6,14 +6,14 @@ View Source: [contracts/libraries/VaultFactoryLibV1.sol](../contracts/libraries/
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin)](#getbytecode)
+- [getByteCodeInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin)](#getbytecodeinternal)
 
-### getByteCode
+### getByteCodeInternal
 
 Gets the bytecode of the `Vault` contract
 
 ```solidity
-function getByteCode(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin) external pure
+function getByteCodeInternal(IStore s, bytes32 coverKey, string tokenName, string tokenSymbol, address stablecoin) external pure
 returns(bytecode bytes, salt bytes32)
 ```
 
@@ -31,7 +31,7 @@ returns(bytecode bytes, salt bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getByteCode(
+function getByteCodeInternal(
     IStore s,
     bytes32 coverKey,
     string calldata tokenName,

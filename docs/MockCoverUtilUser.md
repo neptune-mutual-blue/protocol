@@ -58,8 +58,8 @@ returns(uint256)
 
 ```javascript
 function getActiveLiquidityUnderProtection(bytes32 coverKey, bytes32 productKey) external view returns (uint256) {
-    uint256 precision = s.getStablecoinPrecision();
-    return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
+    uint256 precision = s.getStablecoinPrecisionInternal();
+    return s.getActiveLiquidityUnderProtectionInternal(coverKey, productKey, precision);
   }
 ```
 </details>

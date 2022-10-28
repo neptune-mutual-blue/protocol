@@ -17,7 +17,7 @@ library cxTokenFactoryLibV1 {
    * @param expiryDate Specify the expiry date of this cxToken instance
    *
    */
-  function getByteCode(
+  function getByteCodeInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,

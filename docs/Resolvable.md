@@ -23,7 +23,7 @@ Enables governance agents to resolve a contract undergoing reporting.
 
 ### resolve
 
-Marks as a cover as "resolved" after the reporting period.
+Marks a cover as "resolved" after the reporting period.
  A resolution has a (configurable) 24-hour cooldown period
  that enables governance admins to revese decision in case of
  attack or mistake.
@@ -179,12 +179,12 @@ function _resolve(
     uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
 
     // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriodInternal(coverKey) : 0;
 
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey, claimBeginsFrom);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey, claimExpiresAt);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }

@@ -16,7 +16,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
    * Uses the hooks `preFlashLoan` and `postFlashLoan` on the vault delegate contract.
    *
    * @custom:suppress-acl This is a publicly accessible feature
-   * @custom:suppress-malicious-erc This ERC-20 `s.getStablecoin()` is a well-known address.
+   * @custom:suppress-malicious-erc This ERC-20 `s.getStablecoinAddressInternal()` is a well-known address.
    * @custom:suppress-pausable
    * @custom:suppress-address-trust-issue The address `token` can't be manipulated via user input.
    *
@@ -51,7 +51,7 @@ abstract contract WithFlashLoan is VaultStrategy, IERC3156FlashLender {
     require(finalBalance >= previousBalance + fee, "Access is denied");
 
     // Transfer protocol fee to the treasury
-    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
+    stablecoin.ensureTransfer(s.getTreasuryAddressInternal(), protocolFee);
 
     /******************************************************************************************
       POST

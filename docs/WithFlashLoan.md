@@ -44,7 +44,7 @@ function flashLoan(
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    (IERC20 stablecoin, uint256 fee, uint256 protocolFee) = delgate().preFlashLoan(msg.sender, key, receiver, token, amount, data);
+    (IERC20 stablecoin, uint256 fee, uint256 protocolFee) = delegate().preFlashLoan(msg.sender, key, receiver, token, amount, data);
 
     /******************************************************************************************
       BODY
@@ -60,13 +60,13 @@ function flashLoan(
     require(finalBalance >= previousBalance + fee, "Access is denied");
 
     // Transfer protocol fee to the treasury
-    stablecoin.ensureTransfer(s.getTreasury(), protocolFee);
+    stablecoin.ensureTransfer(s.getTreasuryAddressInternal(), protocolFee);
 
     /******************************************************************************************
       POST
      ******************************************************************************************/
 
-    delgate().postFlashLoan(msg.sender, key, receiver, token, amount, data);
+    delegate().postFlashLoan(msg.sender, key, receiver, token, amount, data);
 
     emit FlashLoanBorrowed(address(this), address(receiver), token, amount, fee);
 
@@ -77,7 +77,7 @@ function flashLoan(
 
 ### flashFee
 
-Gets the fee required to borrow the spefied token and given amount of the loan.
+Gets the fee required to borrow the specified token and given amount of the loan.
 
 ```solidity
 function flashFee(address token, uint256 amount) external view
@@ -96,7 +96,7 @@ returns(uint256)
 
 ```javascript
 function flashFee(address token, uint256 amount) external view override returns (uint256) {
-    return delgate().getFlashFee(msg.sender, key, token, amount);
+    return delegate().getFlashFee(msg.sender, key, token, amount);
   }
 ```
 </details>
@@ -121,7 +121,7 @@ returns(uint256)
 
 ```javascript
 function maxFlashLoan(address token) external view override returns (uint256) {
-    return delgate().getMaxFlashLoan(msg.sender, key, token);
+    return delegate().getMaxFlashLoan(msg.sender, key, token);
   }
 ```
 </details>

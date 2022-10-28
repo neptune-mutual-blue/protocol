@@ -356,8 +356,8 @@ function addBulkLiquidity(struct IVault.AddLiquidityArgs[] args) external nonpay
 
 ```javascript
 function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external override {
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-    IERC20 npm = s.npmToken();
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
+    IERC20 npm = s.getNpmTokenInstanceInternal();
 
     uint256 totalAmount;
     uint256 totalNpm;
@@ -375,7 +375,7 @@ function addBulkLiquidity(IVault.AddLiquidityArgs[] calldata args) external over
       uint256 balance = vault.balanceOf(address(this));
 
       if (balance > 0) {
-        IERC20(vault).ensureTransfer(s.getTreasury(), balance);
+        IERC20(vault).ensureTransfer(s.getTreasuryAddressInternal(), balance);
       }
 
       stablecoin.approve(address(vault), args[i].amount);

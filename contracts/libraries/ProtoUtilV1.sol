@@ -236,15 +236,15 @@ library ProtoUtilV1 {
   bytes32 public constant CNAME_VAULT_DELEGATE = "Vault Delegate";
   bytes32 public constant CNAME_LIQUIDITY_ENGINE = "Liquidity Engine";
 
-  function getProtocol(IStore s) external view returns (IProtocol) {
-    return IProtocol(getProtocolAddress(s));
+  function getProtocolInternal(IStore s) external view returns (IProtocol) {
+    return IProtocol(getProtocolAddressInternal(s));
   }
 
-  function getProtocolAddress(IStore s) public view returns (address) {
+  function getProtocolAddressInternal(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_CORE);
   }
 
-  function getContract(
+  function getContractInternal(
     IStore s,
     bytes32 name,
     bytes32 key
@@ -256,7 +256,7 @@ library ProtoUtilV1 {
     return s.getAddressByKeys(NS_CONTRACTS, name);
   }
 
-  function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+  function isProtocolMemberInternal(IStore s, address contractAddress) public view returns (bool) {
     return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 
@@ -264,7 +264,7 @@ library ProtoUtilV1 {
    * @dev Reverts if the caller is one of the protocol members.
    */
   function mustBeProtocolMember(IStore s, address contractAddress) external view {
-    bool isMember = isProtocolMember(s, contractAddress);
+    bool isMember = isProtocolMemberInternal(s, contractAddress);
     require(isMember, "Not a protocol member");
   }
 
@@ -279,7 +279,7 @@ library ProtoUtilV1 {
     bytes32 key,
     address sender
   ) public view {
-    address contractAddress = getContract(s, name, key);
+    address contractAddress = getContractInternal(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 
@@ -303,40 +303,40 @@ library ProtoUtilV1 {
     return mustBeExactContract(s, name, ProtoUtilV1.KEY_INTENTIONALLY_EMPTY, caller);
   }
 
-  function npmToken(IStore s) external view returns (IERC20) {
-    return IERC20(getNpmTokenAddress(s));
+  function getNpmTokenInstanceInternal(IStore s) external view returns (IERC20) {
+    return IERC20(getNpmTokenAddressInternal(s));
   }
 
-  function getNpmTokenAddress(IStore s) public view returns (address) {
+  function getNpmTokenAddressInternal(IStore s) public view returns (address) {
     address npm = s.getAddressByKey(CNS_NPM);
     return npm;
   }
 
-  function getUniswapV2Router(IStore s) external view returns (address) {
+  function getUniswapV2RouterInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
   }
 
-  function getUniswapV2Factory(IStore s) external view returns (address) {
+  function getUniswapV2FactoryInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
   }
 
-  function getNpmPriceOracle(IStore s) external view returns (address) {
+  function getNpmPriceOracleInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
   }
 
-  function getTreasury(IStore s) external view returns (address) {
+  function getTreasuryAddressInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_TREASURY);
   }
 
-  function getStablecoin(IStore s) public view returns (address) {
+  function getStablecoinAddressInternal(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 
-  function getStablecoinPrecision(IStore s) external view returns (uint256) {
-    return 10**IERC20Detailed(getStablecoin(s)).decimals();
+  function getStablecoinPrecisionInternal(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoinAddressInternal(s)).decimals();
   }
 
-  function getBurnAddress(IStore s) external view returns (address) {
+  function getBurnAddressInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_BURNER);
   }
 }

@@ -16,14 +16,6 @@ struct CalculatePolicyFeeArgs {
 }
 ```
 
-## Contract Members
-**Constants & Variables**
-
-```js
-uint256 public constant COVER_LAG_FALLBACK_VALUE;
-
-```
-
 ## Functions
 
 - [calculatePolicyFeeInternal(IStore s, struct PolicyHelperV1.CalculatePolicyFeeArgs args)](#calculatepolicyfeeinternal)
@@ -35,9 +27,8 @@ uint256 public constant COVER_LAG_FALLBACK_VALUE;
 - [_getMonthName(uint256 date)](#_getmonthname)
 - [_getCxTokenName(bytes32 coverKey, bytes32 productKey, uint256 expiry)](#_getcxtokenname)
 - [purchaseCoverInternal(IStore s, struct IPolicy.PurchaseCoverArgs args)](#purchasecoverinternal)
-- [getCoverageLagInternal(IStore s, bytes32 coverKey)](#getcoveragelaginternal)
 - [getEODInternal(uint256 date)](#geteodinternal)
-- [incrementPolicyId(IStore s)](#incrementpolicyid)
+- [incrementPolicyIdInternal(IStore s)](#incrementpolicyidinternal)
 
 ### calculatePolicyFeeInternal
 
@@ -82,7 +73,7 @@ function calculatePolicyFeeInternal(IStore s, CalculatePolicyFeeArgs memory args
     }
 
     uint256 expiryDate = CoverUtilV1.getExpiryDateInternal(block.timestamp, args.coverDuration); // solhint-disable-line
-    uint256 effectiveFrom = getEODInternal(block.timestamp) + getCoverageLagInternal(s, args.coverKey); // solhint-disable-line
+    uint256 effectiveFrom = getEODInternal(block.timestamp + s.getCoverageLagInternal(args.coverKey)); // solhint-disable-line
     uint256 daysCovered = BokkyPooBahsDateTimeLibrary.diffDays(effectiveFrom, expiryDate);
 
     policyFee.fee = (args.amountToCover * policyFee.rate * daysCovered) / (365 * ProtoUtilV1.MULTIPLIER);
@@ -272,7 +263,7 @@ function getCxTokenOrDeployInternal(
     // @warning: Do not uncomment the following line
     // Reason: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
-    // s.getProtocol().addMember(cxToken);
+    // s.getProtocolInternal().addMember(cxToken);
     return ICxToken(cxToken);
   }
 ```
@@ -311,9 +302,9 @@ function _getMonthName(uint256 date) private pure returns (bytes3) {
 Returns cxToken name from the supplied inputs.
  Format:
  For basket cover pool product
- --> cxusd:dex:uni:nov (cxUSD)
+ --> dex:uni:nov (cxUSD)
  For standalone cover pool
- --> cxusd:bal:nov (cxUSD)
+ --> bal:nov (cxUSD)
 
 ```solidity
 function _getCxTokenName(bytes32 coverKey, bytes32 productKey, uint256 expiry) private pure
@@ -340,10 +331,10 @@ function _getCxTokenName(
     bytes3 month = _getMonthName(expiry);
 
     if (productKey > 0) {
-      return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(productKey)), ":", string(abi.encodePacked(month))));
+      return string(abi.encodePacked(string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(productKey)), ":", string(abi.encodePacked(month))));
     }
 
-    return string(abi.encodePacked("cxusd:", string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(month))));
+    return string(abi.encodePacked(string(abi.encodePacked(coverKey)), ":", string(abi.encodePacked(month))));
   }
 ```
 </details>
@@ -386,59 +377,20 @@ function purchaseCoverInternal(IStore s, IPolicy.PurchaseCoverArgs calldata args
     require(fee > 0, "Insufficient fee");
     require(platformFee > 0, "Insufficient platform fee");
 
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(args.coverKey), fee - platformFee);
-    IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
+    IERC20(stablecoin).ensureTransfer(s.getTreasuryAddressInternal(), platformFee);
 
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
     uint256 toMint = (args.amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
     cxToken = getCxTokenOrDeployInternal(s, args.coverKey, args.productKey, args.coverDuration);
     cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
-    s.updateStateAndLiquidity(args.coverKey);
-  }
-```
-</details>
-
-### getCoverageLagInternal
-
-```solidity
-function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view
-returns(uint256)
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| s | IStore |  | 
-| coverKey | bytes32 |  | 
-
-<details>
-	<summary><strong>Source Code</strong></summary>
-
-```javascript
-function getCoverageLagInternal(IStore s, bytes32 coverKey) internal view returns (uint256) {
-    uint256 custom = s.getUintByKeys(ProtoUtilV1.NS_COVERAGE_LAG, coverKey);
-
-    // Custom means set for this exact cover
-    if (custom > 0) {
-      return custom;
-    }
-
-    // Global means set for all covers (without specifying a cover key)
-    uint256 global = s.getUintByKey(ProtoUtilV1.NS_COVERAGE_LAG);
-
-    if (global > 0) {
-      return global;
-    }
-
-    // Fallback means the default option
-    return COVER_LAG_FALLBACK_VALUE;
+    s.updateStateAndLiquidityInternal(args.coverKey);
   }
 ```
 </details>
@@ -469,12 +421,12 @@ function getEODInternal(uint256 date) public pure returns (uint256) {
 ```
 </details>
 
-### incrementPolicyId
+### incrementPolicyIdInternal
 
 Increases the "last policy id" and returns new id
 
 ```solidity
-function incrementPolicyId(IStore s) external nonpayable
+function incrementPolicyIdInternal(IStore s) external nonpayable
 returns(uint256)
 ```
 
@@ -488,7 +440,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function incrementPolicyId(IStore s) external returns (uint256) {
+function incrementPolicyIdInternal(IStore s) external returns (uint256) {
     s.addUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID, 1);
 
     return s.getUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID);

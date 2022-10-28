@@ -21,7 +21,7 @@ library RoutineInvokerLibV1 {
     Withdraw
   }
 
-  function updateStateAndLiquidity(IStore s, bytes32 coverKey) external {
+  function updateStateAndLiquidityInternal(IStore s, bytes32 coverKey) external {
     _invoke(s, coverKey);
   }
 
@@ -36,7 +36,7 @@ library RoutineInvokerLibV1 {
     if (coverKey > 0) {
       _updateWithdrawalPeriod(s, coverKey);
       _invokeAssetManagement(s, coverKey);
-      s.setLastUpdatedOn(coverKey);
+      s.setLastUpdatedOnInternal(coverKey);
     }
   }
 
@@ -58,8 +58,8 @@ library RoutineInvokerLibV1 {
     (lendingPeriod, withdrawalWindow) = s.getRiskPoolingPeriodsInternal(coverKey);
 
     // Get the withdrawal period of this cover liquidity
-    start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
-    end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+    start = s.getUintByKey(getNextWithdrawalStartKeyInternal(coverKey));
+    end = s.getUintByKey(getNextWithdrawalEndKeyInternal(coverKey));
 
     // solhint-disable-next-line
     if (block.timestamp >= start && block.timestamp <= end) {
@@ -93,14 +93,14 @@ library RoutineInvokerLibV1 {
       // Withdrawals can be performed until the end of the next withdrawal cycle
       end = start + withdrawalWindow;
 
-      s.setUintByKey(getNextWithdrawalStartKey(coverKey), start);
-      s.setUintByKey(getNextWithdrawalEndKey(coverKey), end);
+      s.setUintByKey(getNextWithdrawalStartKeyInternal(coverKey), start);
+      s.setUintByKey(getNextWithdrawalEndKeyInternal(coverKey), end);
       setAccrualCompleteInternal(s, coverKey, false);
     }
   }
 
   function isAccrualCompleteInternal(IStore s, bytes32 coverKey) external view returns (bool) {
-    return s.getBoolByKey(getAccrualInvocationKey(coverKey));
+    return s.getBoolByKey(getAccrualInvocationKeyInternal(coverKey));
   }
 
   function setAccrualCompleteInternal(
@@ -108,7 +108,7 @@ library RoutineInvokerLibV1 {
     bytes32 coverKey,
     bool flag
   ) public {
-    s.setBoolByKey(getAccrualInvocationKey(coverKey), flag);
+    s.setBoolByKey(getAccrualInvocationKeyInternal(coverKey), flag);
   }
 
   /**
@@ -119,7 +119,7 @@ library RoutineInvokerLibV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getAccrualInvocationKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getAccrualInvocationKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_ACCRUAL_INVOCATION, coverKey));
   }
 
@@ -131,7 +131,7 @@ library RoutineInvokerLibV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getNextWithdrawalStartKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getNextWithdrawalStartKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_START, coverKey));
   }
 
@@ -143,14 +143,14 @@ library RoutineInvokerLibV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getNextWithdrawalEndKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getNextWithdrawalEndKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LENDING_STRATEGY_WITHDRAWAL_END, coverKey));
   }
 
   function mustBeDuringWithdrawalPeriod(IStore s, bytes32 coverKey) external view {
     // Get the withdrawal period of this cover liquidity
-    uint256 start = s.getUintByKey(getNextWithdrawalStartKey(coverKey));
-    uint256 end = s.getUintByKey(getNextWithdrawalEndKey(coverKey));
+    uint256 start = s.getUintByKey(getNextWithdrawalStartKeyInternal(coverKey));
+    uint256 end = s.getUintByKey(getNextWithdrawalEndKeyInternal(coverKey));
 
     require(start > 0 && block.timestamp >= start, "Withdrawal period has not started");
     require(end > 0 && block.timestamp <= end, "Withdrawal period has already ended");
@@ -166,8 +166,8 @@ library RoutineInvokerLibV1 {
 
     if (isNormal != true) {
       // Reset the withdrawal window
-      s.setUintByKey(getNextWithdrawalStartKey(coverKey), 0);
-      s.setUintByKey(getNextWithdrawalEndKey(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalStartKeyInternal(coverKey), 0);
+      s.setUintByKey(getNextWithdrawalEndKeyInternal(coverKey), 0);
 
       return Action.Withdraw;
     }
@@ -185,14 +185,14 @@ library RoutineInvokerLibV1 {
     uint256 totalStrategies,
     bytes32 coverKey
   ) private view returns (uint256) {
-    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
 
     uint256 totalBalance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 maximumAllowed = (totalBalance * s.getMaxLendingRatioInternal()) / ProtoUtilV1.MULTIPLIER;
     uint256 allocation = maximumAllowed / totalStrategies;
     uint256 weight = strategy.getWeight();
     uint256 canDeposit = (allocation * weight) / ProtoUtilV1.MULTIPLIER;
-    uint256 alreadyDeposited = s.getAmountInStrategy(coverKey, strategy.getName(), address(stablecoin));
+    uint256 alreadyDeposited = s.getAmountInStrategyInternal(coverKey, strategy.getName(), address(stablecoin));
 
     if (alreadyDeposited >= canDeposit) {
       return 0;
@@ -221,7 +221,7 @@ library RoutineInvokerLibV1 {
     bytes32 coverKey
   ) private {
     uint256 canDeposit = _canDeposit(s, strategy, totalStrategies, coverKey);
-    uint256 balance = IERC20(s.getStablecoin()).balanceOf(vault);
+    uint256 balance = IERC20(s.getStablecoinAddressInternal()).balanceOf(vault);
 
     if (canDeposit > balance) {
       canDeposit = balance;

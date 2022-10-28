@@ -37,8 +37,8 @@ library StakingPoolCoreLibV1 {
    * @dev Reports the remaining amount of tokens that can be staked in this pool
    */
   function getAvailableToStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 totalStaked = getTotalStaked(s, key);
-    uint256 target = getTarget(s, key);
+    uint256 totalStaked = getTotalStakedInternal(s, key);
+    uint256 target = getTargetInternal(s, key);
 
     if (totalStaked >= target) {
       return 0;
@@ -47,27 +47,27 @@ library StakingPoolCoreLibV1 {
     return target - totalStaked;
   }
 
-  function getTarget(IStore s, bytes32 key) public view returns (uint256) {
+  function getTargetInternal(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(NS_POOL_STAKING_TARGET, key);
   }
 
-  function getRewardPlatformFee(IStore s, bytes32 key) external view returns (uint256) {
+  function getRewardPlatformFeeInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key);
   }
 
-  function getTotalStaked(IStore s, bytes32 key) public view returns (uint256) {
+  function getTotalStakedInternal(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
   }
 
-  function getRewardPerBlock(IStore s, bytes32 key) external view returns (uint256) {
+  function getRewardPerBlockInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
   }
 
-  function getLockupPeriodInBlocks(IStore s, bytes32 key) external view returns (uint256) {
+  function getLockupPeriodInBlocksInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 
-  function getRewardTokenBalance(IStore s, bytes32 key) external view returns (uint256) {
+  function getRewardTokenBalanceInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key);
   }
 
@@ -91,18 +91,18 @@ library StakingPoolCoreLibV1 {
     return s.getAddressByKeys(NS_POOL_REWARD_TOKEN_UNI_STABLECOIN_PAIR, key);
   }
 
-  function ensureValidStakingPool(IStore s, bytes32 key) external view {
-    require(checkIfStakingPoolExists(s, key), "Pool invalid or closed");
+  function ensureValidStakingPoolInternal(IStore s, bytes32 key) external view {
+    require(checkIfStakingPoolExistsInternal(s, key), "Pool invalid or closed");
   }
 
-  function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bool) {
+  function checkIfStakingPoolExistsInternal(IStore s, bytes32 key) public view returns (bool) {
     return s.getBoolByKeys(NS_POOL, key);
   }
 
   function validateAddOrEditPoolInternal(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) public view returns (bool) {
     require(args.key > 0, "Invalid key");
 
-    bool exists = checkIfStakingPoolExists(s, args.key);
+    bool exists = checkIfStakingPoolExistsInternal(s, args.key);
 
     if (exists == false) {
       require(bytes(args.name).length > 0, "Invalid name");

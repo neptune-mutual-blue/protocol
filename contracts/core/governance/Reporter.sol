@@ -146,7 +146,7 @@ abstract contract Reporter is IReporter, Witness {
     s.addAttestationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Reported(coverKey, productKey, msg.sender, incidentDate, info, stake, resolutionDate);
     emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
@@ -217,7 +217,7 @@ abstract contract Reporter is IReporter, Witness {
     s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Disputed(coverKey, productKey, msg.sender, incidentDate, info, stake);
     emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);

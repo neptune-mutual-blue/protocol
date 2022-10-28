@@ -53,7 +53,7 @@ contract MockVaultLibUser {
     address stablecoin,
     uint256 amount
   ) external {
-    // getStrategyOutKey
+    // getStrategyOutKeyInternal
     bytes32 k = keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, stablecoin));
 
     s.setUintByKey(k, amount);

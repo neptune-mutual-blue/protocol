@@ -67,7 +67,7 @@ function deploy(
     s.mustNotBePaused();
     s.senderMustBeCoverContract();
 
-    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCode(s, coverKey, tokenName, tokenSymbol, s.getStablecoin());
+    (bytes memory bytecode, bytes32 salt) = VaultFactoryLibV1.getByteCodeInternal(s, coverKey, tokenName, tokenSymbol, s.getStablecoinAddressInternal());
 
     // solhint-disable-next-line
     assembly {

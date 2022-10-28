@@ -33,7 +33,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getCoverOwner(IStore s, bytes32 coverKey) external view returns (address) {
+  function getCoverOwnerInternal(IStore s, bytes32 coverKey) external view returns (address) {
     return s.getAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
   }
 
@@ -46,7 +46,7 @@ library CoverUtilV1 {
    * @return minStakeToAddLiquidity Returns the amount of NPM tokens you need to stake to add liquidity
    *
    */
-  function getCoverCreationFeeInfo(IStore s)
+  function getCoverCreationFeeInfoInternal(IStore s)
     external
     view
     returns (
@@ -56,23 +56,16 @@ library CoverUtilV1 {
     )
   {
     fee = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
-    minCoverCreationStake = getMinCoverCreationStake(s);
-    minStakeToAddLiquidity = getMinStakeToAddLiquidity(s);
+    minCoverCreationStake = getMinCoverCreationStakeInternal(s);
+    minStakeToAddLiquidity = getMinStakeToAddLiquidityInternal(s);
   }
 
   /**
    * @dev Returns minimum NPM stake to create a new cover.
    * @param s Specify store instance
    */
-  function getMinCoverCreationStake(IStore s) public view returns (uint256) {
-    uint256 value = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
-
-    if (value == 0) {
-      // Fallback to 250 NPM
-      value = 250 ether;
-    }
-
-    return value;
+  function getMinCoverCreationStakeInternal(IStore s) public view returns (uint256) {
+    return s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE);
   }
 
   /**
@@ -84,7 +77,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getCoverCreationDate(IStore s, bytes32 coverKey) external view returns (uint256) {
+  function getCoverCreationDateInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     return s.getUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
   }
 
@@ -92,7 +85,7 @@ library CoverUtilV1 {
    * @dev Returns minimum NPM stake to add liquidity.
    * @param s Specify store instance
    */
-  function getMinStakeToAddLiquidity(IStore s) public view returns (uint256) {
+  function getMinStakeToAddLiquidityInternal(IStore s) public view returns (uint256) {
     return s.getUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE);
   }
 
@@ -105,7 +98,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getClaimPeriod(IStore s, bytes32 coverKey) external view returns (uint256) {
+  function getClaimPeriodInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
     uint256 fromKey = s.getUintByKeys(ProtoUtilV1.NS_CLAIM_PERIOD, coverKey);
     uint256 fallbackValue = s.getUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD);
 
@@ -123,10 +116,10 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view returns (IPolicy.CoverPoolSummaryType memory summary) {
-    uint256 precision = s.getStablecoinPrecision();
+    uint256 precision = s.getStablecoinPrecisionInternal();
 
     summary.totalAmountInPool = s.getStablecoinOwnedByVaultInternal(coverKey); // precision: stablecoin
-    summary.totalCommitment = getActiveLiquidityUnderProtection(s, coverKey, productKey, precision); // <-- adjusted precision
+    summary.totalCommitment = getActiveLiquidityUnderProtectionInternal(s, coverKey, productKey, precision); // <-- adjusted precision
     summary.reassuranceAmount = getReassuranceAmountInternal(s, coverKey); // precision: stablecoin
     summary.reassurancePoolWeight = getReassuranceWeightInternal(s, coverKey);
     summary.productCount = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
@@ -150,14 +143,14 @@ library CoverUtilV1 {
    *
    */
   function getReassuranceWeightInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    uint256 setForTheCoverPool = s.getUintByKey(getReassuranceWeightKey(coverKey));
+    uint256 setForTheCoverPool = s.getUintByKey(getReassuranceWeightKeyInternal(coverKey));
 
     if (setForTheCoverPool > 0) {
       return setForTheCoverPool;
     }
 
     // Globally set value: not set for any specific cover
-    uint256 setGlobally = s.getUintByKey(getReassuranceWeightKey(0));
+    uint256 setGlobally = s.getUintByKey(getReassuranceWeightKeyInternal(0));
 
     if (setGlobally > 0) {
       return setGlobally;
@@ -175,7 +168,7 @@ library CoverUtilV1 {
    *
    */
   function getReassuranceAmountInternal(IStore s, bytes32 coverKey) public view returns (uint256) {
-    return s.getUintByKey(getReassuranceKey(coverKey));
+    return s.getUintByKey(getReassuranceKeyInternal(coverKey));
   }
 
   /**
@@ -193,7 +186,7 @@ library CoverUtilV1 {
    *
    */
   function getReassuranceRateInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    uint256 rate = s.getUintByKey(getReassuranceRateKey(coverKey));
+    uint256 rate = s.getUintByKey(getReassuranceRateKeyInternal(coverKey));
 
     if (rate > 0) {
       return rate;
@@ -211,7 +204,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getReassuranceKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getReassuranceKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE, coverKey));
   }
 
@@ -223,7 +216,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getReassuranceRateKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getReassuranceRateKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey));
   }
 
@@ -235,7 +228,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getReassuranceWeightKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getReassuranceWeightKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey));
   }
 
@@ -313,7 +306,7 @@ library CoverUtilV1 {
     bytes32 productKey,
     uint256 incidentDate
   ) public view returns (ProductStatus) {
-    uint256 value = s.getUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate));
+    uint256 value = s.getUintByKey(getProductStatusOfKeyInternal(coverKey, productKey, incidentDate));
     return ProductStatus(value);
   }
 
@@ -328,7 +321,7 @@ library CoverUtilV1 {
    * @param incidentDate Enter incident date
    *
    */
-  function getProductStatusOfKey(
+  function getProductStatusOfKeyInternal(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
@@ -344,7 +337,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getCoverLiquidityStakeKey(bytes32 coverKey) external pure returns (bytes32) {
+  function getCoverLiquidityStakeKeyInternal(bytes32 coverKey) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey));
   }
 
@@ -358,7 +351,7 @@ library CoverUtilV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getLastDepositHeightKey(bytes32 coverKey) external pure returns (bytes32) {
+  function getLastDepositHeightKeyInternal(bytes32 coverKey) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_DEPOSIT_HEIGHTS, coverKey));
   }
 
@@ -371,7 +364,7 @@ library CoverUtilV1 {
    * @param account Enter the account to obtain the hash key
    *
    */
-  function getCoverLiquidityStakeIndividualKey(bytes32 coverKey, address account) external pure returns (bytes32) {
+  function getCoverLiquidityStakeIndividualKeyInternal(bytes32 coverKey, address account) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_STAKE, coverKey, account));
   }
 
@@ -386,7 +379,7 @@ library CoverUtilV1 {
    * @param incidentDate Enter the trigger incident date
    *
    */
-  function getBlacklistKey(
+  function getBlacklistKeyInternal(
     bytes32 coverKey,
     bytes32 productKey,
     uint256 incidentDate
@@ -409,7 +402,7 @@ library CoverUtilV1 {
    * @param precision Specify the protocol stablecoin precision.
    *
    */
-  function getTotalLiquidityUnderProtection(
+  function getTotalLiquidityUnderProtectionInternal(
     IStore s,
     bytes32 coverKey,
     uint256 precision
@@ -417,13 +410,13 @@ library CoverUtilV1 {
     bool supportsProducts = supportsProductsInternal(s, coverKey);
 
     if (supportsProducts == false) {
-      return getActiveLiquidityUnderProtection(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, precision);
+      return getActiveLiquidityUnderProtectionInternal(s, coverKey, ProtoUtilV1.PRODUCT_KEY_INTENTIONALLY_EMPTY, precision);
     }
 
     bytes32[] memory products = _getProducts(s, coverKey);
 
     for (uint256 i = 0; i < products.length; i++) {
-      total += getActiveLiquidityUnderProtection(s, coverKey, products[i], precision);
+      total += getActiveLiquidityUnderProtectionInternal(s, coverKey, products[i], precision);
     }
   }
 
@@ -447,7 +440,7 @@ library CoverUtilV1 {
    * @param adjustPrecision Specify the protocol stablecoin precision.
    *
    */
-  function getActiveLiquidityUnderProtection(
+  function getActiveLiquidityUnderProtectionInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,
@@ -536,19 +529,6 @@ library CoverUtilV1 {
   }
 
   /**
-   * @dev Gets the total amount of NPM stakes added for the specified cover.
-   *
-   *
-   * Warning: this function does not validate the cover key supplied.
-   *
-   * @param s Specify store instance
-   * @param coverKey Enter cover key
-   */
-  function getStake(IStore s, bytes32 coverKey) external view returns (uint256) {
-    return s.getUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey);
-  }
-
-  /**
    * @dev Sets the current status of a given cover
    *
    * 0 - normal
@@ -565,7 +545,7 @@ library CoverUtilV1 {
     uint256 incidentDate,
     ProductStatus status
   ) external {
-    s.setUintByKey(getProductStatusOfKey(coverKey, productKey, incidentDate), uint256(status));
+    s.setUintByKey(getProductStatusOfKeyInternal(coverKey, productKey, incidentDate), uint256(status));
   }
 
   /**
@@ -631,7 +611,7 @@ library CoverUtilV1 {
     cxToken = s.getAddress(k);
   }
 
-  function checkIfProductRequiresWhitelist(
+  function checkIfProductRequiresWhitelistInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey
@@ -639,7 +619,7 @@ library CoverUtilV1 {
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey);
   }
 
-  function checkIfRequiresWhitelist(IStore s, bytes32 coverKey) external view returns (bool) {
+  function checkIfRequiresWhitelistInternal(IStore s, bytes32 coverKey) external view returns (bool) {
     return s.getBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
   }
 
@@ -669,7 +649,7 @@ library CoverUtilV1 {
     bytes32 productKey,
     bool status
   ) external {
-    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    bytes32 key = getPolicyDisabledKeyInternal(coverKey, productKey);
     s.setBoolByKey(key, status);
   }
 
@@ -678,7 +658,7 @@ library CoverUtilV1 {
     bytes32 coverKey,
     bytes32 productKey
   ) external view returns (bool) {
-    bytes32 key = getPolicyDisabledKey(coverKey, productKey);
+    bytes32 key = getPolicyDisabledKeyInternal(coverKey, productKey);
     return s.getBoolByKey(key);
   }
 
@@ -691,7 +671,7 @@ library CoverUtilV1 {
    * @param productKey Enter product key
    *
    */
-  function getPolicyDisabledKey(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
+  function getPolicyDisabledKeyInternal(bytes32 coverKey, bytes32 productKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_POLICY_DISABLED, coverKey, productKey));
   }
 

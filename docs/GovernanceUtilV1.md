@@ -710,6 +710,8 @@ function getUnstakeInfoForInternal(
       reward = (info.totalStakeInLosingCamp * rewardRatio) / ProtoUtilV1.MULTIPLIER;
     }
 
+    require(getReportingBurnRateInternal(s) + getGovernanceReporterCommissionInternal(s) <= ProtoUtilV1.MULTIPLIER, "Invalid configuration");
+
     info.toBurn = (reward * getReportingBurnRateInternal(s)) / ProtoUtilV1.MULTIPLIER;
     info.toReporter = (reward * getGovernanceReporterCommissionInternal(s)) / ProtoUtilV1.MULTIPLIER;
     info.myReward = reward - info.toBurn - info.toReporter;
@@ -923,7 +925,7 @@ function addAttestationInternal(
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
     _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 ```
 </details>
@@ -1011,7 +1013,7 @@ function addRefutationInternal(
     s.addUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate), stake);
     _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 ```
 </details>
@@ -1371,7 +1373,7 @@ function mustNotExceedNpmThreshold(uint256 amount) public pure
 
 ```javascript
 function mustNotExceedNpmThreshold(uint256 amount) public pure {
-    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "Please specify a smaller amount");
+    require(amount <= ProtoUtilV1.MAX_NPM_STAKE * 1 ether, "NPM stake is above threshold");
   }
 ```
 </details>

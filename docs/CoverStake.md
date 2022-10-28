@@ -80,10 +80,10 @@ function increaseStake(
 
     require(amount >= fee, "Invalid fee");
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(this), amount);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(this), amount);
 
     if (fee > 0) {
-      s.npmToken().ensureTransfer(s.getBurnAddress(), fee);
+      s.getNpmTokenInstanceInternal().ensureTransfer(s.getBurnAddressInternal(), fee);
       emit FeeBurned(coverKey, fee);
     }
 
@@ -130,9 +130,9 @@ function decreaseStake(bytes32 coverKey, uint256 amount) external override nonRe
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE, coverKey, amount);
     s.subtractUintByKeys(ProtoUtilV1.NS_COVER_STAKE_OWNED, coverKey, msg.sender, amount);
 
-    s.npmToken().ensureTransfer(msg.sender, amount);
+    s.getNpmTokenInstanceInternal().ensureTransfer(msg.sender, amount);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit StakeRemoved(coverKey, msg.sender, amount);
   }
@@ -195,11 +195,11 @@ Returns the drawing power of the specified account on the given cover key
 
 ```javascript
 function _getDrawingPower(bytes32 coverKey, address account) private view returns (uint256) {
-    uint256 createdAt = s.getCoverCreationDate(coverKey);
+    uint256 createdAt = s.getCoverCreationDateInternal(coverKey);
     uint256 yourStake = stakeOf(coverKey, account);
-    bool isOwner = account == s.getCoverOwner(coverKey);
+    bool isOwner = account == s.getCoverOwnerInternal(coverKey);
 
-    uint256 minStakeRequired = block.timestamp > createdAt + 365 days ? 0 : s.getMinCoverCreationStake(); // solhint-disable-line
+    uint256 minStakeRequired = block.timestamp > createdAt + 365 days ? 0 : s.getMinCoverCreationStakeInternal(); // solhint-disable-line
 
     return isOwner ? yourStake - minStakeRequired : yourStake;
   }

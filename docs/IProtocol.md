@@ -29,6 +29,7 @@ struct InitializeArgs {
  address priceOracle,
  uint256 coverCreationFee,
  uint256 minCoverCreationStake,
+ uint256 minStakeToAddLiquidity,
  uint256 firstReportingStake,
  uint256 claimPeriod,
  uint256 reportingBurnRate,

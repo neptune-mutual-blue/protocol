@@ -49,7 +49,7 @@ function transferGovernance(
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    address stablecoin = delgate().preTransferGovernance(msg.sender, coverKey, to, amount);
+    address stablecoin = delegate().preTransferGovernance(msg.sender, coverKey, to, amount);
 
     /******************************************************************************************
       BODY
@@ -60,7 +60,7 @@ function transferGovernance(
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    delgate().postTransferGovernance(msg.sender, coverKey, to, amount);
+    delegate().postTransferGovernance(msg.sender, coverKey, to, amount);
     emit GovernanceTransfer(to, amount);
   }
 ```
@@ -93,7 +93,7 @@ function addLiquidity(AddLiquidityArgs calldata args) external override nonReent
       PRE
      ******************************************************************************************/
 
-    (uint256 podsToMint, uint256 previousNpmStake) = delgate().preAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
+    (uint256 podsToMint, uint256 previousNpmStake) = delegate().preAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
     require(podsToMint > 0, "Can't determine PODs");
 
@@ -104,7 +104,7 @@ function addLiquidity(AddLiquidityArgs calldata args) external override nonReent
     IERC20(sc).ensureTransferFrom(msg.sender, address(this), args.amount);
 
     if (args.npmStakeToAdd > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
+      IERC20(s.getNpmTokenAddressInternal()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
     }
 
     super._mint(msg.sender, podsToMint);
@@ -113,7 +113,7 @@ function addLiquidity(AddLiquidityArgs calldata args) external override nonReent
       POST
      ******************************************************************************************/
 
-    delgate().postAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
+    delegate().postAddLiquidity(msg.sender, args.coverKey, args.amount, args.npmStakeToAdd);
 
     emit PodsIssued(msg.sender, podsToMint, args.amount, args.referralCode);
 
@@ -160,7 +160,7 @@ function removeLiquidity(
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    (address stablecoin, uint256 stablecoinToRelease) = delgate().preRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
+    (address stablecoin, uint256 stablecoinToRelease) = delegate().preRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
 
     /******************************************************************************************
       BODY
@@ -174,13 +174,13 @@ function removeLiquidity(
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
+      IERC20(s.getNpmTokenAddressInternal()).ensureTransfer(msg.sender, npmStakeToRemove);
     }
 
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    delgate().postRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
+    delegate().postRemoveLiquidity(msg.sender, coverKey, podsToRedeem, npmStakeToRemove, exit);
 
     emit PodsRedeemed(msg.sender, podsToRedeem, stablecoinToRelease);
 
@@ -215,7 +215,7 @@ returns(uint256)
 
 ```javascript
 function calculatePods(uint256 forStablecoinUnits) external view override returns (uint256) {
-    return delgate().calculatePodsImplementation(key, forStablecoinUnits);
+    return delegate().calculatePodsImplementation(key, forStablecoinUnits);
   }
 ```
 </details>
@@ -240,7 +240,7 @@ returns(uint256)
 
 ```javascript
 function calculateLiquidity(uint256 podsToBurn) external view override returns (uint256) {
-    return delgate().calculateLiquidityImplementation(key, podsToBurn);
+    return delegate().calculateLiquidityImplementation(key, podsToBurn);
   }
 ```
 </details>
@@ -265,14 +265,14 @@ returns(uint256)
 
 ```javascript
 function getStablecoinBalanceOf() external view override returns (uint256) {
-    return delgate().getStablecoinBalanceOfImplementation(key);
+    return delegate().getStablecoinBalanceOfImplementation(key);
   }
 ```
 </details>
 
 ### accrueInterest
 
-Accrues interests from external straties
+Accrues interests from external strategies
 
 ```solidity
 function accrueInterest() external nonpayable nonReentrant 
@@ -288,7 +288,7 @@ function accrueInterest() external nonpayable nonReentrant
 
 ```javascript
 function accrueInterest() external override nonReentrant {
-    delgate().accrueInterestImplementation(msg.sender, key);
+    delegate().accrueInterestImplementation(msg.sender, key);
     emit InterestAccrued(key);
   }
 ```

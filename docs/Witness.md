@@ -84,7 +84,7 @@ function attest(
 
     s.addAttestationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
   }
@@ -132,7 +132,7 @@ function refute(
 
     s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);
   }

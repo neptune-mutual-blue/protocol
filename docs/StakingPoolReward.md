@@ -78,7 +78,7 @@ function withdrawRewards(bytes32 key) external nonpayable nonReentrant
 ```javascript
 function withdrawRewards(bytes32 key) external override nonReentrant {
     s.mustNotBePaused();
-    s.ensureValidStakingPool(key);
+    s.ensureValidStakingPoolInternal(key);
 
     (address rewardToken, uint256 rewards, uint256 platformFee) = s.withdrawRewardsInternal(key, msg.sender);
 

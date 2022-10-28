@@ -11,7 +11,7 @@ library VaultFactoryLibV1 {
    * @param coverKey Provide the cover key
    * @param stablecoin Specify the liquidity token for this Vault
    */
-  function getByteCode(
+  function getByteCodeInternal(
     IStore s,
     bytes32 coverKey,
     string calldata tokenName,

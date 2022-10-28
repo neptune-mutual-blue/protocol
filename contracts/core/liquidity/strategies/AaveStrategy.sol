@@ -37,7 +37,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
   }
 
   function getDepositAsset() public view override returns (IERC20) {
-    return IERC20(s.getStablecoin());
+    return IERC20(s.getStablecoinAddressInternal());
   }
 
   function getDepositCertificate() public view override returns (IERC20) {
@@ -48,7 +48,7 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
     uint256 amount = asset.balanceOf(address(this));
 
     if (amount > 0) {
-      asset.ensureTransfer(s.getTreasury(), amount);
+      asset.ensureTransfer(s.getTreasuryAddressInternal(), amount);
       emit Drained(asset, amount);
     }
   }

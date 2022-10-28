@@ -62,7 +62,7 @@ returns(uint256)
 
 ```javascript
 function calculateTokensForLpInternal(IStore s, uint256 lpTokens) public view returns (uint256) {
-    uint256 dollarValue = s.convertNpmLpUnitsToStabelcoin(lpTokens);
+    uint256 dollarValue = s.convertNpmLpUnitsToStabelcoinInternal(lpTokens);
 
     uint256 npmPrice = s.getNpmPriceInternal(1 ether);
     uint256 discount = _getDiscountRate(s);
@@ -104,7 +104,7 @@ function getBondPoolInfoInternal(IStore s, address you) external view returns (I
     info.maxBond = _getMaxBondInUnit(s);
     info.totalNpmAllocated = _getTotalNpmAllocated(s);
     info.totalNpmDistributed = _getTotalNpmDistributed(s);
-    info.npmAvailable = IERC20(s.npmToken()).balanceOf(address(this));
+    info.npmAvailable = IERC20(s.getNpmTokenInstanceInternal()).balanceOf(address(this));
 
     info.bondContribution = _getYourBondContribution(s, you); // total lp tokens contributed by you
     info.claimable = _getYourBondClaimable(s, you); // your total claimable NPM tokens at the end of the vesting period or "unlock date"
@@ -423,7 +423,7 @@ returns(uint256)
 
 ```javascript
 function _getNpmBalance(IStore s) private view returns (uint256) {
-    return IERC20(s.npmToken()).balanceOf(address(this));
+    return IERC20(s.getNpmTokenInstanceInternal()).balanceOf(address(this));
   }
 ```
 </details>
@@ -492,7 +492,7 @@ function claimBondInternal(IStore s) external returns (uint256 npmToTransfer) {
     require(npmToTransfer > 0, "Nothing to claim");
 
     s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_DISTRIBUTED, npmToTransfer);
-    IERC20(s.npmToken()).ensureTransfer(msg.sender, npmToTransfer);
+    IERC20(s.getNpmTokenInstanceInternal()).ensureTransfer(msg.sender, npmToTransfer);
   }
 ```
 </details>
@@ -538,7 +538,7 @@ function setupBondPoolInternal(IStore s, IBondPool.SetupBondPoolArgs calldata ar
     }
 
     if (args.npmToTopUpNow > 0) {
-      IERC20(s.npmToken()).ensureTransferFrom(msg.sender, address(this), args.npmToTopUpNow);
+      IERC20(s.getNpmTokenInstanceInternal()).ensureTransferFrom(msg.sender, address(this), args.npmToTopUpNow);
       s.addUintByKey(BondPoolLibV1.NS_BOND_TOTAL_NPM_ALLOCATED, args.npmToTopUpNow);
     }
   }

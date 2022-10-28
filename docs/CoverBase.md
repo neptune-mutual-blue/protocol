@@ -149,7 +149,7 @@ function setMinStakeToAddLiquidity(uint256 value) external nonpayable nonReentra
 
 ```javascript
 function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
-    require(value > 0, "Please specify value");
+    // require(value > 0, "Please specify value"); // <-- ZERO value is allowed now
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);

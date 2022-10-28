@@ -26,13 +26,6 @@ describe('Cover: setMinStakeToAddLiquidity', () => {
     event.args.current.should.equal(minStake)
   })
 
-  it('reverts when invalid value is passed as min stake', async () => {
-    const minStake = '0'
-
-    await deployed.cover.setMinStakeToAddLiquidity(minStake)
-      .should.be.rejectedWith('Please specify value')
-  })
-
   it('reverts when protocol is paused', async () => {
     const minStake = '1'
 

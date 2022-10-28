@@ -53,8 +53,8 @@ returns(vaults address[])
 
 ```javascript
 function addCovers(ICover.AddCoverArgs[] calldata args) external override returns (address[] memory vaults) {
-    IERC20 npm = s.npmToken();
-    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 npm = s.getNpmTokenInstanceInternal();
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
 
     ICover cover = s.getCoverContract();
 
@@ -162,7 +162,7 @@ function purchaseCovers(struct IPolicy.PurchaseCoverArgs[] args) external nonpay
 function purchaseCovers(IPolicy.PurchaseCoverArgs[] calldata args) external override {
     uint256 fee = _getFee(args);
 
-    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
     IPolicy policy = s.getPolicyContract();
 
     stablecoin.ensureTransferFrom(msg.sender, address(this), fee);
@@ -192,8 +192,8 @@ function addLiquidities(struct IVault.AddLiquidityArgs[] args) external nonpayab
 
 ```javascript
 function addLiquidities(IVault.AddLiquidityArgs[] calldata args) external override {
-    IERC20 stablecoin = IERC20(s.getStablecoin());
-    IERC20 npm = s.npmToken();
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
+    IERC20 npm = s.getNpmTokenInstanceInternal();
 
     uint256 totalAmount;
     uint256 totalNpm;

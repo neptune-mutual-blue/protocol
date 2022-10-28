@@ -95,7 +95,7 @@ contract VaultTest is CoverSpec {
 
     vm.warp(block.timestamp + 1 days);
 
-    RoutineInvokerLibV1.updateStateAndLiquidity(_store, _COVER_KEY);
+    RoutineInvokerLibV1.updateStateAndLiquidityInternal(_store, _COVER_KEY);
 
     vm.roll(block.number + 2);
     vm.warp(block.timestamp + 1000 days);
@@ -132,7 +132,7 @@ contract VaultTest is CoverSpec {
 
     vm.warp(block.timestamp + 1 days);
 
-    RoutineInvokerLibV1.updateStateAndLiquidity(_store, _COVER_KEY);
+    RoutineInvokerLibV1.updateStateAndLiquidityInternal(_store, _COVER_KEY);
 
     vm.roll(block.number + 2);
     vm.warp(block.timestamp + 180 days);
@@ -169,7 +169,7 @@ contract VaultTest is CoverSpec {
 
     vm.warp(block.timestamp + 1 days);
 
-    RoutineInvokerLibV1.updateStateAndLiquidity(_store, _COVER_KEY);
+    RoutineInvokerLibV1.updateStateAndLiquidityInternal(_store, _COVER_KEY);
 
     vm.roll(block.number + 2);
     vm.warp(block.timestamp + 180 days);

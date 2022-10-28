@@ -41,7 +41,7 @@ bytes32 public constant NS_ROLES_UNPAUSE_AGENT;
 - [callerMustBePauseAgent(IStore s, address caller)](#callermustbepauseagent)
 - [callerMustBeUnpauseAgent(IStore s, address caller)](#callermustbeunpauseagent)
 - [_mustHaveAccess(IStore s, bytes32 role, address caller)](#_musthaveaccess)
-- [hasAccess(IStore s, bytes32 role, address user)](#hasaccess)
+- [hasAccessInternal(IStore s, bytes32 role, address user)](#hasaccessinternal)
 - [addContractInternal(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#addcontractinternal)
 - [_addContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#_addcontract)
 - [_deleteContract(IStore s, bytes32 namespace, bytes32 key, address contractAddress)](#_deletecontract)
@@ -517,17 +517,17 @@ function _mustHaveAccess(
     bytes32 role,
     address caller
   ) private view {
-    require(hasAccess(s, role, caller), "Forbidden");
+    require(hasAccessInternal(s, role, caller), "Forbidden");
   }
 ```
 </details>
 
-### hasAccess
+### hasAccessInternal
 
 Checks if a given user has access to the given role
 
 ```solidity
-function hasAccess(IStore s, bytes32 role, address user) public view
+function hasAccessInternal(IStore s, bytes32 role, address user) public view
 returns(bool)
 ```
 
@@ -547,12 +547,12 @@ Returns true if the user is a member of the specified role
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function hasAccess(
+function hasAccessInternal(
     IStore s,
     bytes32 role,
     address user
   ) public view returns (bool) {
-    address protocol = s.getProtocolAddress();
+    address protocol = s.getProtocolAddressInternal();
 
     // The protocol is not deployed yet. Therefore, no role to check
     if (protocol == address(0)) {
@@ -675,7 +675,7 @@ function _deleteContract(
 
 Upgrades a contract at the given namespace and key.
  The previous contract's protocol membership is revoked and
- the current immediately starts assuming responsbility of
+ the current immediately starts assuming responsibility of
  whatever the contract needs to do at the supplied namespace and key.
 
 ```solidity
@@ -708,7 +708,7 @@ function upgradeContractInternal(
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    bool isMember = s.isProtocolMember(previous);
+    bool isMember = s.isProtocolMemberInternal(previous);
     require(isMember, "Not a protocol member");
 
     _deleteContract(s, namespace, key, previous);
