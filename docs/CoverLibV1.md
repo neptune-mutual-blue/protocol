@@ -53,7 +53,7 @@ function initializeCoverInternal(
     s.setAddressByKey(ProtoUtilV1.CNS_COVER_STABLECOIN, stablecoin);
     s.setBytes32ByKey(ProtoUtilV1.NS_COVER_STABLECOIN_NAME, friendlyName);
 
-    s.updateStateAndLiquidity(0);
+    s.updateStateAndLiquidityInternal(0);
   }
 ```
 </details>
@@ -94,7 +94,7 @@ function addCoverInternal(IStore s, ICover.AddCoverArgs calldata args) external 
     // Set the basic cover info
     _addCover(s, args, fee);
 
-    IERC20 npm = s.npmToken();
+    IERC20 npm = s.getNpmTokenInstanceInternal();
     ICoverStake stakingContract = s.getStakingContract();
 
     npm.ensureTransferFrom(msg.sender, address(this), args.stakeWithFee);
@@ -106,7 +106,7 @@ function addCoverInternal(IStore s, ICover.AddCoverArgs calldata args) external 
 
     // Add cover reassurance
     if (args.initialReassuranceAmount > 0) {
-      IERC20 stablecoin = IERC20(s.getStablecoin());
+      IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
       ICoverReassurance reassurance = s.getReassuranceContract();
 
       stablecoin.ensureTransferFrom(msg.sender, address(this), args.initialReassuranceAmount);
@@ -153,6 +153,7 @@ function _addCover(
     require(args.ceiling > args.floor, "Invalid ceiling rate");
     require(args.reassuranceRate > 0, "Invalid reassurance rate");
     require(args.leverageFactor > 0 && args.leverageFactor < 25, "Invalid leverage");
+    require(args.reportingPeriod >= s.getCoverageLagInternal(args.coverKey), "Invalid reporting period");
 
     if (args.supportsProducts == false) {
       // Standalone pools do not support any leverage
@@ -300,7 +301,7 @@ function deployVaultInternal(
     // Deploy cover liquidity contract
     address deployed = s.getVaultFactoryContract().deploy(coverKey, tokenName, tokenSymbol);
 
-    s.getProtocol().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, deployed);
+    s.getProtocolInternal().addContractWithKey(ProtoUtilV1.CNS_COVER_VAULT, coverKey, deployed);
     return deployed;
   }
 ```
@@ -332,7 +333,7 @@ function _getFee(
     bytes32 coverKey,
     uint256 stakeWithFee
   ) private view returns (uint256 fee, uint256 minCoverCreationStake) {
-    (fee, minCoverCreationStake, ) = s.getCoverCreationFeeInfo();
+    (fee, minCoverCreationStake, ) = s.getCoverCreationFeeInfoInternal();
 
     uint256 minStake = fee + minCoverCreationStake;
 
@@ -508,7 +509,7 @@ function setCoverCreationFeeInternal(IStore s, uint256 value) external returns (
     previous = s.getUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, value);
 
-    s.updateStateAndLiquidity(0);
+    s.updateStateAndLiquidityInternal(0);
   }
 ```
 </details>
@@ -541,10 +542,10 @@ function setMinCoverCreationStakeInternal(IStore s, uint256 value) external retu
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    previous = s.getMinCoverCreationStake();
+    previous = s.getMinCoverCreationStakeInternal();
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, value);
 
-    s.updateStateAndLiquidity(0);
+    s.updateStateAndLiquidityInternal(0);
   }
 ```
 </details>
@@ -577,10 +578,10 @@ function setMinStakeToAddLiquidityInternal(IStore s, uint256 value) external ret
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    previous = s.getMinStakeToAddLiquidity();
+    previous = s.getMinStakeToAddLiquidityInternal();
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, value);
 
-    s.updateStateAndLiquidity(0);
+    s.updateStateAndLiquidityInternal(0);
   }
 ```
 </details>

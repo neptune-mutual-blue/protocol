@@ -14,6 +14,7 @@ uint256 public constant WITHDRAWAL_HEIGHT_OFFSET;
 
 ## Functions
 
+- [_validateVaultBalance(IStore s, bytes32 coverKey, address pod)](#_validatevaultbalance)
 - [calculatePodsInternal(IStore s, bytes32 coverKey, address pod, uint256 liquidityToAdd)](#calculatepodsinternal)
 - [calculateLiquidityInternal(IStore s, bytes32 coverKey, address pod, uint256 podsToBurn)](#calculateliquidityinternal)
 - [getInfoInternal(IStore s, bytes32 coverKey, address pod, address you)](#getinfointernal)
@@ -21,7 +22,7 @@ uint256 public constant WITHDRAWAL_HEIGHT_OFFSET;
 - [_updateLastBlock(IStore s, bytes32 coverKey)](#_updatelastblock)
 - [_updateNpmStake(IStore s, bytes32 coverKey, address account, uint256 amount)](#_updatenpmstake)
 - [_getMyNpmStake(IStore s, bytes32 coverKey, address account)](#_getmynpmstake)
-- [getCoverNpmStake(IStore s, bytes32 coverKey, address account)](#getcovernpmstake)
+- [getCoverNpmStakeInternal(IStore s, bytes32 coverKey, address account)](#getcovernpmstakeinternal)
 - [mustHaveNoBalanceInStrategies(IStore s, bytes32 coverKey, address stablecoin)](#musthavenobalanceinstrategies)
 - [mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey)](#mustmaintainblockheightoffset)
 - [preRemoveLiquidityInternal(IStore s, bytes32 coverKey, address pod, address account, uint256 podsToRedeem, uint256 npmStakeToRemove, bool exit)](#preremoveliquidityinternal)
@@ -34,6 +35,42 @@ uint256 public constant WITHDRAWAL_HEIGHT_OFFSET;
 - [_getFlashLoanFeeRateInternal(IStore s)](#_getflashloanfeerateinternal)
 - [_getProtocolFlashLoanFeeRateInternal(IStore s)](#_getprotocolflashloanfeerateinternal)
 - [getMaxFlashLoanInternal(IStore s, bytes32 coverKey, address token)](#getmaxflashloaninternal)
+
+### _validateVaultBalance
+
+Validates the vault's balance before adding liquidity.
+
+```solidity
+function _validateVaultBalance(IStore s, bytes32 coverKey, address pod) private nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| s | IStore |  | 
+| coverKey | bytes32 |  | 
+| pod | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function _validateVaultBalance(
+    IStore s,
+    bytes32 coverKey,
+    address pod
+  ) private {
+    uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
+    uint256 podSupply = IERC20(pod).totalSupply();
+
+    // The vault should not have a stablecoin balance unless someone purposefully transferred it shortly after deployment.
+    if (podSupply == 0 && balance > 0) {
+      IERC20(s.getStablecoinAddressInternal()).ensureTransfer(s.getTreasuryAddressInternal(), balance); // Zeros out the vault's stablecoin balance
+    }
+  }
+```
+</details>
 
 ### calculatePodsInternal
 
@@ -63,18 +100,9 @@ function calculatePodsInternal(
     address pod,
     uint256 liquidityToAdd
   ) public view returns (uint256) {
-    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
-
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
-
-    // This smart contract contains stablecoins without liquidity provider contribution.
-    // This can happen if someone wants to create a nuisance by sending stablecoin
-    // to this contract immediately after deployment.
-    if (podSupply == 0 && balance > 0) {
-      revert("Liquidity/POD mismatch");
-    }
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
 
     if (balance > 0) {
       return (podSupply * liquidityToAdd) / balance;
@@ -159,12 +187,12 @@ function getInfoInternal(
   ) external view returns (IVault.VaultInfoType memory info) {
     info.totalPods = IERC20(pod).totalSupply(); // Total PODs in existence
     info.balance = s.getStablecoinOwnedByVaultInternal(coverKey); // Stablecoins held in the vault
-    info.extendedBalance = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
+    info.extendedBalance = s.getAmountInStrategiesInternal(coverKey, s.getStablecoinAddressInternal()); //  Stablecoins lent outside of the protocol
     info.totalReassurance = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     info.myPodBalance = IERC20(pod).balanceOf(you); // Your POD Balance
     info.myShare = calculateLiquidityInternal(s, coverKey, pod, info.myPodBalance); //  My share of the liquidity pool (in stablecoin)
-    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey)); // The timestamp when withdrawals are opened
-    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey)); // The timestamp when withdrawals are closed again
+    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKeyInternal(coverKey)); // The timestamp when withdrawals are opened
+    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKeyInternal(coverKey)); // The timestamp when withdrawals are closed again
   }
 ```
 </details>
@@ -202,6 +230,9 @@ function preAddLiquidityInternal(
     uint256 npmStakeToAdd
   ) external returns (uint256 podsToMint, uint256 myPreviousStake) {
     require(account != address(0), "Invalid account");
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
+    _validateVaultBalance(s, coverKey, pod);
 
     // Update values
     myPreviousStake = _updateNpmStake(s, coverKey, account, npmStakeToAdd);
@@ -230,7 +261,7 @@ function _updateLastBlock(IStore s, bytes32 coverKey) private nonpayable
 
 ```javascript
 function _updateLastBlock(IStore s, bytes32 coverKey) private {
-    s.setUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey), block.number);
+    s.setUintByKey(CoverUtilV1.getLastDepositHeightKeyInternal(coverKey), block.number);
   }
 ```
 </details>
@@ -262,11 +293,11 @@ function _updateNpmStake(
     uint256 amount
   ) private returns (uint256 myPreviousStake) {
     myPreviousStake = _getMyNpmStake(s, coverKey, account);
-    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidity(), "Insufficient stake");
+    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidityInternal(), "Insufficient stake");
 
     if (amount > 0) {
-      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
-      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey), amount); // Total stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account), amount); // Your stake
     }
   }
 ```
@@ -296,15 +327,15 @@ function _getMyNpmStake(
     bytes32 coverKey,
     address account
   ) private view returns (uint256 myStake) {
-    (, myStake) = getCoverNpmStake(s, coverKey, account);
+    (, myStake) = getCoverNpmStakeInternal(s, coverKey, account);
   }
 ```
 </details>
 
-### getCoverNpmStake
+### getCoverNpmStakeInternal
 
 ```solidity
-function getCoverNpmStake(IStore s, bytes32 coverKey, address account) public view
+function getCoverNpmStakeInternal(IStore s, bytes32 coverKey, address account) public view
 returns(totalStake uint256, myStake uint256)
 ```
 
@@ -320,13 +351,13 @@ returns(totalStake uint256, myStake uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getCoverNpmStake(
+function getCoverNpmStakeInternal(
     IStore s,
     bytes32 coverKey,
     address account
   ) public view returns (uint256 totalStake, uint256 myStake) {
-    totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey));
-    myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account));
+    totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey));
+    myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account));
   }
 ```
 </details>
@@ -354,7 +385,7 @@ function mustHaveNoBalanceInStrategies(
     bytes32 coverKey,
     address stablecoin
   ) external view {
-    require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
+    require(s.getAmountInStrategiesInternal(coverKey, stablecoin) == 0, "Strategy balance is not zero");
   }
 ```
 </details>
@@ -377,7 +408,7 @@ function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view
 
 ```javascript
 function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view {
-    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey));
+    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKeyInternal(coverKey));
     require(block.number > lastDeposit + WITHDRAWAL_HEIGHT_OFFSET, "Please wait a few blocks");
   }
 ```
@@ -417,12 +448,14 @@ function preRemoveLiquidityInternal(
     uint256 npmStakeToRemove,
     bool exit
   ) external returns (address stablecoin, uint256 releaseAmount) {
-    stablecoin = s.getStablecoin();
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
+    stablecoin = s.getStablecoinAddressInternal();
 
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
-    ValidationLibV1.mustNotExceedStablecoinThreshold(s, releaseAmount);
+    ValidationLibV1.mustMaintainStablecoinThreshold(s, releaseAmount);
     GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToRemove);
 
     // Unstake NPM tokens
@@ -461,7 +494,7 @@ function _unStakeNpm(
     bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
-    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidity();
+    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidityInternal();
 
     if (exit) {
       require(remainingStake == amount, "Invalid NPM stake to exit");
@@ -469,8 +502,8 @@ function _unStakeNpm(
       require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
     }
 
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey), amount); // Total stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account), amount); // Your stake
   }
 ```
 </details>
@@ -507,10 +540,10 @@ function _redeemPodCalculation(
 
     s.mustBeProtocolMember(pod);
 
-    uint256 precision = s.getStablecoinPrecision();
+    uint256 precision = s.getStablecoinPrecisionInternal();
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey, precision);
+    uint256 commitment = s.getTotalLiquidityUnderProtectionInternal(coverKey, precision);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);
@@ -541,10 +574,12 @@ function accrueInterestInternal(IStore s, bytes32 coverKey) external nonpayable
 
 ```javascript
 function accrueInterestInternal(IStore s, bytes32 coverKey) external {
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+
     (bool isWithdrawalPeriod, , , , ) = s.getWithdrawalInfoInternal(coverKey);
     require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     s.setAccrualCompleteInternal(coverKey, true);
   }
@@ -602,7 +637,7 @@ function getFlashFeesInternal(
     address token,
     uint256 amount
   ) public view returns (uint256 fee, uint256 protocolFee) {
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     /*
@@ -731,7 +766,7 @@ function getMaxFlashLoanInternal(
     bytes32 coverKey,
     address token
   ) external view returns (uint256) {
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     if (stablecoin == token) {

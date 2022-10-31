@@ -58,6 +58,7 @@ contract Protocol is IProtocol, ProtoBase {
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, args.coverCreationFee);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, args.minCoverCreationStake);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, args.minStakeToAddLiquidity);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, args.firstReportingStake);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, args.claimPeriod);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, args.reportingBurnRate);

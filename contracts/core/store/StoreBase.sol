@@ -104,7 +104,7 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
     super._unpause();
   }
 
-  function isProtocolMember(address contractAddress) public view returns (bool) {
+  function isProtocolMemberInternal(address contractAddress) public view returns (bool) {
     return boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, contractAddress))];
   }
 
@@ -113,6 +113,6 @@ abstract contract StoreBase is IStore, Pausable, Ownable {
   }
 
   function _throwIfSenderNotProtocolMember() internal view {
-    require(isProtocolMember(msg.sender), "Forbidden");
+    require(isProtocolMemberInternal(msg.sender), "Forbidden");
   }
 }

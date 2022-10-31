@@ -30,20 +30,20 @@ event MaxLendingRatioSet(uint256  ratio);
 - [addStrategiesInternal(IStore s, address[] strategies)](#addstrategiesinternal)
 - [getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey)](#getriskpoolingperiodsinternal)
 - [setRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey, uint256 lendingPeriod, uint256 withdrawalWindow)](#setriskpoolingperiodsinternal)
-- [getLendingPeriodKey(bytes32 coverKey)](#getlendingperiodkey)
+- [getLendingPeriodKeyInternal(bytes32 coverKey)](#getlendingperiodkeyinternal)
 - [getMaxLendingRatioInternal(IStore s)](#getmaxlendingratiointernal)
 - [setMaxLendingRatioInternal(IStore s, uint256 ratio)](#setmaxlendingratiointernal)
-- [getMaxLendingRatioKey()](#getmaxlendingratiokey)
-- [getWithdrawalWindowKey(bytes32 coverKey)](#getwithdrawalwindowkey)
+- [getMaxLendingRatioKeyInternal()](#getmaxlendingratiokeyinternal)
+- [getWithdrawalWindowKeyInternal(bytes32 coverKey)](#getwithdrawalwindowkeyinternal)
 - [_addStrategy(IStore s, address deployedOn)](#_addstrategy)
 - [_disableStrategy(IStore s, address toFind)](#_disablestrategy)
 - [_deleteStrategy(IStore s, address toFind)](#_deletestrategy)
 - [getDisabledStrategiesInternal(IStore s)](#getdisabledstrategiesinternal)
 - [getActiveStrategiesInternal(IStore s)](#getactivestrategiesinternal)
-- [getStrategyOutKey(bytes32 coverKey, address token)](#getstrategyoutkey)
-- [getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, address token)](#getspecificstrategyoutkey)
-- [getAmountInStrategies(IStore s, bytes32 coverKey, address token)](#getamountinstrategies)
-- [getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, address token)](#getamountinstrategy)
+- [getStrategyOutKeyInternal(bytes32 coverKey, address token)](#getstrategyoutkeyinternal)
+- [getSpecificStrategyOutKeyInternal(bytes32 coverKey, bytes32 strategyName, address token)](#getspecificstrategyoutkeyinternal)
+- [getAmountInStrategiesInternal(IStore s, bytes32 coverKey, address token)](#getamountinstrategiesinternal)
+- [getAmountInStrategyInternal(IStore s, bytes32 coverKey, bytes32 strategyName, address token)](#getamountinstrategyinternal)
 - [preTransferToStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 amount)](#pretransfertostrategyinternal)
 - [postReceiveFromStrategyInternal(IStore s, IERC20 token, bytes32 coverKey, bytes32 strategyName, uint256 received)](#postreceivefromstrategyinternal)
 - [_addToStrategyOut(IStore s, bytes32 coverKey, address token, uint256 amountToAdd)](#_addtostrategyout)
@@ -202,12 +202,12 @@ returns(lendingPeriod uint256, withdrawalWindow uint256)
 
 ```javascript
 function getRiskPoolingPeriodsInternal(IStore s, bytes32 coverKey) external view returns (uint256 lendingPeriod, uint256 withdrawalWindow) {
-    lendingPeriod = s.getUintByKey(getLendingPeriodKey(coverKey));
-    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(coverKey));
+    lendingPeriod = s.getUintByKey(getLendingPeriodKeyInternal(coverKey));
+    withdrawalWindow = s.getUintByKey(getWithdrawalWindowKeyInternal(coverKey));
 
     if (lendingPeriod == 0) {
-      lendingPeriod = s.getUintByKey(getLendingPeriodKey(0));
-      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKey(0));
+      lendingPeriod = s.getUintByKey(getLendingPeriodKeyInternal(0));
+      withdrawalWindow = s.getUintByKey(getWithdrawalWindowKeyInternal(0));
     }
 
     lendingPeriod = lendingPeriod == 0 ? DEFAULT_LENDING_PERIOD : lendingPeriod;
@@ -241,21 +241,21 @@ function setRiskPoolingPeriodsInternal(
     uint256 lendingPeriod,
     uint256 withdrawalWindow
   ) external {
-    s.setUintByKey(getLendingPeriodKey(coverKey), lendingPeriod);
-    s.setUintByKey(getWithdrawalWindowKey(coverKey), withdrawalWindow);
+    s.setUintByKey(getLendingPeriodKeyInternal(coverKey), lendingPeriod);
+    s.setUintByKey(getWithdrawalWindowKeyInternal(coverKey), withdrawalWindow);
 
     emit RiskPoolingPeriodSet(coverKey, lendingPeriod, withdrawalWindow);
   }
 ```
 </details>
 
-### getLendingPeriodKey
+### getLendingPeriodKeyInternal
 
 Hash key of the "lending period" for the given cover.
  Warning: this function does not validate the cover key supplied.
 
 ```solidity
-function getLendingPeriodKey(bytes32 coverKey) public pure
+function getLendingPeriodKeyInternal(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -269,7 +269,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLendingPeriodKey(bytes32 coverKey) public pure returns (bytes32) {
+function getLendingPeriodKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, coverKey));
     }
@@ -297,7 +297,7 @@ returns(uint256)
 
 ```javascript
 function getMaxLendingRatioInternal(IStore s) external view returns (uint256) {
-    return s.getUintByKey(getMaxLendingRatioKey());
+    return s.getUintByKey(getMaxLendingRatioKeyInternal());
   }
 ```
 </details>
@@ -320,19 +320,19 @@ function setMaxLendingRatioInternal(IStore s, uint256 ratio) external nonpayable
 
 ```javascript
 function setMaxLendingRatioInternal(IStore s, uint256 ratio) external {
-    s.setUintByKey(getMaxLendingRatioKey(), ratio);
+    s.setUintByKey(getMaxLendingRatioKeyInternal(), ratio);
 
     emit MaxLendingRatioSet(ratio);
   }
 ```
 </details>
 
-### getMaxLendingRatioKey
+### getMaxLendingRatioKeyInternal
 
 Hash key of the "maximum lending ratio" for the given cover.
 
 ```solidity
-function getMaxLendingRatioKey() public pure
+function getMaxLendingRatioKeyInternal() public pure
 returns(bytes32)
 ```
 
@@ -345,19 +345,19 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getMaxLendingRatioKey() public pure returns (bytes32) {
+function getMaxLendingRatioKeyInternal() public pure returns (bytes32) {
     return ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO;
   }
 ```
 </details>
 
-### getWithdrawalWindowKey
+### getWithdrawalWindowKeyInternal
 
 Hash key of the "withdrawal window duration" for the given cover.
  Warning: this function does not validate the cover key supplied.
 
 ```solidity
-function getWithdrawalWindowKey(bytes32 coverKey) public pure
+function getWithdrawalWindowKeyInternal(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -371,7 +371,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getWithdrawalWindowKey(bytes32 coverKey) public pure returns (bytes32) {
+function getWithdrawalWindowKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     if (coverKey > 0) {
       return keccak256(abi.encodePacked(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, coverKey));
     }
@@ -514,13 +514,13 @@ function getActiveStrategiesInternal(IStore s) external view returns (address[] 
 ```
 </details>
 
-### getStrategyOutKey
+### getStrategyOutKeyInternal
 
 Hash key of the "strategy outs" for the given cover and token.
  Warning: this function does not validate the cover key and token supplied.
 
 ```solidity
-function getStrategyOutKey(bytes32 coverKey, address token) public pure
+function getStrategyOutKeyInternal(bytes32 coverKey, address token) public pure
 returns(bytes32)
 ```
 
@@ -535,19 +535,19 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStrategyOutKey(bytes32 coverKey, address token) public pure returns (bytes32) {
+function getStrategyOutKeyInternal(bytes32 coverKey, address token) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_VAULT_STRATEGY_OUT, coverKey, token));
   }
 ```
 </details>
 
-### getSpecificStrategyOutKey
+### getSpecificStrategyOutKeyInternal
 
 Hash key of the "outs" to a specific strategy for the given cover and token.
  Warning: this function does not validate the cover key and token supplied.
 
 ```solidity
-function getSpecificStrategyOutKey(bytes32 coverKey, bytes32 strategyName, address token) public pure
+function getSpecificStrategyOutKeyInternal(bytes32 coverKey, bytes32 strategyName, address token) public pure
 returns(bytes32)
 ```
 
@@ -563,7 +563,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getSpecificStrategyOutKey(
+function getSpecificStrategyOutKeyInternal(
     bytes32 coverKey,
     bytes32 strategyName,
     address token
@@ -573,10 +573,10 @@ function getSpecificStrategyOutKey(
 ```
 </details>
 
-### getAmountInStrategies
+### getAmountInStrategiesInternal
 
 ```solidity
-function getAmountInStrategies(IStore s, bytes32 coverKey, address token) public view
+function getAmountInStrategiesInternal(IStore s, bytes32 coverKey, address token) public view
 returns(uint256)
 ```
 
@@ -592,21 +592,21 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAmountInStrategies(
+function getAmountInStrategiesInternal(
     IStore s,
     bytes32 coverKey,
     address token
   ) public view returns (uint256) {
-    bytes32 k = getStrategyOutKey(coverKey, token);
+    bytes32 k = getStrategyOutKeyInternal(coverKey, token);
     return s.getUintByKey(k);
   }
 ```
 </details>
 
-### getAmountInStrategy
+### getAmountInStrategyInternal
 
 ```solidity
-function getAmountInStrategy(IStore s, bytes32 coverKey, bytes32 strategyName, address token) public view
+function getAmountInStrategyInternal(IStore s, bytes32 coverKey, bytes32 strategyName, address token) public view
 returns(uint256)
 ```
 
@@ -623,13 +623,13 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getAmountInStrategy(
+function getAmountInStrategyInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 strategyName,
     address token
   ) public view returns (uint256) {
-    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    bytes32 k = getSpecificStrategyOutKeyInternal(coverKey, strategyName, token);
     return s.getUintByKey(k);
   }
 ```
@@ -662,7 +662,7 @@ function preTransferToStrategyInternal(
     bytes32 strategyName,
     uint256 amount
   ) external {
-    if (s.getStablecoin() != address(token)) {
+    if (s.getStablecoinAddressInternal() != address(token)) {
       return;
     }
 
@@ -700,11 +700,11 @@ function postReceiveFromStrategyInternal(
     bytes32 strategyName,
     uint256 received
   ) external returns (uint256 income, uint256 loss) {
-    if (s.getStablecoin() != address(token)) {
+    if (s.getStablecoinAddressInternal() != address(token)) {
       return (income, loss);
     }
 
-    uint256 amountInThisStrategy = getAmountInStrategy(s, coverKey, strategyName, address(token));
+    uint256 amountInThisStrategy = getAmountInStrategyInternal(s, coverKey, strategyName, address(token));
 
     income = received > amountInThisStrategy ? received - amountInThisStrategy : 0;
     loss = received < amountInThisStrategy ? amountInThisStrategy - received : 0;
@@ -742,7 +742,7 @@ function _addToStrategyOut(
     address token,
     uint256 amountToAdd
   ) private {
-    bytes32 k = getStrategyOutKey(coverKey, token);
+    bytes32 k = getStrategyOutKeyInternal(coverKey, token);
     s.addUintByKey(k, amountToAdd);
   }
 ```
@@ -773,7 +773,7 @@ function _reduceStrategyOut(
     address token,
     uint256 amount
   ) private {
-    bytes32 k = getStrategyOutKey(coverKey, token);
+    bytes32 k = getStrategyOutKeyInternal(coverKey, token);
     s.subtractUintByKey(k, amount);
   }
 ```
@@ -806,7 +806,7 @@ function _addToSpecificStrategyOut(
     address token,
     uint256 amountToAdd
   ) private {
-    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    bytes32 k = getSpecificStrategyOutKeyInternal(coverKey, strategyName, token);
     s.addUintByKey(k, amountToAdd);
   }
 ```
@@ -837,7 +837,7 @@ function _clearSpecificStrategyOut(
     bytes32 strategyName,
     address token
   ) private {
-    bytes32 k = getSpecificStrategyOutKey(coverKey, strategyName, token);
+    bytes32 k = getSpecificStrategyOutKeyInternal(coverKey, strategyName, token);
     s.deleteUintByKey(k);
   }
 ```
@@ -910,10 +910,10 @@ returns(uint256)
 
 ```javascript
 function getStablecoinOwnedByVaultInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
 
     uint256 balance = IERC20(stablecoin).balanceOf(s.getVaultAddress(coverKey));
-    uint256 inStrategies = getAmountInStrategies(s, coverKey, stablecoin);
+    uint256 inStrategies = getAmountInStrategiesInternal(s, coverKey, stablecoin);
 
     return balance + inStrategies;
   }

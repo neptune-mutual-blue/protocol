@@ -71,7 +71,7 @@ abstract contract VaultLiquidity is VaultBase {
     IERC20(sc).ensureTransferFrom(msg.sender, address(this), args.amount);
 
     if (args.npmStakeToAdd > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
+      IERC20(s.getNpmTokenAddressInternal()).ensureTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
     }
 
     super._mint(msg.sender, podsToMint);
@@ -128,7 +128,7 @@ abstract contract VaultLiquidity is VaultBase {
 
     // Unstake NPM tokens
     if (npmStakeToRemove > 0) {
-      IERC20(s.getNpmTokenAddress()).ensureTransfer(msg.sender, npmStakeToRemove);
+      IERC20(s.getNpmTokenAddressInternal()).ensureTransfer(msg.sender, npmStakeToRemove);
     }
 
     /******************************************************************************************

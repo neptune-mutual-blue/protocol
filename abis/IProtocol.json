@@ -102,6 +102,11 @@
           },
           {
             "internalType": "uint256",
+            "name": "minStakeToAddLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "firstReportingStake",
             "type": "uint256"
           },
@@ -484,6 +489,11 @@
           {
             "internalType": "uint256",
             "name": "minCoverCreationStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minStakeToAddLiquidity",
             "type": "uint256"
           },
           {

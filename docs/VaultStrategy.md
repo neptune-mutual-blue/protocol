@@ -62,7 +62,7 @@ function transferToStrategy(
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    delgate().preTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
+    delegate().preTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
 
     /******************************************************************************************
       BODY
@@ -73,7 +73,7 @@ function transferToStrategy(
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    delgate().postTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
+    delegate().postTransferToStrategy(msg.sender, token, coverKey, strategyName, amount);
 
     emit StrategyTransfer(address(token), msg.sender, strategyName, amount);
     _transferToStrategyEntry = 0;
@@ -118,7 +118,7 @@ function receiveFromStrategy(
     /******************************************************************************************
       PRE
      ******************************************************************************************/
-    delgate().preReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
+    delegate().preReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
 
     /******************************************************************************************
       BODY
@@ -129,7 +129,7 @@ function receiveFromStrategy(
     /******************************************************************************************
       POST
      ******************************************************************************************/
-    (uint256 income, uint256 loss) = delgate().postReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
+    (uint256 income, uint256 loss) = delegate().postReceiveFromStrategy(msg.sender, token, coverKey, strategyName, amount);
 
     emit StrategyReceipt(address(token), msg.sender, strategyName, amount, income, loss);
     _receiveFromStrategyEntry = 0;

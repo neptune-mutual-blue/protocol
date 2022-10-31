@@ -19,11 +19,11 @@ address public sc;
 ## Functions
 
 - [constructor(IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin)](#)
-- [delgate()](#delgate)
+- [delegate()](#delegate)
 
 ### 
 
-Contructs this contract
+Constructs this contract
 
 ```solidity
 function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) internal nonpayable ERC20 Recoverable 
@@ -56,12 +56,12 @@ constructor(
 ```
 </details>
 
-### delgate
+### delegate
 
 Returns the delegate contract instance
 
 ```solidity
-function delgate() public view
+function delegate() public view
 returns(contract IVaultDelegate)
 ```
 
@@ -74,9 +74,8 @@ returns(contract IVaultDelegate)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function delgate() public view returns (IVaultDelegate) {
-    address delegate = s.getVaultDelegate();
-    return IVaultDelegate(delegate);
+function delegate() public view returns (IVaultDelegate) {
+    return IVaultDelegate(s.getVaultDelegate());
   }
 ```
 </details>

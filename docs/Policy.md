@@ -73,20 +73,20 @@ returns(address, uint256)
 function purchaseCover(PurchaseCoverArgs calldata args) public override nonReentrant returns (address, uint256) {
     // @todo: When the POT system is replaced with NPM tokens in the future, upgrade this contract
     // and uncomment the following line
-    // require(IERC20(s.getNpmTokenAddress()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
+    // require(IERC20(s.getNpmTokenAddressInternal()).balanceOf(msg.sender) >= 1 ether, "No NPM balance");
     require(args.coverKey > 0, "Invalid cover key");
     require(args.onBehalfOf != address(0), "Invalid `onBehalfOf`");
     require(args.amountToCover > 0, "Enter an amount");
     require(args.coverDuration > 0 && args.coverDuration <= ProtoUtilV1.MAX_POLICY_DURATION, "Invalid cover duration");
 
     s.mustNotBePaused();
-    s.mustNotExceedProposalThreshold(args.amountToCover);
+    s.mustMaintainProposalThreshold(args.amountToCover);
     s.mustBeSupportedProductOrEmpty(args.coverKey, args.productKey);
     s.mustHaveNormalProductStatus(args.coverKey, args.productKey);
     s.mustNotHavePolicyDisabled(args.coverKey, args.productKey);
     s.senderMustBeWhitelistedIfRequired(args.coverKey, args.productKey, args.onBehalfOf);
 
-    uint256 lastPolicyId = s.incrementPolicyId();
+    uint256 lastPolicyId = s.incrementPolicyIdInternal();
 
     (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(args);
 
@@ -234,8 +234,8 @@ returns(uint256)
 
 ```javascript
 function getCommitment(bytes32 coverKey, bytes32 productKey) external view override returns (uint256) {
-    uint256 precision = s.getStablecoinPrecision();
-    return s.getActiveLiquidityUnderProtection(coverKey, productKey, precision);
+    uint256 precision = s.getStablecoinPrecisionInternal();
+    return s.getActiveLiquidityUnderProtectionInternal(coverKey, productKey, precision);
   }
 ```
 </details>

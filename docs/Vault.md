@@ -46,7 +46,7 @@ When a cover is created, a corresponding liquidity pool is also constituted.
 
 ### 
 
-Contructs this contract
+Constructs this contract
 
 ```solidity
 function (IStore store, bytes32 coverKey, string tokenName, string tokenSymbol, IERC20 stablecoin) public nonpayable VaultBase 
@@ -97,7 +97,7 @@ returns(struct IVault.VaultInfoType)
 
 ```javascript
 function getInfo(address you) external view override returns (VaultInfoType memory) {
-    return delgate().getInfoImplementation(key, you);
+    return delegate().getInfoImplementation(key, you);
   }
 ```
 </details>

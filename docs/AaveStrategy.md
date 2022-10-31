@@ -89,7 +89,7 @@ returns(contract IERC20)
 
 ```javascript
 function getDepositAsset() public view override returns (IERC20) {
-    return IERC20(s.getStablecoin());
+    return IERC20(s.getStablecoinAddressInternal());
   }
 ```
 </details>
@@ -136,7 +136,7 @@ function _drain(IERC20 asset) private {
     uint256 amount = asset.balanceOf(address(this));
 
     if (amount > 0) {
-      asset.ensureTransfer(s.getTreasury(), amount);
+      asset.ensureTransfer(s.getTreasuryAddressInternal(), amount);
       emit Drained(asset, amount);
     }
   }

@@ -21,7 +21,7 @@ library ValidationLibV1 {
    * @dev Reverts if the protocol is paused
    */
   function mustNotBePaused(IStore s) public view {
-    address protocol = s.getProtocolAddress();
+    address protocol = s.getProtocolAddressInternal();
     require(IPausable(protocol).paused() == false, "Protocol is paused");
   }
 
@@ -101,7 +101,7 @@ library ValidationLibV1 {
     bytes32 coverKey,
     address sender
   ) public view {
-    bool isCoverOwner = s.getCoverOwner(coverKey) == sender;
+    bool isCoverOwner = s.getCoverOwnerInternal(coverKey) == sender;
     require(isCoverOwner, "Forbidden");
   }
 
@@ -115,14 +115,14 @@ library ValidationLibV1 {
     bytes32 coverKey,
     address sender
   ) external view {
-    bool isCoverOwner = s.getCoverOwner(coverKey) == sender;
+    bool isCoverOwner = s.getCoverOwnerInternal(coverKey) == sender;
     bool isCoverContract = address(s.getCoverContract()) == sender;
 
     require(isCoverOwner || isCoverContract, "Forbidden");
   }
 
   function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 coverKey) external view {
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+    if (AccessControlLibV1.hasAccessInternal(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
       mustBeCoverOwner(s, coverKey, msg.sender);
     }
   }
@@ -202,7 +202,7 @@ library ValidationLibV1 {
   }
 
   function senderMustBeProtocolMember(IStore s) external view {
-    require(s.isProtocolMember(msg.sender), "Forbidden");
+    require(s.isProtocolMemberInternal(msg.sender), "Forbidden");
   }
 
   function mustBeReporting(
@@ -466,7 +466,7 @@ library ValidationLibV1 {
     address sender
   ) external view {
     bool supportsProducts = s.supportsProductsInternal(coverKey);
-    bool required = supportsProducts ? s.checkIfProductRequiresWhitelist(coverKey, productKey) : s.checkIfRequiresWhitelist(coverKey);
+    bool required = supportsProducts ? s.checkIfProductRequiresWhitelistInternal(coverKey, productKey) : s.checkIfRequiresWhitelistInternal(coverKey);
 
     if (required == false) {
       return;
@@ -499,14 +499,14 @@ library ValidationLibV1 {
   }
 
   function mustMaintainStablecoinThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
 
     require(amount >= ProtoUtilV1.MIN_LIQUIDITY * stablecoinPrecision, "Liquidity is below threshold");
     require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Liquidity is above threshold");
   }
 
   function mustMaintainProposalThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
 
     require(amount >= ProtoUtilV1.MIN_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is below threshold");
     require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is above threshold");

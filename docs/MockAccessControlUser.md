@@ -219,7 +219,7 @@ returns(bool)
 
 ```javascript
 function hasAccess(bytes32 role, address user) external view returns (bool) {
-    return s.hasAccess(role, user);
+    return s.hasAccessInternal(role, user);
   }
 ```
 </details>

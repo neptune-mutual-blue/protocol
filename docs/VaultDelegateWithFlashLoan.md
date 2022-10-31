@@ -136,12 +136,13 @@ function preFlashLoan(
     s.mustEnsureAllProductsAreNormal(coverKey);
     s.senderMustBeVaultContract(coverKey);
 
-    stablecoin = IERC20(s.getStablecoin());
+    require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, true);
+
+    stablecoin = IERC20(s.getStablecoinAddressInternal());
 
     // require(address(stablecoin) == token, "Unknown token"); <-- already checked in `getFlashFeesInternal`
     // require(amount > 0, "Loan too small"); <-- already checked in `getFlashFeesInternal`
-
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, true);
 
     (fee, protocolFee) = s.getFlashFeesInternal(coverKey, token, amount);
 
@@ -188,7 +189,7 @@ function postFlashLoan(
     s.mustEnsureAllProductsAreNormal(coverKey);
 
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey, false);
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 ```
 </details>

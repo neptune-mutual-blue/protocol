@@ -24,7 +24,7 @@ library StakingPoolLibV1 {
     bytes32 key,
     address you
   ) external view returns (IStakingPools.StakingPoolInfoType memory info) {
-    bool valid = s.checkIfStakingPoolExists(key);
+    bool valid = s.checkIfStakingPoolExistsInternal(key);
 
     if (valid) {
       info.name = s.getStringByKeys(StakingPoolCoreLibV1.NS_POOL, key);
@@ -34,21 +34,21 @@ library StakingPoolLibV1 {
       info.rewardToken = s.getRewardTokenAddressInternal(key);
       info.rewardTokenStablecoinPair = s.getRewardTokenStablecoinPairAddressInternal(key);
 
-      info.totalStaked = s.getTotalStaked(key);
-      info.target = s.getTarget(key);
+      info.totalStaked = s.getTotalStakedInternal(key);
+      info.target = s.getTargetInternal(key);
       info.maximumStake = s.getMaximumStakeInternal(key);
       info.stakeBalance = getPoolStakeBalanceInternal(s, key);
-      info.cumulativeDeposits = getPoolCumulativeDeposits(s, key);
-      info.rewardPerBlock = s.getRewardPerBlock(key);
-      info.platformFee = s.getRewardPlatformFee(key);
-      info.lockupPeriod = s.getLockupPeriodInBlocks(key);
-      info.rewardTokenBalance = s.getRewardTokenBalance(key);
+      info.cumulativeDeposits = getPoolCumulativeDepositsInternal(s, key);
+      info.rewardPerBlock = s.getRewardPerBlockInternal(key);
+      info.platformFee = s.getRewardPlatformFeeInternal(key);
+      info.lockupPeriod = s.getLockupPeriodInBlocksInternal(key);
+      info.rewardTokenBalance = s.getRewardTokenBalanceInternal(key);
       info.accountStakeBalance = getAccountStakingBalanceInternal(s, key, you);
       info.totalBlockSinceLastReward = getTotalBlocksSinceLastRewardInternal(s, key, you);
       info.rewards = calculateRewardsInternal(s, key, you);
       info.canWithdrawFromBlockHeight = canWithdrawFromBlockHeightInternal(s, key, you);
-      info.lastDepositHeight = getLastDepositHeight(s, key, you);
-      info.lastRewardHeight = getLastRewardHeight(s, key, you);
+      info.lastDepositHeight = getLastDepositHeightInternal(s, key, you);
+      info.lastRewardHeight = getLastRewardHeightInternal(s, key, you);
     }
   }
 
@@ -57,7 +57,7 @@ library StakingPoolLibV1 {
     return totalStake;
   }
 
-  function getPoolCumulativeDeposits(IStore s, bytes32 key) public view returns (uint256) {
+  function getPoolCumulativeDepositsInternal(IStore s, bytes32 key) public view returns (uint256) {
     uint256 totalStake = s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
     return totalStake;
   }
@@ -75,7 +75,7 @@ library StakingPoolLibV1 {
     bytes32 key,
     address account
   ) public view returns (uint256) {
-    uint256 from = getLastRewardHeight(s, key, account);
+    uint256 from = getLastRewardHeightInternal(s, key, account);
 
     if (from == 0) {
       return 0;
@@ -89,18 +89,18 @@ library StakingPoolLibV1 {
     bytes32 key,
     address account
   ) public view returns (uint256) {
-    uint256 lastDepositHeight = getLastDepositHeight(s, key, account);
+    uint256 lastDepositHeight = getLastDepositHeightInternal(s, key, account);
 
     if (lastDepositHeight == 0) {
       return 0;
     }
 
-    uint256 lockupPeriod = s.getLockupPeriodInBlocks(key);
+    uint256 lockupPeriod = s.getLockupPeriodInBlocksInternal(key);
 
     return lastDepositHeight + lockupPeriod;
   }
 
-  function getLastDepositHeight(
+  function getLastDepositHeightInternal(
     IStore s,
     bytes32 key,
     address account
@@ -108,7 +108,7 @@ library StakingPoolLibV1 {
     return s.getUintByKeys(StakingPoolCoreLibV1.NS_POOL_DEPOSIT_HEIGHTS, key, account);
   }
 
-  function getLastRewardHeight(
+  function getLastRewardHeightInternal(
     IStore s,
     bytes32 key,
     address account
@@ -127,11 +127,11 @@ library StakingPoolLibV1 {
       return 0;
     }
 
-    uint256 rewardPerBlock = s.getRewardPerBlock(key);
+    uint256 rewardPerBlock = s.getRewardPerBlockInternal(key);
     uint256 myStake = getAccountStakingBalanceInternal(s, key, account);
     uint256 rewards = (myStake * rewardPerBlock * totalBlocks) / 1 ether;
 
-    uint256 poolBalance = s.getRewardTokenBalance(key);
+    uint256 poolBalance = s.getRewardTokenBalanceInternal(key);
 
     return rewards > poolBalance ? poolBalance : rewards;
   }
@@ -155,7 +155,7 @@ library StakingPoolLibV1 {
       uint256 platformFee
     )
   {
-    require(s.getRewardPlatformFee(key) <= ProtoUtilV1.MULTIPLIER, "Invalid reward platform fee");
+    require(s.getRewardPlatformFeeInternal(key) <= ProtoUtilV1.MULTIPLIER, "Invalid reward platform fee");
     rewards = calculateRewardsInternal(s, key, account);
 
     s.setUintByKeys(StakingPoolCoreLibV1.NS_POOL_REWARD_HEIGHTS, key, account, block.number);
@@ -175,15 +175,15 @@ library StakingPoolLibV1 {
 
     // @suppress-division Checked side effects. If the reward platform fee is zero
     // or a very small number, platform fee becomes zero because of data loss
-    platformFee = (rewards * s.getRewardPlatformFee(key)) / ProtoUtilV1.MULTIPLIER;
+    platformFee = (rewards * s.getRewardPlatformFeeInternal(key)) / ProtoUtilV1.MULTIPLIER;
 
-    // @suppress-subtraction If `getRewardPlatformFee` is 100%, the following can result in zero value.
+    // @suppress-subtraction If `getRewardPlatformFeeInternal` is 100%, the following can result in zero value.
     if (rewards - platformFee > 0) {
       IERC20(rewardToken).ensureTransfer(msg.sender, rewards - platformFee);
     }
 
     if (platformFee > 0) {
-      IERC20(rewardToken).ensureTransfer(s.getTreasury(), platformFee);
+      IERC20(rewardToken).ensureTransfer(s.getTreasuryAddressInternal(), platformFee);
     }
   }
 

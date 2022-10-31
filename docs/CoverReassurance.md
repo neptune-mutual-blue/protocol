@@ -74,14 +74,14 @@ function addReassurance(
 
     require(amount > 0, "Provide valid amount");
 
-    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
 
-    s.addUintByKey(CoverUtilV1.getReassuranceKey(coverKey), amount);
+    s.addUintByKey(CoverUtilV1.getReassuranceKeyInternal(coverKey), amount);
 
     stablecoin.ensureTransferFrom(msg.sender, address(this), amount);
 
     // Do not update state during cover creation
-    // s.updateStateAndLiquidity(coverKey);
+    // s.updateStateAndLiquidityInternal(coverKey);
 
     emit ReassuranceAdded(coverKey, onBehalfOf, amount);
   }
@@ -114,9 +114,9 @@ function setWeight(bytes32 coverKey, uint256 weight) external override nonReentr
 
     require(weight > 0 && weight <= ProtoUtilV1.MULTIPLIER, "Please specify weight");
 
-    s.setUintByKey(CoverUtilV1.getReassuranceWeightKey(coverKey), weight);
+    s.setUintByKey(CoverUtilV1.getReassuranceWeightKeyInternal(coverKey), weight);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit WeightSet(coverKey, weight);
   }
@@ -163,14 +163,14 @@ function capitalizePool(
     s.mustBeAfterClaimExpiry(coverKey, productKey);
 
     IVault vault = s.getVault(coverKey);
-    IERC20 stablecoin = IERC20(s.getStablecoin());
+    IERC20 stablecoin = IERC20(s.getStablecoinAddressInternal());
 
     uint256 toTransfer = s.getReassuranceTransferrableInternal(coverKey, productKey, incidentDate);
 
     require(toTransfer > 0, "Nothing to capitalize");
 
     stablecoin.ensureTransfer(address(vault), toTransfer);
-    s.subtractUintByKey(CoverUtilV1.getReassuranceKey(coverKey), toTransfer);
+    s.subtractUintByKey(CoverUtilV1.getReassuranceKeyInternal(coverKey), toTransfer);
     s.addReassurancePayoutInternal(coverKey, productKey, incidentDate, toTransfer);
 
     emit PoolCapitalized(coverKey, productKey, incidentDate, toTransfer);

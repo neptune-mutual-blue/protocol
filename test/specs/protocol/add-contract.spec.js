@@ -48,6 +48,7 @@ describe('Adding a New Protocol Contract', () => {
       priceOracle: priceOracle.address,
       coverCreationFee: helper.ether(0),
       minCoverCreationStake: helper.ether(0),
+      minStakeToAddLiquidity: helper.ether(0),
       firstReportingStake: helper.ether(250),
       claimPeriod: 7 * DAYS,
       reportingBurnRate: helper.percentage(30),

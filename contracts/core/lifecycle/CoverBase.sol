@@ -87,7 +87,7 @@ abstract contract CoverBase is ICover, Recoverable {
    * @param value Enter the minimum stake to add liquidity.
    */
   function setMinStakeToAddLiquidity(uint256 value) external override nonReentrant {
-    require(value > 0, "Please specify value");
+    // require(value > 0, "Please specify value"); // <-- ZERO value is allowed now
 
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);

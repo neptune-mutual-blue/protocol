@@ -63,6 +63,7 @@ const initialize = async (suite, deploymentId) => {
     priceOracle: npmPriceOracle,
     coverCreationFee: helper.ether(0),
     minCoverCreationStake: helper.ether(0),
+    minStakeToAddLiquidity: helper.ether(0),
     firstReportingStake: helper.ether(250),
     claimPeriod,
     reportingBurnRate: helper.percentage(30),

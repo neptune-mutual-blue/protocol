@@ -72,7 +72,7 @@ function deploy(
 
     require(expiryDate > 0, "Please specify expiry date");
 
-    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCode(s, coverKey, productKey, tokenName, expiryDate);
+    (bytes memory bytecode, bytes32 salt) = cxTokenFactoryLibV1.getByteCodeInternal(s, coverKey, productKey, tokenName, expiryDate);
 
     require(s.getAddress(salt) == address(0), "Already deployed");
 

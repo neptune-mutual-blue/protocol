@@ -82,7 +82,7 @@ function setPolicyRatesByKey(
       s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, ceiling);
     }
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit CoverPolicyRateSet(coverKey, floor, ceiling);
   }

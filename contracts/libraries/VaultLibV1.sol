@@ -32,7 +32,7 @@ library VaultLibV1 {
 
     // The vault should not have a stablecoin balance unless someone purposefully transferred it shortly after deployment.
     if (podSupply == 0 && balance > 0) {
-      IERC20(s.getStablecoin()).ensureTransfer(s.getTreasury(), balance); // Zeros out the vault's stablecoin balance
+      IERC20(s.getStablecoinAddressInternal()).ensureTransfer(s.getTreasuryAddressInternal(), balance); // Zeros out the vault's stablecoin balance
     }
   }
 
@@ -47,7 +47,7 @@ library VaultLibV1 {
   ) public view returns (uint256) {
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
     uint256 podSupply = IERC20(pod).totalSupply();
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
 
     if (balance > 0) {
       return (podSupply * liquidityToAdd) / balance;
@@ -95,12 +95,12 @@ library VaultLibV1 {
   ) external view returns (IVault.VaultInfoType memory info) {
     info.totalPods = IERC20(pod).totalSupply(); // Total PODs in existence
     info.balance = s.getStablecoinOwnedByVaultInternal(coverKey); // Stablecoins held in the vault
-    info.extendedBalance = s.getAmountInStrategies(coverKey, s.getStablecoin()); //  Stablecoins lent outside of the protocol
+    info.extendedBalance = s.getAmountInStrategiesInternal(coverKey, s.getStablecoinAddressInternal()); //  Stablecoins lent outside of the protocol
     info.totalReassurance = s.getReassuranceAmountInternal(coverKey); // Total reassurance for this cover
     info.myPodBalance = IERC20(pod).balanceOf(you); // Your POD Balance
     info.myShare = calculateLiquidityInternal(s, coverKey, pod, info.myPodBalance); //  My share of the liquidity pool (in stablecoin)
-    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKey(coverKey)); // The timestamp when withdrawals are opened
-    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKey(coverKey)); // The timestamp when withdrawals are closed again
+    info.withdrawalOpen = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalStartKeyInternal(coverKey)); // The timestamp when withdrawals are opened
+    info.withdrawalClose = s.getUintByKey(RoutineInvokerLibV1.getNextWithdrawalEndKeyInternal(coverKey)); // The timestamp when withdrawals are closed again
   }
 
   /**
@@ -135,7 +135,7 @@ library VaultLibV1 {
   }
 
   function _updateLastBlock(IStore s, bytes32 coverKey) private {
-    s.setUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey), block.number);
+    s.setUintByKey(CoverUtilV1.getLastDepositHeightKeyInternal(coverKey), block.number);
   }
 
   function _updateNpmStake(
@@ -145,11 +145,11 @@ library VaultLibV1 {
     uint256 amount
   ) private returns (uint256 myPreviousStake) {
     myPreviousStake = _getMyNpmStake(s, coverKey, account);
-    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidity(), "Insufficient stake");
+    require(amount + myPreviousStake >= s.getMinStakeToAddLiquidityInternal(), "Insufficient stake");
 
     if (amount > 0) {
-      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
-      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey), amount); // Total stake
+      s.addUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account), amount); // Your stake
     }
   }
 
@@ -158,16 +158,16 @@ library VaultLibV1 {
     bytes32 coverKey,
     address account
   ) private view returns (uint256 myStake) {
-    (, myStake) = getCoverNpmStake(s, coverKey, account);
+    (, myStake) = getCoverNpmStakeInternal(s, coverKey, account);
   }
 
-  function getCoverNpmStake(
+  function getCoverNpmStakeInternal(
     IStore s,
     bytes32 coverKey,
     address account
   ) public view returns (uint256 totalStake, uint256 myStake) {
-    totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey));
-    myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account));
+    totalStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey));
+    myStake = s.getUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account));
   }
 
   function mustHaveNoBalanceInStrategies(
@@ -175,11 +175,11 @@ library VaultLibV1 {
     bytes32 coverKey,
     address stablecoin
   ) external view {
-    require(s.getAmountInStrategies(coverKey, stablecoin) == 0, "Strategy balance is not zero");
+    require(s.getAmountInStrategiesInternal(coverKey, stablecoin) == 0, "Strategy balance is not zero");
   }
 
   function mustMaintainBlockHeightOffset(IStore s, bytes32 coverKey) external view {
-    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKey(coverKey));
+    uint256 lastDeposit = s.getUintByKey(CoverUtilV1.getLastDepositHeightKeyInternal(coverKey));
     require(block.number > lastDeposit + WITHDRAWAL_HEIGHT_OFFSET, "Please wait a few blocks");
   }
 
@@ -205,7 +205,7 @@ library VaultLibV1 {
   ) external returns (address stablecoin, uint256 releaseAmount) {
     require(s.getBoolByKeys(ProtoUtilV1.NS_COVER_HAS_FLASH_LOAN, coverKey) == false, "On flash loan, please try again");
 
-    stablecoin = s.getStablecoin();
+    stablecoin = s.getStablecoinAddressInternal();
 
     // Redeem the PODs and receive DAI
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
@@ -227,7 +227,7 @@ library VaultLibV1 {
     bool exit
   ) private {
     uint256 remainingStake = _getMyNpmStake(s, coverKey, account);
-    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidity();
+    uint256 minStakeToMaintain = s.getMinStakeToAddLiquidityInternal();
 
     if (exit) {
       require(remainingStake == amount, "Invalid NPM stake to exit");
@@ -235,8 +235,8 @@ library VaultLibV1 {
       require(remainingStake - amount >= minStakeToMaintain, "Can't go below min stake");
     }
 
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKey(coverKey), amount); // Total stake
-    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKey(coverKey, account), amount); // Your stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeKeyInternal(coverKey), amount); // Total stake
+    s.subtractUintByKey(CoverUtilV1.getCoverLiquidityStakeIndividualKeyInternal(coverKey, account), amount); // Your stake
   }
 
   function _redeemPodCalculation(
@@ -251,10 +251,10 @@ library VaultLibV1 {
 
     s.mustBeProtocolMember(pod);
 
-    uint256 precision = s.getStablecoinPrecision();
+    uint256 precision = s.getStablecoinPrecisionInternal();
 
     uint256 balance = s.getStablecoinOwnedByVaultInternal(coverKey);
-    uint256 commitment = s.getTotalLiquidityUnderProtection(coverKey, precision);
+    uint256 commitment = s.getTotalLiquidityUnderProtectionInternal(coverKey, precision);
     uint256 available = balance - commitment;
 
     uint256 releaseAmount = calculateLiquidityInternal(s, coverKey, pod, podsToRedeem);
@@ -271,7 +271,7 @@ library VaultLibV1 {
     (bool isWithdrawalPeriod, , , , ) = s.getWithdrawalInfoInternal(coverKey);
     require(isWithdrawalPeriod == true, "Withdrawal hasn't yet begun");
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     s.setAccrualCompleteInternal(coverKey, true);
   }
@@ -294,7 +294,7 @@ library VaultLibV1 {
     address token,
     uint256 amount
   ) public view returns (uint256 fee, uint256 protocolFee) {
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     /*
@@ -341,7 +341,7 @@ library VaultLibV1 {
     bytes32 coverKey,
     address token
   ) external view returns (uint256) {
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     if (stablecoin == token) {

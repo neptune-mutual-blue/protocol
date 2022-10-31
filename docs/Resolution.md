@@ -9,7 +9,8 @@ View Source: [contracts/core/governance/resolution/Resolution.sol](../contracts/
 This contract enables governance agents or admins to resolve
  actively-reporting cover products. Once a resolution occurs, the
  NPM token holders who voted for the valid camp can unstake
- their staking during the claim period with additional rewards.
+ their stakes after resolution and before finalization
+ with additional rewards.
 
 ## Functions
 

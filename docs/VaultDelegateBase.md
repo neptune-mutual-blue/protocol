@@ -92,7 +92,7 @@ function preTransferGovernance(
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
 
-    stablecoin = s.getStablecoin();
+    stablecoin = s.getStablecoinAddressInternal();
   }
 ```
 </details>
@@ -330,7 +330,7 @@ function preAddLiquidity(
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
 
-    ValidationLibV1.mustNotExceedStablecoinThreshold(s, amount);
+    ValidationLibV1.mustMaintainStablecoinThreshold(s, amount);
     GovernanceUtilV1.mustNotExceedNpmThreshold(npmStakeToAdd);
 
     address pod = msg.sender;
@@ -372,7 +372,7 @@ function postAddLiquidity(
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 ```
 </details>
@@ -487,7 +487,7 @@ function postRemoveLiquidity(
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 ```
 </details>

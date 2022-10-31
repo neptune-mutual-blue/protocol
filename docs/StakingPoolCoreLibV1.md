@@ -34,19 +34,19 @@ bytes32 public constant NS_POOL_TOTAL_REWARD_GIVEN;
 ## Functions
 
 - [getAvailableToStakeInternal(IStore s, bytes32 key)](#getavailabletostakeinternal)
-- [getTarget(IStore s, bytes32 key)](#gettarget)
-- [getRewardPlatformFee(IStore s, bytes32 key)](#getrewardplatformfee)
-- [getTotalStaked(IStore s, bytes32 key)](#gettotalstaked)
-- [getRewardPerBlock(IStore s, bytes32 key)](#getrewardperblock)
-- [getLockupPeriodInBlocks(IStore s, bytes32 key)](#getlockupperiodinblocks)
-- [getRewardTokenBalance(IStore s, bytes32 key)](#getrewardtokenbalance)
+- [getTargetInternal(IStore s, bytes32 key)](#gettargetinternal)
+- [getRewardPlatformFeeInternal(IStore s, bytes32 key)](#getrewardplatformfeeinternal)
+- [getTotalStakedInternal(IStore s, bytes32 key)](#gettotalstakedinternal)
+- [getRewardPerBlockInternal(IStore s, bytes32 key)](#getrewardperblockinternal)
+- [getLockupPeriodInBlocksInternal(IStore s, bytes32 key)](#getlockupperiodinblocksinternal)
+- [getRewardTokenBalanceInternal(IStore s, bytes32 key)](#getrewardtokenbalanceinternal)
 - [getMaximumStakeInternal(IStore s, bytes32 key)](#getmaximumstakeinternal)
 - [getStakingTokenAddressInternal(IStore s, bytes32 key)](#getstakingtokenaddressinternal)
 - [getStakingTokenStablecoinPairAddressInternal(IStore s, bytes32 key)](#getstakingtokenstablecoinpairaddressinternal)
 - [getRewardTokenAddressInternal(IStore s, bytes32 key)](#getrewardtokenaddressinternal)
 - [getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key)](#getrewardtokenstablecoinpairaddressinternal)
-- [ensureValidStakingPool(IStore s, bytes32 key)](#ensurevalidstakingpool)
-- [checkIfStakingPoolExists(IStore s, bytes32 key)](#checkifstakingpoolexists)
+- [ensureValidStakingPoolInternal(IStore s, bytes32 key)](#ensurevalidstakingpoolinternal)
+- [checkIfStakingPoolExistsInternal(IStore s, bytes32 key)](#checkifstakingpoolexistsinternal)
 - [validateAddOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#validateaddoreditpoolinternal)
 - [addOrEditPoolInternal(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#addoreditpoolinternal)
 - [_updatePoolValues(IStore s, struct IStakingPools.AddOrEditPoolArgs args)](#_updatepoolvalues)
@@ -73,8 +73,8 @@ returns(uint256)
 
 ```javascript
 function getAvailableToStakeInternal(IStore s, bytes32 key) external view returns (uint256) {
-    uint256 totalStaked = getTotalStaked(s, key);
-    uint256 target = getTarget(s, key);
+    uint256 totalStaked = getTotalStakedInternal(s, key);
+    uint256 target = getTargetInternal(s, key);
 
     if (totalStaked >= target) {
       return 0;
@@ -85,10 +85,10 @@ function getAvailableToStakeInternal(IStore s, bytes32 key) external view return
 ```
 </details>
 
-### getTarget
+### getTargetInternal
 
 ```solidity
-function getTarget(IStore s, bytes32 key) public view
+function getTargetInternal(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -103,16 +103,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTarget(IStore s, bytes32 key) public view returns (uint256) {
+function getTargetInternal(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(NS_POOL_STAKING_TARGET, key);
   }
 ```
 </details>
 
-### getRewardPlatformFee
+### getRewardPlatformFeeInternal
 
 ```solidity
-function getRewardPlatformFee(IStore s, bytes32 key) external view
+function getRewardPlatformFeeInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -127,16 +127,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardPlatformFee(IStore s, bytes32 key) external view returns (uint256) {
+function getRewardPlatformFeeInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PLATFORM_FEE, key);
   }
 ```
 </details>
 
-### getTotalStaked
+### getTotalStakedInternal
 
 ```solidity
-function getTotalStaked(IStore s, bytes32 key) public view
+function getTotalStakedInternal(IStore s, bytes32 key) public view
 returns(uint256)
 ```
 
@@ -151,16 +151,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTotalStaked(IStore s, bytes32 key) public view returns (uint256) {
+function getTotalStakedInternal(IStore s, bytes32 key) public view returns (uint256) {
     return s.getUintByKeys(NS_POOL_CUMULATIVE_STAKING_AMOUNT, key);
   }
 ```
 </details>
 
-### getRewardPerBlock
+### getRewardPerBlockInternal
 
 ```solidity
-function getRewardPerBlock(IStore s, bytes32 key) external view
+function getRewardPerBlockInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -175,16 +175,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardPerBlock(IStore s, bytes32 key) external view returns (uint256) {
+function getRewardPerBlockInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_PER_BLOCK, key);
   }
 ```
 </details>
 
-### getLockupPeriodInBlocks
+### getLockupPeriodInBlocksInternal
 
 ```solidity
-function getLockupPeriodInBlocks(IStore s, bytes32 key) external view
+function getLockupPeriodInBlocksInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -199,16 +199,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLockupPeriodInBlocks(IStore s, bytes32 key) external view returns (uint256) {
+function getLockupPeriodInBlocksInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_LOCKUP_PERIOD_IN_BLOCKS, key);
   }
 ```
 </details>
 
-### getRewardTokenBalance
+### getRewardTokenBalanceInternal
 
 ```solidity
-function getRewardTokenBalance(IStore s, bytes32 key) external view
+function getRewardTokenBalanceInternal(IStore s, bytes32 key) external view
 returns(uint256)
 ```
 
@@ -223,7 +223,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getRewardTokenBalance(IStore s, bytes32 key) external view returns (uint256) {
+function getRewardTokenBalanceInternal(IStore s, bytes32 key) external view returns (uint256) {
     return s.getUintByKeys(NS_POOL_REWARD_TOKEN_BALANCE, key);
   }
 ```
@@ -349,10 +349,10 @@ function getRewardTokenStablecoinPairAddressInternal(IStore s, bytes32 key) exte
 ```
 </details>
 
-### ensureValidStakingPool
+### ensureValidStakingPoolInternal
 
 ```solidity
-function ensureValidStakingPool(IStore s, bytes32 key) external view
+function ensureValidStakingPoolInternal(IStore s, bytes32 key) external view
 ```
 
 **Arguments**
@@ -366,16 +366,16 @@ function ensureValidStakingPool(IStore s, bytes32 key) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function ensureValidStakingPool(IStore s, bytes32 key) external view {
-    require(checkIfStakingPoolExists(s, key), "Pool invalid or closed");
+function ensureValidStakingPoolInternal(IStore s, bytes32 key) external view {
+    require(checkIfStakingPoolExistsInternal(s, key), "Pool invalid or closed");
   }
 ```
 </details>
 
-### checkIfStakingPoolExists
+### checkIfStakingPoolExistsInternal
 
 ```solidity
-function checkIfStakingPoolExists(IStore s, bytes32 key) public view
+function checkIfStakingPoolExistsInternal(IStore s, bytes32 key) public view
 returns(bool)
 ```
 
@@ -390,7 +390,7 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function checkIfStakingPoolExists(IStore s, bytes32 key) public view returns (bool) {
+function checkIfStakingPoolExistsInternal(IStore s, bytes32 key) public view returns (bool) {
     return s.getBoolByKeys(NS_POOL, key);
   }
 ```
@@ -417,7 +417,7 @@ returns(bool)
 function validateAddOrEditPoolInternal(IStore s, IStakingPools.AddOrEditPoolArgs calldata args) public view returns (bool) {
     require(args.key > 0, "Invalid key");
 
-    bool exists = checkIfStakingPoolExists(s, args.key);
+    bool exists = checkIfStakingPoolExistsInternal(s, args.key);
 
     if (exists == false) {
       require(bytes(args.name).length > 0, "Invalid name");

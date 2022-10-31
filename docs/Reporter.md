@@ -102,7 +102,7 @@ function report(
     s.addAttestationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Reported(coverKey, productKey, msg.sender, incidentDate, info, stake, resolutionDate);
     emit Attested(coverKey, productKey, msg.sender, incidentDate, stake);
@@ -118,7 +118,7 @@ If you believe that a reported incident is wrong, you can stake NPM tokens to di
  <br /> <br />
  **Rewards:**
  If you get resolution in your favor, you will receive these rewards:
- - A 10% commission on all reward received by valid camp voters (check `Unstakeable.unstakeWithClaim`) in NPM tokens.
+ - A 10% commission on all reward received by valid camp voters (check `Unstakable.unstakeWithClaim`) in NPM tokens.
  - Your proportional share of the 60% pool of the invalid camp.
 
 ```solidity
@@ -159,7 +159,7 @@ function dispute(
     s.addRefutationInternal(coverKey, productKey, msg.sender, incidentDate, stake);
 
     // Transfer the stake to the resolution contract
-    s.npmToken().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
+    s.getNpmTokenInstanceInternal().ensureTransferFrom(msg.sender, address(s.getResolutionContract()), stake);
 
     emit Disputed(coverKey, productKey, msg.sender, incidentDate, info, stake);
     emit Refuted(coverKey, productKey, msg.sender, incidentDate, stake);
@@ -259,6 +259,8 @@ function setReportingBurnRate(uint256 value) external override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
+    require(s.getGovernanceReporterCommissionInternal() + value <= ProtoUtilV1.MULTIPLIER, "Rate too high");
+
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, value);
 
@@ -290,9 +292,12 @@ function setReporterCommission(uint256 value) external nonpayable nonReentrant
 
 ```javascript
 function setReporterCommission(uint256 value) external override nonReentrant {
+    require(value > 0, "Please specify value");
+
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
-    require(value > 0, "Please specify value");
+
+    require(s.getReportingBurnRateInternal() + value <= ProtoUtilV1.MULTIPLIER, "Rate too high");
 
     uint256 previous = s.getUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTER_COMMISSION, value);
@@ -363,7 +368,7 @@ function getReporter(
 
 ### getResolutionTimestamp
 
-Retuns the resolution date of a given cover
+Returns the resolution date of a given cover
  Warning: this function does not validate the input arguments.
 
 ```solidity

@@ -8,10 +8,10 @@ View Source: [contracts/libraries/PriceLibV1.sol](../contracts/libraries/PriceLi
 
 - [getPriceOracleInternal(IStore s)](#getpriceoracleinternal)
 - [setNpmPrice(IStore s)](#setnpmprice)
-- [convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn)](#convertnpmlpunitstostabelcoin)
+- [convertNpmLpUnitsToStabelcoinInternal(IStore s, uint256 amountIn)](#convertnpmlpunitstostabelcoininternal)
 - [getLastUpdatedOnInternal(IStore s, bytes32 coverKey)](#getlastupdatedoninternal)
-- [setLastUpdatedOn(IStore s, bytes32 coverKey)](#setlastupdatedon)
-- [getLastUpdateKey(bytes32 coverKey)](#getlastupdatekey)
+- [setLastUpdatedOnInternal(IStore s, bytes32 coverKey)](#setlastupdatedoninternal)
+- [getLastUpdateKeyInternal(bytes32 coverKey)](#getlastupdatekeyinternal)
 - [getNpmPriceInternal(IStore s, uint256 amountIn)](#getnpmpriceinternal)
 
 ### getPriceOracleInternal
@@ -32,7 +32,7 @@ returns(contract IPriceOracle)
 
 ```javascript
 function getPriceOracleInternal(IStore s) public view returns (IPriceOracle) {
-    return IPriceOracle(s.getNpmPriceOracle());
+    return IPriceOracle(s.getNpmPriceOracleInternal());
   }
 ```
 </details>
@@ -59,10 +59,10 @@ function setNpmPrice(IStore s) internal {
 ```
 </details>
 
-### convertNpmLpUnitsToStabelcoin
+### convertNpmLpUnitsToStabelcoinInternal
 
 ```solidity
-function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view
+function convertNpmLpUnitsToStabelcoinInternal(IStore s, uint256 amountIn) external view
 returns(uint256)
 ```
 
@@ -77,7 +77,7 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view returns (uint256) {
+function convertNpmLpUnitsToStabelcoinInternal(IStore s, uint256 amountIn) external view returns (uint256) {
     return getPriceOracleInternal(s).consultPair(amountIn);
   }
 ```
@@ -102,16 +102,16 @@ returns(uint256)
 
 ```javascript
 function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    bytes32 key = getLastUpdateKey(coverKey);
+    bytes32 key = getLastUpdateKeyInternal(coverKey);
     return s.getUintByKey(key);
   }
 ```
 </details>
 
-### setLastUpdatedOn
+### setLastUpdatedOnInternal
 
 ```solidity
-function setLastUpdatedOn(IStore s, bytes32 coverKey) external nonpayable
+function setLastUpdatedOnInternal(IStore s, bytes32 coverKey) external nonpayable
 ```
 
 **Arguments**
@@ -125,20 +125,20 @@ function setLastUpdatedOn(IStore s, bytes32 coverKey) external nonpayable
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
-    bytes32 key = getLastUpdateKey(coverKey);
+function setLastUpdatedOnInternal(IStore s, bytes32 coverKey) external {
+    bytes32 key = getLastUpdateKeyInternal(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 ```
 </details>
 
-### getLastUpdateKey
+### getLastUpdateKeyInternal
 
 Hash key of the "last state update" for the given cover.
  Warning: this function does not validate the cover key supplied.
 
 ```solidity
-function getLastUpdateKey(bytes32 coverKey) public pure
+function getLastUpdateKeyInternal(bytes32 coverKey) public pure
 returns(bytes32)
 ```
 
@@ -152,7 +152,7 @@ returns(bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
+function getLastUpdateKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
   }
 ```
@@ -177,7 +177,7 @@ returns(uint256)
 
 ```javascript
 function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (uint256) {
-    return getPriceOracleInternal(s).consult(s.getNpmTokenAddress(), amountIn);
+    return getPriceOracleInternal(s).consult(s.getNpmTokenAddressInternal(), amountIn);
   }
 ```
 </details>

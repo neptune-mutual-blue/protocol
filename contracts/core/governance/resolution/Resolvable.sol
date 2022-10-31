@@ -143,12 +143,12 @@ abstract contract Resolvable is Finalization, IResolvable {
     uint256 claimBeginsFrom = decision ? deadline + 1 : 0;
 
     // Claim expires after the period specified by the cover creator.
-    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriod(coverKey) : 0;
+    uint256 claimExpiresAt = decision ? claimBeginsFrom + s.getClaimPeriodInternal(coverKey) : 0;
 
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_BEGIN_TS, coverKey, productKey, claimBeginsFrom);
     s.setUintByKeys(ProtoUtilV1.NS_CLAIM_EXPIRY_TS, coverKey, productKey, claimExpiresAt);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit Resolved(coverKey, productKey, incidentDate, deadline, decision, emergency, claimBeginsFrom, claimExpiresAt);
   }

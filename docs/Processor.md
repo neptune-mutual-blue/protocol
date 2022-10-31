@@ -88,7 +88,7 @@ function claim(
     IVault vault = s.getVault(coverKey);
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
 
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
     uint256 payout = (amount * stablecoinPrecision) / ProtoUtilV1.CXTOKEN_PRECISION;
 
     require(payout > 0, "Invalid payout");
@@ -120,10 +120,10 @@ function claim(
     if (platformFee - reporterFee > 0) {
       // @suppress-subtraction The following (or above) subtraction can cause
       // an underflow if `getClaimReporterCommissionInternal` is greater than 100%.
-      vault.transferGovernance(coverKey, s.getTreasury(), platformFee - reporterFee);
+      vault.transferGovernance(coverKey, s.getTreasuryAddressInternal(), platformFee - reporterFee);
     }
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit Claimed(cxToken, coverKey, productKey, incidentDate, msg.sender, finalReporter, amount, reporterFee, platformFee, claimed);
   }
@@ -293,7 +293,7 @@ ction setBlacklist(
     s.mustBeValidIncidentDate(coverKey, productKey, incidentDate);
 
     for (uint256 i = 0; i < accounts.length; i++) {
-      s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
+      s.setAddressBooleanByKey(CoverUtilV1.getBlacklistKeyInternal(coverKey, productKey, incidentDate), accounts[i], statuses[i]);
       emit BlacklistSet(coverKey, productKey, incidentDate, accounts[i], statuses[i]);
     }
   }
@@ -329,7 +329,7 @@ ction isBlacklisted(
     uint256 incidentDate,
     address account
   ) public view override returns (bool) {
-    return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKey(coverKey, productKey, incidentDate), account);
+    return s.getAddressBooleanByKey(CoverUtilV1.getBlacklistKeyInternal(coverKey, productKey, incidentDate), account);
   }
 
 ```

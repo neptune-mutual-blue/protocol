@@ -6,15 +6,15 @@ View Source: [contracts/libraries/cxTokenFactoryLibV1.sol](../contracts/librarie
 
 ## Functions
 
-- [getByteCode(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate)](#getbytecode)
+- [getByteCodeInternal(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate)](#getbytecodeinternal)
 
-### getByteCode
+### getByteCodeInternal
 
 Gets the bytecode of the `cxToken` contract
  Warning: this function does not validate the input arguments.
 
 ```solidity
-function getByteCode(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external pure
+function getByteCodeInternal(IStore s, bytes32 coverKey, bytes32 productKey, string tokenName, uint256 expiryDate) external pure
 returns(bytecode bytes, salt bytes32)
 ```
 
@@ -32,7 +32,7 @@ returns(bytecode bytes, salt bytes32)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getByteCode(
+function getByteCodeInternal(
     IStore s,
     bytes32 coverKey,
     bytes32 productKey,

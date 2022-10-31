@@ -60,7 +60,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.senderMustBeVaultContract(coverKey);
     s.callerMustBeClaimsProcessorContract(caller);
 
-    stablecoin = s.getStablecoin();
+    stablecoin = s.getStablecoinAddressInternal();
   }
 
   /**
@@ -261,7 +261,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
     s.mustEnsureAllProductsAreNormal(coverKey);
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 
   /**
@@ -348,7 +348,7 @@ abstract contract VaultDelegateBase is IVaultDelegate, Recoverable {
     s.mustNotBePaused();
     s.mustBeProtocolMember(msg.sender);
     s.senderMustBeVaultContract(coverKey);
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 
   /**

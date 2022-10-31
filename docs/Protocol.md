@@ -25,8 +25,10 @@ bool public initialized;
 - [addContractWithKey(bytes32 namespace, bytes32 key, address contractAddress)](#addcontractwithkey)
 - [upgradeContract(bytes32 namespace, address previous, address current)](#upgradecontract)
 - [upgradeContractWithKey(bytes32 namespace, bytes32 key, address previous, address current)](#upgradecontractwithkey)
-- [grantRole(bytes32 role, address account)](#grantrole)
 - [grantRoles(struct IProtocol.AccountWithRoles[] detail)](#grantroles)
+- [grantRole(bytes32 role, address account)](#grantrole)
+- [revokeRole(bytes32 role, address account)](#revokerole)
+- [renounceRole(bytes32 role, address account)](#renouncerole)
 - [version()](#version)
 - [getName()](#getname)
 
@@ -89,6 +91,8 @@ function initialize(InitializeArgs calldata args) external override nonReentrant
       emit MemberRemoved(msg.sender);
     }
 
+    require(args.reportingBurnRate + args.governanceReporterCommission <= ProtoUtilV1.MULTIPLIER, "Invalid gov burn/commission rate");
+
     s.setAddressByKey(ProtoUtilV1.CNS_BURNER, args.burner);
 
     s.setAddressByKey(ProtoUtilV1.CNS_UNISWAP_V2_ROUTER, args.uniswapV2RouterLike);
@@ -98,6 +102,7 @@ function initialize(InitializeArgs calldata args) external override nonReentrant
 
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_FEE, args.coverCreationFee);
     s.setUintByKey(ProtoUtilV1.NS_COVER_CREATION_MIN_STAKE, args.minCoverCreationStake);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MIN_STAKE, args.minStakeToAddLiquidity);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, args.firstReportingStake);
     s.setUintByKey(ProtoUtilV1.NS_CLAIM_PERIOD, args.claimPeriod);
     s.setUintByKey(ProtoUtilV1.NS_GOVERNANCE_REPORTING_BURN_RATE, args.reportingBurnRate);
@@ -313,7 +318,7 @@ function upgradeContract(
 
 Upgrades a contract at the given namespace and key.
  The previous contract's protocol membership is revoked and
- the current immediately starts assuming responsbility of
+ the current immediately starts assuming responsibility of
  whatever the contract needs to do at the supplied namespace and key.
 
 ```solidity
@@ -351,6 +356,40 @@ function upgradeContractWithKey(
 ```
 </details>
 
+### grantRoles
+
+Grants roles to the protocol.
+ Individual Neptune Mutual protocol contracts inherit roles
+ defined to this contract. Meaning, the `AccessControl` logic
+ here is used everywhere else.
+
+```solidity
+function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable nonReentrant whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| detail | struct IProtocol.AccountWithRoles[] |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
+    // @suppress-zero-value-check Checked
+    require(detail.length > 0, "Invalid args");
+
+    for (uint256 i = 0; i < detail.length; i++) {
+      for (uint256 j = 0; j < detail[i].roles.length; j++) {
+        super.grantRole(detail[i].roles[j], detail[i].account);
+      }
+    }
+  }
+```
+</details>
+
 ### grantRole
 
 Grants `role` to `account`.
@@ -380,37 +419,62 @@ function grantRole(bytes32 role, address account) public override(AccessControl,
 ```
 </details>
 
-### grantRoles
+### revokeRole
 
-Grants roles to the protocol.
- Individual Neptune Mutual protocol contracts inherit roles
- defined to this contract. Meaning, the `AccessControl` logic
- here is used everywhere else.
+Revokes `role` from `account`.
+ If `account` had been granted `role`, emits a {RoleRevoked} event.
+ Requirements:
+ - the caller must have ``role``'s admin role.
 
 ```solidity
-function grantRoles(struct IProtocol.AccountWithRoles[] detail) external nonpayable nonReentrant whenNotPaused 
+function revokeRole(bytes32 role, address account) public nonpayable whenNotPaused 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| detail | struct IProtocol.AccountWithRoles[] |  | 
+| role | bytes32 |  | 
+| account | address |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function grantRoles(AccountWithRoles[] calldata detail) external override nonReentrant whenNotPaused {
-    // @suppress-zero-value-check Checked
-    require(detail.length > 0, "Invalid args");
-    AccessControlLibV1.mustBeAdmin(s);
+function revokeRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+    super.revokeRole(role, account);
+  }
+```
+</details>
 
-    for (uint256 i = 0; i < detail.length; i++) {
-      for (uint256 j = 0; j < detail[i].roles.length; j++) {
-        _grantRole(detail[i].roles[j], detail[i].account);
-      }
-    }
+### renounceRole
+
+Revokes `role` from the calling account.
+ Roles are often managed via {grantRole} and {revokeRole}: this function's
+ purpose is to provide a mechanism for accounts to lose their privileges
+ if they are compromised (such as when a trusted device is misplaced).
+ If the calling account had been revoked `role`, emits a {RoleRevoked}
+ event.
+ Requirements:
+ - the caller must be `account`.
+
+```solidity
+function renounceRole(bytes32 role, address account) public nonpayable whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| role | bytes32 |  | 
+| account | address |  | 
+
+<details>
+	<summary><strong>Source Code</strong></summary>
+
+```javascript
+function renounceRole(bytes32 role, address account) public override(AccessControl, IAccessControl) whenNotPaused {
+    super.renounceRole(role, account);
   }
 ```
 </details>

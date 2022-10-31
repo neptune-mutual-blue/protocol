@@ -40,7 +40,7 @@ bytes32 private constant _NS_MEMBERS;
 - [recoverToken(address token, address sendTo)](#recovertoken)
 - [pause()](#pause)
 - [unpause()](#unpause)
-- [isProtocolMember(address contractAddress)](#isprotocolmember)
+- [isProtocolMemberInternal(address contractAddress)](#isprotocolmemberinternal)
 - [_throwIfPaused()](#_throwifpaused)
 - [_throwIfSenderNotProtocolMember()](#_throwifsendernotprotocolmember)
 
@@ -203,10 +203,10 @@ function unpause() external onlyOwner {
 ```
 </details>
 
-### isProtocolMember
+### isProtocolMemberInternal
 
 ```solidity
-function isProtocolMember(address contractAddress) public view
+function isProtocolMemberInternal(address contractAddress) public view
 returns(bool)
 ```
 
@@ -220,7 +220,7 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isProtocolMember(address contractAddress) public view returns (bool) {
+function isProtocolMemberInternal(address contractAddress) public view returns (bool) {
     return boolStorage[keccak256(abi.encodePacked(_NS_MEMBERS, contractAddress))];
   }
 ```
@@ -263,7 +263,7 @@ function _throwIfSenderNotProtocolMember() internal view
 
 ```javascript
 function _throwIfSenderNotProtocolMember() internal view {
-    require(isProtocolMember(msg.sender), "Forbidden");
+    require(isProtocolMemberInternal(msg.sender), "Forbidden");
   }
 ```
 </details>

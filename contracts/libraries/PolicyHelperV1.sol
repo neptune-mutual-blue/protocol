@@ -136,7 +136,7 @@ library PolicyHelperV1 {
     // @warning: Do not uncomment the following line
     // Reason: cxTokens are no longer protocol members
     // as we will end up with way too many contracts
-    // s.getProtocol().addMember(cxToken);
+    // s.getProtocolInternal().addMember(cxToken);
     return ICxToken(cxToken);
   }
 
@@ -200,20 +200,20 @@ library PolicyHelperV1 {
     require(fee > 0, "Insufficient fee");
     require(platformFee > 0, "Insufficient platform fee");
 
-    address stablecoin = s.getStablecoin();
+    address stablecoin = s.getStablecoinAddressInternal();
     require(stablecoin != address(0), "Cover liquidity uninitialized");
 
     IERC20(stablecoin).ensureTransferFrom(msg.sender, address(this), fee);
     IERC20(stablecoin).ensureTransfer(s.getVaultAddress(args.coverKey), fee - platformFee);
-    IERC20(stablecoin).ensureTransfer(s.getTreasury(), platformFee);
+    IERC20(stablecoin).ensureTransfer(s.getTreasuryAddressInternal(), platformFee);
 
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
     uint256 toMint = (args.amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
     cxToken = getCxTokenOrDeployInternal(s, args.coverKey, args.productKey, args.coverDuration);
     cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
-    s.updateStateAndLiquidity(args.coverKey);
+    s.updateStateAndLiquidityInternal(args.coverKey);
   }
 
   /**
@@ -228,7 +228,7 @@ library PolicyHelperV1 {
    * @dev Increases the "last policy id" and returns new id
    *
    */
-  function incrementPolicyId(IStore s) external returns (uint256) {
+  function incrementPolicyIdInternal(IStore s) external returns (uint256) {
     s.addUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID, 1);
 
     return s.getUintByKey(ProtoUtilV1.NS_POLICY_LAST_PURCHASE_ID);

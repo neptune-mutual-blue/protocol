@@ -54,8 +54,8 @@ View Source: [contracts/libraries/ValidationLibV1.sol](../contracts/libraries/Va
 - [senderMustBeWhitelistedIfRequired(IStore s, bytes32 coverKey, bytes32 productKey, address sender)](#sendermustbewhitelistedifrequired)
 - [mustBeSupportedProductOrEmpty(IStore s, bytes32 coverKey, bytes32 productKey)](#mustbesupportedproductorempty)
 - [mustNotHavePolicyDisabled(IStore s, bytes32 coverKey, bytes32 productKey)](#mustnothavepolicydisabled)
-- [mustNotExceedStablecoinThreshold(IStore s, uint256 amount)](#mustnotexceedstablecointhreshold)
-- [mustNotExceedProposalThreshold(IStore s, uint256 amount)](#mustnotexceedproposalthreshold)
+- [mustMaintainStablecoinThreshold(IStore s, uint256 amount)](#mustmaintainstablecointhreshold)
+- [mustMaintainProposalThreshold(IStore s, uint256 amount)](#mustmaintainproposalthreshold)
 
 ### mustNotBePaused
 
@@ -76,7 +76,7 @@ function mustNotBePaused(IStore s) public view
 
 ```javascript
 function mustNotBePaused(IStore s) public view {
-    address protocol = s.getProtocolAddress();
+    address protocol = s.getProtocolAddressInternal();
     require(IPausable(protocol).paused() == false, "Protocol is paused");
   }
 ```
@@ -275,7 +275,7 @@ function mustBeCoverOwner(
     bytes32 coverKey,
     address sender
   ) public view {
-    bool isCoverOwner = s.getCoverOwner(coverKey) == sender;
+    bool isCoverOwner = s.getCoverOwnerInternal(coverKey) == sender;
     require(isCoverOwner, "Forbidden");
   }
 ```
@@ -306,7 +306,7 @@ function mustBeCoverOwnerOrCoverContract(
     bytes32 coverKey,
     address sender
   ) external view {
-    bool isCoverOwner = s.getCoverOwner(coverKey) == sender;
+    bool isCoverOwner = s.getCoverOwnerInternal(coverKey) == sender;
     bool isCoverContract = address(s.getCoverContract()) == sender;
 
     require(isCoverOwner || isCoverContract, "Forbidden");
@@ -332,7 +332,7 @@ function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 coverKey) external view
 
 ```javascript
 function senderMustBeCoverOwnerOrAdmin(IStore s, bytes32 coverKey) external view {
-    if (AccessControlLibV1.hasAccess(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
+    if (AccessControlLibV1.hasAccessInternal(s, AccessControlLibV1.NS_ROLES_ADMIN, msg.sender) == false) {
       mustBeCoverOwner(s, coverKey, msg.sender);
     }
   }
@@ -643,7 +643,7 @@ function senderMustBeProtocolMember(IStore s) external view
 
 ```javascript
 function senderMustBeProtocolMember(IStore s) external view {
-    require(s.isProtocolMember(msg.sender), "Forbidden");
+    require(s.isProtocolMemberInternal(msg.sender), "Forbidden");
   }
 ```
 </details>
@@ -1367,7 +1367,7 @@ function senderMustBeWhitelistedIfRequired(
     address sender
   ) external view {
     bool supportsProducts = s.supportsProductsInternal(coverKey);
-    bool required = supportsProducts ? s.checkIfProductRequiresWhitelist(coverKey, productKey) : s.checkIfRequiresWhitelist(coverKey);
+    bool required = supportsProducts ? s.checkIfProductRequiresWhitelistInternal(coverKey, productKey) : s.checkIfRequiresWhitelistInternal(coverKey);
 
     if (required == false) {
       return;
@@ -1441,10 +1441,10 @@ function mustNotHavePolicyDisabled(
 ```
 </details>
 
-### mustNotExceedStablecoinThreshold
+### mustMaintainStablecoinThreshold
 
 ```solidity
-function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view
+function mustMaintainStablecoinThreshold(IStore s, uint256 amount) external view
 ```
 
 **Arguments**
@@ -1458,17 +1458,19 @@ function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external vie
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustNotExceedStablecoinThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Please specify a smaller amount");
+function mustMaintainStablecoinThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
+
+    require(amount >= ProtoUtilV1.MIN_LIQUIDITY * stablecoinPrecision, "Liquidity is below threshold");
+    require(amount <= ProtoUtilV1.MAX_LIQUIDITY * stablecoinPrecision, "Liquidity is above threshold");
   }
 ```
 </details>
 
-### mustNotExceedProposalThreshold
+### mustMaintainProposalThreshold
 
 ```solidity
-function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view
+function mustMaintainProposalThreshold(IStore s, uint256 amount) external view
 ```
 
 **Arguments**
@@ -1482,9 +1484,11 @@ function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function mustNotExceedProposalThreshold(IStore s, uint256 amount) external view {
-    uint256 stablecoinPrecision = s.getStablecoinPrecision();
-    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Please specify a smaller amount");
+function mustMaintainProposalThreshold(IStore s, uint256 amount) external view {
+    uint256 stablecoinPrecision = s.getStablecoinPrecisionInternal();
+
+    require(amount >= ProtoUtilV1.MIN_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is below threshold");
+    require(amount <= ProtoUtilV1.MAX_PROPOSAL_AMOUNT * stablecoinPrecision, "Proposal is above threshold");
   }
 ```
 </details>

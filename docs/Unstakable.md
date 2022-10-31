@@ -18,7 +18,7 @@ Enables voters to unstake their NPM tokens after
 
 ### unstake
 
-Reporters on the valid camp can unstake their tokens even after the claim period is over.
+Reporters on the valid camp can unstake their tokens even after finalization.
  Unlike `unstakeWithClaim`, stakers can unstake but do not receive any reward if they choose to
  use this function.
 
@@ -57,8 +57,8 @@ function unstake(
     // Set the unstake details
     s.updateUnstakeDetailsInternal(msg.sender, coverKey, productKey, incidentDate, myStakeInWinningCamp, 0, 0, 0);
 
-    s.npmToken().ensureTransfer(msg.sender, myStakeInWinningCamp);
-    s.updateStateAndLiquidity(coverKey);
+    s.getNpmTokenInstanceInternal().ensureTransfer(msg.sender, myStakeInWinningCamp);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit Unstaken(coverKey, productKey, msg.sender, myStakeInWinningCamp, 0);
   }
@@ -98,7 +98,7 @@ function unstakeWithClaim(
     s.validateUnstakeWithClaim(coverKey, productKey, incidentDate);
 
     address finalReporter = s.getReporterInternal(coverKey, productKey, incidentDate);
-    address burner = s.getBurnAddress();
+    address burner = s.getBurnAddressInternal();
 
     UnstakeInfoType memory info = s.getUnstakeInfoForInternal(msg.sender, coverKey, productKey, incidentDate);
 
@@ -107,17 +107,17 @@ function unstakeWithClaim(
 
     uint256 myStakeWithReward = info.myReward + info.myStakeInWinningCamp;
 
-    s.npmToken().ensureTransfer(msg.sender, myStakeWithReward);
+    s.getNpmTokenInstanceInternal().ensureTransfer(msg.sender, myStakeWithReward);
 
     if (info.toReporter > 0) {
-      s.npmToken().ensureTransfer(finalReporter, info.toReporter);
+      s.getNpmTokenInstanceInternal().ensureTransfer(finalReporter, info.toReporter);
     }
 
     if (info.toBurn > 0) {
-      s.npmToken().ensureTransfer(burner, info.toBurn);
+      s.getNpmTokenInstanceInternal().ensureTransfer(burner, info.toBurn);
     }
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
 
     emit Unstaken(coverKey, productKey, msg.sender, info.myStakeInWinningCamp, info.myReward);
     emit ReporterRewardDistributed(coverKey, productKey, msg.sender, finalReporter, info.myReward, info.toReporter);

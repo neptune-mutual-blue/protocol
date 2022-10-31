@@ -154,7 +154,7 @@ library AccessControlLibV1 {
     bytes32 role,
     address caller
   ) private view {
-    require(hasAccess(s, role, caller), "Forbidden");
+    require(hasAccessInternal(s, role, caller), "Forbidden");
   }
 
   /**
@@ -163,12 +163,12 @@ library AccessControlLibV1 {
    * @param user Enter the user account
    * @return Returns true if the user is a member of the specified role
    */
-  function hasAccess(
+  function hasAccessInternal(
     IStore s,
     bytes32 role,
     address user
   ) public view returns (bool) {
-    address protocol = s.getProtocolAddress();
+    address protocol = s.getProtocolAddressInternal();
 
     // The protocol is not deployed yet. Therefore, no role to check
     if (protocol == address(0)) {
@@ -263,7 +263,7 @@ library AccessControlLibV1 {
     // must also be an upgrade agent
     callerMustBeUpgradeAgent(s, address(this));
 
-    bool isMember = s.isProtocolMember(previous);
+    bool isMember = s.isProtocolMemberInternal(previous);
     require(isMember, "Not a protocol member");
 
     _deleteContract(s, namespace, key, previous);

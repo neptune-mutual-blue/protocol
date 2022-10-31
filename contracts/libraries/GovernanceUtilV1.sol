@@ -538,7 +538,7 @@ library GovernanceUtilV1 {
     s.addUintByKey(_getIncidentOccurredStakesKey(coverKey, productKey, incidentDate), stake);
     _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 
   /**
@@ -596,7 +596,7 @@ library GovernanceUtilV1 {
     s.addUintByKey(_getFalseReportingStakesKey(coverKey, productKey, incidentDate), stake);
     _updateProductStatusBeforeResolutionInternal(s, coverKey, productKey, incidentDate);
 
-    s.updateStateAndLiquidity(coverKey);
+    s.updateStateAndLiquidityInternal(coverKey);
   }
 
   /**

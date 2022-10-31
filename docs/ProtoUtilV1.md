@@ -12,7 +12,9 @@ uint256 public constant MAX_POLICY_DURATION;
 bytes32 public constant KEY_INTENTIONALLY_EMPTY;
 bytes32 public constant PRODUCT_KEY_INTENTIONALLY_EMPTY;
 uint256 public constant MULTIPLIER;
+uint256 public constant MIN_LIQUIDITY;
 uint256 public constant MAX_LIQUIDITY;
+uint256 public constant MIN_PROPOSAL_AMOUNT;
 uint256 public constant MAX_PROPOSAL_AMOUNT;
 uint256 public constant MAX_NPM_STAKE;
 uint256 public constant NPM_PRECISION;
@@ -146,28 +148,28 @@ bytes32 public constant CNAME_LIQUIDITY_ENGINE;
 
 ## Functions
 
-- [getProtocol(IStore s)](#getprotocol)
-- [getProtocolAddress(IStore s)](#getprotocoladdress)
-- [getContract(IStore s, bytes32 name, bytes32 key)](#getcontract)
-- [isProtocolMember(IStore s, address contractAddress)](#isprotocolmember)
+- [getProtocolInternal(IStore s)](#getprotocolinternal)
+- [getProtocolAddressInternal(IStore s)](#getprotocoladdressinternal)
+- [getContractInternal(IStore s, bytes32 name, bytes32 key)](#getcontractinternal)
+- [isProtocolMemberInternal(IStore s, address contractAddress)](#isprotocolmemberinternal)
 - [mustBeProtocolMember(IStore s, address contractAddress)](#mustbeprotocolmember)
 - [mustBeExactContract(IStore s, bytes32 name, bytes32 key, address sender)](#mustbeexactcontract)
 - [senderMustBeExactContract(IStore s, bytes32 name)](#sendermustbeexactcontract)
 - [callerMustBeExactContract(IStore s, bytes32 name, address caller)](#callermustbeexactcontract)
-- [npmToken(IStore s)](#npmtoken)
-- [getNpmTokenAddress(IStore s)](#getnpmtokenaddress)
-- [getUniswapV2Router(IStore s)](#getuniswapv2router)
-- [getUniswapV2Factory(IStore s)](#getuniswapv2factory)
-- [getNpmPriceOracle(IStore s)](#getnpmpriceoracle)
-- [getTreasury(IStore s)](#gettreasury)
-- [getStablecoin(IStore s)](#getstablecoin)
-- [getStablecoinPrecision(IStore s)](#getstablecoinprecision)
-- [getBurnAddress(IStore s)](#getburnaddress)
+- [getNpmTokenInstanceInternal(IStore s)](#getnpmtokeninstanceinternal)
+- [getNpmTokenAddressInternal(IStore s)](#getnpmtokenaddressinternal)
+- [getUniswapV2RouterInternal(IStore s)](#getuniswapv2routerinternal)
+- [getUniswapV2FactoryInternal(IStore s)](#getuniswapv2factoryinternal)
+- [getNpmPriceOracleInternal(IStore s)](#getnpmpriceoracleinternal)
+- [getTreasuryAddressInternal(IStore s)](#gettreasuryaddressinternal)
+- [getStablecoinAddressInternal(IStore s)](#getstablecoinaddressinternal)
+- [getStablecoinPrecisionInternal(IStore s)](#getstablecoinprecisioninternal)
+- [getBurnAddressInternal(IStore s)](#getburnaddressinternal)
 
-### getProtocol
+### getProtocolInternal
 
 ```solidity
-function getProtocol(IStore s) external view
+function getProtocolInternal(IStore s) external view
 returns(contract IProtocol)
 ```
 
@@ -181,16 +183,16 @@ returns(contract IProtocol)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getProtocol(IStore s) external view returns (IProtocol) {
-    return IProtocol(getProtocolAddress(s));
+function getProtocolInternal(IStore s) external view returns (IProtocol) {
+    return IProtocol(getProtocolAddressInternal(s));
   }
 ```
 </details>
 
-### getProtocolAddress
+### getProtocolAddressInternal
 
 ```solidity
-function getProtocolAddress(IStore s) public view
+function getProtocolAddressInternal(IStore s) public view
 returns(address)
 ```
 
@@ -204,16 +206,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getProtocolAddress(IStore s) public view returns (address) {
+function getProtocolAddressInternal(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_CORE);
   }
 ```
 </details>
 
-### getContract
+### getContractInternal
 
 ```solidity
-function getContract(IStore s, bytes32 name, bytes32 key) public view
+function getContractInternal(IStore s, bytes32 name, bytes32 key) public view
 returns(address)
 ```
 
@@ -229,7 +231,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getContract(
+function getContractInternal(
     IStore s,
     bytes32 name,
     bytes32 key
@@ -243,10 +245,10 @@ function getContract(
 ```
 </details>
 
-### isProtocolMember
+### isProtocolMemberInternal
 
 ```solidity
-function isProtocolMember(IStore s, address contractAddress) public view
+function isProtocolMemberInternal(IStore s, address contractAddress) public view
 returns(bool)
 ```
 
@@ -261,7 +263,7 @@ returns(bool)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function isProtocolMember(IStore s, address contractAddress) public view returns (bool) {
+function isProtocolMemberInternal(IStore s, address contractAddress) public view returns (bool) {
     return s.getBoolByKeys(ProtoUtilV1.NS_MEMBERS, contractAddress);
   }
 ```
@@ -287,7 +289,7 @@ function mustBeProtocolMember(IStore s, address contractAddress) external view
 
 ```javascript
 function mustBeProtocolMember(IStore s, address contractAddress) external view {
-    bool isMember = isProtocolMember(s, contractAddress);
+    bool isMember = isProtocolMemberInternal(s, contractAddress);
     require(isMember, "Not a protocol member");
   }
 ```
@@ -320,7 +322,7 @@ function mustBeExactContract(
     bytes32 key,
     address sender
   ) public view {
-    address contractAddress = getContract(s, name, key);
+    address contractAddress = getContractInternal(s, name, key);
     require(sender == contractAddress, "Access denied");
   }
 ```
@@ -381,10 +383,10 @@ function callerMustBeExactContract(
 ```
 </details>
 
-### npmToken
+### getNpmTokenInstanceInternal
 
 ```solidity
-function npmToken(IStore s) external view
+function getNpmTokenInstanceInternal(IStore s) external view
 returns(contract IERC20)
 ```
 
@@ -398,16 +400,16 @@ returns(contract IERC20)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function npmToken(IStore s) external view returns (IERC20) {
-    return IERC20(getNpmTokenAddress(s));
+function getNpmTokenInstanceInternal(IStore s) external view returns (IERC20) {
+    return IERC20(getNpmTokenAddressInternal(s));
   }
 ```
 </details>
 
-### getNpmTokenAddress
+### getNpmTokenAddressInternal
 
 ```solidity
-function getNpmTokenAddress(IStore s) public view
+function getNpmTokenAddressInternal(IStore s) public view
 returns(address)
 ```
 
@@ -421,17 +423,17 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getNpmTokenAddress(IStore s) public view returns (address) {
+function getNpmTokenAddressInternal(IStore s) public view returns (address) {
     address npm = s.getAddressByKey(CNS_NPM);
     return npm;
   }
 ```
 </details>
 
-### getUniswapV2Router
+### getUniswapV2RouterInternal
 
 ```solidity
-function getUniswapV2Router(IStore s) external view
+function getUniswapV2RouterInternal(IStore s) external view
 returns(address)
 ```
 
@@ -445,16 +447,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getUniswapV2Router(IStore s) external view returns (address) {
+function getUniswapV2RouterInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_ROUTER);
   }
 ```
 </details>
 
-### getUniswapV2Factory
+### getUniswapV2FactoryInternal
 
 ```solidity
-function getUniswapV2Factory(IStore s) external view
+function getUniswapV2FactoryInternal(IStore s) external view
 returns(address)
 ```
 
@@ -468,16 +470,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getUniswapV2Factory(IStore s) external view returns (address) {
+function getUniswapV2FactoryInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_UNISWAP_V2_FACTORY);
   }
 ```
 </details>
 
-### getNpmPriceOracle
+### getNpmPriceOracleInternal
 
 ```solidity
-function getNpmPriceOracle(IStore s) external view
+function getNpmPriceOracleInternal(IStore s) external view
 returns(address)
 ```
 
@@ -491,16 +493,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getNpmPriceOracle(IStore s) external view returns (address) {
+function getNpmPriceOracleInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_NPM_PRICE_ORACLE);
   }
 ```
 </details>
 
-### getTreasury
+### getTreasuryAddressInternal
 
 ```solidity
-function getTreasury(IStore s) external view
+function getTreasuryAddressInternal(IStore s) external view
 returns(address)
 ```
 
@@ -514,16 +516,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getTreasury(IStore s) external view returns (address) {
+function getTreasuryAddressInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_TREASURY);
   }
 ```
 </details>
 
-### getStablecoin
+### getStablecoinAddressInternal
 
 ```solidity
-function getStablecoin(IStore s) public view
+function getStablecoinAddressInternal(IStore s) public view
 returns(address)
 ```
 
@@ -537,16 +539,16 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoin(IStore s) public view returns (address) {
+function getStablecoinAddressInternal(IStore s) public view returns (address) {
     return s.getAddressByKey(CNS_COVER_STABLECOIN);
   }
 ```
 </details>
 
-### getStablecoinPrecision
+### getStablecoinPrecisionInternal
 
 ```solidity
-function getStablecoinPrecision(IStore s) external view
+function getStablecoinPrecisionInternal(IStore s) external view
 returns(uint256)
 ```
 
@@ -560,16 +562,16 @@ returns(uint256)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getStablecoinPrecision(IStore s) external view returns (uint256) {
-    return 10**IERC20Detailed(getStablecoin(s)).decimals();
+function getStablecoinPrecisionInternal(IStore s) external view returns (uint256) {
+    return 10**IERC20Detailed(getStablecoinAddressInternal(s)).decimals();
   }
 ```
 </details>
 
-### getBurnAddress
+### getBurnAddressInternal
 
 ```solidity
-function getBurnAddress(IStore s) external view
+function getBurnAddressInternal(IStore s) external view
 returns(address)
 ```
 
@@ -583,7 +585,7 @@ returns(address)
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function getBurnAddress(IStore s) external view returns (address) {
+function getBurnAddressInternal(IStore s) external view returns (address) {
     return s.getAddressByKey(CNS_BURNER);
   }
 ```

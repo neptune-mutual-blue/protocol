@@ -15,24 +15,24 @@ library PriceLibV1 {
   using StoreKeyUtil for IStore;
 
   function getPriceOracleInternal(IStore s) public view returns (IPriceOracle) {
-    return IPriceOracle(s.getNpmPriceOracle());
+    return IPriceOracle(s.getNpmPriceOracleInternal());
   }
 
   function setNpmPrice(IStore s) internal {
     getPriceOracleInternal(s).update();
   }
 
-  function convertNpmLpUnitsToStabelcoin(IStore s, uint256 amountIn) external view returns (uint256) {
+  function convertNpmLpUnitsToStabelcoinInternal(IStore s, uint256 amountIn) external view returns (uint256) {
     return getPriceOracleInternal(s).consultPair(amountIn);
   }
 
   function getLastUpdatedOnInternal(IStore s, bytes32 coverKey) external view returns (uint256) {
-    bytes32 key = getLastUpdateKey(coverKey);
+    bytes32 key = getLastUpdateKeyInternal(coverKey);
     return s.getUintByKey(key);
   }
 
-  function setLastUpdatedOn(IStore s, bytes32 coverKey) external {
-    bytes32 key = getLastUpdateKey(coverKey);
+  function setLastUpdatedOnInternal(IStore s, bytes32 coverKey) external {
+    bytes32 key = getLastUpdateKeyInternal(coverKey);
     s.setUintByKey(key, block.timestamp); // solhint-disable-line
   }
 
@@ -44,11 +44,11 @@ library PriceLibV1 {
    * @param coverKey Enter cover key
    *
    */
-  function getLastUpdateKey(bytes32 coverKey) public pure returns (bytes32) {
+  function getLastUpdateKeyInternal(bytes32 coverKey) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(ProtoUtilV1.NS_LAST_LIQUIDITY_STATE_UPDATE, coverKey));
   }
 
   function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (uint256) {
-    return getPriceOracleInternal(s).consult(s.getNpmTokenAddress(), amountIn);
+    return getPriceOracleInternal(s).consult(s.getNpmTokenAddressInternal(), amountIn);
   }
 }
