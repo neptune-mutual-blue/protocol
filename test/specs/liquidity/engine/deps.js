@@ -120,7 +120,11 @@ const deployDependencies = async () => {
     flashLoanFeeProtocol: helper.percentage(2.5),
     resolutionCoolDownPeriod: 1 * DAYS,
     stateUpdateInterval: 1 * DAYS,
-    maxLendingRatio: helper.percentage(5)
+    maxLendingRatio: helper.percentage(5),
+    lendingPeriod: 180 * DAYS,
+    withdrawalWindow: 7 * DAYS,
+    policyFloor: helper.percentage(7),
+    policyCeiling: helper.percentage(45)
   }
 
   await protocol.initialize(args)

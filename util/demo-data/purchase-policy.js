@@ -10,13 +10,13 @@ const add = async (coverKey, payload) => {
   const amount = ether(getRandomNumber(250_000, 5_000_000), PRECISION)
   const stake = ether(getRandomNumber(1000, 125_000))
 
-  const { dai, npm } = payload
+  const { stablecoin, npm } = payload
   const vault = await composer.vault.getVault(payload, coverKey)
 
-  await dai.mint(amount)
+  await stablecoin.mint(amount)
   await npm.mint(stake)
 
-  await approve(dai.address, vault.address, lp, amount)
+  await approve(stablecoin.address, vault.address, lp, amount)
   await approve(npm.address, vault.address, lp, stake)
 
   await vault.connect(lp).addLiquidity({
@@ -26,7 +26,7 @@ const add = async (coverKey, payload) => {
     referralCode: toBytes32('')
   })
 
-  console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'DAI'), weiAsToken(stake, 'NPM'))
+  console.info('Added %s to the vault. Stake: %s', weiAsToken(amount, 'USDC'), weiAsToken(stake, 'NPM'))
 }
 
 const addLiquidity = async (payload) => {

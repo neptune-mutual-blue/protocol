@@ -37,7 +37,7 @@ mapping(address => mapping(uint256 => uint256)) public coverageStartsFrom;
 - [getCoverageStartsFrom(address account, uint256 date)](#getcoveragestartsfrom)
 - [_getExcludedCoverageOf(address account)](#_getexcludedcoverageof)
 - [getClaimablePolicyOf(address account)](#getclaimablepolicyof)
-- [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
+- [mint(uint256 policyId, bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [_beforeTokenTransfer(address from, address to, uint256 )](#_beforetokentransfer)
 
@@ -182,13 +182,14 @@ Mints cxTokens when a policy is purchased.
  This feature can only be accessed by the latest policy smart contract.
 
 ```solidity
-function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable nonReentrant 
+function mint(uint256 policyId, bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable nonReentrant 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| policyId | uint256 |  | 
 | coverKey | bytes32 | Enter the cover key for which the cxTokens are being minted | 
 | productKey | bytes32 |  | 
 | to | address | Enter the address where the minted token will be sent | 
@@ -199,6 +200,7 @@ function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) 
 
 ```javascript
 function mint(
+    uint256 policyId,
     bytes32 coverKey,
     bytes32 productKey,
     address to,
@@ -214,6 +216,8 @@ function mint(
 
     uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
+
+    emit CoverageStartSet(policyId, coverKey, productKey, to, effectiveFrom, amount);
 
     super._mint(to, amount);
   }
@@ -317,7 +321,7 @@ function _beforeTokenTransfer(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -327,7 +331,7 @@ function _beforeTokenTransfer(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

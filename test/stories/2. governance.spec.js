@@ -58,12 +58,12 @@ const coverKey = key.toBytes32('Compound Finance Cover')
 let contracts = {}
 
 const attest = async (id, user, stake) => {
-  await contracts.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
+  await contracts.tokens.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
   await contracts.governance.connect(user).attest(coverKey, helper.emptyBytes32, id, helper.ether(stake))
 }
 
 const refute = async (id, user, stake) => {
-  await contracts.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
+  await contracts.tokens.npm.connect(user).approve(contracts.governance.address, helper.ether(stake))
   await contracts.governance.connect(user).refute(coverKey, helper.emptyBytes32, id, helper.ether(stake))
 }
 
@@ -90,9 +90,9 @@ describe('Governance Stories', function () {
     const reassuranceRate = helper.percentage(50)
 
     // Submit approvals
-    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
+    await contracts.tokens.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
-    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
+    await contracts.tokens.stablecoin.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
     await contracts.cover.addCover({
@@ -117,8 +117,8 @@ describe('Governance Stories', function () {
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,
       amount: initialLiquidity,
@@ -140,7 +140,7 @@ describe('Governance Stories', function () {
 
     ; (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken.should.equal(helper.zerox)
 
-    await contracts.dai.connect(kimberly).approve(contracts.policy.address, fee)
+    await contracts.tokens.stablecoin.connect(kimberly).approve(contracts.policy.address, fee)
     await contracts.policy.connect(kimberly).purchaseCover(args)
 
     let at = (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken
@@ -152,7 +152,7 @@ describe('Governance Stories', function () {
 
     fee = (await contracts.policy.getCoverFeeInfo(args.coverKey, args.productKey, args.coverDuration, args.amountToCover)).fee
 
-    await contracts.dai.connect(lewis).approve(contracts.policy.address, fee)
+    await contracts.tokens.stablecoin.connect(lewis).approve(contracts.policy.address, fee)
     await contracts.policy.connect(lewis).purchaseCover(args)
 
     at = (await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)).cxToken
@@ -187,15 +187,15 @@ describe('Governance Stories', function () {
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)
 
-    const previous = await contracts.npm.balanceOf(alice.address)
+    const previous = await contracts.tokens.npm.balanceOf(alice.address)
 
-    await contracts.npm.connect(alice).approve(contracts.governance.address, stake)
+    await contracts.tokens.npm.connect(alice).approve(contracts.governance.address, stake)
     await contracts.governance.connect(alice).report(coverKey, helper.emptyBytes32, info, helper.ether(1))
       .should.be.rejectedWith('Stake insufficient')
 
     await contracts.governance.connect(alice).report(coverKey, helper.emptyBytes32, info, stake)
 
-    const current = await contracts.npm.balanceOf(alice.address)
+    const current = await contracts.tokens.npm.balanceOf(alice.address)
     previous.sub(current).toString().should.equal(stake)
   })
 
@@ -205,7 +205,7 @@ describe('Governance Stories', function () {
     const stake = helper.ether(constants.stakes.yes.reporting)
     const info = await ipfs.write(constants.reportInfo)
 
-    await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
+    await contracts.tokens.npm.connect(bob).approve(contracts.governance.address, stake)
     await contracts.governance.connect(bob).report(coverKey, helper.emptyBytes32, info, stake)
       .should.be.rejectedWith('Status not normal')
   })
@@ -233,7 +233,7 @@ describe('Governance Stories', function () {
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.npm.connect(bob).approve(contracts.governance.address, stake)
+    await contracts.tokens.npm.connect(bob).approve(contracts.governance.address, stake)
 
     await contracts.governance.connect(bob).dispute(coverKey, helper.emptyBytes32, incidentDate, info, helper.ether(1))
       .should.be.rejectedWith('Stake insufficient')
@@ -247,7 +247,7 @@ describe('Governance Stories', function () {
     const info = await ipfs.write(constants.reportInfo)
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
 
-    await contracts.npm.connect(chris).approve(contracts.governance.address, stake)
+    await contracts.tokens.npm.connect(chris).approve(contracts.governance.address, stake)
     await contracts.governance.connect(chris).dispute(coverKey, helper.emptyBytes32, incidentDate, info, stake)
       .should.be.rejectedWith('Already disputed')
   })
@@ -431,10 +431,10 @@ describe('Governance Stories', function () {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
-    const before = await contracts.dai.balanceOf(kimberly.address)
+    const before = await contracts.tokens.stablecoin.balanceOf(kimberly.address)
 
     await contracts.claimsProcessor.connect(kimberly).claim(constants.cxTokens.kimberly.address, coverKey, helper.emptyBytes32, incidentDate, balance)
-    const after = await contracts.dai.balanceOf(kimberly.address)
+    const after = await contracts.tokens.stablecoin.balanceOf(kimberly.address)
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 

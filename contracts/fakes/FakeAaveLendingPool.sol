@@ -8,7 +8,7 @@ import "./FakeToken.sol";
 contract FakeAaveLendingPool is IAaveV2LendingPoolLike, ERC20 {
   FakeToken public aToken;
 
-  constructor(FakeToken _aToken) ERC20("aDAI", "aDAI") {
+  constructor(FakeToken _aToken) ERC20("aStablecoin", "aStablecoin") {
     aToken = _aToken;
   }
 
@@ -30,12 +30,12 @@ contract FakeAaveLendingPool is IAaveV2LendingPoolLike, ERC20 {
   ) external override returns (uint256) {
     aToken.transferFrom(msg.sender, address(this), amount);
 
-    FakeToken dai = FakeToken(asset);
+    FakeToken stablecoin = FakeToken(asset);
 
     uint256 interest = (amount * 10) / 100;
-    dai.mint(interest);
+    stablecoin.mint(interest);
 
-    dai.transfer(to, amount + interest);
+    stablecoin.transfer(to, amount + interest);
 
     return amount;
   }

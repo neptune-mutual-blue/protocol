@@ -39,9 +39,9 @@ describe('Staking Pool Stories', () => {
       key: key.toBytes32('CPOOL'),
       name: 'Clearpool Staking',
       poolType: '0',
-      stakingToken: contracts.npm.address,
+      stakingToken: contracts.tokens.npm.address,
       uniStakingTokenDollarPair: contracts.npmUsdPair.address,
-      rewardToken: contracts.crpool.address,
+      rewardToken: contracts.tokens.crpool.address,
       uniRewardTokenDollarPair: contracts.crpoolUsdPair.address,
       stakingTarget: helper.ether(4_000_000),
       maxStake: helper.ether(10_000),
@@ -51,8 +51,8 @@ describe('Staking Pool Stories', () => {
       rewardTokenToDeposit: helper.ether(10_000_000)
     }
 
-    await contracts.crpool.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
-    await contracts.hwt.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
+    await contracts.tokens.crpool.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
+    await contracts.tokens.hwt.approve(contracts.stakingPoolContract.address, args.rewardTokenToDeposit)
 
     await contracts.stakingPoolContract.addOrEditPool(args)
 
@@ -60,7 +60,7 @@ describe('Staking Pool Stories', () => {
       ...args,
       key: key.toBytes32('HWT'),
       name: key.toBytes32('HWT Staking'),
-      rewardToken: contracts.hwt.address,
+      rewardToken: contracts.tokens.hwt.address,
       uniRewardTokenDollarPair: contracts.hwtUsdPair.address
     })
 
@@ -90,7 +90,7 @@ describe('Staking Pool Stories', () => {
       amount: helper.ether(100)
     }
 
-    await contracts.npm.approve(contracts.stakingPoolContract.address, arg.amount)
+    await contracts.tokens.npm.approve(contracts.stakingPoolContract.address, arg.amount)
     await contracts.stakingPoolContract.deposit(arg.key, arg.amount)
   })
 

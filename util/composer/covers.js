@@ -1,4 +1,5 @@
 const { ethers } = require('hardhat')
+const { getNetworkInfo } = require('../network')
 const { covers, products } = require('../../examples')
 const ipfs = require('../ipfs')
 const CHUNK_SIZE = 4
@@ -8,10 +9,10 @@ const toChunks = (array, size) => Array(Math.ceil(array.length / size)).fill().m
 
 const create = async (payload) => {
   const { intermediate, cache, contracts } = payload
-  const { npm, cover, dai } = contracts
+  const { tokens, cover } = contracts
 
-  await intermediate(cache, npm, 'approve', cover.address, ethers.constants.MaxUint256)
-  await intermediate(cache, dai, 'approve', cover.address, ethers.constants.MaxUint256)
+  await intermediate(cache, tokens.npm, 'approve', cover.address, ethers.constants.MaxUint256)
+  await intermediate(cache, tokens.stablecoin, 'approve', cover.address, ethers.constants.MaxUint256)
 
   await addCovers(payload)
   await rest(200)
@@ -22,17 +23,35 @@ const addCovers = async (payload) => {
   const { intermediate, cache, contracts } = payload
   const { cover } = contracts
 
+  const network = await getNetworkInfo()
+  const claimPeriod = network.cover.claimPeriod
+  const cooldownPeriod = network.cover.cooldownPeriod
+  const reportingPeriod = network.cover.reportingPeriod
+  const { mainnet } = network
+
   if (covers.length > CHUNK_SIZE) {
     console.log('Total covers: %s. Breaking into to chunks of %s covers', covers.length, CHUNK_SIZE)
   }
+
   const chunks = toChunks(covers, CHUNK_SIZE)
 
   for (const chunk of chunks) {
     const args = await Promise.all(chunk.map(async (x) => {
-      return {
+      let arg = {
         info: await ipfs.write(x),
         ...x
       }
+
+      if (mainnet === false) {
+        arg = {
+          ...arg,
+          claimPeriod,
+          cooldownPeriod,
+          reportingPeriod
+        }
+      }
+
+      return arg
     }))
 
     await intermediate(cache, cover, 'addCovers', args)

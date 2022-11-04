@@ -96,7 +96,7 @@ contract Policy is IPolicy, Recoverable {
 
     uint256 lastPolicyId = s.incrementPolicyIdInternal();
 
-    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(args);
+    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(lastPolicyId, args);
 
     emit CoverPurchased(args, address(cxToken), fee, platformFee, cxToken.expiresOn(), lastPolicyId);
     return (address(cxToken), lastPolicyId);

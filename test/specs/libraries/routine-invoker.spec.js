@@ -39,7 +39,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -63,7 +63,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
     aToken = await deployer.deploy(cache, 'FakeToken', 'aToken', 'aToken', helper.ether(100_000_000), 18)
     aaveLendingPool = await deployer.deploy(cache, 'FakeAaveLendingPool', aToken.address)
 
-    await deployed.dai.addMinter(aaveLendingPool.address, true)
+    await deployed.stablecoin.addMinter(aaveLendingPool.address, true)
 
     aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -103,7 +103,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
 
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     const tx = await deployed.vault.addLiquidity({
       coverKey,
@@ -123,7 +123,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
 
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     const tx = await deployed.vault.addLiquidity({
       coverKey,
@@ -144,7 +144,7 @@ describe('RoutineInvokerLibV1: _executeStrategy', () => {
 
     await network.provider.send('evm_increaseTime', [deployed.stateAndLiquidityUpdateInterval])
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     const tx = await deployed.vault.addLiquidity({
       coverKey,

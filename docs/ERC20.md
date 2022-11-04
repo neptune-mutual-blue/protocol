@@ -3,7 +3,7 @@
 View Source: [openzeppelin-solidity/contracts/token/ERC20/ERC20.sol](../openzeppelin-solidity/contracts/token/ERC20/ERC20.sol)
 
 **↗ Extends: [Context](Context.md), [IERC20](IERC20.md), [IERC20Metadata](IERC20Metadata.md)**
-**↘ Derived Contracts: [cxToken](cxToken.md), [FakeAaveLendingPool](FakeAaveLendingPool.md), [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md), [FakeToken](FakeToken.md), [FakeUniswapPair](FakeUniswapPair.md), [FaultyAaveLendingPool](FaultyAaveLendingPool.md), [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md), [MaliciousToken](MaliciousToken.md), [MockCxToken](MockCxToken.md), [MockVault](MockVault.md), [NPM](NPM.md), [VaultBase](VaultBase.md)**
+**↘ Derived Contracts: [cxToken](cxToken.md), [FakeAaveLendingPool](FakeAaveLendingPool.md), [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md), [FakeToken](FakeToken.md), [FakeUniswapPair](FakeUniswapPair.md), [FaultyAaveLendingPool](FaultyAaveLendingPool.md), [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md), [MaliciousToken](MaliciousToken.md), [MockCxToken](MockCxToken.md), [MockVault](MockVault.md), [NPM](NPM.md), [VaultBase](VaultBase.md)**
 
 **ERC20**
 
@@ -691,7 +691,7 @@ function _afterTokenTransfer(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -701,7 +701,7 @@ function _afterTokenTransfer(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('sushi-v2'),
-  productName: 'Sushi',
+  productName: 'Sushi v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(70),
   tags: ['exchange', 'dex', 'swap', 'fork', 'flashloan'],

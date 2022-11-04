@@ -28,20 +28,20 @@
  * @typedef {Object} Contracts
  * @property {Object} store - Store contract
  * @property {Object} npm - NPM Token contract
- * @property {Object} dai - dai token contract
+ * @property {Object} stablecoin - stablecoin token contract
  * @property {Object} crpool - Crystalpool token contract
  * @property {Object} hwt - Huobi-Wan token contract
  * @property {Object} obk - OBK token contract
  * @property {Object} sabre - SABRE token contract
  * @property {Object} bec - BEC token contract
  * @property {Object} xd - XD token contract
- * @property {Object} npmUsdPair NPM/DAI Uniswap Pair,
- * @property {Object} crpoolUsdPair CRPOOL/DAI Uniswap Pair,
- * @property {Object} hwtUsdPair HWT/DAI Uniswap Pair
- * @property {Object} obkUsdPair OBK/DAI Uniswap Pair
- * @property {Object} sabreUsdPair SABRE/DAI Uniswap Pair
- * @property {Object} becUsdPair BEC/DAI Uniswap Pair
- * @property {Object} xdUsdPair XD/DAI Uniswap Pair
+ * @property {Object} npmUsdPair NPM/Stablecoin Uniswap Pair,
+ * @property {Object} crpoolUsdPair CRPOOL/Stablecoin Uniswap Pair,
+ * @property {Object} hwtUsdPair HWT/Stablecoin Uniswap Pair
+ * @property {Object} obkUsdPair OBK/Stablecoin Uniswap Pair
+ * @property {Object} sabreUsdPair SABRE/Stablecoin Uniswap Pair
+ * @property {Object} becUsdPair BEC/Stablecoin Uniswap Pair
+ * @property {Object} xdUsdPair XD/Stablecoin Uniswap Pair
  * @property {Object} reassuranceToken - Reassurance token
  * @property {Object} protocol - The base protocol contract
  * @property {Object} stakingContract - NPM staking contract
@@ -67,5 +67,5 @@
  * @property {Object} router - UniswapV2-like router
  * @property {Object} factory - UniswapV2-like factory
  * @property {Object} aaveLendingPool - Aave lending pool
- * @property {Object} compoundDaiDelegator - Compound Dai delegator
+ * @property {Object} compoundStablecoinDelegator - Compound Stablecoin delegator
  */

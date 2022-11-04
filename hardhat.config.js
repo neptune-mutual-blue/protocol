@@ -14,8 +14,14 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      gasPrice: 50 * GWEI,
       blockGasLimit: 20000000 // 20M
+    },
+    local: {
+      chainId: 1337,
+      url: 'http://localhost:7547',
+      gasPrice: 34 * GWEI,
+      blockGasLimit: 20000000, // 20M
+      explorer: 'https://etherscan.com'
     },
     mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com',
@@ -30,11 +36,6 @@ const config = {
       accounts: [process.env.PRIVATE_KEY],
       gas: 'auto',
       explorer: 'https://testnet.snowtrace.io'
-    },
-    local: {
-      url: 'http://localhost:8545/',
-      chainId: 1337,
-      accounts: [process.env.PRIVATE_KEY]
     }
   },
   solidity: {

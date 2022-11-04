@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('convex-v1'),
-  productName: 'Convex (v1)',
+  productName: 'Convex v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['curve', 'staking', 'yield'],

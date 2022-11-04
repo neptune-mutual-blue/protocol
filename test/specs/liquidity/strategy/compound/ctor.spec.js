@@ -11,13 +11,13 @@ require('chai')
   .should()
 
 describe('Compound Strategy Constructor', () => {
-  let deployed, daiDelegator, cDai
+  let deployed, stablecoinDelegator, cStablecoin
 
   beforeEach(async () => {
     deployed = await deployDependencies()
 
-    cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
-    daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', deployed.dai.address, cDai.address)
+    cStablecoin = await deployer.deploy(cache, 'FakeToken', 'cStablecoin', 'cStablecoin', helper.ether(100_000_000), 18)
+    stablecoinDelegator = await deployer.deploy(cache, 'FakeCompoundStablecoinDelegator', deployed.stablecoin.address, cStablecoin.address)
   })
 
   it('correctly deploys', async () => {
@@ -29,7 +29,7 @@ describe('Compound Strategy Constructor', () => {
       RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, daiDelegator.address, cDai.address)
+    }, deployed.store.address, stablecoinDelegator.address, cStablecoin.address)
 
    ; (await compoundStrategy.getKey()).should.equal(ethers.utils.solidityKeccak256(['string', 'string', 'string', 'string'], ['lending', 'strategy', 'compound', 'v2']))
     ; (await compoundStrategy.version()).should.equal(key.toBytes32('v0.1'))

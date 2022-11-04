@@ -15,10 +15,12 @@ const createPairs = async (routerAt, factoryAt, pairInfo) => {
 
     const router = await uniswap.getRouter(routerAt)
     const factory = await uniswap.getFactory(factoryAt)
+    const network = await getNetworkInfo()
+    const { mainnet } = network
 
-    let pair = await factory.getPair(token0.address, token1.address)
+    let pair = token0 ? await factory.getPair(token0.address, token1.address) : zerox
 
-    if (pair === zerox) {
+    if (pair === zerox && mainnet === false) {
       console.log(`Attempting to provide ${name} liquidity to a Uniswap-like DEX`)
 
       const t0d = await token0.decimals()
@@ -32,7 +34,7 @@ const createPairs = async (routerAt, factoryAt, pairInfo) => {
       await tx.wait()
     }
 
-    pair = await factory.getPair(token0.address, token1.address)
+    pair = token0 ? await factory.getPair(token0.address, token1.address) : zerox
     console.info(name, 'pair:', pair)
 
     const instance = await uniswap.getPair(pair)
@@ -50,6 +52,7 @@ const deploySeveral = async (cache, pairInfo) => {
   const network = await getNetworkInfo()
   const router = network?.uniswapV2Like?.addresses?.router
   const factory = network?.uniswapV2Like?.addresses?.factory
+  const { mainnet } = network
 
   if (router) {
     return createPairs(router, factory, pairInfo)
@@ -58,7 +61,7 @@ const deploySeveral = async (cache, pairInfo) => {
   for (const i in pairInfo) {
     const { token0, token1 } = pairInfo[i]
 
-    const contract = await deployer.deploy(cache, 'FakeUniswapPair', token0.address, token1.address)
+    const contract = mainnet ? null : await deployer.deploy(cache, 'FakeUniswapPair', token0.address, token1.address)
 
     pairInfo[i].pairInstance = contract
 
@@ -74,16 +77,16 @@ const at = async (address) => {
 }
 
 const compose = async (cache, tokens) => {
-  const { npm, dai, crpool, hwt, obk, sabre, bec, xd } = tokens
+  const { npm, stablecoin, crpool, hwt, obk, sabre, bec, xd } = tokens
 
   return deploySeveral(cache, [
-    { token0: npm, token1: dai, name: 'NPM/DAI' },
-    { token0: crpool, token1: dai, name: 'CRPOOL/DAI' },
-    { token0: hwt, token1: dai, name: 'HWT/DAI' },
-    { token0: obk, token1: dai, name: 'OBK/DAI' },
-    { token0: sabre, token1: dai, name: 'SABRE/DAI' },
-    { token0: bec, token1: dai, name: 'BEC/DAI' },
-    { token0: xd, token1: dai, name: 'XD/DAI' }
+    { token0: npm, token1: stablecoin, name: 'NPM/Stablecoin' },
+    { token0: crpool, token1: stablecoin, name: 'CRPOOL/Stablecoin' },
+    { token0: hwt, token1: stablecoin, name: 'HWT/Stablecoin' },
+    { token0: obk, token1: stablecoin, name: 'OBK/Stablecoin' },
+    { token0: sabre, token1: stablecoin, name: 'SABRE/Stablecoin' },
+    { token0: bec, token1: stablecoin, name: 'BEC/Stablecoin' },
+    { token0: xd, token1: stablecoin, name: 'XD/Stablecoin' }
   ])
 }
 

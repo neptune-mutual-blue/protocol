@@ -86,6 +86,7 @@ function initialize(InitializeArgs calldata args) external override nonReentrant
       s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
 
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, args.npm);
+      s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender, true);
 
       s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
       emit MemberRemoved(msg.sender);
@@ -115,6 +116,10 @@ function initialize(InitializeArgs calldata args) external override nonReentrant
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, args.stateUpdateInterval);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, args.maxLendingRatio);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, args.lendingPeriod);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, args.withdrawalWindow);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, args.policyFloor);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, args.policyCeiling);
 
     initialized = true;
 
@@ -554,7 +559,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -564,7 +569,7 @@ function getName() external pure override returns (bytes32) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

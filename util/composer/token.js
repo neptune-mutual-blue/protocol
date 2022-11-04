@@ -40,7 +40,7 @@ const deployOrGetFromConfig = async (cache, tokens) => {
 
       const token = await erc20.getInstance(tokenAt)
 
-      if (['DAI', 'cDai', 'aToken', 'NPM'].indexOf(symbol) === -1) {
+      if (['USDC', 'cStablecoin', 'aToken', 'NPM'].indexOf(symbol) === -1) {
         await faucet.request(token)
       }
 
@@ -48,14 +48,12 @@ const deployOrGetFromConfig = async (cache, tokens) => {
       continue
     }
 
-    if (supportedNetworks.indexOf(hre.network.config.chainId) === -1) {
-      // throw new Error(`Can't deploy ${symbol} on this network.`)
+    if (supportedNetworks.indexOf(hre.network.config.chainId) > -1) {
+      const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000, decimals), decimals)
+      hre.network.name === 'hardhat' && sendTransfers(contract, decimals)
+
+      contracts.push(contract)
     }
-
-    const contract = await deployer.deploy(cache, 'FakeToken', `Fake ${name}`, symbol, supply || helper.ether(800_000_000, decimals), decimals)
-    hre.network.name === 'hardhat' && sendTransfers(contract, decimals)
-
-    contracts.push(contract)
   }
 
   return contracts
@@ -69,7 +67,7 @@ const at = async (address) => {
 const compose = async (cache) => {
   const list = [
     { name: 'Neptune Mutual Token', symbol: 'NPM', decimals: 18 },
-    { name: 'Dai', symbol: 'DAI', decimals: helper.STABLECOIN_DECIMALS },
+    { name: 'USDC', symbol: 'USDC', decimals: helper.STABLECOIN_DECIMALS },
     { name: 'Crystalpool Token', symbol: 'CRPOOL', decimals: 18 },
     { name: 'Huobi-Wan Token', symbol: 'HWT', decimals: 18 },
     { name: 'Ob1-Ex', symbol: 'OBK', decimals: 18 },
@@ -77,13 +75,13 @@ const compose = async (cache) => {
     { name: 'Bb8 Exchange', symbol: 'BEC', decimals: 18 },
     { name: 'XD Token', symbol: 'XD', decimals: 18 },
     { name: 'aToken', symbol: 'aToken', decimals: 18 },
-    { name: 'cDai', symbol: 'cDai', decimals: 18 }
+    { name: 'cStablecoin', symbol: 'cStablecoin', decimals: 18 }
   ]
 
-  const [npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai] = await deployOrGetFromConfig(cache, list)
+  const [npm, stablecoin, crpool, hwt, obk, sabre, bec, xd, aToken, cStablecoin] = await deployOrGetFromConfig(cache, list)
 
   list.find(x => x.symbol === 'NPM').instance = npm
-  list.find(x => x.symbol === 'DAI').instance = dai
+  list.find(x => x.symbol === 'USDC').instance = stablecoin
   list.find(x => x.symbol === 'CRPOOL').instance = crpool
   list.find(x => x.symbol === 'HWT').instance = hwt
   list.find(x => x.symbol === 'OBK').instance = obk
@@ -91,9 +89,9 @@ const compose = async (cache) => {
   list.find(x => x.symbol === 'BEC').instance = bec
   list.find(x => x.symbol === 'XD').instance = xd
   list.find(x => x.symbol === 'aToken').instance = aToken
-  list.find(x => x.symbol === 'cDai').instance = cDai
+  list.find(x => x.symbol === 'cStablecoin').instance = cStablecoin
 
-  return { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo: list }
+  return { npm, stablecoin, crpool, hwt, obk, sabre, bec, xd, aToken, cStablecoin, tokenInfo: list }
 }
 
 module.exports = { deploySeveral: deployOrGetFromConfig, at, compose }

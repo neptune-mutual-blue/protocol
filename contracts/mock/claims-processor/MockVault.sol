@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 contract MockVault is ERC20 {
-  constructor() ERC20("USD Coin", "USDC") {
+  constructor() ERC20("POD", "POD") {
     super._mint(msg.sender, 100_000 ether);
   }
 

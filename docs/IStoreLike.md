@@ -297,25 +297,25 @@ function purchasePolicy(IPolicy.PurchaseCoverArgs memory args) external nonReent
     IPolicy policy = getPolicyContract();
     require(address(policy) != address(0), "Fatal: Policy missing");
 
-    IERC20 dai = getStablecoin();
-    require(address(dai) != address(0), "Fatal: DAI missing");
+    IERC20 stablecoin = getStablecoin();
+    require(address(stablecoin) != address(0), "Fatal: Stablecoin missing");
 
     // Get fee info
     (uint256 premium, uint256 fee) = getPremium(args.coverKey, args.productKey, args.coverDuration, args.amountToCover);
 
-    // Transfer DAI to this contract
-    dai.safeTransferFrom(msg.sender, address(this), premium + fee);
+    // Transfer stablecoin to this contract
+    stablecoin.safeTransferFrom(msg.sender, address(this), premium + fee);
 
     // Approve protocol to pull the protocol fee
-    dai.safeIncreaseAllowance(address(policy), premium);
+    stablecoin.safeIncreaseAllowance(address(policy), premium);
 
     args.onBehalfOf = msg.sender;
 
     // Purchase protection for this user
     (address cxTokenAt, ) = policy.purchaseCover(args);
 
-    // Send your fee (+ any remaining DAI balance) to your treasury address
-    dai.safeTransfer(treasury, dai.balanceOf(address(this)));
+    // Send your fee (+ any remaining stablecoin balance) to your treasury address
+    stablecoin.safeTransfer(treasury, stablecoin.balanceOf(address(this)));
 
     emit PolicySold(args.coverKey, args.productKey, cxTokenAt, msg.sender, args.coverDuration, args.amountToCover, args.referralCode, fee, premium);
   }
@@ -342,36 +342,36 @@ function addLiquidity(IVault.AddLiquidityArgs calldata args) external nonReentra
     require(args.coverKey > 0, "Invalid key");
     require(args.amount > 0, "Invalid amount");
 
-    IVault nDai = getVaultContract(args.coverKey);
-    IERC20 dai = getStablecoin();
+    IVault pod = getVaultContract(args.coverKey);
+    IERC20 stablecoin = getStablecoin();
     IERC20 npm = getNpm();
 
-    require(address(nDai) != address(0), "Fatal: Vault missing");
-    require(address(dai) != address(0), "Fatal: DAI missing");
+    require(address(pod) != address(0), "Fatal: Vault missing");
+    require(address(stablecoin) != address(0), "Fatal: Stablecoin missing");
     require(address(npm) != address(0), "Fatal: NPM missing");
 
     // Before moving forward, first drain all balances of this contract
-    _drain(nDai);
-    _drain(dai);
+    _drain(pod);
+    _drain(stablecoin);
     _drain(npm);
 
-    // Transfer DAI from sender's wallet here
-    dai.safeTransferFrom(msg.sender, address(this), args.amount);
+    // Transfer stablecoin from sender's wallet here
+    stablecoin.safeTransferFrom(msg.sender, address(this), args.amount);
 
-    // Approve the Vault (or nDai) contract to spend DAI
-    dai.safeIncreaseAllowance(address(nDai), args.amount);
+    // Approve the Vault (or pod) contract to spend stablecoin
+    stablecoin.safeIncreaseAllowance(address(pod), args.amount);
 
     if (args.npmStakeToAdd > 0) {
       // Transfer NPM from the sender's wallet here
       npm.safeTransferFrom(msg.sender, address(this), args.npmStakeToAdd);
 
-      // Approve the Vault (or nDai) contract to spend NPM
-      npm.safeIncreaseAllowance(address(nDai), args.npmStakeToAdd);
+      // Approve the Vault (or pod) contract to spend NPM
+      npm.safeIncreaseAllowance(address(pod), args.npmStakeToAdd);
     }
 
-    nDai.addLiquidity(args);
+    pod.addLiquidity(args);
 
-    nDai.safeTransfer(msg.sender, nDai.balanceOf(address(this)));
+    pod.safeTransfer(msg.sender, pod.balanceOf(address(this)));
 
     emit LiquidityAdded(args.coverKey, msg.sender, args.referralCode, args.amount, args.npmStakeToAdd);
   }
@@ -406,28 +406,28 @@ function removeLiquidity(
     require(coverKey > 0, "Invalid key");
     require(amount > 0, "Invalid amount");
 
-    IVault nDai = getVaultContract(coverKey);
-    IERC20 dai = getStablecoin();
+    IVault pod = getVaultContract(coverKey);
+    IERC20 stablecoin = getStablecoin();
     IERC20 npm = getNpm();
 
-    require(address(nDai) != address(0), "Fatal: Vault missing");
-    require(address(dai) != address(0), "Fatal: DAI missing");
+    require(address(pod) != address(0), "Fatal: Vault missing");
+    require(address(stablecoin) != address(0), "Fatal: Stablecoin missing");
     require(address(npm) != address(0), "Fatal: NPM missing");
 
     // Before moving forward, first drain all balances of this contract
-    _drain(nDai);
-    _drain(dai);
+    _drain(pod);
+    _drain(stablecoin);
     _drain(npm);
 
-    // Transfer nDai from sender's wallet here
-    nDai.safeTransferFrom(msg.sender, address(this), amount);
+    // Transfer pod from sender's wallet here
+    pod.safeTransferFrom(msg.sender, address(this), amount);
 
-    // Approve the Vault (or nDai) contract to spend nDai
-    nDai.safeIncreaseAllowance(address(nDai), amount);
+    // Approve the Vault (or pod) contract to spend pod
+    pod.safeIncreaseAllowance(address(pod), amount);
 
-    nDai.removeLiquidity(coverKey, amount, npmStake, exit);
+    pod.removeLiquidity(coverKey, amount, npmStake, exit);
 
-    dai.safeTransfer(msg.sender, nDai.balanceOf(address(this)));
+    stablecoin.safeTransfer(msg.sender, pod.balanceOf(address(this)));
 
     emit LiquidityRemoved(coverKey, msg.sender, amount, npmStake, exit);
   }
@@ -490,7 +490,7 @@ function _drain(IERC20 token) private {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -500,7 +500,7 @@ function _drain(IERC20 token) private {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

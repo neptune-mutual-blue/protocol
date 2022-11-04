@@ -39,7 +39,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -72,7 +72,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -126,7 +126,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     const coverageAmount = helper.ether(500_000, PRECISION)
 
     // Purchase policy so that cxToken is created
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -171,7 +171,7 @@ describe('CoverUtilV1: getActiveLiquidityUnderProtection', () => {
     await network.provider.send('evm_increaseTime', [daysToPass * DAYS])
 
     // block number only changes after this transaction even after increasing the time
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const currentDate = new Date(block.timestamp * 1000).getUTCDate()

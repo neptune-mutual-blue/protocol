@@ -31,7 +31,7 @@ describe('Distributor: `addLiquidity` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, npmStakeToAdd)
-    await deployed.dai.approve(distributor.address, amount)
+    await deployed.stablecoin.approve(distributor.address, amount)
 
     const tx = await distributor.addLiquidity({
       coverKey,
@@ -57,8 +57,8 @@ describe('Distributor: `addLiquidity` function', () => {
     const npmStakeToAdd = '0'
     const referralCode = key.toBytes32('referral-code')
 
-    await deployed.dai.approve(distributor.address, amount)
-    await deployed.dai.connect(alice).approve(distributor.address, amount)
+    await deployed.stablecoin.approve(distributor.address, amount)
+    await deployed.stablecoin.connect(alice).approve(distributor.address, amount)
 
     await distributor.addLiquidity({
       coverKey,
@@ -81,7 +81,7 @@ describe('Distributor: `addLiquidity` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, npmStakeToAdd)
-    await deployed.dai.approve(distributor.address, amount)
+    await deployed.stablecoin.approve(distributor.address, amount)
 
     await distributor.addLiquidity({
       coverKey: key.toBytes32(''),
@@ -117,7 +117,7 @@ describe('Distributor: `addLiquidity` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, npmStakeToAdd)
-    await deployed.dai.approve(distributor.address, amount)
+    await deployed.stablecoin.approve(distributor.address, amount)
 
     const storeKey = ethers.utils.solidityKeccak256(['bytes32', 'bytes32', 'bytes32'], [key.toBytes32('ns:contracts'), key.toBytes32('cns:cover:vault'), coverKey])
     await deployed.store.deleteAddress(storeKey)
@@ -141,7 +141,7 @@ describe('Distributor: `addLiquidity` function', () => {
     await deployed.protocol.removeMember(owner.address)
   })
 
-  it('must reject if DAI was not found', async () => {
+  it('must reject if stablecoin was not found', async () => {
     const [owner] = await ethers.getSigners()
     await deployed.protocol.addMember(owner.address)
 
@@ -151,7 +151,7 @@ describe('Distributor: `addLiquidity` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     const storeKey = key.toBytes32('cns:cover:sc')
     await deployed.store.deleteAddress(storeKey)
@@ -161,9 +161,9 @@ describe('Distributor: `addLiquidity` function', () => {
       amount,
       npmStakeToAdd,
       referralCode
-    }).should.be.rejectedWith('Fatal: DAI missing')
+    }).should.be.rejectedWith('Fatal: Stablecoin missing')
 
-    await deployed.store.setAddress(storeKey, deployed.dai.address)
+    await deployed.store.setAddress(storeKey, deployed.stablecoin.address)
 
     await distributor.addLiquidity({
       coverKey,
@@ -185,7 +185,7 @@ describe('Distributor: `addLiquidity` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     const storeKey = key.toBytes32('cns:core:npm:instance')
     await deployed.store.deleteAddress(storeKey)

@@ -16,7 +16,7 @@ import "../../interfaces/IStore.sol";
  * POTs aren't conventional ERC-20 tokens; they can't be transferred freely;
  * they don't have any value, and therefore must not be purchased or sold.
  *
- * Agan, POTs are distributed to individuals and companies
+ * Again, POTs are distributed to individuals and companies
  * who particpate in our governance and dispute management portals.
  *
  */

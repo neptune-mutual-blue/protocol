@@ -14,16 +14,16 @@ require('chai')
   .should()
 
 describe('Add or Edit Pool', () => {
-  let pool, deployed, dai, npmDai, payload, sabre, sabreDai
+  let pool, deployed, stablecoin, npmStablecoinPair, payload, sabre, sabreStablecoinPair
 
   before(async () => {
     deployed = await deployDependencies()
 
     const [owner] = await ethers.getSigners()
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
+    stablecoin = await deployer.deploy(cache, 'FakeToken', 'USDC', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: stablecoin }])
     sabre = await deployer.deploy(cache, 'FakeToken', 'Sabre Oracles', 'SABRE', helper.ether(100_000_000), 12)
-    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: dai }])
+    ;[[sabreStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: stablecoin }])
 
     pool = await deployer.deployWithLibraries(cache, 'StakingPools', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -43,9 +43,9 @@ describe('Add or Edit Pool', () => {
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
       stakingToken: deployed.npm.address,
-      uniStakingTokenDollarPair: npmDai.address,
+      uniStakingTokenDollarPair: npmStablecoinPair.address,
       rewardToken: sabre.address,
-      uniRewardTokenDollarPair: sabreDai.address,
+      uniRewardTokenDollarPair: sabreStablecoinPair.address,
       stakingTarget: helper.ether(4_000_000),
       maxStake: helper.ether(10_000),
       platformFee: helper.percentage(0.5),
@@ -73,9 +73,9 @@ describe('Add or Edit Pool', () => {
     event.args.args.name.should.equal(payload.name)
     event.args.args.poolType.should.equal(payload.poolType)
     event.args.args.stakingToken.should.equal(deployed.npm.address)
-    event.args.args.uniStakingTokenDollarPair.should.equal(npmDai.address)
+    event.args.args.uniStakingTokenDollarPair.should.equal(npmStablecoinPair.address)
     event.args.args.rewardToken.should.equal(sabre.address)
-    event.args.args.uniRewardTokenDollarPair.should.equal(sabreDai.address)
+    event.args.args.uniRewardTokenDollarPair.should.equal(sabreStablecoinPair.address)
     event.args.args.rewardTokenToDeposit.should.equal(payload.rewardTokenToDeposit)
     event.args.args.maxStake.should.equal(payload.maxStake)
     event.args.args.platformFee.should.equal(payload.platformFee)
@@ -86,9 +86,9 @@ describe('Add or Edit Pool', () => {
 
     info.name.should.equal(payload.name)
     info.stakingToken.should.equal(deployed.npm.address)
-    info.stakingTokenStablecoinPair.should.equal(npmDai.address)
+    info.stakingTokenStablecoinPair.should.equal(npmStablecoinPair.address)
     info.rewardToken.should.equal(sabre.address)
-    info.rewardTokenStablecoinPair.should.equal(sabreDai.address)
+    info.rewardTokenStablecoinPair.should.equal(sabreStablecoinPair.address)
     info.totalStaked.should.equal('0')
     info.target.should.equal(payload.stakingTarget)
     info.maximumStake.should.equal(payload.maxStake)
@@ -124,9 +124,9 @@ describe('Add or Edit Pool', () => {
 
     info.name.should.equal(payload.name)
     info.stakingToken.should.equal(deployed.npm.address)
-    info.stakingTokenStablecoinPair.should.equal(npmDai.address)
+    info.stakingTokenStablecoinPair.should.equal(npmStablecoinPair.address)
     info.rewardToken.should.equal(sabre.address)
-    info.rewardTokenStablecoinPair.should.equal(sabreDai.address)
+    info.rewardTokenStablecoinPair.should.equal(sabreStablecoinPair.address)
     info.totalStaked.should.equal('0')
     info.target.should.equal(payload.stakingTarget)
     info.maximumStake.should.equal(payload.maxStake)

@@ -17,10 +17,10 @@ const deployDependencies = async () => {
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
 
   const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000), 18)
-  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
-  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm, token1: dai }])
+  const stablecoin = await deployer.deploy(cache, 'FakeToken', 'USDC', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
+  const [[npmStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: npm, token1: stablecoin }])
 
-  const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
+  const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmStablecoinPair.address)
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
   const protoUtilV1 = await deployer.deployWithLibraries(cache, 'ProtoUtilV1', {
@@ -140,7 +140,11 @@ const deployDependencies = async () => {
     flashLoanFeeProtocol: helper.percentage(2.5),
     resolutionCoolDownPeriod: 1 * DAYS,
     stateUpdateInterval: 1 * DAYS,
-    maxLendingRatio: helper.percentage(5)
+    maxLendingRatio: helper.percentage(5),
+    lendingPeriod: 30 * 60 * 60,
+    withdrawalWindow: 30 * 60 * 60,
+    policyFloor: helper.percentage(7),
+    policyCeiling: helper.percentage(45)
   }
 
   await protocol.initialize(args)
@@ -164,7 +168,7 @@ const deployDependencies = async () => {
   )
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER, cover.address)
-  await cover.initialize(dai.address, key.toBytes32('DAI'))
+  await cover.initialize(stablecoin.address, key.toBytes32('USDC'))
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     AccessControlLibV1: accessControlLibV1.address,
@@ -347,7 +351,7 @@ const deployDependencies = async () => {
   cover.updateCoverCreatorWhitelist([owner.address], [true])
 
   await npm.approve(cover.address, stakeWithFee)
-  await dai.approve(cover.address, initialReassuranceAmount)
+  await stablecoin.approve(cover.address, initialReassuranceAmount)
 
   await cover.addCover({
     coverKey,
@@ -385,7 +389,7 @@ const deployDependencies = async () => {
     }
   }, coverKey)
 
-  await dai.approve(vault.address, initialLiquidity)
+  await stablecoin.approve(vault.address, initialLiquidity)
   await npm.approve(vault.address, minStakeToReport)
   await vault.addLiquidity({
     coverKey,
@@ -396,8 +400,8 @@ const deployDependencies = async () => {
 
   return {
     npm,
-    dai,
-    npmDai,
+    stablecoin,
+    npmStablecoinPair,
     store,
     router,
     storeKeyUtil,

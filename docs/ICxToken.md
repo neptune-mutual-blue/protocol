@@ -7,9 +7,15 @@ View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToke
 
 **ICxToken**
 
+**Events**
+
+```js
+event CoverageStartSet(uint256  policyId, bytes32  coverKey, bytes32  productKey, address  account, uint256  effectiveFrom, uint256  amount);
+```
+
 ## Functions
 
-- [mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
+- [mint(uint256 policyId, bytes32 coverKey, bytes32 productKey, address to, uint256 amount)](#mint)
 - [burn(uint256 amount)](#burn)
 - [createdOn()](#createdon)
 - [expiresOn()](#expireson)
@@ -21,13 +27,14 @@ View Source: [contracts/interfaces/ICxToken.sol](../contracts/interfaces/ICxToke
 ### mint
 
 ```solidity
-function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable
+function mint(uint256 policyId, bytes32 coverKey, bytes32 productKey, address to, uint256 amount) external nonpayable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+| policyId | uint256 |  | 
 | coverKey | bytes32 |  | 
 | productKey | bytes32 |  | 
 | to | address |  | 
@@ -38,6 +45,7 @@ function mint(bytes32 coverKey, bytes32 productKey, address to, uint256 amount) 
 
 ```javascript
 function mint(
+    uint256 policyId,
     bytes32 coverKey,
     bytes32 productKey,
     address to,
@@ -216,7 +224,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -226,7 +234,7 @@ function getClaimablePolicyOf(address account) external view returns (uint256);
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

@@ -39,7 +39,7 @@ describe('Cover: updateProduct', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -85,7 +85,7 @@ describe('Cover: updateProduct', () => {
 
     await network.provider.send('evm_increaseTime', [1 * HOURS])
 
-    await deployed.dai.approve(vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,

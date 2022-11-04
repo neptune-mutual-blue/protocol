@@ -40,7 +40,7 @@ describe('Liquidity Engine: `setRiskPoolingPeriods` function', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.LIQUIDITY_ENGINE, liquidityEngine.address)
   })
 
-  it('correct gets the lending period', async () => {
+  it('correctly gets the lending period', async () => {
     const result = await liquidityEngine.getRiskPoolingPeriods(coverKey)
     result[0].should.equal(fallback.lendingPeriod)
     result[1].should.equal(fallback.withdrawalWindow)

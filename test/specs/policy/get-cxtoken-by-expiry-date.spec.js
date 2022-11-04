@@ -51,7 +51,7 @@ describe('Policy: getCxTokenByExpiryDate', function () {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -84,7 +84,7 @@ describe('Policy: getCxTokenByExpiryDate', function () {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -97,7 +97,7 @@ describe('Policy: getCxTokenByExpiryDate', function () {
   it('must return successfully', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,

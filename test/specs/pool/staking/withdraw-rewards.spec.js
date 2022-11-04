@@ -15,16 +15,16 @@ require('chai')
   .should()
 
 describe('Withdraw Rewards', () => {
-  let pool, payload, deployed, dai, npmDai, sabre, sabreDai
+  let pool, payload, deployed, stablecoin, npmStablecoinPair, sabre, sabreStablecoinPair
 
   before(async () => {
     deployed = await deployDependencies()
 
     const [owner, bob] = await ethers.getSigners()
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
+    stablecoin = await deployer.deploy(cache, 'FakeToken', 'USDC', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: stablecoin }])
     sabre = await deployer.deploy(cache, 'FakeToken', 'Sabre Oracles', 'SABRE', helper.ether(100_000_000), 18)
-    ;[[sabreDai]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: dai }])
+    ;[[sabreStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: sabre, token1: stablecoin }])
 
     pool = await deployer.deployWithLibraries(cache, 'StakingPools', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -45,9 +45,9 @@ describe('Withdraw Rewards', () => {
       name: 'NPM Staking Pool',
       poolType: PoolTypes.Token,
       stakingToken: deployed.npm.address,
-      uniStakingTokenDollarPair: npmDai.address,
+      uniStakingTokenDollarPair: npmStablecoinPair.address,
       rewardToken: sabre.address,
-      uniRewardTokenDollarPair: sabreDai.address,
+      uniRewardTokenDollarPair: sabreStablecoinPair.address,
       stakingTarget: helper.ether(4_000_000),
       maxStake: helper.ether(10_000),
       platformFee: helper.percentage(0.5),

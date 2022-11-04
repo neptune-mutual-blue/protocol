@@ -32,6 +32,10 @@ interface IProtocol is IMember, IAccessControl {
     uint256 resolutionCoolDownPeriod;
     uint256 stateUpdateInterval;
     uint256 maxLendingRatio;
+    uint256 lendingPeriod;
+    uint256 withdrawalWindow;
+    uint256 policyFloor;
+    uint256 policyCeiling;
   }
 
   event Initialized(InitializeArgs args);

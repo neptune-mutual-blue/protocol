@@ -42,8 +42,10 @@ const getAssets = (tokenInfo, pairInfo, settings) => {
 }
 
 const create = async (payload) => {
-  const { intermediate, cache, contracts, provider, tokenInfo, pairInfo } = payload
+  const { intermediate, cache, contracts, provider, tokens, pairInfo } = payload
   const pools = []
+
+  const { tokenInfo } = tokens
 
   for (const i in covers) {
     const cover = covers[i]

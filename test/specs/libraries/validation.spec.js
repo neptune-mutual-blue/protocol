@@ -132,7 +132,7 @@ describe('ValidationLibV1: mustBeDisputed', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -165,7 +165,7 @@ describe('ValidationLibV1: mustBeDisputed', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -253,7 +253,7 @@ describe('ValidationLibV1: mustHaveNormalProductStatus', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -295,7 +295,7 @@ describe('ValidationLibV1: mustHaveNormalProductStatus', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,

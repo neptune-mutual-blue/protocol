@@ -96,7 +96,7 @@ function deploy(
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, deployed);
 
-    emit CxTokenDeployed(coverKey, productKey, deployed, expiryDate);
+    emit CxTokenDeployed(deployed, s, coverKey, productKey, tokenName, expiryDate);
   }
 ```
 </details>
@@ -176,7 +176,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -186,7 +186,7 @@ function getName() external pure override returns (bytes32) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

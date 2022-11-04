@@ -142,6 +142,7 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
    *
    */
   function mint(
+    uint256 policyId,
     bytes32 coverKey,
     bytes32 productKey,
     address to,
@@ -157,6 +158,8 @@ contract cxToken is ICxToken, Recoverable, ERC20 {
 
     uint256 effectiveFrom = PolicyHelperV1.getEODInternal(block.timestamp + s.getCoverageLagInternal(coverKey)); // solhint-disable-line
     coverageStartsFrom[to][effectiveFrom] += amount;
+
+    emit CoverageStartSet(policyId, coverKey, productKey, to, effectiveFrom, amount);
 
     super._mint(to, amount);
   }

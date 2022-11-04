@@ -11,11 +11,11 @@ const deployDependencies = async () => {
   const store = await deployer.deploy(cache, 'Store')
   const router = await deployer.deploy(cache, 'FakeUniswapV2RouterLike')
   const npm = await deployer.deploy(cache, 'FakeToken', 'Neptune Mutual Token', 'NPM', helper.ether(100_000_000), 18)
-  const dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+  const stablecoin = await deployer.deploy(cache, 'FakeToken', 'USDC', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
 
-  const [[npmDai]] = await pair.deploySeveral(cache, [{ token0: npm, token1: dai }])
+  const [[npmStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: npm, token1: stablecoin }])
 
-  const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmDai.address)
+  const factory = await deployer.deploy(cache, 'FakeUniswapV2FactoryLike', npmStablecoinPair.address)
 
   const storeKeyUtil = await deployer.deploy(cache, 'StoreKeyUtil')
 
@@ -136,8 +136,13 @@ const deployDependencies = async () => {
     flashLoanFeeProtocol: helper.percentage(2.5),
     resolutionCoolDownPeriod: 1 * DAYS,
     stateUpdateInterval: 1 * DAYS,
-    maxLendingRatio: helper.percentage(5)
+    maxLendingRatio: helper.percentage(5),
+    lendingPeriod: 30 * 60 * 60,
+    withdrawalWindow: 30 * 60 * 60,
+    policyFloor: helper.percentage(7),
+    policyCeiling: helper.percentage(45)
   }
+
   await protocol.initialize(args)
 
   await protocol.grantRoles([{ account: owner.address, roles: [key.ACCESS_CONTROL.UPGRADE_AGENT, key.ACCESS_CONTROL.COVER_MANAGER, key.ACCESS_CONTROL.LIQUIDITY_MANAGER, key.ACCESS_CONTROL.PAUSE_AGENT, key.ACCESS_CONTROL.UNPAUSE_AGENT, key.ACCESS_CONTROL.GOVERNANCE_ADMIN] }])
@@ -158,7 +163,7 @@ const deployDependencies = async () => {
   )
 
   await protocol.addContract(key.PROTOCOL.CNS.COVER, cover.address)
-  await cover.initialize(dai.address, key.toBytes32('DAI'))
+  await cover.initialize(stablecoin.address, key.toBytes32('USDC'))
 
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     AccessControlLibV1: accessControlLibV1.address,
@@ -311,8 +316,8 @@ const deployDependencies = async () => {
 
   return {
     npm,
-    dai,
-    npmDai,
+    stablecoin,
+    npmStablecoinPair,
     store,
     router,
     storeKeyUtil,

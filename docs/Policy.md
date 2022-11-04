@@ -88,7 +88,7 @@ function purchaseCover(PurchaseCoverArgs calldata args) public override nonReent
 
     uint256 lastPolicyId = s.incrementPolicyIdInternal();
 
-    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(args);
+    (ICxToken cxToken, uint256 fee, uint256 platformFee) = s.purchaseCoverInternal(lastPolicyId, args);
 
     emit CoverPurchased(args, address(cxToken), fee, platformFee, cxToken.expiresOn(), lastPolicyId);
     return (address(cxToken), lastPolicyId);
@@ -403,7 +403,7 @@ function getName() external pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -413,7 +413,7 @@ function getName() external pure override returns (bytes32) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

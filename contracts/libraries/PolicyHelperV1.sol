@@ -131,12 +131,10 @@ library PolicyHelperV1 {
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(coverKey, productKey, _getCxTokenName(coverKey, productKey, expiryDate), expiryDate);
+    string memory tokenName = _getCxTokenName(coverKey, productKey, expiryDate);
 
-    // @warning: Do not uncomment the following line
-    // Reason: cxTokens are no longer protocol members
-    // as we will end up with way too many contracts
-    // s.getProtocolInternal().addMember(cxToken);
+    cxToken = factory.deploy(coverKey, productKey, tokenName, expiryDate);
+
     return ICxToken(cxToken);
   }
 
@@ -186,7 +184,11 @@ library PolicyHelperV1 {
    * @custom:suppress-malicious-erc The ERC-20 `stablecoin` can't be manipulated via user input.
    *
    */
-  function purchaseCoverInternal(IStore s, IPolicy.PurchaseCoverArgs calldata args)
+  function purchaseCoverInternal(
+    IStore s,
+    uint256 policyId,
+    IPolicy.PurchaseCoverArgs calldata args
+  )
     external
     returns (
       ICxToken cxToken,
@@ -211,7 +213,7 @@ library PolicyHelperV1 {
     uint256 toMint = (args.amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
     cxToken = getCxTokenOrDeployInternal(s, args.coverKey, args.productKey, args.coverDuration);
-    cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
+    cxToken.mint(policyId, args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
     s.updateStateAndLiquidityInternal(args.coverKey);
   }

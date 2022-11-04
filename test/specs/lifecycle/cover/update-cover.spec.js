@@ -65,7 +65,7 @@ describe('Cover: updateCover', () => {
     await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover(args)
 
@@ -83,7 +83,7 @@ describe('Cover: updateCover', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(vault.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(vault.address, ethers.constants.MaxUint256)
     await deployed.npm.approve(vault.address, ethers.constants.MaxUint256)
     await vault.addLiquidity({
       coverKey,
@@ -112,7 +112,7 @@ describe('Cover: updateCover', () => {
     await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       ...args,
@@ -136,7 +136,7 @@ describe('Cover: updateCover', () => {
     }, coverKey)
 
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
-    await deployed.dai.approve(vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,
@@ -158,7 +158,7 @@ describe('Cover: updateCover', () => {
     await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       ...args,
@@ -182,7 +182,7 @@ describe('Cover: updateCover', () => {
     }, coverKey)
 
     await deployed.liquidityEngine.setRiskPoolingPeriods(coverKey, lendingPeriod, withdrawalWindow)
-    await deployed.dai.approve(vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(vault.address, initialLiquidity)
     await deployed.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,

@@ -1,17 +1,17 @@
-# FaultyCompoundDaiDelegator.sol
+# FaultyCompoundStablecoinDelegator.sol
 
-View Source: [contracts/fakes/FaultyCompoundDaiDelegator.sol](../contracts/fakes/FaultyCompoundDaiDelegator.sol)
+View Source: [contracts/fakes/FaultyCompoundStablecoinDelegator.sol](../contracts/fakes/FaultyCompoundStablecoinDelegator.sol)
 
 **↗ Extends: [ICompoundERC20DelegatorLike](ICompoundERC20DelegatorLike.md), [ERC20](ERC20.md)**
 
-**FaultyCompoundDaiDelegator**
+**FaultyCompoundStablecoinDelegator**
 
 ## Contract Members
 **Constants & Variables**
 
 ```js
-contract FakeToken public dai;
-contract FakeToken public cDai;
+contract FakeToken public stablecoin;
+contract FakeToken public cStablecoin;
 uint256 public returnValue;
 
 ```
@@ -19,7 +19,7 @@ uint256 public returnValue;
 ## Functions
 
 - [setReturnValue(uint256 _returnValue)](#setreturnvalue)
-- [constructor(FakeToken _dai, FakeToken _cDai, uint256 _returnValue)](#)
+- [constructor(FakeToken _stablecoin, FakeToken _cStablecoin, uint256 _returnValue)](#)
 - [mint(uint256 mintAmount)](#mint)
 - [redeem(uint256 redeemTokens)](#redeem)
 
@@ -48,15 +48,15 @@ function setReturnValue(uint256 _returnValue) external {
 ### 
 
 ```solidity
-function (FakeToken _dai, FakeToken _cDai, uint256 _returnValue) public nonpayable ERC20 
+function (FakeToken _stablecoin, FakeToken _cStablecoin, uint256 _returnValue) public nonpayable ERC20 
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _dai | FakeToken |  | 
-| _cDai | FakeToken |  | 
+| _stablecoin | FakeToken |  | 
+| _cStablecoin | FakeToken |  | 
 | _returnValue | uint256 |  | 
 
 <details>
@@ -64,12 +64,12 @@ function (FakeToken _dai, FakeToken _cDai, uint256 _returnValue) public nonpayab
 
 ```javascript
 constructor(
-    FakeToken _dai,
-    FakeToken _cDai,
+    FakeToken _stablecoin,
+    FakeToken _cStablecoin,
     uint256 _returnValue
-  ) ERC20("cDAI", "cDAI") {
-    dai = _dai;
-    cDai = _cDai;
+  ) ERC20("cStablecoin", "cStablecoin") {
+    stablecoin = _stablecoin;
+    cStablecoin = _cStablecoin;
     returnValue = _returnValue;
   }
 ```
@@ -99,7 +99,7 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function mint(uint256 mintAmount) external override returns (uint256) {
-    dai.transferFrom(msg.sender, address(this), mintAmount);
+    stablecoin.transferFrom(msg.sender, address(this), mintAmount);
     return returnValue;
   }
 ```
@@ -129,7 +129,7 @@ uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
 
 ```javascript
 function redeem(uint256 redeemTokens) external override returns (uint256) {
-    cDai.transferFrom(msg.sender, address(this), redeemTokens);
+    cStablecoin.transferFrom(msg.sender, address(this), redeemTokens);
     return returnValue;
   }
 ```
@@ -162,7 +162,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -172,7 +172,7 @@ function redeem(uint256 redeemTokens) external override returns (uint256) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

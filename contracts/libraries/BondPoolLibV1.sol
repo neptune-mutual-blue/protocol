@@ -133,12 +133,12 @@ library BondPoolLibV1 {
   }
 
   /**
-   * @dev Create a new NPM/DAI LP token bond
+   * @dev Create a new NPM/stablecoin LP token bond
    *
    * @custom:suppress-malicious-erc The token `BondPoolLibV1.NS_BOND_LP_TOKEN` can't be manipulated via user input
    *
    * @param s Specify store instance
-   * @param lpTokens Enter the total units of NPM/DAI Uniswap v2 tokens to be bonded
+   * @param lpTokens Enter the total units of NPM/Stablecoin Uniswap v2 tokens to be bonded
    * @param minNpmDesired Enter the minimum NPM tokens you desire for the given LP tokens.
    * This transaction will revert if the final NPM bond is less than your specified value.
    *

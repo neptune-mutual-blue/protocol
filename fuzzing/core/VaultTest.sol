@@ -22,8 +22,8 @@ contract VaultTest is CoverSpec {
     vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
     vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
-    _dai.mint(amount);
-    _dai.approve(address(_vault), amount);
+    _stablecoin.mint(amount);
+    _stablecoin.approve(address(_vault), amount);
 
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
@@ -46,8 +46,8 @@ contract VaultTest is CoverSpec {
     vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
     vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
-    _dai.mint(amount);
-    _dai.approve(address(_vault), amount);
+    _stablecoin.mint(amount);
+    _stablecoin.approve(address(_vault), amount);
 
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
@@ -78,8 +78,8 @@ contract VaultTest is CoverSpec {
     vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
     vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
-    _dai.mint(amount);
-    _dai.approve(address(_vault), amount);
+    _stablecoin.mint(amount);
+    _stablecoin.approve(address(_vault), amount);
 
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
@@ -115,8 +115,8 @@ contract VaultTest is CoverSpec {
     vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
     vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
-    _dai.mint(amount);
-    _dai.approve(address(_vault), amount);
+    _stablecoin.mint(amount);
+    _stablecoin.approve(address(_vault), amount);
 
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);
@@ -152,8 +152,8 @@ contract VaultTest is CoverSpec {
     vm.assume(amount > 0 && amount < DEPOSIT_THRESHOLD);
     vm.assume(npmStakeToAdd > 5000 ether && npmStakeToAdd < NPM_DEPOSIT_THRESHOLD);
 
-    _dai.mint(amount);
-    _dai.approve(address(_vault), amount);
+    _stablecoin.mint(amount);
+    _stablecoin.approve(address(_vault), amount);
 
     _npm.mint(npmStakeToAdd);
     _npm.approve(address(_vault), npmStakeToAdd);

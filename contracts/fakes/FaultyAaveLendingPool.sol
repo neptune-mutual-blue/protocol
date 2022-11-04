@@ -8,7 +8,7 @@ import "./FakeToken.sol";
 contract FaultyAaveLendingPool is IAaveV2LendingPoolLike, ERC20 {
   FakeToken public aToken;
 
-  constructor(FakeToken _aToken) ERC20("aDAI", "aDAI") {
+  constructor(FakeToken _aToken) ERC20("aStablecoin", "aStablecoin") {
     aToken = _aToken;
   }
 

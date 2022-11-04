@@ -5,7 +5,7 @@ import "./IStore.sol";
 import "./IMember.sol";
 
 interface IVaultFactory is IMember {
-  event VaultDeployed(bytes32 indexed coverKey, address vault);
+  event VaultDeployed(address vault, bytes32 indexed coverKey, string name, string symbol);
 
   function deploy(
     bytes32 coverKey,

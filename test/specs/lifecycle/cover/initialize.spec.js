@@ -57,7 +57,11 @@ describe('Cover: initialize', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -94,12 +98,12 @@ describe('Cover: initialize', () => {
 
     await protocol.addContract(key.PROTOCOL.CNS.COVER, cover.address)
 
-    const tx = await cover.initialize(deployed.dai.address, key.toBytes32('DAI'))
+    const tx = await cover.initialize(deployed.stablecoin.address, key.toBytes32('USDC'))
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'CoverInitialized')
 
-    event.args.stablecoin.should.equal(deployed.dai.address)
-    event.args.withName.should.equal(key.toBytes32('DAI'))
+    event.args.stablecoin.should.equal(deployed.stablecoin.address)
+    event.args.withName.should.equal(key.toBytes32('USDC'))
   })
 
   it('reverts if already initialized', async () => {
@@ -118,8 +122,8 @@ describe('Cover: initialize', () => {
 
     await protocol.addContract(key.PROTOCOL.CNS.COVER, cover.address)
 
-    await cover.initialize(deployed.dai.address, key.toBytes32('DAI'))
-    await cover.initialize(deployed.dai.address, key.toBytes32('DAI'))
+    await cover.initialize(deployed.stablecoin.address, key.toBytes32('USDC'))
+    await cover.initialize(deployed.stablecoin.address, key.toBytes32('USDC'))
       .should.be.rejectedWith('Already initialized')
   })
 })

@@ -29,7 +29,7 @@ describe('Distributor: `removeLiquidity` function', () => {
     const npmStakeToAdd = helper.ether(1000)
 
     await deployed.npm.approve(distributor.address, ethers.constants.MaxUint256)
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     await deployed.cover.setMinStakeToAddLiquidity(helper.ether(250))
 
@@ -120,7 +120,7 @@ describe('Distributor: `removeLiquidity` function', () => {
     await deployed.protocol.removeMember(owner.address)
   })
 
-  it('must reject if DAI is missing', async () => {
+  it('must reject if stablecoin is missing', async () => {
     const [owner] = await ethers.getSigners()
     await deployed.protocol.addMember(owner.address)
 
@@ -134,9 +134,9 @@ describe('Distributor: `removeLiquidity` function', () => {
     await deployed.store.deleteAddress(storeKey)
 
     await distributor.removeLiquidity(coverKey, pods, npmStake, false)
-      .should.be.rejectedWith('Fatal: DAI missing')
+      .should.be.rejectedWith('Fatal: Stablecoin missing')
 
-    await deployed.store.setAddress(storeKey, deployed.dai.address)
+    await deployed.store.setAddress(storeKey, deployed.stablecoin.address)
 
     await distributor.removeLiquidity(coverKey, pods, npmStake, false)
       .should.not.be.rejected

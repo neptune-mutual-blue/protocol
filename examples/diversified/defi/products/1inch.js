@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('1inch-v2'),
-  productName: '1inch (v2)',
+  productName: '1inch v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['exchange', 'dex', 'swap', 'aggregation'],

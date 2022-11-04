@@ -98,7 +98,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    // Transfer DAI to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
+    // Transfer stablecoin to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
     stablecoin.ensureApproval(address(delegator), amount);
 
@@ -141,7 +141,7 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
     IERC20 stablecoin = getDepositAsset();
     IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
-    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `DAI`
+    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `stablecoin`
     _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
@@ -151,19 +151,19 @@ contract CompoundStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
-    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem DAI
+    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem stablecoin
     vault.transferToStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinRedeemed);
     compoundWrappedStablecoin.ensureApproval(address(delegator), compoundWrappedStablecoinRedeemed);
     uint256 result = delegator.redeem(compoundWrappedStablecoinRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
-    // Check how many DAI we received
+    // Check how many stablecoin we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     require(stablecoinWithdrawn > 0, "Redeeming cUS$ failed");
 
-    // Immediately send DAI to the vault compoundWrappedStablecoin came from
+    // Immediately send stablecoin to the vault compoundWrappedStablecoin came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 

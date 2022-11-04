@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('synthetix-v2'),
-  productName: 'Synthetix (v2)',
+  productName: 'Synthetix v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(70),
   tags: ['derivative', 'staking', 'yield'],

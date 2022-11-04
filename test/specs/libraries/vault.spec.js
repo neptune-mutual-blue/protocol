@@ -36,7 +36,7 @@ describe('Vault Library', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.setMinStakeToAddLiquidity(helper.ether(250))
 
@@ -71,7 +71,7 @@ describe('Vault Library', () => {
       }
     }, coverKey)
 
-    // await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    // await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     // await deployed.vault.addLiquidity({
     //   coverKey,
@@ -121,9 +121,9 @@ describe('Vault Library', () => {
 
   describe('VaultLibV1: mustHaveNoBalanceInStrategies', () => {
     it('must revert when strategy balance is zero', async () => {
-      await mockContract.setAmountInStrategies(coverKey, deployed.dai.address, 1)
+      await mockContract.setAmountInStrategies(coverKey, deployed.stablecoin.address, 1)
 
-      await mockContract.mustHaveNoBalanceInStrategies(coverKey, deployed.dai.address)
+      await mockContract.mustHaveNoBalanceInStrategies(coverKey, deployed.stablecoin.address)
         .should.be.rejectedWith('Strategy balance is not zero')
     })
   })
@@ -135,7 +135,7 @@ describe('Vault Library', () => {
       await mockContract.getMaxFlashLoanInternal(coverKey, deployed.vault.address)
         .should.be.rejectedWith('Cover liquidity uninitialized')
 
-      await mockContract.setAddressByKey(key.PROTOCOL.CNS.COVER_STABLECOIN, deployed.dai.address)
+      await mockContract.setAddressByKey(key.PROTOCOL.CNS.COVER_STABLECOIN, deployed.stablecoin.address)
     })
 
     it('must return zero if token is not stablecoin', async () => {

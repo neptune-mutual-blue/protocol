@@ -42,6 +42,7 @@ contract Protocol is IProtocol, ProtoBase {
       s.setBoolByKeys(ProtoUtilV1.NS_CONTRACTS, address(this), true);
 
       s.setAddressByKey(ProtoUtilV1.CNS_NPM, args.npm);
+      s.setAddressBooleanByKey(ProtoUtilV1.NS_COVER_CREATOR_WHITELIST, msg.sender, true);
 
       s.deleteBoolByKeys(ProtoUtilV1.NS_MEMBERS, msg.sender);
       emit MemberRemoved(msg.sender);
@@ -71,6 +72,10 @@ contract Protocol is IProtocol, ProtoBase {
     s.setUintByKey(ProtoUtilV1.NS_LIQUIDITY_STATE_UPDATE_INTERVAL, args.stateUpdateInterval);
     s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_MAX_LENDING_RATIO, args.maxLendingRatio);
     s.setUintByKey(ProtoUtilV1.NS_COVERAGE_LAG, 1 days);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_LENDING_PERIOD, args.lendingPeriod);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_LIQUIDITY_WITHDRAWAL_WINDOW, args.withdrawalWindow);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_FLOOR, args.policyFloor);
+    s.setUintByKey(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, args.policyCeiling);
 
     initialized = true;
 

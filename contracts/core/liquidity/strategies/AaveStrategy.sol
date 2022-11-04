@@ -93,11 +93,11 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
 
     require(stablecoin.balanceOf(address(vault)) >= amount, "Balance insufficient");
 
-    // This strategy should never have token balances without any exception, especially `aToken` and `DAI`
+    // This strategy should never have token balances without any exception, especially `aToken` and `stablecoin`
     _drain(aToken);
     _drain(stablecoin);
 
-    // Transfer DAI to this contract; then approve and deposit it to Aave Lending Pool to receive aToken certificates
+    // Transfer stablecoin to this contract; then approve and deposit it to Aave Lending Pool to receive aToken certificates
     // stablecoin.ensureTransferFrom(fromVault, address(this), amount);
 
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
@@ -149,18 +149,18 @@ contract AaveStrategy is ILendingStrategy, Recoverable {
       return 0;
     }
 
-    // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back DAI + rewards
+    // Transfer aToken to this contract; then approve and send it to the Aave Lending pool get back stablecoin + rewards
     vault.transferToStrategy(aToken, coverKey, getName(), aTokenRedeemed);
 
     aToken.ensureApproval(address(lendingPool), aTokenRedeemed);
     lendingPool.withdraw(address(stablecoin), aTokenRedeemed, address(this));
 
-    // Check how many DAI we received
+    // Check how many stablecoins we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     require(stablecoinWithdrawn > 0, "Redeeming aToken failed");
 
-    // Immediately send DAI to the vault aToken came from
+    // Immediately send stablecoin to the vault aToken came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 

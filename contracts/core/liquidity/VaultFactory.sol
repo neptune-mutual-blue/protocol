@@ -56,7 +56,7 @@ contract VaultFactory is IVaultFactory, Recoverable {
       }
     }
 
-    emit VaultDeployed(coverKey, addr);
+    emit VaultDeployed(addr, coverKey, tokenName, tokenSymbol);
   }
 
   /**

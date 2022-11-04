@@ -82,10 +82,7 @@ function addCover(AddCoverArgs calldata args) public override nonReentrant retur
 
     emit CoverCreated(args.coverKey, args.info, args.tokenName, args.tokenSymbol, args.supportsProducts, args.requiresWhitelist);
 
-    address vault = s.deployVaultInternal(args.coverKey, args.tokenName, args.tokenSymbol);
-    emit VaultDeployed(args.coverKey, vault);
-
-    return vault;
+    return s.deployVaultInternal(args.coverKey, args.tokenName, args.tokenSymbol);
   }
 ```
 </details>
@@ -440,7 +437,7 @@ function checkIfWhitelistedUser(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -450,7 +447,7 @@ function checkIfWhitelistedUser(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)
