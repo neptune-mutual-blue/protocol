@@ -160,11 +160,11 @@ Do not trust ERC-20 addresses that are supplied by users. Verify your intended u
 using NTransferUtilV2 for IERC20;
 
 function claim(address cxToken, bytes32 key, bytes32 incidentDate, uint256 amount) {
-	// ...
-	// @suppress-malicious-erc20 The ERC-20 operation on the address `cxToken`
+  // ...
+  // @suppress-malicious-erc20 The ERC-20 operation on the address `cxToken`
   // is validated using the `NTransferUtilV2` library
-	IERC20(**cxToken**).ensureTransferFrom(msg.sender, address(this), amount);
-	// validate ☝️ `cxToken` address
+  IERC20(**cxToken**).ensureTransferFrom(msg.sender, address(this), amount);
+  // validate ☝️ `cxToken` address
 }
 ```
 
