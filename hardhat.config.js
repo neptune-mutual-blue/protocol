@@ -19,7 +19,7 @@ const config = {
     local: {
       chainId: 1337,
       url: 'http://localhost:7547',
-      gasPrice: 34 * GWEI,
+      gasPrice: 12 * GWEI,
       blockGasLimit: 20000000, // 20M
       explorer: 'https://etherscan.com'
     },

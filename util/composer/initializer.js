@@ -66,7 +66,7 @@ const initialize = async (suite, deploymentId) => {
     npm: tokens.npm.address,
     treasury,
     priceOracle,
-    coverCreationFee: helper.ether(0),
+    coverCreationFee: helper.ether(10_000),
     minCoverCreationStake: helper.ether(0),
     minStakeToAddLiquidity: helper.ether(0),
     firstReportingStake: helper.ether(10_000),
@@ -76,14 +76,14 @@ const initialize = async (suite, deploymentId) => {
     claimPlatformFee: helper.percentage(6.5),
     claimReporterCommission: helper.percentage(5),
     flashLoanFee: helper.percentage(0.5),
-    flashLoanFeeProtocol: helper.percentage(2.5),
+    flashLoanFeeProtocol: helper.percentage(6.5),
     resolutionCoolDownPeriod: cooldownPeriod,
     stateUpdateInterval: stateUpdateInterval,
     maxLendingRatio: helper.percentage(5),
     lendingPeriod: network.cover.lendingPeriod,
     withdrawalWindow: network.cover.withdrawalWindow,
-    policyFloor: helper.percentage(7),
-    policyCeiling: helper.percentage(45)
+    policyFloor: helper.percentage(1),
+    policyCeiling: helper.percentage(89)
   }
 
   await intermediate(cache, protocol, 'initialize', args)

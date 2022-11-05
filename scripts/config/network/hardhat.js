@@ -1,6 +1,3 @@
-// const mainnet = require('./mainnet')
-// const knownAccounts = mainnet['1'].knownAccounts
-// const uniswapV2Like = mainnet['1'].uniswapV2Like
 const { ACCESS_CONTROL } = require('../../../util/key')
 const wallet = require('../../../util/wallet')
 

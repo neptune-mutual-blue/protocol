@@ -1,8 +1,8 @@
 const hre = require('hardhat')
-const deployment = require('../.deployments/fuji.json')
+const deployment = require('../.deployments/ethereum.json')
 const io = require('../util/io')
 const path = require('path')
-const network = 'fuji'
+const network = 'ethereum'
 const deploymentId = 6
 
 const ensureDirectory = async () => {

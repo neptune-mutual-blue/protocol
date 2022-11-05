@@ -11,6 +11,7 @@
     "build:clean": "npm run clean && npm run compile",
     "ganache": "npx ganache -p 8545 --chain.chainId 333333",
     "deploy": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:ethereum": "hardhat run scripts/deploy.js --network ethereum 2>&1 | tee ./.ignored/ethereum-deployment.md",
     "deploy:local": "rm -f ./.deployments/local.json && hardhat run scripts/deploy.js --network local 2>&1 | tee ./.ignored/local-deployment.md",
     "deploy:fuji": "hardhat run scripts/deploy.js --network fuji 2>&1 | tee ./.ignored/fuji-deployment.md",
     "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai 2>&1 | tee ./.ignored/mumbai-deployment.md",

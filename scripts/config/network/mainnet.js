@@ -22,12 +22,7 @@ const config = {
       stateUpdateInterval: 5 * MINUTES
     },
     knownAccounts: [
-      // {
-      //   account: '',
-      //   roles: [
-      //     ACCESS_CONTROL.PAUSE_AGENT
-      //   ]
-      // },
+
     ],
     deployedTokens: {
       NPM: '0xb31AB812aAD7E905A7B8f3263560D2f610d582d7', // POT
@@ -44,7 +39,7 @@ const config = {
     aave: {
       description: 'Aave on Ethereum',
       addresses: {
-        lendingPool: '0x398eC7346DcD622eDc5ae82352F02bE94C62d119'
+        lendingPool: ''
       }
     },
     compound: {
@@ -53,8 +48,8 @@ const config = {
       }
     },
     protocol: {
-      burner: '',
-      treasury: ''
+      burner: '0x365673739e2d8F46DCCce07866e9f53A19526918',
+      treasury: '0x5e4B7212Beb8926fc925328e890dBe6c6fC971f0'
     }
   }
 }
