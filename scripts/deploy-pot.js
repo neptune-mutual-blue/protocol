@@ -25,8 +25,7 @@ const main = async () => {
 
   console.log('Deployer: %s. Balance: %s ETH', deployer.address, formatEther(previousBalance))
 
-  const store = await deploy('Store')
-  await deploy('POT', deployer.address, store.address)
+  await deploy('POT', deployer.address)
 
   const balance = await deployer.getBalance()
   const cost = previousBalance.sub(balance)
