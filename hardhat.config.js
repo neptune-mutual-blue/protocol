@@ -36,6 +36,13 @@ const config = {
       accounts: [process.env.PRIVATE_KEY],
       gas: 'auto',
       explorer: 'https://testnet.snowtrace.io'
+    },
+    ethereum: {
+      url: process.env.ETHEREUM_RPC_URL,
+      chainId: 1,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 12 * GWEI,
+      explorer: 'https://etherscan.io'
     }
   },
   solidity: {
@@ -60,7 +67,7 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.SNOWTRACE_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY,
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
       mumbai: process.env.POLYGONSCAN_API_KEY,
