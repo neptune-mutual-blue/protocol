@@ -1,4 +1,4 @@
-const hardhat = require('./hardhat')
+const hardhat = require('./hardhat-fork')
 const mainnet = require('./mainnet')
 const fuji = require('./fuji')
 const mumbai = require('./mumbai')

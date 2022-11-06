@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('binance'),
   coverName: 'Binance Exchange',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-BNB',
   requiresWhitelist: false,
   supportsProducts: false,

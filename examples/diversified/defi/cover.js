@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('defi'),
   coverName: 'Popular DeFi Apps',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-POP',
   requiresWhitelist: false,
   supportsProducts: true,

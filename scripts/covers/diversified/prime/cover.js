@@ -1,8 +1,7 @@
-const { key, helper } = require('../../../util')
-const { ether, percentage, STABLECOIN_DECIMALS } = helper
+const { key, helper } = require('../../../../util')
+const { ether, percentage } = helper
 
-const MINUTES = 60
-const PRECISION = STABLECOIN_DECIMALS
+const DAYS = 86400
 
 module.exports = {
   coverKey: key.toBytes32('prime'),
@@ -12,7 +11,7 @@ module.exports = {
   tokenSymbol: 'iUSDC-PRI',
   requiresWhitelist: false,
   supportsProducts: true,
-  leverageFactor: '10',
+  leverageFactor: '6',
   tags: ['nft', 'exchange', 'dex', 'swap', 'fork', 'stablecoin', 'lending', 'flashloan', 'borrowing', 'interest', 'loan', 'staking', 'yield', 'insurance', 'payment'],
   about: '',
   blockchains: [{
@@ -21,11 +20,11 @@ module.exports = {
   }],
   floor: percentage(0.5),
   ceiling: percentage(8),
-  reportingPeriod: 5 * MINUTES,
-  cooldownPeriod: 5 * MINUTES,
-  claimPeriod: 5 * MINUTES,
-  minStakeToReport: ether(2000),
-  stakeWithFee: ether(2000),
-  initialReassuranceAmount: ether(50_000, PRECISION),
+  reportingPeriod: 7 * DAYS,
+  cooldownPeriod: 1 * DAYS,
+  claimPeriod: 7 * DAYS,
+  minStakeToReport: ether(10_000),
+  stakeWithFee: ether(12_000),
+  initialReassuranceAmount: '0',
   reassuranceRate: percentage(25)
 }

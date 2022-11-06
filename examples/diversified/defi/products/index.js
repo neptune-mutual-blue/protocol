@@ -6,7 +6,6 @@ const lido = require('./lido')
 const nexusMutual = require('./nexus-mutual')
 const rocketPool = require('./rocket-pool')
 const sushi = require('./sushi')
-const synthetix = require('./synthetix')
 const uniswap = require('./uniswap')
 
 module.exports = [
@@ -18,6 +17,5 @@ module.exports = [
   nexusMutual,
   rocketPool,
   sushi,
-  synthetix,
   uniswap
 ]

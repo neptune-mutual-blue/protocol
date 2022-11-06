@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('animoca'),
   coverName: 'Animoca Brands',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-AB',
   requiresWhitelist: false,
   supportsProducts: true,

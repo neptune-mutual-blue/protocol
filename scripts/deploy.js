@@ -20,7 +20,7 @@ const deploy = async () => {
   const result = await composer.initializer.initialize(isHardhat, DEPLOYMENT_ID)
   const { intermediate, cache, tokens, pairInfo, startBalance } = result
 
-  if (!network.mainnet) {
+  if (network.mainnet === false) {
     console.info('Stop: 100ms')
     await rest(100)
     console.info('Go')

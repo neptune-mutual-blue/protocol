@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('okx'),
   coverName: 'OKX',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-OKX',
   requiresWhitelist: false,
   supportsProducts: false,

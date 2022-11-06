@@ -14,7 +14,12 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      blockGasLimit: 20000000 // 20M
+      blockGasLimit: 20000000, // 20M
+      forking: {
+        url: process.env.ETHEREUM_RPC_URL,
+        blockNumber: 15910266
+      },
+      explorer: 'https://etherscan.io'
     },
     local: {
       chainId: 1337,

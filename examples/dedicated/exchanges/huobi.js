@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('huobi'),
   coverName: 'Huobi Global',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-HT',
   requiresWhitelist: false,
   supportsProducts: false,

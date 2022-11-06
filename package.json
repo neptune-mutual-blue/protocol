@@ -92,6 +92,9 @@
     "solidoc2": "1.0.7",
     "standard": "16.0.4"
   },
+  "resolutions": {
+    "hardhat/**/@ethereumjs/tx": "3.5.0"
+  },
   "volta": {
     "node": "16.13.1",
     "yarn": "1.22.19"

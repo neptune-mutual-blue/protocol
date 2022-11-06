@@ -8,7 +8,7 @@ module.exports = {
   coverKey: key.toBytes32('coinbase'),
   coverName: 'Coinbase (Non US)',
   projectName: null,
-  tokenName: 'Income Bearing USDC',
+  tokenName: 'Yield Bearing USDC',
   tokenSymbol: 'iUSDC-COIN',
   requiresWhitelist: false,
   supportsProducts: false,
