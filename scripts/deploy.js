@@ -1,12 +1,15 @@
 const { ethers } = require('hardhat')
 const composer = require('../util/composer')
 const helper = require('../util/helper')
+const key = require('../util/key')
 const covers = require('../util/composer/covers')
 const podStakingPools = require('../util/composer/pod-staking')
 const demoData = require('../util/demo-data')
 const { getNetworkInfo } = require('../util/network')
 
 const DEPLOYMENT_ID = 6
+const MINUTES = 60
+const COVERAGE_LAG = 'ns:coverage:lag'
 
 const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
@@ -21,6 +24,9 @@ const deploy = async () => {
   const { intermediate, cache, tokens, pairInfo, startBalance } = result
 
   if (network.mainnet === false) {
+    await intermediate(cache, result.protocol, 'addMember', owner.address)
+    await intermediate(cache, result.store, 'setUint', key.toBytes32(COVERAGE_LAG), 1 * MINUTES)
+
     console.info('Stop: 100ms')
     await rest(100)
     console.info('Go')
