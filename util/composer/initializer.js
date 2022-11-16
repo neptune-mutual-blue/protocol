@@ -7,6 +7,7 @@ const { getNetworkInfo } = require('../network')
 const { grantRoles } = require('./grant-roles')
 const { getExternalProtocols } = require('./external-protocols')
 const { setStakingPools } = require('./testnet/staking-pools')
+const chalk = require('chalk')
 
 /**
  * Initializes all contracts
@@ -18,24 +19,28 @@ const initialize = async (suite, deploymentId) => {
 
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
+
+  if (network.chainId !== 31337) {
+    console.info(chalk.red.bold.underline('Deploying to %s: %s (%s)\n'), network.mainnet ? 'mainnet' : 'testnet', network.network, network.chainId)
+  }
+
   const claimPeriod = network.cover.claimPeriod
   const cooldownPeriod = network.cover.cooldownPeriod
   const stateUpdateInterval = network.cover.stateUpdateInterval
   const bondPeriod = network.pool.bond.period.toString()
   const { mainnet } = network
+  const burner = network.protocol.burner
+  const treasury = network.protocol.treasury
 
   const tokens = await fakeTokenComposer.compose(cache)
-  const { npm, dai, crpool, hwt, obk, sabre, bec, xd, aToken, cDai, tokenInfo } = tokens
 
-  console.info('Deployer: %s / ETH: %s / NPM: %s / DAI: %s', owner.address, helper.weiAsToken(startBalance, 'ETH'), helper.weiAsToken(await npm.balanceOf(owner.address), 'NPM'), helper.weiAsToken(await dai.balanceOf(owner.address), 'DAI'))
-  const { router, factory, aaveLendingPool, compoundDaiDelegator, npmPriceOracle } = await getExternalProtocols(cache, tokens)
+  console.info('Deployer: %s / ETH: %s / NPM: %s / USDC: %s', owner.address, helper.weiAsToken(startBalance, 'ETH'), helper.weiAsToken(await tokens.npm.balanceOf(owner.address), 'NPM'), helper.weiAsToken(await tokens.stablecoin.balanceOf(owner.address), 'USDC'))
+
+  const { router, factory, aaveLendingPool, compoundStablecoinDelegator, priceOracle } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
   const [npmUsdPair, crpoolUsdPair, hwtUsdPair, obkUsdPair, sabreUsdPair, becUsdPair, xdUsdPair] = pairs
-
-  // The protocol only supports stablecoin as reassurance token for now
-  const reassuranceToken = dai
 
   const store = await storeComposer.deploy(cache)
   const libs = await libsComposer.deployAll(cache)
@@ -54,28 +59,34 @@ const initialize = async (suite, deploymentId) => {
 
   await intermediate(cache, store, 'setBool', key.qualifyMember(protocol.address), true)
 
-  await intermediate(cache, protocol, 'initialize', {
-    burner: helper.zero1,
+  const args = {
+    burner,
     uniswapV2RouterLike: router,
     uniswapV2FactoryLike: factory,
-    npm: npm.address,
-    treasury: sample.fake.TREASURY,
-    priceOracle: npmPriceOracle,
-    coverCreationFee: helper.ether(0),
+    npm: tokens.npm.address,
+    treasury,
+    priceOracle,
+    coverCreationFee: helper.ether(10_000),
     minCoverCreationStake: helper.ether(0),
     minStakeToAddLiquidity: helper.ether(0),
-    firstReportingStake: helper.ether(250),
+    firstReportingStake: helper.ether(10_000),
     claimPeriod,
     reportingBurnRate: helper.percentage(30),
     governanceReporterCommission: helper.percentage(10),
     claimPlatformFee: helper.percentage(6.5),
     claimReporterCommission: helper.percentage(5),
     flashLoanFee: helper.percentage(0.5),
-    flashLoanFeeProtocol: helper.percentage(2.5),
+    flashLoanFeeProtocol: helper.percentage(6.5),
     resolutionCoolDownPeriod: cooldownPeriod,
     stateUpdateInterval: stateUpdateInterval,
-    maxLendingRatio: helper.percentage(5)
-  })
+    maxLendingRatio: helper.percentage(5),
+    lendingPeriod: network.cover.lendingPeriod,
+    withdrawalWindow: network.cover.withdrawalWindow,
+    policyFloor: helper.percentage(1),
+    policyCeiling: helper.percentage(89)
+  }
+
+  await intermediate(cache, protocol, 'initialize', args)
 
   const bondPoolContract = await deployer.deployWithLibraries(cache, 'BondPool', {
     AccessControlLibV1: libs.accessControlLibV1.address,
@@ -253,7 +264,7 @@ const initialize = async (suite, deploymentId) => {
 
   const strategies = []
 
-  if (aaveLendingPool) {
+  if (aaveLendingPool && mainnet === false) {
     const aaveStrategy = await deployer.deployWithLibraries(cache, 'AaveStrategy', {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
@@ -262,7 +273,7 @@ const initialize = async (suite, deploymentId) => {
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLibV1.address
-    }, store.address, aaveLendingPool, aToken.address)
+    }, store.address, aaveLendingPool, tokens.aToken.address)
 
     addContractArgs.namespaces.push(key.PROTOCOL.CNS.STRATEGY_AAVE)
     addContractArgs.contractAddresses.push(aaveStrategy)
@@ -270,7 +281,7 @@ const initialize = async (suite, deploymentId) => {
     strategies.push(aaveStrategy.address)
   }
 
-  if (compoundDaiDelegator) {
+  if (compoundStablecoinDelegator && mainnet === false) {
     const compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
       AccessControlLibV1: libs.accessControlLibV1.address,
       BaseLibV1: libs.baseLibV1.address,
@@ -279,7 +290,7 @@ const initialize = async (suite, deploymentId) => {
       RegistryLibV1: libs.registryLibV1.address,
       StoreKeyUtil: libs.storeKeyUtil.address,
       ValidationLibV1: libs.validationLibV1.address
-    }, store.address, compoundDaiDelegator, cDai.address)
+    }, store.address, compoundStablecoinDelegator, tokens.cStablecoin.address)
 
     addContractArgs.namespaces.push(key.PROTOCOL.CNS.STRATEGY_COMPOUND)
     addContractArgs.contractAddresses.push(compoundStrategy)
@@ -293,37 +304,29 @@ const initialize = async (suite, deploymentId) => {
     await intermediate(cache, liquidityEngine, 'addStrategies', strategies)
   }
 
-  await intermediate(cache, npm, 'approve', bondPoolContract.address, helper.ether(2_000_000))
+  if (mainnet === false) {
+    await intermediate(cache, tokens.npm, 'approve', bondPoolContract.address, helper.ether(2_000_000))
 
-  await intermediate(cache, bondPoolContract, 'setup', {
-    lpToken: npmUsdPair.address,
-    treasury: sample.fake.TREASURY,
-    bondDiscountRate: helper.percentage(0.75),
-    maxBondAmount: helper.ether(10_000),
-    vestingTerm: bondPeriod,
-    npmToTopUpNow: helper.ether(2_000_000)
-  })
+    await intermediate(cache, bondPoolContract, 'setup', {
+      lpToken: npmUsdPair.address,
+      treasury: sample.fake.TREASURY,
+      bondDiscountRate: helper.percentage(0.75),
+      maxBondAmount: helper.ether(10_000),
+      vestingTerm: bondPeriod,
+      npmToTopUpNow: helper.ether(2_000_000)
+    })
+  }
 
-  await intermediate(cache, liquidityEngine, 'setRiskPoolingPeriods', key.toBytes32(''), network.cover.lendingPeriod, network.cover.withdrawalWindow)
-
-  await intermediate(cache, cover, 'updateCoverCreatorWhitelist', [owner.address], [true])
-  await intermediate(cache, cover, 'initialize', dai.address, key.toBytes32('DAI'))
-
-  await intermediate(cache, policyAdminContract, 'setPolicyRatesByKey', key.toBytes32(''), helper.percentage(7), helper.percentage(45))
+  await intermediate(cache, cover, 'initialize', tokens.stablecoin.address, key.toBytes32('USDC'))
 
   const returns = {
     startBalance,
     intermediate,
     cache,
     store,
-    npm,
-    dai,
-    crpool,
-    hwt,
-    obk,
-    sabre,
-    bec,
-    xd,
+    tokens,
+    pairs,
+    pairInfo,
     npmUsdPair,
     crpoolUsdPair,
     hwtUsdPair,
@@ -331,7 +334,7 @@ const initialize = async (suite, deploymentId) => {
     sabreUsdPair,
     becUsdPair,
     xdUsdPair,
-    reassuranceToken,
+    reassuranceToken: tokens.stablecoin,
     protocol,
     stakingContract,
     reassuranceContract,
@@ -346,9 +349,7 @@ const initialize = async (suite, deploymentId) => {
     claimsProcessor,
     bondPoolContract,
     stakingPoolContract,
-    libs,
-    tokenInfo,
-    pairInfo
+    libs
   }
 
   if (mainnet === false) {

@@ -3,6 +3,12 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "coverKey",
@@ -10,9 +16,15 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "symbol",
+        "type": "string"
       }
     ],
     "name": "VaultDeployed",

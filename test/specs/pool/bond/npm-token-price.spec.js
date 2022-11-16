@@ -30,7 +30,7 @@ describe('Bond: NPM Token Price', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      lpToken: deployed.npmDai.address,
+      lpToken: deployed.npmStablecoinPair.address,
       treasury: helper.randomAddress(),
       bondDiscountRate: helper.percentage(1),
       maxBondAmount: helper.ether(100_000),

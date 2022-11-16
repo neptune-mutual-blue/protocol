@@ -344,7 +344,7 @@ function _getTotalNpmDistributed(IStore s) private view returns (uint256) {
 
 ### createBondInternal
 
-Create a new NPM/DAI LP token bond
+Create a new NPM/stablecoin LP token bond
 
 ```solidity
 function createBondInternal(IStore s, uint256 lpTokens, uint256 minNpmDesired) external nonpayable
@@ -356,7 +356,7 @@ returns(npmToVest uint256, unlockDate uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore | Specify store instance | 
-| lpTokens | uint256 | Enter the total units of NPM/DAI Uniswap v2 tokens to be bonded | 
+| lpTokens | uint256 | Enter the total units of NPM/Stablecoin Uniswap v2 tokens to be bonded | 
 | minNpmDesired | uint256 | Enter the minimum NPM tokens you desire for the given LP tokens.  This transaction will revert if the final NPM bond is less than your specified value. | 
 
 <details>
@@ -572,7 +572,7 @@ function setupBondPoolInternal(IStore s, IBondPool.SetupBondPoolArgs calldata ar
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -582,7 +582,7 @@ function setupBondPoolInternal(IStore s, IBondPool.SetupBondPoolArgs calldata ar
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

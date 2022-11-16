@@ -1,6 +1,7 @@
 const hre = require('hardhat')
 const fakesComposer = require('./fakes')
 const { getNetworkInfo } = require('../network')
+const { zerox } = require('../helper')
 
 /**
  * Initializes all contracts
@@ -11,9 +12,9 @@ const getExternalProtocols = async (cache, tokens) => {
 
   let router = network?.uniswapV2Like?.addresses?.router
   let factory = network?.uniswapV2Like?.addresses?.factory
-  let npmPriceOracle = network?.uniswapV2Like?.addresses?.npmPriceOracle
+  let priceOracle = network?.uniswapV2Like?.addresses?.npmPriceOracle
   let aaveLendingPool = network?.aave?.addresses?.lendingPool
-  let compoundDaiDelegator = network?.compound?.dai?.delegator
+  let compoundStablecoinDelegator = network?.compound?.stablecoin?.delegator
 
   if (hre.network.name === 'hardhat') {
     const fakes = await fakesComposer.deployAll(cache, tokens)
@@ -30,21 +31,21 @@ const getExternalProtocols = async (cache, tokens) => {
       aaveLendingPool = fakes.aave.lendingPool.address
     }
 
-    if (!compoundDaiDelegator) {
-      compoundDaiDelegator = fakes.compound.daiDelegator.address
+    if (!compoundStablecoinDelegator) {
+      compoundStablecoinDelegator = fakes.compound.stablecoinDelegator.address
     }
+  }
 
-    if (!npmPriceOracle) {
-      npmPriceOracle = fakes.priceOracle.address
-    }
+  if (!priceOracle) {
+    priceOracle = zerox
   }
 
   return {
     router,
     factory,
-    npmPriceOracle,
+    priceOracle,
     aaveLendingPool,
-    compoundDaiDelegator
+    compoundStablecoinDelegator
   }
 }
 

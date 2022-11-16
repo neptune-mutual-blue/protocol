@@ -1,6 +1,3 @@
-// const mainnet = require('./mainnet')
-// const knownAccounts = mainnet['1'].knownAccounts
-// const uniswapV2Like = mainnet['1'].uniswapV2Like
 const { ACCESS_CONTROL } = require('../../../util/key')
 const wallet = require('../../../util/wallet')
 
@@ -22,6 +19,7 @@ const config = {
       withdrawalWindow: 7 * DAYS,
       claimPeriod: 7 * DAYS,
       cooldownPeriod: 1 * DAYS,
+      reportingPeriod: 7 * DAYS,
       stateUpdateInterval: 1 * HOURS
     },
     // knownAccounts,
@@ -51,7 +49,11 @@ const config = {
         ]
       }
     ],
-    uniswapV2Like: null
+    uniswapV2Like: null,
+    protocol: {
+      burner: '0x0000000000000000000000000000000000000001',
+      treasury: '0x0000000000000000000000000000000000000001'
+    }
   }
 }
 

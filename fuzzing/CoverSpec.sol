@@ -26,24 +26,24 @@ import "../contracts/fakes/FakePriceOracle.sol";
 contract BaseSpec is Test {
   Store internal _store;
   FakeToken internal _npm;
-  FakeToken internal _dai;
+  FakeToken internal _stablecoin;
 
-  uint8 public constant DAI_DECIMALS = 6;
+  uint8 public constant STABLECOIN_DECIMALS = 6;
   uint256 public immutable NPM_DEPOSIT_THRESHOLD;
   uint256 public immutable DEPOSIT_THRESHOLD;
-  uint256 public constant DAI_PRECISION = 10**DAI_DECIMALS;
+  uint256 public constant STABLECOIN_PRECISION = 10**STABLECOIN_DECIMALS;
 
   constructor() {
     _store = new Store();
     _deployTokens();
 
-    DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * (10**DAI_DECIMALS);
+    DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_LIQUIDITY * (10**STABLECOIN_DECIMALS);
     NPM_DEPOSIT_THRESHOLD = ProtoUtilV1.MAX_NPM_STAKE * 1 ether;
   }
 
   function _deployTokens() internal {
     _npm = new FakeToken("Neptune Mutual Token", "NPM", 0, 18);
-    _dai = new FakeToken("Dai", "DAI", 0, DAI_DECIMALS);
+    _stablecoin = new FakeToken("USDC", "USDC", 0, STABLECOIN_DECIMALS);
   }
 }
 
@@ -77,7 +77,7 @@ contract ProtocolSpec is BaseSpec {
   function _initializeProtocol() internal {
     _deployProtocol();
 
-    FakeUniswapV2PairLike pair = new FakeUniswapV2PairLike(address(_npm), address(_dai));
+    FakeUniswapV2PairLike pair = new FakeUniswapV2PairLike(address(_npm), address(_stablecoin));
     FakeUniswapV2RouterLike router = new FakeUniswapV2RouterLike();
     FakeUniswapV2FactoryLike factory = new FakeUniswapV2FactoryLike(address(pair));
     FakePriceOracle oracle = new FakePriceOracle();
@@ -164,7 +164,7 @@ contract CoverSpec is ProtocolSpec {
     args.supportsProducts = false;
     args.requiresWhitelist = false;
     args.stakeWithFee = 10_000 ether;
-    args.initialReassuranceAmount = 1_000_000 * DAI_PRECISION;
+    args.initialReassuranceAmount = 1_000_000 * STABLECOIN_PRECISION;
     args.minStakeToReport = 20_000 ether;
     args.reportingPeriod = 7 days;
     args.cooldownPeriod = 1 days;
@@ -174,7 +174,7 @@ contract CoverSpec is ProtocolSpec {
     args.reassuranceRate = 5000;
     args.leverageFactor = 1;
 
-    _cover.initialize(address(_dai), "DAI Token");
+    _cover.initialize(address(_stablecoin), "USDC Token");
 
     address[] memory whitelist = new address[](1);
     whitelist[0] = address(this);
@@ -186,8 +186,8 @@ contract CoverSpec is ProtocolSpec {
     _npm.mint(args.stakeWithFee);
     _npm.approve(address(_coverStake), args.stakeWithFee);
 
-    _dai.mint(args.initialReassuranceAmount);
-    _dai.approve(address(_cover), args.initialReassuranceAmount);
+    _stablecoin.mint(args.initialReassuranceAmount);
+    _stablecoin.approve(address(_cover), args.initialReassuranceAmount);
 
     _vault = Vault(_cover.addCover(args));
   }

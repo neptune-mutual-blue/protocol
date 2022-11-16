@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('curve-v2'),
-  productName: 'Curve Finance (v2)',
+  productName: 'Curve Finance v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(70),
   tags: ['dex', 'exchange', 'swap', 'stablecoin'],

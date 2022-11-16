@@ -14,8 +14,19 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      gasPrice: 50 * GWEI,
-      blockGasLimit: 20000000 // 20M
+      blockGasLimit: 20000000, // 20M
+      forking: {
+        url: process.env.ETHEREUM_RPC_URL,
+        blockNumber: 15910266
+      },
+      explorer: 'https://etherscan.io'
+    },
+    local: {
+      chainId: 1337,
+      url: 'http://localhost:7547',
+      gasPrice: 12 * GWEI,
+      blockGasLimit: 20000000, // 20M
+      explorer: 'https://etherscan.com'
     },
     mumbai: {
       url: 'https://rpc-mumbai.maticvigil.com',
@@ -31,10 +42,12 @@ const config = {
       gas: 'auto',
       explorer: 'https://testnet.snowtrace.io'
     },
-    local: {
-      url: 'http://localhost:8545/',
-      chainId: 1337,
-      accounts: [process.env.PRIVATE_KEY]
+    ethereum: {
+      url: process.env.ETHEREUM_RPC_URL,
+      chainId: 1,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 12 * GWEI,
+      explorer: 'https://etherscan.io'
     }
   },
   solidity: {
@@ -59,7 +72,7 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.SNOWTRACE_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY,
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
       mumbai: process.env.POLYGONSCAN_API_KEY,

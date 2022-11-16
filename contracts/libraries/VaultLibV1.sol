@@ -207,7 +207,7 @@ library VaultLibV1 {
 
     stablecoin = s.getStablecoinAddressInternal();
 
-    // Redeem the PODs and receive DAI
+    // Redeem the PODs and receive stablecoin
     releaseAmount = _redeemPodCalculation(s, coverKey, pod, podsToRedeem);
 
     ValidationLibV1.mustMaintainStablecoinThreshold(s, releaseAmount);

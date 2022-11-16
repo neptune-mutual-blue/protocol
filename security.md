@@ -79,6 +79,71 @@ Critical access level roles can not only attack the protocol, they can also chan
 | NS_ROLES_PAUSE_AGENT       | Low      | Pause Agents can pause the protocol.                                                                                                                                                                                                                             |
 | NS_ROLES_UNPAUSE_AGENT     | Critical | Unpause Agents can unpause the protocol.                                                                                                                                                                                                                         |
 
+
+### NS_ROLES_ADMIN
+
+* setupRole
+* initialize (Protocol)
+
+### NS_ROLES_COVER_MANAGER
+
+* setClaimPeriod
+* setBlacklist
+* setFirstReportingStake
+* setReportingBurnRate
+* setReporterCommission
+* updateCover
+* updateProduct
+* disablePolicy
+* updateCoverCreatorWhitelist
+* initialize (Cover)
+* setCoverCreationFee
+* setMinCoverCreationStake
+* setMinStakeToAddLiquidity
+* setPolicyRatesByKey
+* setCoverageLag
+
+
+### NS_ROLES_LIQUIDITY_MANAGER
+
+* accrueInterestImplementation
+* setWeight (Reassurance)
+* capitalizePool (Reassurance)
+* addStrategies
+* setLiquidityStateUpdateInterval
+* disableStrategy
+* deleteStrategy
+* setRiskPoolingPeriods
+* setMaxLendingRatio
+* setup (Bond Pool)
+* addOrEditPool (Staking Pools)
+* closePool (Staking Pools)
+
+
+### NS_ROLES_GOVERNANCE_AGENT
+
+* finalize
+* resolve
+
+### NS_ROLES_GOVERNANCE_ADMIN
+
+* emergencyResolve
+* configureCoolDownPeriod
+* closeReport
+
+### NS_ROLES_UPGRADE_AGENT
+
+* addMember
+* removeMember
+* addContractWithKey
+* upgradeContractWithKey
+
+### NS_ROLES_RECOVERY_AGENT
+
+* recoverEther
+* recoverToken
+
+
 ## Solidity Rules
 
 [SWC Registry](https://swcregistry.io/)
@@ -95,11 +160,11 @@ Do not trust ERC-20 addresses that are supplied by users. Verify your intended u
 using NTransferUtilV2 for IERC20;
 
 function claim(address cxToken, bytes32 key, bytes32 incidentDate, uint256 amount) {
-	// ...
-	// @suppress-malicious-erc20 The ERC-20 operation on the address `cxToken`
+  // ...
+  // @suppress-malicious-erc20 The ERC-20 operation on the address `cxToken`
   // is validated using the `NTransferUtilV2` library
-	IERC20(**cxToken**).ensureTransferFrom(msg.sender, address(this), amount);
-	// validate ☝️ `cxToken` address
+  IERC20(**cxToken**).ensureTransferFrom(msg.sender, address(this), amount);
+  // validate ☝️ `cxToken` address
 }
 ```
 

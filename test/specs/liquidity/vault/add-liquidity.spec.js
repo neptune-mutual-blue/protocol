@@ -25,7 +25,7 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
-    await deployed.dai.approve(deployed.vault.address, amount)
+    await deployed.stablecoin.approve(deployed.vault.address, amount)
 
     const tx = await deployed.vault.addLiquidity({
       coverKey,
@@ -47,7 +47,7 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
-    await deployed.dai.approve(deployed.vault.address, amount)
+    await deployed.stablecoin.approve(deployed.vault.address, amount)
 
     await deployed.vault.addLiquidity({
       coverKey,
@@ -64,7 +64,7 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
-    await deployed.dai.approve(deployed.vault.address, amount)
+    await deployed.stablecoin.approve(deployed.vault.address, amount)
 
     await deployed.vault.addLiquidity({
       coverKey,
@@ -81,7 +81,7 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
-    await deployed.dai.approve(deployed.vault.address, amount)
+    await deployed.stablecoin.approve(deployed.vault.address, amount)
 
     await deployed.vault.addLiquidity({
       coverKey,
@@ -98,7 +98,7 @@ describe('Vault: addLiquidity (Dedicated Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(deployed.vault.address, npmStakeToAdd)
-    await deployed.dai.approve(deployed.vault.address, amount)
+    await deployed.stablecoin.approve(deployed.vault.address, amount)
 
     await deployed.vault.addLiquidity({
       coverKey,
@@ -136,7 +136,7 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
     await deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -185,7 +185,7 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(vault.address, npmStakeToAdd)
-    await deployed.dai.approve(vault.address, amount)
+    await deployed.stablecoin.approve(vault.address, amount)
 
     const tx = await vault.addLiquidity({
       coverKey,
@@ -215,7 +215,7 @@ describe('Vault: addLiquidity (Diversified Cover)', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.connect(bob).approve(vault.address, npmStakeToAdd)
-    await deployed.dai.connect(bob).approve(vault.address, amount)
+    await deployed.stablecoin.connect(bob).approve(vault.address, amount)
 
     await vault.connect(bob).addLiquidity({
       coverKey,

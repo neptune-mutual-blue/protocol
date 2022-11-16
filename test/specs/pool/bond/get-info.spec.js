@@ -14,15 +14,15 @@ require('chai')
   .should()
 
 describe('Bond Pool: Get Info', () => {
-  let deployed, store, dai, npmDai, pool, payload
+  let deployed, store, stablecoin, npmStablecoinPair, pool, payload
 
   before(async () => {
     deployed = await deployDependencies()
 
     store = deployed.store
 
-    dai = await deployer.deploy(cache, 'FakeToken', 'DAI', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
-    ;[[npmDai]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: dai }])
+    stablecoin = await deployer.deploy(cache, 'FakeToken', 'USDC', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
+    ;[[npmStablecoinPair]] = await pair.deploySeveral(cache, [{ token0: deployed.npm, token1: stablecoin }])
 
     pool = await deployer.deployWithLibraries(cache, 'BondPool', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -35,7 +35,7 @@ describe('Bond Pool: Get Info', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      lpToken: npmDai.address,
+      lpToken: npmStablecoinPair.address,
       treasury: helper.randomAddress(),
       bondDiscountRate: helper.percentage(1),
       maxBondAmount: helper.ether(100_000),

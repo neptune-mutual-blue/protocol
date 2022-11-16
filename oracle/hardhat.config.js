@@ -16,6 +16,7 @@ const config = {
       //   url: process.env.ALCHEMY_API_URL,
       //   blockNumber: 11819774
       // }
+      explorer: 'https://fooscan.com'
     },
     mumbai: {
       url: 'https://matic-mumbai.chainstacklabs.com',

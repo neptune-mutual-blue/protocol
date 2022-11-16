@@ -37,7 +37,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -70,7 +70,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -83,7 +83,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
 
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -108,7 +108,7 @@ describe('cxToken: `getCoverageStartsFrom` function', () => {
     const previous = deployed.policy.address
     await deployed.protocol.upgradeContract(key.PROTOCOL.CNS.COVER_POLICY, deployed.policy.address, bob.address)
 
-    await cxToken.connect(bob).mint(coverKey, helper.emptyBytes32, charles.address, amount)
+    await cxToken.connect(bob).mint(1, coverKey, helper.emptyBytes32, charles.address, amount)
 
     const block = await ethers.provider.getBlock(await ethers.provider.getBlockNumber())
     const tomorrowEOD = moment((block.timestamp + 1 * DAYS) * 1000).utc().endOf('day').unix()

@@ -19,7 +19,13 @@ library PriceLibV1 {
   }
 
   function setNpmPrice(IStore s) internal {
-    getPriceOracleInternal(s).update();
+    IPriceOracle oracle = getPriceOracleInternal(s);
+
+    if (address(oracle) == address(0)) {
+      return;
+    }
+
+    oracle.update();
   }
 
   function convertNpmLpUnitsToStabelcoinInternal(IStore s, uint256 amountIn) external view returns (uint256) {

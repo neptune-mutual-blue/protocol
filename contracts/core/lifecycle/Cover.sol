@@ -52,10 +52,7 @@ contract Cover is CoverBase {
 
     emit CoverCreated(args.coverKey, args.info, args.tokenName, args.tokenSymbol, args.supportsProducts, args.requiresWhitelist);
 
-    address vault = s.deployVaultInternal(args.coverKey, args.tokenName, args.tokenSymbol);
-    emit VaultDeployed(args.coverKey, vault);
-
-    return vault;
+    return s.deployVaultInternal(args.coverKey, args.tokenName, args.tokenSymbol);
   }
 
   function addCovers(AddCoverArgs[] calldata args) external override returns (address[] memory vaults) {

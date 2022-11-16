@@ -36,7 +36,7 @@ function (FakeToken _aToken) public nonpayable ERC20
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-constructor(FakeToken _aToken) ERC20("aDAI", "aDAI") {
+constructor(FakeToken _aToken) ERC20("aStablecoin", "aStablecoin") {
     aToken = _aToken;
   }
 ```
@@ -129,7 +129,7 @@ function withdraw(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -139,7 +139,7 @@ function withdraw(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

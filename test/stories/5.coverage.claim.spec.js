@@ -61,9 +61,9 @@ describe('Coverage Claim Stories', function () {
     }
 
     // Submit approvals
-    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
+    await contracts.tokens.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
-    await contracts.dai.approve(contracts.cover.address, initialLiquidity)
+    await contracts.tokens.stablecoin.approve(contracts.cover.address, initialLiquidity)
 
     // Create a new cover
     await contracts.cover.addCover({
@@ -88,8 +88,8 @@ describe('Coverage Claim Stories', function () {
     // Add initial liquidity
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,
       amount: initialLiquidity,
@@ -98,9 +98,9 @@ describe('Coverage Claim Stories', function () {
     })
 
     // Create Approvals
-    await contracts.dai.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
-    await contracts.dai.connect(alice).approve(contracts.policy.address, ethers.constants.MaxUint256)
-    await contracts.dai.connect(bob).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.tokens.stablecoin.connect(attacker).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.tokens.stablecoin.connect(alice).approve(contracts.policy.address, ethers.constants.MaxUint256)
+    await contracts.tokens.stablecoin.connect(bob).approve(contracts.policy.address, ethers.constants.MaxUint256)
 
     // Attacker purchases a cover
 
@@ -166,7 +166,7 @@ describe('Coverage Claim Stories', function () {
     const [owner] = await ethers.getSigners()
 
     const info = await ipfs.write(constants.reportInfo)
-    await contracts.npm.approve(contracts.governance.address, helper.ether(100_000))
+    await contracts.tokens.npm.approve(contracts.governance.address, helper.ether(100_000))
     await contracts.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(100_000))
 
     await contracts.protocol.grantRole(key.ACCESS_CONTROL.GOVERNANCE_ADMIN, owner.address)
@@ -190,10 +190,10 @@ describe('Coverage Claim Stories', function () {
     const incidentDate = await contracts.governance.getActiveIncidentDate(coverKey, helper.emptyBytes32)
     await network.provider.send('evm_increaseTime', [1 * constants.DAYS])
 
-    const before = await contracts.dai.balanceOf(alice.address)
+    const before = await contracts.tokens.stablecoin.balanceOf(alice.address)
 
     await contracts.claimsProcessor.connect(alice).claim(constants.cxTokens.alice.address, coverKey, helper.emptyBytes32, incidentDate, balance)
-    const after = await contracts.dai.balanceOf(alice.address)
+    const after = await contracts.tokens.stablecoin.balanceOf(alice.address)
 
     parseInt(after.toString()).should.be.gt(parseInt(before.toString()))
 

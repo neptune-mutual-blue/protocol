@@ -30,7 +30,7 @@ describe('Create Bond', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      lpToken: deployed.npmDai.address,
+      lpToken: deployed.npmStablecoinPair.address,
       treasury: helper.randomAddress(),
       bondDiscountRate: helper.percentage(1),
       maxBondAmount: helper.ether(100_000),
@@ -47,7 +47,7 @@ describe('Create Bond', () => {
     const [owner] = await ethers.getSigners()
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(1800))
 
-    await deployed.npmDai.approve(pool.address, helper.ether(1800))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(1800))
     const tx = await pool.createBond(helper.ether(1800), tokensDesired)
     const { events } = await tx.wait()
 
@@ -64,13 +64,13 @@ describe('Create Bond', () => {
   it('must revert if zero value is specified for `lpTokens`', async () => {
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond('0', tokensDesired)
       .should.be.rejectedWith('Please specify `lpTokens`')
   })
 
   it('must revert if zero value is specified for `minNpmDesired`', async () => {
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(200), '0')
       .should.be.rejectedWith('Please enter `minNpmDesired`')
   })
@@ -79,7 +79,7 @@ describe('Create Bond', () => {
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
     await deployed.protocol.pause()
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(200), tokensDesired)
       .should.be.rejectedWith('Protocol is paused')
 
@@ -89,7 +89,7 @@ describe('Create Bond', () => {
   it('must revert if the bond amount is too large', async () => {
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(2000000), tokensDesired)
       .should.be.rejectedWith('Bond too big')
   })
@@ -97,7 +97,7 @@ describe('Create Bond', () => {
   it('must revert if the minimum NPM desired is too big', async () => {
     const tokensDesired = helper.ether(100_000)
 
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(200), tokensDesired)
       .should.be.rejectedWith('Min bond `minNpmDesired` failed')
   })
@@ -106,7 +106,7 @@ describe('Create Bond', () => {
     const amount = helper.ether(90_000)
     const tokensDesired = await pool.calculateTokensForLp(amount)
 
-    await deployed.npmDai.approve(pool.address, amount)
+    await deployed.npmStablecoinPair.approve(pool.address, amount)
     await pool.createBond(amount, tokensDesired)
       .should.be.rejectedWith('NPM balance insufficient to bond')
   })

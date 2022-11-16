@@ -38,7 +38,7 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
     const reassuranceRate = helper.percentage(50)
     const leverageFactor = '1'
 
-    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
+    await contracts.tokens.npm.approve(contracts.cover.address, stakeWithFee)
 
     await contracts.cover.addCover({
       coverKey,
@@ -61,8 +61,8 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,
       amount: initialLiquidity,
@@ -94,9 +94,9 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
 
       totalFee = totalFee.add(fee)
 
-      console.info('[#%s] Fee: %s. Total fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee, 'DAI', PRECISION), formatEther(totalFee, 'DAI', PRECISION), totalPurchased.toLocaleString(), formatEther(available, 'DAI', PRECISION))
+      console.info('[#%s] Fee: %s. Total fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee, 'USDC', PRECISION), formatEther(totalFee, 'USDC', PRECISION), totalPurchased.toLocaleString(), formatEther(available, 'USDC', PRECISION))
 
-      await contracts.dai.approve(contracts.policy.address, fee)
+      await contracts.tokens.stablecoin.approve(contracts.policy.address, fee)
       await contracts.policy.purchaseCover(args)
 
       totalPurchased += amount
@@ -127,9 +127,9 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
       const fee = info.fee
       const available = info.totalAvailableLiquidity
 
-      console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee, 'DAI', PRECISION), totalPurchased.toLocaleString(), formatEther(available, 'DAI', PRECISION))
+      console.info('[#%s] Fee: %s. Total purchased %s. Available Now: %s', i + 1, formatEther(fee, 'USDC', PRECISION), totalPurchased.toLocaleString(), formatEther(available, 'USDC', PRECISION))
 
-      await contracts.dai.approve(contracts.policy.address, ethers.constants.MaxUint256)
+      await contracts.tokens.stablecoin.approve(contracts.policy.address, ethers.constants.MaxUint256)
       await contracts.policy.purchaseCover(args)
 
       totalPurchased += amount
@@ -155,13 +155,13 @@ describe('Fractionalization of Standalone Pool Reserves', () => {
       const fee = info.fee
 
       if (i < 4) {
-        await contracts.dai.approve(contracts.policy.address, fee)
+        await contracts.tokens.stablecoin.approve(contracts.policy.address, fee)
         await contracts.policy.purchaseCover(args)
       }
 
       await network.provider.send('evm_increaseTime', [7 * DAYS])
       // Dummy transaction
-      await contracts.npm.approve(contracts.governance.address, helper.ether(1000))
+      await contracts.tokens.npm.approve(contracts.governance.address, helper.ether(1000))
     }
 
     const commitment = await contracts.policy.getCommitment(coverKey, helper.emptyBytes32)

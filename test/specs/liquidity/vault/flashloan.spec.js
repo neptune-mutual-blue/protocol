@@ -17,20 +17,20 @@ describe('Flashloan', () => {
 
   before(async () => {
     deployed = await deployDependencies()
-    borrower = await deployer.deploy(cache, 'MockFlashBorrower', deployed.dai.address, deployed.vault.address)
+    borrower = await deployer.deploy(cache, 'MockFlashBorrower', deployed.stablecoin.address, deployed.vault.address)
   })
 
   it('must successfully lend out a flash loan', async () => {
     const amount = '8000'
-    const fee = await deployed.vault.flashFee(deployed.dai.address, amount)
+    const fee = await deployed.vault.flashFee(deployed.stablecoin.address, amount)
 
     // First transfer the fee to the contract
-    await deployed.dai.transfer(borrower.address, fee)
+    await deployed.stablecoin.transfer(borrower.address, fee)
 
     deployed.vault.on('FlashLoanBorrowed', (_lender, _borrower, _stablecoin, _amount, _fee) => {
       _lender.should.equal(deployed.vault.address)
       _borrower.should.equal(borrower.address)
-      _stablecoin.should.equal(deployed.dai.address)
+      _stablecoin.should.equal(deployed.stablecoin.address)
       _amount.should.equal(amount)
       _fee.should.equal(fee)
     })
@@ -64,15 +64,15 @@ describe('Flashloan', () => {
       .should.be.rejectedWith('Unsupported token')
 
     // Reset back
-    await borrower.setStablecoin(deployed.dai.address)
+    await borrower.setStablecoin(deployed.stablecoin.address)
   })
 
   it('must revert when an invalid value is returned', async () => {
     const amount = '8000'
-    const fee = await deployed.vault.flashFee(deployed.dai.address, amount)
+    const fee = await deployed.vault.flashFee(deployed.stablecoin.address, amount)
 
     // First transfer the fee to the contract
-    await deployed.dai.transfer(borrower.address, fee)
+    await deployed.stablecoin.transfer(borrower.address, fee)
 
     await borrower.setReturnValue(key.toBytes32('foobar'))
 

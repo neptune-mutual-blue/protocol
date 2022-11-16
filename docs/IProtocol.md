@@ -40,7 +40,11 @@ struct InitializeArgs {
  uint256 flashLoanFeeProtocol,
  uint256 resolutionCoolDownPeriod,
  uint256 stateUpdateInterval,
- uint256 maxLendingRatio
+ uint256 maxLendingRatio,
+ uint256 lendingPeriod,
+ uint256 withdrawalWindow,
+ uint256 policyFloor,
+ uint256 policyCeiling
 }
 ```
 
@@ -300,7 +304,7 @@ function grantRoles(AccountWithRoles[] calldata detail) external;
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -310,7 +314,7 @@ function grantRoles(AccountWithRoles[] calldata detail) external;
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

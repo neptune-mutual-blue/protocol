@@ -40,7 +40,7 @@ describe('Distributor: `purchasePolicy` function', () => {
 
     const [premium, fee] = await distributor.getPremium(coverKey, helper.emptyBytes32, duration, amountToCover)
 
-    await deployed.dai.approve(distributor.address, premium.add(fee))
+    await deployed.stablecoin.approve(distributor.address, premium.add(fee))
     const tx = await distributor.purchasePolicy(args)
     const { events } = await tx.wait()
 
@@ -69,7 +69,7 @@ describe('Distributor: `purchasePolicy` function', () => {
       referralCode: key.toBytes32('REF-CODE-001')
     }
 
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     await distributor.purchasePolicy(args).should.be.rejectedWith('Invalid key')
   })
@@ -87,7 +87,7 @@ describe('Distributor: `purchasePolicy` function', () => {
       referralCode: key.toBytes32('REF-CODE-001')
     }
 
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
     await distributor.purchasePolicy(args).should.be.rejectedWith('Invalid duration')
   })
 
@@ -104,7 +104,7 @@ describe('Distributor: `purchasePolicy` function', () => {
       referralCode: key.toBytes32('REF-CODE-001')
     }
 
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
     await distributor.purchasePolicy(args).should.be.rejectedWith('Invalid protection amount')
   })
 
@@ -115,7 +115,7 @@ describe('Distributor: `purchasePolicy` function', () => {
     const coverKey = deployed.coverKey
     const amountToCover = helper.ether(10_000, PRECISION)
 
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     const storeKey = key.qualifyBytes32(key.toBytes32('cns:cover:policy'))
     await deployed.store.deleteAddress(storeKey)
@@ -136,14 +136,14 @@ describe('Distributor: `purchasePolicy` function', () => {
     await deployed.protocol.removeMember(owner.address)
   })
 
-  it('must reject if DAI address is not registered on the protocol', async () => {
+  it('must reject if stablecoin address is not registered on the protocol', async () => {
     const [owner] = await ethers.getSigners()
     await deployed.protocol.addMember(owner.address)
 
     const coverKey = deployed.coverKey
     const amountToCover = helper.ether(10_000, PRECISION)
 
-    await deployed.dai.approve(distributor.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(distributor.address, ethers.constants.MaxUint256)
 
     const storeKey = key.toBytes32('cns:cover:sc')
     await deployed.store.deleteAddress(storeKey)
@@ -157,9 +157,9 @@ describe('Distributor: `purchasePolicy` function', () => {
       referralCode: key.toBytes32('REF-CODE-001')
     }
 
-    await distributor.purchasePolicy(args).should.be.rejectedWith('Fatal: DAI missing')
+    await distributor.purchasePolicy(args).should.be.rejectedWith('Fatal: Stablecoin missing')
 
-    await deployed.store.setAddress(storeKey, deployed.dai.address)
+    await deployed.store.setAddress(storeKey, deployed.stablecoin.address)
 
     await deployed.protocol.removeMember(owner.address)
   })

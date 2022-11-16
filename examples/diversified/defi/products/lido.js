@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('lido-v1'),
-  productName: 'Lido (v1)',
+  productName: 'Lido v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['staking', 'yield'],

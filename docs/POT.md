@@ -11,7 +11,7 @@ POTs can't be used outside of the protocol
  For now, Neptune Mutual team and a few others will have access to POTs.
  POTs aren't conventional ERC-20 tokens; they can't be transferred freely;
  they don't have any value, and therefore must not be purchased or sold.
- Agan, POTs are distributed to individuals and companies
+ Again, POTs are distributed to individuals and companies
  who particpate in our governance and dispute management portals.
 
 ## Contract Members
@@ -190,7 +190,7 @@ function _beforeTokenTransfer(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -200,7 +200,7 @@ function _beforeTokenTransfer(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

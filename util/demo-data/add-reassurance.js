@@ -9,15 +9,15 @@ const add = async (coverKey, payload) => {
   const [owner] = await ethers.getSigners()
   const amount = ether(getRandomNumber(250_000, 5_000_000), PRECISION)
 
-  const { dai, reassuranceContract } = payload
+  const { tokens, reassuranceContract } = payload
 
-  await faucet.request(dai, amount)
+  await faucet.request(tokens.stablecoin, amount)
 
-  await approve(dai.address, reassuranceContract.address, owner, ethers.constants.MaxUint256)
+  await approve(tokens.stablecoin.address, reassuranceContract.address, owner, ethers.constants.MaxUint256)
 
   await reassuranceContract.connect(owner).addReassurance(coverKey, owner.address, amount)
 
-  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'DAI', PRECISION))
+  console.info('Added %s to the reassurance vault.', weiAsToken(amount, 'USDC', PRECISION))
 }
 
 const addReassurance = async (payload) => {

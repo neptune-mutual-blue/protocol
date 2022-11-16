@@ -5,7 +5,10 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 pragma solidity ^0.8.0;
 
 interface ICxToken is IERC20 {
+  event CoverageStartSet(uint256 policyId, bytes32 coverKey, bytes32 productKey, address account, uint256 effectiveFrom, uint256 amount);
+
   function mint(
+    uint256 policyId,
     bytes32 coverKey,
     bytes32 productKey,
     address to,

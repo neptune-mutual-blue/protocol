@@ -17,7 +17,7 @@ describe('Flashloan: max flash loan', () => {
   })
 
   it('must get max flashloan amount', async () => {
-    const result = await deployed.vault.maxFlashLoan(deployed.dai.address)
+    const result = await deployed.vault.maxFlashLoan(deployed.stablecoin.address)
 
     result.should.equal(helper.ether(4_000_000, PRECISION))
   })

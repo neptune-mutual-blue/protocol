@@ -57,7 +57,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -106,7 +110,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -165,7 +173,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -227,7 +239,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args).should.be.rejectedWith('Invalid NPM')
@@ -271,7 +287,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args).should.be.rejectedWith('Invalid Treasury')
@@ -317,7 +337,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -365,7 +389,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)
@@ -413,7 +441,11 @@ describe('Protocol Constructor & Initializer', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args).should.be.rejectedWith('Invalid Burner')

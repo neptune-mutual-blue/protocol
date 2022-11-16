@@ -37,7 +37,7 @@ describe('CoverReassurance: addReassurance', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -70,7 +70,7 @@ describe('CoverReassurance: addReassurance', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -85,7 +85,7 @@ describe('CoverReassurance: addReassurance', () => {
   it('correctly adds reassurance', async () => {
     const amount = helper.ether(1, PRECISION)
 
-    await deployed.dai.approve(deployed.reassuranceContract.address, amount)
+    await deployed.stablecoin.approve(deployed.reassuranceContract.address, amount)
     const tx = await coverReassurance.addReassurance(coverKey, helper.randomAddress(), amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'ReassuranceAdded')

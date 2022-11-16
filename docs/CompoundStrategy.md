@@ -232,7 +232,7 @@ function deposit(bytes32 coverKey, uint256 amount) external override nonReentran
     _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
-    // Transfer DAI to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
+    // Transfer stablecoin to this contract; then approve and send it to delegator to mint compoundWrappedStablecoin
     vault.transferToStrategy(stablecoin, coverKey, getName(), amount);
     stablecoin.ensureApproval(address(delegator), amount);
 
@@ -288,7 +288,7 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
     IERC20 stablecoin = getDepositAsset();
     IERC20 compoundWrappedStablecoin = getDepositCertificate();
 
-    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `DAI`
+    // This strategy should never have token balances without any exception, especially `compoundWrappedStablecoin` and `stablecoin`
     _drain(compoundWrappedStablecoin);
     _drain(stablecoin);
 
@@ -298,19 +298,19 @@ function withdraw(bytes32 coverKey) external virtual override nonReentrant retur
       return 0;
     }
 
-    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem DAI
+    // Transfer compoundWrappedStablecoin to this contract; then approve and send it to delegator to redeem stablecoin
     vault.transferToStrategy(compoundWrappedStablecoin, coverKey, getName(), compoundWrappedStablecoinRedeemed);
     compoundWrappedStablecoin.ensureApproval(address(delegator), compoundWrappedStablecoinRedeemed);
     uint256 result = delegator.redeem(compoundWrappedStablecoinRedeemed);
 
     require(result == 0, "Compound delegator redeem failed");
 
-    // Check how many DAI we received
+    // Check how many stablecoin we received
     stablecoinWithdrawn = stablecoin.balanceOf(address(this));
 
     require(stablecoinWithdrawn > 0, "Redeeming cUS$ failed");
 
-    // Immediately send DAI to the vault compoundWrappedStablecoin came from
+    // Immediately send stablecoin to the vault compoundWrappedStablecoin came from
     stablecoin.ensureApproval(address(vault), stablecoinWithdrawn);
     vault.receiveFromStrategy(stablecoin, coverKey, getName(), stablecoinWithdrawn);
 
@@ -496,7 +496,7 @@ function getName() public pure override returns (bytes32) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -506,7 +506,7 @@ function getName() public pure override returns (bytes32) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

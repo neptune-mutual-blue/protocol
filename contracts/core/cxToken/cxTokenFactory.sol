@@ -71,7 +71,7 @@ contract cxTokenFactory is ICxTokenFactory, Recoverable {
     s.setBoolByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, deployed, true);
     s.setAddressArrayByKeys(ProtoUtilV1.NS_COVER_CXTOKEN, coverKey, productKey, deployed);
 
-    emit CxTokenDeployed(coverKey, productKey, deployed, expiryDate);
+    emit CxTokenDeployed(deployed, s, coverKey, productKey, tokenName, expiryDate);
   }
 
   /**

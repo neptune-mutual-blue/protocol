@@ -1,14 +1,14 @@
-const { helper, key } = require('../../../../util')
+const { helper, key } = require('../../../../../util')
 const cover = require('../cover')
 
 module.exports = {
   coverKey: cover.coverKey,
-  productKey: key.toBytes32('synthetix-v2'),
-  productName: 'Synthetix (v2)',
+  productKey: key.toBytes32('uniswap-v2'),
+  productName: 'Uniswap v2',
   requiresWhitelist: false,
-  efficiency: helper.percentage(70),
-  tags: ['derivative', 'staking', 'yield'],
-  about: 'Synthetix is a new financial primitive enabling the creation of synthetic assets, offering unique derivatives and exposure to real-world assets on the blockchain.',
+  efficiency: helper.percentage(90),
+  tags: ['exchange', 'dex', 'swap', 'nft'],
+  about: 'The Uniswap protocol is a peer-to-peer system designed for exchanging cryptocurrencies (ERC-20 Tokens) on the Ethereum blockchain. The protocol is implemented as a set of persistent, non-upgradable smart contracts; designed to prioritize censorship resistance, security, self-custody, and to function without any trusted intermediaries who may selectively restrict access.',
   blockchains: [{
     chainId: 1,
     name: 'Main Ethereum Network'
@@ -21,7 +21,7 @@ module.exports = {
       list: {
         type: 'unordered',
         items: [
-          'This policy relates exclusively to the Synthetix Protocol (v2) deployed on the Ethereum blockchain.',
+          'This policy relates exclusively to the Uniswap V2 deployed on the Ethereum blockchain.',
           'To be eligible for a claim, policyholder must hold at least 10 NPM tokens in the wallet used for the policy transaction for the full duration of the cover policy.'
         ]
       }
@@ -54,18 +54,22 @@ module.exports = {
     }
   ],
   links: {
-    website: 'https://synthetix.io/',
-    discord: 'https://discord.com/invite/AEdUHzt',
-    twitter: 'https://twitter.com/synthetix_io',
-    github: 'https://github.com/synthetixio',
-    blog: 'https://blog.synthetix.io/',
-    dao: 'https://synthetix.io/governance',
-    documentation: 'https://docs.synthetix.io/'
+    website: 'https://uniswap.org/',
+    app: 'https://app.uniswap.org/#/swap?use=V2',
+    twitter: 'https://twitter.com/Uniswap',
+    blog: 'https://uniswap.org/blog',
+    discord: 'https://discord.com/invite/FCfyBSbCU5',
+    github: 'https://github.com/Uniswap',
+    docs: 'https://docs.uniswap.org/protocol/V2/introduction'
   },
   resolutionSources: [
     {
-      text: 'Synthetix Twitter',
-      uri: 'https://twitter.com/synthetix_io'
+      text: 'Uniswap Blog',
+      uri: 'https://uniswap.org/blog'
+    },
+    {
+      text: 'Uniswap Twitter',
+      uri: 'https://twitter.com/Uniswap'
     },
     {
       text: 'Neptune Mutual Twitter',

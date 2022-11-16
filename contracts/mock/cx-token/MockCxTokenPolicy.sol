@@ -16,6 +16,6 @@ contract MockCxTokenPolicy {
     address to,
     uint256 amount
   ) external {
-    cxToken.mint(key, productKey, to, amount);
+    cxToken.mint(1, key, productKey, to, amount);
   }
 }

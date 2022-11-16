@@ -41,7 +41,7 @@ describe('Liquidity Stories', () => {
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
 
-    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
+    await contracts.tokens.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     await contracts.cover.addCover({
@@ -69,8 +69,8 @@ describe('Liquidity Stories', () => {
     const minStakeToReport = helper.ether(250)
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
 
     await vault.addLiquidity({
       coverKey,
@@ -81,8 +81,8 @@ describe('Liquidity Stories', () => {
 
     await network.provider.send('evm_increaseTime', [1 * DAYS])
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
 
     await vault.addLiquidity({
       coverKey,

@@ -4,7 +4,7 @@ const io = require('../io')
 
 const settings = {
   exclusion: {
-    files: ['StoreKeyUtil.sol', 'BokkyPooBahsDateTimeLibrary.sol', 'Destroyable.sol', 'FaultyCompoundDaiDelegator.sol', 'MaliciousToken.sol', 'ForceEther.sol', 'NTransferUtilV2Intermediate.sol', 'FaultyAaveLendingPool.sol', 'InvalidStrategy.sol', 'PoorMansERC20.sol'],
+    files: ['StoreKeyUtil.sol', 'BokkyPooBahsDateTimeLibrary.sol', 'Destroyable.sol', 'FaultyCompoundStablecoinDelegator.sol', 'MaliciousToken.sol', 'ForceEther.sol', 'NTransferUtilV2Intermediate.sol', 'FaultyAaveLendingPool.sol', 'InvalidStrategy.sol', 'PoorMansERC20.sol'],
     patterns: ['mock', 'fake', 'interfaces']
   },
   // Ignore lines added by pretier code formatter

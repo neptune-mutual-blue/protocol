@@ -3,6 +3,18 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "cxToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IStore",
+        "name": "store",
+        "type": "address"
+      },
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "coverKey",
@@ -16,12 +28,12 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "cxToken",
-        "type": "address"
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "expiryDate",
         "type": "uint256"

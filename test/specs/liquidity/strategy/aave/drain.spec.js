@@ -38,15 +38,15 @@ describe('Aave Deposit: Drained', () => {
   })
 
   it('must correctly drain', async () => {
-    await deployed.dai.mint(helper.ether(100, PRECISION))
-    await deployed.dai.transfer(aaveStrategy.address, helper.ether(100, PRECISION))
+    await deployed.stablecoin.mint(helper.ether(100, PRECISION))
+    await deployed.stablecoin.transfer(aaveStrategy.address, helper.ether(100, PRECISION))
 
     const amount = helper.ether(10, PRECISION)
     const tx = await aaveStrategy.deposit(deployed.coverKey, amount)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Drained')
 
-    event.args.asset.should.equal(deployed.dai.address)
+    event.args.asset.should.equal(deployed.stablecoin.address)
     event.args.amount.should.equal(helper.ether(100, PRECISION))
   })
 })

@@ -39,7 +39,7 @@ describe('Policy Purchase Stories', () => {
     const ceiling = helper.percentage(45)
     const reassuranceRate = helper.percentage(50)
 
-    await contracts.npm.approve(contracts.cover.address, stakeWithFee)
+    await contracts.tokens.npm.approve(contracts.cover.address, stakeWithFee)
     await contracts.reassuranceToken.approve(contracts.cover.address, initialReassuranceAmount)
 
     await contracts.cover.addCover({
@@ -63,8 +63,8 @@ describe('Policy Purchase Stories', () => {
 
     const vault = await composer.vault.getVault(contracts, coverKey)
 
-    await contracts.dai.approve(vault.address, initialLiquidity)
-    await contracts.npm.approve(vault.address, minStakeToReport)
+    await contracts.tokens.stablecoin.approve(vault.address, initialLiquidity)
+    await contracts.tokens.npm.approve(vault.address, minStakeToReport)
     await vault.addLiquidity({
       coverKey,
       amount: initialLiquidity,
@@ -102,15 +102,15 @@ describe('Policy Purchase Stories', () => {
 
    ;(await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration))[0].should.equal(helper.zerox)
 
-    await contracts.dai.approve(contracts.policy.address, fee)
+    await contracts.tokens.stablecoin.approve(contracts.policy.address, fee)
     await contracts.policy.purchaseCover(args)
 
     const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)
     const cxToken = await composer.token.at(cxTokenAddress)
 
-    const cxDaiBalance = await cxToken.balanceOf(owner.address)
+    const cxStablecoinPairBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(helper.ether(2_500_000))
+    cxStablecoinPairBalance.toString().should.equal(helper.ether(2_500_000))
   })
 
   it('let\'s purchase a policy for `Compound Finance Cover` again', async () => {
@@ -129,15 +129,15 @@ describe('Policy Purchase Stories', () => {
 
    ;(await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration))[0].should.not.equal(helper.zerox)
 
-    await contracts.dai.approve(contracts.policy.address, fee)
+    await contracts.tokens.stablecoin.approve(contracts.policy.address, fee)
 
     await contracts.policy.purchaseCover(args)
 
     const { cxToken: cxTokenAddress } = await contracts.policy.getCxToken(args.coverKey, args.productKey, args.coverDuration)
     const cxToken = await composer.token.at(cxTokenAddress)
 
-    const cxDaiBalance = await cxToken.balanceOf(owner.address)
+    const cxStablecoinPairBalance = await cxToken.balanceOf(owner.address)
 
-    cxDaiBalance.toString().should.equal(helper.ether(3_000_000))
+    cxStablecoinPairBalance.toString().should.equal(helper.ether(3_000_000))
   })
 })

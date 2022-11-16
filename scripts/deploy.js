@@ -1,37 +1,47 @@
-const { network, ethers } = require('hardhat')
+const { ethers } = require('hardhat')
 const composer = require('../util/composer')
 const helper = require('../util/helper')
+const key = require('../util/key')
 const covers = require('../util/composer/covers')
 const podStakingPools = require('../util/composer/pod-staking')
 const demoData = require('../util/demo-data')
+const { getNetworkInfo } = require('../util/network')
 
 const DEPLOYMENT_ID = 6
+const MINUTES = 60
+const COVERAGE_LAG = 'ns:coverage:lag'
 
 const rest = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
 const deploy = async () => {
   global.log = true
   const [owner] = await ethers.getSigners()
+  const network = await getNetworkInfo()
 
-  const isHardhat = network.name === 'hardhat'
+  const isHardhat = network.chainId === 31337
 
   const result = await composer.initializer.initialize(isHardhat, DEPLOYMENT_ID)
-  const { intermediate, cache, tokenInfo, pairInfo, startBalance } = result
+  const { intermediate, cache, tokens, pairInfo, startBalance } = result
 
-  console.info('Stop: 100ms')
-  await rest(100)
-  console.info('Go')
-  await covers.create({ intermediate, cache, contracts: result })
+  if (network.mainnet === false) {
+    await intermediate(cache, result.protocol, 'addMember', owner.address)
+    await intermediate(cache, result.store, 'setUint', key.toBytes32(COVERAGE_LAG), 1 * MINUTES)
 
-  console.info('Stop: 200ms')
-  await rest(200)
-  console.info('Go')
-  await podStakingPools.create({ intermediate, cache, contracts: result, tokenInfo, pairInfo, provider: owner })
+    console.info('Stop: 100ms')
+    await rest(100)
+    console.info('Go')
+    await covers.create({ intermediate, cache, contracts: result })
 
-  console.info('Stop: 200ms')
-  await rest(200)
-  console.info('Go')
-  await demoData.create(result)
+    console.info('Stop: 200ms')
+    await rest(200)
+    console.info('Go')
+    await podStakingPools.create({ intermediate, cache, contracts: result, tokens, pairInfo, provider: owner })
+
+    console.info('Stop: 200ms')
+    await rest(200)
+    console.info('Go')
+    await demoData.create(result)
+  }
 
   const endBalance = await ethers.provider.getBalance(owner.address)
   const spent = startBalance.sub(endBalance)

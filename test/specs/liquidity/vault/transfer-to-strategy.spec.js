@@ -23,7 +23,7 @@ describe('Vault: transferToStrategy', () => {
     const coverKey = await deployed.vault.key()
     const amount = helper.ether(0)
     const strategyName = key.toBytes32('TestStrategy')
-    const token = deployed.dai.address
+    const token = deployed.stablecoin.address
 
     await deployed.vault.transferToStrategy(token, coverKey, strategyName, amount)
       .should.be.rejectedWith('Please specify amount')
@@ -33,7 +33,7 @@ describe('Vault: transferToStrategy', () => {
     const coverKey = key.toBytes32('test-key')
     const amount = helper.ether(1, PRECISION)
     const strategyName = key.toBytes32('TestStrategy')
-    const token = deployed.dai.address
+    const token = deployed.stablecoin.address
 
     await deployed.vault.transferToStrategy(token, coverKey, strategyName, amount)
       .should.be.rejectedWith('Forbidden')
@@ -43,7 +43,7 @@ describe('Vault: transferToStrategy', () => {
     const coverKey = await deployed.vault.key()
     const amount = helper.ether(1, PRECISION)
     const strategyName = key.toBytes32('TestStrategy')
-    const token = deployed.dai.address
+    const token = deployed.stablecoin.address
 
     await deployed.vault.transferToStrategy(token, coverKey, strategyName, amount)
       .should.be.rejectedWith('Not a strategy contract')

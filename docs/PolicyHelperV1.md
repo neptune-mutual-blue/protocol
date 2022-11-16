@@ -26,7 +26,7 @@ struct CalculatePolicyFeeArgs {
 - [getCxTokenOrDeployInternal(IStore s, bytes32 coverKey, bytes32 productKey, uint256 coverDuration)](#getcxtokenordeployinternal)
 - [_getMonthName(uint256 date)](#_getmonthname)
 - [_getCxTokenName(bytes32 coverKey, bytes32 productKey, uint256 expiry)](#_getcxtokenname)
-- [purchaseCoverInternal(IStore s, struct IPolicy.PurchaseCoverArgs args)](#purchasecoverinternal)
+- [purchaseCoverInternal(IStore s, uint256 policyId, struct IPolicy.PurchaseCoverArgs args)](#purchasecoverinternal)
 - [getEODInternal(uint256 date)](#geteodinternal)
 - [incrementPolicyIdInternal(IStore s)](#incrementpolicyidinternal)
 
@@ -258,12 +258,10 @@ function getCxTokenOrDeployInternal(
     }
 
     ICxTokenFactory factory = s.getCxTokenFactory();
-    cxToken = factory.deploy(coverKey, productKey, _getCxTokenName(coverKey, productKey, expiryDate), expiryDate);
+    string memory tokenName = _getCxTokenName(coverKey, productKey, expiryDate);
 
-    // @warning: Do not uncomment the following line
-    // Reason: cxTokens are no longer protocol members
-    // as we will end up with way too many contracts
-    // s.getProtocolInternal().addMember(cxToken);
+    cxToken = factory.deploy(coverKey, productKey, tokenName, expiryDate);
+
     return ICxToken(cxToken);
   }
 ```
@@ -348,7 +346,7 @@ Purchase cover for the specified amount. <br /> <br />
  stablecoins (like wxDai, DAI, USDC, or BUSD) based on the chain.
 
 ```solidity
-function purchaseCoverInternal(IStore s, struct IPolicy.PurchaseCoverArgs args) external nonpayable
+function purchaseCoverInternal(IStore s, uint256 policyId, struct IPolicy.PurchaseCoverArgs args) external nonpayable
 returns(cxToken contract ICxToken, fee uint256, platformFee uint256)
 ```
 
@@ -357,13 +355,18 @@ returns(cxToken contract ICxToken, fee uint256, platformFee uint256)
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | s | IStore |  | 
+| policyId | uint256 |  | 
 | args | struct IPolicy.PurchaseCoverArgs |  | 
 
 <details>
 	<summary><strong>Source Code</strong></summary>
 
 ```javascript
-function purchaseCoverInternal(IStore s, IPolicy.PurchaseCoverArgs calldata args)
+function purchaseCoverInternal(
+    IStore s,
+    uint256 policyId,
+    IPolicy.PurchaseCoverArgs calldata args
+  )
     external
     returns (
       ICxToken cxToken,
@@ -388,7 +391,7 @@ function purchaseCoverInternal(IStore s, IPolicy.PurchaseCoverArgs calldata args
     uint256 toMint = (args.amountToCover * ProtoUtilV1.CXTOKEN_PRECISION) / stablecoinPrecision;
 
     cxToken = getCxTokenOrDeployInternal(s, args.coverKey, args.productKey, args.coverDuration);
-    cxToken.mint(args.coverKey, args.productKey, args.onBehalfOf, toMint);
+    cxToken.mint(policyId, args.coverKey, args.productKey, args.onBehalfOf, toMint);
 
     s.updateStateAndLiquidityInternal(args.coverKey);
   }
@@ -475,7 +478,7 @@ function incrementPolicyIdInternal(IStore s) external returns (uint256) {
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -485,7 +488,7 @@ function incrementPolicyIdInternal(IStore s) external returns (uint256) {
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

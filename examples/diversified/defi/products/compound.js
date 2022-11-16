@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('compound-v2'),
-  productName: 'Compound (v2)',
+  productName: 'Compound v2',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['borrowing', 'loan', 'interest', 'interest-bearing', 'lending', 'yield', 'staking'],

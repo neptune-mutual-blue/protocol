@@ -5,7 +5,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('kyberswap-v1'),
-  productName: 'Kyberswap (v1)',
+  productName: 'Kyberswap v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(50),
   tags: ['exchange', 'dex', 'swap'],

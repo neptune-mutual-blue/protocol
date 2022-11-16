@@ -18,7 +18,7 @@ describe('Flashloan: flashFee', () => {
     const amount = 200
     const fee = 1 // Flash Loan Fee: 0.5%
 
-    const result = await deployed.vault.flashFee(deployed.dai.address, amount)
+    const result = await deployed.vault.flashFee(deployed.stablecoin.address, amount)
     result.should.equal(fee)
   })
 })

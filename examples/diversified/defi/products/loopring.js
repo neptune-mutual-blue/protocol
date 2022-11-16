@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('lrcex-v3'),
-  productName: 'Loopring Exchange (v3)',
+  productName: 'Loopring Exchange v3',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['dex', 'zk', 'zkrollup', 'swap', 'exchange'],

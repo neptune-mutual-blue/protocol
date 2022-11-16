@@ -45,7 +45,6 @@ interface ICover is IMember {
   event CoverUpdated(bytes32 indexed coverKey, string info);
   event ProductUpdated(bytes32 indexed coverKey, bytes32 productKey, string info);
   event ProductStateUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed updatedBy, bool status, string reason);
-  event VaultDeployed(bytes32 indexed coverKey, address vault);
 
   event CoverCreatorWhitelistUpdated(address account, bool status);
   event CoverUserWhitelistUpdated(bytes32 indexed coverKey, bytes32 indexed productKey, address indexed account, bool status);

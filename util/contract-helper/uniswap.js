@@ -2,6 +2,7 @@ const { ethers } = require('hardhat')
 const routerAbi = require('../../abis/IUniswapV2RouterLike.json')
 const factoryAbi = require('../../abis/IUniswapV2FactoryLike.json')
 const pairAbi = require('../../abis/IUniswapV2PairLike.json')
+const { helper } = require('..')
 
 const getRouter = async (routerAt, signer) => {
   const [owner] = await ethers.getSigners()
@@ -14,6 +15,10 @@ const getFactory = async (factoryAt, signer) => {
 }
 
 const getPair = async (pairAt, signer) => {
+  if (pairAbi === helper.zerox) {
+    return helper.zerox
+  }
+
   const [owner] = await ethers.getSigners()
   return new ethers.Contract(pairAt, pairAbi, signer || owner)
 }

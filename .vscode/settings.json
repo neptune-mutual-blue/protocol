@@ -15,6 +15,7 @@
   "javascript.suggestionActions.enabled": false,
   "tsImportSorter.configuration.development.enableDebug": false,
   "tsImportSorter.configuration.hasSemicolon": false,
+  "tsImportSorter.configuration.trailingComma": "none",
   "[javascript]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": "standard.vscode-standard"
@@ -51,6 +52,7 @@
     "chainid",
     "CNAME",
     "cpool",
+    "crpool",
     "CXTOKEN",
     "finalizer",
     "Fractionalization",

@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('maker-v1'),
-  productName: 'Maker DAO MCD (v1)',
+  productName: 'Maker DAO MCD v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['lending', 'borrowing', 'stablecoin', 'yield', 'staking', 'payment'],

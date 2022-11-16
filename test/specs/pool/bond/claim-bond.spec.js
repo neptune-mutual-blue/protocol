@@ -30,7 +30,7 @@ describe('Claim Bond', () => {
     await deployed.protocol.addContract(key.PROTOCOL.CNS.BOND_POOL, pool.address)
 
     payload = {
-      lpToken: deployed.npmDai.address,
+      lpToken: deployed.npmStablecoinPair.address,
       treasury: helper.randomAddress(),
       bondDiscountRate: helper.percentage(1),
       maxBondAmount: helper.ether(100_000),
@@ -47,7 +47,7 @@ describe('Claim Bond', () => {
     const [owner] = await ethers.getSigners()
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(200), tokensDesired)
 
     await network.provider.send('evm_increaseTime', [5 * MINUTES])
@@ -68,7 +68,7 @@ describe('Claim Bond', () => {
   it('must revert if the protocol is paused', async () => {
     const tokensDesired = await pool.calculateTokensForLp(helper.ether(200))
 
-    await deployed.npmDai.approve(pool.address, helper.ether(200))
+    await deployed.npmStablecoinPair.approve(pool.address, helper.ether(200))
     await pool.createBond(helper.ether(200), tokensDesired)
 
     await network.provider.send('evm_increaseTime', [5 * MINUTES])
@@ -83,9 +83,9 @@ describe('Claim Bond', () => {
     const amount = helper.ether(200)
     const tokensDesired = await pool.calculateTokensForLp(amount)
 
-    await deployed.npmDai.transfer(bob.address, amount)
+    await deployed.npmStablecoinPair.transfer(bob.address, amount)
 
-    await deployed.npmDai.connect(bob).approve(pool.address, amount)
+    await deployed.npmStablecoinPair.connect(bob).approve(pool.address, amount)
     await pool.connect(bob).createBond(amount, tokensDesired)
     await pool.connect(bob).claimBond()
       .should.be.rejectedWith('Still vesting')

@@ -54,7 +54,13 @@ function setNpmPrice(IStore s) internal nonpayable
 
 ```javascript
 function setNpmPrice(IStore s) internal {
-    getPriceOracleInternal(s).update();
+    IPriceOracle oracle = getPriceOracleInternal(s);
+
+    if (address(oracle) == address(0)) {
+      return;
+    }
+
+    oracle.update();
   }
 ```
 </details>
@@ -209,7 +215,7 @@ function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -219,7 +225,7 @@ function getNpmPriceInternal(IStore s, uint256 amountIn) external view returns (
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

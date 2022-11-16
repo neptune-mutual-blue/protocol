@@ -15,7 +15,7 @@ contract NpmPriceOracle is IPriceOracle {
   using SafeMath for uint256;
   using FixedPoint for *;
 
-  uint256 public constant UPDATE_INTERVAL = 30 minutes;
+  uint256 public constant UPDATE_INTERVAL = 8 hours;
   uint256 public constant NPM_MULTIPLIER = 1 ether;
 
   address public immutable token0;
@@ -87,7 +87,7 @@ contract NpmPriceOracle is IPriceOracle {
   }
 
   /**
-   * @dev Gets the "fair" price of LP tokens in DAI.
+   * @dev Gets the "fair" price of LP tokens in stablecoin (USDC or DAI).
    * https://blog.alphaventuredao.io/fair-lp-token-pricing
    *
    * @param r0 Provide pair reserve0 value

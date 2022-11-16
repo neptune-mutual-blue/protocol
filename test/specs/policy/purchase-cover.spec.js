@@ -54,7 +54,7 @@ describe('Policy: purchaseCover', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -87,7 +87,7 @@ describe('Policy: purchaseCover', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -101,7 +101,7 @@ describe('Policy: purchaseCover', () => {
     const [owner] = await ethers.getSigners()
 
     const amount = helper.ether(500_000, PRECISION)
-    await deployed.dai.approve(deployed.policy.address, amount)
+    await deployed.stablecoin.approve(deployed.policy.address, amount)
 
     const args = {
       onBehalfOf: owner.address,
@@ -134,7 +134,7 @@ describe('Policy: purchaseCover', () => {
     const [owner] = await ethers.getSigners()
 
     const amount = helper.ether(500_000, PRECISION)
-    await deployed.dai.approve(deployed.policy.address, amount)
+    await deployed.stablecoin.approve(deployed.policy.address, amount)
 
     const args = {
       onBehalfOf: owner.address,
@@ -156,7 +156,7 @@ describe('Policy: purchaseCover', () => {
     const [owner] = await ethers.getSigners()
 
     const amount = helper.ether(500_000, PRECISION)
-    await deployed.dai.approve(deployed.policy.address, amount)
+    await deployed.stablecoin.approve(deployed.policy.address, amount)
 
     await deployed.cover.disablePolicy(coverKey, helper.emptyBytes32, true, 'reason: testing')
 
@@ -182,7 +182,7 @@ describe('Policy: purchaseCover', () => {
   it('must revert if zero is sent as the amount to cover', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -200,7 +200,7 @@ describe('Policy: purchaseCover', () => {
   it('must revert if invalid value is sent as the cover duration', async () => {
     const [owner] = await ethers.getSigners()
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -225,7 +225,7 @@ describe('Policy: purchaseCover', () => {
 
     await deployed.protocol.pause()
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -249,7 +249,7 @@ describe('Policy: purchaseCover', () => {
     await deployed.npm.approve(deployed.governance.address, helper.ether(1000))
     await deployed.governance.report(coverKey, helper.emptyBytes32, info, helper.ether(1000))
 
-    await deployed.dai.approve(deployed.policy.address, ethers.constants.MaxUint256)
+    await deployed.stablecoin.approve(deployed.policy.address, ethers.constants.MaxUint256)
 
     const args = {
       onBehalfOf: owner.address,
@@ -304,7 +304,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
     deployed.cover.updateCoverCreatorWhitelist([owner.address], [true])
 
     await deployed.npm.approve(deployed.cover.address, stakeWithFee)
-    await deployed.dai.approve(deployed.cover.address, initialReassuranceAmount)
+    await deployed.stablecoin.approve(deployed.cover.address, initialReassuranceAmount)
 
     await deployed.cover.addCover({
       coverKey,
@@ -337,7 +337,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
       }
     }, coverKey)
 
-    await deployed.dai.approve(deployed.vault.address, initialLiquidity)
+    await deployed.stablecoin.approve(deployed.vault.address, initialLiquidity)
     await deployed.npm.approve(deployed.vault.address, minStakeToReport)
     await deployed.vault.addLiquidity({
       coverKey,
@@ -353,7 +353,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     await deployed.cover.updateCoverUsersWhitelist(coverKey, helper.emptyBytes32, [owner.address], [true])
 
-    await deployed.dai.approve(deployed.policy.address, amount)
+    await deployed.stablecoin.approve(deployed.policy.address, amount)
 
     const args = {
       onBehalfOf: owner.address,
@@ -379,7 +379,7 @@ describe('Policy: purchaseCover (requires whitelist)', () => {
 
     await deployed.npm.transfer(bob.address, amount)
 
-    await deployed.dai.connect(bob).approve(deployed.policy.address, amount)
+    await deployed.stablecoin.connect(bob).approve(deployed.policy.address, amount)
 
     const args = {
       onBehalfOf: bob.address,

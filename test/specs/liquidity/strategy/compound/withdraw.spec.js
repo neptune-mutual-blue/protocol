@@ -11,7 +11,7 @@ require('chai')
   .should()
 
 describe('Compound Withdrawal', () => {
-  let deployed, daiDelegator, cDai, compoundStrategy
+  let deployed, stablecoinDelegator, cStablecoin, compoundStrategy
 
   beforeEach(async () => {
     const [owner] = await ethers.getSigners()
@@ -19,8 +19,8 @@ describe('Compound Withdrawal', () => {
     deployed = await deployDependencies()
     await deployed.protocol.addMember(owner.address)
 
-    cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
-    daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', deployed.dai.address, cDai.address)
+    cStablecoin = await deployer.deploy(cache, 'FakeToken', 'cStablecoin', 'cStablecoin', helper.ether(100_000_000), 18)
+    stablecoinDelegator = await deployer.deploy(cache, 'FakeCompoundStablecoinDelegator', deployed.stablecoin.address, cStablecoin.address)
 
     compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -30,7 +30,7 @@ describe('Compound Withdrawal', () => {
       RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, daiDelegator.address, cDai.address)
+    }, deployed.store.address, stablecoinDelegator.address, cStablecoin.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
 
@@ -41,7 +41,7 @@ describe('Compound Withdrawal', () => {
     const amount = helper.ether(10, PRECISION)
     await compoundStrategy.deposit(deployed.coverKey, amount)
 
-    const cDais = await cDai.balanceOf(deployed.vault.address)
+    const cStablecoins = await cStablecoin.balanceOf(deployed.vault.address)
     const tx = await compoundStrategy.withdraw(deployed.coverKey)
     const { events } = await tx.wait()
     const event = events.find(x => x.event === 'Withdrawn')
@@ -49,7 +49,7 @@ describe('Compound Withdrawal', () => {
     event.args.key.should.equal(deployed.coverKey)
     event.args.sendTo.should.equal(deployed.vault.address)
     event.args.stablecoinWithdrawn.should.be.gte(amount)
-    event.args.certificateTokenRedeemed.should.equal(cDais.toString())
+    event.args.certificateTokenRedeemed.should.equal(cStablecoins.toString())
 
     const [, withdrawn] = await compoundStrategy.getInfo(deployed.coverKey)
     withdrawn.should.equal(event.args.stablecoinWithdrawn)
@@ -62,7 +62,7 @@ describe('Compound Withdrawal', () => {
 })
 
 describe('Compound Withdrawal: Faulty Pool', () => {
-  let deployed, daiDelegator, compoundStrategy
+  let deployed, stablecoinDelegator, compoundStrategy
 
   before(async () => {
     const [owner] = await ethers.getSigners()
@@ -70,10 +70,10 @@ describe('Compound Withdrawal: Faulty Pool', () => {
     deployed = await deployDependencies()
     await deployed.protocol.addMember(owner.address)
 
-    const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
-    daiDelegator = await deployer.deploy(cache, 'FaultyCompoundDaiDelegator', deployed.dai.address, cDai.address, '1')
+    const cStablecoin = await deployer.deploy(cache, 'FakeToken', 'cStablecoin', 'cStablecoin', helper.ether(100_000_000), 18)
+    stablecoinDelegator = await deployer.deploy(cache, 'FaultyCompoundStablecoinDelegator', deployed.stablecoin.address, cStablecoin.address, '1')
 
-    await cDai.transfer(deployed.vault.address, helper.ether(1000))
+    await cStablecoin.transfer(deployed.vault.address, helper.ether(1000))
 
     compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -83,19 +83,19 @@ describe('Compound Withdrawal: Faulty Pool', () => {
       RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, daiDelegator.address, cDai.address)
+    }, deployed.store.address, stablecoinDelegator.address, cStablecoin.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
     await deployed.liquidityEngine.addStrategies([compoundStrategy.address])
   })
 
-  it('must revert if dai delegator returns an error code', async () => {
+  it('must revert if stablecoin delegator returns an error code', async () => {
     await compoundStrategy.withdraw(deployed.coverKey)
       .should.be.rejectedWith('Compound delegator redeem failed')
   })
 
   it('must revert if no certificate tokens were received', async () => {
-    await daiDelegator.setReturnValue('0')
+    await stablecoinDelegator.setReturnValue('0')
 
     await compoundStrategy.withdraw(deployed.coverKey)
       .should.be.rejectedWith('Redeeming cUS$ failed')

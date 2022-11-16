@@ -10,7 +10,7 @@ View Source: [contracts/interfaces/ICxTokenFactory.sol](../contracts/interfaces/
 **Events**
 
 ```js
-event CxTokenDeployed(bytes32 indexed coverKey, bytes32 indexed productKey, address  cxToken, uint256  expiryDate);
+event CxTokenDeployed(address  cxToken, IStore  store, bytes32 indexed coverKey, bytes32 indexed productKey, string  tokenName, uint256 indexed expiryDate);
 ```
 
 ## Functions
@@ -73,7 +73,7 @@ function deploy(
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -83,7 +83,7 @@ function deploy(
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

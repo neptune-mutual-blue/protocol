@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('gnosis-safe-v1'),
-  productName: 'Gnosis Safe (v1)',
+  productName: 'Gnosis Safe v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(70),
   tags: ['wallet', 'multi-sig'],

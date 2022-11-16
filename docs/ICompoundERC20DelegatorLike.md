@@ -2,7 +2,7 @@
 
 View Source: [contracts/dependencies/compound/ICompoundERC20DelegatorLike.sol](../contracts/dependencies/compound/ICompoundERC20DelegatorLike.sol)
 
-**↘ Derived Contracts: [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md), [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)**
+**↘ Derived Contracts: [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md), [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)**
 
 **ICompoundERC20DelegatorLike**
 
@@ -92,7 +92,7 @@ function redeem(uint256 redeemTokens) external returns (uint256);
 * [ERC165](ERC165.md)
 * [ERC20](ERC20.md)
 * [FakeAaveLendingPool](FakeAaveLendingPool.md)
-* [FakeCompoundDaiDelegator](FakeCompoundDaiDelegator.md)
+* [FakeCompoundStablecoinDelegator](FakeCompoundStablecoinDelegator.md)
 * [FakePriceOracle](FakePriceOracle.md)
 * [FakeRecoverable](FakeRecoverable.md)
 * [FakeStore](FakeStore.md)
@@ -102,7 +102,7 @@ function redeem(uint256 redeemTokens) external returns (uint256);
 * [FakeUniswapV2PairLike](FakeUniswapV2PairLike.md)
 * [FakeUniswapV2RouterLike](FakeUniswapV2RouterLike.md)
 * [FaultyAaveLendingPool](FaultyAaveLendingPool.md)
-* [FaultyCompoundDaiDelegator](FaultyCompoundDaiDelegator.md)
+* [FaultyCompoundStablecoinDelegator](FaultyCompoundStablecoinDelegator.md)
 * [Finalization](Finalization.md)
 * [ForceEther](ForceEther.md)
 * [Governance](Governance.md)

@@ -11,7 +11,7 @@ require('chai')
   .should()
 
 describe('Compound Deposit', () => {
-  let deployed, daiDelegator, cDai, compoundStrategy
+  let deployed, stablecoinDelegator, cStablecoin, compoundStrategy
 
   beforeEach(async () => {
     const [owner] = await ethers.getSigners()
@@ -19,8 +19,8 @@ describe('Compound Deposit', () => {
     deployed = await deployDependencies()
     await deployed.protocol.addMember(owner.address)
 
-    cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
-    daiDelegator = await deployer.deploy(cache, 'FakeCompoundDaiDelegator', deployed.dai.address, cDai.address)
+    cStablecoin = await deployer.deploy(cache, 'FakeToken', 'cStablecoin', 'cStablecoin', helper.ether(100_000_000), 18)
+    stablecoinDelegator = await deployer.deploy(cache, 'FakeCompoundStablecoinDelegator', deployed.stablecoin.address, cStablecoin.address)
 
     compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -30,7 +30,7 @@ describe('Compound Deposit', () => {
       RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, daiDelegator.address, cDai.address)
+    }, deployed.store.address, stablecoinDelegator.address, cStablecoin.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
 
@@ -64,16 +64,16 @@ describe('Compound Deposit', () => {
 })
 
 describe('Compound Deposit: Faulty Pool', () => {
-  let deployed, daiDelegator, compoundStrategy
+  let deployed, stablecoinDelegator, compoundStrategy
 
   before(async () => {
     const [owner] = await ethers.getSigners()
 
     deployed = await deployDependencies()
     await deployed.protocol.addMember(owner.address)
-    const cDai = await deployer.deploy(cache, 'FakeToken', 'cDai', 'cDai', helper.ether(100_000_000), 18)
+    const cStablecoin = await deployer.deploy(cache, 'FakeToken', 'cStablecoin', 'cStablecoin', helper.ether(100_000_000), 18)
 
-    daiDelegator = await deployer.deploy(cache, 'FaultyCompoundDaiDelegator', deployed.dai.address, cDai.address, '1')
+    stablecoinDelegator = await deployer.deploy(cache, 'FaultyCompoundStablecoinDelegator', deployed.stablecoin.address, cStablecoin.address, '1')
 
     compoundStrategy = await deployer.deployWithLibraries(cache, 'CompoundStrategy', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
@@ -83,20 +83,20 @@ describe('Compound Deposit: Faulty Pool', () => {
       RegistryLibV1: deployed.registryLibV1.address,
       StoreKeyUtil: deployed.storeKeyUtil.address,
       ValidationLibV1: deployed.validationLibV1.address
-    }, deployed.store.address, daiDelegator.address, cDai.address)
+    }, deployed.store.address, stablecoinDelegator.address, cStablecoin.address)
 
     await deployed.protocol.addContract(key.PROTOCOL.CNS.STRATEGY_COMPOUND, compoundStrategy.address)
 
     await deployed.liquidityEngine.addStrategies([compoundStrategy.address])
   })
 
-  it('must revert if dai delegator returns an error code', async () => {
+  it('must revert if stablecoin delegator returns an error code', async () => {
     await compoundStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
       .should.be.rejectedWith('Compound delegator mint failed')
   })
 
   it('must revert if no certificate tokens were received', async () => {
-    await daiDelegator.setReturnValue('0')
+    await stablecoinDelegator.setReturnValue('0')
 
     await compoundStrategy.deposit(deployed.coverKey, helper.ether(10, PRECISION))
       .should.be.rejectedWith('Minting cUS$ failed')

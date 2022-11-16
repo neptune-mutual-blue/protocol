@@ -5,9 +5,9 @@ import "../dependencies/compound/ICompoundERC20DelegatorLike.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./FakeToken.sol";
 
-contract FaultyCompoundDaiDelegator is ICompoundERC20DelegatorLike, ERC20 {
-  FakeToken public dai;
-  FakeToken public cDai;
+contract FaultyCompoundStablecoinDelegator is ICompoundERC20DelegatorLike, ERC20 {
+  FakeToken public stablecoin;
+  FakeToken public cStablecoin;
   uint256 public returnValue;
 
   function setReturnValue(uint256 _returnValue) external {
@@ -15,12 +15,12 @@ contract FaultyCompoundDaiDelegator is ICompoundERC20DelegatorLike, ERC20 {
   }
 
   constructor(
-    FakeToken _dai,
-    FakeToken _cDai,
+    FakeToken _stablecoin,
+    FakeToken _cStablecoin,
     uint256 _returnValue
-  ) ERC20("cDAI", "cDAI") {
-    dai = _dai;
-    cDai = _cDai;
+  ) ERC20("cStablecoin", "cStablecoin") {
+    stablecoin = _stablecoin;
+    cStablecoin = _cStablecoin;
     returnValue = _returnValue;
   }
 
@@ -31,7 +31,7 @@ contract FaultyCompoundDaiDelegator is ICompoundERC20DelegatorLike, ERC20 {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function mint(uint256 mintAmount) external override returns (uint256) {
-    dai.transferFrom(msg.sender, address(this), mintAmount);
+    stablecoin.transferFrom(msg.sender, address(this), mintAmount);
     return returnValue;
   }
 
@@ -42,7 +42,7 @@ contract FaultyCompoundDaiDelegator is ICompoundERC20DelegatorLike, ERC20 {
    * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
    */
   function redeem(uint256 redeemTokens) external override returns (uint256) {
-    cDai.transferFrom(msg.sender, address(this), redeemTokens);
+    cStablecoin.transferFrom(msg.sender, address(this), redeemTokens);
     return returnValue;
   }
 }

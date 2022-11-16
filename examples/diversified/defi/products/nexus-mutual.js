@@ -4,7 +4,7 @@ const cover = require('../cover')
 module.exports = {
   coverKey: cover.coverKey,
   productKey: key.toBytes32('nexus-mutual-v1'),
-  productName: 'Nexus Mutual (v1)',
+  productName: 'Nexus Mutual v1',
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['insurance', 'cover'],

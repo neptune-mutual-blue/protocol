@@ -29,7 +29,7 @@ describe('Distributor: `drain` function', () => {
     const referralCode = key.toBytes32('referral-code')
 
     await deployed.npm.approve(distributor.address, npmStakeToAdd)
-    await deployed.dai.approve(distributor.address, amount)
+    await deployed.stablecoin.approve(distributor.address, amount)
 
     await deployed.npm.transfer(distributor.address, helper.ether(3333))
 

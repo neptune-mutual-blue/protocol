@@ -59,7 +59,11 @@ describe('Setup roles in protocol', () => {
       flashLoanFeeProtocol: helper.percentage(2.5),
       resolutionCoolDownPeriod: 1 * DAYS,
       stateUpdateInterval: 1 * DAYS,
-      maxLendingRatio: helper.percentage(5)
+      maxLendingRatio: helper.percentage(5),
+      lendingPeriod: 30 * 60 * 60,
+      withdrawalWindow: 30 * 60 * 60,
+      policyFloor: helper.percentage(7),
+      policyCeiling: helper.percentage(45)
     }
 
     await protocol.initialize(args)

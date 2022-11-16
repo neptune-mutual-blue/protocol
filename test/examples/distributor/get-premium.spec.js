@@ -33,7 +33,7 @@ describe('Distributor: `getPremium` function', () => {
     fee.should.be.gt('0')
   })
 
-  it('must reject if DAI address is not registered on the protocol', async () => {
+  it('must reject if stablecoin address is not registered on the protocol', async () => {
     const [owner] = await ethers.getSigners()
     await deployed.protocol.addMember(owner.address)
 

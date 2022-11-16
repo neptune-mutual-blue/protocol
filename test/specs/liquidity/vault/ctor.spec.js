@@ -21,7 +21,7 @@ describe('Vault Constructor and Views', () => {
 
   it('correctly deploys', async () => {
     const coverKey = key.toBytes32('test')
-    const liquidityToken = await deployer.deploy(cache, 'FakeToken', 'DAI Token', 'DAI', helper.ether(100_000_000, PRECISION), PRECISION)
+    const liquidityToken = await deployer.deploy(cache, 'FakeToken', 'USDC Token', 'USDC', helper.ether(100_000_000, PRECISION), PRECISION)
 
     const vault = await deployer.deployWithLibraries(cache, 'Vault', {
       AccessControlLibV1: deployed.accessControlLibV1.address,
