@@ -9,6 +9,9 @@ abstract contract VaultLiquidity is VaultBase {
   using RegistryLibV1 for IStore;
   using NTransferUtilV2 for IERC20;
 
+  uint256 public constant MIN_LIQUIDITY = 10;
+  uint256 public constant MAX_LIQUIDITY = 10_000_000;
+
   /**
    * @dev Transfers stablecoins to claims processor contracts for claims payout.
    * Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
@@ -55,6 +58,9 @@ abstract contract VaultLiquidity is VaultBase {
   function addLiquidity(AddLiquidityArgs calldata args) external override nonReentrant {
     require(args.coverKey == key, "Forbidden");
     require(args.amount > 0, "Please specify amount");
+
+    require(args.amount > MIN_LIQUIDITY, "Liquidity token amount below threshold");
+    require(args.amount < MAX_LIQUIDITY, "Liquidity token amount above threshold");
 
     /******************************************************************************************
       PRE
