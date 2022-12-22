@@ -1,4 +1,4 @@
-const { deploy } = require('./covers/deployments/binance')
+const { deploy } = require('./covers/deployments/okx')
 
 deploy()
   .then(() => process.exit(0))
