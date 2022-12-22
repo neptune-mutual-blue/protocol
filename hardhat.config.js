@@ -17,8 +17,9 @@ const config = {
       blockGasLimit: 20000000, // 20M
       forking: {
         url: process.env.ETHEREUM_RPC_URL,
-        blockNumber: 15910266
+        blockNumber: 16238599
       },
+      gasPrice: 12 * GWEI,
       explorer: 'https://etherscan.io'
     },
     local: {
