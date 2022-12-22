@@ -34,8 +34,8 @@ module.exports = {
       list: {
         type: 'ordered',
         items: [
-          'The designated exchange platform suffers a security breach of its hot or cold wallets where the minimum total loss of  funds exceeds $50M',
-          'Or the exchange halts all asset withdrawals for all users for more than 15 days except for Legitimate Reasons as defined under the Standard Terms and Conditions.  In this case, incident report cannot be submitted until the expiry of the 15-day withdrawal-halt period. No policy could be purchased after withdrawal halt by the exchange and if any such policy purchased after withdrawal halt will be deemed invalid.  Any policies that are expired prior to the end of the 15-day withdrawal-halt period will not be eligible for payout'
+          'The designated exchange platform suffers a security breach of its hot or cold wallets where the minimum total loss of funds exceeds $50M',
+          'Or the exchange halts all asset withdrawals for all users for more than 15 days except for Legitimate Reasons as defined under the Standard Terms and Conditions. In this case, incident report cannot be submitted until the expiry of the 15-day withdrawal-halt period. No policy could be purchased after withdrawal halt by the exchange and if any such policy purchased after withdrawal halt will be deemed invalid. Any policies that are expired prior to the end of the 15-day withdrawal-halt period will not be eligible for payout'
         ]
       }
     },

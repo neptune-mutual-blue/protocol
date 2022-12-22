@@ -54,10 +54,10 @@ const getContracts = async () => {
 
   const npm = await attach(signer, deployedTokens.NPM, 'POT', {})
 
-  const balance = await npm.balanceOf(signer._address)
-  const wei = await ethers.provider.getBalance(signer._address)
+  const balance = await npm.balanceOf(signer._address || signer.address)
+  const wei = await ethers.provider.getBalance(signer._address || signer.address)
 
-  printer.push(['Signer', signer._address])
+  printer.push(['Signer', signer._address || signer.address])
   printer.push(['ETH Balance', weiAsToken(wei, 'ETH')])
   printer.push(['NPM Balance', weiAsToken(balance, 'NPM')])
 
@@ -66,9 +66,23 @@ const getContracts = async () => {
 
 const approve = async (contracts, cover) => {
   try {
-    console.info('Approving the cover contract to spend %s tokens', weiAsToken(cover.stakeWithFee, 'NPM'))
-    const tx = await contracts.npm.approve(contracts.cover.address, cover.stakeWithFee)
-    console.log('Approval: %s/tx/%s', hre.network.config.explorer, tx.hash)
+    const signer = await getSigner(process.env.COVER_CREATOR)
+    const signerAddress = signer.address || signer._address
+    const allowance = await contracts.npm.allowance(signerAddress, contracts.cover.address)
+
+    console.log('Submitting approval transaction')
+
+    if(allowance.lt(cover.stakeWithFee)) {
+      console.info('Approving the cover contract to spend unlimited NPM tokens')
+      let tx = await contracts.npm.approve(contracts.cover.address, hre.ethers.constants.MaxUint256)
+      console.log('Wait: %s/tx/%s', hre.network.config.explorer, tx.hash)
+
+      await tx.wait()      
+      console.log('Allowance Done')
+      return
+    }
+
+    console.info('Approval not required because of existing allowance')
   } catch (error) {
     console.error('Error approving Signer\'s NPM tokens to the cover address')
     throw error
@@ -103,7 +117,6 @@ const deploy = async () => {
     ruler()
 
     await approve(contracts, cover)
-
     ruler()
 
     await addCover(cover, contracts, info)
