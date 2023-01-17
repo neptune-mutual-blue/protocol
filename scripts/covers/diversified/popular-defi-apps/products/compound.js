@@ -21,7 +21,7 @@ module.exports = {
       list: {
         type: 'unordered',
         items: [
-          'This policy relates exclusively to the version 2 version of the protocol deployed on the Ethereum blockchain.',
+          'This policy relates exclusively to the Compound V2 protocol deployed on the Ethereum blockchain.',
           'To be eligible for a claim, policyholder must hold at least 99 NPM tokens in the wallet used for the policy transaction for the full duration of the cover policy.'
         ]
       }
