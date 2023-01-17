@@ -14,12 +14,12 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      blockGasLimit: 20000000, // 20M
+      blockGasLimit: 9000000, // 9M
       forking: {
         url: process.env.ETHEREUM_RPC_URL,
-        blockNumber: 16238599
+        blockNumber: 16425236
       },
-      gasPrice: 12 * GWEI,
+      gasPrice: 20 * GWEI,
       explorer: 'https://etherscan.io'
     },
     local: {
@@ -47,7 +47,7 @@ const config = {
       url: process.env.ETHEREUM_RPC_URL,
       chainId: 1,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 12 * GWEI,
+      gasPrice: 70 * GWEI,
       explorer: 'https://etherscan.io'
     }
   },
