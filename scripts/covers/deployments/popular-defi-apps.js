@@ -1,5 +1,5 @@
 const hre = require('hardhat')
-const prime = require('../diversified/popular-defi-apps')
+const pop = require('../diversified/popular-defi-apps')
 const ethereum = require('../../config/deployments/ethereum.json')
 const ipfs = require('../../../util/ipfs')
 const { getNetworkInfo } = require('../../../util/network')
@@ -74,7 +74,7 @@ const approve = async (contracts, cover) => {
 
 const deploy = async () => {
   const balances = []
-  const { cover, products } = prime
+  const { cover, products } = pop
 
   const contracts = await getContracts()
 
