@@ -1,7 +1,9 @@
-const config = require('./mainnet')
+const mainnet = require('./mainnet')
 
-config[31337] = config[1]
+const config = {}
+config[31337] = {...mainnet[1]}
 config[31337].network = 'Hardhat Forked Ethereum Network'
 config[31337].mainnet = false
+config[31337].chainId = 31337
 
 module.exports = config

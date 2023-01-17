@@ -3,7 +3,6 @@ const binance = require('../dedicated/binance')
 const ethereum = require('../../config/deployments/ethereum.json')
 const ipfs = require('../../../util/ipfs')
 const { getNetworkInfo } = require('../../../util/network')
-const { weiAsToken } = require('../../../util/helper')
 
 const { ethers } = hre
 
@@ -54,22 +53,37 @@ const getContracts = async () => {
 }
 
 const deploy = async () => {
+  const signer = await getSigner(process.env.COVER_CREATOR)
   const cover = binance
 
   const contracts = await getContracts()
 
   console.log('\n')
 
-  console.info('Approving the cover contract to spend %s tokens', weiAsToken(cover.stakeWithFee, 'NPM'))
-  let tx = await contracts.npm.approve(contracts.cover.address, cover.stakeWithFee)
-  console.log('Approval: %s/tx/%s', hre.network.config.explorer, tx.hash)
 
-  console.log('-'.repeat(128))
+  const signerAddress = signer.address || signer._address
+
+
+  const allowance = await contracts.npm.allowance(signerAddress, contracts.cover.address)
+  console.log('Signer: %s. Cover: %s. Allowance: %s. Needed: %s. lt: %s', signerAddress, contracts.cover.address, allowance, cover.stakeWithFee, allowance.lt(cover.stakeWithFee))
+
+  if(allowance.lt(cover.stakeWithFee)) {
+    console.info('Approving the cover contract to spend unlimited NPM tokens')
+    let tx = await contracts.npm.approve(contracts.cover.address, hre.ethers.constants.MaxUint256)
+    console.log('Wait: %s/tx/%s', hre.network.config.explorer, tx.hash)
+
+    await tx.wait()
+
+    console.log('Done')
+    console.log('-'.repeat(128))
+  }
 
   const info = await ipfs.write(cover)
 
-  console.info('Adding a new cover %s', cover.coverName)
-  tx = await contracts.cover.addCover({ info, ...cover })
+  const args = { info, ...cover }
+
+  console.info('Adding a new cover %s', args.coverName)
+  tx = await contracts.cover.addCover(args)
   console.log('Created the cover %s: %s/tx/%s', cover.coverName, hre.network.config.explorer, tx.hash)
 
   console.log('-'.repeat(128))
