@@ -36,7 +36,7 @@ module.exports = {
           'Minimum total loss of user funds from the reported incident should exceed $5 million.',
           'The designated protocol suffers a hack of user funds in which the user funds are permanently and irrecoverably stolen from the protocol.',
           'The loss arises from a smart contract vulnerability.',
-          'The loss must arise from one of the following blockchains: Arbitrum and Ethereum (if available).'
+          'The loss must arise from one of the following blockchains: Ethereum.'
         ]
       }
     },
