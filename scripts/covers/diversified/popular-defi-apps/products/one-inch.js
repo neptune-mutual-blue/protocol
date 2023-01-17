@@ -22,7 +22,7 @@ module.exports = {
         type: 'unordered',
         items: [
           'This policy relates exclusively to the 1inch v2 protocol deployed on the Ethereum blockchain.',
-          'To be eligible for a claim, policyholder must hold at least 49 NPM tokens in the wallet used for the policy transaction for the full duration of the cover policy.'
+          'To be eligible for a claim, policyholder must hold at least 299 NPM tokens in the wallet used for the policy transaction for the full duration of the cover policy.'
         ]
       }
     },
