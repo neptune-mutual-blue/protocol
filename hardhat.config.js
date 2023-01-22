@@ -16,11 +16,11 @@ const config = {
     hardhat: {
       blockGasLimit: 9000000, // 9M
       forking: {
-        url: process.env.ETHEREUM_RPC_URL,
-        blockNumber: 16425236
+        url: process.env.ARBITRUM_RPC_URL,
+        blockNumber: 54690150
       },
-      gasPrice: 20 * GWEI,
-      explorer: 'https://etherscan.io'
+      gasPrice: 0.15 * GWEI,
+      explorer: 'https://arbiscan.io'
     },
     local: {
       chainId: 1337,

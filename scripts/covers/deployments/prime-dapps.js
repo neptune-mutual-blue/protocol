@@ -61,7 +61,7 @@ const deploy = async () => {
   console.log('\n')
 
   console.info('Approving the cover contract to spend %s tokens', weiAsToken(cover.stakeWithFee, 'NPM'))
-  let tx = await contracts.npm.approve(contracts.cover.address, cover.stakeWithFee)
+  let tx = await contracts.npm.approve(contracts.cover.address, ethers.constants.MaxUint256)
   console.log('Approval: %s/tx/%s', hre.network.config.explorer, tx.hash)
 
   console.log('-'.repeat(128))
