@@ -1,5 +1,5 @@
 const hre = require('hardhat')
-const prime = require('../diversified/prime')
+const pop = require('../diversified/popular-defi-apps')
 const ethereum = require('../../config/deployments/ethereum.json')
 const ipfs = require('../../../util/ipfs')
 const { getNetworkInfo } = require('../../../util/network')
@@ -24,6 +24,19 @@ const getContractInstance = async (connectedTo, deployments, contractName) => {
   }
 }
 
+const getContracts = async () => {
+  const signer = await getSigner(process.env.COVER_CREATOR)
+  const network = await getNetworkInfo()
+  const { deployedTokens } = network
+  const { deployments } = ethereum[DEPLOYMENT_ID]
+
+  const cover = await getContractInstance(signer, deployments, 'Cover')
+
+  const npm = await attach(signer, deployedTokens.NPM, 'POT', {})
+
+  return { cover, npm }
+}
+
 const getSigner = async (impersonate) => {
   const network = await getNetworkInfo()
 
@@ -40,36 +53,47 @@ const getSigner = async (impersonate) => {
   return ethers.provider.getSigner(impersonate)
 }
 
-const getContracts = async () => {
-  const signer = await getSigner(process.env.COVER_CREATOR)
-  const network = await getNetworkInfo()
-  const { deployedTokens } = network
-  const { deployments } = ethereum[DEPLOYMENT_ID]
+const approve = async (contracts, cover) => {
+  try {
+    const signer = await getSigner(process.env.COVER_CREATOR)
+    console.info('Approving the cover contract to spend %s tokens', weiAsToken(cover.stakeWithFee, 'NPM'))
+    const allowance = await contracts.npm.allowance(signer.address || signer._address, contracts.cover.address)
 
-  const cover = await getContractInstance(signer, deployments, 'Cover')
+    if (allowance.gte(cover.stakeWithFee)) {
+      console.log('Approval not required')
+      return
+    }
 
-  const npm = await attach(signer, deployedTokens.NPM, 'POT', {})
-
-  return { cover, npm }
+    const tx = await contracts.npm.approve(contracts.cover.address, cover.stakeWithFee)
+    console.log('Approval: %s/tx/%s', hre.network.config.explorer, tx.hash)
+  } catch (error) {
+    console.error('Error approving Signer\'s NPM tokens to the cover address')
+    throw error
+  }
 }
 
 const deploy = async () => {
-  const { cover, products } = prime
+  const balances = []
+  const { cover, products } = pop
 
   const contracts = await getContracts()
 
-  console.log('\n')
+  const signer = await getSigner(process.env.COVER_CREATOR)
+  balances.push(await ethers.provider.getBalance(signer.address || signer._address))
 
-  console.info('Approving the cover contract to spend %s tokens', weiAsToken(cover.stakeWithFee, 'NPM'))
-  let tx = await contracts.npm.approve(contracts.cover.address, ethers.constants.MaxUint256)
-  console.log('Approval: %s/tx/%s', hre.network.config.explorer, tx.hash)
+  console.log('\n')
+  console.log('Signer [%s]: https://etherscan.io/address/%s', weiAsToken(balances[0], 'ETH'), signer.address ?? signer._address)
+
+  console.log('-'.repeat(128))
+
+  await approve(contracts, cover)
 
   console.log('-'.repeat(128))
 
   const info = await ipfs.write(cover)
 
   console.info('Adding a new cover %s', cover.coverName)
-  tx = await contracts.cover.addCover({ info, ...cover })
+  let tx = await contracts.cover.addCover({ info, ...cover })
   console.log('Created the cover %s: %s/tx/%s', cover.coverName, hre.network.config.explorer, tx.hash)
 
   console.log('-'.repeat(128))
@@ -92,6 +116,11 @@ const deploy = async () => {
   console.log('Created products for %s: %s/tx/%s', cover.coverName, hre.network.config.explorer, tx.hash)
 
   console.log('-'.repeat(128))
+
+  balances.push(await ethers.provider.getBalance(signer.address || signer._address))
+  const [previous, current] = balances
+
+  console.info('Balance: %s. Gas cost: %s', weiAsToken(current, 'ETH'), weiAsToken(previous.sub(current), 'ETH'))
 }
 
 module.exports = { deploy }

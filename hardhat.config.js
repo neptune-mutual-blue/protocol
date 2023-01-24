@@ -14,13 +14,13 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      blockGasLimit: 20000000, // 20M
+      blockGasLimit: 9000000, // 9M
       forking: {
-        url: process.env.ETHEREUM_RPC_URL,
-        blockNumber: 16238599
+        url: process.env.ARBITRUM_RPC_URL,
+        blockNumber: 54690150
       },
-      gasPrice: 12 * GWEI,
-      explorer: 'https://etherscan.io'
+      gasPrice: 0.15 * GWEI,
+      explorer: 'https://arbiscan.io'
     },
     local: {
       chainId: 1337,
@@ -28,13 +28,6 @@ const config = {
       gasPrice: 12 * GWEI,
       blockGasLimit: 20000000, // 20M
       explorer: 'https://etherscan.com'
-    },
-    mumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com',
-      chainId: 80001,
-      accounts: [process.env.PRIVATE_KEY],
-      gas: 'auto',
-      explorer: 'https://mumbai.polygonscan.com'
     },
     fuji: {
       url: 'https://api.avax-test.network/ext/bc/C/rpc',
@@ -44,11 +37,19 @@ const config = {
       explorer: 'https://testnet.snowtrace.io'
     },
     ethereum: {
+      blockGasLimit: 19000000, // 19M
       url: process.env.ETHEREUM_RPC_URL,
       chainId: 1,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 12 * GWEI,
+      gasPrice: 14 * GWEI,
       explorer: 'https://etherscan.io'
+    },
+    arbitrum: {
+      url: process.env.ARBITRUM_RPC_URL,
+      chainId: 42161,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 0.1 * GWEI,
+      explorer: 'https://arbiscan.io'
     }
   },
   solidity: {
@@ -76,7 +77,7 @@ const config = {
     apiKey: process.env.ETHERSCAN_API_KEY,
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
-      mumbai: process.env.POLYGONSCAN_API_KEY,
+      arbitrum: process.env.ARBISCAN_API_KEY,
       fuji: process.env.SNOWTRACE_API_KEY
     }
   },

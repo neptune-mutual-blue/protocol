@@ -1,4 +1,4 @@
-const { deploy } = require('./covers/deployments/okx')
+const { deploy } = require('./covers/deployments/popular-defi-apps')
 
 deploy()
   .then(() => process.exit(0))
