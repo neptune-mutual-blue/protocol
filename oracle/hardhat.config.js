@@ -12,14 +12,9 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      // forking: {
-      //   url: process.env.ALCHEMY_API_URL,
-      //   blockNumber: 11819774
-      // }
-      explorer: 'https://fooscan.com'
     },
     mumbai: {
-      url: 'https://matic-mumbai.chainstacklabs.com',
+      url: process.env.MUMBAI_RPC_URL,
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
       gas: 'auto',
@@ -66,11 +61,12 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY,
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
       mumbai: process.env.POLYGONSCAN_API_KEY,
-      fuji: process.env.SNOWTRACE_API_KEY
+      fuji: process.env.SNOWTRACE_API_KEY,
+      arbitrum: process.env.ARBISCAN_API_KEY
     }
   }
 }

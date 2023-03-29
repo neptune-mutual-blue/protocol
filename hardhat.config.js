@@ -1,3 +1,5 @@
+require('@matterlabs/hardhat-zksync-deploy')
+require('@matterlabs/hardhat-zksync-solc')
 require('hardhat-contract-sizer')
 require('@nomiclabs/hardhat-waffle')
 require('solidity-coverage')
@@ -12,15 +14,14 @@ const GWEI = 1000000000
  */
 const config = {
   defaultNetwork: 'hardhat',
+  zksolc: {
+    version: '1.3.5',
+    compilerSource: 'binary',
+    settings: {}
+  },
   networks: {
     hardhat: {
-      blockGasLimit: 9000000, // 9M
-      forking: {
-        url: process.env.ARBITRUM_RPC_URL,
-        blockNumber: 54690150
-      },
-      gasPrice: 0.15 * GWEI,
-      explorer: 'https://arbiscan.io'
+      zksync: true
     },
     local: {
       chainId: 1337,
@@ -29,12 +30,24 @@ const config = {
       blockGasLimit: 20000000, // 20M
       explorer: 'https://etherscan.com'
     },
+    zkTestnet: {
+      url: 'https://zksync2-testnet.zksync.dev', // URL of the zkSync network RPC
+      ethNetwork: 'goerli', // Can also be the RPC URL of the Ethereum network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+      zksync: true
+    },
     fuji: {
       url: 'https://api.avax-test.network/ext/bc/C/rpc',
       chainId: 43113,
       accounts: [process.env.PRIVATE_KEY],
       gas: 'auto',
       explorer: 'https://testnet.snowtrace.io'
+    },
+    mumbai: {
+      url: process.env.MUMBAI_RPC_URL,
+      chainId: 80001,
+      accounts: [process.env.PRIVATE_KEY],
+      gas: 'auto',
+      explorer: 'https://mumbai.polygonscan.com'
     },
     ethereum: {
       blockGasLimit: 19000000, // 19M
@@ -78,7 +91,8 @@ const config = {
     apiKeyAll: {
       mainnet: process.env.ETHERSCAN_API_KEY,
       arbitrum: process.env.ARBISCAN_API_KEY,
-      fuji: process.env.SNOWTRACE_API_KEY
+      fuji: process.env.SNOWTRACE_API_KEY,
+      mumbai: process.env.POLYGONSCAN_API_KEY
     }
   },
   paths: {

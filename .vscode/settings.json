@@ -45,6 +45,7 @@
   "cSpell.words": [
     "Aave",
     "alloc",
+    "ARBISCAN",
     "Arbitrum",
     "Bahs",
     "Bokky",
@@ -95,7 +96,8 @@
     "unstaking",
     "WXDAI",
     "zerox",
-    "zkrollup"
+    "zkrollup",
+    "zksolc"
   ],
   "git.detectSubmodules": false
 }

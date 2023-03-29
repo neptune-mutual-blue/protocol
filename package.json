@@ -14,6 +14,7 @@
     "deploy:ethereum": "hardhat run scripts/deploy.js --network ethereum 2>&1 | tee ./.ignored/ethereum-deployment.md",
     "deploy:local": "rm -f ./.deployments/local.json && hardhat run scripts/deploy.js --network local 2>&1 | tee ./.ignored/local-deployment.md",
     "deploy:fuji": "hardhat run scripts/deploy.js --network fuji 2>&1 | tee ./.ignored/fuji-deployment.md",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai 2>&1 | tee ./.ignored/mumbai-deployment.md",
     "deploy:cover": "npx hardhat run scripts/deploy-covers.js",
     "deploy:cover:ethereum": "npx hardhat run scripts/deploy-covers.js --network ethereum",
     "deploy:arbitrum": "hardhat run scripts/deploy.js --network arbitrum 2>&1 | tee ./.ignored/arbitrum-deployment.md",
@@ -66,6 +67,8 @@
   },
   "homepage": "https://github.com/neptune-mutual/protocol#readme",
   "devDependencies": {
+    "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
+    "@matterlabs/hardhat-zksync-solc": "^0.3.14",
     "@neptunemutual/solidoc": "^0.0.2-beta",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-etherscan": "^3.1.5",
@@ -92,7 +95,8 @@
     "solhint": "3.3.6",
     "solidity-coverage": "0.7.17",
     "solidoc2": "1.0.7",
-    "standard": "16.0.4"
+    "standard": "16.0.4",
+    "zksync-web3": "^0.14.3"
   },
   "resolutions": {
     "hardhat/**/@ethereumjs/tx": "3.5.0"
