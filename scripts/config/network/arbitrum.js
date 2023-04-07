@@ -6,6 +6,7 @@ const DAYS = 86400
 const config = {
   42161: {
     network: 'Arbitrum One',
+    name: 'arbitrum',
     chainId: 42161,
     mainnet: true,
     pool: {

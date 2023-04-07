@@ -17,6 +17,9 @@ const networks = {
   43113: {
     approximateBlockTime: 2
   },
+  84531: {
+    approximateBlockTime: 2
+  },
   31337: {
     approximateBlockTime: 1
   }

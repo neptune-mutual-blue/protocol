@@ -6,6 +6,7 @@ const DAYS = 86400
 const config = {
   1: {
     network: 'Main Ethereum Network',
+    name: 'ethereum',
     chainId: 1,
     mainnet: true,
     pool: {
