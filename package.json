@@ -13,7 +13,7 @@
     "deploy": "hardhat run scripts/deploy.js --network hardhat",
     "deploy:ethereum": "hardhat run scripts/deploy.js --network ethereum 2>&1 | tee ./.ignored/ethereum-deployment.md",
     "deploy:local": "rm -f ./.deployments/local.json && hardhat run scripts/deploy.js --network local 2>&1 | tee ./.ignored/local-deployment.md",
-    "deploy:fuji": "hardhat run scripts/deploy.js --network fuji 2>&1 | tee ./.ignored/fuji-deployment.md",
+    "deploy:basegoerli": "hardhat run scripts/deploy.js --network basegoerli 2>&1 | tee ./.ignored/basegoerli-deployment.md",
     "deploy:cover": "npx hardhat run scripts/deploy-covers.js",
     "deploy:cover:ethereum": "npx hardhat run scripts/deploy-covers.js --network ethereum",
     "deploy:arbitrum": "hardhat run scripts/deploy.js --network arbitrum 2>&1 | tee ./.ignored/arbitrum-deployment.md",
@@ -68,7 +68,7 @@
   "devDependencies": {
     "@neptunemutual/solidoc": "^0.0.2-beta",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "@nomiclabs/hardhat-etherscan": "^3.1.5",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "axios": "0.26.0",
     "bignumber.js": "9.0.2",

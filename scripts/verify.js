@@ -1,8 +1,8 @@
 const hre = require('hardhat')
-const deployment = require('../.deployments/ethereum.json')
+const deployment = require('../.deployments/basegoerli.json')
 const io = require('../util/io')
 const path = require('path')
-const network = 'ethereum'
+const network = 'basegoerli'
 const deploymentId = 6
 
 const ensureDirectory = async () => {

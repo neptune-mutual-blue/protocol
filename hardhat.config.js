@@ -14,13 +14,7 @@ const config = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {
-      blockGasLimit: 9000000, // 9M
-      forking: {
-        url: process.env.ARBITRUM_RPC_URL,
-        blockNumber: 54690150
-      },
-      gasPrice: 0.15 * GWEI,
-      explorer: 'https://arbiscan.io'
+      blockGasLimit: 19000000
     },
     local: {
       chainId: 1337,
@@ -29,12 +23,12 @@ const config = {
       blockGasLimit: 20000000, // 20M
       explorer: 'https://etherscan.com'
     },
-    fuji: {
-      url: 'https://api.avax-test.network/ext/bc/C/rpc',
-      chainId: 43113,
+    basegoerli: {
+      url: 'https://goerli.base.org',
+      chainId: 84531,
       accounts: [process.env.PRIVATE_KEY],
-      gas: 'auto',
-      explorer: 'https://testnet.snowtrace.io'
+      gasPrice: 1 * GWEI,
+      explorer: 'https://goerli.basescan.org'
     },
     ethereum: {
       blockGasLimit: 19000000, // 19M
@@ -74,12 +68,21 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKeyAll: {
+    apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY,
-      arbitrum: process.env.ARBISCAN_API_KEY,
-      fuji: process.env.SNOWTRACE_API_KEY
-    }
+      arbitrumOne: process.env.ARBISCAN_API_KEY,
+      basegoerli: 'base'
+    },
+    customChains: [
+      {
+        network: 'basegoerli',
+        chainId: 84531,
+        urls: {
+          apiURL: 'https://api-goerli.basescan.org/api',
+          browserURL: 'https://goerli.basescan.org'
+        }
+      }
+    ]
   },
   paths: {
     tests: './test',

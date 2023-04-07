@@ -1,12 +1,12 @@
-const hardhat = require('./hardhat-fork')
+const hardhat = require('./hardhat')
 const mainnet = require('./mainnet')
 const arbitrum = require('./arbitrum')
-const fuji = require('./fuji')
+const baseGoerli = require('./base-goerli')
 const local = require('./local')
 
 module.exports = {
   ...hardhat,
-  ...fuji,
+  ...baseGoerli,
   ...mainnet,
   ...arbitrum,
   ...local

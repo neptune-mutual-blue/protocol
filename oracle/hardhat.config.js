@@ -5,6 +5,8 @@ require('hardhat-gas-reporter')
 require('@nomiclabs/hardhat-etherscan')
 require('dotenv').config()
 
+const GWEI = 1000000000
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -18,24 +20,17 @@ const config = {
       // }
       explorer: 'https://fooscan.com'
     },
-    mumbai: {
-      url: 'https://matic-mumbai.chainstacklabs.com',
-      chainId: 80001,
-      accounts: [process.env.PRIVATE_KEY],
-      gas: 'auto',
-      explorer: 'https://mumbai.polygonscan.com'
-    },
-    fuji: {
-      url: 'https://api.avax-test.network/ext/bc/C/rpc',
-      chainId: 43113,
-      accounts: [process.env.PRIVATE_KEY],
-      gas: 'auto',
-      explorer: 'https://testnet.snowtrace.io'
-    },
     local: {
       url: 'http://localhost:8545/',
       chainId: 1337,
       accounts: [process.env.PRIVATE_KEY]
+    },
+    basegoerli: {
+      url: 'https://goerli.base.org',
+      chainId: 84531,
+      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 1 * GWEI,
+      explorer: 'https://goerli.basescan.org'
     }
   },
   solidity: {
@@ -66,12 +61,21 @@ const config = {
     disambiguatePaths: false
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
-    apiKeyAll: {
+    apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY,
-      mumbai: process.env.POLYGONSCAN_API_KEY,
-      fuji: process.env.SNOWTRACE_API_KEY
-    }
+      arbitrumOne: process.env.ARBISCAN_API_KEY,
+      basegoerli: 'base'
+    },
+    customChains: [
+      {
+        network: 'basegoerli',
+        chainId: 84531,
+        urls: {
+          apiURL: 'https://api-goerli.basescan.org/api',
+          browserURL: 'https://goerli.basescan.org'
+        }
+      }
+    ]
   }
 }
 
