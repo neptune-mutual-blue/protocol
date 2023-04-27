@@ -96,16 +96,20 @@ describe('NPM Token: Issuances', () => {
   })
 
   it('should not allow issuances when paused', async () => {
-    const [owner, timelockOrOwner] = await ethers.getSigners()
+    const [owner, timelockOrOwner, charles] = await ethers.getSigners()
+
+    await npm.connect(timelockOrOwner).setPausers([charles.address], [true])
 
     const issuanceKey = key.toBytes32('Seed Round Investors')
     const issueTo = owner.address
     const amount = ethers.BigNumber.from(helper.ether(1))
 
-    await npm.connect(timelockOrOwner).pause(true)
+    await npm.connect(charles).pause()
 
     await npm.connect(timelockOrOwner).issueMany(issuanceKey, [issueTo], [amount])
       .should.be.rejectedWith('Pausable: paused')
+
+    await npm.connect(timelockOrOwner).unpause()
   })
 })
 
@@ -183,9 +187,12 @@ describe('NPM Token: Issue Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await npm.connect(timelockOrOwner).pause(true)
+    await npm.connect(timelockOrOwner).setPausers([timelockOrOwner.address], [true])
+    await npm.connect(timelockOrOwner).pause()
+
     await npm.connect(timelockOrOwner).issueMany(issuanceKey, receivers, amounts)
       .should.be.rejectedWith('Pausable: paused')
+    await npm.connect(timelockOrOwner).unpause()
   })
 })
 
@@ -217,12 +224,13 @@ describe('NPM Token: Transfers', () => {
   it('should not allow transfers when paused', async () => {
     const [, timelockOrOwner, alice] = await ethers.getSigners()
 
-    await npm.connect(timelockOrOwner).pause(true)
+    await npm.connect(timelockOrOwner).setPausers([timelockOrOwner.address], [true])
+    await npm.connect(timelockOrOwner).pause()
 
     await npm.transfer(alice.address, helper.ether(2))
       .should.be.rejectedWith('Pausable: paused')
 
-    await npm.connect(timelockOrOwner).pause(false)
+    await npm.connect(timelockOrOwner).unpause()
 
     await npm.transfer(alice.address, helper.ether(2)).should.not.be.rejected
   })
@@ -291,8 +299,11 @@ describe('NPM Token: Transfer Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await npm.connect(timelockOrOwner).pause(true)
+    await npm.connect(timelockOrOwner).setPausers([timelockOrOwner.address], [true])
+    await npm.connect(timelockOrOwner).pause()
+
     await npm.connect(timelockOrOwner).transferMany(receivers, amounts)
       .should.be.rejectedWith('Pausable: paused')
+    await npm.connect(timelockOrOwner).unpause()
   })
 })
