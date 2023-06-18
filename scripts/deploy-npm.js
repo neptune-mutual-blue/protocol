@@ -2,8 +2,6 @@ const { formatEther } = require('ethers/lib/utils')
 const { network } = require('hardhat')
 const { ethers } = require('hardhat')
 
-const OWNER = '0xAc6CD41F7E434DCf2Da45bb3ff385706DC2A2b9C'
-
 const deploy = async (contractName, ...args) => {
   const ContractFactory = await ethers.getContractFactory(contractName)
   const instance = await ContractFactory.deploy(...args)
@@ -27,7 +25,7 @@ const main = async () => {
 
   console.log('Deployer: %s. Balance: %s ETH', deployer.address, formatEther(previousBalance))
 
-  await deploy('NPM', OWNER, 'Neptune Mutual', 'NPM')
+  await deploy('NPM', '0xAc6CD41F7E434DCf2Da45bb3ff385706DC2A2b9C', 'Neptune Mutual', 'NPM')
 
   const balance = await deployer.getBalance()
   const cost = previousBalance.sub(balance)
