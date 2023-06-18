@@ -20,7 +20,7 @@ const initialize = async (suite, deploymentId) => {
   const cache = suite ? null : await fileCache.from(deploymentId)
   const network = await getNetworkInfo()
 
-  if (network.chainId !== 31337) {
+  if (network.chainId !== 31338) {
     console.info(chalk.red.bold.underline('Deploying to %s: %s (%s)\n'), network.mainnet ? 'mainnet' : 'testnet', network.network, network.chainId)
   }
 
@@ -39,6 +39,7 @@ const initialize = async (suite, deploymentId) => {
   const { router, factory, aaveLendingPool, compoundStablecoinDelegator, priceOracle } = await getExternalProtocols(cache, tokens)
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
+
 
   const [npmUsdPair, crpoolUsdPair, hwtUsdPair, obkUsdPair, sabreUsdPair, becUsdPair, xdUsdPair] = pairs
 

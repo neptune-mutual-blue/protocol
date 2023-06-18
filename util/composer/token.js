@@ -5,7 +5,7 @@ const erc20 = require('../contract-helper/erc20')
 const faucet = require('../contract-helper/faucet')
 const { ethers } = hre
 
-const supportedNetworks = [31337]
+const supportedNetworks = [31338]
 
 const sendTransfers = async (contract, decimals) => {
   const [owner, alice, bob, chris, david, emily, franklin, george, harry, isabel, john, kimberly, lewis] = await ethers.getSigners() // eslint-disable-line

@@ -18,7 +18,7 @@ const deploy = async () => {
   const [owner] = await ethers.getSigners()
   const network = await getNetworkInfo()
 
-  const isHardhat = network.chainId === 31337
+  const isHardhat = network.chainId === 31338
 
   const result = await composer.initializer.initialize(isHardhat, DEPLOYMENT_ID)
   const { intermediate, cache, tokens, pairInfo, startBalance } = result
