@@ -8,7 +8,7 @@ module.exports = {
   requiresWhitelist: false,
   efficiency: helper.percentage(90),
   tags: ['exchange', 'dex', 'swap', 'nft'],
-  about: 'Sushiswap is  an automated market maker (AMM), in addition to facilitating market making for LPs and traders, Sushiswap also offers token vaults for lending & borrowing.',
+  about: 'PancakeSwap is the most popular decentralized exchange protocol for swapping BEP20 tokens on the BNB Smart Chain. The protocol, launched in December 2020, is based on the AMM (automated market maker) model, where users trade against a liquidity pool. These pools are filled by users who deposit their funds and, in return, receive liquidity provider (LP) tokens, enabling them to earn proportional trading fees.',
   blockchains: [
     {
       chainId: 56,

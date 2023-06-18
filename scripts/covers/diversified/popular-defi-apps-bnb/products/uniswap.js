@@ -8,7 +8,7 @@ module.exports = {
   requiresWhitelist: false,
   efficiency: helper.percentage(95),
   tags: ['exchange', 'dex', 'swap', 'nft'],
-  about: 'The Uniswap protocol is a peer-to-peer system designed for exchanging cryptocurrencies (ERC-20 Tokens) on the Ethereum blockchain. The protocol is implemented as a set of persistent, non-upgradable smart contracts; designed to prioritize censorship resistance, security, self-custody, and to function without any trusted intermediaries who may selectively restrict access.',
+  about: 'The Uniswap protocol is a peer-to-peer system designed for exchanging cryptocurrencies (ERC-20 Tokens) on the Ethereum blockchain. The protocol is implemented as a set of persistent, non-upgradable smart contracts. It is designed to prioritize censorship resistance, security, self-custody, and to function without any trusted intermediaries who may selectively restrict access. It has been deployed on the BNB Smart Chain since early 2023.',
   blockchains: [
     {
       chainId: 56,
