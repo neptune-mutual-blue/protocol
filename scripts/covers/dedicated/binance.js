@@ -57,7 +57,7 @@ module.exports = {
   cooldownPeriod: 1 * DAYS,
   claimPeriod: 7 * DAYS,
   minStakeToReport: ether(50_000),
-  stakeWithFee: ether(30_000),
+  stakeWithFee: ether(12_500),
   initialReassuranceAmount: '0',
   reassuranceRate: percentage(25),
   links: {
