@@ -4,10 +4,10 @@ const MINUTES = 60
 const DAYS = 86400
 
 const config = {
-  42161: {
-    network: 'Arbitrum One',
-    name: 'arbitrum',
-    chainId: 42161,
+  56: {
+    network: 'BNB Chain',
+    name: 'bsc',
+    chainId: 56,
     mainnet: true,
     pool: {
       bond: {
@@ -86,18 +86,18 @@ const config = {
     ],
     deployedTokens: {
       NPM: '0x57f12FE6A4e5fe819eec699FAdf9Db2D06606bB4',
-      USDC: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
+      USDC: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
     },
     uniswapV2Like: {
-      description: 'Sushiswap v2 on Arbitrum',
+      description: 'PancakeSwap on BNB Chain',
       addresses: {
-        factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
-        router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
+        factory: '0xca143ce32fe78f1f7019d7d551a6402fc5350c73',
+        router: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
         npmPriceOracle: null
       }
     },
     aave: {
-      description: 'Aave on Arbitrum',
+      description: '',
       addresses: {
         lendingPool: ''
       }

@@ -52,7 +52,7 @@ describe('Deposit to Staking Pool', () => {
       maxStake: helper.ether(10_000),
       platformFee: helper.percentage(0.5),
       rewardPerBlock: (12_345_678).toString(),
-      lockupPeriod: minutesToBlocks(31337, 5),
+      lockupPeriod: minutesToBlocks(31338, 5),
       rewardTokenToDeposit: helper.ether(10_000_000)
     }
 

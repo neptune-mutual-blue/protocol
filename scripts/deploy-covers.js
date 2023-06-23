@@ -1,4 +1,4 @@
-const { deploy } = require('./covers/deployments/popular-defi-apps')
+const { deploy } = require('./covers/deployments/popular-defi-apps-bnb')
 
 deploy()
   .then(() => process.exit(0))

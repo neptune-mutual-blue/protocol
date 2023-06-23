@@ -5,10 +5,10 @@ const DAYS = 86400
 const HOURS = 3600
 
 const config = {
-  31337: {
-    network: 'Hardhat Forked Ethereum Network',
+  31338: {
+    network: 'Hardhat',
     name: 'hardhat',
-    chainId: 31337,
+    chainId: 31338,
     mainnet: false,
     pool: {
       bond: {
