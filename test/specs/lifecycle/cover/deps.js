@@ -92,12 +92,6 @@ const deployDependencies = async () => {
     ValidationLibV1: validationLibV1.address
   })
 
-  const coverLibV2 = await deployer.deployWithLibraries(cache, 'CoverLibV2', {
-    CoverUtilV1: coverUtilV1.address,
-    StoreKeyUtil: storeKeyUtil.address,
-    ValidationLibV1: validationLibV1.address
-  })
-
   const policyHelperV1 = await deployer.deployWithLibraries(cache, 'PolicyHelperV1', {
     CoverUtilV1: coverUtilV1.address,
     NTransferUtilV2: transferLib.address,
@@ -190,8 +184,8 @@ const deployDependencies = async () => {
     {
       AccessControlLibV1: accessControlLibV1.address,
       BaseLibV1: baseLibV1.address,
-      CoverLibV2: coverLibV2.address,
       CoverUtilV1: coverUtilV1.address,
+      ProtoUtilV1: protoUtilV1.address,
       RegistryLibV1: registryLibV1.address,
       StoreKeyUtil: storeKeyUtil.address,
       ValidationLibV1: validationLibV1.address
