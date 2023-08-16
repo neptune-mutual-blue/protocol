@@ -180,6 +180,21 @@ const deployDependencies = async () => {
   await protocol.addContract(key.PROTOCOL.CNS.COVER, cover.address)
   await cover.initialize(stablecoin.address, key.toBytes32('USDC'))
 
+  const coverUpdate = await deployer.deployWithLibraries(cache, 'CoverUpdate',
+    {
+      AccessControlLibV1: accessControlLibV1.address,
+      BaseLibV1: baseLibV1.address,
+      CoverUtilV1: coverUtilV1.address,
+      ProtoUtilV1: protoUtilV1.address,
+      RegistryLibV1: registryLibV1.address,
+      StoreKeyUtil: storeKeyUtil.address,
+      ValidationLibV1: validationLibV1.address
+    },
+    store.address
+  )
+
+  await protocol.addContract(key.toBytes32('cns:cover:update'), coverUpdate.address)
+
   const stakingContract = await deployer.deployWithLibraries(cache, 'CoverStake', {
     AccessControlLibV1: accessControlLibV1.address,
     BaseLibV1: baseLibV1.address,
@@ -367,6 +382,7 @@ const deployDependencies = async () => {
     protocol,
     routineInvokerLibV1,
     cover,
+    coverUpdate,
     coverLibV1,
     policy,
     policyHelperV1,

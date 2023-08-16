@@ -3,7 +3,6 @@
 pragma solidity ^0.8.0;
 import "./CoverBase.sol";
 import "../../interfaces/ICoverStake.sol";
-import "../../interfaces/ICoverStake.sol";
 import "../../interfaces/IVault.sol";
 
 /**
