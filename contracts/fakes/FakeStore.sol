@@ -71,7 +71,10 @@ contract FakeStore is IStore {
   function setBool(bytes32 k, bool v) external override {
     if (v) {
       boolStorage[k] = v;
+      return;
     }
+
+    delete boolStorage[k];
   }
 
   function setInt(bytes32 k, int256 v) external override {
