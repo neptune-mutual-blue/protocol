@@ -47,7 +47,7 @@ const config = {
       explorer: 'https://testnet.bscscan.com/'
     },
     polygonMumbai: {
-      url: 'https://rpc-mumbai.maticvigil.com	',
+      url: 'https://rpc-mumbai.maticvigil.com',
       chainId: 80001,
       accounts: [process.env.PRIVATE_KEY],
       gasPrice: 2 * GWEI,

@@ -90,8 +90,8 @@ contract CoverUpdate is Recoverable, ICoverUpdate {
     bool supportsProducts = s.supportsProductsInternal(coverKey);
     require(supportsProducts == false, "Invalid cover");
 
-    uint256 future = _getFutureCommitments(s, coverKey, bytes32(0), 0);
-    require(future == 0, "Has active policies");
+    uint256 commitment = _getFutureCommitments(s, coverKey, bytes32(0), 0);
+    require(commitment == 0, "Has active policies");
 
     uint256 productCount = s.countBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey);
     require(productCount == 0, "Has products");
@@ -100,16 +100,11 @@ contract CoverUpdate is Recoverable, ICoverUpdate {
     uint256 balance = vault.getStablecoinBalanceOf();
     require(balance <= liquidityThreshold, "Has liquidity");
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, false);
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, false);
     s.deleteAddressByKeys(ProtoUtilV1.NS_COVER_OWNER, coverKey);
-    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, "");
-    s.deleteUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
 
+    s.deleteUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_WEIGHT, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_CREATION_FEE_EARNING, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_CREATION_DATE, coverKey);
-
-    s.deleteBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_MIN_FIRST_STAKE, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_GOVERNANCE_REPORTING_PERIOD, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_RESOLUTION_COOL_DOWN_PERIOD, coverKey);
@@ -118,6 +113,12 @@ contract CoverUpdate is Recoverable, ICoverUpdate {
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_POLICY_RATE_CEILING, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_REASSURANCE_RATE, coverKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_LEVERAGE_FACTOR, coverKey);
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER, coverKey, false);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_SUPPORTS_PRODUCTS, coverKey, false);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, false);
+
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_INFO, coverKey, "");
   }
 
   /**
@@ -132,20 +133,22 @@ contract CoverUpdate is Recoverable, ICoverUpdate {
     uint256 futureCommitments = _getFutureCommitments(s, coverKey, productKey, 0);
     require(futureCommitments == 0, "Has active policies");
 
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, false);
-    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, "");
     s.deleteBytes32ArrayByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
-    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, false);
 
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey);
     s.deleteUintByKeys(ProtoUtilV1.NS_COVER_PRODUCT_EFFICIENCY, coverKey, productKey);
+
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, false);
+    s.setBoolByKeys(ProtoUtilV1.NS_COVER_REQUIRES_WHITELIST, coverKey, productKey, false);
+
+    s.setStringByKeys(ProtoUtilV1.NS_COVER_PRODUCT, coverKey, productKey, "");
   }
 
   function deleteCover(bytes32 coverKey) public override nonReentrant {
     s.mustNotBePaused();
     AccessControlLibV1.mustBeCoverManager(s);
 
-    uint256 liquidityThreshold = 10 * s.getStablecoinPrecisionInternal();
+    uint256 liquidityThreshold = 10 * s.getStablecoinPrecisionInternal(); // 10 USD
     _deleteCoverInternal(s, coverKey, liquidityThreshold);
 
     emit CoverDeleted(coverKey);

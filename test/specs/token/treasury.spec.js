@@ -10,10 +10,11 @@ require('chai')
   .should()
 
 describe('Treasury: Transfer Many', () => {
-  let npm, usdc, treasury
+  let npm, usdc, treasury, timelockOrOwner
 
   before(async () => {
-    const [, timelockOrOwner] = await ethers.getSigners()
+    const [, _timelockOrOwner] = await ethers.getSigners()
+    timelockOrOwner = _timelockOrOwner
 
     npm = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Neptune Mutual', 'NPM')
     usdc = await deployer.deploy(cache, 'NPM', timelockOrOwner.address, 'Fake USDC', 'USDC')
@@ -31,8 +32,8 @@ describe('Treasury: Transfer Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await treasury.transferMany(npm.address, receivers, amounts)
-    await treasury.transferMany(usdc.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).transferMany(npm.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).transferMany(usdc.address, receivers, amounts)
 
     for (const i in receivers) {
       let balance = await npm.balanceOf(receivers[i])
@@ -49,7 +50,7 @@ describe('Treasury: Transfer Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(10000), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await treasury.transferMany(npm.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).transferMany(npm.address, receivers, amounts)
       .should.be.rejectedWith('Insufficient Balance')
   })
 
@@ -67,7 +68,7 @@ describe('Treasury: Transfer Many', () => {
     const receivers = []
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await treasury.transferMany(npm.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).transferMany(npm.address, receivers, amounts)
       .should.be.rejectedWith('No receiver')
   })
 
@@ -77,18 +78,23 @@ describe('Treasury: Transfer Many', () => {
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500)]
 
-    await treasury.transferMany(npm.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).transferMany(npm.address, receivers, amounts)
       .should.be.rejectedWith('Invalid args')
   })
 
   it('should not allow transferMany when paused', async () => {
-    const [, , alice, bob, charles, david, emily, frank] = await ethers.getSigners()
+    const [owner, , alice, bob, charles, david, emily, frank] = await ethers.getSigners()
 
     const receivers = [alice.address, bob.address, charles.address, david.address, emily.address, frank.address]
     const amounts = [helper.ether(100), helper.ether(200), helper.ether(300), helper.ether(400), helper.ether(500), helper.ether(600)]
 
-    await treasury.pause(true)
-    await treasury.transferMany(npm.address, receivers, amounts)
+    await treasury.connect(timelockOrOwner).setPausers([owner.address], [true])
+    await treasury.pause()
+
+    await treasury.connect(timelockOrOwner).transferMany(npm.address, receivers, amounts)
       .should.be.rejectedWith('Pausable: paused')
+
+    await treasury.connect(timelockOrOwner).unpause()
+    await treasury.connect(timelockOrOwner).setPausers([owner.address], [false])
   })
 })
