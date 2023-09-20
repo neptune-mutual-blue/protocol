@@ -28,7 +28,7 @@ import "./Witness.sol";
  * <br /> <br />
  *
  * Please carefully check the cover rules, cover exclusions, and standard exclusion
- * in detail before you interact with the Governace contract(s). You entire stake will be forfeited
+ * in detail before you interact with the Governance contract(s). Your entire stake will be forfeited
  * if resolution does not go in your favor. You will be able to unstake
  * and receive back your NPM only if:
  *
@@ -78,7 +78,7 @@ abstract contract Reporter is IReporter, Witness {
    *
    * **Observed Date**
    *
-   * The date an time when incident occurred in the real world.
+   * The date and time when incident occurred in the real world.
    *
    * **Incident Date**
    *
@@ -92,7 +92,7 @@ abstract contract Reporter is IReporter, Witness {
    * @custom:warning **Warning:**
    *
    * Please carefully check the cover rules, cover exclusions, and standard exclusion
-   * in detail before you submit this report. You entire stake will be forfeited
+   * in detail before you submit this report. Your entire stake will be forfeited
    * if resolution does not go in your favor. You will be able to unstake
    * and receive back your NPM only if:
    *
@@ -169,7 +169,7 @@ abstract contract Reporter is IReporter, Witness {
    * @custom:warning **Warning:**
    *
    * Please carefully check the coverage rules and exclusions in detail
-   * before you submit this report. You entire stake will be forfeited
+   * before you submit this report. Your entire stake will be forfeited
    * if resolution does not go in your favor. You will be able to unstake
    * and receive back your NPM only if:
    *
