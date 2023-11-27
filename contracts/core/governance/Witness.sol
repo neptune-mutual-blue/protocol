@@ -33,7 +33,7 @@ import "../../libraries/NTransferUtilV2.sol";
  * <br /> <br />
  *
  * Please carefully check the cover rules, cover exclusions, and standard exclusion
- * in detail before you interact with the Governace contract(s). You entire stake will be forfeited
+ * in detail before you interact with the Governance contract(s). Your entire stake will be forfeited
  * if resolution does not go in your favor. You will be able to unstake
  * and receive back your NPM only if:
  *

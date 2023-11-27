@@ -13,7 +13,7 @@ abstract contract VaultLiquidity is VaultBase {
    * @dev Transfers stablecoins to claims processor contracts for claims payout.
    * Uses the hooks `preTransferGovernance` and `postTransferGovernance` on the vault delegate contract.
    *
-   * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernace`
+   * @custom:suppress-acl This function is only callable by the claims processor as checked in `preTransferGovernance` and `postTransferGovernance`
    * @custom:suppress-pausable
    *
    */
