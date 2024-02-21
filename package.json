@@ -80,17 +80,16 @@
     "dotenv": "10.0.0",
     "ethereum-waffle": "3.4.0",
     "ethers": "5.5.2",
-    "hardhat": "2.8.0",
+    "hardhat": "2.19.3",
     "hardhat-contract-sizer": "2.1.1",
     "hardhat-gas-reporter": "1.0.6",
-    "ipfs-mini": "1.1.5",
     "moment": "2.29.1",
     "node-enumerable": "6.0.0",
     "openzeppelin-solidity": "4.4.1",
     "prettier": "2.5.1",
     "prettier-plugin-solidity": "1.0.0-beta.19",
     "solhint": "3.3.6",
-    "solidity-coverage": "0.7.17",
+    "solidity-coverage": "^0.8.7",
     "solidoc2": "1.0.7",
     "standard": "16.0.4"
   },
@@ -98,7 +97,7 @@
     "hardhat/**/@ethereumjs/tx": "3.5.0"
   },
   "volta": {
-    "node": "16.13.1",
+    "node": "18.12.0",
     "yarn": "1.22.19"
   }
 }
