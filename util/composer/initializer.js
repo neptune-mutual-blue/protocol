@@ -40,7 +40,6 @@ const initialize = async (suite, deploymentId) => {
 
   const [pairs, pairInfo] = await fakeUniswapPairComposer.compose(cache, tokens)
 
-
   const [npmUsdPair, crpoolUsdPair, hwtUsdPair, obkUsdPair, sabreUsdPair, becUsdPair, xdUsdPair] = pairs
 
   const store = await storeComposer.deploy(cache)
@@ -67,7 +66,7 @@ const initialize = async (suite, deploymentId) => {
     npm: tokens.npm.address,
     treasury,
     priceOracle,
-    coverCreationFee: helper.ether(10_000),
+    coverCreationFee: helper.ether(1_000),
     minCoverCreationStake: helper.ether(0),
     minStakeToAddLiquidity: helper.ether(0),
     firstReportingStake: helper.ether(10_000),
