@@ -20,7 +20,7 @@
     "verify": "node ./scripts/verify.js",
     "solhint": "solhint \"contracts/**/*.sol\"",
     "genabi": "rm -rf ./abis && mkdir abis && node ./util/extract/abis",
-    "replace:abis": "npm run genabi && cp ./abis/*.json ../sdk/src/config/abis && cp ./abis/*.json ../subgraph/abis",
+    "replace:abis": "npm run genabi && node ./util/extract/genabi.js ./abis ../sdk/src/config/abis/index.ts && cp ./abis/*.json ../subgraph/abis",
     "events:all": "node util/events/all.js 2>&1 | tee ./.todo/events.md",
     "fix": "standard --fix",
     "events:table": "node util/events/table.js 2>&1 | tee ./.todo/events-table.md",
