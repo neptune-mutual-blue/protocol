@@ -62,18 +62,26 @@ const addProducts = async (payload) => {
   const { intermediate, cache, contracts } = payload
   const { cover } = contracts
 
-  const args = await Promise.all(products.map(async (x) => {
-    return {
-      coverKey: x.coverKey,
-      productKey: x.productKey,
-      info: await ipfs.write(x),
-      requiresWhitelist: x.requiresWhitelist,
-      productStatus: '1',
-      efficiency: x.efficiency
-    }
-  }))
+  if (products.length > CHUNK_SIZE) {
+    console.log('Total products: %s. Breaking into to chunks of %s products', products.length, CHUNK_SIZE)
+  }
 
-  await intermediate(cache, cover, 'addProducts', args)
+  const chunks = toChunks(products, CHUNK_SIZE)
+
+  for (const chunk of chunks) {
+    const args = await Promise.all(chunk.map(async (x) => {
+      return {
+        coverKey: x.coverKey,
+        productKey: x.productKey,
+        info: await ipfs.write(x),
+        requiresWhitelist: x.requiresWhitelist,
+        productStatus: '1',
+        efficiency: x.efficiency
+      }
+    }))
+
+    await intermediate(cache, cover, 'addProducts', args)
+  }
 }
 
 module.exports = { create }

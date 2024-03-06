@@ -44,7 +44,7 @@ describe('Policy Admin: setCoverageLag', () => {
       tokenSymbol: 'POD',
       supportsProducts: false,
       requiresWhitelist: false,
-      stakeWithFee: helper.ether(100000),
+      stakeWithFee: helper.ether(10_000),
       initialReassuranceAmount: '0',
       minStakeToReport: helper.ether(100),
       reportingPeriod: 7 * DAYS,
